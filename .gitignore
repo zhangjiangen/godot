@@ -368,3 +368,11 @@ compile_commands.json
 # https://clangd.llvm.org/ cache folder
 .clangd/
 .cache/
+Godot.app/Contents/Info.plist
+Godot.app/Contents/PkgInfo
+Godot.app/Contents/MacOS/Godot
+Godot.app/Contents/Resources/GDScript.icns
+Godot.app/Contents/Resources/Godot.icns
+Godot.app/Contents/Resources/Project.icns
+Godot.app/Contents/Resources/Resource.icns
+Godot.app/Contents/Resources/Scene.icns
