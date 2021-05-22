@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  javascript_eval.h                                                    */
+/*  test_crypto.h                                                        */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,26 +28,14 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef JAVASCRIPT_EVAL_H
-#define JAVASCRIPT_EVAL_H
+#ifndef TEST_CRYPTO_H
+#define TEST_CRYPTO_H
 
-#include "core/object.h"
+#include "core/os/main_loop.h"
 
-class JavaScript : public Object {
-private:
-	GDCLASS(JavaScript, Object);
+namespace TestCrypto {
 
-	static JavaScript *singleton;
+MainLoop *test();
+}
 
-protected:
-	static void _bind_methods();
-
-public:
-	Variant eval(const String &p_code, bool p_use_global_exec_context = false);
-
-	static JavaScript *get_singleton();
-	JavaScript();
-	~JavaScript();
-};
-
-#endif // JAVASCRIPT_EVAL_H
+#endif
