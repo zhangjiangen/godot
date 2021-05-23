@@ -4004,6 +4004,7 @@ String String::get_fbx_basename() const {
 	if (ext != "fbx") {
 		return String();
 	}
+    base_file = base_file.get_file();
 	bool isFirst = base_file.begins_with("@");
 	int isMind = base_file.find("@");
 
@@ -4022,8 +4023,6 @@ String String::get_fbx_basename() const {
 		// 选择的不是一个动作
 		if (base_file.ends_with("_skin")) {
 			base_file = base_file.substr(0, base_file.length() - 5);
-		} else {
-			base_file = base_file;
 		}
 	}
 	return base_file;
