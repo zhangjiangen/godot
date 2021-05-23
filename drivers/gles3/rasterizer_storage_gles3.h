@@ -853,8 +853,11 @@ public:
 			VS::PrimitiveType primitive;
 			Vector<Vector3> vertices;
 			Vector<Vector3> normals;
+			Vector<Plane32> normals32;
 			Vector<Plane> tangents;
+			Vector<Plane32> tangents32;
 			Vector<Color> colors;
+			Vector<Color32> colors32;
 			Vector<Vector2> uvs;
 			Vector<Vector2> uvs2;
 		};

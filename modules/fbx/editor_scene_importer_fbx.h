@@ -59,7 +59,7 @@
 #define CONVERT_FBX_TIME(time) static_cast<double>(time) / 46186158000LL
 
 class EditorSceneImporterFBX : public EditorSceneImporter {
-private:
+public:
 	GDCLASS(EditorSceneImporterFBX, EditorSceneImporter);
 
 	struct AssetImportAnimation {
@@ -112,7 +112,8 @@ private:
 
 	void BuildDocumentNodes(Ref<PivotTransform> parent_transform, ImportState &state, const FBXDocParser::Document *doc, uint64_t id, Ref<FBXNode> fbx_parent);
 
-	Spatial *_generate_scene(const String &p_path, const FBXDocParser::Document *p_document,
+public:
+	Spatial *_generate_scene(const String &p_path, const FBXDocParser::Document *p_document, const Vector<FBXDocParser::Document *> &all_doc,
 			const uint32_t p_flags,
 			int p_bake_fps,
 			const int32_t p_max_bone_weights,

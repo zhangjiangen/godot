@@ -953,8 +953,8 @@ BakedLightmap::BakeError BakedLightmap::bake(Node *p_from_node, String p_data_sa
 
 			Ref<ConfigFile> config;
 			config.instance();
-			if (FileAccess::exists(base_path + ".import")) {
-				config->load(base_path + ".import");
+			if (FileAccess::exists(base_path.change_to_fbx_basename_path() + ".import")) {
+				config->load(base_path.change_to_fbx_basename_path() + ".import");
 			} else {
 				// Set only if settings don't exist, to keep user choice
 				config->set_value("params", "compress/mode", 0);
@@ -968,7 +968,7 @@ BakedLightmap::BakeError BakedLightmap::bake(Node *p_from_node, String p_data_sa
 			config->set_value("params", "flags/srgb", use_srgb);
 			config->set_value("params", "slices/horizontal", 1);
 			config->set_value("params", "slices/vertical", images.size());
-			config->save(base_path + ".import");
+			config->save(base_path.change_to_fbx_basename_path() + ".import");
 
 			ResourceLoader::import(base_path);
 			texture = ResourceLoader::load(base_path); //if already loaded, it will be updated on refocus?
@@ -1025,8 +1025,8 @@ BakedLightmap::BakeError BakedLightmap::bake(Node *p_from_node, String p_data_sa
 
 				Ref<ConfigFile> config;
 				config.instance();
-				if (FileAccess::exists(base_path + ".import")) {
-					config->load(base_path + ".import");
+				if (FileAccess::exists(base_path.change_to_fbx_basename_path() + ".import")) {
+					config->load(base_path.change_to_fbx_basename_path() + ".import");
 				} else {
 					// Set only if settings don't exist, to keep user choice
 					config->set_value("params", "compress/mode", 0);
@@ -1039,7 +1039,7 @@ BakedLightmap::BakeError BakedLightmap::bake(Node *p_from_node, String p_data_sa
 				config->set_value("params", "flags/mipmaps", false);
 				config->set_value("params", "flags/srgb", use_srgb);
 
-				config->save(base_path + ".import");
+				config->save(base_path.change_to_fbx_basename_path() + ".import");
 
 				ResourceLoader::import(base_path);
 				texture = ResourceLoader::load(base_path); //if already loaded, it will be updated on refocus?

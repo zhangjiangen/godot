@@ -1275,7 +1275,11 @@ private:
 	const ImportSettings &settings;
 
 	ObjectMap objects;
+
+public:
 	const Parser &parser;
+
+private:
 	bool SafeToImport = false;
 
 	PropertyTemplateMap templates;

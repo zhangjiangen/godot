@@ -131,8 +131,9 @@ public:
 		return tokens;
 	}
 
-private:
 	TokenList tokens;
+
+private:
 	ScopePtr compound = nullptr;
 	std::vector<ScopePtr> compound_scope;
 	TokenPtr key_token = nullptr;
@@ -209,8 +210,11 @@ private:
 
 private:
 	ScopeList scopes;
+
+public:
 	const TokenList &tokens;
 
+private:
 	TokenPtr last = nullptr, current = nullptr;
 	TokenList::const_iterator cursor;
 	ScopePtr root = nullptr;

@@ -350,5 +350,31 @@ struct _GlobalLock {
 #ifndef FALLTHROUGH
 #define FALLTHROUGH
 #endif
+struct UByte4 {
+	union {
+		struct {
+			uint8_t r;
+			uint8_t g;
+			uint8_t b;
+			uint8_t a;
+		};
+		struct {
+			uint8_t x;
+			uint8_t y;
+			uint8_t z;
+			uint8_t w;
+		};
+		uint32_t intvalue;
+	};
+	UByte4(uint8_t p_x, uint8_t p_y, uint8_t p_z, uint8_t p_w) :
+			x(p_x), y(p_y), z(p_z), w(p_w) {
+	}
 
+	UByte4(uint32_t p_iv) :
+			intvalue(p_iv) {
+	}
+	UByte4() :
+			intvalue(0) {
+	}
+};
 #endif // TYPEDEFS_H

@@ -33,7 +33,7 @@
 
 #include "core/math/math_funcs.h"
 #include "core/ustring.h"
-
+typedef UByte4 Color32;
 struct Color {
 	union {
 		struct {
@@ -209,6 +209,15 @@ struct Color {
 		g = p_g;
 		b = p_b;
 		a = p_a;
+	}
+	_FORCE_INLINE_ Color(const Color32 &value) {
+		r = (float)value.r / 255.0f;
+		g = (float)value.g / 255.0f;
+		b = (float)value.b / 255.0f;
+		a = (float)value.a / 255.0f;
+	}
+	_FORCE_INLINE_ operator Color32() {
+		return Color32((uint8_t)(r * 255.0f), (uint8_t)(g * 255.0f), (uint8_t)(b * 255.0f), (uint8_t)(a * 255.0f));
 	}
 };
 

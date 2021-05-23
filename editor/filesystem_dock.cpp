@@ -843,10 +843,10 @@ void FileSystemDock::_select_file(const String &p_path, bool p_select_in_favorit
 			fpath = fpath.substr(0, fpath.length() - 1);
 		}
 	} else if (fpath != "Favorites") {
-		if (FileAccess::exists(fpath + ".import")) {
+		if (FileAccess::exists(fpath.change_to_fbx_basename_path() + ".import")) {
 			Ref<ConfigFile> config;
 			config.instance();
-			Error err = config->load(fpath + ".import");
+			Error err = config->load(fpath.change_to_fbx_basename_path() + ".import");
 			if (err == OK) {
 				if (config->has_section_key("remap", "importer")) {
 					String importer = config->get_value("remap", "importer");
@@ -1044,10 +1044,10 @@ void FileSystemDock::_try_move_item(const FileOrFolder &p_item, const String &p_
 	Error err = da->rename(old_path, new_path);
 	if (err == OK) {
 		// Move/Rename any corresponding import settings too.
-		if (p_item.is_file && FileAccess::exists(old_path + ".import")) {
-			err = da->rename(old_path + ".import", new_path + ".import");
+		if (p_item.is_file && FileAccess::exists(old_path.change_to_fbx_basename_path() + ".import")) {
+			err = da->rename(old_path.change_to_fbx_basename_path() + ".import", new_path.change_to_fbx_basename_path() + ".import");
 			if (err != OK) {
-				EditorNode::get_singleton()->add_io_error(TTR("Error moving:") + "\n" + old_path + ".import\n");
+				EditorNode::get_singleton()->add_io_error(TTR("Error moving:") + "\n" + old_path.change_to_fbx_basename_path() + ".import\n");
 			}
 		}
 
@@ -1103,8 +1103,8 @@ void FileSystemDock::_try_duplicate_item(const FileOrFolder &p_item, const Strin
 	Error err = p_item.is_file ? da->copy(old_path, new_path) : da->copy_dir(old_path, new_path);
 	if (err == OK) {
 		// Move/Rename any corresponding import settings too.
-		if (p_item.is_file && FileAccess::exists(old_path + ".import")) {
-			err = da->copy(old_path + ".import", new_path + ".import");
+		if (p_item.is_file && FileAccess::exists(old_path.change_to_fbx_basename_path() + ".import")) {
+			err = da->copy(old_path.change_to_fbx_basename_path() + ".import", new_path.change_to_fbx_basename_path() + ".import");
 			if (err != OK) {
 				EditorNode::get_singleton()->add_io_error(TTR("Error duplicating:") + "\n" + old_path + ".import\n");
 			}
@@ -2543,13 +2543,13 @@ void FileSystemDock::_update_import_dock() {
 			break;
 		}
 
-		if (!FileAccess::exists(fpath + ".import")) {
+		if (!FileAccess::exists(fpath.change_to_fbx_basename_path() + ".import")) {
 			imports.clear();
 			break;
 		}
 		Ref<ConfigFile> cf;
 		cf.instance();
-		Error err = cf->load(fpath + ".import");
+		Error err = cf->load(fpath.change_to_fbx_basename_path() + ".import");
 		if (err != OK) {
 			imports.clear();
 			break;

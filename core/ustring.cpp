@@ -3993,6 +3993,49 @@ String String::get_file() const {
 	return substr(sep + 1, length());
 }
 
+String String::get_fbx_basename() const {
+	int pos = rfind(".");
+	if (pos < 0 || pos < MAX(rfind("/"), rfind("\\"))) {
+		return String();
+	}
+
+	String base_file = substr(0, pos).to_lower();
+	String ext = substr(pos + 1, length()).to_lower();
+	if (ext != "fbx") {
+		return String();
+	}
+	bool isFirst = base_file.begins_with("@");
+	int isMind = base_file.find("@");
+
+	if (isFirst || isMind > 0) {
+		// 选择的是一个动作
+		if (isFirst) {
+			// 地址符号在首位的地址符号和最后一个下划线是基础文件名称
+			int last = base_file.rfind("_");
+			if (last > 1) {
+				base_file = base_file.substr(1, last - 1);
+			}
+		} else if (isMind > 1) {
+			base_file = base_file.substr(0, isMind);
+		}
+	} else {
+		// 选择的不是一个动作
+		if (base_file.ends_with("_skin")) {
+			base_file = base_file.substr(0, base_file.length() - 5);
+		} else {
+			base_file = base_file;
+		}
+	}
+	return base_file;
+}
+
+String String::change_to_fbx_basename_path() const {
+		String fbx_base_name = get_fbx_basename();
+	if (fbx_base_name.length() > 0) {
+		return get_base_dir() + "/" + fbx_base_name + ".fbx";
+	}
+	return *this;
+}
 String String::get_extension() const {
 	int pos = find_last(".");
 	if (pos < 0 || pos < MAX(find_last("/"), find_last("\\"))) {

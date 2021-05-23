@@ -36,6 +36,7 @@
 
 class Basis;
 
+typedef UByte4 Plane32;
 struct Vector3 {
 	static const int AXIS_COUNT = 3;
 
@@ -128,6 +129,15 @@ struct Vector3 {
 	_FORCE_INLINE_ Vector3 reflect(const Vector3 &p_normal) const;
 
 	bool is_equal_approx(const Vector3 &p_v) const;
+
+	_FORCE_INLINE_ Vector3(const Plane32 &p_plane) {
+		x = ((p_plane.x / 255.0f) - 0.5f) * 2.0f;
+		y = ((p_plane.y / 255.0f) - 0.5f) * 2.0f;
+		z = ((p_plane.z / 255.0f) - 0.5f) * 2.0f;
+	}
+	_FORCE_INLINE_ operator Plane32() const {
+		return Plane32((uint8_t)((x * 0.5 + 0.5f) * 255.0f), (uint8_t)((y * 0.5 + 0.5f) * 255.0f), (uint8_t)((z * 0.5 + 0.5f) * 255.0f), 0);
+	}
 
 	/* Operators */
 

@@ -32,13 +32,13 @@
 #define PLANE_H
 
 #include "core/math/vector3.h"
-
 class Plane {
 public:
 	Vector3 normal;
 	real_t d;
 
-	void set_normal(const Vector3 &p_normal);
+	void
+	set_normal(const Vector3 &p_normal);
 	_FORCE_INLINE_ Vector3 get_normal() const { return normal; }; ///Point is coplanar, CMP_EPSILON for precision
 
 	void normalize();
@@ -79,6 +79,20 @@ public:
 			normal(p_a, p_b, p_c),
 			d(p_d) {}
 
+	_FORCE_INLINE_ Plane(const Plane32 &p_plane) {
+		normal.x = ((p_plane.x / 255.0f) - 0.5f) * 2.0f;
+		normal.y = ((p_plane.y / 255.0f) - 0.5f) * 2.0f;
+		normal.z = ((p_plane.z / 255.0f) - 0.5f) * 2.0f;
+		d = ((p_plane.w / 255.0f) - 0.5f) * 2.0f;
+	}
+	_FORCE_INLINE_ operator Plane32() const {
+		Plane32 ret;
+		ret.x = (uint8_t)((normal.x * 0.5f + 0.5) * 255.0f);
+		ret.y = (uint8_t)((normal.y * 0.5f + 0.5) * 255.0f);
+		ret.z = (uint8_t)((normal.z * 0.5f + 0.5) * 255.0f);
+		ret.w = (uint8_t)((d * 0.5f + 0.5) * 255.0f);
+		return ret;
+	}
 	_FORCE_INLINE_ Plane(const Vector3 &p_normal, real_t p_d);
 	_FORCE_INLINE_ Plane(const Vector3 &p_point, const Vector3 &p_normal);
 	_FORCE_INLINE_ Plane(const Vector3 &p_point1, const Vector3 &p_point2, const Vector3 &p_point3, ClockDirection p_dir = CLOCKWISE);
@@ -97,7 +111,6 @@ bool Plane::has_point(const Vector3 &p_point, real_t _epsilon) const {
 	dist = ABS(dist);
 	return (dist <= _epsilon);
 }
-
 Plane::Plane(const Vector3 &p_normal, real_t p_d) :
 		normal(p_normal),
 		d(p_d) {

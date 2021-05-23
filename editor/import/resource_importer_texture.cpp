@@ -90,7 +90,7 @@ void ResourceImporterTexture::update_imports() {
 	for (Map<StringName, int>::Element *E = make_flags.front(); E; E = E->next()) {
 		Ref<ConfigFile> cf;
 		cf.instance();
-		String src_path = String(E->key()) + ".import";
+		String src_path = String(E->key()).change_to_fbx_basename_path() + ".import";
 
 		Error err = cf->load(src_path);
 		ERR_CONTINUE(err != OK);

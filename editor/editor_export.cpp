@@ -740,11 +740,11 @@ Error EditorExportPlatform::export_project_files(const Ref<EditorExportPreset> &
 		String path = E->get();
 		String type = ResourceLoader::get_resource_type(path);
 
-		if (FileAccess::exists(path + ".import")) {
+		if (FileAccess::exists(path.change_to_fbx_basename_path() + ".import")) {
 			//file is imported, replace by what it imports
 			Ref<ConfigFile> config;
 			config.instance();
-			err = config->load(path + ".import");
+			err = config->load(path.change_to_fbx_basename_path() + ".import");
 			if (err != OK) {
 				ERR_PRINTS("Could not parse: '" + path + "', not exported.");
 				continue;
@@ -805,8 +805,8 @@ Error EditorExportPlatform::export_project_files(const Ref<EditorExportPreset> &
 			}
 
 			//also save the .import file
-			Vector<uint8_t> array = FileAccess::get_file_as_array(path + ".import");
-			err = p_func(p_udata, path + ".import", array, idx, total);
+			Vector<uint8_t> array = FileAccess::get_file_as_array(path.change_to_fbx_basename_path() + ".import");
+			err = p_func(p_udata, path.change_to_fbx_basename_path() + ".import", array, idx, total);
 
 			if (err != OK) {
 				return err;

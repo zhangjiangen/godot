@@ -82,9 +82,219 @@ void EditorSceneImporterFBX::_register_project_setting_import(const String gener
 uint32_t EditorSceneImporterFBX::get_import_flags() const {
 	return IMPORT_SCENE;
 }
+static FBXDocParser::Document *LoadDoc(const String &p_path) {
+	Error err;
+	FileAccessRef f = FileAccess::open(p_path, FileAccess::READ, &err);
 
+	if (!f) {
+		WARN_PRINT("open fbx file error: " + p_path);
+		return nullptr;
+	}
+
+	{
+		PoolByteArray data;
+		// broadphase tokenizing pass in which we identify the core
+		// syntax elements of FBX (brackets, commas, key:value mappings)
+		FBXDocParser::TokenList *tokens = new FBXDocParser::TokenList;
+
+		bool is_binary = false;
+		data.resize(f->get_len());
+
+		if (data.size() < 64) {
+			WARN_PRINT("open fbx file format error: " + p_path);
+			f->close();
+			return nullptr;
+		}
+
+		f->get_buffer(data.write().ptr(), data.size());
+		PoolByteArray fbx_header;
+		fbx_header.resize(64);
+		for (int32_t byte_i = 0; byte_i < 64; byte_i++) {
+			fbx_header.write()[byte_i] = data.read()[byte_i];
+		}
+
+		String fbx_header_string;
+		if (fbx_header.size() >= 0) {
+			PoolByteArray::Read r = fbx_header.read();
+			fbx_header_string.parse_utf8((const char *)r.ptr(), fbx_header.size());
+		}
+
+		print_verbose("[doc] opening fbx file: " + p_path);
+		print_verbose("[doc] fbx header: " + fbx_header_string);
+
+		// safer to check this way as there can be different formatted headers
+		if (fbx_header_string.find("Kaydara FBX Binary", 0) != -1) {
+			is_binary = true;
+			print_verbose("[doc] is binary");
+			FBXDocParser::TokenizeBinary(*tokens, (const char *)data.write().ptr(), (size_t)data.size());
+		} else {
+			print_verbose("[doc] is ascii");
+			FBXDocParser::Tokenize(*tokens, (const char *)data.write().ptr(), (size_t)data.size());
+		}
+
+		// The import process explained:
+		// 1. Tokens are made, these are then taken into the 'parser' below
+		// 2. The parser constructs 'Elements' and all 'real' FBX Types.
+		// 3. This creates a problem: shared_ptr ownership, should Elements later 'take ownership'
+		// 4. No, it shouldn't so we should either a.) use weak ref for elements; but this is not correct.
+
+		// use this information to construct a very rudimentary
+		// parse-tree representing the FBX scope structure
+		FBXDocParser::Parser parser(*tokens, is_binary);
+		FBXDocParser::ImportSettings settings;
+		settings.strictMode = false;
+
+		// this function leaks a lot
+		FBXDocParser::Document *doc = memnew(FBXDocParser::Document(parser, settings));
+
+		// yeah so closing the file is a good idea (prevents readonly states)
+		f->close();
+		return doc;
+	}
+}
+void ClearDocArray(Vector<FBXDocParser::Document *> &doces) {
+	for (int index = 0; index < doces.size(); ++index) {
+		for (FBXDocParser::TokenPtr token : doces[index]->parser.tokens) {
+			if (token) {
+				delete token;
+				token = nullptr;
+			}
+		}
+		delete &(doces[index]->parser.tokens);
+		memdelete(doces[index]);
+	}
+	doces.clear();
+}
+static Vector<FBXDocParser::Document *> GetAllFBXAnimationAndSkinFile(const String &p_path) {
+	Vector<FBXDocParser::Document *> ret;
+	// 获取fbx对应的文件名称
+	String baseName = p_path.get_file().get_fbx_basename();
+	if (baseName.length() == 0) {
+		return ret;
+	}
+	DirAccess *d = DirAccess::open(p_path.get_base_dir());
+	if (d) {
+		List<String> custom_themes;
+		d->list_dir_begin();
+		String file = d->get_next();
+		while (file != String()) {
+			if (!d->current_is_dir() && file.get_extension() == "fbx") {
+				String temp_basename = file.get_file().get_fbx_basename();
+				if (temp_basename == baseName) {
+					FBXDocParser::Document *doc = LoadDoc(file);
+					if (doc) {
+						ret.push_back(doc);
+					}
+				}
+			}
+			file = d->get_next();
+		}
+		d->list_dir_end();
+		memdelete(d);
+	}
+	return ret;
+}
+
+static bool IsMeshDocument(FBXDocParser::Document *p_documentes) {
+	if (p_documentes) {
+		const std::vector<const FBXDocParser::Connection *> &conns = p_documentes->GetConnectionsByDestinationSequenced(0, "Model");
+
+		for (const FBXDocParser::Connection *con : conns) {
+			// ignore object-property links
+			if (con->PropertyName().length()) {
+				// really important we document why this is ignored.
+				print_verbose("ignoring property link - no docs on why this is ignored");
+				continue;
+			}
+
+			// convert connection source object into Object base class
+			// Source objects can exist with 'null connections' this means that we only for sure know the source exists.
+			const FBXDocParser::Object *const source_object = con->SourceObject();
+
+			if (nullptr == source_object) {
+				print_verbose("failed to convert source object for Model link");
+				continue;
+			}
+
+			// FBX Model::Cube, Model::Bone001, etc elements
+			// This detects if we can cast the object into this model structure.
+			const FBXDocParser::Model *const model = dynamic_cast<const FBXDocParser::Model *>(source_object);
+			if (model) {
+				const std::vector<const FBXDocParser::Geometry *> &geometry = model->GetGeometry();
+				for (const FBXDocParser::Geometry *mesh : geometry) {
+					if (mesh == nullptr) {
+						continue;
+					}
+
+					const FBXDocParser::MeshGeometry *mesh_geometry = dynamic_cast<const FBXDocParser::MeshGeometry *>(mesh);
+					if (mesh_geometry == nullptr) {
+						continue;
+					}
+					if (mesh_geometry->get_vertices().size() > 0 || mesh_geometry->get_polygon_indices().size() > 0) {
+						return true;
+					}
+				}
+			}
+		}
+	}
+	return false;
+}
+
+static Node *import_all_scene(EditorSceneImporterFBX *import, const String &p_path, uint32_t p_flags, int p_bake_fps,
+		List<String> *r_missing_deps, Error *r_err) {
+	Vector<FBXDocParser::Document *> doces = GetAllFBXAnimationAndSkinFile(p_path);
+	if (doces.size() > 0) {
+		FBXDocParser::Document *meshDoc = nullptr;
+		for (int index = 0; index < doces.size(); ++index) {
+			if (IsMeshDocument(doces[index])) {
+				meshDoc = doces[index];
+				break;
+			}
+		}
+
+		if (meshDoc != nullptr) {
+			const FBXDocParser::PropertyTable *import_props = meshDoc->GetMetadataProperties();
+			bool is_blender_fbx = false;
+			const FBXDocParser::PropertyPtr app_name = import_props->Get("Original|ApplicationName");
+			const FBXDocParser::PropertyPtr app_vendor = import_props->Get("Original|ApplicationVendor");
+			const FBXDocParser::PropertyPtr app_version = import_props->Get("Original|ApplicationVersion");
+			if (app_name) {
+				const FBXDocParser::TypedProperty<std::string> *app_name_string = dynamic_cast<const FBXDocParser::TypedProperty<std::string> *>(app_name);
+				if (app_name_string) {
+					print_verbose("FBX App Name: " + String(app_name_string->Value().c_str()));
+				}
+			}
+
+			if (app_vendor) {
+				const FBXDocParser::TypedProperty<std::string> *app_vendor_string = dynamic_cast<const FBXDocParser::TypedProperty<std::string> *>(app_vendor);
+				if (app_vendor_string) {
+					print_verbose("FBX App Vendor: " + String(app_vendor_string->Value().c_str()));
+					is_blender_fbx = app_vendor_string->Value().find("Blender") != std::string::npos;
+				}
+			}
+
+			if (app_version) {
+				const FBXDocParser::TypedProperty<std::string> *app_version_string = dynamic_cast<const FBXDocParser::TypedProperty<std::string> *>(app_version);
+				if (app_version_string) {
+					print_verbose("FBX App Version: " + String(app_version_string->Value().c_str()));
+				}
+			}
+
+			if (is_blender_fbx) {
+				WARN_PRINT("We don't officially support Blender FBX animations yet, due to issues with upstream Blender,\n"
+						   "so please wait for us to work around remaining issues. We will continue to import the file but it may be broken.\n"
+						   "For minimal breakage, please export FBX from Blender with -Z forward, and Y up.");
+			}
+			return import->_generate_scene(p_path, meshDoc, doces, p_flags, p_bake_fps, 8, is_blender_fbx);
+		}
+	}
+	*r_err = FAILED;
+	return memnew(Spatial);
+}
 Node *EditorSceneImporterFBX::import_scene(const String &p_path, uint32_t p_flags, int p_bake_fps,
 		List<String> *r_missing_deps, Error *r_err) {
+	return import_all_scene(this, p_path, p_flags, p_bake_fps, r_missing_deps, r_err);
+#if 0
 	// done for performance when re-importing lots of files when testing importer in verbose only!
 	if (OS::get_singleton()->is_stdout_verbose()) {
 		EditorLog *log = EditorNode::get_log();
@@ -93,7 +303,10 @@ Node *EditorSceneImporterFBX::import_scene(const String &p_path, uint32_t p_flag
 	Error err;
 	FileAccessRef f = FileAccess::open(p_path, FileAccess::READ, &err);
 
-	ERR_FAIL_COND_V(!f, nullptr);
+	if (!f) {
+		WARN_PRINT(!f, "open fbx file error: " + p_path);
+		return memnew(Spatial);
+	}
 
 	{
 		PoolByteArray data;
@@ -104,7 +317,7 @@ Node *EditorSceneImporterFBX::import_scene(const String &p_path, uint32_t p_flag
 		bool is_binary = false;
 		data.resize(f->get_len());
 
-		ERR_FAIL_COND_V(data.size() < 64, nullptr);
+		WARN_PRINT(data.size() < 64, nullptr);
 
 		f->get_buffer(data.write().ptr(), data.size());
 		PoolByteArray fbx_header;
@@ -205,6 +418,7 @@ Node *EditorSceneImporterFBX::import_scene(const String &p_path, uint32_t p_flag
 	}
 
 	return memnew(Spatial);
+#endif
 }
 
 template <class T>
@@ -359,10 +573,9 @@ Transform get_global_transform(Spatial *root, Spatial *child_node) {
 
 	return t;
 }
-
 Spatial *EditorSceneImporterFBX::_generate_scene(
 		const String &p_path,
-		const FBXDocParser::Document *p_document,
+		const FBXDocParser::Document *p_document, const Vector<FBXDocParser::Document *> &all_doc,
 		const uint32_t p_flags,
 		int p_bake_fps,
 		const int32_t p_max_bone_weights,
@@ -825,438 +1038,441 @@ Spatial *EditorSceneImporterFBX::_generate_scene(
 
 	// enable animation import, only if local animation is enabled
 	if (state.enable_animation_import && (p_flags & IMPORT_ANIMATION)) {
-		// document animation stack list - get by ID so we can unload any non used animation stack
-		const std::vector<uint64_t> animation_stack = p_document->GetAnimationStackIDs();
+		for (int index = 0; index < all_doc.size(); ++index) {
+			// document animation stack list - get by ID so we can unload any non used animation stack
+			// const std::vector<uint64_t> animation_stack = p_document->GetAnimationStackIDs();
+			const std::vector<uint64_t> animation_stack = all_doc[index]->GetAnimationStackIDs();
 
-		for (uint64_t anim_id : animation_stack) {
-			FBXDocParser::LazyObject *lazyObject = p_document->GetObject(anim_id);
-			const FBXDocParser::AnimationStack *stack = lazyObject->Get<FBXDocParser::AnimationStack>();
+			for (uint64_t anim_id : animation_stack) {
+				FBXDocParser::LazyObject *lazyObject = all_doc[index]->GetObject(anim_id);
+				const FBXDocParser::AnimationStack *stack = lazyObject->Get<FBXDocParser::AnimationStack>();
 
-			if (stack != nullptr) {
-				String animation_name = ImportUtils::FBXNodeToName(stack->Name());
-				print_verbose("Valid animation stack has been found: " + animation_name);
-				// ReferenceTime is the same for some animations?
-				// LocalStop time is the start and end time
-				float r_start = CONVERT_FBX_TIME(stack->ReferenceStart());
-				float r_stop = CONVERT_FBX_TIME(stack->ReferenceStop());
-				float start_time = CONVERT_FBX_TIME(stack->LocalStart());
-				float end_time = CONVERT_FBX_TIME(stack->LocalStop());
-				float duration = end_time - start_time;
+				if (stack != nullptr) {
+					String animation_name = ImportUtils::FBXNodeToName(stack->Name());
+					print_verbose("Valid animation stack has been found: " + animation_name);
+					// ReferenceTime is the same for some animations?
+					// LocalStop time is the start and end time
+					float r_start = CONVERT_FBX_TIME(stack->ReferenceStart());
+					float r_stop = CONVERT_FBX_TIME(stack->ReferenceStop());
+					float start_time = CONVERT_FBX_TIME(stack->LocalStart());
+					float end_time = CONVERT_FBX_TIME(stack->LocalStop());
+					float duration = end_time - start_time;
 
-				print_verbose("r_start " + rtos(r_start) + ", r_stop " + rtos(r_stop));
-				print_verbose("start_time" + rtos(start_time) + " end_time " + rtos(end_time));
-				print_verbose("anim duration : " + rtos(duration));
+					print_verbose("r_start " + rtos(r_start) + ", r_stop " + rtos(r_stop));
+					print_verbose("start_time" + rtos(start_time) + " end_time " + rtos(end_time));
+					print_verbose("anim duration : " + rtos(duration));
 
-				// we can safely create the animation player
-				if (state.animation_player == nullptr) {
-					print_verbose("Creating animation player");
-					state.animation_player = memnew(AnimationPlayer);
-					state.root->add_child(state.animation_player);
-					state.animation_player->set_owner(state.root_owner);
-				}
+					// we can safely create the animation player
+					if (state.animation_player == nullptr) {
+						print_verbose("Creating animation player");
+						state.animation_player = memnew(AnimationPlayer);
+						state.root->add_child(state.animation_player);
+						state.animation_player->set_owner(state.root_owner);
+					}
 
-				Ref<Animation> animation;
-				animation.instance();
-				animation->set_name(animation_name);
-				animation->set_length(duration);
+					Ref<Animation> animation;
+					animation.instance();
+					animation->set_name(animation_name);
+					animation->set_length(duration);
 
-				print_verbose("Animation length: " + rtos(animation->get_length()) + " seconds");
+					print_verbose("Animation length: " + rtos(animation->get_length()) + " seconds");
 
-				// i think assimp was duplicating things, this lets me know to just reference or ignore this to prevent duplicate information in tracks
-				// this would mean that we would be doing three times as much work per track if my theory is correct.
-				// this was not the case but this is a good sanity check for the animation handler from the document.
-				// it also lets us know if the FBX specification massively changes the animation system, in theory such a change would make this show
-				// an fbx specification error, so best keep it in
-				// the overhead is tiny.
-				Map<uint64_t, const FBXDocParser::AnimationCurve *> CheckForDuplication;
+					// i think assimp was duplicating things, this lets me know to just reference or ignore this to prevent duplicate information in tracks
+					// this would mean that we would be doing three times as much work per track if my theory is correct.
+					// this was not the case but this is a good sanity check for the animation handler from the document.
+					// it also lets us know if the FBX specification massively changes the animation system, in theory such a change would make this show
+					// an fbx specification error, so best keep it in
+					// the overhead is tiny.
+					Map<uint64_t, const FBXDocParser::AnimationCurve *> CheckForDuplication;
 
-				const std::vector<const FBXDocParser::AnimationLayer *> &layers = stack->Layers();
-				print_verbose("FBX Animation layers: " + itos(layers.size()));
-				for (const FBXDocParser::AnimationLayer *layer : layers) {
-					std::vector<const FBXDocParser::AnimationCurveNode *> node_list = layer->Nodes();
-					print_verbose("Layer: " + ImportUtils::FBXNodeToName(layer->Name()) + ", " + " AnimCurveNode count " + itos(node_list.size()));
+					const std::vector<const FBXDocParser::AnimationLayer *> &layers = stack->Layers();
+					print_verbose("FBX Animation layers: " + itos(layers.size()));
+					for (const FBXDocParser::AnimationLayer *layer : layers) {
+						std::vector<const FBXDocParser::AnimationCurveNode *> node_list = layer->Nodes();
+						print_verbose("Layer: " + ImportUtils::FBXNodeToName(layer->Name()) + ", " + " AnimCurveNode count " + itos(node_list.size()));
 
-					// first thing to do here is that i need to first get the animcurvenode to a Vector3
-					// we now need to put this into the track information for godot.
-					// to do this we need to know which track is what?
+						// first thing to do here is that i need to first get the animcurvenode to a Vector3
+						// we now need to put this into the track information for godot.
+						// to do this we need to know which track is what?
 
-					// target id, [ track name, [time index, vector] ]
-					// new map needs to be [ track name, keyframe_data ]
-					Map<uint64_t, Map<StringName, FBXTrack>> AnimCurveNodes;
+						// target id, [ track name, [time index, vector] ]
+						// new map needs to be [ track name, keyframe_data ]
+						Map<uint64_t, Map<StringName, FBXTrack>> AnimCurveNodes;
 
-					// struct AnimTrack {
-					// 	// Animation track can be
-					// 	// visible, T, R, S
-					// 	Map<StringName, Map<uint64_t, Vector3> > animation_track;
-					// };
+						// struct AnimTrack {
+						// 	// Animation track can be
+						// 	// visible, T, R, S
+						// 	Map<StringName, Map<uint64_t, Vector3> > animation_track;
+						// };
 
-					// Map<uint64_t, AnimTrack> AnimCurveNodes;
+						// Map<uint64_t, AnimTrack> AnimCurveNodes;
 
-					// so really, what does this mean to make an animtion track.
-					// we need to know what object the curves are for.
-					// we need the target ID and the target name for the track reduction.
+						// so really, what does this mean to make an animtion track.
+						// we need to know what object the curves are for.
+						// we need the target ID and the target name for the track reduction.
 
-					FBXDocParser::Model::RotOrder quat_rotation_order = FBXDocParser::Model::RotOrder_EulerXYZ;
+						FBXDocParser::Model::RotOrder quat_rotation_order = FBXDocParser::Model::RotOrder_EulerXYZ;
 
-					// T:: R:: S:: Visible:: Custom::
-					for (const FBXDocParser::AnimationCurveNode *curve_node : node_list) {
-						// when Curves() is called the curves are actually read, we could replace this with our own ProcessDomConnection code here if required.
-						// We may need to do this but ideally we use Curves
-						// note: when you call this there might be a delay in opening it
-						// uses mutable type to 'cache' the response until the AnimationCurveNode is cleaned up.
-						std::map<std::string, const FBXDocParser::AnimationCurve *> curves = curve_node->Curves();
-						const FBXDocParser::Object *object = curve_node->Target();
-						const FBXDocParser::Model *target = curve_node->TargetAsModel();
-						if (target == nullptr) {
-							if (object != nullptr) {
-								print_error("[doc] warning failed to find a target Model for curve: " + String(object->Name().c_str()));
+						// T:: R:: S:: Visible:: Custom::
+						for (const FBXDocParser::AnimationCurveNode *curve_node : node_list) {
+							// when Curves() is called the curves are actually read, we could replace this with our own ProcessDomConnection code here if required.
+							// We may need to do this but ideally we use Curves
+							// note: when you call this there might be a delay in opening it
+							// uses mutable type to 'cache' the response until the AnimationCurveNode is cleaned up.
+							std::map<std::string, const FBXDocParser::AnimationCurve *> curves = curve_node->Curves();
+							const FBXDocParser::Object *object = curve_node->Target();
+							const FBXDocParser::Model *target = curve_node->TargetAsModel();
+							if (target == nullptr) {
+								if (object != nullptr) {
+									print_error("[doc] warning failed to find a target Model for curve: " + String(object->Name().c_str()));
+								} else {
+									//print_error("[doc] failed to resolve object");
+									continue;
+								}
+
+								continue;
 							} else {
-								//print_error("[doc] failed to resolve object");
+								//print_verbose("[doc] applied rotation order: " + itos(target->RotationOrder()));
+								quat_rotation_order = target->RotationOrder();
+							}
+
+							uint64_t target_id = target->ID();
+							String target_name = ImportUtils::FBXNodeToName(target->Name());
+
+							const FBXDocParser::PropertyTable *properties = curve_node->Props();
+							bool got_x = false, got_y = false, got_z = false;
+							float offset_x = FBXDocParser::PropertyGet<float>(properties, "d|X", got_x);
+							float offset_y = FBXDocParser::PropertyGet<float>(properties, "d|Y", got_y);
+							float offset_z = FBXDocParser::PropertyGet<float>(properties, "d|Z", got_z);
+
+							String curve_node_name = ImportUtils::FBXNodeToName(curve_node->Name());
+
+							// Reduce all curves for this node into a single container
+							// T, R, S is what we expect, although other tracks are possible
+							// like for example visibility tracks.
+
+							// We are not ordered here, we don't care about ordering, this happens automagically by godot when we insert with the
+							// key time :), so order is unimportant because the insertion will happen at a time index
+							// good to know: we do not need a list of these in another format :)
+							//Map<String, Vector<const Assimp::FBX::AnimationCurve *> > unordered_track;
+
+							// T
+							// R
+							// S
+							// Map[String, List<VECTOR>]
+
+							// So this is a reduction of the animation curve nodes
+							// We build this as a lookup, this is essentially our 'animation track'
+							//AnimCurveNodes.insert(curve_node_name, Map<uint64_t, Vector3>());
+
+							// create the animation curve information with the target id
+							// so the point of this makes a track with the name "T" for example
+							// the target ID is also set here, this means we don't need to do anything extra when we are in the 'create all animation tracks' step
+							FBXTrack &keyframe_map = AnimCurveNodes[target_id][StringName(curve_node_name)];
+
+							if (got_x && got_y && got_z) {
+								Vector3 default_value = Vector3(offset_x, offset_y, offset_z);
+								keyframe_map.default_value = default_value;
+								keyframe_map.has_default = true;
+								//print_verbose("track name: " + curve_node_name);
+								//print_verbose("xyz default: " + default_value);
+							}
+							// target id, [ track name, [time index, vector] ]
+							// Map<uint64_t, Map<StringName, Map<uint64_t, Vector3> > > AnimCurveNodes;
+
+							// we probably need the target id here.
+							// so map[uint64_t map]...
+							// Map<uint64_t, Vector3D> translation_keys, rotation_keys, scale_keys;
+
+							// extra const required by C++11 colon/Range operator
+							// note: do not use C++17 syntax here for dicts.
+							// this is banned in Godot.
+							for (std::pair<const std::string, const FBXDocParser::AnimationCurve *> &kvp : curves) {
+								const String curve_element = ImportUtils::FBXNodeToName(kvp.first);
+								const FBXDocParser::AnimationCurve *curve = kvp.second;
+								String curve_name = ImportUtils::FBXNodeToName(curve->Name());
+								uint64_t curve_id = curve->ID();
+
+								if (CheckForDuplication.has(curve_id)) {
+									print_error("(FBX spec changed?) We found a duplicate curve being used for an alternative node - report to godot issue tracker");
+								} else {
+									CheckForDuplication.insert(curve_id, curve);
+								}
+
+								// FBX has no name for AnimCurveNode::, most of the time, not seen any with valid name here.
+								const std::map<int64_t, float> &track_time = curve->GetValueTimeTrack();
+
+								if (track_time.size() > 0) {
+									for (std::pair<int64_t, float> keyframe : track_time) {
+										if (curve_element == "d|X") {
+											keyframe_map.keyframes[keyframe.first].x = keyframe.second;
+										} else if (curve_element == "d|Y") {
+											keyframe_map.keyframes[keyframe.first].y = keyframe.second;
+										} else if (curve_element == "d|Z") {
+											keyframe_map.keyframes[keyframe.first].z = keyframe.second;
+										} else {
+											//print_error("FBX Unsupported element: " + curve_element);
+										}
+
+										//print_verbose("[" + itos(target_id) + "] Keyframe added:  " + itos(keyframe_map.size()));
+
+										//print_verbose("Keyframe t:" + rtos(animation_track_time) + " v: " + rtos(keyframe.second));
+									}
+								}
+							}
+						}
+
+						// Map<uint64_t, Map<StringName, Map<uint64_t, Vector3> > > AnimCurveNodes;
+						// add this animation track here
+
+						// target id, [ track name, [time index, vector] ]
+						//std::map<uint64_t, std::map<StringName, FBXTrack > > AnimCurveNodes;
+						for (Map<uint64_t, Map<StringName, FBXTrack>>::Element *track = AnimCurveNodes.front(); track; track = track->next()) {
+							// 5 tracks
+							// current track index
+							// track count is 5
+							// track count is 5.
+							// next track id is 5.
+							const uint64_t target_id = track->key();
+							int track_idx = animation->add_track(Animation::TYPE_TRANSFORM);
+
+							// animation->track_set_path(track_idx, node_path);
+							// animation->track_set_path(track_idx, node_path);
+							Ref<FBXBone> bone;
+
+							// note we must not run the below code if the entry doesn't exist, it will create dummy entries which is very bad.
+							// remember that state.fbx_bone_map[target_id] will create a new entry EVEN if you only read.
+							// this would break node animation targets, so if you change this be warned. :)
+							if (state.fbx_bone_map.has(target_id)) {
+								bone = state.fbx_bone_map[target_id];
+							}
+
+							Transform target_transform;
+
+							if (state.fbx_target_map.has(target_id)) {
+								Ref<FBXNode> node_ref = state.fbx_target_map[target_id];
+								target_transform = node_ref->pivot_transform->GlobalTransform;
+								//print_verbose("[doc] allocated animation node transform");
+							}
+
+							//int size_targets = state.fbx_target_map.size();
+							//print_verbose("Target ID map: " + itos(size_targets));
+							//print_verbose("[doc] debug bone map size: " + itos(state.fbx_bone_map.size()));
+
+							// if this is a skeleton mapped track we can just set the path for the track.
+							// todo: implement node paths here at some
+							if (state.fbx_bone_map.size() > 0 && state.fbx_bone_map.has(target_id)) {
+								if (bone->fbx_skeleton.is_valid() && bone.is_valid()) {
+									Ref<FBXSkeleton> fbx_skeleton = bone->fbx_skeleton;
+									String bone_path = state.root->get_path_to(fbx_skeleton->skeleton);
+									bone_path += ":" + fbx_skeleton->skeleton->get_bone_name(bone->godot_bone_id);
+									print_verbose("[doc] track bone path: " + bone_path);
+									NodePath path = bone_path;
+									animation->track_set_path(track_idx, path);
+								}
+							} else if (state.fbx_target_map.has(target_id)) {
+								//print_verbose("[doc] we have a valid target for a node animation");
+								Ref<FBXNode> target_node = state.fbx_target_map[target_id];
+								if (target_node.is_valid() && target_node->godot_node != nullptr) {
+									String node_path = state.root->get_path_to(target_node->godot_node);
+									NodePath path = node_path;
+									animation->track_set_path(track_idx, path);
+									//print_verbose("[doc] node animation path: " + node_path);
+								}
+							} else {
+								// note: this could actually be unsafe this means we should be careful about continuing here, if we see bizarre effects later we should disable this.
+								// I am not sure if this is unsafe or not, testing will tell us this.
+								print_error("[doc] invalid fbx target detected for this track");
 								continue;
 							}
 
-							continue;
-						} else {
-							//print_verbose("[doc] applied rotation order: " + itos(target->RotationOrder()));
-							quat_rotation_order = target->RotationOrder();
-						}
-
-						uint64_t target_id = target->ID();
-						String target_name = ImportUtils::FBXNodeToName(target->Name());
-
-						const FBXDocParser::PropertyTable *properties = curve_node->Props();
-						bool got_x = false, got_y = false, got_z = false;
-						float offset_x = FBXDocParser::PropertyGet<float>(properties, "d|X", got_x);
-						float offset_y = FBXDocParser::PropertyGet<float>(properties, "d|Y", got_y);
-						float offset_z = FBXDocParser::PropertyGet<float>(properties, "d|Z", got_z);
-
-						String curve_node_name = ImportUtils::FBXNodeToName(curve_node->Name());
-
-						// Reduce all curves for this node into a single container
-						// T, R, S is what we expect, although other tracks are possible
-						// like for example visibility tracks.
-
-						// We are not ordered here, we don't care about ordering, this happens automagically by godot when we insert with the
-						// key time :), so order is unimportant because the insertion will happen at a time index
-						// good to know: we do not need a list of these in another format :)
-						//Map<String, Vector<const Assimp::FBX::AnimationCurve *> > unordered_track;
-
-						// T
-						// R
-						// S
-						// Map[String, List<VECTOR>]
-
-						// So this is a reduction of the animation curve nodes
-						// We build this as a lookup, this is essentially our 'animation track'
-						//AnimCurveNodes.insert(curve_node_name, Map<uint64_t, Vector3>());
-
-						// create the animation curve information with the target id
-						// so the point of this makes a track with the name "T" for example
-						// the target ID is also set here, this means we don't need to do anything extra when we are in the 'create all animation tracks' step
-						FBXTrack &keyframe_map = AnimCurveNodes[target_id][StringName(curve_node_name)];
-
-						if (got_x && got_y && got_z) {
-							Vector3 default_value = Vector3(offset_x, offset_y, offset_z);
-							keyframe_map.default_value = default_value;
-							keyframe_map.has_default = true;
-							//print_verbose("track name: " + curve_node_name);
-							//print_verbose("xyz default: " + default_value);
-						}
-						// target id, [ track name, [time index, vector] ]
-						// Map<uint64_t, Map<StringName, Map<uint64_t, Vector3> > > AnimCurveNodes;
-
-						// we probably need the target id here.
-						// so map[uint64_t map]...
-						// Map<uint64_t, Vector3D> translation_keys, rotation_keys, scale_keys;
-
-						// extra const required by C++11 colon/Range operator
-						// note: do not use C++17 syntax here for dicts.
-						// this is banned in Godot.
-						for (std::pair<const std::string, const FBXDocParser::AnimationCurve *> &kvp : curves) {
-							const String curve_element = ImportUtils::FBXNodeToName(kvp.first);
-							const FBXDocParser::AnimationCurve *curve = kvp.second;
-							String curve_name = ImportUtils::FBXNodeToName(curve->Name());
-							uint64_t curve_id = curve->ID();
-
-							if (CheckForDuplication.has(curve_id)) {
-								print_error("(FBX spec changed?) We found a duplicate curve being used for an alternative node - report to godot issue tracker");
-							} else {
-								CheckForDuplication.insert(curve_id, curve);
+							// everything in FBX and Maya is a node therefore if this happens something is seriously broken.
+							if (!state.fbx_target_map.has(target_id)) {
+								print_error("unable to resolve this to an FBX object.");
+								continue;
 							}
 
-							// FBX has no name for AnimCurveNode::, most of the time, not seen any with valid name here.
-							const std::map<int64_t, float> &track_time = curve->GetValueTimeTrack();
-
-							if (track_time.size() > 0) {
-								for (std::pair<int64_t, float> keyframe : track_time) {
-									if (curve_element == "d|X") {
-										keyframe_map.keyframes[keyframe.first].x = keyframe.second;
-									} else if (curve_element == "d|Y") {
-										keyframe_map.keyframes[keyframe.first].y = keyframe.second;
-									} else if (curve_element == "d|Z") {
-										keyframe_map.keyframes[keyframe.first].z = keyframe.second;
-									} else {
-										//print_error("FBX Unsupported element: " + curve_element);
-									}
-
-									//print_verbose("[" + itos(target_id) + "] Keyframe added:  " + itos(keyframe_map.size()));
-
-									//print_verbose("Keyframe t:" + rtos(animation_track_time) + " v: " + rtos(keyframe.second));
-								}
-							}
-						}
-					}
-
-					// Map<uint64_t, Map<StringName, Map<uint64_t, Vector3> > > AnimCurveNodes;
-					// add this animation track here
-
-					// target id, [ track name, [time index, vector] ]
-					//std::map<uint64_t, std::map<StringName, FBXTrack > > AnimCurveNodes;
-					for (Map<uint64_t, Map<StringName, FBXTrack>>::Element *track = AnimCurveNodes.front(); track; track = track->next()) {
-						// 5 tracks
-						// current track index
-						// track count is 5
-						// track count is 5.
-						// next track id is 5.
-						const uint64_t target_id = track->key();
-						int track_idx = animation->add_track(Animation::TYPE_TRANSFORM);
-
-						// animation->track_set_path(track_idx, node_path);
-						// animation->track_set_path(track_idx, node_path);
-						Ref<FBXBone> bone;
-
-						// note we must not run the below code if the entry doesn't exist, it will create dummy entries which is very bad.
-						// remember that state.fbx_bone_map[target_id] will create a new entry EVEN if you only read.
-						// this would break node animation targets, so if you change this be warned. :)
-						if (state.fbx_bone_map.has(target_id)) {
-							bone = state.fbx_bone_map[target_id];
-						}
-
-						Transform target_transform;
-
-						if (state.fbx_target_map.has(target_id)) {
-							Ref<FBXNode> node_ref = state.fbx_target_map[target_id];
-							target_transform = node_ref->pivot_transform->GlobalTransform;
-							//print_verbose("[doc] allocated animation node transform");
-						}
-
-						//int size_targets = state.fbx_target_map.size();
-						//print_verbose("Target ID map: " + itos(size_targets));
-						//print_verbose("[doc] debug bone map size: " + itos(state.fbx_bone_map.size()));
-
-						// if this is a skeleton mapped track we can just set the path for the track.
-						// todo: implement node paths here at some
-						if (state.fbx_bone_map.size() > 0 && state.fbx_bone_map.has(target_id)) {
-							if (bone->fbx_skeleton.is_valid() && bone.is_valid()) {
-								Ref<FBXSkeleton> fbx_skeleton = bone->fbx_skeleton;
-								String bone_path = state.root->get_path_to(fbx_skeleton->skeleton);
-								bone_path += ":" + fbx_skeleton->skeleton->get_bone_name(bone->godot_bone_id);
-								print_verbose("[doc] track bone path: " + bone_path);
-								NodePath path = bone_path;
-								animation->track_set_path(track_idx, path);
-							}
-						} else if (state.fbx_target_map.has(target_id)) {
-							//print_verbose("[doc] we have a valid target for a node animation");
 							Ref<FBXNode> target_node = state.fbx_target_map[target_id];
-							if (target_node.is_valid() && target_node->godot_node != nullptr) {
-								String node_path = state.root->get_path_to(target_node->godot_node);
-								NodePath path = node_path;
-								animation->track_set_path(track_idx, path);
-								//print_verbose("[doc] node animation path: " + node_path);
-							}
-						} else {
-							// note: this could actually be unsafe this means we should be careful about continuing here, if we see bizarre effects later we should disable this.
-							// I am not sure if this is unsafe or not, testing will tell us this.
-							print_error("[doc] invalid fbx target detected for this track");
-							continue;
-						}
+							const FBXDocParser::Model *model = target_node->fbx_model;
+							const FBXDocParser::PropertyTable *props = model->Props();
 
-						// everything in FBX and Maya is a node therefore if this happens something is seriously broken.
-						if (!state.fbx_target_map.has(target_id)) {
-							print_error("unable to resolve this to an FBX object.");
-							continue;
-						}
+							Map<StringName, FBXTrack> &track_data = track->value();
+							FBXTrack &translation_keys = track_data[StringName("T")];
+							FBXTrack &rotation_keys = track_data[StringName("R")];
+							FBXTrack &scale_keys = track_data[StringName("S")];
 
-						Ref<FBXNode> target_node = state.fbx_target_map[target_id];
-						const FBXDocParser::Model *model = target_node->fbx_model;
-						const FBXDocParser::PropertyTable *props = model->Props();
+							double increment = 1.0f / fps_setting;
+							double time = 0.0f;
 
-						Map<StringName, FBXTrack> &track_data = track->value();
-						FBXTrack &translation_keys = track_data[StringName("T")];
-						FBXTrack &rotation_keys = track_data[StringName("R")];
-						FBXTrack &scale_keys = track_data[StringName("S")];
+							bool last = false;
 
-						double increment = 1.0f / fps_setting;
-						double time = 0.0f;
+							Vector<Vector3> pos_values;
+							Vector<float> pos_times;
+							Vector<Vector3> scale_values;
+							Vector<float> scale_times;
+							Vector<Quat> rot_values;
+							Vector<float> rot_times;
 
-						bool last = false;
+							double max_duration = 0;
+							double anim_length = animation->get_length();
 
-						Vector<Vector3> pos_values;
-						Vector<float> pos_times;
-						Vector<Vector3> scale_values;
-						Vector<float> scale_times;
-						Vector<Quat> rot_values;
-						Vector<float> rot_times;
+							for (std::pair<int64_t, Vector3> position_key : translation_keys.keyframes) {
+								pos_values.push_back(position_key.second * state.scale);
+								double animation_track_time = CONVERT_FBX_TIME(position_key.first);
 
-						double max_duration = 0;
-						double anim_length = animation->get_length();
+								if (animation_track_time > max_duration) {
+									max_duration = animation_track_time;
+								}
 
-						for (std::pair<int64_t, Vector3> position_key : translation_keys.keyframes) {
-							pos_values.push_back(position_key.second * state.scale);
-							double animation_track_time = CONVERT_FBX_TIME(position_key.first);
-
-							if (animation_track_time > max_duration) {
-								max_duration = animation_track_time;
+								//print_verbose("pos keyframe: t:" + rtos(animation_track_time) + " value " + position_key.second);
+								pos_times.push_back(animation_track_time);
 							}
 
-							//print_verbose("pos keyframe: t:" + rtos(animation_track_time) + " value " + position_key.second);
-							pos_times.push_back(animation_track_time);
-						}
+							for (std::pair<int64_t, Vector3> scale_key : scale_keys.keyframes) {
+								scale_values.push_back(scale_key.second);
+								double animation_track_time = CONVERT_FBX_TIME(scale_key.first);
 
-						for (std::pair<int64_t, Vector3> scale_key : scale_keys.keyframes) {
-							scale_values.push_back(scale_key.second);
-							double animation_track_time = CONVERT_FBX_TIME(scale_key.first);
-
-							if (animation_track_time > max_duration) {
-								max_duration = animation_track_time;
-							}
-							//print_verbose("scale keyframe t:" + rtos(animation_track_time));
-							scale_times.push_back(animation_track_time);
-						}
-
-						//
-						// Pre and Post keyframe rotation handler
-						// -- Required because Maya and Autodesk <3 the pain when it comes to implementing animation code! enjoy <3
-
-						bool got_pre = false;
-						bool got_post = false;
-
-						Quat post_rotation;
-						Quat pre_rotation;
-
-						// Rotation matrix
-						const Vector3 &PreRotation = FBXDocParser::PropertyGet<Vector3>(props, "PreRotation", got_pre);
-						const Vector3 &PostRotation = FBXDocParser::PropertyGet<Vector3>(props, "PostRotation", got_post);
-
-						FBXDocParser::Model::RotOrder rot_order = model->RotationOrder();
-						if (got_pre) {
-							pre_rotation = ImportUtils::EulerToQuaternion(rot_order, ImportUtils::deg2rad(PreRotation));
-						}
-						if (got_post) {
-							post_rotation = ImportUtils::EulerToQuaternion(rot_order, ImportUtils::deg2rad(PostRotation));
-						}
-
-						Quat lastQuat = Quat();
-
-						for (std::pair<int64_t, Vector3> rotation_key : rotation_keys.keyframes) {
-							double animation_track_time = CONVERT_FBX_TIME(rotation_key.first);
-
-							//print_verbose("euler rotation key: " + rotation_key.second);
-							Quat rot_key_value = ImportUtils::EulerToQuaternion(quat_rotation_order, ImportUtils::deg2rad(rotation_key.second));
-
-							if (lastQuat != Quat() && rot_key_value.dot(lastQuat) < 0) {
-								rot_key_value.x = -rot_key_value.x;
-								rot_key_value.y = -rot_key_value.y;
-								rot_key_value.z = -rot_key_value.z;
-								rot_key_value.w = -rot_key_value.w;
-							}
-							// pre_post rotation possibly could fix orientation
-							Quat final_rotation = pre_rotation * rot_key_value * post_rotation;
-
-							lastQuat = final_rotation;
-
-							if (animation_track_time > max_duration) {
-								max_duration = animation_track_time;
+								if (animation_track_time > max_duration) {
+									max_duration = animation_track_time;
+								}
+								//print_verbose("scale keyframe t:" + rtos(animation_track_time));
+								scale_times.push_back(animation_track_time);
 							}
 
-							rot_values.push_back(final_rotation.normalized());
-							rot_times.push_back(animation_track_time);
-						}
+							//
+							// Pre and Post keyframe rotation handler
+							// -- Required because Maya and Autodesk <3 the pain when it comes to implementing animation code! enjoy <3
 
-						bool valid_rest = false;
-						Transform bone_rest;
-						int skeleton_bone = -1;
-						if (state.fbx_bone_map.has(target_id)) {
-							if (bone.is_valid() && bone->fbx_skeleton.is_valid()) {
-								skeleton_bone = bone->godot_bone_id;
-								if (skeleton_bone >= 0) {
-									bone_rest = bone->fbx_skeleton->skeleton->get_bone_rest(skeleton_bone);
-									valid_rest = true;
+							bool got_pre = false;
+							bool got_post = false;
+
+							Quat post_rotation;
+							Quat pre_rotation;
+
+							// Rotation matrix
+							const Vector3 &PreRotation = FBXDocParser::PropertyGet<Vector3>(props, "PreRotation", got_pre);
+							const Vector3 &PostRotation = FBXDocParser::PropertyGet<Vector3>(props, "PostRotation", got_post);
+
+							FBXDocParser::Model::RotOrder rot_order = model->RotationOrder();
+							if (got_pre) {
+								pre_rotation = ImportUtils::EulerToQuaternion(rot_order, ImportUtils::deg2rad(PreRotation));
+							}
+							if (got_post) {
+								post_rotation = ImportUtils::EulerToQuaternion(rot_order, ImportUtils::deg2rad(PostRotation));
+							}
+
+							Quat lastQuat = Quat();
+
+							for (std::pair<int64_t, Vector3> rotation_key : rotation_keys.keyframes) {
+								double animation_track_time = CONVERT_FBX_TIME(rotation_key.first);
+
+								//print_verbose("euler rotation key: " + rotation_key.second);
+								Quat rot_key_value = ImportUtils::EulerToQuaternion(quat_rotation_order, ImportUtils::deg2rad(rotation_key.second));
+
+								if (lastQuat != Quat() && rot_key_value.dot(lastQuat) < 0) {
+									rot_key_value.x = -rot_key_value.x;
+									rot_key_value.y = -rot_key_value.y;
+									rot_key_value.z = -rot_key_value.z;
+									rot_key_value.w = -rot_key_value.w;
+								}
+								// pre_post rotation possibly could fix orientation
+								Quat final_rotation = pre_rotation * rot_key_value * post_rotation;
+
+								lastQuat = final_rotation;
+
+								if (animation_track_time > max_duration) {
+									max_duration = animation_track_time;
+								}
+
+								rot_values.push_back(final_rotation.normalized());
+								rot_times.push_back(animation_track_time);
+							}
+
+							bool valid_rest = false;
+							Transform bone_rest;
+							int skeleton_bone = -1;
+							if (state.fbx_bone_map.has(target_id)) {
+								if (bone.is_valid() && bone->fbx_skeleton.is_valid()) {
+									skeleton_bone = bone->godot_bone_id;
+									if (skeleton_bone >= 0) {
+										bone_rest = bone->fbx_skeleton->skeleton->get_bone_rest(skeleton_bone);
+										valid_rest = true;
+									}
+								}
+
+								if (!valid_rest) {
+									print_verbose("invalid rest!");
 								}
 							}
 
-							if (!valid_rest) {
-								print_verbose("invalid rest!");
-							}
-						}
+							const Vector3 def_pos = translation_keys.has_default ? (translation_keys.default_value * state.scale) : bone_rest.origin;
+							const Quat def_rot = rotation_keys.has_default ? ImportUtils::EulerToQuaternion(quat_rotation_order, ImportUtils::deg2rad(rotation_keys.default_value)) : bone_rest.basis.get_rotation_quat();
+							const Vector3 def_scale = scale_keys.has_default ? scale_keys.default_value : bone_rest.basis.get_scale();
+							print_verbose("track defaults: p(" + def_pos + ") s(" + def_scale + ") r(" + def_rot + ")");
 
-						const Vector3 def_pos = translation_keys.has_default ? (translation_keys.default_value * state.scale) : bone_rest.origin;
-						const Quat def_rot = rotation_keys.has_default ? ImportUtils::EulerToQuaternion(quat_rotation_order, ImportUtils::deg2rad(rotation_keys.default_value)) : bone_rest.basis.get_rotation_quat();
-						const Vector3 def_scale = scale_keys.has_default ? scale_keys.default_value : bone_rest.basis.get_scale();
-						print_verbose("track defaults: p(" + def_pos + ") s(" + def_scale + ") r(" + def_rot + ")");
+							while (true) {
+								Vector3 pos = def_pos;
+								Quat rot = def_rot;
+								Vector3 scale = def_scale;
 
-						while (true) {
-							Vector3 pos = def_pos;
-							Quat rot = def_rot;
-							Vector3 scale = def_scale;
+								if (pos_values.size()) {
+									pos = _interpolate_track<Vector3>(pos_times, pos_values, time,
+											AssetImportAnimation::INTERP_LINEAR);
+								}
 
-							if (pos_values.size()) {
-								pos = _interpolate_track<Vector3>(pos_times, pos_values, time,
-										AssetImportAnimation::INTERP_LINEAR);
-							}
+								if (rot_values.size()) {
+									rot = _interpolate_track<Quat>(rot_times, rot_values, time,
+											AssetImportAnimation::INTERP_LINEAR);
+								}
 
-							if (rot_values.size()) {
-								rot = _interpolate_track<Quat>(rot_times, rot_values, time,
-										AssetImportAnimation::INTERP_LINEAR);
-							}
+								if (scale_values.size()) {
+									scale = _interpolate_track<Vector3>(scale_times, scale_values, time,
+											AssetImportAnimation::INTERP_LINEAR);
+								}
 
-							if (scale_values.size()) {
-								scale = _interpolate_track<Vector3>(scale_times, scale_values, time,
-										AssetImportAnimation::INTERP_LINEAR);
-							}
+								// node animations must also include pivots
+								if (skeleton_bone >= 0) {
+									Transform xform = Transform();
+									xform.basis.set_quat_scale(rot, scale);
+									xform.origin = pos;
+									const Transform t = bone_rest.affine_inverse() * xform;
 
-							// node animations must also include pivots
-							if (skeleton_bone >= 0) {
-								Transform xform = Transform();
-								xform.basis.set_quat_scale(rot, scale);
-								xform.origin = pos;
-								const Transform t = bone_rest.affine_inverse() * xform;
+									// populate	this again
+									rot = t.basis.get_rotation_quat();
+									rot.normalize();
+									scale = t.basis.get_scale();
+									pos = t.origin;
+								}
 
-								// populate	this again
-								rot = t.basis.get_rotation_quat();
-								rot.normalize();
-								scale = t.basis.get_scale();
-								pos = t.origin;
-							}
+								animation->transform_track_insert_key(track_idx, time, pos, rot, scale);
 
-							animation->transform_track_insert_key(track_idx, time, pos, rot, scale);
+								if (last) {
+									break;
+								}
 
-							if (last) {
-								break;
-							}
-
-							time += increment;
-							if (time > anim_length) {
-								last = true;
-								time = anim_length;
-								break;
+								time += increment;
+								if (time > anim_length) {
+									last = true;
+									time = anim_length;
+									break;
+								}
 							}
 						}
 					}
+					state.animation_player->add_animation(animation_name, animation);
 				}
-				state.animation_player->add_animation(animation_name, animation);
 			}
+
+			// AnimStack elements contain start stop time and name of animation
+			// AnimLayer is the current active layer of the animation (multiple layers can be active we only support 1)
+			// AnimCurveNode has a OP link back to the model which is the real node.
+			// AnimCurveNode has a direct link to AnimationCurve (of which it may have more than one)
+
+			// Store animation stack in list
+			// iterate over all AnimStacks like the cache node algorithm recursively
+			// this can then be used with ProcessDomConnection<> to link from
+			// AnimStack:: <-- (OO) --> AnimLayer:: <-- (OO) --> AnimCurveNode:: (which can OP resolve) to Model::
 		}
-
-		// AnimStack elements contain start stop time and name of animation
-		// AnimLayer is the current active layer of the animation (multiple layers can be active we only support 1)
-		// AnimCurveNode has a OP link back to the model which is the real node.
-		// AnimCurveNode has a direct link to AnimationCurve (of which it may have more than one)
-
-		// Store animation stack in list
-		// iterate over all AnimStacks like the cache node algorithm recursively
-		// this can then be used with ProcessDomConnection<> to link from
-		// AnimStack:: <-- (OO) --> AnimLayer:: <-- (OO) --> AnimCurveNode:: (which can OP resolve) to Model::
 	}
 
 	//
