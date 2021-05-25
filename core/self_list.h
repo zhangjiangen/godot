@@ -42,7 +42,7 @@ public:
 		SelfList<T> *_last;
 
 	public:
-		void add(SelfList<T> *p_elem) {
+		_FORCE_INLINE_ void add(SelfList<T> *p_elem) {
 			ERR_FAIL_COND(p_elem->_root);
 
 			p_elem->_root = this;
@@ -59,7 +59,7 @@ public:
 			_first = p_elem;
 		}
 
-		void add_last(SelfList<T> *p_elem) {
+		_FORCE_INLINE_ void add_last(SelfList<T> *p_elem) {
 			ERR_FAIL_COND(p_elem->_root);
 
 			p_elem->_root = this;
@@ -76,7 +76,7 @@ public:
 			_last = p_elem;
 		}
 
-		void remove(SelfList<T> *p_elem) {
+		_FORCE_INLINE_ void remove(SelfList<T> *p_elem) {
 			ERR_FAIL_COND(p_elem->_root != this);
 			if (p_elem->_next) {
 				p_elem->_next->_prev = p_elem->_prev;

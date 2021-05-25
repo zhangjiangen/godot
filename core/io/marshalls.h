@@ -49,7 +49,18 @@ union MarshallDouble {
 	uint64_t l; ///< long long
 	double d; ///< double
 };
-
+static inline bool is_little_endian() {
+	union IntToByte4 {
+		unsigned int intvalue;
+		char byte[4];
+	};
+	IntToByte4 t;
+	t.intvalue = 1;
+	return t.byte[0] > 0;
+}
+static inline bool is_big_endian() {
+	return !is_little_endian();
+}
 static inline unsigned int encode_uint16(uint16_t p_uint, uint8_t *p_arr) {
 	for (int i = 0; i < 2; i++) {
 		*p_arr = p_uint & 0xFF;

@@ -82,118 +82,6 @@ void EditorSceneImporterFBX::_register_project_setting_import(const String gener
 uint32_t EditorSceneImporterFBX::get_import_flags() const {
 	return IMPORT_SCENE;
 }
-static FBXDocParser::Document *LoadDoc(const String &p_path) {
-	Error err;
-	FileAccessRef f = FileAccess::open(p_path, FileAccess::READ, &err);
-
-	if (!f) {
-		WARN_PRINT("open fbx file error: " + p_path);
-		return nullptr;
-	}
-
-	{
-		PoolByteArray data;
-		// broadphase tokenizing pass in which we identify the core
-		// syntax elements of FBX (brackets, commas, key:value mappings)
-		FBXDocParser::TokenList *tokens = new FBXDocParser::TokenList;
-
-		bool is_binary = false;
-		data.resize(f->get_len());
-
-		if (data.size() < 64) {
-			WARN_PRINT("open fbx file format error: " + p_path);
-			f->close();
-			return nullptr;
-		}
-
-		f->get_buffer(data.write().ptr(), data.size());
-		PoolByteArray fbx_header;
-		fbx_header.resize(64);
-		for (int32_t byte_i = 0; byte_i < 64; byte_i++) {
-			fbx_header.write()[byte_i] = data.read()[byte_i];
-		}
-
-		String fbx_header_string;
-		if (fbx_header.size() >= 0) {
-			PoolByteArray::Read r = fbx_header.read();
-			fbx_header_string.parse_utf8((const char *)r.ptr(), fbx_header.size());
-		}
-
-		print_verbose("[doc] opening fbx file: " + p_path);
-		print_verbose("[doc] fbx header: " + fbx_header_string);
-
-		// safer to check this way as there can be different formatted headers
-		if (fbx_header_string.find("Kaydara FBX Binary", 0) != -1) {
-			is_binary = true;
-			print_verbose("[doc] is binary");
-			FBXDocParser::TokenizeBinary(*tokens, (const char *)data.write().ptr(), (size_t)data.size());
-		} else {
-			print_verbose("[doc] is ascii");
-			FBXDocParser::Tokenize(*tokens, (const char *)data.write().ptr(), (size_t)data.size());
-		}
-
-		// The import process explained:
-		// 1. Tokens are made, these are then taken into the 'parser' below
-		// 2. The parser constructs 'Elements' and all 'real' FBX Types.
-		// 3. This creates a problem: shared_ptr ownership, should Elements later 'take ownership'
-		// 4. No, it shouldn't so we should either a.) use weak ref for elements; but this is not correct.
-
-		// use this information to construct a very rudimentary
-		// parse-tree representing the FBX scope structure
-		FBXDocParser::Parser parser(*tokens, is_binary);
-		FBXDocParser::ImportSettings settings;
-		settings.strictMode = false;
-
-		// this function leaks a lot
-		FBXDocParser::Document *doc = memnew(FBXDocParser::Document(parser, settings));
-
-		// yeah so closing the file is a good idea (prevents readonly states)
-		f->close();
-		return doc;
-	}
-}
-void ClearDocArray(Vector<FBXDocParser::Document *> &doces) {
-	for (int index = 0; index < doces.size(); ++index) {
-		for (FBXDocParser::TokenPtr token : doces[index]->parser.tokens) {
-			if (token) {
-				delete token;
-				token = nullptr;
-			}
-		}
-		delete &(doces[index]->parser.tokens);
-		memdelete(doces[index]);
-	}
-	doces.clear();
-}
-static Vector<FBXDocParser::Document *> GetAllFBXAnimationAndSkinFile(const String &p_path) {
-	Vector<FBXDocParser::Document *> ret;
-	// 获取fbx对应的文件名称
-	String baseName = p_path.get_file().get_fbx_basename();
-	if (baseName.length() == 0) {
-		return ret;
-	}
-	DirAccess *d = DirAccess::open(p_path.get_base_dir());
-	if (d) {
-		List<String> custom_themes;
-		d->list_dir_begin();
-		String file = d->get_next();
-		while (file != String()) {
-			if (!d->current_is_dir() && file.get_extension() == "fbx") {
-				String temp_basename = file.get_file().get_fbx_basename();
-				if (temp_basename == baseName) {
-					FBXDocParser::Document *doc = LoadDoc(file);
-					if (doc) {
-						ret.push_back(doc);
-					}
-				}
-			}
-			file = d->get_next();
-		}
-		d->list_dir_end();
-		memdelete(d);
-	}
-	return ret;
-}
 
 static bool IsMeshDocument(FBXDocParser::Document *p_documentes) {
 	if (p_documentes) {
@@ -240,24 +128,83 @@ static bool IsMeshDocument(FBXDocParser::Document *p_documentes) {
 	return false;
 }
 
-static Node *import_all_scene(EditorSceneImporterFBX *import, const String &p_path, uint32_t p_flags, int p_bake_fps,
+static Spatial *LoadDoc(EditorSceneImporterFBX *import, AnimationPlayer *&animation_player, const String &p_path, uint32_t p_flags, int p_bake_fps,
 		List<String> *r_missing_deps, Error *r_err) {
-	Vector<FBXDocParser::Document *> doces = GetAllFBXAnimationAndSkinFile(p_path);
-	if (doces.size() > 0) {
-		FBXDocParser::Document *meshDoc = nullptr;
-		for (int index = 0; index < doces.size(); ++index) {
-			if (IsMeshDocument(doces[index])) {
-				meshDoc = doces[index];
-				break;
-			}
+	Error err;
+	FileAccessRef f = FileAccess::open(p_path, FileAccess::READ, &err);
+
+	if (!f) {
+		WARN_PRINT("open fbx file error: " + p_path);
+		return nullptr;
+	}
+
+	{
+		PoolByteArray data;
+		// broadphase tokenizing pass in which we identify the core
+		// syntax elements of FBX (brackets, commas, key:value mappings)
+		FBXDocParser::TokenList tokens;
+
+		bool is_binary = false;
+		data.resize(f->get_len());
+
+		if (data.size() < 64) {
+			WARN_PRINT("open fbx file format error: " + p_path);
+			f->close();
+			return nullptr;
 		}
 
-		if (meshDoc != nullptr) {
-			const FBXDocParser::PropertyTable *import_props = meshDoc->GetMetadataProperties();
+		f->get_buffer(data.write().ptr(), data.size());
+		PoolByteArray fbx_header;
+		fbx_header.resize(64);
+		for (int32_t byte_i = 0; byte_i < 64; byte_i++) {
+			fbx_header.write()[byte_i] = data.read()[byte_i];
+		}
+
+		String fbx_header_string;
+		if (fbx_header.size() >= 0) {
+			PoolByteArray::Read r = fbx_header.read();
+			fbx_header_string.parse_utf8((const char *)r.ptr(), fbx_header.size());
+		}
+
+		print_verbose("[doc] opening fbx file: " + p_path);
+		print_verbose("[doc] fbx header: " + fbx_header_string);
+
+		// safer to check this way as there can be different formatted headers
+		if (fbx_header_string.find("Kaydara FBX Binary", 0) != -1) {
+			is_binary = true;
+			print_verbose("[doc] is binary");
+			FBXDocParser::TokenizeBinary(tokens, (const char *)data.write().ptr(), (size_t)data.size());
+		} else {
+			print_verbose("[doc] is ascii");
+			FBXDocParser::Tokenize(tokens, (const char *)data.write().ptr(), (size_t)data.size());
+		}
+
+		// The import process explained:
+		// 1. Tokens are made, these are then taken into the 'parser' below
+		// 2. The parser constructs 'Elements' and all 'real' FBX Types.
+		// 3. This creates a problem: shared_ptr ownership, should Elements later 'take ownership'
+		// 4. No, it shouldn't so we should either a.) use weak ref for elements; but this is not correct.
+
+		// use this information to construct a very rudimentary
+		// parse-tree representing the FBX scope structure
+		FBXDocParser::Parser parser(tokens, is_binary);
+		FBXDocParser::ImportSettings settings;
+		settings.strictMode = false;
+
+		// this function leaks a lot
+		FBXDocParser::Document doc(parser, settings);
+		// yeah so closing the file is a good idea (prevents readonly states)
+		f->close();
+
+		if (doc.IsSafeToImport()) {
 			bool is_blender_fbx = false;
+			//const FBXDocParser::PropertyPtr app_vendor = p_document->GlobalSettingsPtr()->Props()
+			//	p_document->Creator()
+			const FBXDocParser::PropertyTable *import_props = doc.GetMetadataProperties();
 			const FBXDocParser::PropertyPtr app_name = import_props->Get("Original|ApplicationName");
 			const FBXDocParser::PropertyPtr app_vendor = import_props->Get("Original|ApplicationVendor");
 			const FBXDocParser::PropertyPtr app_version = import_props->Get("Original|ApplicationVersion");
+			//
 			if (app_name) {
 				const FBXDocParser::TypedProperty<std::string> *app_name_string = dynamic_cast<const FBXDocParser::TypedProperty<std::string> *>(app_name);
 				if (app_name_string) {
@@ -285,10 +232,73 @@ static Node *import_all_scene(EditorSceneImporterFBX *import, const String &p_pa
 						   "so please wait for us to work around remaining issues. We will continue to import the file but it may be broken.\n"
 						   "For minimal breakage, please export FBX from Blender with -Z forward, and Y up.");
 			}
-			return import->_generate_scene(p_path, meshDoc, doces, p_flags, p_bake_fps, 8, is_blender_fbx);
+			Spatial *spatial = import->_generate_scene(p_path, &doc, animation_player, p_flags, p_bake_fps, 8, is_blender_fbx);
+			for (FBXDocParser::TokenPtr token : tokens) {
+				if (token) {
+					delete token;
+					token = nullptr;
+				}
+			}
+			return spatial;
 		}
 	}
-	*r_err = FAILED;
+	return nullptr;
+}
+static Spatial *GetAllFBXAnimationAndSkinFile(EditorSceneImporterFBX *import, AnimationPlayer *&animation_player, Vector<Spatial *> &animNode, const String &p_path, uint32_t p_flags, int p_bake_fps,
+		List<String> *r_missing_deps, Error *r_err) {
+	Vector<Spatial *> ret;
+	Spatial *MeshNode = nullptr;
+	// 获取fbx对应的文件名称
+	String baseName = p_path.get_file().get_fbx_basename();
+	if (baseName.length() == 0) {
+		return MeshNode;
+	}
+	DirAccess *d = DirAccess::open(p_path.get_base_dir());
+	if (d) {
+		List<String> custom_themes;
+		d->list_dir_begin();
+		String file = d->get_next();
+		while (file != String()) {
+			if (!d->current_is_dir() && file.get_extension() == "fbx") {
+				String temp_basename = file.get_fbx_basename();
+				if (temp_basename == baseName) {
+					Spatial *doc = LoadDoc(import, animation_player, d->full_path(file), p_flags, p_bake_fps,
+							r_missing_deps, r_err);
+					if (doc) {
+						if (MeshNode == nullptr && file.rfind("@") < 0) {
+							MeshNode = doc;
+						} else {
+							animNode.push_back(doc);
+						}
+					}
+				}
+			}
+			file = d->get_next();
+		}
+		d->list_dir_end();
+		memdelete(d);
+	}
+	return MeshNode;
+}
+
+static Node *import_all_scene(EditorSceneImporterFBX *import, const String &p_path, uint32_t p_flags, int p_bake_fps,
+		List<String> *r_missing_deps, Error *r_err) {
+	Vector<Spatial *> doces;
+	AnimationPlayer *animation_player = nullptr;
+	Spatial *root_owner = GetAllFBXAnimationAndSkinFile(import, animation_player, doces, p_path, p_flags, p_bake_fps,
+			r_missing_deps, r_err);
+	if (root_owner != nullptr) {
+		Node *root = root_owner->get_child(0);
+		root->add_child(animation_player);
+		animation_player->set_owner(root_owner);
+		for (int i = 0; i < doces.size(); ++i) {
+			memdelete(doces[i]);
+		}
+		doces.clear();
+		// 合并动画
+		return root_owner;
+	}
+
 	return memnew(Spatial);
 }
 Node *EditorSceneImporterFBX::import_scene(const String &p_path, uint32_t p_flags, int p_bake_fps,
@@ -575,7 +585,7 @@ Transform get_global_transform(Spatial *root, Spatial *child_node) {
 }
 Spatial *EditorSceneImporterFBX::_generate_scene(
 		const String &p_path,
-		const FBXDocParser::Document *p_document, const Vector<FBXDocParser::Document *> &all_doc,
+		const FBXDocParser::Document *p_document, AnimationPlayer *&animation_player,
 		const uint32_t p_flags,
 		int p_bake_fps,
 		const int32_t p_max_bone_weights,
@@ -1038,13 +1048,14 @@ Spatial *EditorSceneImporterFBX::_generate_scene(
 
 	// enable animation import, only if local animation is enabled
 	if (state.enable_animation_import && (p_flags & IMPORT_ANIMATION)) {
-		for (int index = 0; index < all_doc.size(); ++index) {
+		//for (int index = 0; index < all_doc.size(); ++index)
+		{
 			// document animation stack list - get by ID so we can unload any non used animation stack
 			// const std::vector<uint64_t> animation_stack = p_document->GetAnimationStackIDs();
-			const std::vector<uint64_t> animation_stack = all_doc[index]->GetAnimationStackIDs();
+			const std::vector<uint64_t> animation_stack = p_document->GetAnimationStackIDs();
 
 			for (uint64_t anim_id : animation_stack) {
-				FBXDocParser::LazyObject *lazyObject = all_doc[index]->GetObject(anim_id);
+				FBXDocParser::LazyObject *lazyObject = p_document->GetObject(anim_id);
 				const FBXDocParser::AnimationStack *stack = lazyObject->Get<FBXDocParser::AnimationStack>();
 
 				if (stack != nullptr) {
@@ -1065,9 +1076,14 @@ Spatial *EditorSceneImporterFBX::_generate_scene(
 					// we can safely create the animation player
 					if (state.animation_player == nullptr) {
 						print_verbose("Creating animation player");
-						state.animation_player = memnew(AnimationPlayer);
-						state.root->add_child(state.animation_player);
-						state.animation_player->set_owner(state.root_owner);
+						state.animation_player = animation_player;
+						if (state.animation_player == nullptr) {
+							state.animation_player = memnew(AnimationPlayer);
+							animation_player = state.animation_player;
+						}
+						//state.animation_player = memnew(AnimationPlayer);
+						//state.root->add_child(state.animation_player);
+						//state.animation_player->set_owner(state.root_owner);
 					}
 
 					Ref<Animation> animation;

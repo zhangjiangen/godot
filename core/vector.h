@@ -63,10 +63,10 @@ private:
 	CowData<T> _cowdata;
 
 public:
-	bool push_back(T p_elem);
+	_FORCE_INLINE_ bool push_back(T p_elem);
 
-	void remove(int p_index) { _cowdata.remove(p_index); }
-	void erase(const T &p_val) {
+	_FORCE_INLINE_ void remove(int p_index) { _cowdata.remove(p_index); }
+	_FORCE_INLINE_ void erase(const T &p_val) {
 		int idx = find(p_val);
 		if (idx >= 0) {
 			remove(idx);
@@ -83,15 +83,15 @@ public:
 	_FORCE_INLINE_ const T &get(int p_index) const { return _cowdata.get(p_index); }
 	_FORCE_INLINE_ void set(int p_index, const T &p_elem) { _cowdata.set(p_index, p_elem); }
 	_FORCE_INLINE_ int size() const { return _cowdata.size(); }
-	Error resize(int p_size) { return _cowdata.resize(p_size); }
+	_FORCE_INLINE_ Error resize(int p_size) { return _cowdata.resize(p_size); }
 	_FORCE_INLINE_ const T &operator[](int p_index) const { return _cowdata.get(p_index); }
-	Error insert(int p_pos, T p_val) { return _cowdata.insert(p_pos, p_val); }
-	int find(const T &p_val, int p_from = 0) const { return _cowdata.find(p_val, p_from); }
+	_FORCE_INLINE_ Error insert(int p_pos, T p_val) { return _cowdata.insert(p_pos, p_val); }
+	_FORCE_INLINE_ int find(const T &p_val, int p_from = 0) const { return _cowdata.find(p_val, p_from); }
 
 	void append_array(Vector<T> p_other);
 
 	template <class C>
-	void sort_custom() {
+	_FORCE_INLINE_ void sort_custom() {
 		int len = _cowdata.size();
 		if (len == 0) {
 			return;
@@ -102,7 +102,7 @@ public:
 		sorter.sort(data, len);
 	}
 
-	void sort() {
+	_FORCE_INLINE_ void sort() {
 		sort_custom<_DefaultComparator<T>>();
 	}
 

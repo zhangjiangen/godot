@@ -105,6 +105,9 @@ public:
 		}
 		memdelete(da);
 	}
+	String full_path(String sub_path) {
+		return get_current_dir() + "/" + sub_path;
+	}
 
 	virtual String get_filesystem_type() const = 0;
 	static String get_full_path(const String &p_path, AccessType p_access);

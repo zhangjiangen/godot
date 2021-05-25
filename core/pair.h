@@ -36,30 +36,30 @@ struct Pair {
 	F first;
 	S second;
 
-	Pair() :
+	_FORCE_INLINE_ Pair() :
 			first(),
 			second() {
 	}
 
-	Pair(F p_first, const S &p_second) :
+	_FORCE_INLINE_ Pair(F p_first, const S &p_second) :
 			first(p_first),
 			second(p_second) {
 	}
 };
 
 template <class F, class S>
-bool operator==(const Pair<F, S> &pair, const Pair<F, S> &other) {
+_FORCE_INLINE_ bool operator==(const Pair<F, S> &pair, const Pair<F, S> &other) {
 	return (pair.first == other.first) && (pair.second == other.second);
 }
 
 template <class F, class S>
-bool operator!=(const Pair<F, S> &pair, const Pair<F, S> &other) {
+_FORCE_INLINE_ bool operator!=(const Pair<F, S> &pair, const Pair<F, S> &other) {
 	return (pair.first != other.first) || (pair.second != other.second);
 }
 
 template <class F, class S>
 struct PairSort {
-	bool operator()(const Pair<F, S> &A, const Pair<F, S> &B) const {
+	_FORCE_INLINE_ bool operator()(const Pair<F, S> &A, const Pair<F, S> &B) const {
 		return A.first < B.first;
 	}
 };

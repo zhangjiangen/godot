@@ -377,4 +377,57 @@ struct UByte4 {
 			intvalue(0) {
 	}
 };
+// 取值范围在正负1之间
+struct ShortUV {
+	short u;
+	short v;
+	ShortUV() :
+			u(0), v(0) {
+	}
+	ShortUV(float p_u, float p_v) {
+		Set(p_u, p_v);
+	}
+	void Set(float p_u, float p_v) {
+		if (p_u < -1.0f) {
+			p_u = -1.0f;
+		}
+		if (p_u > 1.0f) {
+			p_u = 1.0f;
+		}
+		if (p_v < -1.0f) {
+			p_v = -1.0f;
+		}
+		if (p_v > 1.0f) {
+			p_v = 1.0f;
+		}
+		u = (short)(p_u * 32767.0f);
+		v = (short)(p_v * 32767.0f);
+	}
+	void Get(float &p_u, float &p_v) {
+		if (p_u < -1.0f) {
+			p_u = -1.0f;
+		}
+		if (p_u > 1.0f) {
+			p_u = 1.0f;
+		}
+		if (p_v < -1.0f) {
+			p_v = -1.0f;
+		}
+		if (p_v > 1.0f) {
+			p_v = 1.0f;
+		}
+		p_u = u / 32767.0f;
+		p_v = v / 32767.0f;
+	}
+};
+struct ShortUVTwo {
+	ShortUV uv0;
+	ShortUV uv1;
+	ShortUVTwo() {
+	}
+	ShortUVTwo(float p_u0, float p_v0, float p_u1, float p_v1) :
+			uv0(p_u0, p_v0), uv1(p_u1, p_v1) {
+	}
+};
+
 #endif // TYPEDEFS_H
