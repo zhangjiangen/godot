@@ -30,7 +30,7 @@
 
 #ifndef PAIR_H
 #define PAIR_H
-
+#include "core/typedefs.h"
 template <class F, class S>
 struct Pair {
 	F first;
