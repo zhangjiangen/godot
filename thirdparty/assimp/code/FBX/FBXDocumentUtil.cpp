@@ -2,7 +2,7 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2019, assimp team
+Copyright (c) 2006-2021, assimp team
 
 
 All rights reserved.
@@ -65,7 +65,7 @@ void DOMError(const std::string& message, const Token& token)
 }
 
 // ------------------------------------------------------------------------------------------------
-void DOMError(const std::string& message, const Element* element /*= NULL*/)
+void DOMError(const std::string& message, const Element* element /*= nullptr*/)
 {
     if(element) {
         DOMError(message,element->KeyToken());
@@ -84,7 +84,7 @@ void DOMWarning(const std::string& message, const Token& token)
 }
 
 // ------------------------------------------------------------------------------------------------
-void DOMWarning(const std::string& message, const Element* element /*= NULL*/)
+void DOMWarning(const std::string& message, const Element* element /*= nullptr*/)
 {
     if(element) {
         DOMWarning(message,element->KeyToken());

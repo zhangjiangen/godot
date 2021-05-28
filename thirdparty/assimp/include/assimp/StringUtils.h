@@ -103,7 +103,14 @@ std::string to_string( T value ) {
 
     return os.str();
 }
+template <typename T>
+AI_FORCE_INLINE std::string ai_to_string(T value) {
+    
+    std::ostringstream os;
+    os << value;
 
+    return os.str();
+}
 ///	@fn		ai_strtof
 ///	@brief	The portable version of strtof.
 ///	@param	begin   The first character of the string.

@@ -2,7 +2,7 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2019, assimp team
+Copyright (c) 2006-2021, assimp team
 
 
 All rights reserved.
@@ -53,6 +53,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 #include <assimp/Exceptional.h>
 #include <assimp/ByteSwapper.h>
+#include <assimp/DefaultLogger.hpp>
+#include <assimp/StringUtils.h>
 
 namespace Assimp {
 namespace FBX {
@@ -373,7 +375,7 @@ bool ReadScope(TokenList& output_tokens, const char* input, const char*& cursor,
 
     // now come the individual properties
     const char* begin_cursor = cursor;
-    for (unsigned int i = 0; i < prop_count; ++i) {
+     for (unsigned int i = 0; i < prop_count; ++i) {
         ReadData(sbeg, send, input, cursor, begin_cursor + prop_length);
 
         output_tokens.push_back(new_Token(sbeg, send, TokenType_DATA, Offset(input, cursor) ));
@@ -426,7 +428,8 @@ bool ReadScope(TokenList& output_tokens, const char* input, const char*& cursor,
 // TODO: Test FBX Binary files newer than the 7500 version to check if the 64 bits address behaviour is consistent
 void TokenizeBinary(TokenList& output_tokens, const char* input, size_t length)
 {
-    ai_assert(input);
+	ai_assert(input);
+	ASSIMP_LOG_DEBUG("Tokenizing binary FBX file");
 
     if(length < 0x1b) {
         TokenizeError("file is too short",0);

@@ -2,7 +2,7 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2019, assimp team
+Copyright (c) 2006-2021, assimp team
 
 
 All rights reserved.
@@ -241,7 +241,7 @@ const MatIndexArray& MeshGeometry::GetMaterialIndices() const {
 // ------------------------------------------------------------------------------------------------
 const unsigned int* MeshGeometry::ToOutputVertexIndex( unsigned int in_index, unsigned int& count ) const {
     if ( in_index >= m_mapping_counts.size() ) {
-        return NULL;
+        return nullptr;
     }
 
     ai_assert( m_mapping_counts.size() == m_mapping_offsets.size() );
@@ -330,7 +330,7 @@ void MeshGeometry::ReadVertexData(const std::string& type, int index, const Scop
         }
 
         const Element* Name = source["Name"];
-        m_uvNames[index] = "";
+        m_uvNames[index] = std::string();
         if(Name) {
             m_uvNames[index] = ParseTokenAsString(GetRequiredToken(*Name,0));
         }
@@ -446,14 +446,19 @@ void ResolveVertexDataArray(std::vector<T>& data_out, const Scope& source,
             return;
         }
         std::vector<T> tempData;
-		ParseVectorDataArray(tempData, GetRequiredElement(source, dataElementName));
+        ParseVectorDataArray(tempData, GetRequiredElement(source, dataElementName));
+
+        if (tempData.size() != mapping_offsets.size()) {
+            FBXImporter::LogError(Formatter::format("length of input data unexpected for ByVertice mapping: ")
+                << tempData.size() << ", expected " << mapping_offsets.size());
+            return;
+        }
 
         data_out.resize(vertex_count);
-		for (size_t i = 0, e = tempData.size(); i < e; ++i) {
-
+        for (size_t i = 0, e = tempData.size(); i < e; ++i) {
             const unsigned int istart = mapping_offsets[i], iend = istart + mapping_counts[i];
             for (unsigned int j = istart; j < iend; ++j) {
-				data_out[mappings[j]] = tempData[i];
+                data_out[mappings[j]] = tempData[i];
             }
         }
     }
@@ -461,10 +466,17 @@ void ResolveVertexDataArray(std::vector<T>& data_out, const Scope& source,
 		std::vector<T> tempData;
 		ParseVectorDataArray(tempData, GetRequiredElement(source, dataElementName));
 
-        data_out.resize(vertex_count);
-
         std::vector<int> uvIndices;
         ParseVectorDataArray(uvIndices,GetRequiredElement(source,indexDataElementName));
+
+        if (uvIndices.size() != vertex_count) {
+            FBXImporter::LogError(Formatter::format("length of input data unexpected for ByVertice mapping: ")
+                << uvIndices.size() << ", expected " <<vertex_count);
+            return;
+        }
+
+        data_out.resize(vertex_count);
+
         for (size_t i = 0, e = uvIndices.size(); i < e; ++i) {
 
             const unsigned int istart = mapping_offsets[i], iend = istart + mapping_counts[i];
@@ -482,7 +494,7 @@ void ResolveVertexDataArray(std::vector<T>& data_out, const Scope& source,
 
 		if (tempData.size() != vertex_count) {
             FBXImporter::LogError(Formatter::format("length of input data unexpected for ByPolygon mapping: ")
-				<< tempData.size() << ", expected " << vertex_count
+				<< tempData.size() <<  ", expected " << vertex_count
             );
             return;
         }
@@ -493,15 +505,22 @@ void ResolveVertexDataArray(std::vector<T>& data_out, const Scope& source,
 		std::vector<T> tempData;
 		ParseVectorDataArray(tempData, GetRequiredElement(source, dataElementName));
 
-        data_out.resize(vertex_count);
-
         std::vector<int> uvIndices;
         ParseVectorDataArray(uvIndices,GetRequiredElement(source,indexDataElementName));
 
+        if (uvIndices.size() > vertex_count) {
+            FBXImporter::LogWarn(Formatter::format("trimming length of input array for ByPolygonVertex mapping: ")
+                                          << uvIndices.size() << ", expected " << vertex_count);
+            uvIndices.resize(vertex_count);
+        }
+
         if (uvIndices.size() != vertex_count) {
-            FBXImporter::LogError("length of input data unexpected for ByPolygonVertex mapping");
+            FBXImporter::LogError(Formatter::format("length of input data unexpected for ByPolygonVertex mapping: ")
+                                  << uvIndices.size() << ", expected " << vertex_count);
             return;
         }
+
+        data_out.resize(vertex_count);
 
         const T empty;
         unsigned int next = 0;
@@ -585,15 +604,15 @@ void MeshGeometry::ReadVertexDataTangents(std::vector<aiVector3D>& tangents_out,
 }
 
 // ------------------------------------------------------------------------------------------------
-static const std::string BinormalIndexToken = "BinormalIndex";
-static const std::string BinormalsIndexToken = "BinormalsIndex";
+static const char * BinormalIndexToken = "BinormalIndex";
+static const char * BinormalsIndexToken = "BinormalsIndex";
 
 void MeshGeometry::ReadVertexDataBinormals(std::vector<aiVector3D>& binormals_out, const Scope& source,
     const std::string& MappingInformationType,
     const std::string& ReferenceInformationType)
 {
     const char * str = source.Elements().count( "Binormals" ) > 0 ? "Binormals" : "Binormal";
-    const char * strIdx = source.Elements().count( "Binormals" ) > 0 ? BinormalsIndexToken.c_str() : BinormalIndexToken.c_str();
+    const char * strIdx = source.Elements().count( "Binormals" ) > 0 ? BinormalsIndexToken : BinormalIndexToken;
     ResolveVertexDataArray(binormals_out,source,MappingInformationType,ReferenceInformationType,
         str,
         strIdx,
@@ -623,10 +642,10 @@ void MeshGeometry::ReadVertexDataMaterials(std::vector<int>& materials_out, cons
     if (MappingInformationType == "AllSame") {
         // easy - same material for all faces
         if (materials_out.empty()) {
-            FBXImporter::LogError(Formatter::format("expected material index, ignoring"));
+            FBXImporter::LogError("expected material index, ignoring");
             return;
         } else if (materials_out.size() > 1) {
-            FBXImporter::LogWarn(Formatter::format("expected only a single material index, ignoring all except the first one"));
+            FBXImporter::LogWarn("expected only a single material index, ignoring all except the first one");
             materials_out.clear();
         }
 

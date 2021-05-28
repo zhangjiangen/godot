@@ -27,7 +27,6 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
-#if 0
 #include "register_types.h"
 
 #include "editor/editor_node.h"
@@ -35,13 +34,16 @@
 
 #ifdef TOOLS_ENABLED
 static void _editor_init() {
+#if 0
 	Ref<EditorSceneImporterFBX> import_fbx;
 	import_fbx.instance();
 	ResourceImporterScene::get_singleton()->add_importer(import_fbx);
+#endif
 }
 #endif
 
 void register_fbx_types() {
+#if 0
 #ifdef TOOLS_ENABLED
 	ClassDB::APIType prev_api = ClassDB::get_current_api();
 	ClassDB::set_current_api(ClassDB::API_EDITOR);
@@ -52,8 +54,8 @@ void register_fbx_types() {
 
 	EditorNode::add_init_callback(_editor_init);
 #endif
+#endif
 }
 
 void unregister_fbx_types() {
 }
-#endif
