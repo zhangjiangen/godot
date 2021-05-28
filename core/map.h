@@ -36,7 +36,6 @@
 
 // based on the very nice implementation of rb-trees by:
 // https://web.archive.org/web/20120507164830/http://web.mit.edu/~emin/www/source_code/red_black_tree/index.html
-
 template <class K, class V, class C = Comparator<K>, class A = DefaultAllocator>
 class Map {
 	enum Color {
@@ -60,34 +59,34 @@ public:
 		//_Data *data;
 
 	public:
-		const Element *next() const {
+		_FORCE_INLINE_ const Element *next() const {
 			return _next;
 		}
-		Element *next() {
+		_FORCE_INLINE_ Element *next() {
 			return _next;
 		}
-		const Element *prev() const {
+		_FORCE_INLINE_ const Element *prev() const {
 			return _prev;
 		}
-		Element *prev() {
+		_FORCE_INLINE_ Element *prev() {
 			return _prev;
 		}
-		const K &key() const {
+		_FORCE_INLINE_ const K &key() const {
 			return _key;
 		};
-		V &value() {
+		_FORCE_INLINE_ V &value() {
 			return _value;
 		};
-		const V &value() const {
+		_FORCE_INLINE_ const V &value() const {
 			return _value;
 		};
-		V &get() {
+		_FORCE_INLINE_ V &get() {
 			return _value;
 		};
-		const V &get() const {
+		_FORCE_INLINE_ const V &get() const {
 			return _value;
 		};
-		Element() {
+		_FORCE_INLINE_ Element() {
 			color = RED;
 			right = nullptr;
 			left = nullptr;
@@ -115,20 +114,20 @@ private:
 			size_cache = 0;
 		}
 
-		void _create_root() {
+		_FORCE_INLINE_ void _create_root() {
 			_root = memnew_allocator(Element, A);
 			_root->parent = _root->left = _root->right = _nil;
 			_root->color = BLACK;
 		}
 
-		void _free_root() {
+		_FORCE_INLINE_ void _free_root() {
 			if (_root) {
 				memdelete_allocator<Element, A>(_root);
 				_root = nullptr;
 			}
 		}
 
-		~_Data() {
+		_FORCE_INLINE_ ~_Data() {
 			_free_root();
 
 #ifdef GLOBALNIL_DISABLED
@@ -139,12 +138,12 @@ private:
 
 	_Data _data;
 
-	inline void _set_color(Element *p_node, int p_color) {
+	_FORCE_INLINE_ void _set_color(Element *p_node, int p_color) {
 		ERR_FAIL_COND(p_node == _data._nil && p_color == RED);
 		p_node->color = p_color;
 	}
 
-	inline void _rotate_left(Element *p_node) {
+	_FORCE_INLINE_ void _rotate_left(Element *p_node) {
 		Element *r = p_node->right;
 		p_node->right = r->left;
 		if (r->left != _data._nil) {
@@ -161,7 +160,7 @@ private:
 		p_node->parent = r;
 	}
 
-	inline void _rotate_right(Element *p_node) {
+	_FORCE_INLINE_ void _rotate_right(Element *p_node) {
 		Element *l = p_node->left;
 		p_node->left = l->right;
 		if (l->right != _data._nil) {
@@ -420,7 +419,7 @@ private:
 		ERR_FAIL_COND(_data._nil->color != BLACK);
 	}
 
-	void _erase(Element *p_node) {
+	_FORCE_INLINE_ void _erase(Element *p_node) {
 		Element *rp = ((p_node->left == _data._nil) || (p_node->right == _data._nil)) ? p_node : p_node->_next;
 		Element *node = (rp->left == _data._nil) ? rp->right : rp->left;
 
@@ -505,7 +504,7 @@ private:
 	}
 
 public:
-	const Element *find(const K &p_key) const {
+	_FORCE_INLINE_ const Element *find(const K &p_key) const {
 		if (!_data._root) {
 			return nullptr;
 		}
@@ -514,7 +513,7 @@ public:
 		return res;
 	}
 
-	Element *find(const K &p_key) {
+	_FORCE_INLINE_ Element *find(const K &p_key) {
 		if (!_data._root) {
 			return nullptr;
 		}
@@ -523,7 +522,7 @@ public:
 		return res;
 	}
 
-	const Element *find_closest(const K &p_key) const {
+	_FORCE_INLINE_ const Element *find_closest(const K &p_key) const {
 		if (!_data._root) {
 			return NULL;
 		}
@@ -532,7 +531,7 @@ public:
 		return res;
 	}
 
-	Element *find_closest(const K &p_key) {
+	_FORCE_INLINE_ Element *find_closest(const K &p_key) {
 		if (!_data._root) {
 			return nullptr;
 		}
@@ -541,18 +540,18 @@ public:
 		return res;
 	}
 
-	bool has(const K &p_key) const {
+	_FORCE_INLINE_ bool has(const K &p_key) const {
 		return find(p_key) != nullptr;
 	}
 
-	Element *insert(const K &p_key, const V &p_value) {
+	_FORCE_INLINE_ Element *insert(const K &p_key, const V &p_value) {
 		if (!_data._root) {
 			_data._create_root();
 		}
 		return _insert(p_key, p_value);
 	}
 
-	void erase(Element *p_element) {
+	_FORCE_INLINE_ void erase(Element *p_element) {
 		if (!_data._root || !p_element) {
 			return;
 		}
@@ -563,7 +562,7 @@ public:
 		}
 	}
 
-	bool erase(const K &p_key) {
+	_FORCE_INLINE_ bool erase(const K &p_key) {
 		if (!_data._root) {
 			return false;
 		}
@@ -580,14 +579,14 @@ public:
 		return true;
 	}
 
-	const V &operator[](const K &p_key) const {
+	_FORCE_INLINE_ const V &operator[](const K &p_key) const {
 		CRASH_COND(!_data._root);
 		const Element *e = find(p_key);
 		CRASH_COND(!e);
 		return e->_value;
 	}
 
-	V &operator[](const K &p_key) {
+	_FORCE_INLINE_ V &operator[](const K &p_key) {
 		if (!_data._root) {
 			_data._create_root();
 		}
@@ -637,7 +636,7 @@ public:
 	inline bool empty() const { return _data.size_cache == 0; }
 	inline int size() const { return _data.size_cache; }
 
-	int calculate_depth() const {
+	_FORCE_INLINE_ int calculate_depth() const {
 		// used for debug mostly
 		if (!_data._root) {
 			return 0;
@@ -648,7 +647,7 @@ public:
 		return max_d;
 	}
 
-	void clear() {
+	_FORCE_INLINE_ void clear() {
 		if (!_data._root) {
 			return;
 		}
@@ -659,18 +658,18 @@ public:
 		_data._free_root();
 	}
 
-	void operator=(const Map &p_map) {
+	_FORCE_INLINE_ void operator=(const Map &p_map) {
 		_copy_from(p_map);
 	}
 
-	Map(const Map &p_map) {
+	_FORCE_INLINE_ Map(const Map &p_map) {
 		_copy_from(p_map);
 	}
 
 	_FORCE_INLINE_ Map() {
 	}
 
-	~Map() {
+	_FORCE_INLINE_ ~Map() {
 		clear();
 	}
 };

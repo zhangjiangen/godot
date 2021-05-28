@@ -46,14 +46,14 @@ class Node : public Object {
 	OBJ_CATEGORY("Nodes");
 
 public:
-	enum PauseMode {
+	enum PauseMode : uint8_t {
 
 		PAUSE_MODE_INHERIT,
 		PAUSE_MODE_STOP,
 		PAUSE_MODE_PROCESS
 	};
 
-	enum DuplicateFlags {
+	enum DuplicateFlags : uint8_t {
 
 		DUPLICATE_SIGNALS = 1,
 		DUPLICATE_GROUPS = 2,
@@ -85,18 +85,12 @@ private:
 		String filename;
 		Ref<SceneState> instance_state;
 		Ref<SceneState> inherited_state;
+		StringName name;
+		SceneTree *tree;
 
 		Node *parent;
 		Node *owner;
 		Vector<Node *> children; // list of children
-		int pos;
-		int depth;
-		int blocked; // safeguard that throws an error when attempting to modify the tree in a harmful way while being traversed.
-		StringName name;
-		SceneTree *tree;
-		bool inside_tree;
-		bool ready_notified; //this is a small hack, so if a node is added during _ready() to the tree, it correctly gets the _ready() notification
-		bool ready_first;
 #ifdef TOOLS_ENABLED
 		NodePath import_path; //path used when imported, used by scene editors to keep tracking
 #endif
@@ -110,29 +104,35 @@ private:
 		PauseMode pause_mode;
 		Node *pause_owner;
 
-		int network_master;
 		Map<StringName, MultiplayerAPI::RPCMode> rpc_methods;
 		Map<StringName, MultiplayerAPI::RPCMode> rpc_properties;
 
 		// variables used to properly sort the node when processing, ignored otherwise
 		//should move all the stuff below to bits
-		bool physics_process;
-		bool idle_process;
+		int network_master;
+		int pos;
+		int depth;
+		int blocked; // safeguard that throws an error when attempting to modify the tree in a harmful way while being traversed.
 		int process_priority;
+		uint8_t inside_tree : 1;
+		uint8_t ready_notified : 1; //this is a small hack, so if a node is added during _ready() to the tree, it correctly gets the _ready() notification
+		uint8_t ready_first : 1;
+		uint8_t physics_process : 1;
+		uint8_t idle_process : 1;
 
-		bool physics_process_internal;
-		bool idle_process_internal;
+		uint8_t physics_process_internal : 1;
+		uint8_t idle_process_internal : 1;
 
-		bool input;
-		bool unhandled_input;
-		bool unhandled_key_input;
+		uint8_t input : 1;
+		uint8_t unhandled_input : 1;
+		uint8_t unhandled_key_input : 1;
 
-		bool parent_owned;
-		bool in_constructor;
-		bool use_placeholder;
+		uint8_t parent_owned : 1;
+		uint8_t in_constructor : 1;
+		uint8_t use_placeholder : 1;
 
-		bool display_folded;
-		bool editable_instance;
+		uint8_t display_folded : 1;
+		uint8_t editable_instance : 1;
 
 		mutable NodePath *path_cache;
 

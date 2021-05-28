@@ -62,8 +62,8 @@ public:
 		TKey key;
 		TData data;
 
-		Pair() {}
-		Pair(const TKey &p_key, const TData &p_data) :
+		_FORCE_INLINE_ Pair() {}
+		_FORCE_INLINE_ Pair(const TKey &p_key, const TData &p_data) :
 				key(p_key),
 				data(p_data) {
 		}
@@ -75,19 +75,19 @@ public:
 
 		uint32_t hash;
 		Element *next;
-		Element() { next = nullptr; }
+		_FORCE_INLINE_ Element() { next = nullptr; }
 		Pair pair;
 
 	public:
-		const TKey &key() const {
+		_FORCE_INLINE_ const TKey &key() const {
 			return pair.key;
 		}
 
-		TData &value() {
+		_FORCE_INLINE_ TData &value() {
 			return pair.data;
 		}
 
-		const TData &value() const {
+		_FORCE_INLINE_ const TData &value() const {
 			return pair.value();
 		}
 	};
@@ -109,7 +109,7 @@ private:
 		}
 	}
 
-	void erase_hash_table() {
+	_FORCE_INLINE_ void erase_hash_table() {
 		ERR_FAIL_COND_MSG(elements, "Cannot erase hash table if there are still elements inside.");
 
 		memdelete_arr(hash_table);
@@ -190,7 +190,7 @@ private:
 		return nullptr;
 	}
 
-	Element *create_element(const TKey &p_key) {
+	_FORCE_INLINE_ Element *create_element(const TKey &p_key) {
 		/* if element doesn't exist, create it */
 		Element *e = memnew(Element);
 		ERR_FAIL_COND_V_MSG(!e, nullptr, "Out of memory.");
@@ -242,11 +242,11 @@ private:
 	}
 
 public:
-	Element *set(const TKey &p_key, const TData &p_data) {
+	_FORCE_INLINE_ Element *set(const TKey &p_key, const TData &p_data) {
 		return set(Pair(p_key, p_data));
 	}
 
-	Element *set(const Pair &p_pair) {
+	_FORCE_INLINE_ Element *set(const Pair &p_pair) {
 		Element *e = nullptr;
 		if (!hash_table) {
 			make_hash_table(); // if no table, make one
@@ -268,7 +268,7 @@ public:
 		return e;
 	}
 
-	bool has(const TKey &p_key) const {
+	_FORCE_INLINE_ bool has(const TKey &p_key) const {
 		return getptr(p_key) != nullptr;
 	}
 
@@ -278,13 +278,13 @@ public:
 	 * first with has(key)
 	 */
 
-	const TData &get(const TKey &p_key) const {
+	_FORCE_INLINE_ const TData &get(const TKey &p_key) const {
 		const TData *res = getptr(p_key);
 		CRASH_COND_MSG(!res, "Map key not found.");
 		return *res;
 	}
 
-	TData &get(const TKey &p_key) {
+	_FORCE_INLINE_ TData &get(const TKey &p_key) {
 		TData *res = getptr(p_key);
 		CRASH_COND_MSG(!res, "Map key not found.");
 		return *res;
@@ -418,11 +418,11 @@ public:
 		return false;
 	}
 
-	inline const TData &operator[](const TKey &p_key) const { //constref
+	_FORCE_INLINE_ const TData &operator[](const TKey &p_key) const { //constref
 
 		return get(p_key);
 	}
-	inline TData &operator[](const TKey &p_key) { //assignment
+	_FORCE_INLINE_ TData &operator[](const TKey &p_key) { //assignment
 
 		Element *e = nullptr;
 		if (!hash_table) {
@@ -493,11 +493,11 @@ public:
 		return nullptr; /* nothing found */
 	}
 
-	inline unsigned int size() const {
+	_FORCE_INLINE_ unsigned int size() const {
 		return elements;
 	}
 
-	inline bool empty() const {
+	_FORCE_INLINE_ bool empty() const {
 		return elements == 0;
 	}
 
@@ -520,11 +520,11 @@ public:
 		elements = 0;
 	}
 
-	void operator=(const HashMap &p_table) {
+	_FORCE_INLINE_ void operator=(const HashMap &p_table) {
 		copy_from(p_table);
 	}
 
-	HashMap() {
+	_FORCE_INLINE_ HashMap() {
 		hash_table = nullptr;
 		elements = 0;
 		hash_table_power = 0;
@@ -557,7 +557,7 @@ public:
 		}
 	}
 
-	HashMap(const HashMap &p_table) {
+	_FORCE_INLINE_ HashMap(const HashMap &p_table) {
 		hash_table = nullptr;
 		elements = 0;
 		hash_table_power = 0;
@@ -565,7 +565,7 @@ public:
 		copy_from(p_table);
 	}
 
-	~HashMap() {
+	_FORCE_INLINE_ ~HashMap() {
 		clear();
 	}
 };

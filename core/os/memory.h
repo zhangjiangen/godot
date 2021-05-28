@@ -107,7 +107,7 @@ _ALWAYS_INLINE_ bool predelete_handler(void *) {
 }
 
 template <class T>
-void memdelete(T *p_class) {
+_FORCE_INLINE_ void memdelete(T *p_class) {
 	if (!predelete_handler(p_class)) {
 		return; // doesn't want to be deleted
 	}
@@ -119,7 +119,7 @@ void memdelete(T *p_class) {
 }
 
 template <class T, class A>
-void memdelete_allocator(T *p_class) {
+_FORCE_INLINE_ void memdelete_allocator(T *p_class) {
 	if (!predelete_handler(p_class)) {
 		return; // doesn't want to be deleted
 	}
@@ -170,13 +170,13 @@ T *memnew_arr_template(size_t p_elements, const char *p_descr = "") {
  */
 
 template <typename T>
-size_t memarr_len(const T *p_class) {
+_FORCE_INLINE_ size_t memarr_len(const T *p_class) {
 	uint64_t *ptr = (uint64_t *)p_class;
 	return *(ptr - 1);
 }
 
 template <typename T>
-void memdelete_arr(T *p_class) {
+_FORCE_INLINE_ void memdelete_arr(T *p_class) {
 	uint64_t *ptr = (uint64_t *)p_class;
 
 	if (!__has_trivial_destructor(T)) {

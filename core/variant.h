@@ -93,7 +93,7 @@ typedef PoolVector<Color> PoolColorArray;
 class Variant {
 public:
 	// If this changes the table in variant_op must be updated
-	enum Type {
+	enum Type : uint8_t {
 
 		NIL,
 

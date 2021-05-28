@@ -40,10 +40,10 @@ class NodePath {
 		Vector<StringName> path;
 		Vector<StringName> subpath;
 		StringName concatenated_subpath;
+		mutable uint32_t hash_cache;
 		bool absolute;
 		bool has_slashes;
 		mutable bool hash_cache_valid;
-		mutable uint32_t hash_cache;
 	};
 
 	mutable Data *data;

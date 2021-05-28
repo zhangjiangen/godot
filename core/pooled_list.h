@@ -54,24 +54,24 @@ class PooledList {
 	int _used_size;
 
 public:
-	PooledList() {
+	_FORCE_INLINE_ PooledList() {
 		_used_size = 0;
 	}
 
-	int estimate_memory_use() const {
+	_FORCE_INLINE_ int estimate_memory_use() const {
 		return (list.size() * sizeof(T)) + (freelist.size() * sizeof(uint32_t));
 	}
 
-	const T &operator[](uint32_t p_index) const {
+	_FORCE_INLINE_ const T &operator[](uint32_t p_index) const {
 		return list[p_index];
 	}
-	T &operator[](uint32_t p_index) {
+	_FORCE_INLINE_ T &operator[](uint32_t p_index) {
 		return list[p_index];
 	}
 
-	int size() const { return _used_size; }
+	_FORCE_INLINE_ int size() const { return _used_size; }
 
-	T *request(uint32_t &r_id) {
+	_FORCE_INLINE_ T *request(uint32_t &r_id) {
 		_used_size++;
 
 		if (freelist.size()) {
@@ -86,7 +86,7 @@ public:
 		list.resize(r_id + 1);
 		return &list[r_id];
 	}
-	void free(const uint32_t &p_id) {
+	_FORCE_INLINE_ void free(const uint32_t &p_id) {
 		// should not be on free list already
 		CRASH_COND(p_id >= list.size());
 		freelist.push_back(p_id);

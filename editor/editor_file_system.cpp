@@ -647,6 +647,7 @@ void EditorFileSystem::_scan_new_dir(EditorFileSystemDirectory *p_dir, DirAccess
 
 	p_dir->modified_time = FileAccess::get_modified_time(cd);
 
+	Map<String, String> fbxFile;
 	da->list_dir_begin();
 	while (true) {
 		String f = da->get_next();
@@ -670,8 +671,18 @@ void EditorFileSystem::_scan_new_dir(EditorFileSystemDirectory *p_dir, DirAccess
 			dirs.push_back(f);
 
 		} else {
-			files.push_back(f);
+			if (f.ends_with(".fbx")) {
+				String base_name = f.get_fbx_basename();
+				fbxFile[base_name] = f;
+			} else {
+				files.push_back(f);
+			}
 		}
+	}
+	Map<String, String>::Element *element = fbxFile.front();
+	while (element) {
+		files.push_back(element->value());
+		element = element->next();
 	}
 
 	da->list_dir_end();

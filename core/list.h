@@ -145,7 +145,7 @@ private:
 		Element *last;
 		int size_cache;
 
-		bool erase(const Element *p_I) {
+		_FORCE_INLINE_ bool erase(const Element *p_I) {
 			ERR_FAIL_COND_V(!p_I, false);
 			ERR_FAIL_COND_V(p_I->data != this, false);
 
@@ -206,7 +206,7 @@ public:
 	/**
 	 * store a new element at the end of the list
 	 */
-	Element *push_back(const T &value) {
+	_FORCE_INLINE_ Element *push_back(const T &value) {
 		if (!_data) {
 			_data = memnew_allocator(_Data, A);
 			_data->first = nullptr;
@@ -245,7 +245,7 @@ public:
 	/**
 	 * store a new element at the beginning of the list
 	 */
-	Element *push_front(const T &value) {
+	_FORCE_INLINE_ Element *push_front(const T &value) {
 		if (!_data) {
 			_data = memnew_allocator(_Data, A);
 			_data->first = nullptr;
@@ -274,13 +274,13 @@ public:
 		return n;
 	};
 
-	void pop_front() {
+	_FORCE_INLINE_ void pop_front() {
 		if (_data && _data->first) {
 			erase(_data->first);
 		}
 	}
 
-	Element *insert_after(Element *p_element, const T &p_value) {
+	_FORCE_INLINE_ Element *insert_after(Element *p_element, const T &p_value) {
 		CRASH_COND(p_element && (!_data || p_element->data != _data));
 
 		if (!p_element) {
@@ -306,7 +306,7 @@ public:
 		return n;
 	}
 
-	Element *insert_before(Element *p_element, const T &p_value) {
+	_FORCE_INLINE_ Element *insert_before(Element *p_element, const T &p_value) {
 		CRASH_COND(p_element && (!_data || p_element->data != _data));
 
 		if (!p_element) {
@@ -351,7 +351,7 @@ public:
 	/**
 	 * erase an element in the list, by iterator pointing to it. Return true if it was found/erased.
 	 */
-	bool erase(const Element *p_I) {
+	_FORCE_INLINE_ bool erase(const Element *p_I) {
 		if (_data) {
 			bool ret = _data->erase(p_I);
 
@@ -369,7 +369,7 @@ public:
 	/**
 	 * erase the first element in the list, that contains value
 	 */
-	bool erase(const T &value) {
+	_FORCE_INLINE_ bool erase(const T &value) {
 		Element *I = find(value);
 		return erase(I);
 	};
@@ -394,7 +394,7 @@ public:
 		return _data ? _data->size_cache : 0;
 	}
 
-	void swap(Element *p_A, Element *p_B) {
+	_FORCE_INLINE_ void swap(Element *p_A, Element *p_B) {
 		ERR_FAIL_COND(!p_A || !p_B);
 		ERR_FAIL_COND(p_A->data != _data);
 		ERR_FAIL_COND(p_B->data != _data);
@@ -476,7 +476,7 @@ public:
 		CRASH_NOW(); // bug!!
 	}
 
-	void move_to_back(Element *p_I) {
+	_FORCE_INLINE_ void move_to_back(Element *p_I) {
 		ERR_FAIL_COND(p_I->data != _data);
 		if (!p_I->next_ptr) {
 			return;
@@ -513,7 +513,7 @@ public:
 		}
 	}
 
-	void move_to_front(Element *p_I) {
+	_FORCE_INLINE_ void move_to_front(Element *p_I) {
 		ERR_FAIL_COND(p_I->data != _data);
 		if (!p_I->prev_ptr) {
 			return;
@@ -539,7 +539,7 @@ public:
 		_data->first = p_I;
 	}
 
-	void move_before(Element *value, Element *where) {
+	_FORCE_INLINE_ void move_before(Element *value, Element *where) {
 		if (value->prev_ptr) {
 			value->prev_ptr->next_ptr = value->next_ptr;
 		} else {
@@ -573,7 +573,7 @@ public:
 	 * simple insertion sort
 	 */
 
-	void sort() {
+	_FORCE_INLINE_ void sort() {
 		sort_custom<Comparator<T>>();
 	}
 
@@ -633,7 +633,7 @@ public:
 	};
 
 	template <class C>
-	void sort_custom() {
+	_FORCE_INLINE_ void sort_custom() {
 		//this version uses auxiliary memory for speed.
 		//if you don't want to use auxiliary memory, use the in_place version
 
@@ -669,7 +669,7 @@ public:
 		memdelete_arr(aux_buffer);
 	}
 
-	const void *id() const {
+	_FORCE_INLINE_ const void *id() const {
 		return (void *)_data;
 	}
 
@@ -685,10 +685,10 @@ public:
 		}
 	}
 
-	List() {
+	_FORCE_INLINE_ List() {
 		_data = nullptr;
 	};
-	~List() {
+	_FORCE_INLINE_ ~List() {
 		clear();
 		if (_data) {
 			ERR_FAIL_COND(_data->size_cache);

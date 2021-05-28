@@ -290,7 +290,7 @@ public:
 		}
 	}
 
-	inline void final_insertion_sort(int p_first, int p_last, T *p_array) const {
+	_FORCE_INLINE_ void final_insertion_sort(int p_first, int p_last, T *p_array) const {
 		if (p_last - p_first > INTROSORT_THRESHOLD) {
 			insertion_sort(p_first, p_first + INTROSORT_THRESHOLD, p_array);
 			unguarded_insertion_sort(p_first + INTROSORT_THRESHOLD, p_last, p_array);
@@ -299,18 +299,18 @@ public:
 		}
 	}
 
-	inline void sort_range(int p_first, int p_last, T *p_array) const {
+	_FORCE_INLINE_ void sort_range(int p_first, int p_last, T *p_array) const {
 		if (p_first != p_last) {
 			introsort(p_first, p_last, p_array, bitlog(p_last - p_first) * 2);
 			final_insertion_sort(p_first, p_last, p_array);
 		}
 	}
 
-	inline void sort(T *p_array, int p_len) const {
+	_FORCE_INLINE_ void sort(T *p_array, int p_len) const {
 		sort_range(0, p_len, p_array);
 	}
 
-	inline void nth_element(int p_first, int p_last, int p_nth, T *p_array) const {
+	_FORCE_INLINE_ void nth_element(int p_first, int p_last, int p_nth, T *p_array) const {
 		if (p_first == p_last || p_nth == p_last) {
 			return;
 		}

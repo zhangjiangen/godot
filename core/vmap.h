@@ -113,7 +113,7 @@ private:
 	}
 
 public:
-	int insert(const T &p_key, const V &p_val) {
+	_FORCE_INLINE_ int insert(const T &p_key, const V &p_val) {
 		bool exact;
 		int pos = _find(p_key, exact);
 		if (exact) {
@@ -124,11 +124,11 @@ public:
 		return pos;
 	}
 
-	bool has(const T &p_val) const {
+	_FORCE_INLINE_ bool has(const T &p_val) const {
 		return _find_exact(p_val) != -1;
 	}
 
-	void erase(const T &p_val) {
+	_FORCE_INLINE_ void erase(const T &p_val) {
 		int pos = _find_exact(p_val);
 		if (pos < 0) {
 			return;
@@ -136,11 +136,11 @@ public:
 		_cowdata.remove(pos);
 	}
 
-	int find(const T &p_val) const {
+	_FORCE_INLINE_ int find(const T &p_val) const {
 		return _find_exact(p_val);
 	}
 
-	int find_nearest(const T &p_val) const {
+	_FORCE_INLINE_ int find_nearest(const T &p_val) const {
 		bool exact;
 		return _find(p_val, exact);
 	}
@@ -148,31 +148,31 @@ public:
 	_FORCE_INLINE_ int size() const { return _cowdata.size(); }
 	_FORCE_INLINE_ bool empty() const { return _cowdata.empty(); }
 
-	const Pair *get_array() const {
+	_FORCE_INLINE_ const Pair *get_array() const {
 		return _cowdata.ptr();
 	}
 
-	Pair *get_array() {
+	_FORCE_INLINE_ Pair *get_array() {
 		return _cowdata.ptrw();
 	}
 
-	const V &getv(int p_index) const {
+	_FORCE_INLINE_ const V &getv(int p_index) const {
 		return _cowdata.get(p_index).value;
 	}
 
-	V &getv(int p_index) {
+	_FORCE_INLINE_ V &getv(int p_index) {
 		return _cowdata.get_m(p_index).value;
 	}
 
-	const T &getk(int p_index) const {
+	_FORCE_INLINE_ const T &getk(int p_index) const {
 		return _cowdata.get(p_index).key;
 	}
 
-	T &getk(int p_index) {
+	_FORCE_INLINE_ T &getk(int p_index) {
 		return _cowdata.get_m(p_index).key;
 	}
 
-	inline const V &operator[](const T &p_key) const {
+	_FORCE_INLINE_ const V &operator[](const T &p_key) const {
 		int pos = _find_exact(p_key);
 
 		CRASH_COND(pos < 0);
@@ -180,7 +180,7 @@ public:
 		return _cowdata.get(pos).value;
 	}
 
-	inline V &operator[](const T &p_key) {
+	_FORCE_INLINE_ V &operator[](const T &p_key) {
 		int pos = _find_exact(p_key);
 		if (pos < 0) {
 			pos = insert(p_key, V());
@@ -191,7 +191,7 @@ public:
 
 	_FORCE_INLINE_ VMap(){};
 	_FORCE_INLINE_ VMap(const VMap &p_from) { _cowdata._ref(p_from._cowdata); }
-	inline VMap &operator=(const VMap &p_from) {
+	_FORCE_INLINE_ VMap &operator=(const VMap &p_from) {
 		_cowdata._ref(p_from._cowdata);
 		return *this;
 	}

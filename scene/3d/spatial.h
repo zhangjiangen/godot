@@ -61,7 +61,7 @@ public:
 	};
 
 private:
-	enum TransformDirty {
+	enum TransformDirty : uint8_t {
 		DIRTY_NONE = 0,
 		DIRTY_VECTORS = 1,
 		DIRTY_LOCAL = 2,
@@ -83,21 +83,21 @@ private:
 
 		Viewport *viewport;
 
-		bool toplevel_active;
-		bool toplevel;
-		bool inside_world;
-
 		int children_lock;
 		Spatial *parent;
 		List<Spatial *> children;
 		List<Spatial *>::Element *C;
 
-		bool ignore_notification;
-		bool notify_local_transform;
-		bool notify_transform;
+		uint8_t ignore_notification : 1;
+		uint8_t notify_local_transform : 1;
+		uint8_t notify_transform : 1;
 
-		bool visible;
-		bool disable_scale;
+		uint8_t visible : 1;
+		uint8_t disable_scale : 1;
+
+		uint8_t toplevel_active : 1;
+		uint8_t toplevel : 1;
+		uint8_t inside_world : 1;
 
 #ifdef TOOLS_ENABLED
 		Ref<SpatialGizmo> gizmo;

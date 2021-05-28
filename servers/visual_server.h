@@ -91,7 +91,7 @@ public:
 		TEXTURE_FLAGS_DEFAULT = TEXTURE_FLAG_REPEAT | TEXTURE_FLAG_MIPMAPS | TEXTURE_FLAG_FILTER
 	};
 
-	enum TextureType {
+	enum TextureType : uint8_t {
 		TEXTURE_TYPE_2D,
 		TEXTURE_TYPE_EXTERNAL,
 		TEXTURE_TYPE_CUBEMAP,
@@ -99,7 +99,7 @@ public:
 		TEXTURE_TYPE_3D,
 	};
 
-	enum CubeMapSide {
+	enum CubeMapSide : uint8_t {
 
 		CUBEMAP_LEFT,
 		CUBEMAP_RIGHT,
@@ -176,7 +176,7 @@ public:
 
 	/* SHADER API */
 
-	enum ShaderMode {
+	enum ShaderMode : uint8_t {
 
 		SHADER_SPATIAL,
 		SHADER_CANVAS_ITEM,
@@ -221,7 +221,7 @@ public:
 
 	/* MESH API */
 
-	enum ArrayType {
+	enum ArrayType : uint8_t {
 
 		ARRAY_VERTEX = 0,
 		ARRAY_NORMAL = 1,
@@ -266,7 +266,7 @@ public:
 
 	};
 
-	enum PrimitiveType {
+	enum PrimitiveType : uint8_t {
 		PRIMITIVE_POINTS = 0,
 		PRIMITIVE_LINES = 1,
 		PRIMITIVE_LINE_STRIP = 2,
@@ -331,19 +331,19 @@ public:
 
 	virtual RID multimesh_create() = 0;
 
-	enum MultimeshTransformFormat {
+	enum MultimeshTransformFormat : uint8_t {
 		MULTIMESH_TRANSFORM_2D,
 		MULTIMESH_TRANSFORM_3D,
 	};
 
-	enum MultimeshColorFormat {
+	enum MultimeshColorFormat : uint8_t {
 		MULTIMESH_COLOR_NONE,
 		MULTIMESH_COLOR_8BIT,
 		MULTIMESH_COLOR_FLOAT,
 		MULTIMESH_COLOR_MAX,
 	};
 
-	enum MultimeshCustomDataFormat {
+	enum MultimeshCustomDataFormat : uint8_t {
 		MULTIMESH_CUSTOM_DATA_NONE,
 		MULTIMESH_CUSTOM_DATA_8BIT,
 		MULTIMESH_CUSTOM_DATA_FLOAT,
@@ -401,13 +401,13 @@ public:
 
 	/* Light API */
 
-	enum LightType {
+	enum LightType : uint8_t {
 		LIGHT_DIRECTIONAL,
 		LIGHT_OMNI,
 		LIGHT_SPOT
 	};
 
-	enum LightParam {
+	enum LightParam : uint8_t {
 
 		LIGHT_PARAM_ENERGY,
 		LIGHT_PARAM_INDIRECT_ENERGY,
@@ -442,7 +442,7 @@ public:
 	virtual void light_set_use_gi(RID p_light, bool p_enable) = 0;
 
 	// bake mode
-	enum LightBakeMode {
+	enum LightBakeMode : uint8_t {
 		LIGHT_BAKE_DISABLED,
 		LIGHT_BAKE_INDIRECT,
 		LIGHT_BAKE_ALL
@@ -451,7 +451,7 @@ public:
 	virtual void light_set_bake_mode(RID p_light, LightBakeMode p_bake_mode) = 0;
 
 	// omni light
-	enum LightOmniShadowMode {
+	enum LightOmniShadowMode : uint8_t {
 		LIGHT_OMNI_SHADOW_DUAL_PARABOLOID,
 		LIGHT_OMNI_SHADOW_CUBE,
 	};
@@ -459,7 +459,7 @@ public:
 	virtual void light_omni_set_shadow_mode(RID p_light, LightOmniShadowMode p_mode) = 0;
 
 	// omni light
-	enum LightOmniShadowDetail {
+	enum LightOmniShadowDetail : uint8_t {
 		LIGHT_OMNI_SHADOW_DETAIL_VERTICAL,
 		LIGHT_OMNI_SHADOW_DETAIL_HORIZONTAL
 	};
@@ -467,7 +467,7 @@ public:
 	virtual void light_omni_set_shadow_detail(RID p_light, LightOmniShadowDetail p_detail) = 0;
 
 	// directional light
-	enum LightDirectionalShadowMode {
+	enum LightDirectionalShadowMode : uint8_t {
 		LIGHT_DIRECTIONAL_SHADOW_ORTHOGONAL,
 		LIGHT_DIRECTIONAL_SHADOW_PARALLEL_2_SPLITS,
 		LIGHT_DIRECTIONAL_SHADOW_PARALLEL_4_SPLITS
@@ -476,7 +476,7 @@ public:
 	virtual void light_directional_set_shadow_mode(RID p_light, LightDirectionalShadowMode p_mode) = 0;
 	virtual void light_directional_set_blend_splits(RID p_light, bool p_enable) = 0;
 
-	enum LightDirectionalShadowDepthRangeMode {
+	enum LightDirectionalShadowDepthRangeMode : uint8_t {
 		LIGHT_DIRECTIONAL_SHADOW_DEPTH_RANGE_STABLE,
 		LIGHT_DIRECTIONAL_SHADOW_DEPTH_RANGE_OPTIMIZED,
 
@@ -582,7 +582,7 @@ public:
 	virtual void particles_request_process(RID p_particles) = 0;
 	virtual void particles_restart(RID p_particles) = 0;
 
-	enum ParticlesDrawOrder {
+	enum ParticlesDrawOrder : uint8_t {
 		PARTICLES_DRAW_ORDER_INDEX,
 		PARTICLES_DRAW_ORDER_LIFETIME,
 		PARTICLES_DRAW_ORDER_VIEW_DEPTH,
@@ -670,7 +670,7 @@ public:
 	virtual void viewport_set_shadow_atlas_size(RID p_viewport, int p_size) = 0;
 	virtual void viewport_set_shadow_atlas_quadrant_subdivision(RID p_viewport, int p_quadrant, int p_subdiv) = 0;
 
-	enum ViewportMSAA {
+	enum ViewportMSAA : uint8_t {
 		VIEWPORT_MSAA_DISABLED,
 		VIEWPORT_MSAA_2X,
 		VIEWPORT_MSAA_4X,
@@ -684,7 +684,7 @@ public:
 	virtual void viewport_set_use_fxaa(RID p_viewport, bool p_fxaa) = 0;
 	virtual void viewport_set_use_debanding(RID p_viewport, bool p_debanding) = 0;
 
-	enum ViewportUsage {
+	enum ViewportUsage : uint8_t {
 		VIEWPORT_USAGE_2D,
 		VIEWPORT_USAGE_2D_NO_SAMPLING,
 		VIEWPORT_USAGE_3D,
@@ -694,7 +694,7 @@ public:
 	virtual void viewport_set_hdr(RID p_viewport, bool p_enabled) = 0;
 	virtual void viewport_set_usage(RID p_viewport, ViewportUsage p_usage) = 0;
 
-	enum ViewportRenderInfo {
+	enum ViewportRenderInfo : uint8_t {
 
 		VIEWPORT_RENDER_INFO_OBJECTS_IN_FRAME,
 		VIEWPORT_RENDER_INFO_VERTICES_IN_FRAME,
@@ -709,7 +709,7 @@ public:
 
 	virtual int viewport_get_render_info(RID p_viewport, ViewportRenderInfo p_info) = 0;
 
-	enum ViewportDebugDraw {
+	enum ViewportDebugDraw : uint8_t {
 		VIEWPORT_DEBUG_DRAW_DISABLED,
 		VIEWPORT_DEBUG_DRAW_UNSHADED,
 		VIEWPORT_DEBUG_DRAW_OVERDRAW,
@@ -722,7 +722,7 @@ public:
 
 	virtual RID environment_create() = 0;
 
-	enum EnvironmentBG {
+	enum EnvironmentBG : uint8_t {
 
 		ENV_BG_CLEAR_COLOR,
 		ENV_BG_COLOR,
@@ -748,7 +748,7 @@ public:
 	//set default SSR options
 	//set default SSSSS options
 
-	enum EnvironmentDOFBlurQuality {
+	enum EnvironmentDOFBlurQuality : uint8_t {
 		ENV_DOF_BLUR_QUALITY_LOW,
 		ENV_DOF_BLUR_QUALITY_MEDIUM,
 		ENV_DOF_BLUR_QUALITY_HIGH,
@@ -757,7 +757,7 @@ public:
 	virtual void environment_set_dof_blur_near(RID p_env, bool p_enable, float p_distance, float p_transition, float p_far_amount, EnvironmentDOFBlurQuality p_quality) = 0;
 	virtual void environment_set_dof_blur_far(RID p_env, bool p_enable, float p_distance, float p_transition, float p_far_amount, EnvironmentDOFBlurQuality p_quality) = 0;
 
-	enum EnvironmentGlowBlendMode {
+	enum EnvironmentGlowBlendMode : uint8_t {
 		GLOW_BLEND_MODE_ADDITIVE,
 		GLOW_BLEND_MODE_SCREEN,
 		GLOW_BLEND_MODE_SOFTLIGHT,
@@ -765,7 +765,7 @@ public:
 	};
 	virtual void environment_set_glow(RID p_env, bool p_enable, int p_level_flags, float p_intensity, float p_strength, float p_bloom_threshold, EnvironmentGlowBlendMode p_blend_mode, float p_hdr_bleed_threshold, float p_hdr_bleed_scale, float p_hdr_luminance_cap, bool p_bicubic_upscale) = 0;
 
-	enum EnvironmentToneMapper {
+	enum EnvironmentToneMapper : uint8_t {
 		ENV_TONE_MAPPER_LINEAR,
 		ENV_TONE_MAPPER_REINHARD,
 		ENV_TONE_MAPPER_FILMIC,
@@ -777,13 +777,13 @@ public:
 
 	virtual void environment_set_ssr(RID p_env, bool p_enable, int p_max_steps, float p_fade_in, float p_fade_out, float p_depth_tolerance, bool p_roughness) = 0;
 
-	enum EnvironmentSSAOQuality {
+	enum EnvironmentSSAOQuality : uint8_t {
 		ENV_SSAO_QUALITY_LOW,
 		ENV_SSAO_QUALITY_MEDIUM,
 		ENV_SSAO_QUALITY_HIGH,
 	};
 
-	enum EnvironmentSSAOBlur {
+	enum EnvironmentSSAOBlur : uint8_t {
 		ENV_SSAO_BLUR_DISABLED,
 		ENV_SSAO_BLUR_1x1,
 		ENV_SSAO_BLUR_2x2,
@@ -800,7 +800,7 @@ public:
 
 	virtual RID scenario_create() = 0;
 
-	enum ScenarioDebugMode {
+	enum ScenarioDebugMode : uint8_t {
 		SCENARIO_DEBUG_DISABLED,
 		SCENARIO_DEBUG_WIREFRAME,
 		SCENARIO_DEBUG_OVERDRAW,
@@ -815,7 +815,7 @@ public:
 
 	/* INSTANCING API */
 
-	enum InstanceType {
+	enum InstanceType : uint8_t {
 
 		INSTANCE_NONE,
 		INSTANCE_MESH,
@@ -862,13 +862,13 @@ public:
 	Array _instances_cull_ray_bind(const Vector3 &p_from, const Vector3 &p_to, RID p_scenario = RID()) const;
 	Array _instances_cull_convex_bind(const Array &p_convex, RID p_scenario = RID()) const;
 
-	enum InstanceFlags {
+	enum InstanceFlags : uint8_t {
 		INSTANCE_FLAG_USE_BAKED_LIGHT,
 		INSTANCE_FLAG_DRAW_NEXT_FRAME_IF_VISIBLE,
 		INSTANCE_FLAG_MAX
 	};
 
-	enum ShadowCastingSetting {
+	enum ShadowCastingSetting : uint8_t {
 		SHADOW_CASTING_SETTING_OFF,
 		SHADOW_CASTING_SETTING_ON,
 		SHADOW_CASTING_SETTING_DOUBLE_SIDED,
@@ -908,7 +908,7 @@ public:
 
 	virtual void canvas_item_set_draw_behind_parent(RID p_item, bool p_enable) = 0;
 
-	enum NinePatchAxisMode {
+	enum NinePatchAxisMode : uint8_t {
 		NINE_PATCH_STRETCH,
 		NINE_PATCH_TILE,
 		NINE_PATCH_TILE_FIT,
@@ -959,7 +959,7 @@ public:
 	virtual void canvas_light_set_item_cull_mask(RID p_light, int p_mask) = 0;
 	virtual void canvas_light_set_item_shadow_cull_mask(RID p_light, int p_mask) = 0;
 
-	enum CanvasLightMode {
+	enum CanvasLightMode : uint8_t {
 		CANVAS_LIGHT_MODE_ADD,
 		CANVAS_LIGHT_MODE_SUB,
 		CANVAS_LIGHT_MODE_MIX,
@@ -968,7 +968,7 @@ public:
 
 	virtual void canvas_light_set_mode(RID p_light, CanvasLightMode p_mode) = 0;
 
-	enum CanvasLightShadowFilter {
+	enum CanvasLightShadowFilter : uint8_t {
 		CANVAS_LIGHT_FILTER_NONE,
 		CANVAS_LIGHT_FILTER_PCF3,
 		CANVAS_LIGHT_FILTER_PCF5,
@@ -995,7 +995,7 @@ public:
 	virtual void canvas_occluder_polygon_set_shape(RID p_occluder_polygon, const PoolVector<Vector2> &p_shape, bool p_closed) = 0;
 	virtual void canvas_occluder_polygon_set_shape_as_lines(RID p_occluder_polygon, const PoolVector<Vector2> &p_shape) = 0;
 
-	enum CanvasOccluderPolygonCullMode {
+	enum CanvasOccluderPolygonCullMode : uint8_t {
 		CANVAS_OCCLUDER_POLYGON_CULL_DISABLED,
 		CANVAS_OCCLUDER_POLYGON_CULL_CLOCKWISE,
 		CANVAS_OCCLUDER_POLYGON_CULL_COUNTER_CLOCKWISE,
@@ -1023,7 +1023,7 @@ public:
 
 	/* STATUS INFORMATION */
 
-	enum RenderInfo {
+	enum RenderInfo : uint8_t {
 
 		INFO_OBJECTS_IN_FRAME,
 		INFO_VERTICES_IN_FRAME,
@@ -1061,7 +1061,7 @@ public:
 	virtual void set_default_clear_color(const Color &p_color) = 0;
 	virtual void set_shader_time_scale(float p_scale) = 0;
 
-	enum Features {
+	enum Features : uint8_t {
 		FEATURE_SHADERS,
 		FEATURE_MULTITHREADED,
 	};

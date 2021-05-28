@@ -179,7 +179,7 @@ class PoolVector {
 		}
 	}
 
-	void _reference(const PoolVector &p_pool_vector) {
+	_FORCE_INLINE_ void _reference(const PoolVector &p_pool_vector) {
 		if (alloc == p_pool_vector.alloc) {
 			return;
 		}
@@ -195,7 +195,7 @@ class PoolVector {
 		}
 	}
 
-	void _unreference() {
+	_FORCE_INLINE_ void _unreference() {
 		if (!alloc) {
 			return;
 		}
@@ -280,7 +280,7 @@ public:
 			}
 		}
 
-		Access() {
+		_FORCE_INLINE_ Access() {
 			alloc = nullptr;
 			mem = nullptr;
 		}
@@ -290,7 +290,7 @@ public:
 			_unref();
 		}
 
-		void release() {
+		_FORCE_INLINE_ void release() {
 			_unref();
 		}
 	};
@@ -300,7 +300,7 @@ public:
 		_FORCE_INLINE_ const T &operator[](int p_index) const { return this->mem[p_index]; }
 		_FORCE_INLINE_ const T *ptr() const { return this->mem; }
 
-		void operator=(const Read &p_read) {
+		_FORCE_INLINE_ void operator=(const Read &p_read) {
 			if (this->alloc == p_read.alloc) {
 				return;
 			}
@@ -308,7 +308,7 @@ public:
 			this->_ref(p_read.alloc);
 		}
 
-		Read(const Read &p_read) {
+		_FORCE_INLINE_ Read(const Read &p_read) {
 			this->_ref(p_read.alloc);
 		}
 
@@ -320,7 +320,7 @@ public:
 		_FORCE_INLINE_ T &operator[](int p_index) const { return this->mem[p_index]; }
 		_FORCE_INLINE_ T *ptr() const { return this->mem; }
 
-		void operator=(const Write &p_read) {
+		_FORCE_INLINE_ void operator=(const Write &p_read) {
 			if (this->alloc == p_read.alloc) {
 				return;
 			}
@@ -328,21 +328,21 @@ public:
 			this->_ref(p_read.alloc);
 		}
 
-		Write(const Write &p_read) {
+		_FORCE_INLINE_ Write(const Write &p_read) {
 			this->_ref(p_read.alloc);
 		}
 
-		Write() {}
+		_FORCE_INLINE_ Write() {}
 	};
 
-	Read read() const {
+	_FORCE_INLINE_ Read read() const {
 		Read r;
 		if (alloc) {
 			r._ref(alloc);
 		}
 		return r;
 	}
-	Write write() {
+	_FORCE_INLINE_ Write write() {
 		Write w;
 		if (alloc) {
 			_copy_on_write(); //make sure there is only one being accessed
@@ -373,13 +373,13 @@ public:
 		resize(s - 1);
 	}
 
-	inline int size() const;
-	inline bool empty() const;
-	T get(int p_index) const;
-	void set(int p_index, const T &p_val);
-	void push_back(const T &p_val);
-	void append(const T &p_val) { push_back(p_val); }
-	void append_array(const PoolVector<T> &p_arr) {
+	_FORCE_INLINE_ int size() const;
+	_FORCE_INLINE_ bool empty() const;
+	_FORCE_INLINE_ T get(int p_index) const;
+	_FORCE_INLINE_ void set(int p_index, const T &p_val);
+	_FORCE_INLINE_ void push_back(const T &p_val);
+	_FORCE_INLINE_ void append(const T &p_val) { push_back(p_val); }
+	_FORCE_INLINE_ void append_array(const PoolVector<T> &p_arr) {
 		int ds = p_arr.size();
 		if (ds == 0) {
 			return;
@@ -442,11 +442,11 @@ public:
 		return rs;
 	}
 
-	bool is_locked() const { return alloc && alloc->lock.get() > 0; }
+	_FORCE_INLINE_ bool is_locked() const { return alloc && alloc->lock.get() > 0; }
 
 	inline T operator[](int p_index) const;
 
-	Error resize(int p_size);
+	_FORCE_INLINE_ Error resize(int p_size);
 
 	void invert();
 
