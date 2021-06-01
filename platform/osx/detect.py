@@ -78,7 +78,6 @@ def configure(env):
     env["bits"] = "64"
 
     ## Compiler configuration
-
     # Save this in environment for use by other modules
     if "OSXCROSS_ROOT" in os.environ:
         env["osxcross"] = True
@@ -190,7 +189,8 @@ def configure(env):
     env.Append(CPPDEFINES=["VULKAN_ENABLED"])
     env.Append(LINKFLAGS=["-framework", "Metal", "-framework", "QuartzCore", "-framework", "IOSurface"])
     if env["use_static_mvk"]:
-        env.Append(LINKFLAGS=["-framework", "MoltenVK"])
+        #env.Append(LINKFLAGS=["-framework", "MoltenVK"])
+        env.Append(LINKFLAGS="/Users/zhangjiangen/Downloads/vulkansdk-macos-1.2.135.0/MoltenVK/macOS/static/libMoltenVK.a")
         env["builtin_vulkan"] = False
     elif not env["builtin_vulkan"]:
         env.Append(LIBS=["vulkan"])

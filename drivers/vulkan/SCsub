@@ -6,6 +6,7 @@ thirdparty_obj = []
 
 # FIXME: Refactor all this to reduce code duplication.
 if env["platform"] == "android":
+    print("android using builtin thirdparty/vulkan.......")
     # Use NDK Vulkan headers
     thirdparty_dir = env["ANDROID_NDK_ROOT"] + "/sources/third_party/vulkan/src"
     thirdparty_includes = [
@@ -25,6 +26,7 @@ if env["platform"] == "android":
     env_thirdparty.add_source_files(thirdparty_obj, vma_sources)
 
 elif env["platform"] == "iphone":
+    print("iphone using builtin thirdparty/vulkan.......")
     # Use bundled Vulkan headers
     thirdparty_dir = "#thirdparty/vulkan"
     env.Prepend(CPPPATH=[thirdparty_dir, thirdparty_dir + "/include", thirdparty_dir + "/loader"])
@@ -37,6 +39,7 @@ elif env["platform"] == "iphone":
     env_thirdparty.add_source_files(thirdparty_obj, vma_sources)
 
 elif env["builtin_vulkan"]:
+    print("using builtin valkan.......")
     # Use bundled Vulkan headers
     thirdparty_dir = "#thirdparty/vulkan"
     env.Prepend(CPPPATH=[thirdparty_dir, thirdparty_dir + "/include", thirdparty_dir + "/loader"])
@@ -104,7 +107,11 @@ elif env["builtin_vulkan"]:
     env_thirdparty.add_source_files(thirdparty_obj, vma_sources)
 
 else:  # Always build VMA.
+    print("using thirdparty/vulkan.......")
     thirdparty_dir = "#thirdparty/vulkan"
+    if env["platform"] == "osx":
+        env.Prepend(CPPPATH='/Users/zhangjiangen/VulkanSDK/1.2.176.1/MoltenVK/include')
+    
     env.Prepend(CPPPATH=[thirdparty_dir])
 
     # Build Vulkan loader library
