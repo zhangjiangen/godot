@@ -87,7 +87,9 @@ struct FBXMeshData : Reference {
 	/* mesh maximum weight count */
 	bool valid_weight_count = false;
 	int max_weight_count = 0;
+	// 对应的骨架ID
 	uint64_t armature_id = 0;
+	// 是否为谷歌动画模型
 	bool valid_armature_id = false;
 	MeshInstance *godot_mesh_instance = nullptr;
 

@@ -2734,6 +2734,32 @@ bool String::ends_with(const String &p_string) const {
 	return true;
 }
 
+bool String::ends_with(const String &p_string, bool ignore_case) const {
+	if (ignore_case) {
+		int l = p_string.length();
+		if (l > length()) {
+			return false;
+		}
+
+		if (l == 0) {
+			return true;
+		}
+
+		String t_string = p_string.to_lower();
+		const CharType *p = &p_string[0];
+		const CharType *s = &operator[](length() - l);
+
+		for (int i = 0; i < l; i++) {
+			if (p[i] != _find_lower(s[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	return ends_with(p_string);
+}
+
 bool String::begins_with(const String &p_string) const {
 	int l = p_string.length();
 	if (l > length()) {
@@ -2774,6 +2800,54 @@ bool String::begins_with(const char *p_string) const {
 	}
 
 	return *p_string == 0;
+}
+
+bool String::begins_with(const String &p_string, bool ignore_case) const {
+	if (ignore_case) {
+		int l = p_string.length();
+		if (l > length()) {
+			return false;
+		}
+
+		if (l == 0) {
+			return true;
+		}
+		const String t_string = p_string.to_lower();
+		const CharType *p = &p_string[0];
+		const CharType *s = &operator[](0);
+
+		for (int i = 0; i < l; i++) {
+			if (p[i] != _find_lower(s[i])) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+	return begins_with(p_string);
+}
+
+bool String::begins_with(const char *p_string, bool ignore_case) const {
+	if (ignore_case) {
+		int l = length();
+		if (l == 0 || !p_string) {
+			return false;
+		}
+
+		const CharType *str = &operator[](0);
+		int i = 0;
+
+		while (*p_string && i < l) {
+			if (_find_lower(*p_string) != _find_lower(str[i])) {
+				return false;
+			}
+			i++;
+			p_string++;
+		}
+
+		return *p_string == 0;
+	}
+	return begins_with(p_string);
 }
 
 bool String::is_enclosed_in(const String &p_string) const {
@@ -4004,7 +4078,7 @@ String String::get_fbx_basename() const {
 	if (ext != "fbx") {
 		return String();
 	}
-    base_file = base_file.get_file();
+	base_file = base_file.get_file();
 	bool isFirst = base_file.begins_with("@");
 	int isMind = base_file.find("@");
 
@@ -4029,7 +4103,7 @@ String String::get_fbx_basename() const {
 }
 
 String String::change_to_fbx_basename_path() const {
-		String fbx_base_name = get_fbx_basename();
+	String fbx_base_name = get_fbx_basename();
 	if (fbx_base_name.length() > 0) {
 		return get_base_dir() + "/" + fbx_base_name + ".fbx";
 	}

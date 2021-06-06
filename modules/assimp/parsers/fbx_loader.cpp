@@ -1,8 +1,8 @@
 #include "fbx_loader.hpp"
 
 // -----------------------------------------------------------------------------
-
 #include "fbx_utils.hpp"
+#include "scene/resources/surface_tool.h"
 #include <fbxsdk/core/arch/fbxarch.h>
 
 // -----------------------------------------------------------------------------
@@ -367,26 +367,92 @@ void importNormals_byPolygonVertex(FbxMesh *fbx_mesh,
 	}
 }
 
+//// Mesh import utilities =====================================================
+
+static void importVertexColors_byControlPoint(FbxMesh *fbx_mesh,
+		FbxGeometryElementVertexColor *elt_color,
+		Abs_mesh &mesh,
+		std::map<std::pair<int, int>, int> &idx_colors,
+		int v_size) {
+	FbxColor n;
+	int n_size = mesh._normals.size();
+	mesh._normals.resize(n_size + elt_color->GetDirectArray().GetCount());
+	if (elt_color->GetReferenceMode() == FbxGeometryElement::eDirect) {
+		for (int i = 0; i < fbx_mesh->GetControlPointsCount(); ++i) {
+			n = elt_color->GetDirectArray().GetAt(i);
+			mesh._colors[n_size + i] = Fbx_utils::to_color(n);
+			idx_colors[std::pair<int, int>(v_size + i, -1)] = n_size + i;
+		}
+	} else {
+		for (int i = 0; i < fbx_mesh->GetControlPointsCount(); ++i) {
+			n = elt_color->GetDirectArray().GetAt(elt_color->GetIndexArray().GetAt(i));
+			mesh._colors[n_size + i] = Fbx_utils::to_color(n);
+			idx_colors[std::pair<int, int>(v_size + i, -1)] = n_size + i;
+		}
+	}
+}
+
+// -----------------------------------------------------------------------------
+
+static void importVertexColors_byPolygonVertex(FbxMesh *fbx_mesh,
+		FbxGeometryElementVertexColor *elt_color,
+		Abs_mesh &mesh,
+		std::map<std::pair<int, int>, int> &idx_colors,
+		int v_size) {
+	FbxColor n;
+	// map of indices of normals, in order to quickly know if already seen
+	std::map<int, int> seenNormals;
+	std::map<int, int>::iterator it;
+	int lIndexByPolygonVertex = 0;
+
+	// Lookup polygons
+	const int nb_polygons = fbx_mesh->GetPolygonCount();
+	for (int p = 0; p < nb_polygons; p++) {
+		// Lookup polygon vertices
+		int lPolygonSize = fbx_mesh->GetPolygonSize(p);
+		for (int i = 0; i < lPolygonSize; i++) {
+			int lNormalIndex = 0;
+			if (elt_color->GetReferenceMode() == FbxGeometryElement::eDirect)
+				lNormalIndex = lIndexByPolygonVertex;
+			if (elt_color->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
+				lNormalIndex = elt_color->GetIndexArray().GetAt(lIndexByPolygonVertex);
+			// record the normal if not already seen
+			it = seenNormals.find(lNormalIndex);
+			if (it == seenNormals.end()) {
+				n = elt_color->GetDirectArray().GetAt(lNormalIndex);
+				mesh._colors.push_back(Fbx_utils::to_color(n));
+				seenNormals[lNormalIndex] = mesh._normals.size() - 1;
+				// record vertice to normal mapping
+				idx_colors[std::pair<int, int>(v_size + fbx_mesh->GetPolygonVertex(p, i), p)] = mesh._normals.size() - 1;
+			} else
+				// record vertice to normal mapping
+				idx_colors[std::pair<int, int>(v_size + fbx_mesh->GetPolygonVertex(p, i), p)] = it->second;
+
+			lIndexByPolygonVertex++;
+		}
+	}
+}
+
 // -----------------------------------------------------------------------------
 
 void importTexCoords_byControlPoint(FbxMesh *lMesh,
 		FbxGeometryElementUV *elt_UV,
 		Abs_mesh &mesh,
 		std::map<std::pair<int, int>, int> &idx_UV,
-		int v_size) {
+		int v_size, Vector<Vector2> &_texCoords) {
 	FbxVector2 uv;
-	int nb_uv = mesh._texCoords.size();
-	mesh._texCoords.resize(nb_uv + elt_UV->GetDirectArray().GetCount());
+	int nb_uv = _texCoords.size();
+	_texCoords.resize(nb_uv + elt_UV->GetDirectArray().GetCount());
 	if (elt_UV->GetReferenceMode() == FbxGeometryElement::eDirect) {
 		for (int i = 0; i < lMesh->GetControlPointsCount(); ++i) {
 			uv = elt_UV->GetDirectArray().GetAt(i);
-			mesh._texCoords[nb_uv + i] = Fbx_utils::to_ltexcoord(uv);
+			_texCoords.set(nb_uv + i, Fbx_utils::to_ltexcoord(uv));
 			idx_UV[std::pair<int, int>(v_size + i, -1)] = nb_uv + i;
 		}
 	} else {
 		for (int i = 0; i < lMesh->GetControlPointsCount(); ++i) {
 			uv = elt_UV->GetDirectArray().GetAt(elt_UV->GetIndexArray().GetAt(i));
-			mesh._texCoords[nb_uv + i] = Fbx_utils::to_ltexcoord(uv);
+			_texCoords.set(nb_uv + i, Fbx_utils::to_ltexcoord(uv));
 			idx_UV[std::pair<int, int>(v_size + i, -1)] = nb_uv + i;
 		}
 	}
@@ -398,7 +464,7 @@ void importTexCoords_byPolygonVertex(FbxMesh *lMesh,
 		FbxGeometryElementUV *elt_UV,
 		Abs_mesh &mesh,
 		std::map<std::pair<int, int>, int> &idx_UV,
-		int v_size) {
+		int v_size, Vector<Vector2> &_texCoords) {
 	FbxVector2 uv;
 	// map of indices of normals, in order to quickly know if already seen
 	std::map<int, int> seenCoords;
@@ -417,10 +483,10 @@ void importTexCoords_byPolygonVertex(FbxMesh *lMesh,
 			it = seenCoords.find(lTexCoordIndex);
 			if (it == seenCoords.end()) {
 				uv = elt_UV->GetDirectArray().GetAt(lTexCoordIndex);
-				mesh._texCoords.push_back(Fbx_utils::to_ltexcoord(uv));
-				seenCoords[lTexCoordIndex] = mesh._texCoords.size() - 1;
+				_texCoords.push_back(Fbx_utils::to_ltexcoord(uv));
+				seenCoords[lTexCoordIndex] = _texCoords.size() - 1;
 				// record vertice to normal mapping
-				idx_UV[std::pair<int, int>(v_size + lMesh->GetPolygonVertex(p, i), p)] = mesh._texCoords.size() - 1;
+				idx_UV[std::pair<int, int>(v_size + lMesh->GetPolygonVertex(p, i), p)] = _texCoords.size() - 1;
 			} else
 				idx_UV[std::pair<int, int>(v_size + lMesh->GetPolygonVertex(p, i), p)] = it->second;
 
@@ -458,90 +524,169 @@ void fill_material(FbxNode *node, Abs_mesh &mesh) {
 
 	} // for materialCount
 }
+Ref<SpatialMaterial> fill_material(FbxNode *node) {
+	Ref<SpatialMaterial> ret;
+	ret.instance();
+	for (int i = 0; i < node->GetMaterialCount(); ++i) {
+		Material m;
+		// get material infos
+		FbxSurfaceMaterial *fbx_mat = node->GetMaterial(i);
+		ret->set_name(fbx_mat->GetName());
 
+	} // for materialCount
+	return ret;
+}
 // -----------------------------------------------------------------------------
 
-void fill_mesh(FbxMesh *fbx_mesh, FbxNode *node, Abs_mesh &mesh) {
-	// deal with non triangular mesh
-	if (!fbx_mesh->IsTriangleMesh()) {
-		FbxGeometryConverter triangulator(g_FBXSdkManager);
-		//fbx_mesh = triangulator.TriangulateMesh(fbx_mesh);
-		FbxNodeAttribute *nodeAttr = triangulator.Triangulate(fbx_mesh, true /*<- replace node*/);
-		FbxNode *node = nodeAttr->GetNode();
-		if (nodeAttr->GetAttributeType() == FbxNodeAttribute::eMesh)
-			fbx_mesh = node->GetMesh();
-		else
-			assert(false && "ERROR: This is really unexpected...");
-	}
-
-	// vertices ################################################################
-	FbxVector4 *v = fbx_mesh->GetControlPoints();
-	int nb_verts = fbx_mesh->GetControlPointsCount();
-	int v_size = mesh._vertices.size();
-	mesh._vertices.resize(v_size + nb_verts);
-	for (int i = 0; i < nb_verts; ++i)
-		mesh._vertices[v_size + i] = Fbx_utils::to_lvertex(v[i]);
-
-	// normals #################################################################
-
-	// map the indice of face and vertice to indice of normal
-	std::map<std::pair<int, int>, int> idx_normals;
-	FbxGeometryElementNormal *elt_normal;
-	FbxGeometryElement::EMappingMode type;
+#include "scene/resources/surface_tool.h"
+void Parser_FbxMesh(Ref<SurfaceTool> st, FbxMesh *fbx_mesh, bool is_skin,
+		Map<int, Pair<Vector<int32_t>, Vector<float_t>>> boneWeight) {
 	bool isNormalByControlPoint = true;
+	int nb_verts = fbx_mesh->GetControlPointsCount();
+	Abs_mesh mesh;
+	FbxGeometryElement::EMappingMode type;
+	int v_size = mesh._vertices.size();
+	std::map<std::pair<int, int>, int> idx_normals;
+	// 解析模型
+	{
+		// vertices ################################################################
+		FbxVector4 *v = fbx_mesh->GetControlPoints();
+		mesh._vertices.resize(v_size + nb_verts);
+		for (int i = 0; i < nb_verts; ++i) {
+			mesh._vertices[v_size + i] = Fbx_utils::to_lvertex(v[i]);
+		}
 
-	int nb_elt_normal = fbx_mesh->GetElementNormalCount();
+		// normals #################################################################
 
-	if (nb_elt_normal > 1) {
-		std::cerr << "WARNING FBX : there is more than one layer for normals";
-		std::cerr << "We only handle the first layer" << std::endl;
-	}
+		// map the indice of face and vertice to indice of normal
+		FbxGeometryElementNormal *elt_normal;
 
-	if (nb_elt_normal > 0) {
-		// Fetch first element
-		elt_normal = fbx_mesh->GetElementNormal();
-		type = elt_normal->GetMappingMode();
+		int nb_elt_normal = fbx_mesh->GetElementNormalCount();
 
-		if (type == FbxGeometryElement::eByControlPoint) {
-			importNormals_byControlPoint(fbx_mesh, elt_normal, mesh, idx_normals, v_size);
-		} else if (type == FbxGeometryElement::eByPolygonVertex) {
-			isNormalByControlPoint = false;
-			importNormals_byPolygonVertex(fbx_mesh, elt_normal, mesh, idx_normals, v_size);
-		} else {
-			std::cerr << "ERROR FBX: mapping mode'" << Fbx_utils::to_string(type);
-			std::cerr << "'for normals is not handled" << std::endl;
+		if (nb_elt_normal > 1) {
+			std::cerr << "WARNING FBX : there is more than one layer for normals";
+			std::cerr << "We only handle the first layer" << std::endl;
+		}
+		if (nb_elt_normal > 0) {
+			// Fetch first element
+			elt_normal = fbx_mesh->GetElementNormal();
+			type = elt_normal->GetMappingMode();
+
+			if (type == FbxGeometryElement::eByControlPoint) {
+				importNormals_byControlPoint(fbx_mesh, elt_normal, mesh, idx_normals, v_size);
+			} else if (type == FbxGeometryElement::eByPolygonVertex) {
+				isNormalByControlPoint = false;
+				importNormals_byPolygonVertex(fbx_mesh, elt_normal, mesh, idx_normals, v_size);
+			} else {
+				std::cerr << "ERROR FBX: mapping mode'" << Fbx_utils::to_string(type).utf8();
+				std::cerr << "'for normals is not handled" << std::endl;
+			}
+		}
+		// texCoords ###############################################################
+		// map the indice of face and vertice to indice of normal
+		FbxGeometryElementUV *elt_uv;
+
+		int nb_elt_uv = fbx_mesh->GetElementUVCount();
+
+		if (nb_elt_uv > 1) {
+			std::cerr << "WARNING FBX : there is more than one layer for texture coordinates";
+			std::cerr << "We only handle the first layer" << std::endl;
 		}
 	}
 
-	// texCoords ###############################################################
-	// map the indice of face and vertice to indice of normal
-	std::map<std::pair<int, int>, int> idx_uv;
-	FbxGeometryElementUV *elt_uv;
-	bool isUVByControlPoint = true;
-
 	int nb_elt_uv = fbx_mesh->GetElementUVCount();
-
-	if (nb_elt_uv > 1) {
-		std::cerr << "WARNING FBX : there is more than one layer for texture coordinates";
-		std::cerr << "We only handle the first layer" << std::endl;
-	}
-
+	FbxGeometryElementUV *elt_uv;
+	Vector<Vector2> uv0;
+	Vector<Vector2> uv1;
+	Vector<Vector2> uv2;
+	Vector<Vector2> uv3;
+	Vector<Vector2> uv4;
+	bool isUVByControlPoint = true;
+	std::map<std::pair<int, int>, int> idx_uv;
 	if (nb_elt_uv > 0) {
 		// Fetch first element
-		elt_uv = fbx_mesh->GetElementUV();
+		elt_uv = fbx_mesh->GetElementUV(0);
 		type = elt_uv->GetMappingMode();
 
 		if (type == FbxGeometryElement::eByControlPoint) {
-			importTexCoords_byControlPoint(fbx_mesh, elt_uv, mesh, idx_uv, v_size);
+			importTexCoords_byControlPoint(fbx_mesh, elt_uv, mesh, idx_uv, v_size, uv0);
 		} else if (type == FbxGeometryElement::eByPolygonVertex) {
 			isUVByControlPoint = false;
-			importTexCoords_byPolygonVertex(fbx_mesh, elt_uv, mesh, idx_uv, v_size);
+			importTexCoords_byPolygonVertex(fbx_mesh, elt_uv, mesh, idx_uv, v_size, uv0);
 		} else {
-			std::cerr << "ERROR FBX: mapping mode'" << Fbx_utils::to_string(type);
+			std::cerr << "ERROR FBX: mapping mode'" << Fbx_utils::to_string(type).utf8();
 			std::cerr << "'for tex coords is not handled" << std::endl;
 		}
 	}
 
+	std::map<std::pair<int, int>, int> idx_uv1;
+	if (nb_elt_uv > 1) {
+		// Fetch first element
+		elt_uv = fbx_mesh->GetElementUV(1);
+
+		FbxGeometryElement::EMappingMode type1 = elt_uv->GetMappingMode();
+
+		if (type1 == FbxGeometryElement::eByControlPoint) {
+			importTexCoords_byControlPoint(fbx_mesh, elt_uv, mesh, idx_uv1, v_size, uv1);
+		} else if (type1 == FbxGeometryElement::eByPolygonVertex) {
+			isUVByControlPoint = false;
+			importTexCoords_byPolygonVertex(fbx_mesh, elt_uv, mesh, idx_uv1, v_size, uv1);
+		} else {
+			std::cerr << "ERROR FBX: mapping mode'" << Fbx_utils::to_string(type).utf8();
+			std::cerr << "'for tex coords is not handled" << std::endl;
+		}
+	}
+	std::map<std::pair<int, int>, int> idx_uv2;
+	if (nb_elt_uv > 2) {
+		// Fetch first element
+		elt_uv = fbx_mesh->GetElementUV(2);
+
+		FbxGeometryElement::EMappingMode type2 = elt_uv->GetMappingMode();
+
+		if (type2 == FbxGeometryElement::eByControlPoint) {
+			importTexCoords_byControlPoint(fbx_mesh, elt_uv, mesh, idx_uv2, v_size, uv2);
+		} else if (type2 == FbxGeometryElement::eByPolygonVertex) {
+			isUVByControlPoint = false;
+			importTexCoords_byPolygonVertex(fbx_mesh, elt_uv, mesh, idx_uv2, v_size, uv2);
+		} else {
+			std::cerr << "ERROR FBX: mapping mode'" << Fbx_utils::to_string(type).utf8();
+			std::cerr << "'for tex coords is not handled" << std::endl;
+		}
+	}
+	std::map<std::pair<int, int>, int> idx_uv3;
+	if (nb_elt_uv > 3) {
+		// Fetch first element
+		elt_uv = fbx_mesh->GetElementUV(3);
+
+		FbxGeometryElement::EMappingMode type3 = elt_uv->GetMappingMode();
+
+		if (type3 == FbxGeometryElement::eByControlPoint) {
+			importTexCoords_byControlPoint(fbx_mesh, elt_uv, mesh, idx_uv3, v_size, uv3);
+		} else if (type3 == FbxGeometryElement::eByPolygonVertex) {
+			isUVByControlPoint = false;
+			importTexCoords_byPolygonVertex(fbx_mesh, elt_uv, mesh, idx_uv3, v_size, uv3);
+		} else {
+			std::cerr << "ERROR FBX: mapping mode'" << Fbx_utils::to_string(type).utf8();
+			std::cerr << "'for tex coords is not handled" << std::endl;
+		}
+	}
+
+	// 获取顶点颜色
+	std::map<std::pair<int, int>, int> idx_color;
+
+	if (fbx_mesh->GetElementVertexColorCount()) {
+		FbxGeometryElementVertexColor *fbx_color = fbx_mesh->GetElementVertexColor();
+		FbxGeometryElement::EMappingMode type1 = elt_uv->GetMappingMode();
+		if (type == FbxGeometryElement::eByControlPoint) {
+			importVertexColors_byControlPoint(fbx_mesh, fbx_color, mesh, idx_uv, v_size);
+		} else if (type == FbxGeometryElement::eByPolygonVertex) {
+			isUVByControlPoint = false;
+			importVertexColors_byPolygonVertex(fbx_mesh, fbx_color, mesh, idx_uv, v_size);
+		} else {
+			std::cerr << "ERROR FBX: mapping mode'" << Fbx_utils::to_string(type).utf8();
+			std::cerr << "'for tex coords is not handled" << std::endl;
+		}
+	}
 	// triangles ###############################################################
 	int f_size = mesh._triangles.size();
 	mesh._triangles.resize(f_size + fbx_mesh->GetPolygonCount());
@@ -560,13 +705,154 @@ void fill_mesh(FbxMesh *fbx_mesh, FbxNode *node, Abs_mesh &mesh) {
 		mesh._triangles[f_size + faceIndex] = f;
 	}
 
+	st->begin(Mesh::PRIMITIVE_TRIANGLES);
+	for (int i = 0; i < mesh._vertices.size(); ++i) {
+		if (nb_elt_uv > 0) {
+			st->add_uv(uv0[i]);
+		}
+		if (nb_elt_uv > 1) {
+			st->add_uv2(uv1[i]);
+		}
+		if (nb_elt_uv > 2) {
+			st->add_uv3(uv2[i]);
+		}
+		if (nb_elt_uv > 3) {
+			st->add_uv4(uv3[i]);
+		}
+		if (i < mesh._colors.size()) {
+			st->add_color(mesh._colors[i]);
+		}
+		if (i < mesh._normals.size()) {
+			st->add_normal(mesh._normals[i]);
+		}
+		// 增加骨骼索引信息
+		if (is_skin) {
+			auto bw = boneWeight.find(i);
+			if (bw) {
+				st->add_bones(bw->value().first);
+				st->add_weights(bw->value().second);
+			}
+		}
+		st->add_vertex(mesh._vertices[i]);
+	}
+	// 增加顶点索引
+	for (int i = 0; i < mesh._triangles.size(); ++i) {
+		st->add_index(mesh._triangles[i].v[0]);
+		st->add_index(mesh._triangles[i].v[1]);
+		st->add_index(mesh._triangles[i].v[2]);
+	}
+}
+struct FBX_LoadContext {
+	Ref<ArrayMesh> godot_mesh;
+	MeshInstance *mesh_instance;
+	// 绑定的骨骼信息
+	Ref<Skin> bind_skin;
+	Skeleton *skeleton;
+};
+void fill_mesh(Fbx_file *file, FbxMesh *fbx_mesh, FbxNode *node, Abs_mesh &mesh, FBX_LoadContext &context) {
+	// deal with non triangular mesh
+	if (!fbx_mesh->IsTriangleMesh()) {
+		FbxGeometryConverter triangulator(g_FBXSdkManager);
+		//fbx_mesh = triangulator.TriangulateMesh(fbx_mesh);
+		FbxNodeAttribute *nodeAttr = triangulator.Triangulate(fbx_mesh, true /*<- replace node*/);
+		FbxNode *node = nodeAttr->GetNode();
+		if (nodeAttr->GetAttributeType() == FbxNodeAttribute::eMesh)
+			fbx_mesh = node->GetMesh();
+		else
+			assert(false && "ERROR: This is really unexpected...");
+	}
+
+	FbxDeformer *Deformer = nullptr;
+	Skeleton *_Skelect = nullptr;
+	Array morphs;
+	FbxNode *Link = nullptr;
+	Map<int, Pair<Vector<int32_t>, Vector<float_t>>> BoneWeight;
+	for (int def_index = 0; def_index < fbx_mesh->GetDeformerCount(); ++def_index) {
+		Deformer = fbx_mesh->GetDeformer(def_index);
+		switch (Deformer->GetDeformerType()) {
+			case FbxDeformer::eSkin: {
+				FbxSkin *skin_def = (FbxSkin *)Deformer;
+				int32_t ClusterCount = skin_def->GetClusterCount();
+				bool bFoundCorrectLink = false;
+				for (int32_t ClusterId = 0; ClusterId < ClusterCount; ++ClusterId) {
+					FbxCluster *cluster = skin_def->GetCluster(ClusterId);
+					FbxNode *Link = cluster->GetLink(); //Get the bone influences by this first cluster
+					// 查找所属的骨架信息
+					Skeleton *skin = file->FindSkelect(Link);
+					if (skin) {
+						_Skelect = skin;
+						context.skeleton = skin;
+						Ref<Skin> bind_skin = context.mesh_instance->get_skin();
+						// 设置蒙皮信息
+						if (!bind_skin.is_valid()) {
+							bind_skin.instance();
+							context.mesh_instance->set_skin(bind_skin);
+						}
+						bind_skin->add_named_bind(Link->GetName(), skin->get_global_transform().inverse() * Fbx_utils::to_transfo(Link->EvaluateGlobalTransform()).inverse());
+					}
+					//
+
+					int bone_id = skin->find_bone(Link->GetName());
+
+					const int size_cluster = cluster->GetControlPointIndicesCount();
+					for (int c = 0; c < size_cluster; c++) {
+						const int fbx_idx = cluster->GetControlPointIndices()[c];
+						const float fbx_weight = (float)cluster->GetControlPointWeights()[c];
+
+						BoneWeight[fbx_idx].first.push_back(bone_id);
+						BoneWeight[fbx_idx].second.push_back(fbx_weight);
+					}
+				}
+
+			}
+			/* code */
+			break;
+			case FbxDeformer::eBlendShape: {
+				// 动画变形信息
+				FbxBlendShape *BlendShape = (FbxBlendShape *)Deformer;
+				String BlendShapeName = BlendShape->GetName();
+				const int32_t BlendShapeChannelCount = BlendShape->GetBlendShapeChannelCount();
+				for (int32_t ChannelIndex = 0; ChannelIndex < BlendShapeChannelCount; ++ChannelIndex) {
+					FbxBlendShapeChannel *Channel = BlendShape->GetBlendShapeChannel(ChannelIndex);
+
+					if (Channel) {
+						String ChannelName = Channel->GetName();
+						FbxShape *shape = Channel->GetTargetShape(ChannelIndex);
+						if (shape) {
+							shape->GetBaseGeometry();
+							FbxGeometry *fbxGeom = shape->GetBaseGeometry();
+							if (fbxGeom && fbxGeom->GetAttributeType() == FbxNodeAttribute::eMesh) {
+								FbxMesh *meshShape = (FbxMesh *)fbxGeom;
+								// 下面解析模型
+								Ref<SurfaceTool> morph_st;
+								morph_st.instance();
+								Parser_FbxMesh(morph_st, meshShape, BoneWeight.size() > 0, BoneWeight);
+								morphs.push_back(morph_st->commit_to_arrays());
+							}
+						}
+					}
+				}
+			}
+
+			break;
+			case FbxDeformer::eVertexCache:
+				break;
+			default:
+				break;
+		}
+	}
+	Ref<SurfaceTool> st;
+	st.instance();
+	st->begin(Mesh::PRIMITIVE_TRIANGLES);
+
 	// materials ###############################################################
 	int m_size = mesh._materials.size();
-	fill_material(node, mesh);
+	auto mat = fill_material(node);
+	st->set_material(mat);
 
 	// material groups & groups ################################################
 	Group g;
-	g._start_face = f_size;
+	g._start_face = 0;
 	g._end_face = mesh._triangles.size();
 	int nb_elementMaterial = fbx_mesh->GetElementMaterialCount();
 	FbxGeometryElementMaterial *lMaterialElement;
@@ -575,7 +861,7 @@ void fill_mesh(FbxMesh *fbx_mesh, FbxNode *node, Abs_mesh &mesh) {
 		if (lMaterialElement->GetMappingMode() == FbxGeometryElement::eAllSame) {
 			Material_group mg;
 			mg._material_idx = m_size + lMaterialElement->GetIndexArray().GetAt(0);
-			mg._start_face = f_size;
+			mg._start_face = 0;
 			mg._end_face = mesh._triangles.size();
 			g._assigned_mats.push_back(mg);
 		} else {
@@ -583,10 +869,10 @@ void fill_mesh(FbxMesh *fbx_mesh, FbxNode *node, Abs_mesh &mesh) {
 				// register all material groups
 				Material_group mg;
 				mg._material_idx = m_size + lMaterialElement->GetIndexArray().GetAt(i);
-				mg._start_face = f_size + i;
+				mg._start_face = 0 + i;
 				for (; i < fbx_mesh->GetPolygonCount() && (m_size + lMaterialElement->GetIndexArray().GetAt(i) == (int)mg._material_idx); ++i)
 					;
-				mg._end_face = f_size + i;
+				mg._end_face = 0 + i;
 				g._assigned_mats.push_back(mg);
 				--i;
 			}
@@ -602,7 +888,7 @@ void fill_mesh(FbxMesh *fbx_mesh, FbxNode *node, Abs_mesh &mesh) {
 			lMaterialElement = fbx_mesh->GetElementMaterial();
 			Material_group mg;
 			mg._material_idx = m_size + lMaterialElement->GetIndexArray().GetAt(0);
-			mg._start_face = f_size;
+			mg._start_face = 0;
 			mg._end_face = mesh._triangles.size();
 			g._assigned_mats.push_back(mg);
 		} else {
@@ -611,10 +897,10 @@ void fill_mesh(FbxMesh *fbx_mesh, FbxNode *node, Abs_mesh &mesh) {
 				// register all material groups
 				Material_group mg;
 				mg._material_idx = m_size + lMaterialElement->GetIndexArray().GetAt(j);
-				mg._start_face = f_size + j;
+				mg._start_face = 0 + j;
 				for (; j < fbx_mesh->GetPolygonCount() && (m_size + lMaterialElement->GetIndexArray().GetAt(j) == (int)mg._material_idx); ++j)
 					;
-				mg._end_face = f_size + j;
+				mg._end_face = 0 + j;
 				g._assigned_mats.push_back(mg);
 				--j;
 			}
@@ -622,6 +908,13 @@ void fill_mesh(FbxMesh *fbx_mesh, FbxNode *node, Abs_mesh &mesh) {
 		mesh._groups.push_back(g);
 	}
 	/////////////////////////////////////////////
+	context.godot_mesh->add_surface_from_arrays(
+			Mesh::PRIMITIVE_TRIANGLES,
+			st->commit_to_arrays(),
+			morphs,
+			true);
+	context.godot_mesh->set_name(fbx_mesh->GetName());
+	context.godot_mesh->surface_set_material(0, mat);
 }
 
 //------------------------------------------------------------------------------
@@ -643,7 +936,7 @@ void Fbx_file::compute_size_mesh() {
 
 //------------------------------------------------------------------------------
 
-bool Fbx_file::import_file(const std::string &filename) {
+bool Fbx_file::import_file(const String &filename) {
 	assert(g_FBXSdkManager != 0);
 	Base_loader::update_paths(filename);
 	free_mem();
@@ -651,9 +944,269 @@ bool Fbx_file::import_file(const std::string &filename) {
 	_fbx_scene = FbxScene::Create(g_FBXSdkManager, "");
 
 	bool state = Fbx_utils::load_scene(filename, _fbx_scene, g_FBXSdkManager);
-	if (state)
+	// 计算定点偏移量
+	if (state) {
 		compute_size_mesh();
+		// 创建场景
+		RetFBXScene = memnew(Spatial());
+	}
+
 	return state;
+}
+void Fbx_file::LoadScene(FbxScene *fbx_scene, Spatial *root_scene) {
+	// 创建场景节点
+
+	FbxNode *RootNode = fbx_scene->GetRootNode();
+	FbxNodeInfo RootInfo;
+	RootInfo.ObjectName = RootNode->GetName();
+	RootInfo.UniqueId = RootNode->GetUniqueID();
+	RootInfo.transform = RootNode->EvaluateGlobalTransform();
+	RootInfo.RotationPivot = RootNode->RotationPivot.Get();
+	RootInfo.ScalePivot = RootNode->ScalingPivot.Get();
+	// 转换一下矩阵
+	RootInfo.godot_trans = Fbx_utils::to_transfo(RootInfo.transform);
+
+	RootInfo.AttributeUniqueId = 0;
+
+	RootInfo.ParentUniqueId = 0;
+
+	//Add the rootnode to the SceneInfo
+	HierarchyInfo.push_back(RootInfo);
+	for (int i = 0; i < fbx_scene->GetNodeCount(); ++i) {
+		FbxNode *node = fbx_scene->GetNode(i);
+		if (node != nullptr) {
+			ProcessNode(node, RootNode, root_scene);
+		}
+	}
+	// 加载所有的模型
+	Map<FbxNode *, MeshInstance *>::Element *mesh_map_node = AllMesh.front();
+	while (mesh_map_node != nullptr) {
+		FBX_LoadContext context;
+		context.godot_mesh.instance();
+		context.mesh_instance = mesh_map_node->value();
+		Abs_mesh mesh;
+		FbxNodeAttribute *attr = mesh_map_node->key()->GetNodeAttribute();
+		fill_mesh(this, (FbxMesh *)attr, mesh_map_node->key(), mesh, context);
+		MeshInstance *mi = mesh_map_node->value();
+		mi->set_mesh(context.godot_mesh);
+		if (context.skeleton) {
+			mi->set_skeleton_path(mi->get_path_to(context.skeleton));
+
+			context.skeleton->add_child(mi);
+			mi->set_owner(RetFBXScene);
+			mi->set_transform(Transform());
+		}
+		mesh_map_node = mesh_map_node->next();
+	}
+}
+void Fbx_file::ProcessNode(FbxNode *fbx_node, FbxNode *parent_node, Spatial *root) {
+	FbxNodeAttribute *attr = fbx_node->GetNodeAttribute();
+
+	FbxNodeInfo ChildInfo;
+	ChildInfo.ObjectName = fbx_node->GetName();
+	ChildInfo.UniqueId = fbx_node->GetUniqueID();
+	ChildInfo.ParentName = parent_node->GetName();
+	ChildInfo.ParentUniqueId = parent_node->GetUniqueID();
+	ChildInfo.RotationPivot = fbx_node->RotationPivot.Get();
+	ChildInfo.ScalePivot = fbx_node->ScalingPivot.Get();
+	ChildInfo.transform = fbx_node->EvaluateLocalTransform();
+	ChildInfo.NodeType = attr->GetAttributeType();
+	ChildInfo.SourceNode = fbx_node;
+	// 转换一下矩阵
+	ChildInfo.godot_trans = Fbx_utils::to_transfo(ChildInfo.transform);
+	Skeleton *skin = nullptr;
+	Spatial *curr_node = nullptr;
+	bool IsSkelete = false;
+	switch (attr->GetAttributeType()) {
+		case FbxNodeAttribute::eUnknown: {
+			ChildInfo.AttributeType = "eUnknown";
+			Spatial *node = memnew(Spatial);
+			node->set_name("Unknown_" + ChildInfo.ObjectName);
+			node->set_transform(ChildInfo.godot_trans);
+			root->add_child(node);
+			curr_node = node;
+		} break;
+		case FbxNodeAttribute::eNull: {
+			ChildInfo.AttributeType = "eNull";
+			Spatial *node = memnew(Spatial);
+			node->set_name("Null_" + ChildInfo.ObjectName);
+			curr_node = node;
+		} break;
+		case FbxNodeAttribute::eMarker: {
+			ChildInfo.AttributeType = "eMarker";
+			Spatial *node = memnew(Spatial);
+			node->set_name("Marker_" + ChildInfo.ObjectName);
+			curr_node = node;
+		} break;
+		case FbxNodeAttribute::eSkeleton:
+			ChildInfo.AttributeType = "eSkeleton";
+			{
+				skin = memnew(Skeleton);
+				skin->set_name("skin_" + ChildInfo.ObjectName);
+				AllSkin.insert(fbx_node, skin);
+				// 设置所属谷歌
+				ChildInfo.SkelectID = AllSkin.size();
+				IsSkelete = true;
+			}
+			break;
+		case FbxNodeAttribute::eMesh:
+			ChildInfo.AttributeType = "eMesh";
+			{
+				MeshInstance *mesh = new MeshInstance();
+				mesh->set_name("mesh_" + ChildInfo.ObjectName);
+				curr_node = mesh;
+				AllMesh.insert(fbx_node, mesh);
+			}
+			break;
+		case FbxNodeAttribute::eNurbs: {
+			ChildInfo.AttributeType = "eNurbs";
+			Spatial *node = memnew(Spatial);
+			node->set_name("Nurbs_" + ChildInfo.ObjectName);
+			curr_node = node;
+		} break;
+		case FbxNodeAttribute::ePatch: {
+			ChildInfo.AttributeType = "ePatch";
+			Spatial *node = memnew(Spatial);
+			node->set_name("Patch_" + ChildInfo.ObjectName);
+			curr_node = node;
+		} break;
+		case FbxNodeAttribute::eCamera: {
+			ChildInfo.AttributeType = "eCamera";
+			Spatial *node = memnew(Spatial);
+			node->set_name("Camera_" + ChildInfo.ObjectName);
+			curr_node = node;
+		} break;
+		case FbxNodeAttribute::eCameraStereo: {
+			ChildInfo.AttributeType = "eCameraStereo";
+			Spatial *node = memnew(Spatial);
+			node->set_name("CameraStereo_" + ChildInfo.ObjectName);
+			curr_node = node;
+		} break;
+		case FbxNodeAttribute::eCameraSwitcher: {
+			ChildInfo.AttributeType = "eCameraSwitcher";
+			Spatial *node = memnew(Spatial);
+			node->set_name("CameraSwitcher_" + ChildInfo.ObjectName);
+			root->add_child(node);
+		} break;
+		case FbxNodeAttribute::eLight: {
+			ChildInfo.AttributeType = "eLight";
+			Spatial *node = memnew(Spatial);
+			node->set_name("Light_" + ChildInfo.ObjectName);
+			curr_node = node;
+		} break;
+		case FbxNodeAttribute::eOpticalReference: {
+			ChildInfo.AttributeType = "eOpticalReference";
+			Spatial *node = memnew(Spatial);
+			node->set_name("OpticalReference_" + ChildInfo.ObjectName);
+			curr_node = node;
+		} break;
+		case FbxNodeAttribute::eOpticalMarker: {
+			ChildInfo.AttributeType = "eOpticalMarker";
+			Spatial *node = memnew(Spatial);
+			node->set_name("OpticalMarker_" + ChildInfo.ObjectName);
+			curr_node = node;
+		} break;
+		case FbxNodeAttribute::eNurbsCurve: {
+			ChildInfo.AttributeType = "eNurbsCurve";
+			Spatial *node = memnew(Spatial);
+			node->set_name("NurbsCurve_" + ChildInfo.ObjectName);
+			curr_node = node;
+		} break;
+		case FbxNodeAttribute::eTrimNurbsSurface: {
+			ChildInfo.AttributeType = "eTrimNurbsSurface";
+			Spatial *node = memnew(Spatial);
+			node->set_name("TrimNurbsSurface_" + ChildInfo.ObjectName);
+			root->add_child(node);
+			curr_node = node;
+		} break;
+		case FbxNodeAttribute::eBoundary: {
+			ChildInfo.AttributeType = "eBoundary";
+			Spatial *node = memnew(Spatial);
+			node->set_name("Boundary_" + ChildInfo.ObjectName);
+			curr_node = node;
+		} break;
+		case FbxNodeAttribute::eNurbsSurface: {
+			ChildInfo.AttributeType = "eNurbsSurface";
+			Spatial *node = memnew(Spatial);
+			node->set_name("NurbsSurface_" + ChildInfo.ObjectName);
+			curr_node = node;
+		} break;
+		case FbxNodeAttribute::eShape: {
+			ChildInfo.AttributeType = "eShape";
+			Spatial *node = memnew(Spatial);
+			node->set_name("Shape_" + ChildInfo.ObjectName);
+			curr_node = node;
+		} break;
+		case FbxNodeAttribute::eLODGroup: {
+			ChildInfo.AttributeType = "eLODGroup";
+			Spatial *node = memnew(Spatial);
+			node->set_name("LODGroup_" + ChildInfo.ObjectName);
+			curr_node = node;
+		} break;
+		case FbxNodeAttribute::eSubDiv: {
+			ChildInfo.AttributeType = "eSubDiv";
+			Spatial *node = memnew(Spatial);
+			node->set_name("SubDiv_" + ChildInfo.ObjectName);
+			curr_node = node;
+		} break;
+		case FbxNodeAttribute::eCachedEffect: {
+			ChildInfo.AttributeType = "eCachedEffect";
+			Spatial *node = memnew(Spatial);
+			node->set_name("CachedEffect_" + ChildInfo.ObjectName);
+			curr_node = node;
+		} break;
+		case FbxNodeAttribute::eLine: {
+			ChildInfo.AttributeType = "eLine";
+			Spatial *node = memnew(Spatial);
+			node->set_name("Line_" + ChildInfo.ObjectName);
+			curr_node = node;
+		} break;
+	}
+	curr_node->set_transform(ChildInfo.godot_trans);
+	root->add_child(curr_node);
+
+	HierarchyInfo.push_back(ChildInfo);
+	// 处理所有子节点
+	int32_t NodeCount = fbx_node->GetChildCount();
+	for (int32_t NodeIndex = 0; NodeIndex < NodeCount; ++NodeIndex) {
+		if (IsSkelete) {
+			LoadSkelect(skin, fbx_node->GetChild(NodeIndex), fbx_node);
+
+		} else {
+			ProcessNode(fbx_node->GetChild(NodeIndex), fbx_node, curr_node);
+		}
+	}
+}
+// 家在谷歌信息
+void Fbx_file::LoadSkelect(Skeleton *skin, FbxNode *node, FbxNode *root_node) {
+	FbxNodeInfo ChildInfo;
+	ChildInfo.ObjectName = node->GetName();
+	ChildInfo.UniqueId = node->GetUniqueID();
+	ChildInfo.ParentName = root_node->GetName();
+	ChildInfo.ParentUniqueId = root_node->GetUniqueID();
+	ChildInfo.RotationPivot = node->RotationPivot.Get();
+	ChildInfo.ScalePivot = node->ScalingPivot.Get();
+	ChildInfo.transform = node->EvaluateLocalTransform();
+	ChildInfo.SkelectID = AllSkin.size();
+	ChildInfo.SourceNode = node;
+	// 转换一下矩阵
+	ChildInfo.godot_trans = Fbx_utils::to_transfo(ChildInfo.transform);
+
+	int32_t NodeCount = node->GetChildCount();
+	String name = node->GetName();
+	skin->add_bone(name);
+	int bone_id = skin->find_bone(name);
+	int bone_parent_id = skin->find_bone(ChildInfo.ParentName);
+	// 设定出事姿势
+	skin->set_bone_rest(bone_id, ChildInfo.godot_trans);
+	skin->set_bone_pose(bone_id, ChildInfo.godot_trans);
+	// 设置骨骼的父节点
+	skin->set_bone_parent(bone_id, bone_parent_id);
+
+	HierarchyInfo.push_back(ChildInfo);
+	for (int32_t NodeIndex = 0; NodeIndex < NodeCount; ++NodeIndex) {
+		LoadSkelect(skin, node->GetChild(NodeIndex), node);
+	}
 }
 
 // -----------------------------------------------------------------------------
@@ -672,10 +1225,15 @@ void Fbx_file::get_mesh(Abs_mesh &mesh) {
 				// TODO: extend NodeAttributes handling
 				case FbxNodeAttribute::eSkeleton:
 					break;
-				case FbxNodeAttribute::eMesh:
+				case FbxNodeAttribute::eMesh: {
 					_offset_verts[node] = mesh._vertices.size();
-					fill_mesh((FbxMesh *)attr, node, mesh);
-					break;
+					FbxMesh *fbx_mesh = (FbxMesh *)attr;
+					Ref<ArrayMesh> godot_mesh;
+					godot_mesh.instance();
+					FBX_LoadContext context;
+					context.godot_mesh = godot_mesh;
+					fill_mesh(this, fbx_mesh, node, mesh, context);
+				} break;
 				default:
 					break;
 			}
@@ -705,7 +1263,7 @@ static int fill_skeleton(Abs_skeleton &skel,
 			attr->GetAttributeType() == FbxNodeAttribute::eNull);
 
 	const FbxSkeleton *skel_attr = (const FbxSkeleton *)attr;
-	std::string name(skel_attr->GetNameOnly().Buffer());
+	String name(skel_attr->GetNameOnly().Buffer());
 
 	//FbxAnimEvaluator::GetNodeGlobalTransformFast()
 	//Transfo tr = Fbx_utils::to_transfo( Fbx_utils::geometry_transfo(node) );

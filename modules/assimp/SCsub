@@ -119,5 +119,7 @@ if True:  # env['builtin_assimp']:
     env_thirdparty.add_source_files(env.modules_sources, Glob("#thirdparty/assimp/code/FBX/*.cpp"))
 
 # Godot's own source files
+env_assimp.Prepend(CPPPATH=["#modules/assimp"])
 env_assimp.add_source_files(env.modules_sources, "parsers/*.cpp")
+env_assimp.add_source_files(env.modules_sources, "fbx_load/*.cpp")
 env_assimp.add_source_files(env.modules_sources, "*.cpp")

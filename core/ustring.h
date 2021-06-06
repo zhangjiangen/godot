@@ -211,7 +211,10 @@ public:
 	bool matchn(const String &p_wildcard) const;
 	bool begins_with(const String &p_string) const;
 	bool begins_with(const char *p_string) const;
+	bool begins_with(const String &p_string, bool ignore_case) const;
+	bool begins_with(const char *p_string, bool ignore_case) const;
 	bool ends_with(const String &p_string) const;
+	bool ends_with(const String &p_string, bool ignore_case) const;
 	bool is_enclosed_in(const String &p_string) const;
 	bool is_subsequence_of(const String &p_string) const;
 	bool is_subsequence_ofi(const String &p_string) const;

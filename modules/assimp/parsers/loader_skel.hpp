@@ -13,7 +13,7 @@ namespace Loader {
 struct Abs_bone {
 	float _length; ///< The bone length
 	Transform _frame; ///< The bone position and orientation
-	std::string _name; ///< The bone name
+	String _name; ///< The bone name
 };
 
 //------------------------------------------------------------------------------

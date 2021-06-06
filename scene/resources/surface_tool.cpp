@@ -205,6 +205,11 @@ void SurfaceTool::add_uv2(const Vector2 &p_uv2) {
 	last_uv2 = p_uv2;
 }
 
+void SurfaceTool::add_uv3(const Vector2 &p_uv3) {
+}
+void SurfaceTool::add_uv4(const Vector2 &p_uv4) {
+}
+
 void SurfaceTool::add_bones(const Vector<int> &p_bones) {
 	ERR_FAIL_COND(!begun);
 	ERR_FAIL_COND(!first && !(format & Mesh::ARRAY_FORMAT_BONES));

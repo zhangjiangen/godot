@@ -14,7 +14,6 @@ Material::Material() :
 	_Tf[0] = _Tf[1] = _Tf[2] = 1;
 	_illum = 4;
 	_Ni = _Ns = 0.5f;
-	_map_Ka = _map_Kd = _map_Ks = _map_Bump = "";
 	_Bm = 0;
 }
 
@@ -54,7 +53,7 @@ Material::~Material() {
 
 //------------------------------------------------------------------------------
 
-void Material::set_relative_paths(const std::string &p) {
+void Material::set_relative_paths(const String &p) {
 }
 
 // END CLASS Material ==========================================================

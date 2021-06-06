@@ -83,6 +83,8 @@ private:
 	Vector3 last_normal;
 	Vector2 last_uv;
 	Vector2 last_uv2;
+	Vector2 last_uv3;
+	Vector2 last_uv4;
 	Vector<int> last_bones;
 	Vector<float> last_weights;
 	Plane last_tangent;
@@ -111,6 +113,8 @@ public:
 	void add_tangent(const Plane &p_tangent);
 	void add_uv(const Vector2 &p_uv);
 	void add_uv2(const Vector2 &p_uv2);
+	void add_uv3(const Vector2 &p_uv3);
+	void add_uv4(const Vector2 &p_uv4);
 	void add_bones(const Vector<int> &p_bones);
 	void add_weights(const Vector<float> &p_weights);
 	void add_smooth_group(bool p_smooth);

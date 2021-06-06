@@ -18,10 +18,10 @@ void print_ver(int *v) {
 
 // -----------------------------------------------------------------------------
 
-bool load_scene(const std::string &filename,
+bool load_scene(const String &filename,
 		FbxScene *fbx_scene,
 		FbxManager *g_manager) {
-	const char *cfile = filename.c_str();
+	const char *cfile = filename.utf8();
 	int file_ver[3];
 	int sdk_ver[3];
 
@@ -160,7 +160,7 @@ void print_hierarchy(FbxScene *pScene) {
 // -----------------------------------------------------------------------------
 
 void print_hierarchy(FbxNode *pNode, int pDepth) {
-	std::string string;
+	String string;
 	int i;
 
 	for (i = 0; i < pDepth; i++)
@@ -170,7 +170,7 @@ void print_hierarchy(FbxNode *pNode, int pDepth) {
 	string += " attr type: ";
 	string += to_string(pNode->GetNodeAttribute()->GetAttributeType());
 
-	std::cout << string << std::endl;
+	std::cout << string.utf8() << std::endl;
 
 	for (i = 0; i < pNode->GetChildCount(); i++)
 		print_hierarchy(pNode->GetChild(i), pDepth + 1);
@@ -262,7 +262,7 @@ void copy(float *t, const FbxDouble3 &d3) {
 // -----------------------------------------------------------------------------
 
 void copy(Loader::Material &m, const FbxSurfacePhong *phong) {
-	m._name = std::string(phong->GetName());
+	m._name = String(phong->GetName());
 	Fbx_utils::copy(m._Ka, phong->Ambient.Get());
 	Fbx_utils::copy(m._Kd, phong->Diffuse.Get());
 	Fbx_utils::copy(m._Ks, phong->Specular.Get());
@@ -273,7 +273,7 @@ void copy(Loader::Material &m, const FbxSurfacePhong *phong) {
 // -----------------------------------------------------------------------------
 
 void copy(Loader::Material &m, const FbxSurfaceLambert *lbrt) {
-	m._name = std::string(lbrt->GetName());
+	m._name = String(lbrt->GetName());
 	Fbx_utils::copy(m._Ka, lbrt->Ambient.Get());
 	Fbx_utils::copy(m._Kd, lbrt->Diffuse.Get());
 	m._Tf[0] = m._Tf[1] = m._Tf[2] = std::max(1.f - (float)lbrt->TransparencyFactor.Get(), 0.f);
@@ -297,6 +297,9 @@ Transform to_transfo(const FbxMatrix mat) {
 
 // -----------------------------------------------------------------------------
 
+Color to_color(const FbxColor &c) {
+	return Color(c.mRed, c.mGreen, c.mBlue, c.mAlpha);
+}
 Transform to_transfo(const FbxMatrix &mat) {
 	Transform tr;
 	tr.basis.set(mat[0][0], mat[0][1], mat[0][2],
@@ -311,26 +314,26 @@ Transform to_transfo(const FbxMatrix &mat) {
 
 // -----------------------------------------------------------------------------
 
-Loader::Vertex to_lvertex(const FbxVector4 &vec) {
-	return Loader::Vertex((float)vec[0], (float)vec[1], (float)vec[2]);
+Vector3 to_lvertex(const FbxVector4 &vec) {
+	return Vector3((float)vec[0], (float)vec[1], (float)vec[2]);
 }
 
 // -----------------------------------------------------------------------------
 
-Loader::Normal to_lnormal(const FbxVector4 &vec) {
-	return Loader::Normal((float)vec[0], (float)vec[1], (float)vec[2]);
+Vector3 to_lnormal(const FbxVector4 &vec) {
+	return Vector3((float)vec[0], (float)vec[1], (float)vec[2]);
 }
 
 // -----------------------------------------------------------------------------
 
-Loader::Tex_coord to_ltexcoord(const FbxVector2 &vec) {
-	return Loader::Tex_coord((float)vec[0], (float)vec[1]);
+Vector2 to_ltexcoord(const FbxVector2 &vec) {
+	return Vector2((float)vec[0], (float)vec[1]);
 }
 
 // -----------------------------------------------------------------------------
 
-std::string to_string(FbxGeometryElement::EMappingMode type) {
-	std::string str;
+String to_string(FbxGeometryElement::EMappingMode type) {
+	String str;
 	switch (type) {
 		case (FbxGeometryElement::eNone):
 			str = "eNONE";
@@ -357,8 +360,8 @@ std::string to_string(FbxGeometryElement::EMappingMode type) {
 
 // -----------------------------------------------------------------------------
 
-std::string to_string(FbxNodeAttribute::EType type) {
-	std::string str;
+String to_string(FbxNodeAttribute::EType type) {
+	String str;
 	switch (type) {
 		case (FbxNodeAttribute::eUnknown):
 			str = "eUnknown";

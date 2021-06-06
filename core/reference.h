@@ -60,7 +60,7 @@ template <class T>
 class Ref {
 	T *reference;
 
-	void ref(const Ref &p_from) {
+	_FORCE_INLINE_ void ref(const Ref &p_from) {
 		if (p_from.reference == reference) {
 			return;
 		}
@@ -73,7 +73,7 @@ class Ref {
 		}
 	}
 
-	void ref_pointer(T *p_ref) {
+	_FORCE_INLINE_ void ref_pointer(T *p_ref) {
 		ERR_FAIL_COND(!p_ref);
 
 		if (p_ref->init_ref()) {
@@ -123,23 +123,23 @@ public:
 		return reference;
 	}
 
-	RefPtr get_ref_ptr() const {
+	_FORCE_INLINE_ RefPtr get_ref_ptr() const {
 		RefPtr refptr;
 		Ref<Reference> *irr = reinterpret_cast<Ref<Reference> *>(refptr.get_data());
 		*irr = *this;
 		return refptr;
 	};
 
-	operator Variant() const {
+	_FORCE_INLINE_ operator Variant() const {
 		return Variant(get_ref_ptr());
 	}
 
-	void operator=(const Ref &p_from) {
+	_FORCE_INLINE_ void operator=(const Ref &p_from) {
 		ref(p_from);
 	}
 
 	template <class T_Other>
-	void operator=(const Ref<T_Other> &p_from) {
+	_FORCE_INLINE_ void operator=(const Ref<T_Other> &p_from) {
 		Reference *refb = const_cast<Reference *>(static_cast<const Reference *>(p_from.ptr()));
 		if (!refb) {
 			unref();
@@ -151,7 +151,7 @@ public:
 		r.reference = nullptr;
 	}
 
-	void operator=(const RefPtr &p_refptr) {
+	_FORCE_INLINE_ void operator=(const RefPtr &p_refptr) {
 		Ref<Reference> *irr = reinterpret_cast<Ref<Reference> *>(p_refptr.get_data());
 		Reference *refb = irr->ptr();
 		if (!refb) {
@@ -164,7 +164,7 @@ public:
 		r.reference = nullptr;
 	}
 
-	void operator=(const Variant &p_variant) {
+	_FORCE_INLINE_ void operator=(const Variant &p_variant) {
 		RefPtr refptr = p_variant;
 		Ref<Reference> *irr = reinterpret_cast<Ref<Reference> *>(refptr.get_data());
 		Reference *refb = irr->ptr();
@@ -179,7 +179,7 @@ public:
 	}
 
 	template <class T_Other>
-	void reference_ptr(T_Other *p_ptr) {
+	_FORCE_INLINE_ void reference_ptr(T_Other *p_ptr) {
 		if (reference == p_ptr) {
 			return;
 		}
@@ -191,13 +191,13 @@ public:
 		}
 	}
 
-	Ref(const Ref &p_from) {
+	_FORCE_INLINE_ Ref(const Ref &p_from) {
 		reference = nullptr;
 		ref(p_from);
 	}
 
 	template <class T_Other>
-	Ref(const Ref<T_Other> &p_from) {
+	_FORCE_INLINE_ Ref(const Ref<T_Other> &p_from) {
 		reference = nullptr;
 		Reference *refb = const_cast<Reference *>(static_cast<const Reference *>(p_from.ptr()));
 		if (!refb) {
@@ -210,14 +210,14 @@ public:
 		r.reference = nullptr;
 	}
 
-	Ref(T *p_reference) {
+	_FORCE_INLINE_ Ref(T *p_reference) {
 		reference = nullptr;
 		if (p_reference) {
 			ref_pointer(p_reference);
 		}
 	}
 
-	Ref(const Variant &p_variant) {
+	_FORCE_INLINE_ Ref(const Variant &p_variant) {
 		RefPtr refptr = p_variant;
 		Ref<Reference> *irr = reinterpret_cast<Ref<Reference> *>(refptr.get_data());
 		reference = nullptr;
@@ -232,7 +232,7 @@ public:
 		r.reference = nullptr;
 	}
 
-	Ref(const RefPtr &p_refptr) {
+	_FORCE_INLINE_ Ref(const RefPtr &p_refptr) {
 		Ref<Reference> *irr = reinterpret_cast<Ref<Reference> *>(p_refptr.get_data());
 		reference = nullptr;
 		Reference *refb = irr->ptr();
@@ -260,15 +260,15 @@ public:
 		reference = nullptr;
 	}
 
-	void instance() {
+	_FORCE_INLINE_ void instance() {
 		ref(memnew(T));
 	}
 
-	Ref() {
+	_FORCE_INLINE_ Ref() {
 		reference = nullptr;
 	}
 
-	~Ref() {
+	_FORCE_INLINE_ ~Ref() {
 		unref();
 	}
 };

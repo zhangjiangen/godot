@@ -1,7 +1,11 @@
 #ifndef FBX_LOADER_HPP__
 #define FBX_LOADER_HPP__
 
+#include "core/reference.h"
+#include "core/ustring.h"
 #include "loader.hpp"
+#include "scene/3d/mesh_instance.h"
+#include "scene/3d/skeleton.h"
 #include <fbxsdk.h>
 #include <fbxsdk/core/fbxmanager.h>
 #include <fbxsdk/fileio/fbximporter.h>
@@ -46,17 +50,59 @@ void clean_fbx_sdk();
 class Fbx_file : public Base_loader {
 public:
 	//friend class Fbx_anim_eval;
+	struct FbxNodeInfo {
+		FbxNodeInfo() {
+			SkelectID = -1;
+			NodeType = FbxNodeAttribute::eUnknown;
+		}
+		String ObjectName;
+		uint64_t UniqueId;
+		FbxAMatrix transform;
+		FbxNode *SourceNode;
+		Transform godot_trans;
+		FbxVector4 RotationPivot;
+		FbxVector4 ScalePivot;
 
-	Fbx_file(const std::string &file_name) :
+		String AttributeName;
+		uint64_t AttributeUniqueId;
+		String AttributeType;
+		FbxNodeAttribute::EType NodeType;
+
+		String ParentName;
+		uint64_t ParentUniqueId;
+		uint64_t SkelectID;
+	};
+	Vector<FbxNodeInfo> HierarchyInfo;
+	Skeleton *FindSkelect(FbxNode *bone_node) {
+		int skelectID = -999;
+		for (int i = 0; i < HierarchyInfo.size(); ++i) {
+			if (HierarchyInfo[i].SourceNode == bone_node) {
+				skelectID = HierarchyInfo[i].SkelectID;
+			}
+		}
+		FbxNode *node = nullptr;
+		for (int i = 0; i < HierarchyInfo.size(); ++i) {
+			if (HierarchyInfo[i].NodeType == FbxNodeAttribute::eSkeleton) {
+				node = HierarchyInfo[i].SourceNode;
+			}
+		}
+		Map<FbxNode *, Skeleton *>::Element *ret = AllSkin.find(node);
+		if (ret) {
+			return ret->value();
+		}
+		return nullptr;
+	}
+	Fbx_file(const String &file_name) :
 			Base_loader(file_name),
-			_fbx_scene(0) {
+			_fbx_scene(nullptr),
+			RetFBXScene(nullptr) {
 		import_file(file_name);
 	}
 
 	~Fbx_file() { free_mem(); }
 
-	bool import_file(const std::string &file_path);
-	bool export_file(const std::string &file_path) {
+	bool import_file(const String &file_path);
+	bool export_file(const String &file_path) {
 		Base_loader::update_paths(file_path);
 		// TODO
 		return false;
@@ -80,6 +126,9 @@ public:
 	void set_mesh(const Abs_mesh &mesh);
 
 	void free_mem();
+	void LoadScene(FbxScene *fbx_scene, Spatial *root_scene);
+	void ProcessNode(FbxNode *fbx_node, FbxNode *parent_node, Spatial *root);
+	void LoadSkelect(Skeleton *skin, FbxNode *node, FbxNode *root_node);
 
 private:
 	/// compute attributes '_offset_verts' and '_size_mesh'
@@ -87,6 +136,10 @@ private:
 
 	/// The FBX file data once parsed with load_file()
 	FbxScene *_fbx_scene;
+
+	Spatial *RetFBXScene;
+	Map<FbxNode *, MeshInstance *> AllMesh;
+	Map<FbxNode *, Skeleton *> AllSkin;
 
 	/// Stores for each FBX mesh node the offset introduced in vertices index
 	/// because we concatenate meshes

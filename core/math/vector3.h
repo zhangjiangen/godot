@@ -452,5 +452,13 @@ Vector3 Vector3::reflect(const Vector3 &p_normal) const {
 #endif
 	return 2.0 * p_normal * this->dot(p_normal) - *this;
 }
-
+struct Vector4 : public Vector3 {
+	real_t w;
+	Vector4() :
+			Vector3(), w(0.0f) {
+	}
+	Vector4(real_t x, real_t y, real_t z, real_t w) :
+			Vector3(x, y, z), w(w) {
+	}
+};
 #endif // VECTOR3_H

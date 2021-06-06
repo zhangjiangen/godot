@@ -8,8 +8,9 @@
 #include <fbxsdk/scene/fbxscene.h>
 #include <string>
 //#include <fbxsdk/fbxfilesdk_nsuse.h>
-
-#include "core/math/Transform.h"
+#include "core/math/transform.h"
+#include "core/math/vector2.h"
+#include "core/ustring.h"
 #include "loader_mesh.hpp"
 
 /**
@@ -24,7 +25,7 @@ namespace Fbx_utils {
 /// @param fbx_scene : the allocated scene by FbxManager
 /// @param g_manager : the global SDK manager initialized
 /// @return If the scene has been succesfully loaded
-bool load_scene(const std::string &filename,
+bool load_scene(const String &filename,
 		FbxScene *fbx_scene,
 		FbxManager *g_manager);
 
@@ -81,19 +82,20 @@ Transform to_transfo(const FbxMatrix &mat);
 Transform to_transfo(const FbxMatrix &mat);
 
 /// FBxVector4 to our loader vertex type
-Loader::Vertex to_lvertex(const FbxVector4 &vec);
+Vector3 to_lvertex(const FbxVector4 &vec);
 
 /// FBxVector4 to our loader normal type
-Loader::Normal to_lnormal(const FbxVector4 &vec);
+Vector3 to_lnormal(const FbxVector4 &vec);
 
 /// FBxVector2 to our loader texture coordinate type
-Loader::Tex_coord to_ltexcoord(const FbxVector2 &vec);
+Vector2 to_ltexcoord(const FbxVector2 &vec);
+Color to_color(const FbxColor &c);
 
 /// @return the string corresponding to the mapping mode
-std::string to_string(FbxGeometryElement::EMappingMode type);
+String to_string(FbxGeometryElement::EMappingMode type);
 
 /// @return the string corresponding to the attribute type
-std::string to_string(FbxNodeAttribute::EType type);
+String to_string(FbxNodeAttribute::EType type);
 
 } // namespace Fbx_utils
 
