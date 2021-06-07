@@ -178,6 +178,7 @@ void FbxLoader::GetVerticesAndIndice(FbxNode *pNode,
 		}
 	}
 	Vector<int> IndexData;
+	sf->begin();
 	int uv_count = 0;
 	for (uint32_t i = 0; i < tCount; ++i) {
 		// For indexing by bone
@@ -450,7 +451,7 @@ void FbxLoader::GetAnimation(
 }
 
 Spatial *FbxLoader::LoadFBX(
-		std::string fileName) {
+		String fileName) {
 	// if exported animation exist
 
 	if (gFbxManager == nullptr) {
@@ -466,8 +467,9 @@ Spatial *FbxLoader::LoadFBX(
 	String clipName = "RootAnim";
 	std::vector<Material> outMaterial;
 	FbxImporter *pImporter = FbxImporter::Create(gFbxManager, "");
-	std::string fbxFileName = fileName;
-	bool bSuccess = pImporter->Initialize(fbxFileName.c_str(), -1, gFbxManager->GetIOSettings());
+	String g_path = ProjectSettings::get_singleton()->globalize_path(fileName);
+	String fbxFileName = g_path;
+	bool bSuccess = pImporter->Initialize(fbxFileName.utf8(), -1, gFbxManager->GetIOSettings());
 	if (!bSuccess)
 		return nullptr;
 
@@ -535,64 +537,6 @@ Spatial *FbxLoader::LoadFBX(
 		mesh_loads = mesh_loads->next();
 	}
 	return root_node;
-}
-
-bool FbxLoader::LoadFBX(
-		SkinnedData &outSkinnedData,
-		const String &clipName,
-		String fileName) {
-	// if exported animation exist
-
-	if (gFbxManager == nullptr) {
-		gFbxManager = FbxManager::Create();
-
-		FbxIOSettings *pIOsettings = FbxIOSettings::Create(gFbxManager, IOSROOT);
-		gFbxManager->SetIOSettings(pIOsettings);
-	}
-
-	FbxImporter *pImporter = FbxImporter::Create(gFbxManager, "");
-	String fbxFileName = fileName + clipName + ".fbx";
-
-	bool bSuccess = pImporter->Initialize(fbxFileName.utf8(), -1, gFbxManager->GetIOSettings());
-	if (!bSuccess)
-		return false;
-
-	FbxScene *pFbxScene = FbxScene::Create(gFbxManager, "");
-	bSuccess = pImporter->Import(pFbxScene);
-	if (!bSuccess)
-		return false;
-
-	pImporter->Destroy();
-
-	FbxAxisSystem sceneAxisSystem = pFbxScene->GetGlobalSettings().GetAxisSystem();
-	FbxAxisSystem::MayaZUp.ConvertScene(pFbxScene); // Delete?
-
-	// Convert quad to triangle
-	FbxGeometryConverter geometryConverter(gFbxManager);
-	geometryConverter.Triangulate(pFbxScene, true);
-
-	// Start to RootNode
-	FbxNode *pFbxRootNode = pFbxScene->GetRootNode();
-	if (pFbxRootNode) {
-		// Animation Data
-		for (int i = 0; i < pFbxRootNode->GetChildCount(); i++) {
-			FbxNode *pFbxChildNode = pFbxRootNode->GetChild(i);
-			FbxMesh *pMesh = (FbxMesh *)pFbxChildNode->GetNodeAttribute();
-			FbxNodeAttribute::EType AttributeType = pMesh->GetAttributeType();
-			if (!pMesh || !AttributeType) {
-				continue;
-			}
-
-			if (AttributeType == FbxNodeAttribute::eMesh) {
-				// Get Animation Clip
-				//GetOnlyAnimation(pFbxScene, pFbxChildNode, outSkinnedData, clipName);
-				GetAnimation(pFbxScene, pFbxChildNode, outSkinnedData, clipName, true);
-			}
-		}
-	}
-
-	//ExportAnimation(outSkinnedData.GetAnimation(clipName), fileName, clipName);
-	return true;
 }
 
 void FbxLoader::GetControlPoints(fbxsdk::FbxNode *pFbxRootNode) {

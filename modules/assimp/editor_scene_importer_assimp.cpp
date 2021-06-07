@@ -29,6 +29,7 @@
 /*************************************************************************/
 
 #include "editor_scene_importer_assimp.h"
+#include "FbxLoader.h"
 #include "core/io/image_loader.h"
 #include "editor/import/resource_importer_scene.h"
 #include "import_utils.h"
@@ -38,8 +39,6 @@
 #include "scene/main/node.h"
 #include "scene/resources/material.h"
 #include "scene/resources/surface_tool.h"
-
-#include "parsers/fbx_loader.hpp"
 #include <assimp/matrix4x4.h>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
@@ -102,7 +101,12 @@ void EditorSceneImporterAssimp::_bind_methods() {
 Node *EditorSceneImporterAssimp::import_scene(const String &p_path, uint32_t p_flags, int p_bake_fps,
 		List<String> *r_missing_deps, Error *r_err) {
 	if (p_path.ends_with(".fbx", true)) {
-		Loader::Fbx_file load(p_path);
+		FbxLoader fbxloader;
+		if(r_err)
+		{
+			*r_err = OK;
+		}
+		return fbxloader.LoadFBX(p_path);
 	}
 	Assimp::Importer importer;
 	importer.SetPropertyBool(AI_CONFIG_PP_FD_REMOVE, true);

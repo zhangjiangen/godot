@@ -132,14 +132,9 @@ public:
 	~FbxLoader();
 
 	// Animation
-	Spatial *LoadFBX(std::string fileName);
+	Spatial *LoadFBX(String fileName);
 	void ProcessSkeletonHierarchy(fbxsdk::FbxNode *root, Spatial *parent_node);
 	void ProcessMeshAndAnimation(fbxsdk::FbxScene *pFbxScene, fbxsdk::FbxNode *root, Spatial *parent_node);
-	// Animation ��
-	bool LoadFBX(
-			SkinnedData &outSkinnedData,
-			const String &clipName,
-			String fileName);
 
 	void GetSkeletonHierarchy(
 			fbxsdk::FbxNode *pNode,
