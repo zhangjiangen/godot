@@ -51,6 +51,7 @@
 #include "scene/gui/viewport_container.h"
 #include "scene/main/canvas_layer.h"
 #include "scene/main/viewport.h"
+#include "scene/resources/dynamic_font.h"
 #include "scene/resources/packed_scene.h"
 
 #include <stdlib.h>
@@ -4109,6 +4110,12 @@ void CanvasItemEditor::_notification(int p_what) {
 		anchors_popup->add_icon_item(get_icon("ControlAlignWide", "EditorIcons"), TTR("Full Rect"), ANCHORS_PRESET_WIDE);
 
 		anchor_mode_button->set_icon(get_icon("Anchor", "EditorIcons"));
+
+		Ref<DynamicFont> font = zoom_reset->get_font("font")->duplicate(false);
+		font->set_outline_size(1);
+		font->set_outline_color(Color(0, 0, 0));
+		zoom_reset->add_font_override("font", font);
+		zoom_reset->add_color_override("font_color", Color(1, 1, 1));
 	}
 
 	if (p_what == NOTIFICATION_VISIBILITY_CHANGED) {
@@ -5252,8 +5259,10 @@ void CanvasItemEditor::_bind_methods() {
 	ClassDB::bind_method("_popup_warning_depop", &CanvasItemEditor::_popup_warning_depop);
 	ClassDB::bind_method(D_METHOD("_selection_result_pressed"), &CanvasItemEditor::_selection_result_pressed);
 	ClassDB::bind_method(D_METHOD("_selection_menu_hide"), &CanvasItemEditor::_selection_menu_hide);
+	ClassDB::bind_method(D_METHOD("get_state"), &CanvasItemEditor::get_state);
 	ClassDB::bind_method(D_METHOD("set_state"), &CanvasItemEditor::set_state);
 	ClassDB::bind_method(D_METHOD("update_viewport"), &CanvasItemEditor::update_viewport);
+	ClassDB::bind_method(D_METHOD("_zoom_on_position"), &CanvasItemEditor::_zoom_on_position);
 
 	ADD_SIGNAL(MethodInfo("item_lock_status_changed"));
 	ADD_SIGNAL(MethodInfo("item_group_status_changed"));
