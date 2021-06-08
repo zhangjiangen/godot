@@ -81,10 +81,10 @@ void FbxLoader::GetSkeletonHierarchy(
 void FbxLoader::ProcessSkeletonHierarchy(fbxsdk::FbxNode *pFbxRootNode, Spatial *parent_node) {
 	for (int i = 0; i < pFbxRootNode->GetChildCount(); i++) {
 		fbxsdk::FbxNode *pFbxChildNode = pFbxRootNode->GetChild(i);
-		fbxsdk::FbxMesh *pMesh = (fbxsdk::FbxMesh *)pFbxChildNode->GetNodeAttribute();
-		fbxsdk::FbxNodeAttribute::EType AttributeType = pMesh->GetAttributeType();
+		fbxsdk::FbxNodeAttribute *pAttribute = pFbxChildNode->GetNodeAttribute();
+		fbxsdk::FbxNodeAttribute::EType AttributeType = pAttribute->GetAttributeType();
 
-		if (!pMesh || !AttributeType) {
+		if (!pAttribute || !AttributeType) {
 			continue;
 		}
 		Spatial *child_node = nullptr;
@@ -117,12 +117,11 @@ void FbxLoader::ProcessSkeletonHierarchy(fbxsdk::FbxNode *pFbxRootNode, Spatial 
 }
 
 void FbxLoader::ProcessMeshAndAnimation(fbxsdk::FbxScene *pFbxScene, fbxsdk::FbxNode *root, Spatial *parent_node) {
-	int ii = root->GetChildCount();
 	for (int i = 0; i < root->GetChildCount(); i++) {
 		fbxsdk::FbxNode *pFbxChildNode = root->GetChild(i);
-		fbxsdk::FbxMesh *pMesh = (fbxsdk::FbxMesh *)pFbxChildNode->GetNodeAttribute();
-		fbxsdk::FbxNodeAttribute::EType AttributeType = pMesh->GetAttributeType();
-		if (!pMesh || !AttributeType) {
+		fbxsdk::FbxNodeAttribute *pAttribute = pFbxChildNode->GetNodeAttribute();
+		fbxsdk::FbxNodeAttribute::EType AttributeType = pAttribute->GetAttributeType();
+		if (!pAttribute || !AttributeType) {
 			continue;
 		}
 
@@ -136,6 +135,7 @@ void FbxLoader::ProcessMeshAndAnimation(fbxsdk::FbxScene *pFbxScene, fbxsdk::Fbx
 			MeshLoadData *meshdata = memnew(MeshLoadData);
 			meshdata->MeshIns = MeshIns;
 			meshdata->MeshName = pFbxChildNode->GetName();
+			meshdata->vertex.instance();
 			TotalMeshLoadDataMap[pFbxChildNode] = meshdata;
 			// Get Animation Clip
 			GetAnimation(pFbxScene, pFbxChildNode, MeshIns, clipName, false);
@@ -145,6 +145,7 @@ void FbxLoader::ProcessMeshAndAnimation(fbxsdk::FbxScene *pFbxScene, fbxsdk::Fbx
 			//outSkinnedData.SetAnimationName(outAnimationName);
 
 			// Get Vertices and indices info
+			fbxsdk::FbxMesh *pMesh = (fbxsdk::FbxMesh *)pAttribute;
 			GetVerticesAndIndice(pFbxChildNode, pMesh, meshdata->vertex);
 
 			GetMaterials(pFbxChildNode, meshdata->material);
@@ -178,7 +179,7 @@ void FbxLoader::GetVerticesAndIndice(FbxNode *pNode,
 		}
 	}
 	Vector<int> IndexData;
-	sf->begin();
+	sf->begin(Mesh::PRIMITIVE_TRIANGLES);
 	int uv_count = 0;
 	for (uint32_t i = 0; i < tCount; ++i) {
 		// For indexing by bone
@@ -196,7 +197,6 @@ void FbxLoader::GetVerticesAndIndice(FbxNode *pNode,
 				FbxVector4 pNormal;
 				pMesh->GetPolygonVertexNormal(i, j, pNormal);
 				// UV
-				float *lUVs = NULL;
 				FbxStringList lUVNames;
 				pMesh->GetUVSetNames(lUVNames);
 				const char *lUVName = NULL;
@@ -358,7 +358,7 @@ void FbxLoader::GetAnimation(
 
 			// Set the Bone Animation Matrix
 			BoneAnimation boneAnim;
-			FbxAnimStack *pCurrAnimStack = pFbxScene->GetSrcObject<FbxAnimStack>(0);
+			//FbxAnimStack *pCurrAnimStack = pFbxScene->GetSrcObject<FbxAnimStack>(0);
 			FbxAnimEvaluator *pSceneEvaluator = pFbxScene->GetAnimationEvaluator();
 
 			SekeletonAnimationData *anim = GetSkinnedAnimationData(SekeletedNode);
@@ -479,7 +479,6 @@ Spatial *FbxLoader::LoadFBX(
 		return nullptr;
 
 	pImporter->Destroy();
-	Spatial *root_node = nullptr;
 	FbxAxisSystem sceneAxisSystem = pFbxScene->GetGlobalSettings().GetAxisSystem();
 	FbxAxisSystem::MayaZUp.ConvertScene(pFbxScene); // Delete?
 
@@ -491,11 +490,11 @@ Spatial *FbxLoader::LoadFBX(
 	fbxsdk::FbxNode *pFbxRootNode = pFbxScene->GetRootNode();
 	if (pFbxRootNode) {
 		RootNode = memnew(Spatial);
+		TotalNodeMap.insert(pFbxRootNode, RootNode);
 		// 解析所有的骨架信息
 		ProcessSkeletonHierarchy(pFbxRootNode, RootNode);
 		// Bone offset, Control point, Vertex, Index Data
 		// And Animation Data
-		int ii = pFbxRootNode->GetChildCount();
 		ProcessMeshAndAnimation(pFbxScene, pFbxRootNode, RootNode);
 		outSkinnedData.Set(mBoneHierarchy, mBoneOffsets, &mAnimations);
 	}
@@ -536,7 +535,7 @@ Spatial *FbxLoader::LoadFBX(
 
 		mesh_loads = mesh_loads->next();
 	}
-	return root_node;
+	return RootNode;
 }
 
 void FbxLoader::GetControlPoints(fbxsdk::FbxNode *pFbxRootNode) {
@@ -622,7 +621,7 @@ void FbxLoader::GetAnimation(
 
 			// Set the Bone Animation Matrix
 			BoneAnimation boneAnim;
-			FbxAnimStack *pCurrAnimStack = pFbxScene->GetSrcObject<FbxAnimStack>(0);
+			//FbxAnimStack *pCurrAnimStack = pFbxScene->GetSrcObject<FbxAnimStack>(0);
 			FbxAnimEvaluator *pSceneEvaluator = pFbxScene->GetAnimationEvaluator();
 
 			// TRqS transformation and Time per frame
