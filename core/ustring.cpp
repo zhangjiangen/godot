@@ -4132,10 +4132,6 @@ String String::get_fbx_basename() const {
 }
 
 String String::change_to_fbx_basename_path() const {
-	String fbx_base_name = get_fbx_basename();
-	if (fbx_base_name.length() > 0) {
-		return get_base_dir() + "/" + fbx_base_name + ".fbx";
-	}
 	return *this;
 }
 String String::get_extension() const {

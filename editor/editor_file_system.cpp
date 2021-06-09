@@ -671,12 +671,7 @@ void EditorFileSystem::_scan_new_dir(EditorFileSystemDirectory *p_dir, DirAccess
 			dirs.push_back(f);
 
 		} else {
-			if (f.ends_with(".fbx")) {
-				String base_name = f.get_fbx_basename();
-				fbxFile[base_name] = f;
-			} else {
-				files.push_back(f);
-			}
+			files.push_back(f);
 		}
 	}
 	Map<String, String>::Element *element = fbxFile.front();

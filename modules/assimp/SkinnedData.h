@@ -77,10 +77,6 @@ public:
 	Transform getBoneOffsets(int num) const;
 	const std::vector<String> &GetBoneName() const;
 
-	void Set(
-			std::vector<int> &boneHierarchy,
-			std::vector<Transform> &boneOffsets,
-			std::map<String, AnimationClip> *animations = nullptr);
 	void SetAnimation(AnimationClip inAnimation, String inClipName);
 	void SetAnimationName(const String &clipName);
 	void SetBoneName(String boneName);

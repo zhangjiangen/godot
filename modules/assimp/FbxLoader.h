@@ -101,7 +101,6 @@ class FbxLoader {
 		std::vector<String> mBoneName;
 		std::vector<int> mBoneHierarchy;
 		std::vector<Transform> mBoneOffsets;
-		SkinnedData mSkinnedData;
 	};
 	struct MeshLoadData {
 		String MeshName;
@@ -121,7 +120,7 @@ class FbxLoader {
 		Ref<Skin> skin;
 	};
 	struct MeshBoneWeightData {
-		std::map<unsigned int, CtrlPoint *> mControlPoints;
+		std::map<unsigned int, CtrlPoint> mControlPoints;
 	};
 	struct SekeletonAnimationData {
 		Map<String, AnimationClip *> mAnimations;
@@ -142,12 +141,6 @@ public:
 			int curIndex, int parentIndex);
 
 	void GetControlPoints(fbxsdk::FbxNode *pFbxRootNode);
-
-	void GetAnimation(
-			fbxsdk::FbxScene *pFbxScene,
-			fbxsdk::FbxNode *pFbxChildNode,
-			SkinnedData &outSkinnedData,
-			const String &ClipName, bool isGetOnlyAnim);
 
 	void GetAnimation(
 			fbxsdk::FbxScene *pFbxScene,
@@ -178,12 +171,11 @@ public:
 private:
 private:
 	std::map<unsigned int, CtrlPoint *> mControlPoints;
-	std::vector<String> mBoneName;
+	//std::vector<String> mBoneName;
 
 	// skinnedData Output
-	std::vector<int> mBoneHierarchy;
-	std::vector<Transform> mBoneOffsets;
-	std::map<String, AnimationClip> mAnimations;
+	//std::vector<int> mBoneHierarchy;
+	//std::vector<Transform> mBoneOffsets;
 	// 通过骨骼获取到骨架家在数据
 	SkinnedLoadData *GetSkinnedLoadData(fbxsdk::FbxNode *fbx_bone_node) {
 		fbxsdk::FbxNode *node = fbx_bone_node;

@@ -100,10 +100,9 @@ void EditorSceneImporterAssimp::_bind_methods() {
 
 Node *EditorSceneImporterAssimp::import_scene(const String &p_path, uint32_t p_flags, int p_bake_fps,
 		List<String> *r_missing_deps, Error *r_err) {
-	if (p_path.ends_with(".fbx", true)) {
+	if (false && p_path.ends_with(".fbx", true)) {
 		FbxLoader fbxloader;
-		if(r_err)
-		{
+		if (r_err) {
 			*r_err = OK;
 		}
 		return fbxloader.LoadFBX(p_path);

@@ -115,16 +115,6 @@ void AnimationClip::Interpolate(float t, std::vector<Transform> &boneTransforms)
 	}
 }
 
-void SkinnedData::Set(
-		std::vector<int> &boneHierarchy,
-		std::vector<Transform> &boneOffsets,
-		std::map<String, AnimationClip> *animations) {
-	mBoneHierarchy = boneHierarchy;
-	mBoneOffsets = boneOffsets;
-	if (animations != nullptr) {
-		mAnimations = (*animations);
-	}
-}
 void SkinnedData::SetAnimation(AnimationClip inAnimation, String ClipName) {
 	mAnimations[ClipName] = inAnimation;
 }

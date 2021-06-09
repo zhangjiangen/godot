@@ -72,7 +72,7 @@ void FbxLoader::GetSkeletonHierarchy(
 	ske->set_bone_rest(curIndex, trans);
 
 	outSkinnedData->mBoneHierarchy.push_back(parentIndex);
-	outSkinnedData->mSkinnedData.SetBoneName(pNode->GetName());
+	outSkinnedData->mBoneName.push_back(pNode->GetName());
 
 	for (int i = 0; i < pNode->GetChildCount(); ++i) {
 		GetSkeletonHierarchy(pNode->GetChild(i), outSkinnedData, outSkinnedData->mBoneHierarchy.size(), curIndex);
@@ -96,6 +96,8 @@ void FbxLoader::ProcessSkeletonHierarchy(fbxsdk::FbxNode *pFbxRootNode, Spatial 
 				child_node = memnew(Skeleton);
 				TotalNodeMap.insert(pFbxChildNode, child_node);
 				GetSkeletonHierarchy(pFbxChildNode, data, 0, -1);
+				// 重新设定谷歌索引大小
+				data->mBoneOffsets.resize(data->mBoneHierarchy.size());
 				child_node->set_name(pFbxChildNode->GetName());
 				parent_node->add_child(child_node);
 				child_node->set_owner(RootNode);
@@ -109,6 +111,7 @@ void FbxLoader::ProcessSkeletonHierarchy(fbxsdk::FbxNode *pFbxRootNode, Spatial 
 				TotalNodeMap.insert(pFbxChildNode, child_node);
 				child_node->set_transform(trans);
 				parent_node->add_child(child_node);
+				child_node->set_owner(RootNode);
 				child_node->set_name(pFbxChildNode->GetName());
 				child_node->set_owner(RootNode);
 			}
@@ -130,7 +133,6 @@ void FbxLoader::ProcessMeshAndAnimation(fbxsdk::FbxScene *pFbxScene, fbxsdk::Fbx
 			MeshInstance *MeshIns = memnew(MeshInstance);
 			Ref<SurfaceTool> st;
 			// To access the bone index directly
-			mBoneOffsets.resize(mBoneHierarchy.size());
 			String clipName = "RootAnim";
 			MeshLoadData *meshdata = memnew(MeshLoadData);
 			meshdata->MeshIns = MeshIns;
@@ -266,15 +268,23 @@ void FbxLoader::GetVerticesAndIndice(FbxNode *pNode,
 		if (bone_weight_data) {
 			Vector<int> bone_index;
 			Vector<float> bone_weight;
-			CtrlPoint *cp = bone_weight_data->mControlPoints[i];
-			for (int b = 0; b < cp->mBoneInfo.size(); ++b) {
-				bone_index.push_back(cp->mBoneInfo[b].mBoneIndices);
-				bone_weight.push_back(cp->mBoneInfo[b].mBoneWeight);
+			CtrlPoint &cp = bone_weight_data->mControlPoints[i];
+			for (int b = 0; b < cp.mBoneInfo.size(); ++b) {
+				bone_index.push_back(cp.mBoneInfo[b].mBoneIndices);
+				bone_weight.push_back(cp.mBoneInfo[b].mBoneWeight);
 			}
 			sf->add_bones(bone_index);
 			sf->add_weights(bone_weight);
 		}
 		sf->add_vertex(ver_base.Pos);
+	}
+	// 保存索引缓冲
+	for (int i = 0; i < IndexData.size(); ++i) {
+		sf->add_index(IndexData[i]);
+	}
+	// 保存切线信息
+	if (uv_count > 0) {
+		sf->generate_tangents();
 	}
 }
 
@@ -309,7 +319,7 @@ void FbxLoader::GetAnimation(
 				continue;
 			}
 			meshdata->skin.instance();
-			SekeletedNode = (Skeleton *)GetSceneNode(pCurrCluster->GetLink());
+			SekeletedNode = (Skeleton *)GetSkeleton(pCurrCluster->GetLink());
 			meshdata->pSekeleton = SekeletedNode;
 			// To find the index that matches the name of the current joint
 			String currJointName = pCurrCluster->GetLink()->GetName();
@@ -351,8 +361,8 @@ void FbxLoader::GetAnimation(
 					currBoneIndexAndWeight.mBoneIndices = currJointIndex;
 					currBoneIndexAndWeight.mBoneWeight = pCurrCluster->GetControlPointWeights()[i];
 
-					meshBoneWeight->mControlPoints[controlPointIndices[i]]->mBoneInfo.push_back(currBoneIndexAndWeight);
-					meshBoneWeight->mControlPoints[controlPointIndices[i]]->mBoneName = currJointName;
+					meshBoneWeight->mControlPoints[controlPointIndices[i]].mBoneInfo.push_back(currBoneIndexAndWeight);
+					meshBoneWeight->mControlPoints[controlPointIndices[i]].mBoneName = currJointName;
 				}
 			}
 
@@ -461,9 +471,6 @@ Spatial *FbxLoader::LoadFBX(
 		gFbxManager->SetIOSettings(pIOsettings);
 	}
 
-	std::vector<CharacterVertex> outVertexVector;
-	std::vector<uint32_t> outIndexVector;
-	SkinnedData outSkinnedData;
 	String clipName = "RootAnim";
 	std::vector<Material> outMaterial;
 	FbxImporter *pImporter = FbxImporter::Create(gFbxManager, "");
@@ -496,7 +503,6 @@ Spatial *FbxLoader::LoadFBX(
 		// Bone offset, Control point, Vertex, Index Data
 		// And Animation Data
 		ProcessMeshAndAnimation(pFbxScene, pFbxRootNode, RootNode);
-		outSkinnedData.Set(mBoneHierarchy, mBoneOffsets, &mAnimations);
 	}
 	// 初始化所有的模型信息
 	Map<fbxsdk::FbxNode *, MeshLoadData *>::Element *mesh_loads = TotalMeshLoadDataMap.front();
@@ -517,20 +523,24 @@ Spatial *FbxLoader::LoadFBX(
 		mesh.instance();
 		Mesh::PrimitiveType primitive = Mesh::PRIMITIVE_TRIANGLES;
 		uint32_t mesh_flags = Mesh::ARRAY_COMPRESS_DEFAULT;
-		mesh->add_surface_from_arrays(primitive, array_mesh, morphs, mesh_flags);
+		mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, array_mesh, morphs, 0);
 		mesh->set_name(data->MeshName);
 		mesh->surface_set_material(0, data->GetMaterial(0));
+		mesh->surface_set_name(0, data->GetMaterial(0)->get_name());
 		if (data->pSekeleton) {
 			data->pSekeleton->add_child(mesh_instance);
 			mesh_instance->set_global_transform(Transform());
 			mesh_instance->set_mesh(mesh);
 			mesh_instance->set_skeleton_path(mesh_instance->get_path_to(data->pSekeleton));
 			mesh_instance->set_skin(data->skin);
+			mesh_instance->set_owner(RootNode);
 		} else {
 			Transform globle_trans = FbxMatrixToTransform(mesh_loads->key()->EvaluateGlobalTransform());
 			Spatial *parentNode = GetSceneNode(mesh_loads->key()->GetParent());
+			mesh_instance->set_mesh(mesh);
 			parentNode->add_child(mesh_instance);
 			mesh_instance->set_global_transform(globle_trans);
+			mesh_instance->set_owner(RootNode);
 		}
 
 		mesh_loads = mesh_loads->next();
@@ -554,162 +564,6 @@ void FbxLoader::GetControlPoints(fbxsdk::FbxNode *pFbxRootNode) {
 		mControlPoints[i] = currCtrlPoint;
 	}
 }
-void FbxLoader::GetAnimation(
-		fbxsdk::FbxScene *pFbxScene,
-		fbxsdk::FbxNode *pFbxChildNode,
-		SkinnedData &outSkinnedData,
-		const String &ClipName,
-		bool isGetOnlyAnim) {
-	fbxsdk::FbxMesh *pMesh = (fbxsdk::FbxMesh *)pFbxChildNode->GetNodeAttribute();
-	FbxAMatrix geometryTransform = GetGeometryTransformation(pFbxChildNode);
-
-	// Animation Data
-	AnimationClip animation;
-
-	// Initialize BoneAnimations
-	animation.BoneAnimations.resize(mBoneName.size());
-
-	// Deformer - Cluster - Link
-	// Deformer
-	for (int deformerIndex = 0; deformerIndex < pMesh->GetDeformerCount(); ++deformerIndex) {
-		FbxSkin *pCurrSkin = reinterpret_cast<FbxSkin *>(pMesh->GetDeformer(deformerIndex, FbxDeformer::eSkin));
-		if (!pCurrSkin) {
-			continue;
-		}
-
-		// Cluster
-		for (int clusterIndex = 0; clusterIndex < pCurrSkin->GetClusterCount(); ++clusterIndex) {
-			FbxCluster *pCurrCluster = pCurrSkin->GetCluster(clusterIndex);
-
-			// To find the index that matches the name of the current joint
-			String currJointName = pCurrCluster->GetLink()->GetName();
-			uint8_t currJointIndex; // current joint index
-			for (currJointIndex = 0; currJointIndex < mBoneName.size(); ++currJointIndex) {
-				if (mBoneName[currJointIndex] == currJointName)
-					break;
-			}
-
-			if (!isGetOnlyAnim) {
-				FbxAMatrix transformMatrix, transformLinkMatrix;
-				FbxAMatrix globalBindposeInverseMatrix;
-
-				transformMatrix = pCurrCluster->GetTransformMatrix(transformMatrix); // The transformation of the mesh at binding time
-				transformLinkMatrix = pCurrCluster->GetTransformLinkMatrix(transformLinkMatrix); // The transformation of the cluster(joint) at binding time from joint space to world space
-				globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * geometryTransform;
-
-				// Set the BoneOffset Matrix
-				Transform boneOffset;
-
-				FbxVector4 T = globalBindposeInverseMatrix.GetT();
-				FbxQuaternion Q = globalBindposeInverseMatrix.GetQ();
-				FbxVector4 S = globalBindposeInverseMatrix.GetS();
-				boneOffset.origin = Vector3(T[0], T[1], T[2]);
-				boneOffset.basis.set_quat_scale(Quat(Q[0], Q[1], Q[2], Q[3]), Vector3(S[0], S[1], S[2]));
-				mBoneOffsets[currJointIndex] = boneOffset;
-
-				// Set the Bone index and weight ./ Max 4
-				int *controlPointIndices = pCurrCluster->GetControlPointIndices();
-				for (int i = 0; i < pCurrCluster->GetControlPointIndicesCount(); ++i) {
-					BoneIndexAndWeight currBoneIndexAndWeight;
-					currBoneIndexAndWeight.mBoneIndices = currJointIndex;
-					currBoneIndexAndWeight.mBoneWeight = pCurrCluster->GetControlPointWeights()[i];
-
-					mControlPoints[controlPointIndices[i]]->mBoneInfo.push_back(currBoneIndexAndWeight);
-					mControlPoints[controlPointIndices[i]]->mBoneName = currJointName;
-				}
-			}
-
-			// Set the Bone Animation Matrix
-			BoneAnimation boneAnim;
-			//FbxAnimStack *pCurrAnimStack = pFbxScene->GetSrcObject<FbxAnimStack>(0);
-			FbxAnimEvaluator *pSceneEvaluator = pFbxScene->GetAnimationEvaluator();
-
-			// TRqS transformation and Time per frame
-			FbxLongLong index;
-			for (index = 0; index < 100; ++index) {
-				FbxTime currTime;
-				currTime.SetFrame(index, FbxTime::eCustom);
-
-				Keyframe key;
-				key.TimePos = static_cast<float>(index) / 8.0f;
-
-				FbxAMatrix currentTransformOffset = pSceneEvaluator->GetNodeGlobalTransform(pFbxChildNode, currTime) * geometryTransform;
-				FbxAMatrix temp = currentTransformOffset.Inverse() * pSceneEvaluator->GetNodeGlobalTransform(pCurrCluster->GetLink(), currTime);
-
-				// Transition, Scaling and Rotation Quaternion
-				FbxVector4 TS = temp.GetT();
-				key.Translation = {
-					static_cast<float>(TS.mData[0]),
-					static_cast<float>(TS.mData[1]),
-					static_cast<float>(TS.mData[2])
-				};
-				TS = temp.GetS();
-				key.Scale = {
-					static_cast<float>(TS.mData[0]),
-					static_cast<float>(TS.mData[1]),
-					static_cast<float>(TS.mData[2])
-				};
-				FbxQuaternion Q = temp.GetQ();
-				key.RotationQuat = {
-					static_cast<float>(Q.mData[0]),
-					static_cast<float>(Q.mData[1]),
-					static_cast<float>(Q.mData[2]),
-					static_cast<float>(Q.mData[3])
-				};
-
-				// Frame does not exist
-				if (index != 0 && boneAnim.Keyframes.back() == key)
-					break;
-
-				boneAnim.Keyframes.push_back(key);
-			}
-			animation.BoneAnimations[currJointIndex] = boneAnim;
-		}
-	}
-
-	BoneAnimation InitBoneAnim;
-
-	// Initialize InitBoneAnim
-	for (int i = 0; i < mBoneName.size(); ++i) {
-		int KeyframeSize = animation.BoneAnimations[i].Keyframes.size();
-		if (KeyframeSize != 0) {
-			for (int j = 0; j < KeyframeSize; ++j) // 60 frames
-			{
-				Keyframe key;
-
-				key.TimePos = static_cast<float>(j / 24.0f);
-				key.Translation = { 0.0f, 0.0f, 0.0f };
-				key.Scale = { 1.0f, 1.0f, 1.0f };
-				key.RotationQuat = { 0.0f, 0.0f, 0.0f, 0.0f };
-				InitBoneAnim.Keyframes.push_back(key);
-			}
-			break;
-		}
-	}
-
-	for (int i = 0; i < mBoneName.size(); ++i) {
-		if (animation.BoneAnimations[i].Keyframes.size() != 0)
-			continue;
-
-		animation.BoneAnimations[i] = InitBoneAnim;
-	}
-
-	if (!isGetOnlyAnim) {
-		BoneIndexAndWeight currBoneIndexAndWeight;
-		currBoneIndexAndWeight.mBoneIndices = 0;
-		currBoneIndexAndWeight.mBoneWeight = 0;
-		for (auto itr = mControlPoints.begin(); itr != mControlPoints.end(); ++itr) {
-			for (uint32_t i = itr->second->mBoneInfo.size(); i <= 4; ++i) {
-				itr->second->mBoneInfo.push_back(currBoneIndexAndWeight);
-			}
-		}
-
-		mAnimations[ClipName] = animation;
-	}
-
-	outSkinnedData.SetAnimation(animation, ClipName);
-}
-
 void FbxLoader::GetMaterials(FbxNode *pNode, std::vector<FbxMaterial> &outMaterial) {
 	int MaterialCount = pNode->GetMaterialCount();
 
@@ -800,7 +654,8 @@ void FbxLoader::GetMaterialAttribute(FbxSurfaceMaterial *pMaterial, FbxMaterial 
 void FbxLoader::GetMaterialTexture(fbxsdk::FbxSurfaceMaterial *pMaterial, FbxMaterial &Mat) {
 	unsigned int textureIndex = 0;
 	FbxProperty property;
-
+	// 设置名称
+	Mat.Name = pMaterial->GetName();
 	FBXSDK_FOR_EACH_TEXTURE(textureIndex) {
 		property = pMaterial->FindProperty(FbxLayerElement::sTextureChannelNames[textureIndex]);
 		if (property.IsValid()) {
@@ -816,7 +671,7 @@ void FbxLoader::GetMaterialTexture(fbxsdk::FbxSurfaceMaterial *pMaterial, FbxMat
 
 						if (fileTexture) {
 							if (textureType == "DiffuseColor") {
-								Mat.Name = fileTexture->GetFileName();
+								//Mat.Name = fileTexture->GetFileName();
 							}
 							/*else if (textureType == "SpecularColor")
 							{
@@ -848,8 +703,4 @@ FbxAMatrix FbxLoader::GetGeometryTransformation(FbxNode *pNode) {
 
 void FbxLoader::clear() {
 	mControlPoints.clear();
-	mBoneName.clear();
-	mBoneHierarchy.clear();
-	mBoneOffsets.clear();
-	mAnimations.clear();
 }
