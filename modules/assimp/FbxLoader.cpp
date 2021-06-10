@@ -61,9 +61,17 @@ static void importVertexColors_byPolygonVertex(fbxsdk::FbxMesh *fbx_mesh,
 }
 
 void FbxLoader::GetSkeletonHierarchy(
-		fbxsdk::FbxNode *pNode,
+		fbxsdk::FbxNode *pNode, fbxsdk::FbxNode *parentNode,
 		SkinnedLoadData *outSkinnedData,
 		int curIndex, int parentIndex) {
+	fbxsdk::FbxNodeAttribute *pAttribute = pNode->GetNodeAttribute();
+	if (pAttribute) {
+		fbxsdk::FbxNodeAttribute::EType AttributeType = pAttribute->GetAttributeType();
+		if (AttributeType == fbxsdk::FbxNodeAttribute::eMesh) {
+			BoneBindMesh.insert(pNode, parentNode);
+		}
+	}
+
 	Skeleton *ske = reinterpret_cast<Skeleton *>(GetSkeleton(pNode));
 	Transform trans = FbxMatrixToTransform(pNode->EvaluateLocalTransform());
 	ske->add_bone(pNode->GetName());
@@ -75,7 +83,7 @@ void FbxLoader::GetSkeletonHierarchy(
 	outSkinnedData->mBoneName.push_back(pNode->GetName());
 
 	for (int i = 0; i < pNode->GetChildCount(); ++i) {
-		GetSkeletonHierarchy(pNode->GetChild(i), outSkinnedData, outSkinnedData->mBoneHierarchy.size(), curIndex);
+		GetSkeletonHierarchy(pNode->GetChild(i), pNode, outSkinnedData, outSkinnedData->mBoneHierarchy.size(), curIndex);
 	}
 }
 void FbxLoader::ProcessSkeletonHierarchy(fbxsdk::FbxNode *pFbxRootNode, Spatial *parent_node) {
@@ -92,10 +100,11 @@ void FbxLoader::ProcessSkeletonHierarchy(fbxsdk::FbxNode *pFbxRootNode, Spatial 
 			case fbxsdk::FbxNodeAttribute::eSkeleton: {
 				// 保存Skin加载数据
 				SkinnedLoadData *data = memnew(SkinnedLoadData);
+				data->RootNode = pFbxChildNode;
 				TotalSkinnedLoadDataMap.insert(pFbxChildNode, data);
 				child_node = memnew(Skeleton);
 				TotalNodeMap.insert(pFbxChildNode, child_node);
-				GetSkeletonHierarchy(pFbxChildNode, data, 0, -1);
+				GetSkeletonHierarchy(pFbxChildNode, nullptr, data, 0, -1);
 				// 重新设定谷歌索引大小
 				data->mBoneOffsets.resize(data->mBoneHierarchy.size());
 				child_node->set_name(pFbxChildNode->GetName());
@@ -129,7 +138,6 @@ void FbxLoader::ProcessMeshAndAnimation(fbxsdk::FbxScene *pFbxScene, fbxsdk::Fbx
 		}
 
 		if (AttributeType == fbxsdk::FbxNodeAttribute::eMesh) {
-			GetControlPoints(pFbxChildNode);
 			MeshInstance *MeshIns = memnew(MeshInstance);
 			Ref<SurfaceTool> st;
 			// To access the bone index directly
@@ -152,7 +160,6 @@ void FbxLoader::ProcessMeshAndAnimation(fbxsdk::FbxScene *pFbxScene, fbxsdk::Fbx
 
 			GetMaterials(pFbxChildNode, meshdata->material);
 
-			break;
 		} else if (AttributeType != fbxsdk::FbxNodeAttribute::eSkeleton) {
 			// 处理所有子节点动画
 			ProcessMeshAndAnimation(pFbxScene, pFbxChildNode, GetSceneNode(pFbxChildNode));
@@ -182,17 +189,17 @@ void FbxLoader::GetVerticesAndIndice(FbxNode *pNode,
 	}
 	Vector<int> IndexData;
 	sf->begin(Mesh::PRIMITIVE_TRIANGLES);
+	int nb_verts = pMesh->GetControlPointsCount();
+	FbxVector4 *v = pMesh->GetControlPoints();
 	int uv_count = 0;
 	for (uint32_t i = 0; i < tCount; ++i) {
 		// For indexing by bone
-		String CurrBoneName = mControlPoints[pMesh->GetPolygonVertex(i, 1)]->mBoneName;
 
 		// Vertex and Index info
 		for (int j = 0; j < 3; ++j) {
 			int controlPointIndex = pMesh->GetPolygonVertex(i, j);
 			// 保存索引信息
 			IndexData.push_back(controlPointIndex);
-			CtrlPoint *CurrCtrlPoint = mControlPoints[controlPointIndex];
 
 			if (!VeetexData.has(controlPointIndex)) {
 				// Normal
@@ -217,7 +224,7 @@ void FbxLoader::GetVerticesAndIndice(FbxNode *pNode,
 					uv_count = lUVNames.GetCount();
 				}
 				// Normal
-				sf->add_normal(Vector3(pNormal.mData[0], pNormal.mData[1], pNormal.mData[2]));
+				sf->add_normal(Vector3(pNormal.mData[0], pNormal.mData[2], pNormal.mData[1]));
 				if (lUVNames.GetCount() > 0) {
 					pMesh->GetPolygonVertexUV(i, j, lUVNames[0], pUVs, bUnMappedUV);
 					Temp.TexC = (Vector2(pUVs[0], 1.0f - pUVs[1]));
@@ -240,9 +247,9 @@ void FbxLoader::GetVerticesAndIndice(FbxNode *pNode,
 				Temp.TexC.y = static_cast<float>(1.0f - pUVs.mData[1]);
 
 				// Position
-				Temp.Pos.x = CurrCtrlPoint->mPosition.x;
-				Temp.Pos.y = CurrCtrlPoint->mPosition.y;
-				Temp.Pos.z = CurrCtrlPoint->mPosition.z;
+				Temp.Pos.x = v[controlPointIndex][0];
+				Temp.Pos.y = v[controlPointIndex][1];
+				Temp.Pos.z = v[controlPointIndex][2];
 				VeetexData.insert(controlPointIndex, Temp);
 			}
 		}
@@ -288,6 +295,15 @@ void FbxLoader::GetVerticesAndIndice(FbxNode *pNode,
 	}
 }
 
+static Transform GetBoneTransformOffset(Skeleton *SekeletedNode, String &name) {
+	Transform rs;
+	int index = SekeletedNode->find_bone(name);
+	while (index != -1) {
+		rs = rs * SekeletedNode->get_bone_rest(index);
+		index = SekeletedNode->get_bone_parent(index);
+	}
+	return SekeletedNode->get_global_transform().inverse() * rs.inverse();
+}
 void FbxLoader::GetAnimation(
 		fbxsdk::FbxScene *pFbxScene,
 		fbxsdk::FbxNode *pFbxChildNode, MeshInstance *meshInstance,
@@ -318,16 +334,14 @@ void FbxLoader::GetAnimation(
 			if (skindata == nullptr) {
 				continue;
 			}
-			meshdata->skin.instance();
+			if (!meshdata->skin.is_valid()) {
+				meshdata->skin.instance();
+			}
 			SekeletedNode = (Skeleton *)GetSkeleton(pCurrCluster->GetLink());
 			meshdata->pSekeleton = SekeletedNode;
 			// To find the index that matches the name of the current joint
 			String currJointName = pCurrCluster->GetLink()->GetName();
-			uint8_t currJointIndex; // current joint index
-			for (currJointIndex = 0; currJointIndex < skindata->mBoneName.size(); ++currJointIndex) {
-				if (skindata->mBoneName[currJointIndex] == currJointName)
-					break;
-			}
+			uint8_t currJointIndex = SekeletedNode->find_bone(currJointName); // current joint index
 
 			{
 				MeshBoneWeightData *meshBoneWeight = GetMeshBoneWeightData(pFbxChildNode);
@@ -343,22 +357,14 @@ void FbxLoader::GetAnimation(
 				globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * geometryTransform;
 
 				// Set the BoneOffset Matrix
-				Transform boneOffset;
-
-				FbxVector4 T = globalBindposeInverseMatrix.GetT();
-				FbxQuaternion Q = globalBindposeInverseMatrix.GetQ();
-				FbxVector4 S = globalBindposeInverseMatrix.GetS();
-				boneOffset.origin = Vector3(T[0], T[1], T[2]);
-				boneOffset.basis.set_quat_scale(Quat(Q[0], Q[1], Q[2], Q[3]), Vector3(S[0], S[1], S[2]));
-				skindata->mBoneOffsets[currJointIndex] = boneOffset;
 				// 设置蒙皮信息
-				meshdata->skin->add_named_bind(currJointName, boneOffset);
+				meshdata->skin->add_named_bind(currJointName, FbxMatrixToTransform(globalBindposeInverseMatrix));
 
 				// Set the Bone index and weight ./ Max 4
 				int *controlPointIndices = pCurrCluster->GetControlPointIndices();
 				for (int i = 0; i < pCurrCluster->GetControlPointIndicesCount(); ++i) {
 					BoneIndexAndWeight currBoneIndexAndWeight;
-					currBoneIndexAndWeight.mBoneIndices = currJointIndex;
+					currBoneIndexAndWeight.mBoneIndices = deformerIndex;
 					currBoneIndexAndWeight.mBoneWeight = pCurrCluster->GetControlPointWeights()[i];
 
 					meshBoneWeight->mControlPoints[controlPointIndices[i]].mBoneInfo.push_back(currBoneIndexAndWeight);
@@ -526,7 +532,7 @@ Spatial *FbxLoader::LoadFBX(
 		mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, array_mesh, morphs, 0);
 		mesh->set_name(data->MeshName);
 		mesh->surface_set_material(0, data->GetMaterial(0));
-		mesh->surface_set_name(0, data->GetMaterial(0)->get_name());
+		mesh->surface_set_name(0, data->MeshName);
 		if (data->pSekeleton) {
 			data->pSekeleton->add_child(mesh_instance);
 			mesh_instance->set_global_transform(Transform());
@@ -548,22 +554,6 @@ Spatial *FbxLoader::LoadFBX(
 	return RootNode;
 }
 
-void FbxLoader::GetControlPoints(fbxsdk::FbxNode *pFbxRootNode) {
-	fbxsdk::FbxMesh *pCurrMesh = (fbxsdk::FbxMesh *)pFbxRootNode->GetNodeAttribute();
-
-	unsigned int ctrlPointCount = pCurrMesh->GetControlPointsCount();
-	for (unsigned int i = 0; i < ctrlPointCount; ++i) {
-		CtrlPoint *currCtrlPoint = new CtrlPoint();
-
-		Vector3 currPosition;
-		currPosition.x = static_cast<float>(pCurrMesh->GetControlPointAt(i).mData[0]);
-		currPosition.y = static_cast<float>(pCurrMesh->GetControlPointAt(i).mData[1]);
-		currPosition.z = static_cast<float>(pCurrMesh->GetControlPointAt(i).mData[2]);
-
-		currCtrlPoint->mPosition = currPosition;
-		mControlPoints[i] = currCtrlPoint;
-	}
-}
 void FbxLoader::GetMaterials(FbxNode *pNode, std::vector<FbxMaterial> &outMaterial) {
 	int MaterialCount = pNode->GetMaterialCount();
 
@@ -702,5 +692,4 @@ FbxAMatrix FbxLoader::GetGeometryTransformation(FbxNode *pNode) {
 }
 
 void FbxLoader::clear() {
-	mControlPoints.clear();
 }

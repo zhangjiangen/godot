@@ -101,6 +101,7 @@ class FbxLoader {
 		std::vector<String> mBoneName;
 		std::vector<int> mBoneHierarchy;
 		std::vector<Transform> mBoneOffsets;
+		fbxsdk::FbxNode *RootNode;
 	};
 	struct MeshLoadData {
 		String MeshName;
@@ -136,11 +137,9 @@ public:
 	void ProcessMeshAndAnimation(fbxsdk::FbxScene *pFbxScene, fbxsdk::FbxNode *root, Spatial *parent_node);
 
 	void GetSkeletonHierarchy(
-			fbxsdk::FbxNode *pNode,
+			fbxsdk::FbxNode *pNode, fbxsdk::FbxNode *parentNode,
 			SkinnedLoadData *outSkinnedData,
 			int curIndex, int parentIndex);
-
-	void GetControlPoints(fbxsdk::FbxNode *pFbxRootNode);
 
 	void GetAnimation(
 			fbxsdk::FbxScene *pFbxScene,
@@ -170,7 +169,6 @@ public:
 
 private:
 private:
-	std::map<unsigned int, CtrlPoint *> mControlPoints;
 	//std::vector<String> mBoneName;
 
 	// skinnedData Output
@@ -243,4 +241,5 @@ private:
 	Map<fbxsdk::FbxNode *, MeshBoneWeightData *> MeshBoneWeight;
 	// 骨架的动画信息
 	Map<Spatial *, SekeletonAnimationData *> SekeletonAnimation;
+	Map<fbxsdk::FbxNode *, fbxsdk::FbxNode *> BoneBindMesh;
 };
