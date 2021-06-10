@@ -94,6 +94,9 @@ protected:
 	void _initialize_skinning(bool p_force_reset = false, bool p_call_attach_skeleton = true);
 	void _update_skinning();
 
+	void _set_material(const Vector<Variant> &p_material);
+	Vector<Variant> _get_material() const;
+
 protected:
 	bool _set(const StringName &p_name, const Variant &p_value);
 	bool _get(const StringName &p_name, Variant &r_ret) const;

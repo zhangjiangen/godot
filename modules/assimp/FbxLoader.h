@@ -190,7 +190,7 @@ private:
 		fbxsdk::FbxQuaternion Q = mat.GetQ();
 		fbxsdk::FbxVector4 S = mat.GetS();
 		Transform ret;
-		ret.origin = Vector3(T[0], T[1], T[2]);
+		ret.origin = Vector3(T[0], T[1], T[2]) * 0.01f;
 		ret.basis.set_quat_scale(Quat(Q[0], Q[1], Q[2], Q[3]), Vector3(S[0], S[1], S[2]));
 		return ret;
 	}

@@ -514,6 +514,21 @@ Ref<Skin> MeshInstance::get_skin() const {
 	return skin;
 }
 
+void MeshInstance::_set_material(const Vector<Variant> &p_material) {
+	materials.clear();
+	for (int i = 0; i < p_material.size(); i++) {
+		Ref<Material> mat = p_material[i];
+		set_surface_material(0, mat);
+	}
+}
+
+Vector<Variant> MeshInstance::_get_material() const {
+	Vector<Variant> rtextures;
+	for (int i = 0; i < materials.size(); i++) {
+		rtextures.push_back(materials[i].get_ref_ptr());
+	}
+	return rtextures;
+}
 void MeshInstance::set_skeleton_path(const NodePath &p_skeleton) {
 	skeleton_path = p_skeleton;
 	if (!is_inside_tree()) {
@@ -829,6 +844,9 @@ void MeshInstance::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_skin", "skin"), &MeshInstance::set_skin);
 	ClassDB::bind_method(D_METHOD("get_skin"), &MeshInstance::get_skin);
 
+	ClassDB::bind_method(D_METHOD("_set_material", "skin"), &MeshInstance::_set_material);
+	ClassDB::bind_method(D_METHOD("_get_material"), &MeshInstance::_get_material);
+
 	ClassDB::bind_method(D_METHOD("get_surface_material_count"), &MeshInstance::get_surface_material_count);
 	ClassDB::bind_method(D_METHOD("set_surface_material", "surface", "material"), &MeshInstance::set_surface_material);
 	ClassDB::bind_method(D_METHOD("get_surface_material", "surface"), &MeshInstance::get_surface_material);
@@ -853,6 +871,7 @@ void MeshInstance::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "skin", PROPERTY_HINT_RESOURCE_TYPE, "Skin"), "set_skin", "get_skin");
 	ADD_PROPERTY(PropertyInfo(Variant::NODE_PATH, "skeleton", PROPERTY_HINT_NODE_PATH_VALID_TYPES, "Skeleton"), "set_skeleton_path", "get_skeleton_path");
 
+	//ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "material", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NOEDITOR | PROPERTY_USAGE_INTERNAL), "_set_material", "_get_material");
 	ADD_GROUP("Software Skinning", "software_skinning");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "software_skinning_transform_normals"), "set_software_skinning_transform_normals", "is_software_skinning_transform_normals_enabled");
 }

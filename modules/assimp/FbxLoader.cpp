@@ -145,6 +145,7 @@ void FbxLoader::ProcessMeshAndAnimation(fbxsdk::FbxScene *pFbxScene, fbxsdk::Fbx
 			MeshLoadData *meshdata = memnew(MeshLoadData);
 			meshdata->MeshIns = MeshIns;
 			meshdata->MeshName = pFbxChildNode->GetName();
+			MeshIns->set_name(pFbxChildNode->GetName());
 			meshdata->vertex.instance();
 			TotalMeshLoadDataMap[pFbxChildNode] = meshdata;
 			// Get Animation Clip
@@ -159,6 +160,8 @@ void FbxLoader::ProcessMeshAndAnimation(fbxsdk::FbxScene *pFbxScene, fbxsdk::Fbx
 			GetVerticesAndIndice(pFbxChildNode, pMesh, meshdata->vertex);
 
 			GetMaterials(pFbxChildNode, meshdata->material);
+			// 处理模型挂载模型
+			ProcessMeshAndAnimation(pFbxScene, pFbxChildNode, GetSceneNode(pFbxChildNode));
 
 		} else if (AttributeType != fbxsdk::FbxNodeAttribute::eSkeleton) {
 			// 处理所有子节点动画
@@ -196,11 +199,15 @@ void FbxLoader::GetVerticesAndIndice(FbxNode *pNode,
 		// For indexing by bone
 
 		// Vertex and Index info
-		for (int j = 0; j < 3; ++j) {
-			int controlPointIndex = pMesh->GetPolygonVertex(i, j);
-			// 保存索引信息
-			IndexData.push_back(controlPointIndex);
 
+		// 保存索引信息
+
+		IndexData.push_back(pMesh->GetPolygonVertex(i, 0));
+		IndexData.push_back(pMesh->GetPolygonVertex(i, 2));
+		IndexData.push_back(pMesh->GetPolygonVertex(i, 1));
+
+		for (int j = 0; j < pMesh->GetPolygonSize(i); ++j) {
+			int controlPointIndex = pMesh->GetPolygonVertex(i, j);
 			if (!VeetexData.has(controlPointIndex)) {
 				// Normal
 				FbxVector4 pNormal;
@@ -283,7 +290,7 @@ void FbxLoader::GetVerticesAndIndice(FbxNode *pNode,
 			sf->add_bones(bone_index);
 			sf->add_weights(bone_weight);
 		}
-		sf->add_vertex(ver_base.Pos);
+		sf->add_vertex(ver_base.Pos * 0.01f);
 	}
 	// 保存索引缓冲
 	for (int i = 0; i < IndexData.size(); ++i) {
@@ -411,6 +418,7 @@ void FbxLoader::GetAnimation(
 					static_cast<float>(TS.mData[1]),
 					static_cast<float>(TS.mData[2])
 				};
+				key.Translation *= 0.01f;
 				TS = temp.GetS();
 				key.Scale = {
 					static_cast<float>(TS.mData[0]),
@@ -549,6 +557,7 @@ Spatial *FbxLoader::LoadFBX(
 			mesh_instance->set_owner(RootNode);
 		}
 
+		mesh_instance->set_surface_material(0, data->GetMaterial(0));
 		mesh_loads = mesh_loads->next();
 	}
 	return RootNode;
