@@ -381,6 +381,8 @@ void FbxLoader::GetAnimation(
 
 			// Set the Bone Animation Matrix
 			BoneAnimation boneAnim;
+			// 保存谷歌名称
+			boneAnim.BoneName = currJointName;
 			//FbxAnimStack *pCurrAnimStack = pFbxScene->GetSrcObject<FbxAnimStack>(0);
 			FbxAnimEvaluator *pSceneEvaluator = pFbxScene->GetAnimationEvaluator();
 
@@ -519,6 +521,7 @@ Spatial *FbxLoader::LoadFBX(
 		ProcessMeshAndAnimation(pFbxScene, pFbxRootNode, RootNode);
 	}
 	// 初始化所有的模型信息
+	bool IsUsingSke = false;
 	Map<fbxsdk::FbxNode *, MeshLoadData *>::Element *mesh_loads = TotalMeshLoadDataMap.front();
 	while (mesh_loads) {
 		MeshLoadData *data = mesh_loads->value();
@@ -548,6 +551,7 @@ Spatial *FbxLoader::LoadFBX(
 			mesh_instance->set_skeleton_path(mesh_instance->get_path_to(data->pSekeleton));
 			mesh_instance->set_skin(data->skin);
 			mesh_instance->set_owner(RootNode);
+			IsUsingSke = true;
 		} else {
 			Transform globle_trans = FbxMatrixToTransform(mesh_loads->key()->EvaluateGlobalTransform());
 			Spatial *parentNode = GetSceneNode(mesh_loads->key()->GetParent());
@@ -560,9 +564,47 @@ Spatial *FbxLoader::LoadFBX(
 		mesh_instance->set_surface_material(0, data->GetMaterial(0));
 		mesh_loads = mesh_loads->next();
 	}
+	AnimationPlayer *animationPlayer = nullptr;
+	if (IsUsingSke) {
+		/* code */
+		animationPlayer = memnew(AnimationPlayer);
+		animationPlayer->set_owner(RootNode);
+		RootNode->add_child(animationPlayer);
+	}
+	Map<Spatial *, SekeletonAnimationData *>::Element *anim_node = SekeletonAnimation.front();
+	while (anim_node) {
+		anim_node->value()->GetAnimation(animationPlayer, RootNode, (Skeleton *)anim_node->key());
+	}
+
 	return RootNode;
 }
+static Ref<Animation> ToGodotAnim(String name, AnimationClip *ac, Spatial *root_node, Skeleton *ske) {
+	Ref<Animation> animation;
+	animation.instance();
+	animation->set_name(name);
+	animation->set_length(ac->GetClipEndTime());
+	for (int ti = 0; ti < ac->BoneAnimations.size(); ++ti) {
+		BoneAnimation &bone_anim = ac->BoneAnimations[ti];
+		// 增加一个轨迹
+		int track_idx = animation->add_track(Animation::TYPE_TRANSFORM);
+		String bone_path = root_node->get_path_to(ske);
+		bone_path += ":" + bone_anim.BoneName;
+		NodePath path = bone_path;
+		animation->track_set_path(track_idx, path);
+		for (int i = 0; i < bone_anim.Keyframes.size(); ++i) {
+			animation->transform_track_insert_key(track_idx, bone_anim.Keyframes[i].TimePos, bone_anim.Keyframes[i].Translation, bone_anim.Keyframes[i].RotationQuat, bone_anim.Keyframes[i].Scale);
+		}
+	}
 
+	return animation;
+}
+void FbxLoader::SekeletonAnimationData::GetAnimation(AnimationPlayer *anim_play, Spatial *root_node, Skeleton *ske) {
+	Map<String, AnimationClip *>::Element *node = mAnimations.front();
+	while (node) {
+		anim_play->add_animation(node->key(), ToGodotAnim(node->key(), node->value(), root_node, ske));
+		node = node->next();
+	}
+}
 void FbxLoader::GetMaterials(FbxNode *pNode, std::vector<FbxMaterial> &outMaterial) {
 	int MaterialCount = pNode->GetMaterialCount();
 

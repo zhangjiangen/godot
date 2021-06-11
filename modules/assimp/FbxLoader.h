@@ -6,6 +6,7 @@
 #include "scene/3d/mesh_instance.h"
 #include "scene/3d/skeleton.h"
 #include "scene/3d/spatial.h"
+#include "scene/animation/animation_player.h"
 #include "scene/resources/surface_tool.h"
 #include <fbxsdk.h>
 #include <map>
@@ -125,6 +126,7 @@ class FbxLoader {
 	};
 	struct SekeletonAnimationData {
 		Map<String, AnimationClip *> mAnimations;
+		void GetAnimation(AnimationPlayer *anim_play, Spatial *root_node, Skeleton *ske);
 	};
 
 public:

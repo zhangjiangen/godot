@@ -378,7 +378,7 @@ Error ResourceImporterTexture::import(const String &p_source_file, const String 
 	bool stream = p_options["stream"];
 	int size_limit = p_options["size_limit"];
 	bool hdr_as_srgb = p_options["process/HDR_as_SRGB"];
-	int normal = p_options["compress/normal_map"];
+    int normal = 0;//p_options["compress/normal_map"];
 	float scale = p_options["svg/scale"];
 	bool force_rgbe = p_options["compress/hdr_mode"];
 	int bptc_ldr = p_options["compress/bptc_ldr"];

@@ -45,7 +45,7 @@ struct BoneAnimation {
 	float GetEndTime() const;
 
 	void Interpolate(float t, Transform &M) const;
-
+	String BoneName;
 	std::vector<Keyframe> Keyframes;
 };
 
