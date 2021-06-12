@@ -2750,7 +2750,7 @@ bool String::ends_with(const String &p_string, bool ignore_case) const {
 		const CharType *s = &operator[](length() - l);
 
 		for (int i = 0; i < l; i++) {
-			if (p[i] != _find_lower(s[i])) {
+			if (_find_lower(p[i]) != _find_lower(s[i])) {
 				return false;
 			}
 		}
@@ -2817,7 +2817,7 @@ bool String::begins_with(const String &p_string, bool ignore_case) const {
 		const CharType *s = &operator[](0);
 
 		for (int i = 0; i < l; i++) {
-			if (p[i] != _find_lower(s[i])) {
+			if (_find_lower(p[i]) != _find_lower(s[i])) {
 				return false;
 			}
 		}

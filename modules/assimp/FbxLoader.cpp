@@ -326,6 +326,8 @@ void FbxLoader::GetAnimation(
 	SkinnedLoadData *skindata = nullptr;
 	// 模型加载数据
 	MeshLoadData *meshdata = GetMeshLoadData(pFbxChildNode);
+	// 保存多边形的变换
+	meshdata->geometryTransform = FbxMatrixToTransform(geometryTransform);
 	// 加载猛批信息
 	for (int deformerIndex = 0; deformerIndex < pMesh->GetDeformerCount(); ++deformerIndex) {
 		FbxSkin *pCurrSkin = reinterpret_cast<FbxSkin *>(pMesh->GetDeformer(deformerIndex, FbxDeformer::eSkin));
@@ -389,6 +391,7 @@ void FbxLoader::GetAnimation(
 			SekeletonAnimationData *anim = GetSkinnedAnimationData(SekeletedNode);
 			if (anim == nullptr) {
 				anim = memnew(SekeletonAnimationData);
+				SekeletonAnimation.insert(SekeletedNode, anim);
 			}
 			// Animation Data
 			AnimationClip *animation = nullptr;
@@ -475,7 +478,59 @@ void FbxLoader::GetAnimation(
 		}
 	}
 }
+#include "core/os/dir_access.h"
+#include "core/os/file_access.h"
+static String find_file(const String &p_base, String material_name, String end_with) {
+	Error err;
+	DirAccessRef dir = DirAccess::open(p_base, &err);
 
+	if (OK == err) {
+		dir->list_dir_begin();
+		String file_name = dir->get_next();
+		while (file_name.length()) {
+			if (dir->current_is_dir() && file_name != "." && file_name != ".." && file_name != "./") {
+				String path = find_file(p_base.plus_file(file_name), material_name, end_with);
+				if (path.length()) {
+					return path;
+				}
+			} else {
+				if (file_name.begins_with(material_name, true) && file_name.get_basename().ends_with(end_with, true)) {
+					return p_base.plus_file(file_name);
+				}
+			}
+			file_name = dir->get_next();
+		}
+	}
+	return String();
+}
+// 加载一个贴图
+static Ref<Texture> LoadTexture(String path, String material_name, String end_with) {
+	String tex_path = find_file(path, material_name, end_with);
+	if (tex_path.length())
+		return ResourceLoader::load(tex_path);
+	return Ref<Texture>();
+}
+// 创建材质
+static Ref<ShaderMaterial> CreateShaderMaterial(String material_path, String mat_name) {
+	Ref<ShaderMaterial> mat;
+	mat.instance();
+	mat->set_name(mat_name);
+	Ref<Shader> shader = ResourceLoader::load("res://MaterialTemplate/PBRBaseScene.tres");
+	mat->set_shader(shader);
+	mat->set_shader_param("Albedo", LoadTexture(material_path, mat_name, "_Albedo"));
+	mat->set_shader_param("NormalR", LoadTexture(material_path, mat_name, "_PBR"));
+	mat->set_shader_param("Mask", LoadTexture(material_path, mat_name, "_REG"));
+	mat->set_shader_param("PaitColor", Color(1, 1, 1, 1));
+	return mat;
+}
+
+Ref<ShaderMaterial> FbxLoader::MeshLoadData::GetShaderMaterial(String load_path, int index) {
+	String mat_name;
+	if (index < this->material.size()) {
+		mat_name = material[index].Name;
+	}
+	return CreateShaderMaterial(load_path, mat_name);
+}
 Spatial *FbxLoader::LoadFBX(
 		String fileName) {
 	// if exported animation exist
@@ -542,11 +597,11 @@ Spatial *FbxLoader::LoadFBX(
 		uint32_t mesh_flags = Mesh::ARRAY_COMPRESS_DEFAULT;
 		mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, array_mesh, morphs, 0);
 		mesh->set_name(data->MeshName);
-		mesh->surface_set_material(0, data->GetMaterial(0));
+		mesh->surface_set_material(0, data->GetShaderMaterial(fileName.get_base_dir(), 0));
 		mesh->surface_set_name(0, data->MeshName);
 		if (data->pSekeleton) {
 			data->pSekeleton->add_child(mesh_instance);
-			mesh_instance->set_global_transform(Transform());
+			mesh_instance->set_transform(Transform());
 			mesh_instance->set_mesh(mesh);
 			mesh_instance->set_skeleton_path(mesh_instance->get_path_to(data->pSekeleton));
 			mesh_instance->set_skin(data->skin);
@@ -568,12 +623,13 @@ Spatial *FbxLoader::LoadFBX(
 	if (IsUsingSke) {
 		/* code */
 		animationPlayer = memnew(AnimationPlayer);
-		animationPlayer->set_owner(RootNode);
 		RootNode->add_child(animationPlayer);
+		animationPlayer->set_owner(RootNode);
 	}
 	Map<Spatial *, SekeletonAnimationData *>::Element *anim_node = SekeletonAnimation.front();
 	while (anim_node) {
 		anim_node->value()->GetAnimation(animationPlayer, RootNode, (Skeleton *)anim_node->key());
+		anim_node = anim_node->next();
 	}
 
 	return RootNode;

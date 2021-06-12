@@ -111,6 +111,8 @@ class FbxLoader {
 		std::vector<FbxMaterial> material;
 		Ref<SurfaceTool> vertex;
 		Vector<Ref<SurfaceTool>> morphs;
+		Transform geometryTransform;
+
 		Ref<SpatialMaterial> GetMaterial(int index) {
 			Ref<SpatialMaterial> spatial_material;
 			spatial_material.instance();
@@ -119,6 +121,7 @@ class FbxLoader {
 			spatial_material->set_name(load_mat.Name);
 			return spatial_material;
 		}
+		Ref<ShaderMaterial> GetShaderMaterial(String load_path, int index);
 		Ref<Skin> skin;
 	};
 	struct MeshBoneWeightData {
