@@ -643,6 +643,10 @@ String _OS::get_user_data_dir() const {
 	return OS::get_singleton()->get_user_data_dir();
 }
 
+String _OS::get_external_data_dir() const {
+	return OS::get_singleton()->get_external_data_dir();
+}
+
 bool _OS::is_debug_build() const {
 #ifdef DEBUG_ENABLED
 	return true;
@@ -743,6 +747,7 @@ void _OS::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_static_memory_peak_usage"), &_OS::get_static_memory_peak_usage);
 
 	ClassDB::bind_method(D_METHOD("get_user_data_dir"), &_OS::get_user_data_dir);
+	ClassDB::bind_method(D_METHOD("get_external_data_dir"), &_OS::get_external_data_dir);
 	ClassDB::bind_method(D_METHOD("get_system_dir", "dir"), &_OS::get_system_dir);
 	ClassDB::bind_method(D_METHOD("get_unique_id"), &_OS::get_unique_id);
 
@@ -2069,7 +2074,7 @@ Variant _ClassDB::instance(const StringName &p_class) const {
 		return Variant();
 	}
 
-	Reference *r = Object::cast_to<Reference>(obj);
+	RefCounted *r = Object::cast_to<RefCounted>(obj);
 	if (r) {
 		return REF(r);
 	} else {
@@ -2415,12 +2420,12 @@ Variant JSONParseResult::get_result() const {
 }
 
 void _JSON::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("print", "value", "indent", "sort_keys"), &_JSON::print, DEFVAL(String()), DEFVAL(false));
+	ClassDB::bind_method(D_METHOD("print", "value", "indent", "sort_keys", "full_precision"), &_JSON::print, DEFVAL(String()), DEFVAL(false), DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("parse", "json"), &_JSON::parse);
 }
 
-String _JSON::print(const Variant &p_value, const String &p_indent, bool p_sort_keys) {
-	return JSON::print(p_value, p_indent, p_sort_keys);
+String _JSON::print(const Variant &p_value, const String &p_indent, bool p_sort_keys, bool p_full_precision) {
+	return JSON::print(p_value, p_indent, p_sort_keys, p_full_precision);
 }
 
 Ref<JSONParseResult> _JSON::parse(const String &p_json) {

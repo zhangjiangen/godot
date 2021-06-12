@@ -32,11 +32,11 @@
 #define CORE_BIND_H
 
 #include "core/io/compression.h"
+#include "core/io/dir_access.h"
+#include "core/io/file_access.h"
 #include "core/io/image.h"
 #include "core/io/resource_loader.h"
 #include "core/io/resource_saver.h"
-#include "core/os/dir_access.h"
-#include "core/os/file_access.h"
 #include "core/os/os.h"
 #include "core/os/semaphore.h"
 #include "core/os/thread.h"
@@ -237,6 +237,7 @@ public:
 	String get_system_dir(SystemDir p_dir) const;
 
 	String get_user_data_dir() const;
+	String get_external_data_dir() const;
 
 	Error set_thread_name(const String &p_name);
 	Thread::ID get_thread_caller_id() const;
@@ -352,8 +353,8 @@ public:
 	_Geometry3D() { singleton = this; }
 };
 
-class _File : public Reference {
-	GDCLASS(_File, Reference);
+class _File : public RefCounted {
+	GDCLASS(_File, RefCounted);
 
 	FileAccess *f = nullptr;
 	bool big_endian = false;
@@ -454,8 +455,8 @@ public:
 VARIANT_ENUM_CAST(_File::ModeFlags);
 VARIANT_ENUM_CAST(_File::CompressionMode);
 
-class _Directory : public Reference {
-	GDCLASS(_Directory, Reference);
+class _Directory : public RefCounted {
+	GDCLASS(_Directory, RefCounted);
 	DirAccess *d;
 	bool dir_open = false;
 
@@ -524,8 +525,8 @@ public:
 	~_Marshalls() { singleton = nullptr; }
 };
 
-class _Mutex : public Reference {
-	GDCLASS(_Mutex, Reference);
+class _Mutex : public RefCounted {
+	GDCLASS(_Mutex, RefCounted);
 	Mutex mutex;
 
 	static void _bind_methods();
@@ -536,8 +537,8 @@ public:
 	void unlock();
 };
 
-class _Semaphore : public Reference {
-	GDCLASS(_Semaphore, Reference);
+class _Semaphore : public RefCounted {
+	GDCLASS(_Semaphore, RefCounted);
 	Semaphore semaphore;
 
 	static void _bind_methods();
@@ -548,8 +549,8 @@ public:
 	void post();
 };
 
-class _Thread : public Reference {
-	GDCLASS(_Thread, Reference);
+class _Thread : public RefCounted {
+	GDCLASS(_Thread, RefCounted);
 
 protected:
 	Variant ret;
@@ -665,8 +666,8 @@ public:
 
 class _JSON;
 
-class JSONParseResult : public Reference {
-	GDCLASS(JSONParseResult, Reference);
+class JSONParseResult : public RefCounted {
+	GDCLASS(JSONParseResult, RefCounted);
 
 	friend class _JSON;
 
@@ -705,7 +706,7 @@ protected:
 public:
 	static _JSON *get_singleton() { return singleton; }
 
-	String print(const Variant &p_value, const String &p_indent = "", bool p_sort_keys = false);
+	String print(const Variant &p_value, const String &p_indent = "", bool p_sort_keys = false, bool p_full_precision = false);
 	Ref<JSONParseResult> parse(const String &p_json);
 
 	_JSON() { singleton = this; }

@@ -31,11 +31,11 @@
 #include "project_manager.h"
 
 #include "core/io/config_file.h"
+#include "core/io/dir_access.h"
+#include "core/io/file_access.h"
 #include "core/io/resource_saver.h"
 #include "core/io/stream_peer_ssl.h"
 #include "core/io/zip_io.h"
-#include "core/os/dir_access.h"
-#include "core/os/file_access.h"
 #include "core/os/keyboard.h"
 #include "core/os/os.h"
 #include "core/string/translation.h"
@@ -2621,7 +2621,7 @@ ProjectManager::ProjectManager() {
 		version_btn = memnew(LinkButton);
 		String hash = String(VERSION_HASH);
 		if (hash.length() != 0) {
-			hash = "." + hash.left(9);
+			hash = " " + vformat("[%s]", hash.left(9));
 		}
 		version_btn->set_text("v" VERSION_FULL_BUILD + hash);
 		// Fade the version label to be less prominent, but still readable.

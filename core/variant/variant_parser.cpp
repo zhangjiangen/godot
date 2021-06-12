@@ -742,7 +742,7 @@ Error VariantParser::parse_value(Token &token, Variant &value, Stream *p_stream,
 				return ERR_PARSE_ERROR;
 			}
 
-			REF ref = REF(Object::cast_to<Reference>(obj));
+			REF ref = REF(Object::cast_to<RefCounted>(obj));
 
 			get_token(p_stream, token, line, r_err_str);
 			if (token.type != TK_COMMA) {
@@ -1516,7 +1516,7 @@ Error VariantWriter::write(const Variant &p_variant, StoreStringFunc p_store_str
 		case Variant::STRING_NAME: {
 			String str = p_variant;
 
-			str = "@\"" + str.c_escape() + "\"";
+			str = "&\"" + str.c_escape() + "\"";
 			p_store_string_func(p_store_string_ud, str);
 
 		} break;

@@ -33,11 +33,11 @@
 #include "core/core_bind.h"
 #include "core/core_string_names.h"
 #include "core/input/input_map.h"
+#include "core/io/dir_access.h"
+#include "core/io/file_access.h"
 #include "core/io/file_access_network.h"
 #include "core/io/file_access_pack.h"
 #include "core/io/marshalls.h"
-#include "core/os/dir_access.h"
-#include "core/os/file_access.h"
 #include "core/os/keyboard.h"
 #include "core/os/os.h"
 #include "core/variant/variant_parser.h"
@@ -62,7 +62,7 @@ String ProjectSettings::localize_path(const String &p_path) const {
 	}
 
 	if (p_path.begins_with("res://") || p_path.begins_with("user://") ||
-			(p_path.is_abs_path() && !p_path.begins_with(resource_path))) {
+			(p_path.is_absolute_path() && !p_path.begins_with(resource_path))) {
 		return p_path.simplify_path();
 	}
 

@@ -301,7 +301,10 @@ private:
 	void set_max_slides(int p_max_slides);
 
 	real_t get_floor_max_angle() const;
-	void set_floor_max_angle(real_t p_floor_max_angle);
+	void set_floor_max_angle(real_t p_radians);
+
+	real_t get_floor_max_angle_degrees() const;
+	void set_floor_max_angle_degrees(real_t p_degrees);
 
 	const Vector2 &get_snap() const;
 	void set_snap(const Vector2 &p_snap);
@@ -335,8 +338,8 @@ public:
 	~CharacterBody2D();
 };
 
-class KinematicCollision2D : public Reference {
-	GDCLASS(KinematicCollision2D, Reference);
+class KinematicCollision2D : public RefCounted {
+	GDCLASS(KinematicCollision2D, RefCounted);
 
 	PhysicsBody2D *owner = nullptr;
 	friend class PhysicsBody2D;

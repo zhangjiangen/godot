@@ -972,7 +972,7 @@ void Variant::call(const StringName &p_method, const Variant **p_args, int p_arg
 			return;
 		}
 #ifdef DEBUG_ENABLED
-		if (EngineDebugger::is_active() && !_get_obj().id.is_reference() && ObjectDB::get_instance(_get_obj().id) == nullptr) {
+		if (EngineDebugger::is_active() && !_get_obj().id.is_ref_counted() && ObjectDB::get_instance(_get_obj().id) == nullptr) {
 			r_error.error = Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL;
 			return;
 		}
@@ -1365,7 +1365,7 @@ static void _register_variant_builtin_methods() {
 	// FIXME: Static function, not sure how to bind
 	//bind_method(String, humanize_size, sarray("size"), varray());
 
-	bind_method(String, is_abs_path, sarray(), varray());
+	bind_method(String, is_absolute_path, sarray(), varray());
 	bind_method(String, is_rel_path, sarray(), varray());
 	bind_method(String, get_base_dir, sarray(), varray());
 	bind_method(String, get_file, sarray(), varray());

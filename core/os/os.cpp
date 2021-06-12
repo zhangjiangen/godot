@@ -32,8 +32,8 @@
 
 #include "core/config/project_settings.h"
 #include "core/input/input.h"
-#include "core/os/dir_access.h"
-#include "core/os/file_access.h"
+#include "core/io/dir_access.h"
+#include "core/io/file_access.h"
 #include "core/os/midi_driver.h"
 #include "core/version_generated.gen.h"
 #include "servers/audio_server.h"
@@ -309,6 +309,11 @@ String OS::get_bundle_resource_dir() const {
 String OS::get_user_data_dir() const {
 	return ".";
 }
+
+// Android OS path to app's external data storage
+String OS::get_external_data_dir() const {
+	return get_user_data_dir();
+};
 
 // Absolute path to res://
 String OS::get_resource_dir() const {

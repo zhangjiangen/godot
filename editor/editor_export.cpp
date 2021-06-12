@@ -33,14 +33,14 @@
 #include "core/config/project_settings.h"
 #include "core/crypto/crypto_core.h"
 #include "core/io/config_file.h"
+#include "core/io/dir_access.h"
+#include "core/io/file_access.h"
 #include "core/io/file_access_encrypted.h"
 #include "core/io/file_access_pack.h" // PACK_HEADER_MAGIC, PACK_FORMAT_VERSION
 #include "core/io/resource_loader.h"
 #include "core/io/resource_saver.h"
 #include "core/io/zip_io.h"
 #include "core/object/script_language.h"
-#include "core/os/dir_access.h"
-#include "core/os/file_access.h"
 #include "core/version.h"
 #include "editor/editor_file_system.h"
 #include "editor/plugins/script_editor_plugin.h"
@@ -151,7 +151,7 @@ void EditorExportPreset::set_export_path(const String &p_path) {
 	export_path = p_path;
 	/* NOTE(SonerSound): if there is a need to implement a PropertyHint that specifically indicates a relative path,
 	 * this should be removed. */
-	if (export_path.is_abs_path()) {
+	if (export_path.is_absolute_path()) {
 		String res_path = OS::get_singleton()->get_resource_dir();
 		export_path = res_path.path_to_file(export_path);
 	}
