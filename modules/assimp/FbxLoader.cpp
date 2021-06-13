@@ -105,6 +105,9 @@ void FbxLoader::ProcessSkeletonHierarchy(fbxsdk::FbxNode *pFbxRootNode, Spatial 
 				child_node = memnew(Skeleton);
 				TotalNodeMap.insert(pFbxChildNode, child_node);
 				GetSkeletonHierarchy(pFbxChildNode, nullptr, data, 0, -1);
+				for (int i = 0; i < pFbxChildNode->GetChildCount(); ++i) {
+					GetSkeletonHierarchy(pFbxChildNode->GetChild(i), pFbxChildNode, data, data->mBoneHierarchy.size(), -1);
+				}
 				// 重新设定谷歌索引大小
 				data->mBoneOffsets.resize(data->mBoneHierarchy.size());
 				child_node->set_name(pFbxChildNode->GetName());
@@ -192,7 +195,6 @@ void FbxLoader::GetVerticesAndIndice(FbxNode *pNode,
 	}
 	Vector<int> IndexData;
 	sf->begin(Mesh::PRIMITIVE_TRIANGLES);
-	int nb_verts = pMesh->GetControlPointsCount();
 	FbxVector4 *v = pMesh->GetControlPoints();
 	int uv_count = 0;
 	for (uint32_t i = 0; i < tCount; ++i) {
@@ -352,142 +354,57 @@ void FbxLoader::GetAnimation(
 			meshdata->pSekeleton = SekeletedNode;
 			// To find the index that matches the name of the current joint
 			String currJointName = pCurrCluster->GetLink()->GetName();
-			uint8_t currJointIndex = SekeletedNode->find_bone(currJointName); // current joint index
 
-			{
-				MeshBoneWeightData *meshBoneWeight = GetMeshBoneWeightData(pFbxChildNode);
-				if (meshBoneWeight == nullptr) {
-					meshBoneWeight = memnew(MeshBoneWeightData);
-					MeshBoneWeight.insert(pFbxChildNode, meshBoneWeight);
-				}
-				FbxAMatrix transformMatrix, transformLinkMatrix;
-				FbxAMatrix globalBindposeInverseMatrix;
-
-				transformMatrix = pCurrCluster->GetTransformMatrix(transformMatrix); // The transformation of the mesh at binding time
-				transformLinkMatrix = pCurrCluster->GetTransformLinkMatrix(transformLinkMatrix); // The transformation of the cluster(joint) at binding time from joint space to world space
-				globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * geometryTransform;
-
-				// Set the BoneOffset Matrix
-				// 设置蒙皮信息
-				meshdata->skin->add_named_bind(currJointName, FbxMatrixToTransform(globalBindposeInverseMatrix));
-
-				// Set the Bone index and weight ./ Max 4
-				int *controlPointIndices = pCurrCluster->GetControlPointIndices();
-				for (int i = 0; i < pCurrCluster->GetControlPointIndicesCount(); ++i) {
-					BoneIndexAndWeight currBoneIndexAndWeight;
-					currBoneIndexAndWeight.mBoneIndices = deformerIndex;
-					currBoneIndexAndWeight.mBoneWeight = pCurrCluster->GetControlPointWeights()[i];
-
-					meshBoneWeight->mControlPoints[controlPointIndices[i]].mBoneInfo.push_back(currBoneIndexAndWeight);
-					meshBoneWeight->mControlPoints[controlPointIndices[i]].mBoneName = currJointName;
-				}
+			MeshBoneWeightData *meshBoneWeight = GetMeshBoneWeightData(pFbxChildNode);
+			if (meshBoneWeight == nullptr) {
+				meshBoneWeight = memnew(MeshBoneWeightData);
+				MeshBoneWeight.insert(pFbxChildNode, meshBoneWeight);
 			}
-			fbxsdk::FbxNode *bone_node = pCurrCluster->GetLink();
-			anim = GetSkinnedAnimationData(SekeletedNode);
-			if (anim == nullptr) {
-				anim = memnew(SekeletonAnimationData);
-				SekeletonAnimation.insert(SekeletedNode, anim);
-			}
-			anim->geometryTransform = geometryTransform;
+			FbxAMatrix transformMatrix, transformLinkMatrix;
+			FbxAMatrix globalBindposeInverseMatrix;
 
-			int nb_stacks = pFbxScene->GetSrcObjectCount<fbxsdk::FbxAnimStack>();
-			FbxAnimEvaluator *pSceneEvaluator = pFbxScene->GetAnimationEvaluator();
-			for (int i = 0; i < nb_stacks; i++) {
-				// Extract the ith animation
-				fbxsdk::FbxObject *obj = pFbxScene->GetSrcObject<fbxsdk::FbxAnimStack>(i);
-				fbxsdk::FbxAnimStack *anim_stack = fbxsdk::FbxCast<fbxsdk::FbxAnimStack>(obj);
-				std::string str(anim_stack->GetName());
-				fbxsdk::FbxTime frame_inter, start, stop;
-				fbxsdk::FbxTime::EMode time_mode = pFbxScene->GetGlobalSettings().GetTimeMode();
+			transformMatrix = pCurrCluster->GetTransformMatrix(transformMatrix); // The transformation of the mesh at binding time
+			transformLinkMatrix = pCurrCluster->GetTransformLinkMatrix(transformLinkMatrix); // The transformation of the cluster(joint) at binding time from joint space to world space
+			globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * geometryTransform;
 
-				// Animation Data
-				AnimationClip *animation = nullptr;
-				if (anim->mAnimations.has(anim_stack->GetName())) {
-					animation = anim->mAnimations.find(anim_stack->GetName())->value();
-				} else {
-					animation = memnew(AnimationClip);
-					// Initialize BoneAnimations
-					animation->BoneAnimations.resize(skindata->mBoneName.size());
-					anim->mAnimations.insert(anim_stack->GetName(), animation);
-				}
+			// Set the BoneOffset Matrix
+			// 设置蒙皮信息
+			meshdata->skin->add_named_bind(currJointName, FbxMatrixToTransform(globalBindposeInverseMatrix));
 
-				const double fps = fbxsdk::FbxTime::GetFrameRate(time_mode) * 8; /* HACK: increase fps to sample more anim frames -----------------------------*/ // ARMA = 4
+			// Set the Bone index and weight ./ Max 4
+			int *controlPointIndices = pCurrCluster->GetControlPointIndices();
+			for (int i = 0; i < pCurrCluster->GetControlPointIndicesCount(); ++i) {
+				BoneIndexAndWeight currBoneIndexAndWeight;
+				currBoneIndexAndWeight.mBoneIndices = deformerIndex;
+				currBoneIndexAndWeight.mBoneWeight = pCurrCluster->GetControlPointWeights()[i];
 
-				frame_inter.SetSecondDouble(1. / fps);
-
-				fbxsdk::FbxTakeInfo *take_info = pFbxScene->GetTakeInfo(anim_stack->GetName());
-				if (take_info) {
-					start = take_info->mLocalTimeSpan.GetStart();
-					stop = take_info->mLocalTimeSpan.GetStop();
-				} else {
-					// Take the time line value
-					fbxsdk::FbxTimeSpan lTimeLineTimeSpan;
-					pFbxScene->GetGlobalSettings().GetTimelineDefaultTimeSpan(lTimeLineTimeSpan);
-
-					start = lTimeLineTimeSpan.GetStart();
-					stop = lTimeLineTimeSpan.GetStop();
-				}
-				BoneAnimation boneAnim;
-				// 保存谷歌名称
-				boneAnim.BoneName = currJointName;
-				for (fbxsdk::FbxTime t = start; t < stop; t += frame_inter) {
-					Keyframe key;
-					fbxsdk::FbxTime local_time = t - start;
-					key.TimePos = local_time.GetSecondDouble();
-
-					fbxsdk::FbxAMatrix currentTransformOffset = pSceneEvaluator->GetNodeGlobalTransform(bone_node, t) * geometryTransform;
-					fbxsdk::FbxAMatrix temp = currentTransformOffset.Inverse() * pSceneEvaluator->GetNodeGlobalTransform(pCurrCluster->GetLink(), t);
-
-					// Transition, Scaling and Rotation Quaternion
-					FbxVector4 TS = temp.GetT();
-					key.Translation = {
-						static_cast<float>(TS.mData[0]),
-						static_cast<float>(TS.mData[1]),
-						static_cast<float>(TS.mData[2])
-					};
-					key.Translation *= 0.01f;
-					TS = temp.GetS();
-					key.Scale = {
-						static_cast<float>(TS.mData[0]),
-						static_cast<float>(TS.mData[1]),
-						static_cast<float>(TS.mData[2])
-					};
-					FbxQuaternion Q = temp.GetQ();
-					key.RotationQuat = {
-						static_cast<float>(Q.mData[0]),
-						static_cast<float>(Q.mData[1]),
-						static_cast<float>(Q.mData[2]),
-						static_cast<float>(Q.mData[3])
-					};
-					boneAnim.Keyframes.push_back(key);
-				}
-				// 保存这个骨骼的动画信息
-				animation->BoneAnimationsForName.insert(currJointName, boneAnim);
+				meshBoneWeight->mControlPoints[controlPointIndices[i]].mBoneInfo.push_back(currBoneIndexAndWeight);
+				meshBoneWeight->mControlPoints[controlPointIndices[i]].mBoneName = currJointName;
 			}
 		}
-	}
-	// 家在变形信息
-	for (int deformerIndex = 0; deformerIndex < pMesh->GetDeformerCount(); ++deformerIndex) {
-		FbxBlendShape *pCurrShape = reinterpret_cast<FbxBlendShape *>(pMesh->GetDeformer(deformerIndex, FbxDeformer::eBlendShape));
-		if (pCurrShape) {
-			String BlendShapeName = pCurrShape->GetName();
-			const int32_t BlendShapeChannelCount = pCurrShape->GetBlendShapeChannelCount();
-			for (int32_t ChannelIndex = 0; ChannelIndex < BlendShapeChannelCount; ++ChannelIndex) {
-				FbxBlendShapeChannel *Channel = pCurrShape->GetBlendShapeChannel(ChannelIndex);
+		// 家在变形信息
+		for (int deformerIndex = 0; deformerIndex < pMesh->GetDeformerCount(); ++deformerIndex) {
+			FbxBlendShape *pCurrShape = reinterpret_cast<FbxBlendShape *>(pMesh->GetDeformer(deformerIndex, FbxDeformer::eBlendShape));
+			if (pCurrShape) {
+				String BlendShapeName = pCurrShape->GetName();
+				const int32_t BlendShapeChannelCount = pCurrShape->GetBlendShapeChannelCount();
+				for (int32_t ChannelIndex = 0; ChannelIndex < BlendShapeChannelCount; ++ChannelIndex) {
+					FbxBlendShapeChannel *Channel = pCurrShape->GetBlendShapeChannel(ChannelIndex);
 
-				if (Channel) {
-					String ChannelName = Channel->GetName();
-					FbxShape *shape = Channel->GetTargetShape(ChannelIndex);
-					if (shape) {
-						shape->GetBaseGeometry();
-						FbxGeometry *fbxGeom = shape->GetBaseGeometry();
-						if (fbxGeom && fbxGeom->GetAttributeType() == FbxNodeAttribute::eMesh) {
-							FbxMesh *meshShape = (FbxMesh *)fbxGeom;
-							// 下面解析模型
-							Ref<SurfaceTool> morph_st;
-							morph_st.instance();
-							GetVerticesAndIndice(pFbxChildNode, meshShape, morph_st);
-							meshdata->morphs.push_back(morph_st);
+					if (Channel) {
+						String ChannelName = Channel->GetName();
+						FbxShape *shape = Channel->GetTargetShape(ChannelIndex);
+						if (shape) {
+							shape->GetBaseGeometry();
+							FbxGeometry *fbxGeom = shape->GetBaseGeometry();
+							if (fbxGeom && fbxGeom->GetAttributeType() == FbxNodeAttribute::eMesh) {
+								FbxMesh *meshShape = (FbxMesh *)fbxGeom;
+								// 下面解析模型
+								Ref<SurfaceTool> morph_st;
+								morph_st.instance();
+								GetVerticesAndIndice(pFbxChildNode, meshShape, morph_st);
+								meshdata->morphs.push_back(morph_st);
+							}
 						}
 					}
 				}
@@ -527,6 +444,80 @@ static Ref<Texture> LoadTexture(String path, String material_name, String end_wi
 		return ResourceLoader::load(tex_path);
 	return Ref<Texture>();
 }
+static void ProcessBoneAnimation(FbxLoader *loader, fbxsdk::FbxScene *pFbxScene, fbxsdk::FbxNode *bone_node, Skeleton *SekeletedNode, FbxLoader::SekeletonAnimationData *anim) {
+	int nb_stacks = pFbxScene->GetSrcObjectCount<fbxsdk::FbxAnimStack>();
+
+	Transform bone_inv_pose = SekeletedNode->get_bone_rest(SekeletedNode->find_bone(bone_node->GetName())).affine_inverse();
+	FbxAnimEvaluator *pSceneEvaluator = pFbxScene->GetAnimationEvaluator();
+	for (int i = 0; i < nb_stacks; i++) {
+		// Extract the ith animation
+		fbxsdk::FbxObject *obj = pFbxScene->GetSrcObject<fbxsdk::FbxAnimStack>(i);
+		fbxsdk::FbxAnimStack *anim_stack = fbxsdk::FbxCast<fbxsdk::FbxAnimStack>(obj);
+		pFbxScene->SetCurrentAnimationStack(anim_stack);
+		std::string str(anim_stack->GetName());
+		fbxsdk::FbxTime frame_inter, start, stop;
+		fbxsdk::FbxTime::EMode time_mode = pFbxScene->GetGlobalSettings().GetTimeMode();
+
+		// Animation Data
+		AnimationClip *animation = nullptr;
+		if (anim->mAnimations.has(anim_stack->GetName())) {
+			animation = anim->mAnimations.find(anim_stack->GetName())->value();
+		} else {
+			animation = memnew(AnimationClip);
+			// Initialize BoneAnimations
+			anim->mAnimations.insert(anim_stack->GetName(), animation);
+		}
+
+		const double fps = fbxsdk::FbxTime::GetFrameRate(time_mode) * 8; /* HACK: increase fps to sample more anim frames -----------------------------*/ // ARMA = 4
+
+		frame_inter.SetSecondDouble(1. / fps);
+
+		fbxsdk::FbxTakeInfo *take_info = pFbxScene->GetTakeInfo(anim_stack->GetName());
+		if (take_info) {
+			start = take_info->mLocalTimeSpan.GetStart();
+			stop = take_info->mLocalTimeSpan.GetStop();
+		} else {
+			// Take the time line value
+			fbxsdk::FbxTimeSpan lTimeLineTimeSpan;
+			pFbxScene->GetGlobalSettings().GetTimelineDefaultTimeSpan(lTimeLineTimeSpan);
+
+			start = lTimeLineTimeSpan.GetStart();
+			stop = lTimeLineTimeSpan.GetStop();
+		}
+		BoneAnimation boneAnim;
+		// 保存谷歌名称
+		boneAnim.BoneName = bone_node->GetName();
+		for (fbxsdk::FbxTime t = start; t < stop; t += frame_inter) {
+			Keyframe key;
+			fbxsdk::FbxTime local_time = t - start;
+			key.TimePos = local_time.GetSecondDouble();
+
+			//fbxsdk::FbxAMatrix currentTransformOffset = pSceneEvaluator->GetNodeGlobalTransform(pFbxChildNode, t) * geometryTransform;
+			//fbxsdk::FbxAMatrix temp = currentTransformOffset.Inverse() * pSceneEvaluator->GetNodeGlobalTransform(pCurrCluster->GetLink(), t);
+			//fbxsdk::FbxAMatrix temp = pSceneEvaluator->GetNodeLocalTransform(bone_node, t);
+			Transform temp = bone_inv_pose * loader->FbxMatrixToTransform(pSceneEvaluator->GetNodeLocalTransform(bone_node, t));
+
+			key.Translation = temp.origin;
+			key.Scale = temp.basis.get_scale();
+			key.RotationQuat = temp.basis.get_rotation_quat();
+			key.RotationQuat.normalize();
+			boneAnim.Keyframes.push_back(key);
+		}
+		// 保存这个骨骼的动画信息
+		animation->BoneAnimationsForName.insert(bone_node->GetName(), boneAnim);
+	}
+	for (int i = 0; i < bone_node->GetChildCount(); i++) {
+		ProcessBoneAnimation(loader, pFbxScene, bone_node->GetChild(i), SekeletedNode, anim);
+	}
+}
+static void ProcessSkeAnimation(fbxsdk::FbxScene *pFbxScene, FbxLoader *loader, Skeleton *SekeletedNode, fbxsdk::FbxNode *root_ske) {
+	FbxLoader::SekeletonAnimationData *anim = loader->GetSkinnedAnimationData(SekeletedNode);
+	if (anim == nullptr) {
+		anim = memnew(FbxLoader::SekeletonAnimationData);
+		loader->SekeletonAnimation.insert(SekeletedNode, anim);
+	}
+	ProcessBoneAnimation(loader, pFbxScene, root_ske, SekeletedNode, anim);
+}
 // 创建材质
 static Ref<ShaderMaterial> CreateShaderMaterial(String material_path, String mat_name) {
 	Ref<ShaderMaterial> mat;
@@ -548,6 +539,7 @@ Ref<ShaderMaterial> FbxLoader::MeshLoadData::GetShaderMaterial(String load_path,
 	}
 	return CreateShaderMaterial(load_path, mat_name);
 }
+
 Spatial *FbxLoader::LoadFBX(
 		String fileName) {
 	// if exported animation exist
@@ -588,6 +580,13 @@ Spatial *FbxLoader::LoadFBX(
 		TotalNodeMap.insert(pFbxRootNode, RootNode);
 		// 解析所有的骨架信息
 		ProcessSkeletonHierarchy(pFbxRootNode, RootNode);
+		Map<fbxsdk::FbxNode *, SkinnedLoadData *>::Element *node = TotalSkinnedLoadDataMap.front();
+		while (node) {
+			for (int i = 0; i < node->key()->GetChildCount(); i++) {
+				ProcessSkeAnimation(pFbxScene, this, (Skeleton *)GetSkeleton(node->key()), node->key()->GetChild(i));
+			}
+			node = node->next();
+		}
 		// Bone offset, Control point, Vertex, Index Data
 		// And Animation Data
 		ProcessMeshAndAnimation(pFbxScene, pFbxRootNode, RootNode);
@@ -611,8 +610,6 @@ Spatial *FbxLoader::LoadFBX(
 			morphs.append(m->commit_to_arrays());
 		}
 		mesh.instance();
-		Mesh::PrimitiveType primitive = Mesh::PRIMITIVE_TRIANGLES;
-		uint32_t mesh_flags = Mesh::ARRAY_COMPRESS_DEFAULT;
 		mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, array_mesh, morphs, 0);
 		mesh->set_name(data->MeshName);
 		mesh->surface_set_material(0, data->GetShaderMaterial(fileName.get_base_dir(), 0));
@@ -620,7 +617,7 @@ Spatial *FbxLoader::LoadFBX(
 		if (data->pSekeleton) {
 			data->pSekeleton->add_child(mesh_instance);
 			//mesh_instance->set_transform(Transform());
-			mesh_instance->set_transform(data->geometryTransform);
+			//mesh_instance->set_transform(data->geometryTransform);
 			mesh_instance->set_mesh(mesh);
 			mesh_instance->set_skeleton_path(mesh_instance->get_path_to(data->pSekeleton));
 			mesh_instance->set_skin(data->skin);
@@ -658,8 +655,9 @@ static Ref<Animation> ToGodotAnim(String name, AnimationClip *ac, Spatial *root_
 	animation.instance();
 	animation->set_name(name);
 	animation->set_length(ac->GetClipEndTime());
-	for (int ti = 0; ti < ac->BoneAnimations.size(); ++ti) {
-		BoneAnimation &bone_anim = ac->BoneAnimations[ti];
+	Map<String, BoneAnimation>::Element *node = ac->BoneAnimationsForName.front();
+	while (node) {
+		BoneAnimation &bone_anim = node->value();
 		// 增加一个轨迹
 		int track_idx = animation->add_track(Animation::TYPE_TRANSFORM);
 		String bone_path = root_node->get_path_to(ske);
@@ -669,6 +667,7 @@ static Ref<Animation> ToGodotAnim(String name, AnimationClip *ac, Spatial *root_
 		for (int i = 0; i < bone_anim.Keyframes.size(); ++i) {
 			animation->transform_track_insert_key(track_idx, bone_anim.Keyframes[i].TimePos, bone_anim.Keyframes[i].Translation, bone_anim.Keyframes[i].RotationQuat, bone_anim.Keyframes[i].Scale);
 		}
+		node = node->next();
 	}
 
 	return animation;

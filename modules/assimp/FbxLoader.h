@@ -98,6 +98,7 @@ struct FbxMaterial {
 	Transform MatTransform;
 };
 class FbxLoader {
+public:
 	struct SkinnedLoadData {
 		std::vector<String> mBoneName;
 		std::vector<int> mBoneHierarchy;
@@ -174,8 +175,18 @@ public:
 
 	void clear();
 
-private:
-private:
+public:
+	SekeletonAnimationData *GetSkinnedAnimationData(Spatial *node) {
+		if (SekeletonAnimation.has(node)) {
+			return SekeletonAnimation.find(node)->value();
+		}
+		return nullptr;
+	}
+
+	// 骨架的动画信息
+	Map<Spatial *, SekeletonAnimationData *> SekeletonAnimation;
+
+public:
 	//std::vector<String> mBoneName;
 
 	// skinnedData Output
@@ -219,12 +230,6 @@ private:
 		}
 		return nullptr;
 	}
-	SekeletonAnimationData *GetSkinnedAnimationData(Spatial *node) {
-		if (SekeletonAnimation.has(node)) {
-			return SekeletonAnimation.find(node)->value();
-		}
-		return nullptr;
-	}
 	// 获取模型的谷歌权重信息
 	MeshBoneWeightData *GetMeshBoneWeightData(fbxsdk::FbxNode *fbx_bone_node) {
 		if (MeshBoneWeight.has(fbx_bone_node)) {
@@ -246,7 +251,5 @@ private:
 	Map<fbxsdk::FbxNode *, Spatial *> TotalNodeMap;
 	// 模型的骨骼权重信息
 	Map<fbxsdk::FbxNode *, MeshBoneWeightData *> MeshBoneWeight;
-	// 骨架的动画信息
-	Map<Spatial *, SekeletonAnimationData *> SekeletonAnimation;
 	Map<fbxsdk::FbxNode *, fbxsdk::FbxNode *> BoneBindMesh;
 };

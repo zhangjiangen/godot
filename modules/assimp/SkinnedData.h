@@ -59,9 +59,6 @@ struct AnimationClip {
 	float GetClipStartTime() const;
 	float GetClipEndTime() const;
 
-	void Interpolate(float t, std::vector<Transform> &boneTransforms) const;
-
-	std::vector<BoneAnimation> BoneAnimations;
 	Map<String, BoneAnimation> BoneAnimationsForName;
 };
 
@@ -85,12 +82,6 @@ public:
 	void SetSubmeshOffset(int num);
 
 	void clear();
-
-	// In a real project, you'd want to cache the result if there was a chance
-	// that you were calling this several times with the same clipName at
-	// the same timePos.
-	void GetFinalTransforms(const String &clipName, float timePos,
-			std::vector<Transform> &finalTransforms) const;
 
 private:
 	std::vector<String> mBoneName;
