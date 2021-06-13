@@ -178,7 +178,7 @@ void FbxLoader::GetVerticesAndIndice(FbxNode *pNode,
 	// 找到对应的骨骼权重信息
 	MeshBoneWeightData *bone_weight_data = GetMeshBoneWeightData(pNode);
 	uint32_t tCount = pMesh->GetPolygonCount(); // Triangle
-	Map<int, Vertex> VeetexData;
+	Map<int, Vertex> VertexData;
 
 	Map<int, Color> color;
 	// 获取顶点颜色信息
@@ -210,7 +210,7 @@ void FbxLoader::GetVerticesAndIndice(FbxNode *pNode,
 
 		for (int j = 0; j < pMesh->GetPolygonSize(i); ++j) {
 			int controlPointIndex = pMesh->GetPolygonVertex(i, j);
-			if (!VeetexData.has(controlPointIndex)) {
+			if (!VertexData.has(controlPointIndex)) {
 				// Normal
 				FbxVector4 pNormal;
 				pMesh->GetPolygonVertexNormal(i, j, pNormal);
@@ -229,11 +229,12 @@ void FbxLoader::GetVerticesAndIndice(FbxNode *pNode,
 				}
 
 				Vertex Temp;
+				Temp.vertexID = controlPointIndex;
 				if (lUVNames.GetCount() > uv_count) {
 					uv_count = lUVNames.GetCount();
 				}
 				// Normal
-				sf->add_normal(Vector3(pNormal.mData[0], pNormal.mData[2], pNormal.mData[1]));
+				Temp.Normal = (Vector3(pNormal.mData[0], pNormal.mData[2], pNormal.mData[1]));
 				if (lUVNames.GetCount() > 0) {
 					pMesh->GetPolygonVertexUV(i, j, lUVNames[0], pUVs, bUnMappedUV);
 					Temp.TexC = (Vector2(pUVs[0], 1.0f - pUVs[1]));
@@ -259,12 +260,12 @@ void FbxLoader::GetVerticesAndIndice(FbxNode *pNode,
 				Temp.Pos.x = v[controlPointIndex][0];
 				Temp.Pos.y = v[controlPointIndex][1];
 				Temp.Pos.z = v[controlPointIndex][2];
-				VeetexData.insert(controlPointIndex, Temp);
+				VertexData.insert(controlPointIndex, Temp);
 			}
 		}
 	}
-	for (int i = 0; i < VeetexData.size(); ++i) {
-		Vertex ver_base = VeetexData[i];
+	for (int i = 0; i < VertexData.size(); ++i) {
+		Vertex ver_base = VertexData[i];
 		sf->add_normal(ver_base.Normal);
 		if (uv_count > 0) {
 			sf->add_uv(ver_base.TexC);
@@ -284,7 +285,9 @@ void FbxLoader::GetVerticesAndIndice(FbxNode *pNode,
 		if (bone_weight_data) {
 			Vector<int> bone_index;
 			Vector<float> bone_weight;
-			CtrlPoint &cp = bone_weight_data->mControlPoints[i];
+			CtrlPoint &cp = bone_weight_data->mControlPoints[ver_base.vertexID];
+			// 进行一下排序
+			cp.SortBlendingInfoByWeight();
 			for (int b = 0; b < cp.mBoneInfo.size(); ++b) {
 				bone_index.push_back(cp.mBoneInfo[b].mBoneIndices);
 				bone_weight.push_back(cp.mBoneInfo[b].mBoneWeight);
@@ -333,6 +336,7 @@ void FbxLoader::GetAnimation(
 	SekeletonAnimationData *anim = nullptr;
 
 	// 加载猛批信息
+
 	for (int deformerIndex = 0; deformerIndex < pMesh->GetDeformerCount(); ++deformerIndex) {
 		FbxSkin *pCurrSkin = reinterpret_cast<FbxSkin *>(pMesh->GetDeformer(deformerIndex, FbxDeformer::eSkin));
 		if (!pCurrSkin) {
@@ -340,6 +344,7 @@ void FbxLoader::GetAnimation(
 		}
 
 		// Cluster
+
 		for (int clusterIndex = 0; clusterIndex < pCurrSkin->GetClusterCount(); ++clusterIndex) {
 			FbxCluster *pCurrCluster = pCurrSkin->GetCluster(clusterIndex);
 
@@ -375,11 +380,18 @@ void FbxLoader::GetAnimation(
 			int *controlPointIndices = pCurrCluster->GetControlPointIndices();
 			for (int i = 0; i < pCurrCluster->GetControlPointIndicesCount(); ++i) {
 				BoneIndexAndWeight currBoneIndexAndWeight;
-				currBoneIndexAndWeight.mBoneIndices = deformerIndex;
+				currBoneIndexAndWeight.mBoneIndices = clusterIndex;
 				currBoneIndexAndWeight.mBoneWeight = pCurrCluster->GetControlPointWeights()[i];
-
-				meshBoneWeight->mControlPoints[controlPointIndices[i]].mBoneInfo.push_back(currBoneIndexAndWeight);
-				meshBoneWeight->mControlPoints[controlPointIndices[i]].mBoneName = currJointName;
+				int vertex_index = controlPointIndices[i];
+				Map<unsigned int, CtrlPoint>::Element *p_find = meshBoneWeight->mControlPoints.find(vertex_index);
+				if (p_find) {
+					p_find->value().mBoneInfo.push_back(currBoneIndexAndWeight);
+				} else {
+					CtrlPoint temp_p;
+					temp_p.mBoneName = currJointName;
+					temp_p.mBoneInfo.push_back(currBoneIndexAndWeight);
+					meshBoneWeight->mControlPoints.insert(vertex_index, temp_p);
+				}
 			}
 		}
 		// 家在变形信息
@@ -567,7 +579,7 @@ Spatial *FbxLoader::LoadFBX(
 
 	pImporter->Destroy();
 	FbxAxisSystem sceneAxisSystem = pFbxScene->GetGlobalSettings().GetAxisSystem();
-	FbxAxisSystem::MayaZUp.ConvertScene(pFbxScene); // Delete?
+	FbxAxisSystem::OpenGL.ConvertScene(pFbxScene); // Delete?
 
 	// Convert quad to triangle
 	FbxGeometryConverter geometryConverter(gFbxManager);
@@ -647,7 +659,7 @@ Spatial *FbxLoader::LoadFBX(
 		anim_node->value()->GetAnimation(animationPlayer, RootNode, (Skeleton *)anim_node->key());
 		anim_node = anim_node->next();
 	}
-
+	pFbxScene->Destroy();
 	return RootNode;
 }
 static Ref<Animation> ToGodotAnim(String name, AnimationClip *ac, Spatial *root_node, Skeleton *ske) {

@@ -42,8 +42,10 @@ struct Vertex {
 	Vector2 TexC2;
 	Vector2 TexC3;
 	Vector2 TexC4;
+	int vertexID;
 
-	bool operator==(const Vertex &other) const {
+	bool
+	operator==(const Vertex &other) const {
 		if (Pos.x != other.Pos.x || Pos.y != other.Pos.y || Pos.z != other.Pos.z)
 			return false;
 
@@ -126,7 +128,7 @@ public:
 		Ref<Skin> skin;
 	};
 	struct MeshBoneWeightData {
-		std::map<unsigned int, CtrlPoint> mControlPoints;
+		Map<unsigned int, CtrlPoint> mControlPoints;
 	};
 	struct SekeletonAnimationData {
 		Map<String, AnimationClip *> mAnimations;
