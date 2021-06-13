@@ -2,6 +2,7 @@
 #define SKINNEDDATA_H_
 
 #include "MathHelper.h"
+#include "core/map.h"
 #include "core/math/plane.h"
 #include "core/math/transform.h"
 #include "core/math/vector3.h"
@@ -61,6 +62,7 @@ struct AnimationClip {
 	void Interpolate(float t, std::vector<Transform> &boneTransforms) const;
 
 	std::vector<BoneAnimation> BoneAnimations;
+	Map<String, BoneAnimation> BoneAnimationsForName;
 };
 
 class SkinnedData {

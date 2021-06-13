@@ -1,0 +1,16 @@
+[entry]
+
+Windows.64="res://addons/gdprocmesh/bin/win64/libgdprocmesh.dll"
+X11.64="res://addons/gdprocmesh/bin/x11/libgdprocmesh.so"
+OSX.64="res://addons/gdprocmesh/bin/osx/libgdprocmesh.dylib"
+
+[dependencies]
+
+Windows.64=[  ]
+
+[general]
+
+singleton=false
+load_once=true
+symbol_prefix="godot_"
+reloadable=false

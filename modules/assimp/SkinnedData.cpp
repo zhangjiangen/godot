@@ -16,9 +16,10 @@ float BoneAnimation::GetStartTime() const {
 }
 float BoneAnimation::GetEndTime() const {
 	// Keyframes are sorted by time, so last keyframe gives end time.
-	float f = Keyframes.back().TimePos;
+	if (Keyframes.size() > 0)
+		return Keyframes.back().TimePos;
 
-	return f;
+	return 0.0f;
 }
 float AnimationClip::GetClipStartTime() const {
 	// Find smallest start time over all bones in this clip.

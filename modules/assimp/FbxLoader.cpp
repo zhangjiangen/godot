@@ -328,6 +328,8 @@ void FbxLoader::GetAnimation(
 	MeshLoadData *meshdata = GetMeshLoadData(pFbxChildNode);
 	// 保存多边形的变换
 	meshdata->geometryTransform = FbxMatrixToTransform(geometryTransform);
+	SekeletonAnimationData *anim = nullptr;
+
 	// 加载猛批信息
 	for (int deformerIndex = 0; deformerIndex < pMesh->GetDeformerCount(); ++deformerIndex) {
 		FbxSkin *pCurrSkin = reinterpret_cast<FbxSkin *>(pMesh->GetDeformer(deformerIndex, FbxDeformer::eSkin));
@@ -380,71 +382,88 @@ void FbxLoader::GetAnimation(
 					meshBoneWeight->mControlPoints[controlPointIndices[i]].mBoneName = currJointName;
 				}
 			}
-
-			// Set the Bone Animation Matrix
-			BoneAnimation boneAnim;
-			// 保存谷歌名称
-			boneAnim.BoneName = currJointName;
-			//FbxAnimStack *pCurrAnimStack = pFbxScene->GetSrcObject<FbxAnimStack>(0);
-			FbxAnimEvaluator *pSceneEvaluator = pFbxScene->GetAnimationEvaluator();
-
-			SekeletonAnimationData *anim = GetSkinnedAnimationData(SekeletedNode);
+			fbxsdk::FbxNode *bone_node = pCurrCluster->GetLink();
+			anim = GetSkinnedAnimationData(SekeletedNode);
 			if (anim == nullptr) {
 				anim = memnew(SekeletonAnimationData);
 				SekeletonAnimation.insert(SekeletedNode, anim);
 			}
-			// Animation Data
-			AnimationClip *animation = nullptr;
-			if (anim->mAnimations.has(ClipName)) {
-				animation = anim->mAnimations.find(ClipName)->value();
-			} else {
-				animation = memnew(AnimationClip);
-				// Initialize BoneAnimations
-				animation->BoneAnimations.resize(skindata->mBoneName.size());
-				anim->mAnimations.insert(ClipName, animation);
+			anim->geometryTransform = geometryTransform;
+
+			int nb_stacks = pFbxScene->GetSrcObjectCount<fbxsdk::FbxAnimStack>();
+			FbxAnimEvaluator *pSceneEvaluator = pFbxScene->GetAnimationEvaluator();
+			for (int i = 0; i < nb_stacks; i++) {
+				// Extract the ith animation
+				fbxsdk::FbxObject *obj = pFbxScene->GetSrcObject<fbxsdk::FbxAnimStack>(i);
+				fbxsdk::FbxAnimStack *anim_stack = fbxsdk::FbxCast<fbxsdk::FbxAnimStack>(obj);
+				std::string str(anim_stack->GetName());
+				fbxsdk::FbxTime frame_inter, start, stop;
+				fbxsdk::FbxTime::EMode time_mode = pFbxScene->GetGlobalSettings().GetTimeMode();
+
+				// Animation Data
+				AnimationClip *animation = nullptr;
+				if (anim->mAnimations.has(anim_stack->GetName())) {
+					animation = anim->mAnimations.find(anim_stack->GetName())->value();
+				} else {
+					animation = memnew(AnimationClip);
+					// Initialize BoneAnimations
+					animation->BoneAnimations.resize(skindata->mBoneName.size());
+					anim->mAnimations.insert(anim_stack->GetName(), animation);
+				}
+
+				const double fps = fbxsdk::FbxTime::GetFrameRate(time_mode) * 8; /* HACK: increase fps to sample more anim frames -----------------------------*/ // ARMA = 4
+
+				frame_inter.SetSecondDouble(1. / fps);
+
+				fbxsdk::FbxTakeInfo *take_info = pFbxScene->GetTakeInfo(anim_stack->GetName());
+				if (take_info) {
+					start = take_info->mLocalTimeSpan.GetStart();
+					stop = take_info->mLocalTimeSpan.GetStop();
+				} else {
+					// Take the time line value
+					fbxsdk::FbxTimeSpan lTimeLineTimeSpan;
+					pFbxScene->GetGlobalSettings().GetTimelineDefaultTimeSpan(lTimeLineTimeSpan);
+
+					start = lTimeLineTimeSpan.GetStart();
+					stop = lTimeLineTimeSpan.GetStop();
+				}
+				BoneAnimation boneAnim;
+				// 保存谷歌名称
+				boneAnim.BoneName = currJointName;
+				for (fbxsdk::FbxTime t = start; t < stop; t += frame_inter) {
+					Keyframe key;
+					fbxsdk::FbxTime local_time = t - start;
+					key.TimePos = local_time.GetSecondDouble();
+
+					fbxsdk::FbxAMatrix currentTransformOffset = pSceneEvaluator->GetNodeGlobalTransform(bone_node, t) * geometryTransform;
+					fbxsdk::FbxAMatrix temp = currentTransformOffset.Inverse() * pSceneEvaluator->GetNodeGlobalTransform(pCurrCluster->GetLink(), t);
+
+					// Transition, Scaling and Rotation Quaternion
+					FbxVector4 TS = temp.GetT();
+					key.Translation = {
+						static_cast<float>(TS.mData[0]),
+						static_cast<float>(TS.mData[1]),
+						static_cast<float>(TS.mData[2])
+					};
+					key.Translation *= 0.01f;
+					TS = temp.GetS();
+					key.Scale = {
+						static_cast<float>(TS.mData[0]),
+						static_cast<float>(TS.mData[1]),
+						static_cast<float>(TS.mData[2])
+					};
+					FbxQuaternion Q = temp.GetQ();
+					key.RotationQuat = {
+						static_cast<float>(Q.mData[0]),
+						static_cast<float>(Q.mData[1]),
+						static_cast<float>(Q.mData[2]),
+						static_cast<float>(Q.mData[3])
+					};
+					boneAnim.Keyframes.push_back(key);
+				}
+				// 保存这个骨骼的动画信息
+				animation->BoneAnimationsForName.insert(currJointName, boneAnim);
 			}
-
-			// TRqS transformation and Time per frame
-			FbxLongLong index;
-			for (index = 0; index < 100; ++index) {
-				FbxTime currTime;
-				currTime.SetFrame(index, FbxTime::eCustom);
-
-				Keyframe key;
-				key.TimePos = static_cast<float>(index) / 8.0f;
-
-				FbxAMatrix currentTransformOffset = pSceneEvaluator->GetNodeGlobalTransform(pFbxChildNode, currTime) * geometryTransform;
-				FbxAMatrix temp = currentTransformOffset.Inverse() * pSceneEvaluator->GetNodeGlobalTransform(pCurrCluster->GetLink(), currTime);
-
-				// Transition, Scaling and Rotation Quaternion
-				FbxVector4 TS = temp.GetT();
-				key.Translation = {
-					static_cast<float>(TS.mData[0]),
-					static_cast<float>(TS.mData[1]),
-					static_cast<float>(TS.mData[2])
-				};
-				key.Translation *= 0.01f;
-				TS = temp.GetS();
-				key.Scale = {
-					static_cast<float>(TS.mData[0]),
-					static_cast<float>(TS.mData[1]),
-					static_cast<float>(TS.mData[2])
-				};
-				FbxQuaternion Q = temp.GetQ();
-				key.RotationQuat = {
-					static_cast<float>(Q.mData[0]),
-					static_cast<float>(Q.mData[1]),
-					static_cast<float>(Q.mData[2]),
-					static_cast<float>(Q.mData[3])
-				};
-
-				// Frame does not exist
-				if (index != 0 && boneAnim.Keyframes.back() == key)
-					break;
-
-				boneAnim.Keyframes.push_back(key);
-			}
-			animation->BoneAnimations[currJointIndex] = boneAnim;
 		}
 	}
 	// 家在变形信息
@@ -473,8 +492,6 @@ void FbxLoader::GetAnimation(
 					}
 				}
 			}
-
-			continue;
 		}
 	}
 }
@@ -575,6 +592,7 @@ Spatial *FbxLoader::LoadFBX(
 		// And Animation Data
 		ProcessMeshAndAnimation(pFbxScene, pFbxRootNode, RootNode);
 	}
+
 	// 初始化所有的模型信息
 	bool IsUsingSke = false;
 	Map<fbxsdk::FbxNode *, MeshLoadData *>::Element *mesh_loads = TotalMeshLoadDataMap.front();
@@ -601,7 +619,8 @@ Spatial *FbxLoader::LoadFBX(
 		mesh->surface_set_name(0, data->MeshName);
 		if (data->pSekeleton) {
 			data->pSekeleton->add_child(mesh_instance);
-			mesh_instance->set_transform(Transform());
+			//mesh_instance->set_transform(Transform());
+			mesh_instance->set_transform(data->geometryTransform);
 			mesh_instance->set_mesh(mesh);
 			mesh_instance->set_skeleton_path(mesh_instance->get_path_to(data->pSekeleton));
 			mesh_instance->set_skin(data->skin);

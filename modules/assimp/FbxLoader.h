@@ -129,6 +129,8 @@ class FbxLoader {
 	};
 	struct SekeletonAnimationData {
 		Map<String, AnimationClip *> mAnimations;
+		// 谷歌的多边形变换信息
+		fbxsdk::FbxAMatrix geometryTransform;
 		void GetAnimation(AnimationPlayer *anim_play, Spatial *root_node, Skeleton *ske);
 	};
 
