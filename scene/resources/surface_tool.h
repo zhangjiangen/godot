@@ -154,6 +154,8 @@ public:
 	void set_tangent(const Plane &p_tangent);
 	void set_uv(const Vector2 &p_uv);
 	void set_uv2(const Vector2 &p_uv2);
+	void set_uv3(const Vector2 &p_uv2) {}
+	void set_uv4(const Vector2 &p_uv2) {}
 	void set_custom(int p_index, const Color &p_custom);
 	void set_bones(const Vector<int> &p_bones);
 	void set_weights(const Vector<float> &p_weights);
