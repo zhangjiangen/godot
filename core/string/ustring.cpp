@@ -3172,7 +3172,7 @@ bool String::ends_with(const String &p_string) const {
 	return true;
 }
 
-bool String::ends_with(const String &p_string, bool ignore_case) const {
+bool String::ends_with_l(const String &p_string, bool ignore_case) const {
 	if (ignore_case) {
 		int l = p_string.length();
 		if (l > length()) {
@@ -3184,8 +3184,8 @@ bool String::ends_with(const String &p_string, bool ignore_case) const {
 		}
 
 		String t_string = p_string.to_lower();
-		const CharType *p = &p_string[0];
-		const CharType *s = &operator[](length() - l);
+		const char32_t *p = &p_string[0];
+		const char32_t *s = &operator[](length() - l);
 
 		for (int i = 0; i < l; i++) {
 			if (_find_lower(p[i]) != _find_lower(s[i])) {
@@ -3240,7 +3240,7 @@ bool String::begins_with(const char *p_string) const {
 	return *p_string == 0;
 }
 
-bool String::begins_with(const String &p_string, bool ignore_case) const {
+bool String::begins_with_l(const String &p_string, bool ignore_case) const {
 	if (ignore_case) {
 		int l = p_string.length();
 		if (l > length()) {
@@ -3264,7 +3264,7 @@ bool String::begins_with(const String &p_string, bool ignore_case) const {
 	}
 	return begins_with(p_string);
 }
-bool String::begins_with(const char *p_string, bool ignore_case) const {
+bool String::begins_with_l(const char *p_string, bool ignore_case) const {
 	if (ignore_case) {
 		int l = length();
 		if (l == 0 || !p_string) {

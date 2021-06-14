@@ -1320,7 +1320,9 @@ static void _register_variant_builtin_methods() {
 	bind_method(String, match, sarray("expr"), varray());
 	bind_method(String, matchn, sarray("expr"), varray());
 	bind_methodv(String, begins_with, static_cast<bool (String::*)(const String &) const>(&String::begins_with), sarray("text"), varray());
+	bind_methodv(String, begins_with_l, static_cast<bool (String::*)(const String &, bool) const>(&String::begins_with_l), sarray("text", "ignore_case"), varray(true));
 	bind_method(String, ends_with, sarray("text"), varray());
+	bind_method(String, ends_with_l, sarray("text", "ignore_case"), varray(true));
 	bind_method(String, is_subsequence_of, sarray("text"), varray());
 	bind_method(String, is_subsequence_ofi, sarray("text"), varray());
 	bind_method(String, bigrams, sarray(), varray());
