@@ -23,10 +23,10 @@ float BoneAnimation::GetEndTime() const {
 }
 float AnimationClip::GetClipStartTime() const {
 	// Find smallest start time over all bones in this clip.
-	float t = MathHelper::Infinity;
+	float t = 90000.0f;
 	Map<String, BoneAnimation>::Element *node = BoneAnimationsForName.front();
 	while (node) {
-		t = MathHelper::Min(t, node->value().GetStartTime());
+		t = MIN(t, node->value().GetStartTime());
 
 		node = node->next();
 	}
@@ -38,7 +38,7 @@ float AnimationClip::GetClipEndTime() const {
 	float t = 0.0f;
 	Map<String, BoneAnimation>::Element *node = BoneAnimationsForName.front();
 	while (node) {
-		t = MathHelper::Max(t, node->value().GetEndTime());
+		t = MAX(t, node->value().GetEndTime());
 		node = node->next();
 	}
 

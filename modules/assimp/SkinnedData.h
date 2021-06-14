@@ -1,7 +1,6 @@
 #ifndef SKINNEDDATA_H_
 #define SKINNEDDATA_H_
 
-#include "MathHelper.h"
 #include "core/map.h"
 #include "core/math/plane.h"
 #include "core/math/transform.h"
