@@ -64,7 +64,7 @@ class OS {
 	bool _stderr_enabled = true;
 
 	char *last_error;
-
+	class GodetBaseLogger *_baseLog = nullptr;
 	CompositeLogger *_logger = nullptr;
 
 	bool restart_on_exit = false;

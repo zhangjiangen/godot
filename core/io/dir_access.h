@@ -113,6 +113,7 @@ public:
 	virtual String get_filesystem_type() const = 0;
 	static String get_full_path(const String &p_path, AccessType p_access);
 	static DirAccess *create_for_path(const String &p_path);
+	static String get_curr_work_dir();
 
 	static DirAccess *create(AccessType p_access);
 

@@ -918,6 +918,7 @@ void EditorSettings::create() {
 		// Validate/create data dir and subdirectories
 
 		String data_dir = EditorPaths::get_singleton()->get_data_dir();
+		WARN_PRINT(data_dir);
 
 		dir = DirAccess::create(DirAccess::ACCESS_FILESYSTEM);
 		if (dir->change_dir(data_dir) != OK) {
@@ -972,7 +973,7 @@ void EditorSettings::create() {
 			if (da->change_dir(EditorSettings::PROJECT_EDITOR_SETTINGS_PATH) != OK) {
 				Error err = da->make_dir_recursive(EditorSettings::PROJECT_EDITOR_SETTINGS_PATH);
 				if (err || da->change_dir(EditorSettings::PROJECT_EDITOR_SETTINGS_PATH) != OK) {
-					ERR_FAIL_MSG("Failed to create '" + EditorSettings::PROJECT_EDITOR_SETTINGS_PATH + "' folder.");
+					WARN_PRINT("Failed to create '" + EditorSettings::PROJECT_EDITOR_SETTINGS_PATH + "' folder.");
 				}
 			}
 		}
@@ -981,10 +982,10 @@ void EditorSettings::create() {
 
 		String config_file_name = "editor_settings-" + itos(VERSION_MAJOR) + ".tres";
 		config_file_path = EditorPaths::get_singleton()->get_config_dir().plus_file(config_file_name);
-		//if (!dir->file_exists(config_file_name)) {
-		//	memdelete(dir);
-		//	goto fail;
-		//}
+		if (!dir->file_exists(config_file_name)) {
+			memdelete(dir);
+			goto fail;
+		}
 
 		memdelete(dir);
 

@@ -29,6 +29,7 @@
 /*************************************************************************/
 
 #include "dir_access.h"
+#include <unistd.h>
 
 #include "core/config/project_settings.h"
 #include "core/io/file_access.h"
@@ -44,6 +45,15 @@ String DirAccess::_get_root_path() const {
 		default:
 			return "";
 	}
+}
+String DirAccess::get_curr_work_dir() {
+	char real_current_dir_name[4096];
+	getcwd(real_current_dir_name, 4096);
+	String prev_dir;
+	if (prev_dir.parse_utf8(real_current_dir_name)) {
+		prev_dir = real_current_dir_name; //no utf8, maybe latin?
+	}
+	return prev_dir;
 }
 
 String DirAccess::_get_root_string() const {

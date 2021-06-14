@@ -365,6 +365,9 @@ void ProjectSettings::_convert_to_last_version(int p_from_version) {
 Error ProjectSettings::_setup(const String &p_path, const String &p_main_pack, bool p_upwards) {
 	// If looking for files in a network client, use it directly
 
+	WARN_PRINT("p_path:" + p_path);
+	String work_dir = DirAccess::get_curr_work_dir();
+	WARN_PRINT("work_dir:" + work_dir);
 	if (FileAccessNetworkClient::get_singleton()) {
 		Error err = _load_settings_text_or_binary("res://project.godot", "res://project.binary");
 		if (err == OK) {
@@ -449,6 +452,7 @@ Error ProjectSettings::_setup(const String &p_path, const String &p_main_pack, b
 		resource_path = OS::get_singleton()->get_resource_dir().replace("\\", "/");
 		if (resource_path != "" && resource_path[resource_path.length() - 1] == '/') {
 			resource_path = resource_path.substr(0, resource_path.length() - 1); // Chop end.
+			WARN_PRINT("resource_path:" + resource_path);
 		}
 
 		Error err = _load_settings_text_or_binary("res://project.godot", "res://project.binary");
@@ -493,6 +497,7 @@ Error ProjectSettings::_setup(const String &p_path, const String &p_main_pack, b
 			break;
 		}
 	}
+	WARN_PRINT("resource_path:" + resource_path);
 
 	memdelete(d);
 
@@ -502,6 +507,7 @@ Error ProjectSettings::_setup(const String &p_path, const String &p_main_pack, b
 
 	if (resource_path.length() && resource_path[resource_path.length() - 1] == '/') {
 		resource_path = resource_path.substr(0, resource_path.length() - 1); // Chop end.
+		WARN_PRINT("resource_path:" + resource_path);
 	}
 
 	return OK;

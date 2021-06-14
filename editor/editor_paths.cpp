@@ -74,6 +74,7 @@ void EditorPaths::_bind_methods() {
 EditorPaths::EditorPaths(bool p_for_project_mamanger) {
 	singleton = this;
 
+	WARN_PRINT("p_for_project_mamanger:" + p_for_project_mamanger);
 	String exe_path = OS::get_singleton()->get_executable_path().get_base_dir();
 	{
 		DirAccessRef d = DirAccess::create_for_path(exe_path);
@@ -94,7 +95,10 @@ EditorPaths::EditorPaths(bool p_for_project_mamanger) {
 	if (self_contained) {
 		// editor is self contained, all in same folder
 		data_path = exe_path;
+
+		WARN_PRINT("self_contained data_path:" + data_path);
 		data_dir = data_path.plus_file("editor_data");
+		WARN_PRINT("self_contained data_dir:" + data_dir);
 		config_path = exe_path;
 		config_dir = data_dir;
 		cache_path = exe_path;
@@ -102,10 +106,15 @@ EditorPaths::EditorPaths(bool p_for_project_mamanger) {
 	} else {
 		// Typically XDG_DATA_HOME or %APPDATA%
 		data_path = OS::get_singleton()->get_data_path();
+		WARN_PRINT("data_path:" + data_path);
+
 		data_dir = data_path.plus_file(OS::get_singleton()->get_godot_dir_name());
+		WARN_PRINT("data_dir:" + data_dir);
 		// Can be different from data_path e.g. on Linux or macOS
 		config_path = OS::get_singleton()->get_config_path();
+		WARN_PRINT("config_path:" + config_path);
 		config_dir = config_path.plus_file(OS::get_singleton()->get_godot_dir_name());
+		WARN_PRINT("config_dir:" + config_dir);
 		// Can be different from above paths, otherwise a subfolder of data_dir
 		cache_path = OS::get_singleton()->get_cache_path();
 		if (cache_path == data_path) {
@@ -113,6 +122,7 @@ EditorPaths::EditorPaths(bool p_for_project_mamanger) {
 		} else {
 			cache_dir = cache_path.plus_file(OS::get_singleton()->get_godot_dir_name());
 		}
+		WARN_PRINT("cache_dir:" + cache_dir);
 	}
 
 	paths_valid = (data_path != "" && config_path != "" && cache_path != "");

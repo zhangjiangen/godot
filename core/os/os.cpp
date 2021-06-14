@@ -43,6 +43,50 @@
 OS *OS::singleton = nullptr;
 uint64_t OS::target_ticks = 0;
 
+#include "core/os/time.h"
+class GodetBaseLogger : public Logger {
+public:
+	GodetBaseLogger() {
+		Init = false;
+	}
+	virtual void logv(const char *p_format, va_list p_list, bool p_err) {
+		if (!Init) {
+			OS *ptr = OS::get_singleton();
+			if (ptr) {
+				OS::Time time = ptr->get_time(true);
+				timestamp = vformat("%02d:%02d:%02d", time.hour, time.minute, time.second);
+				timestamp = timestamp.replace(":", "_");
+				file_path = ptr->get_data_path().plus_file("godot_log" + timestamp + ".txt");
+				Init = true;
+			} else {
+				return;
+			}
+		}
+		FILE *file = fopen(file_path.ascii().ptr(), "a");
+		if (file) {
+			const int static_buf_size = 512;
+			char static_buf[static_buf_size];
+			char *buf = static_buf;
+			va_list list_copy;
+			va_copy(list_copy, p_list);
+			int len = vsnprintf(buf, static_buf_size, p_format, p_list);
+			if (len >= static_buf_size) {
+				buf = (char *)Memory::alloc_static(len + 1);
+				vsnprintf(buf, len + 1, p_format, list_copy);
+			}
+			va_end(list_copy);
+			fwrite(buf, len, 1, file);
+			fwrite("\n\r", 2, 1, file);
+			fclose(file);
+		}
+	}
+	virtual ~GodetBaseLogger() {}
+
+	String file_path;
+	String timestamp;
+	bool Init;
+};
+
 OS *OS::get_singleton() {
 	return singleton;
 }
@@ -77,6 +121,9 @@ void OS::add_logger(Logger *p_logger) {
 }
 
 void OS::print_error(const char *p_function, const char *p_file, int p_line, const char *p_code, const char *p_rationale, Logger::ErrorType p_type) {
+	if (_baseLog) {
+		_baseLog->log_error(p_function, p_file, p_line, p_code, p_rationale, p_type);
+	}
 	if (!_stderr_enabled) {
 		return;
 	}
@@ -507,16 +554,17 @@ void OS::add_frame_delay(bool p_can_draw) {
 		target_ticks = MIN(MAX(target_ticks, current_ticks - dynamic_delay), current_ticks + dynamic_delay);
 	}
 }
-
 OS::OS() {
 	singleton = this;
 
 	Vector<Logger *> loggers;
+	_baseLog = memnew(GodetBaseLogger);
 	loggers.push_back(memnew(StdLogger));
 	_set_logger(memnew(CompositeLogger(loggers)));
 }
 
 OS::~OS() {
 	memdelete(_logger);
+	memdelete(_baseLog);
 	singleton = nullptr;
 }
