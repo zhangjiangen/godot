@@ -1440,8 +1440,10 @@ void RendererStorageRD::shader_set_code(RID p_shader, const String &p_code) {
 			material->shader_type = new_type;
 		}
 
-		for (Map<StringName, RID>::Element *E = shader->default_texture_parameter.front(); E; E = E->next()) {
-			shader->data->set_default_texture_param(E->key(), E->get());
+		if (shader->data) {
+			for (Map<StringName, RID>::Element *E = shader->default_texture_parameter.front(); E; E = E->next()) {
+				shader->data->set_default_texture_param(E->key(), E->get());
+			}
 		}
 	}
 
@@ -3823,7 +3825,7 @@ void RendererStorageRD::_update_dirty_multimeshes() {
 
 			if (multimesh->data_cache_used_dirty_regions) {
 				uint32_t data_cache_dirty_region_count = (multimesh->instances - 1) / MULTIMESH_DIRTY_REGION_SIZE + 1;
-				uint32_t visible_region_count = (visible_instances - 1) / MULTIMESH_DIRTY_REGION_SIZE + 1;
+				uint32_t visible_region_count = visible_instances == 0 ? 0 : (visible_instances - 1) / MULTIMESH_DIRTY_REGION_SIZE + 1;
 
 				uint32_t region_size = multimesh->stride_cache * MULTIMESH_DIRTY_REGION_SIZE * sizeof(float);
 

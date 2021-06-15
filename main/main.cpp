@@ -1336,13 +1336,13 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 	Engine::get_singleton()->set_iterations_per_second(GLOBAL_DEF_BASIC("physics/common/physics_fps", 60));
 	ProjectSettings::get_singleton()->set_custom_property_info("physics/common/physics_fps",
 			PropertyInfo(Variant::INT, "physics/common/physics_fps",
-					PROPERTY_HINT_RANGE, "1,120,1,or_greater"));
+					PROPERTY_HINT_RANGE, "1,1000,1"));
 	Engine::get_singleton()->set_physics_jitter_fix(GLOBAL_DEF("physics/common/physics_jitter_fix", 0.5));
 	Engine::get_singleton()->set_target_fps(GLOBAL_DEF("debug/settings/fps/force_fps", 0));
 	ProjectSettings::get_singleton()->set_custom_property_info("debug/settings/fps/force_fps",
 			PropertyInfo(Variant::INT,
 					"debug/settings/fps/force_fps",
-					PROPERTY_HINT_RANGE, "0,120,1,or_greater"));
+					PROPERTY_HINT_RANGE, "0,1000,1"));
 
 	GLOBAL_DEF("debug/settings/stdout/print_fps", false);
 	GLOBAL_DEF("debug/settings/stdout/verbose_stdout", false);
@@ -1453,7 +1453,7 @@ Error Main::setup2(Thread::ID p_main_tid_override) {
 
 #ifdef TOOLS_ENABLED
 	if (editor || project_manager) {
-		EditorNode::register_editor_paths(project_manager);
+		EditorPaths::create();
 	}
 #endif
 
@@ -2379,10 +2379,8 @@ bool Main::start() {
 			}
 
 			// Load SSL Certificates from Editor Settings (or builtin)
-			Crypto::load_default_certificates(EditorSettings::get_singleton()->get_setting(
-																					 "network/ssl/editor_ssl_certificates")
-													  .
-													  operator String());
+			Crypto::load_default_certificates(
+					EditorSettings::get_singleton()->get_setting("network/ssl/editor_ssl_certificates").operator String());
 		}
 #endif
 	}

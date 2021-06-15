@@ -164,6 +164,7 @@ private:
 		RUN_PLAY_CUSTOM_SCENE,
 		RUN_SETTINGS,
 		RUN_PROJECT_DATA_FOLDER,
+		RUN_RELOAD_CURRENT_PROJECT,
 		RUN_PROJECT_MANAGER,
 		RUN_VCS_SETTINGS,
 		RUN_VCS_SHUT_DOWN,
@@ -798,7 +799,6 @@ public:
 
 	Error export_preset(const String &p_preset, const String &p_path, bool p_debug, bool p_pack_only);
 
-	static void register_editor_paths(bool p_for_project_manager);
 	static void register_editor_types();
 	static void unregister_editor_types();
 
