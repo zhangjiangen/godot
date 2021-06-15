@@ -1,5 +1,6 @@
 def can_build(env, platform):
-    return env["tools"]
+    #return env["tools"]
+    return False
 
 
 def configure(env):
