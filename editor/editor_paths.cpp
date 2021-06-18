@@ -87,8 +87,6 @@ void EditorPaths::_bind_methods() {
 EditorPaths::EditorPaths() {
 	singleton = this;
 
-	WARN_PRINT("p_for_project_mamanger:" + p_for_project_mamanger);
-
 	// Self-contained mode if a `._sc_` or `_sc_` file is present in executable dir.
 
 	String exe_path = OS::get_singleton()->get_executable_path().get_base_dir();
