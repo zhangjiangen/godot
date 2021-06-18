@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  visibility_notifier_3d.h                                             */
+/*  visible_on_screen_notifier_3d.h                                      */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,20 +28,22 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef VISIBILITY_NOTIFIER_H
-#define VISIBILITY_NOTIFIER_H
+#ifndef VISIBLE_ON_SCREEN_NOTIFIER_3D_H
+#define VISIBLE_ON_SCREEN_NOTIFIER_3D_H
 
-#include "scene/3d/node_3d.h"
+#include "scene/3d/visual_instance_3d.h"
 
 class World3D;
 class Camera3D;
-class VisibilityNotifier3D : public Node3D {
-	GDCLASS(VisibilityNotifier3D, Node3D);
-
-	Ref<World3D> world;
-	Set<Camera3D *> cameras;
+class VisibleOnScreenNotifier3D : public VisualInstance3D {
+	GDCLASS(VisibleOnScreenNotifier3D, VisualInstance3D);
 
 	AABB aabb = AABB(Vector3(-1, -1, -1), Vector3(2, 2, 2));
+
+private:
+	bool on_screen = false;
+	void _visibility_enter();
+	void _visibility_exit();
 
 protected:
 	virtual void _screen_enter() {}
@@ -49,53 +51,51 @@ protected:
 
 	void _notification(int p_what);
 	static void _bind_methods();
-	friend struct SpatialIndexer;
-
-	void _enter_camera(Camera3D *p_camera);
-	void _exit_camera(Camera3D *p_camera);
 
 public:
 	void set_aabb(const AABB &p_aabb);
-	AABB get_aabb() const;
+	virtual AABB get_aabb() const override;
 	bool is_on_screen() const;
 
-	VisibilityNotifier3D();
+	virtual Vector<Face3> get_faces(uint32_t p_usage_flags) const override;
+
+	VisibleOnScreenNotifier3D();
+	~VisibleOnScreenNotifier3D();
 };
 
-class VisibilityEnabler3D : public VisibilityNotifier3D {
-	GDCLASS(VisibilityEnabler3D, VisibilityNotifier3D);
+class VisibleOnScreenEnabler3D : public VisibleOnScreenNotifier3D {
+	GDCLASS(VisibleOnScreenEnabler3D, VisibleOnScreenNotifier3D);
 
 public:
-	enum Enabler {
-		ENABLER_PAUSE_ANIMATIONS,
-		ENABLER_FREEZE_BODIES,
-		ENABLER_MAX
+	enum EnableMode {
+		ENABLE_MODE_INHERIT,
+		ENABLE_MODE_ALWAYS,
+		ENABLE_MODE_WHEN_PAUSED,
 	};
 
 protected:
+	ObjectID node_id;
 	virtual void _screen_enter() override;
 	virtual void _screen_exit() override;
 
-	bool visible = false;
-
-	void _find_nodes(Node *p_node);
-
-	Map<Node *, Variant> nodes;
-	void _node_removed(Node *p_node);
-	bool enabler[ENABLER_MAX];
-
-	void _change_node_state(Node *p_node, bool p_enabled);
+	EnableMode enable_mode = ENABLE_MODE_INHERIT;
+	NodePath enable_node_path = NodePath("..");
 
 	void _notification(int p_what);
 	static void _bind_methods();
 
-public:
-	void set_enabler(Enabler p_enabler, bool p_enable);
-	bool is_enabler_enabled(Enabler p_enabler) const;
+	void _update_enable_mode(bool p_enable);
 
-	VisibilityEnabler3D();
+public:
+	void set_enable_mode(EnableMode p_mode);
+	EnableMode get_enable_mode();
+
+	void set_enable_node_path(NodePath p_path);
+	NodePath get_enable_node_path();
+
+	VisibleOnScreenEnabler3D();
 };
 
-VARIANT_ENUM_CAST(VisibilityEnabler3D::Enabler);
+VARIANT_ENUM_CAST(VisibleOnScreenEnabler3D::EnableMode);
 
 #endif // VISIBILITY_NOTIFIER_H

@@ -539,7 +539,7 @@ void FindReplaceBar::_search_text_changed(const String &p_text) {
 	search_current();
 }
 
-void FindReplaceBar::_search_text_entered(const String &p_text) {
+void FindReplaceBar::_search_text_submitted(const String &p_text) {
 	if (Input::get_singleton()->is_key_pressed(KEY_SHIFT)) {
 		search_prev();
 	} else {
@@ -547,7 +547,7 @@ void FindReplaceBar::_search_text_entered(const String &p_text) {
 	}
 }
 
-void FindReplaceBar::_replace_text_entered(const String &p_text) {
+void FindReplaceBar::_replace_text_submitted(const String &p_text) {
 	if (selection_only->is_pressed() && text_editor->is_selection_active()) {
 		_replace_all();
 		_hide_bar();
@@ -643,7 +643,7 @@ FindReplaceBar::FindReplaceBar() {
 	vbc_lineedit->add_child(search_text);
 	search_text->set_custom_minimum_size(Size2(100 * EDSCALE, 0));
 	search_text->connect("text_changed", callable_mp(this, &FindReplaceBar::_search_text_changed));
-	search_text->connect("text_entered", callable_mp(this, &FindReplaceBar::_search_text_entered));
+	search_text->connect("text_submitted", callable_mp(this, &FindReplaceBar::_search_text_submitted));
 
 	matches_label = memnew(Label);
 	hbc_button_search->add_child(matches_label);
@@ -677,7 +677,7 @@ FindReplaceBar::FindReplaceBar() {
 	replace_text = memnew(LineEdit);
 	vbc_lineedit->add_child(replace_text);
 	replace_text->set_custom_minimum_size(Size2(100 * EDSCALE, 0));
-	replace_text->connect("text_entered", callable_mp(this, &FindReplaceBar::_replace_text_entered));
+	replace_text->connect("text_submitted", callable_mp(this, &FindReplaceBar::_replace_text_submitted));
 
 	replace = memnew(Button);
 	hbc_button_replace->add_child(replace);
@@ -940,7 +940,7 @@ void CodeTextEditor::update_editor_settings() {
 	text_editor->set_draw_line_numbers(EditorSettings::get_singleton()->get("text_editor/appearance/show_line_numbers"));
 	text_editor->set_line_numbers_zero_padded(EditorSettings::get_singleton()->get("text_editor/appearance/line_numbers_zero_padded"));
 	text_editor->set_draw_bookmarks_gutter(EditorSettings::get_singleton()->get("text_editor/appearance/show_bookmark_gutter"));
-	text_editor->set_hiding_enabled(EditorSettings::get_singleton()->get("text_editor/appearance/code_folding"));
+	text_editor->set_line_folding_enabled(EditorSettings::get_singleton()->get("text_editor/appearance/code_folding"));
 	text_editor->set_draw_fold_gutter(EditorSettings::get_singleton()->get("text_editor/appearance/code_folding"));
 	text_editor->set_wrap_enabled(EditorSettings::get_singleton()->get("text_editor/appearance/word_wrap"));
 	text_editor->set_show_line_length_guidelines(EditorSettings::get_singleton()->get("text_editor/appearance/show_line_length_guidelines"));
@@ -1502,6 +1502,7 @@ void CodeTextEditor::set_error_pos(int p_line, int p_column) {
 
 void CodeTextEditor::goto_error() {
 	if (error->get_text() != "") {
+		text_editor->unfold_line(error_line);
 		text_editor->cursor_set_line(error_line);
 		text_editor->cursor_set_column(error_column);
 		text_editor->center_viewport_to_cursor();

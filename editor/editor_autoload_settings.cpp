@@ -327,7 +327,7 @@ void EditorAutoloadSettings::_autoload_file_callback(const String &p_path) {
 	add_autoload->set_disabled(false);
 }
 
-void EditorAutoloadSettings::_autoload_text_entered(const String p_name) {
+void EditorAutoloadSettings::_autoload_text_submitted(const String p_name) {
 	if (autoload_add_path->get_text() != "" && _autoload_name_is_valid(p_name, nullptr)) {
 		_autoload_add();
 	}
@@ -859,7 +859,7 @@ EditorAutoloadSettings::EditorAutoloadSettings() {
 
 	autoload_add_name = memnew(LineEdit);
 	autoload_add_name->set_h_size_flags(SIZE_EXPAND_FILL);
-	autoload_add_name->connect("text_entered", callable_mp(this, &EditorAutoloadSettings::_autoload_text_entered));
+	autoload_add_name->connect("text_submitted", callable_mp(this, &EditorAutoloadSettings::_autoload_text_submitted));
 	autoload_add_name->connect("text_changed", callable_mp(this, &EditorAutoloadSettings::_autoload_text_changed));
 	hbc->add_child(autoload_add_name);
 
@@ -882,15 +882,16 @@ EditorAutoloadSettings::EditorAutoloadSettings() {
 
 	tree->set_column_title(0, TTR("Name"));
 	tree->set_column_expand(0, true);
-	tree->set_column_min_width(0, 100);
+	tree->set_column_min_width(0, 100 * EDSCALE);
 
 	tree->set_column_title(1, TTR("Path"));
 	tree->set_column_expand(1, true);
-	tree->set_column_min_width(1, 100);
+	tree->set_column_min_width(1, 100 * EDSCALE);
 
-	tree->set_column_title(2, TTR("Singleton"));
+	tree->set_column_title(2, TTR("Global Variable"));
 	tree->set_column_expand(2, false);
-	tree->set_column_min_width(2, 80 * EDSCALE);
+	// Reserve enough space for translations of "Global Variable" which may be longer.
+	tree->set_column_min_width(2, 150 * EDSCALE);
 
 	tree->set_column_expand(3, false);
 	tree->set_column_min_width(3, 120 * EDSCALE);
@@ -915,7 +916,7 @@ EditorAutoloadSettings::~EditorAutoloadSettings() {
 
 void EditorAutoloadSettings::_set_autoload_add_path(const String &p_text) {
 	autoload_add_path->set_text(p_text);
-	autoload_add_path->emit_signal("text_entered", p_text);
+	autoload_add_path->emit_signal("text_submitted", p_text);
 }
 
 void EditorAutoloadSettings::_browse_autoload_add_path() {

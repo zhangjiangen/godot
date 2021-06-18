@@ -275,7 +275,7 @@ Error String::parse_url(String &r_scheme, String &r_host, int &r_port, String &r
 		base = base.substr(pos + 1, base.length() - pos - 1);
 	} else {
 		// Anything else
-		if (base.get_slice_count(":") > 1) {
+		if (base.get_slice_count(":") > 2) {
 			return ERR_INVALID_PARAMETER;
 		}
 		pos = base.rfind(":");
@@ -294,7 +294,7 @@ Error String::parse_url(String &r_scheme, String &r_host, int &r_port, String &r
 	// Port
 	if (base.begins_with(":")) {
 		base = base.substr(1, base.length() - 1);
-		if (!base.is_valid_integer()) {
+		if (!base.is_valid_int()) {
 			return ERR_INVALID_PARAMETER;
 		}
 		r_port = base.to_int();
@@ -4240,7 +4240,7 @@ String String::trim_suffix(const String &p_suffix) const {
 	return s;
 }
 
-bool String::is_valid_integer() const {
+bool String::is_valid_int() const {
 	int len = length();
 
 	if (len == 0) {
@@ -4465,7 +4465,7 @@ bool String::is_valid_ip_address() const {
 		}
 		for (int i = 0; i < ip.size(); i++) {
 			String n = ip[i];
-			if (!n.is_valid_integer()) {
+			if (!n.is_valid_int()) {
 				return false;
 			}
 			int val = n.to_int();

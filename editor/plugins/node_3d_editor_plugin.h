@@ -764,6 +764,8 @@ private:
 	VBoxContainer *sun_vb;
 	Popup *sun_environ_popup;
 	Control *sun_direction;
+	EditorSpinSlider *sun_angle_altitude;
+	EditorSpinSlider *sun_angle_azimuth;
 	ColorPickerButton *sun_color;
 	EditorSpinSlider *sun_energy;
 	EditorSpinSlider *sun_max_distance;
@@ -771,8 +773,9 @@ private:
 
 	void _sun_direction_draw();
 	void _sun_direction_input(const Ref<InputEvent> &p_event);
+	void _sun_direction_angle_set();
 
-	Basis sun_rotation;
+	Vector2 sun_rotation;
 
 	Ref<Shader> sun_direction_shader;
 	Ref<ShaderMaterial> sun_direction_material;
@@ -817,7 +820,6 @@ protected:
 
 public:
 	static Node3DEditor *get_singleton() { return singleton; }
-	void snap_cursor_to_plane(const Plane &p_plane);
 
 	Vector3 snap_point(Vector3 p_target, Vector3 p_start = Vector3(0, 0, 0)) const;
 
@@ -890,12 +892,7 @@ class Node3DEditorPlugin : public EditorPlugin {
 	Node3DEditor *spatial_editor;
 	EditorNode *editor;
 
-protected:
-	static void _bind_methods();
-
 public:
-	void snap_cursor_to_plane(const Plane &p_plane);
-
 	Node3DEditor *get_spatial_editor() { return spatial_editor; }
 	virtual String get_name() const override { return "3D"; }
 	bool has_main_screen() const override { return true; }
