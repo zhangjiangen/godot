@@ -95,7 +95,7 @@ void SceneImportSettings::_fill_material(Tree *p_tree, const Ref<Material> &p_ma
 
 	if (!material_map.has(import_id)) {
 		MaterialDataPtr md;
-		md.instance();
+		md.instantiate();
 		md->has_import_id = has_import_id;
 		md->material = p_material;
 
@@ -203,7 +203,7 @@ void SceneImportSettings::_fill_mesh(Tree *p_tree, const Ref<Mesh> &p_mesh, Tree
 void SceneImportSettings::_fill_animation(Tree *p_tree, const Ref<Animation> &p_anim, const String &p_name, TreeItem *p_parent) {
 	if (!animation_map.has(p_name)) {
 		AnimationDataPtr ad;
-		ad.instance();
+		ad.instantiate();
 		ad->animation = p_anim;
 
 		_load_default_subresource_settings(ad->settings, "animations", p_name, ResourceImporterScene::INTERNAL_IMPORT_CATEGORY_ANIMATION);
@@ -282,7 +282,7 @@ void SceneImportSettings::_fill_scene(Node *p_node, TreeItem *p_parent_item) {
 
 	if (!node_map.has(import_id)) {
 		NodeDataPtr nd;
-		nd.instance();
+		nd.instantiate();
 		if (p_node != scene) {
 			ResourceImporterScene::InternalImportCategory category;
 			if (src_mesh_node) {

@@ -143,6 +143,38 @@ enum PropertyUsageFlags {
 #define ADD_GROUP(m_name, m_prefix) ClassDB::add_property_group(get_class_static(), m_name, m_prefix)
 #define ADD_SUBGROUP(m_name, m_prefix) ClassDB::add_property_subgroup(get_class_static(), m_name, m_prefix)
 
+#define DECL_PROPERTY(type, name)                                          \
+	type _get_##name() { return name; }                                    \
+	void _set##name(const type &p_value_##name) { name = p_value_##name; } \
+	type name
+#define IMP_PROPERTY(class_name, type, name)                                                                \
+	String pro_get_##name##_func_name = String("_get") + #name;                                             \
+	const char *c_get_##name##_func_name = pro_get_##name##_func_name.utf8();                               \
+                                                                                                            \
+	String pro_set_##name##_func_name = String("_set") + #name;                                             \
+	const char *c_set_##name##_func_name = pro_set_##name##_func_name.utf8();                               \
+	String pro_##name##_arg_name = String("p_value_") + #name;                                              \
+	const char *c_##name##_arg_name = pro_##name##_arg_name.utf8();                                         \
+	type temp_##name##_variant_type;                                                                        \
+	Variant::Type t_##name##_variant_type = Variant(temp_##name##_variant_type).get_type();                 \
+	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set##name); \
+	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                     \
+	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, PROPERTY_HINT_NONE, ""), c_set_##name##_func_name, c_get_##name##_func_name);
+// 枚举类型
+#define IMP_PROPERTY_D(class_name, type, name, pro_hit, hint_string)                                        \
+	String pro_get_##name##_func_name = String("_get") + #name;                                             \
+	const char *c_get_##name##_func_name = pro_get_##name##_func_name.utf8();                               \
+                                                                                                            \
+	String pro_set_##name##_func_name = String("_set") + #name;                                             \
+	const char *c_set_##name##_func_name = pro_set_##name##_func_name.utf8();                               \
+	String pro_##name##_arg_name = String("p_value_") + #name;                                              \
+	const char *c_##name##_arg_name = pro_##name##_arg_name.utf8();                                         \
+	type temp_##name##_variant_type;                                                                        \
+	Variant::Type t_##name##_variant_type = Variant(temp_##name##_variant_type).get_type();                 \
+	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set##name); \
+	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                     \
+	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, pro_hit, hint_string), c_set_##name##_func_name, c_get_##name##_func_name);
+
 struct PropertyInfo {
 	Variant::Type type = Variant::NIL;
 	String name;
