@@ -90,7 +90,11 @@ class SceneImportSettings : public ConfirmationDialog {
 
 	void _update_scene();
 
+	typedef Map<StringName, Variant> VariantNameMap;
 	struct MaterialData {
+		MaterialData() :
+				settings(memnew(VariantNameMap())) {
+		}
 		bool has_import_id;
 		Ref<Material> material;
 		TreeItem *scene_node;
@@ -101,11 +105,15 @@ class SceneImportSettings : public ConfirmationDialog {
 		float cam_rot_y = -Math_PI / 4;
 		float cam_zoom = 1;
 
-		Map<StringName, Variant> settings;
+		SharedPtr<VariantNameMap> settings;
 	};
-	Map<String, MaterialData> material_map;
+	typedef SharedPtr<MaterialData> MaterialDataPtr;
+	Map<String, MaterialDataPtr> material_map;
 
 	struct MeshData {
+		MeshData() :
+				settings(memnew(VariantNameMap())) {
+		}
 		bool has_import_id;
 		Ref<Mesh> mesh;
 		TreeItem *scene_node;
@@ -114,23 +122,32 @@ class SceneImportSettings : public ConfirmationDialog {
 		float cam_rot_x = -Math_PI / 4;
 		float cam_rot_y = -Math_PI / 4;
 		float cam_zoom = 1;
-		Map<StringName, Variant> settings;
+		SharedPtr<VariantNameMap> settings;
 	};
-	Map<String, MeshData> mesh_map;
+	typedef SharedPtr<MeshData> MeshDataPtr;
+	Map<String, MeshDataPtr> mesh_map;
 
 	struct AnimationData {
+		AnimationData() :
+				settings(memnew(VariantNameMap())) {
+		}
 		Ref<Animation> animation;
 		TreeItem *scene_node;
-		Map<StringName, Variant> settings;
+		SharedPtr<VariantNameMap> settings;
 	};
-	Map<String, AnimationData> animation_map;
+	typedef SharedPtr<AnimationData> AnimationDataPtr;
+	Map<String, AnimationDataPtr> animation_map;
 
 	struct NodeData {
+		NodeData() :
+				settings(memnew(VariantNameMap())) {
+		}
 		Node *node;
 		TreeItem *scene_node;
-		Map<StringName, Variant> settings;
+		SharedPtr<VariantNameMap> settings;
 	};
-	Map<String, NodeData> node_map;
+	typedef SharedPtr<NodeData> NodeDataPtr;
+	Map<String, NodeDataPtr> node_map;
 
 	void _fill_material(Tree *p_tree, const Ref<Material> &p_material, TreeItem *p_parent);
 	void _fill_mesh(Tree *p_tree, const Ref<Mesh> &p_mesh, TreeItem *p_parent);
@@ -153,7 +170,7 @@ class SceneImportSettings : public ConfirmationDialog {
 
 	void _viewport_input(const Ref<InputEvent> &p_input);
 
-	Map<StringName, Variant> defaults;
+	SharedPtr<VariantNameMap> defaults;
 
 	SceneImportSettingsData *scene_import_settings_data;
 
@@ -184,7 +201,7 @@ class SceneImportSettings : public ConfirmationDialog {
 
 	Dictionary base_subresource_settings;
 
-	void _load_default_subresource_settings(Map<StringName, Variant> &settings, const String &p_type, const String &p_import_id, ResourceImporterScene::InternalImportCategory p_category);
+	void _load_default_subresource_settings(SharedPtr<VariantNameMap> &settings, const String &p_type, const String &p_import_id, ResourceImporterScene::InternalImportCategory p_category);
 
 protected:
 	void _notification(int p_what);

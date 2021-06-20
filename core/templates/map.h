@@ -590,6 +590,19 @@ public:
 
 		return e->_value;
 	}
+	void set(const K &p_key,const V& p_value)
+	{
+		if (!_data._root) {
+			_data._create_root();
+		}
+
+		Element *e = find(p_key);
+		if (!e) {
+			e = insert(p_key, V());
+		}
+
+		e->_value = p_value;
+	}
 
 	Element *front() const {
 		if (!_data._root) {

@@ -461,7 +461,6 @@ public:                                                                 \
 private:
 
 class ScriptInstance;
-
 class Object {
 public:
 	enum ConnectFlags {
