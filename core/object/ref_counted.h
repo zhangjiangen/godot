@@ -407,7 +407,7 @@ public:
 			pInfo->useCount.ref();
 		}
 	}
-	void instance(int array_count = 1, SharedPtrFreeMethod inFreeMethod = SPFM_DELETE_T) {
+	void instantiate(int array_count = 1, SharedPtrFreeMethod inFreeMethod = SPFM_DELETE_T) {
 		T *ptr = nullptr;
 		switch (inFreeMethod) {
 			case SPFM_DELETE_ARRAY:
