@@ -184,6 +184,20 @@ public:
 	EditorPropertyMember();
 };
 
+class EditorPropertyButton : public EditorProperty {
+	GDCLASS(EditorPropertyButton, EditorProperty);
+	Button *button;
+
+	void _button_pressed();
+
+protected:
+	static void _bind_methods();
+
+public:
+	virtual void update_property() override;
+	void set_button_name(const String &name);
+	EditorPropertyButton();
+};
 class EditorPropertyCheck : public EditorProperty {
 	GDCLASS(EditorPropertyCheck, EditorProperty);
 	CheckBox *checkbox;

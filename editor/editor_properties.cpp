@@ -449,6 +449,25 @@ EditorPropertyMember::EditorPropertyMember() {
 	add_focusable(property);
 	property->connect("pressed", callable_mp(this, &EditorPropertyMember::_property_select));
 }
+///////////////////// Button /////////////////////////
+
+void EditorPropertyButton::_button_pressed() {
+	emit_changed(get_edited_property(), button->is_pressed());
+}
+void EditorPropertyButton::update_property() {
+	bool c = get_edited_object()->get(get_edited_property());
+	button->set_visible(c);
+}
+void EditorPropertyButton::set_button_name(const String &name) {
+	button->set_name(name);
+}
+EditorPropertyButton::EditorPropertyButton() {
+	button = memnew(Button);
+	button->set_clip_text(true);
+	add_child(button);
+	add_focusable(button);
+	button->connect("pressed", callable_mp(this, &EditorPropertyButton::_button_pressed));
+}
 
 ///////////////////// CHECK /////////////////////////
 void EditorPropertyCheck::_checkbox_pressed() {
@@ -2708,8 +2727,15 @@ bool EditorInspectorDefaultPlugin::parse_property(Object *p_object, Variant::Typ
 			add_property_editor(p_path, editor);
 		} break;
 		case Variant::BOOL: {
-			EditorPropertyCheck *editor = memnew(EditorPropertyCheck);
-			add_property_editor(p_path, editor);
+			if (p_hint == PROPERTY_HINT_BUTTON) {
+				EditorPropertyButton *editor = memnew(EditorPropertyButton);
+				editor->set_button_name(p_hint_text);
+				add_property_editor(p_path, editor);
+
+			} else {
+				EditorPropertyCheck *editor = memnew(EditorPropertyCheck);
+				add_property_editor(p_path, editor);
+			}
 		} break;
 		case Variant::INT: {
 			if (p_hint == PROPERTY_HINT_ENUM) {

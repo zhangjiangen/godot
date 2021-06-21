@@ -60,6 +60,7 @@ enum PropertyHint {
 	PROPERTY_HINT_RANGE, ///< hint_text = "min,max,step,slider; //slider is optional"
 	PROPERTY_HINT_EXP_RANGE, ///< hint_text = "min,max,step", exponential edit
 	PROPERTY_HINT_ENUM, ///< hint_text= "val1,val2,val3,etc"
+	PROPERTY_HINT_BUTTON, ///< hit_text="button_name"
 	PROPERTY_HINT_EXP_EASING, /// exponential easing function (Math::ease) use "attenuation" hint string to revert (flip h), "full" to also include in/out. (ie: "attenuation,inout")
 	PROPERTY_HINT_LENGTH, ///< hint_text= "length" (as integer)
 	PROPERTY_HINT_KEY_ACCEL, ///< hint_text= "length" (as integer)
@@ -147,6 +148,11 @@ enum PropertyUsageFlags {
 	type _get_##name() { return name; }                                    \
 	void _set##name(const type &p_value_##name) { name = p_value_##name; } \
 	type name
+// 定义一个按钮
+#define DECL_PROPERTY_BUTTON(state_name, call_function)                          \
+	bool _get_##state_name() { return state_name; }                              \
+	void _set##state_name(const bool &p_value_##state_name) { call_function(); } \
+	bool state_name
 #define IMP_PROPERTY(class_name, type, name)                                                                \
 	String pro_get_##name##_func_name = String("_get") + #name;                                             \
 	const char *c_get_##name##_func_name = pro_get_##name##_func_name.utf8();                               \
