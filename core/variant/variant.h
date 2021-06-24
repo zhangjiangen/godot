@@ -663,6 +663,11 @@ public:
 
 	static void register_types();
 	static void unregister_types();
+	template <typename T>
+	static Type get_type() {
+		T t = T();
+		return Variant(t).get_type();
+	}
 
 	Variant(const Variant &p_variant);
 	_FORCE_INLINE_ Variant() {}
