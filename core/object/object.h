@@ -164,7 +164,7 @@ enum PropertyUsageFlags {
 	Variant::Type t_##name##_variant_type = Variant::get_type<type>();                                      \
 	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set##name); \
 	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                     \
-	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, PROPERTY_HINT_NONE, ""), c_set_##name##_func_name, c_get_##name##_func_name);
+	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), c_set_##name##_func_name, c_get_##name##_func_name);
 // 枚举类型
 #define IMP_PROPERTY_D(class_name, type, name, pro_hit, hint_string)                                        \
 	String pro_get_##name##_func_name = String("_get") + #name;                                             \
@@ -177,7 +177,7 @@ enum PropertyUsageFlags {
 	Variant::Type t_##name##_variant_type = Variant::get_type<type>();                                      \
 	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set##name); \
 	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                     \
-	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, pro_hit, hint_string), c_set_##name##_func_name, c_get_##name##_func_name);
+	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, pro_hit, hint_string, PROPERTY_USAGE_DEFAULT), c_set_##name##_func_name, c_get_##name##_func_name);
 
 struct PropertyInfo {
 	Variant::Type type = Variant::NIL;

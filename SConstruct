@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 
+import glsl_builders
+import methods
+from collections import OrderedDict
+import __init__
+import sys
+import pickle
+import os
+import glob
 EnsureSConsVersion(3, 0, 0)
 EnsurePythonVersion(3, 5)
 
 # System
-import glob
-import os
-import pickle
-import sys
-from collections import OrderedDict
 
 # Local
-import methods
-import glsl_builders
 
 # Scan possible build platforms
 
@@ -112,11 +113,15 @@ opts = Variables(customs, ARGUMENTS)
 opts.Add("p", "Platform (alias for 'platform')", "")
 opts.Add("platform", "Target platform (%s)" % ("|".join(platform_list),), "")
 opts.Add(BoolVariable("tools", "Build the tools (a.k.a. the Godot editor)", True))
-opts.Add(EnumVariable("target", "Compilation target", "debug", ("debug", "release_debug", "release")))
+opts.Add(EnumVariable("target", "Compilation target",
+         "debug", ("debug", "release_debug", "release")))
 opts.Add("arch", "Platform-dependent architecture (arm/arm64/x86/x64/mips/...)", "")
-opts.Add(EnumVariable("bits", "Target platform bits", "default", ("default", "32", "64")))
-opts.Add(EnumVariable("optimize", "Optimization type", "speed", ("speed", "size", "none")))
-opts.Add(BoolVariable("production", "Set defaults to build Godot for use in production", False))
+opts.Add(EnumVariable("bits", "Target platform bits",
+         "default", ("default", "32", "64")))
+opts.Add(EnumVariable("optimize", "Optimization type",
+         "speed", ("speed", "size", "none")))
+opts.Add(BoolVariable("production",
+         "Set defaults to build Godot for use in production", False))
 opts.Add(BoolVariable("use_lto", "Use link-time optimization", False))
 
 # Components
@@ -124,51 +129,75 @@ opts.Add(BoolVariable("deprecated", "Enable deprecated features", True))
 opts.Add(BoolVariable("minizip", "Enable ZIP archive support using minizip", True))
 opts.Add(BoolVariable("xaudio2", "Enable the XAudio2 audio driver", False))
 opts.Add(BoolVariable("vulkan", "Enable the vulkan video driver", True))
-opts.Add("custom_modules", "A list of comma-separated directory paths containing custom modules to build.", "")
-opts.Add(BoolVariable("custom_modules_recursive", "Detect custom modules recursively for each specified path.", True))
+opts.Add("custom_modules",
+         "A list of comma-separated directory paths containing custom modules to build.", "")
+opts.Add(BoolVariable("custom_modules_recursive",
+         "Detect custom modules recursively for each specified path.", True))
 
 # Advanced options
-opts.Add(BoolVariable("dev", "If yes, alias for verbose=yes warnings=extra werror=yes", False))
-opts.Add(BoolVariable("progress", "Show a progress indicator during compilation", True))
+opts.Add(BoolVariable(
+    "dev", "If yes, alias for verbose=yes warnings=extra werror=yes", False))
+opts.Add(BoolVariable(
+    "progress", "Show a progress indicator during compilation", True))
 opts.Add(BoolVariable("tests", "Build the unit tests", False))
 opts.Add(BoolVariable("verbose", "Enable verbose output for the compilation", False))
-opts.Add(EnumVariable("warnings", "Level of compilation warnings", "all", ("extra", "all", "moderate", "no")))
+opts.Add(EnumVariable("warnings", "Level of compilation warnings",
+         "all", ("extra", "all", "moderate", "no")))
 opts.Add(BoolVariable("werror", "Treat compiler warnings as errors", False))
-opts.Add("extra_suffix", "Custom extra suffix added to the base filename of all generated binary files", "")
+opts.Add("extra_suffix",
+         "Custom extra suffix added to the base filename of all generated binary files", "")
 opts.Add(BoolVariable("vsproj", "Generate a Visual Studio solution", False))
-opts.Add(BoolVariable("disable_3d", "Disable 3D nodes for a smaller executable", False))
-opts.Add(BoolVariable("disable_advanced_gui", "Disable advanced GUI nodes and behaviors", False))
-opts.Add(BoolVariable("modules_enabled_by_default", "If no, disable all modules except ones explicitly enabled", True))
-opts.Add(BoolVariable("no_editor_splash", "Don't use the custom splash screen for the editor", False))
-opts.Add("system_certs_path", "Use this path as SSL certificates default for editor (for package maintainers)", "")
-opts.Add(BoolVariable("use_precise_math_checks", "Math checks use very precise epsilon (debug option)", False))
+opts.Add(BoolVariable("disable_3d",
+         "Disable 3D nodes for a smaller executable", False))
+opts.Add(BoolVariable("disable_advanced_gui",
+         "Disable advanced GUI nodes and behaviors", False))
+opts.Add(BoolVariable("modules_enabled_by_default",
+         "If no, disable all modules except ones explicitly enabled", True))
+opts.Add(BoolVariable("no_editor_splash",
+         "Don't use the custom splash screen for the editor", False))
+opts.Add("system_certs_path",
+         "Use this path as SSL certificates default for editor (for package maintainers)", "")
+opts.Add(BoolVariable("use_precise_math_checks",
+         "Math checks use very precise epsilon (debug option)", False))
 
 # Thirdparty libraries
 opts.Add(BoolVariable("builtin_bullet", "Use the built-in Bullet library", True))
-opts.Add(BoolVariable("builtin_certs", "Use the built-in SSL certificates bundles", True))
+opts.Add(BoolVariable("builtin_certs",
+         "Use the built-in SSL certificates bundles", True))
 opts.Add(BoolVariable("builtin_embree", "Use the built-in Embree library", True))
 opts.Add(BoolVariable("builtin_enet", "Use the built-in ENet library", True))
-opts.Add(BoolVariable("builtin_freetype", "Use the built-in FreeType library", True))
-opts.Add(BoolVariable("builtin_glslang", "Use the built-in glslang library", True))
-opts.Add(BoolVariable("builtin_graphite", "Use the built-in Graphite library", True))
-opts.Add(BoolVariable("builtin_harfbuzz", "Use the built-in HarfBuzz library", True))
+opts.Add(BoolVariable("builtin_freetype",
+         "Use the built-in FreeType library", True))
+opts.Add(BoolVariable("builtin_glslang",
+         "Use the built-in glslang library", True))
+opts.Add(BoolVariable("builtin_graphite",
+         "Use the built-in Graphite library", True))
+opts.Add(BoolVariable("builtin_harfbuzz",
+         "Use the built-in HarfBuzz library", True))
 opts.Add(BoolVariable("builtin_icu", "Use the built-in ICU library", True))
 opts.Add(BoolVariable("builtin_libogg", "Use the built-in libogg library", True))
 opts.Add(BoolVariable("builtin_libpng", "Use the built-in libpng library", True))
-opts.Add(BoolVariable("builtin_libtheora", "Use the built-in libtheora library", True))
-opts.Add(BoolVariable("builtin_libvorbis", "Use the built-in libvorbis library", True))
+opts.Add(BoolVariable("builtin_libtheora",
+         "Use the built-in libtheora library", True))
+opts.Add(BoolVariable("builtin_libvorbis",
+         "Use the built-in libvorbis library", True))
 opts.Add(BoolVariable("builtin_libvpx", "Use the built-in libvpx library", True))
-opts.Add(BoolVariable("builtin_libwebp", "Use the built-in libwebp library", True))
+opts.Add(BoolVariable("builtin_libwebp",
+         "Use the built-in libwebp library", True))
 opts.Add(BoolVariable("builtin_wslay", "Use the built-in wslay library", True))
-opts.Add(BoolVariable("builtin_mbedtls", "Use the built-in mbedTLS library", True))
-opts.Add(BoolVariable("builtin_miniupnpc", "Use the built-in miniupnpc library", True))
+opts.Add(BoolVariable("builtin_mbedtls",
+         "Use the built-in mbedTLS library", True))
+opts.Add(BoolVariable("builtin_miniupnpc",
+         "Use the built-in miniupnpc library", True))
 opts.Add(BoolVariable("builtin_opus", "Use the built-in Opus library", True))
 opts.Add(BoolVariable("builtin_pcre2", "Use the built-in PCRE2 library", True))
-opts.Add(BoolVariable("builtin_pcre2_with_jit", "Use JIT compiler for the built-in PCRE2 library", True))
+opts.Add(BoolVariable("builtin_pcre2_with_jit",
+         "Use JIT compiler for the built-in PCRE2 library", True))
 opts.Add(BoolVariable("builtin_recast", "Use the built-in Recast library", True))
 opts.Add(BoolVariable("builtin_rvo2", "Use the built-in RVO2 library", True))
 opts.Add(BoolVariable("builtin_squish", "Use the built-in squish library", True))
-opts.Add(BoolVariable("builtin_vulkan", "Use the built-in Vulkan loader library and headers", True))
+opts.Add(BoolVariable("builtin_vulkan",
+         "Use the built-in Vulkan loader library and headers", True))
 opts.Add(BoolVariable("builtin_xatlas", "Use the built-in xatlas library", True))
 opts.Add(BoolVariable("builtin_zlib", "Use the built-in zlib library", True))
 opts.Add(BoolVariable("builtin_zstd", "Use the built-in Zstd library", True))
@@ -229,7 +258,8 @@ if selected_platform in platform_opts:
 
 # Update the environment to take platform-specific options into account.
 opts.Update(env_base)
-env_base["platform"] = selected_platform  # Must always be re-set after calling opts.Update().
+# Must always be re-set after calling opts.Update().
+env_base["platform"] = selected_platform
 
 # Detect modules.
 modules_detected = OrderedDict()
@@ -250,7 +280,8 @@ for path in module_search_paths:
         # so save the time it takes to parse directories.
         modules = methods.detect_modules(path, recursive=False)
     else:  # Custom.
-        modules = methods.detect_modules(path, env_base["custom_modules_recursive"])
+        modules = methods.detect_modules(
+            path, env_base["custom_modules_recursive"])
         # Provide default include path for both the custom module search `path`
         # and the base directory containing custom modules, as it may be different
         # from the built-in "modules" name (e.g. "custom_modules/summator/summator.h"),
@@ -277,13 +308,15 @@ for name, path in modules_detected.items():
     else:
         enabled = False
 
-    opts.Add(BoolVariable("module_" + name + "_enabled", "Enable module '%s'" % (name,), enabled))
+    opts.Add(BoolVariable("module_" + name + "_enabled",
+             "Enable module '%s'" % (name,), enabled))
 
 methods.write_modules(modules_detected)
 
 # Update the environment again after all the module options are added.
 opts.Update(env_base)
-env_base["platform"] = selected_platform  # Must always be re-set after calling opts.Update().
+# Must always be re-set after calling opts.Update().
+env_base["platform"] = selected_platform
 Help(opts.GenerateHelpText(env_base))
 
 # add default include paths
@@ -344,7 +377,8 @@ if selected_platform in platform_list:
         if env["tools"]:
             env["tests"] = methods.get_cmdline_bool("tests", True)
     if env["production"]:
-        env["use_static_cpp"] = methods.get_cmdline_bool("use_static_cpp", True)
+        env["use_static_cpp"] = methods.get_cmdline_bool(
+            "use_static_cpp", True)
         env["use_lto"] = methods.get_cmdline_bool("use_lto", True)
         env["debug_symbols"] = methods.get_cmdline_bool("debug_symbols", False)
         if not env["tools"] and env["target"] == "debug":
@@ -486,7 +520,8 @@ if selected_platform in platform_list:
     # Configure compiler warnings
     if env.msvc:  # MSVC
         # Truncations, narrowing conversions, signed/unsigned comparisons...
-        disable_nonessential_warnings = ["/wd4267", "/wd4244", "/wd4305", "/wd4018", "/wd4800"]
+        disable_nonessential_warnings = [
+            "/wd4267", "/wd4244", "/wd4305", "/wd4018", "/wd4800"]
         if env["warnings"] == "extra":
             env.Append(CCFLAGS=["/Wall"])  # Implies /W4
         elif env["warnings"] == "all":
@@ -504,10 +539,12 @@ if selected_platform in platform_list:
         gcc_common_warnings = []
 
         if methods.using_gcc(env):
-            gcc_common_warnings += ["-Wshadow-local", "-Wno-misleading-indentation"]
+            gcc_common_warnings += ["-Wshadow-local",
+                                    "-Wno-misleading-indentation"]
 
         if env["warnings"] == "extra":
-            env.Append(CCFLAGS=["-Wall", "-Wextra", "-Wwrite-strings", "-Wno-unused-parameter"] + gcc_common_warnings)
+            env.Append(CCFLAGS=["-Wall", "-Wextra", "-Wwrite-strings",
+                       "-Wno-unused-parameter"] + gcc_common_warnings)
             env.Append(CXXFLAGS=["-Wctor-dtor-privacy", "-Wnon-virtual-dtor"])
             if methods.using_gcc(env):
                 env.Append(
@@ -551,7 +588,8 @@ if selected_platform in platform_list:
 
     if env["target"] == "release":
         if env["tools"]:
-            print("Error: The editor can only be built with `target=debug` or `target=release_debug`.")
+            print(
+                "Error: The editor can only be built with `target=debug` or `target=release_debug`.")
             Exit(255)
         suffix += ".opt"
         env.Append(CPPDEFINES=["NDEBUG"])
@@ -673,12 +711,14 @@ if selected_platform in platform_list:
 
     GLSL_BUILDERS = {
         "RD_GLSL": env.Builder(
-            action=env.Run(glsl_builders.build_rd_headers, 'Building RD_GLSL header: "$TARGET"'),
+            action=env.Run(glsl_builders.build_rd_headers,
+                           'Building RD_GLSL header: "$TARGET"'),
             suffix="glsl.gen.h",
             src_suffix=".glsl",
         ),
         "GLSL_HEADER": env.Builder(
-            action=env.Run(glsl_builders.build_raw_headers, 'Building GLSL header: "$TARGET"'),
+            action=env.Run(glsl_builders.build_raw_headers,
+                           'Building GLSL header: "$TARGET"'),
             suffix="glsl.gen.h",
             src_suffix=".glsl",
         ),
@@ -709,7 +749,8 @@ if selected_platform in platform_list:
         SConscript("tests/SCsub")
     SConscript("main/SCsub")
 
-    SConscript("platform/" + selected_platform + "/SCsub")  # Build selected platform.
+    # Build selected platform.
+    SConscript("platform/" + selected_platform + "/SCsub")
 
     # Microsoft Visual Studio Project Generation
     if env["vsproj"]:
