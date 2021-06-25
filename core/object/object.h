@@ -136,6 +136,12 @@ enum PropertyUsageFlags {
 	PROPERTY_USAGE_DEFAULT_INTL = PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_NETWORK | PROPERTY_USAGE_INTERNATIONALIZED,
 	PROPERTY_USAGE_NOEDITOR = PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_NETWORK,
 };
+// 字符串转换
+#define CODE_TO_STRING(arg) #arg
+#define CODE_TO_STRING_2(arg1, arg2) CODE_TO_STRING(arg1##arg2)
+#define CODE_TO_STRING_3(arg1, arg2, arg3) CODE_TO_STRING(arg1##arg2##arg3)
+#define CODE_TO_STRING_4(arg1, arg2, arg3, arg4) CODE_TO_STRING(arg1##arg2##arg3##arg4)
+#define CODE_TO_STRING_5(arg1, arg2, arg3, arg4, arg5) CODE_TO_STRING(arg1##arg2##arg3##arg4##arg5)
 
 #define ADD_SIGNAL(m_signal) ClassDB::add_signal(get_class_static(), m_signal)
 #define ADD_PROPERTY(m_property, m_setter, m_getter) ClassDB::add_property(get_class_static(), m_property, _scs_create(m_setter), _scs_create(m_getter))
@@ -144,39 +150,31 @@ enum PropertyUsageFlags {
 #define ADD_GROUP(m_name, m_prefix) ClassDB::add_property_group(get_class_static(), m_name, m_prefix)
 #define ADD_SUBGROUP(m_name, m_prefix) ClassDB::add_property_subgroup(get_class_static(), m_name, m_prefix)
 
-#define DECL_PROPERTY(type, name)                                   \
-	type _get_##name() { return name; }                             \
-	void _set##name(type p_value_##name) { name = p_value_##name; } \
+#define DECL_PROPERTY(type, name)                                    \
+	type _get_##name() { return name; }                              \
+	void _set_##name(type p_value_##name) { name = p_value_##name; } \
 	type name
 // 定义一个按钮
-#define DECL_PROPERTY_BUTTON(state_name, call_function)                   \
-	bool _get_##state_name() { return state_name; }                       \
-	void _set##state_name(bool p_value_##state_name) { call_function(); } \
+#define DECL_PROPERTY_BUTTON(state_name, call_function)                    \
+	bool _get_##state_name() { return state_name; }                        \
+	void _set_##state_name(bool p_value_##state_name) { call_function(); } \
 	bool state_name
-#define IMP_PROPERTY(class_name, type, name)                                                                \
-	String pro_get_##name##_func_name = String("_get") + #name;                                             \
-	const char *c_get_##name##_func_name = pro_get_##name##_func_name.utf8();                               \
-                                                                                                            \
-	String pro_set_##name##_func_name = String("_set") + #name;                                             \
-	const char *c_set_##name##_func_name = pro_set_##name##_func_name.utf8();                               \
-	String pro_##name##_arg_name = String("p_value_") + #name;                                              \
-	const char *c_##name##_arg_name = pro_##name##_arg_name.utf8();                                         \
-	Variant::Type t_##name##_variant_type = Variant::get_type<type>();                                      \
-	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set##name); \
-	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                     \
+#define IMP_PROPERTY(class_name, type, name)                                                                 \
+	const char *c_get_##name##_func_name = CODE_TO_STRING_2(_get_, name);                                    \
+	const char *c_set_##name##_func_name = CODE_TO_STRING_2(_set_, name);                                    \
+	const char *c_##name##_arg_name = CODE_TO_STRING_2(p_, name);                                            \
+	Variant::Type t_##name##_variant_type = Variant::get_type<type>();                                       \
+	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set_##name); \
+	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                      \
 	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), c_set_##name##_func_name, c_get_##name##_func_name);
 // 枚举类型
-#define IMP_PROPERTY_D(class_name, type, name, pro_hit, hint_string)                                        \
-	String pro_get_##name##_func_name = String("_get") + #name;                                             \
-	const char *c_get_##name##_func_name = pro_get_##name##_func_name.utf8();                               \
-                                                                                                            \
-	String pro_set_##name##_func_name = String("_set") + #name;                                             \
-	const char *c_set_##name##_func_name = pro_set_##name##_func_name.utf8();                               \
-	String pro_##name##_arg_name = String("p_value_") + #name;                                              \
-	const char *c_##name##_arg_name = pro_##name##_arg_name.utf8();                                         \
-	Variant::Type t_##name##_variant_type = Variant::get_type<type>();                                      \
-	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set##name); \
-	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                     \
+#define IMP_PROPERTY_D(class_name, type, name, pro_hit, hint_string)                                         \
+	const char *c_get_##name##_func_name = CODE_TO_STRING_2(_get_, name);                                    \
+	const char *c_set_##name##_func_name = CODE_TO_STRING_2(_set_, name);                                    \
+	const char *c_##name##_arg_name = CODE_TO_STRING_2(p_, name);                                            \
+	Variant::Type t_##name##_variant_type = Variant::get_type<type>();                                       \
+	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set_##name); \
+	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                      \
 	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, pro_hit, hint_string, PROPERTY_USAGE_DEFAULT), c_set_##name##_func_name, c_get_##name##_func_name);
 
 struct PropertyInfo {

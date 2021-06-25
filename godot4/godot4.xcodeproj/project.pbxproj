@@ -6,10 +6,39 @@
 	objectVersion = 50;
 	objects = {
 
+/* Begin PBXFileReference section */
+		5431A05B2684E869009E60B7 /* editor */ = {isa = PBXFileReference; lastKnownFileType = folder; name = editor; path = ../editor; sourceTree = "<group>"; };
+		5431A05C2684E869009E60B7 /* modules */ = {isa = PBXFileReference; lastKnownFileType = folder; name = modules; path = ../modules; sourceTree = "<group>"; };
+		5431A05D2684E86A009E60B7 /* tests */ = {isa = PBXFileReference; lastKnownFileType = folder; name = tests; path = ../tests; sourceTree = "<group>"; };
+		5431A05E2684E86A009E60B7 /* thirdparty */ = {isa = PBXFileReference; lastKnownFileType = folder; name = thirdparty; path = ../thirdparty; sourceTree = "<group>"; };
+		5431A05F2684E86A009E60B7 /* misc */ = {isa = PBXFileReference; lastKnownFileType = folder; name = misc; path = ../misc; sourceTree = "<group>"; };
+		5431A0602684E86B009E60B7 /* platform */ = {isa = PBXFileReference; lastKnownFileType = folder; name = platform; path = ../platform; sourceTree = "<group>"; };
+		5431A0612684E86B009E60B7 /* servers */ = {isa = PBXFileReference; lastKnownFileType = folder; name = servers; path = ../servers; sourceTree = "<group>"; };
+		5431A0622684E86B009E60B7 /* scene */ = {isa = PBXFileReference; lastKnownFileType = folder; name = scene; path = ../scene; sourceTree = "<group>"; };
+		5431A0632684E86B009E60B7 /* core */ = {isa = PBXFileReference; lastKnownFileType = folder; name = core; path = ../core; sourceTree = "<group>"; };
+		5431A0642684E86B009E60B7 /* godot4 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = godot4; sourceTree = "<group>"; };
+		5431A0652684E86B009E60B7 /* doc */ = {isa = PBXFileReference; lastKnownFileType = folder; name = doc; path = ../doc; sourceTree = "<group>"; };
+		5431A0662684E86C009E60B7 /* drivers */ = {isa = PBXFileReference; lastKnownFileType = folder; name = drivers; path = ../drivers; sourceTree = "<group>"; };
+		5431A0672684E86C009E60B7 /* main */ = {isa = PBXFileReference; lastKnownFileType = folder; name = main; path = ../main; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
 /* Begin PBXGroup section */
 		5431A0502684E817009E60B7 = {
 			isa = PBXGroup;
 			children = (
+				5431A0632684E86B009E60B7 /* core */,
+				5431A0652684E86B009E60B7 /* doc */,
+				5431A0662684E86C009E60B7 /* drivers */,
+				5431A05B2684E869009E60B7 /* editor */,
+				5431A0642684E86B009E60B7 /* godot4 */,
+				5431A0672684E86C009E60B7 /* main */,
+				5431A05F2684E86A009E60B7 /* misc */,
+				5431A05C2684E869009E60B7 /* modules */,
+				5431A0602684E86B009E60B7 /* platform */,
+				5431A0622684E86B009E60B7 /* scene */,
+				5431A0612684E86B009E60B7 /* servers */,
+				5431A05D2684E86A009E60B7 /* tests */,
+				5431A05E2684E86A009E60B7 /* thirdparty */,
 			);
 			sourceTree = "<group>";
 		};
