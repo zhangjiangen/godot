@@ -250,6 +250,9 @@ public:
 	Variant get_ref() const;
 	void set_obj(Object *p_object);
 	void set_ref(const REF &p_ref);
+	ObjectID get_obj_id() {
+		return ref;
+	}
 
 	WeakRef() {}
 };

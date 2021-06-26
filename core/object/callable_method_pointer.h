@@ -72,7 +72,7 @@ public:
 template <class T, class... P>
 class CallableCustomMethodPointer : public CallableCustomMethodPointerBase {
 	struct Data {
-		T *instance;
+		ObjectID instance;
 #ifdef DEBUG_ENABLED
 		uint64_t object_id;
 #endif
@@ -86,19 +86,23 @@ public:
 			return ObjectID();
 		}
 #endif
-		return data.instance->get_instance_id();
+		return data.instance;
 	}
 
 	virtual void call(const Variant **p_arguments, int p_argcount, Variant &r_return_value, Callable::CallError &r_call_error) const {
+		T *obj = (T *)ObjectDB::get_instance(data.instance);
+		if (obj == nullptr) {
+			return;
+		}
 #ifdef DEBUG_ENABLED
 		ERR_FAIL_COND_MSG(ObjectDB::get_instance(ObjectID(data.object_id)) == nullptr, "Invalid Object id '" + uitos(data.object_id) + "', can't call method.");
 #endif
-		call_with_variant_args(data.instance, data.method, p_arguments, p_argcount, r_call_error);
+		call_with_variant_args(obj, data.method, p_arguments, p_argcount, r_call_error);
 	}
 
 	CallableCustomMethodPointer(T *p_instance, void (T::*p_method)(P...)) {
 		memset(&data, 0, sizeof(Data)); // Clear beforehand, may have padding bytes.
-		data.instance = p_instance;
+		data.instance = p_instance->get_instance_id();
 #ifdef DEBUG_ENABLED
 		data.object_id = p_instance->get_instance_id();
 #endif
@@ -126,7 +130,7 @@ Callable create_custom_callable_function_pointer(T *p_instance,
 template <class T, class R, class... P>
 class CallableCustomMethodPointerRet : public CallableCustomMethodPointerBase {
 	struct Data {
-		T *instance;
+		ObjectID instance;
 #ifdef DEBUG_ENABLED
 		uint64_t object_id;
 #endif
@@ -141,19 +145,23 @@ public:
 			return ObjectID();
 		}
 #endif
-		return data.instance->get_instance_id();
+		return data.instance;
 	}
 
 	virtual void call(const Variant **p_arguments, int p_argcount, Variant &r_return_value, Callable::CallError &r_call_error) const {
+		T *obj = (T *)ObjectDB::get_instance(data.instance);
+		if (obj == nullptr) {
+			return;
+		}
 #ifdef DEBUG_ENABLED
 		ERR_FAIL_COND_MSG(ObjectDB::get_instance(ObjectID(data.object_id)) == nullptr, "Invalid Object id '" + uitos(data.object_id) + "', can't call method.");
 #endif
-		call_with_variant_args_ret(data.instance, data.method, p_arguments, p_argcount, r_return_value, r_call_error);
+		call_with_variant_args_ret(obj, data.method, p_arguments, p_argcount, r_return_value, r_call_error);
 	}
 
 	CallableCustomMethodPointerRet(T *p_instance, R (T::*p_method)(P...)) {
 		memset(&data, 0, sizeof(Data)); // Clear beforehand, may have padding bytes.
-		data.instance = p_instance;
+		data.instance = p_instance->get_instance_id();
 #ifdef DEBUG_ENABLED
 		data.object_id = p_instance->get_instance_id();
 #endif
@@ -181,7 +189,7 @@ Callable create_custom_callable_function_pointer(T *p_instance,
 template <class T, class R, class... P>
 class CallableCustomMethodPointerRetC : public CallableCustomMethodPointerBase {
 	struct Data {
-		T *instance;
+		ObjectID instance;
 #ifdef DEBUG_ENABLED
 		uint64_t object_id;
 #endif
@@ -196,19 +204,23 @@ public:
 			return ObjectID();
 		}
 #endif
-		return data.instance->get_instance_id();
+		return data.instance;
 	}
 
 	virtual void call(const Variant **p_arguments, int p_argcount, Variant &r_return_value, Callable::CallError &r_call_error) const {
+		T *obj = (T *)ObjectDB::get_instance(data.instance);
+		if (obj == nullptr) {
+			return;
+		}
 #ifdef DEBUG_ENABLED
 		ERR_FAIL_COND_MSG(ObjectDB::get_instance(ObjectID(data.object_id)) == nullptr, "Invalid Object id '" + uitos(data.object_id) + "', can't call method.");
 #endif
-		call_with_variant_args_retc(data.instance, data.method, p_arguments, p_argcount, r_return_value, r_call_error);
+		call_with_variant_args_retc(obj, data.method, p_arguments, p_argcount, r_return_value, r_call_error);
 	}
 
 	CallableCustomMethodPointerRetC(T *p_instance, R (T::*p_method)(P...) const) {
 		memset(&data, 0, sizeof(Data)); // Clear beforehand, may have padding bytes.
-		data.instance = p_instance;
+		data.instance = p_instance->get_instance_id();
 #ifdef DEBUG_ENABLED
 		data.object_id = p_instance->get_instance_id();
 #endif

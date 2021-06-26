@@ -94,15 +94,17 @@ public:
 
 private:
 	Element **hash_table = nullptr;
+	uint32_t hash_table_size = 0;
 	uint8_t hash_table_power = 0;
 	uint32_t elements = 0;
 
 	void make_hash_table() {
 		ERR_FAIL_COND(hash_table);
 
-		hash_table = memnew_arr(Element *, (1 << MIN_HASH_TABLE_POWER));
-
 		hash_table_power = MIN_HASH_TABLE_POWER;
+		hash_table = memnew_arr(Element *, (1 << hash_table_power));
+		hash_table_size = (uint64_t)1 << hash_table_power;
+
 		elements = 0;
 		for (int i = 0; i < (1 << MIN_HASH_TABLE_POWER); i++) {
 			hash_table[i] = nullptr;
@@ -167,6 +169,7 @@ private:
 			memdelete_arr(hash_table);
 		}
 		hash_table = new_hash_table;
+		hash_table_size = ((uint64_t)1 << new_hash_table_power);
 		hash_table_power = new_hash_table_power;
 	}
 
@@ -214,15 +217,16 @@ private:
 
 		clear();
 
-		if (!p_t.hash_table || p_t.hash_table_power == 0) {
+		if (!p_t.hash_table || p_t.hash_table_power <= 0) {
 			return; /* not copying from empty table */
 		}
 
-		hash_table = memnew_arr(Element *, (uint64_t)1 << p_t.hash_table_power);
 		hash_table_power = p_t.hash_table_power;
+		hash_table = memnew_arr(Element *, (uint64_t)1 << hash_table_power);
+		hash_table_size = (uint64_t)1 << p_t.hash_table_power;
 		elements = p_t.elements;
 
-		for (int i = 0; i < (1 << p_t.hash_table_power); i++) {
+		for (int i = 0; i < (1 << hash_table_power); i++) {
 			hash_table[i] = nullptr;
 
 			const Element *e = p_t.hash_table[i];
@@ -516,6 +520,7 @@ public:
 		}
 
 		hash_table = nullptr;
+		hash_table_size = 0;
 		hash_table_power = 0;
 		elements = 0;
 	}
