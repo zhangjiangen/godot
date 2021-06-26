@@ -154,6 +154,14 @@ enum PropertyUsageFlags {
 	type _get_##name() { return name; }                              \
 	void _set_##name(type p_value_##name) { name = p_value_##name; } \
 	type name
+// 修改属性调用一个回调
+#define DECL_PROPERTY_CB(type, name, cb_func) \
+	type _get_##name() { return name; }       \
+	void _set_##name(type p_value_##name) {   \
+		name = p_value_##name;                \
+		cb_func();                            \
+	}                                         \
+	type name
 // 定义一个按钮
 #define DECL_PROPERTY_BUTTON(state_name, call_function)                    \
 	bool _get_##state_name() { return state_name; }                        \
@@ -167,6 +175,16 @@ enum PropertyUsageFlags {
 	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set_##name); \
 	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                      \
 	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), c_set_##name##_func_name, c_get_##name##_func_name);
+// 动态属性，不可编辑，不存档，用来保存临时状态
+#define IMP_PROPERTY_Temp(class_name, type, name)                                                            \
+	const char *c_get_##name##_func_name = CODE_TO_STRING_2(_get_, name);                                    \
+	const char *c_set_##name##_func_name = CODE_TO_STRING_2(_set_, name);                                    \
+	const char *c_##name##_arg_name = CODE_TO_STRING_2(p_, name);                                            \
+	Variant::Type t_##name##_variant_type = Variant::get_type<bool>();                                       \
+	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set_##name); \
+	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                      \
+	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), c_set_##name##_func_name, c_get_##name##_func_name);
+
 // 枚举类型
 #define IMP_PROPERTY_D(class_name, type, name, pro_hit, hint_string)                                         \
 	const char *c_get_##name##_func_name = CODE_TO_STRING_2(_get_, name);                                    \
@@ -176,10 +194,29 @@ enum PropertyUsageFlags {
 	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set_##name); \
 	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                      \
 	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, pro_hit, hint_string, PROPERTY_USAGE_DEFAULT), c_set_##name##_func_name, c_get_##name##_func_name);
+// 资源类型
+#define IMP_PROPERTY_D_RES(class_name, type, name, pro_hit, hint_string, res_class_name)                     \
+	const char *c_get_##name##_func_name = CODE_TO_STRING_2(_get_, name);                                    \
+	const char *c_set_##name##_func_name = CODE_TO_STRING_2(_set_, name);                                    \
+	const char *c_##name##_arg_name = CODE_TO_STRING_2(p_, name);                                            \
+	Variant::Type t_##name##_variant_type = Variant::get_type<type>();                                       \
+	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set_##name); \
+	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                      \
+	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, pro_hit, hint_string, PROPERTY_USAGE_DEFAULT, #res_class_name), c_set_##name##_func_name, c_get_##name##_func_name);
+// 动态修改可编辑状态，需要设置一个bool类型的属性名称，获取这个属性是否可以编辑
+#define IMP_PROPERTY_D_DYN_EDITOR(class_name, type, name, pro_hit, hint_string, editor_state_get_bool_pro)   \
+	const char *c_get_##name##_func_name = CODE_TO_STRING_2(_get_, name);                                    \
+	const char *c_set_##name##_func_name = CODE_TO_STRING_2(_set_, name);                                    \
+	const char *c_##name##_arg_name = CODE_TO_STRING_2(p_, name);                                            \
+	Variant::Type t_##name##_variant_type = Variant::get_type<type>();                                       \
+	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set_##name); \
+	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                      \
+	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, pro_hit, hint_string, PROPERTY_USAGE_DEFAULT, StringName(), editor_state_get), c_set_##name##_func_name, c_get_##name##_func_name);
 
 struct PropertyInfo {
 	Variant::Type type = Variant::NIL;
 	String name;
+	StringName update_read_state;
 	StringName class_name; //for classes
 	PropertyHint hint = PROPERTY_HINT_NONE;
 	String hint_string;
@@ -197,7 +234,7 @@ struct PropertyInfo {
 
 	PropertyInfo() {}
 
-	PropertyInfo(Variant::Type p_type, const String p_name, PropertyHint p_hint = PROPERTY_HINT_NONE, const String &p_hint_string = "", uint32_t p_usage = PROPERTY_USAGE_DEFAULT, const StringName &p_class_name = StringName()) :
+	PropertyInfo(Variant::Type p_type, const String p_name, PropertyHint p_hint = PROPERTY_HINT_NONE, const String &p_hint_string = "", uint32_t p_usage = PROPERTY_USAGE_DEFAULT, const StringName &p_class_name = StringName(), const StringName &read_only_state = StringName()) :
 			type(p_type),
 			name(p_name),
 			hint(p_hint),
@@ -208,6 +245,7 @@ struct PropertyInfo {
 		} else {
 			class_name = p_class_name;
 		}
+		update_read_state = read_only_state;
 	}
 
 	PropertyInfo(const StringName &p_class_name) :

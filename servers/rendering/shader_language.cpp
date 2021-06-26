@@ -3331,6 +3331,9 @@ bool ShaderLanguage::_validate_varying_assign(ShaderNode::Varying &p_varying, St
 }
 
 bool ShaderLanguage::_validate_varying_using(ShaderNode::Varying &p_varying, String *r_message) {
+	if (current_function == varying_function_names.vertex) {
+		p_varying.stage = ShaderNode::Varying::STAGE_VERTEX;
+	}
 	switch (p_varying.stage) {
 		case ShaderNode::Varying::STAGE_UNKNOWN:
 			*r_message = RTR("Varying must be assigned before using!");

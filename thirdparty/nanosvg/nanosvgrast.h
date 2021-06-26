@@ -1133,6 +1133,8 @@ static void nsvg__rasterizeSortedEdges(NSVGrasterizer *r, float tx, float ty, fl
 			// remove all active edges that terminate before the center of this scanline
 			while (*step) {
 				NSVGactiveEdge *z = *step;
+                if(z == nullptr)
+                    break;
 				if (z->ey <= scany) {
 					*step = z->next; // delete from list
 //					NSVG__assert(z->valid);

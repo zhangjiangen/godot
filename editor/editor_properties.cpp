@@ -461,7 +461,8 @@ void EditorPropertyButton::update_property() {
 	button->set_visible(c);
 }
 void EditorPropertyButton::set_button_name(const String &name) {
-	button->set_name(name);
+	//button->set_name(name);
+	button->set_text(name);
 }
 EditorPropertyButton::EditorPropertyButton() {
 	button = memnew(Button);
