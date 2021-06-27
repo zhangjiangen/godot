@@ -2488,9 +2488,36 @@ Error Image::compress_from_channels(CompressMode p_mode, UsedChannels p_channels
 			ERR_FAIL_COND_V(!_image_compress_bptc_func, ERR_UNAVAILABLE);
 			_image_compress_bptc_func(this, p_lossy_quality, p_channels);
 		} break;
-		case COMPRESS_ASTC: {
+		case COMPRESS_ASTC_4x4:
+		case COMPRESS_ASTC_5x4:
+		case COMPRESS_ASTC_5x5:
+		case COMPRESS_ASTC_6x5:
+		case COMPRESS_ASTC_6x6:
+		case COMPRESS_ASTC_8x5:
+		case COMPRESS_ASTC_8x6:
+		case COMPRESS_ASTC_8x8:
+		case COMPRESS_ASTC_10x5:
+		case COMPRESS_ASTC_10x6:
+		case COMPRESS_ASTC_10x8:
+		case COMPRESS_ASTC_10x10:
+		case COMPRESS_ASTC_12x10:
+		case COMPRESS_ASTC_12x12:
+		case COMPRESS_ALPHA8_ASTC_4x4:
+		case COMPRESS_ALPHA8_ASTC_5x4:
+		case COMPRESS_ALPHA8_ASTC_5x5:
+		case COMPRESS_ALPHA8_ASTC_6x5:
+		case COMPRESS_ALPHA8_ASTC_6x6:
+		case COMPRESS_ALPHA8_ASTC_8x5:
+		case COMPRESS_ALPHA8_ASTC_8x6:
+		case COMPRESS_ALPHA8_ASTC_8x8:
+		case COMPRESS_ALPHA8_ASTC_10x5:
+		case COMPRESS_ALPHA8_ASTC_10x6:
+		case COMPRESS_ALPHA8_ASTC_10x8:
+		case COMPRESS_ALPHA8_ASTC_10x10:
+		case COMPRESS_ALPHA8_ASTC_12x10:
+		case COMPRESS_ALPHA8_ASTC_12x12: {
 			ERR_FAIL_COND_V(!_image_compress_astc_func, ERR_UNAVAILABLE);
-			_image_compress_astc_func(this, p_lossy_quality, p_channels);
+			_image_compress_astc_func(this, p_lossy_quality, p_mode, p_channels);
 		} break;
 	}
 
@@ -2812,7 +2839,7 @@ void (*Image::_image_compress_bptc_func)(Image *, float, Image::UsedChannels) = 
 void (*Image::_image_compress_pvrtc1_4bpp_func)(Image *) = nullptr;
 void (*Image::_image_compress_etc1_func)(Image *, float) = nullptr;
 void (*Image::_image_compress_etc2_func)(Image *, float, Image::UsedChannels) = nullptr;
-void (*Image::_image_compress_astc_func)(Image *, float, Image::UsedChannels) = nullptr;
+void (*Image::_image_compress_astc_func)(Image *, float, Image::CompressMode, Image::UsedChannels) = nullptr;
 void (*Image::_image_decompress_pvrtc)(Image *) = nullptr;
 void (*Image::_image_decompress_bc)(Image *) = nullptr;
 void (*Image::_image_decompress_bptc)(Image *) = nullptr;

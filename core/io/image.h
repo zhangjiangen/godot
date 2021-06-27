@@ -170,7 +170,7 @@ public:
 	static void (*_image_compress_pvrtc1_4bpp_func)(Image *);
 	static void (*_image_compress_etc1_func)(Image *, float);
 	static void (*_image_compress_etc2_func)(Image *, float, UsedChannels p_channels);
-	static void (*_image_compress_astc_func)(Image *, float, Image::UsedChannels);
+	static void (*_image_compress_astc_func)(Image *, float, CompressMode, Image::UsedChannels);
 
 	static void (*_image_decompress_pvrtc)(Image *);
 	static void (*_image_decompress_bc)(Image *);
