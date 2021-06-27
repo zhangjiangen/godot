@@ -400,7 +400,8 @@ Error ResourceImporterTexture::import(const String &p_source_file, const String 
 	bool stream = p_options["compress/streamed"];
 	int size_limit = p_options["process/size_limit"];
 	bool hdr_as_srgb = p_options["process/HDR_as_SRGB"];
-	int normal = p_options["compress/normal_map"];
+	//int normal = p_options["compress/normal_map"];
+	int normal = 0;
 	float scale = p_options["svg/scale"];
 	int hdr_compression = p_options["compress/hdr_compression"];
 	int bptc_ldr = p_options["compress/bptc_ldr"];
