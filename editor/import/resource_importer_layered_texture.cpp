@@ -459,11 +459,51 @@ Error ResourceImporterLayeredTexture::import(const String &p_source_file, const 
 			formats_imported.push_back("pvrtc");
 		}
 
-		if (ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_astc")) {
-			_save_tex(slices, p_save_path + ".etc2." + extension, compress_mode, lossy, Image::COMPRESS_ETC2, csource, used_channels, mipmaps, true);
-			r_platform_variants->push_back("astc");
-			formats_imported.push_back("astc");
-		}
+#define PROCESS_ASTC(w_x_h)                                                                                                \
+		if (ProjectSettings::get_singleton()->get(CODE_TO_STRING_2(rendering/textures/vram_compression/import_astc,w_x_h))\
+		{\
+			_save_stex(image, p_save_path + CODE_TO_STRING_3(.astc, w_x_h, .stex), compress_mode, lossy, Image::COMPRESS_ASTC_##w_x_h, mipmaps, stream, detect_3d, detect_roughness, detect_normal, force_normal, srgb_friendly_pack, true, mipmap_limit, normal_image, roughness_channel);\
+		r_platform_variants->push_back(CODE_TO_STRING_2(astc,w_x_h));\
+		formats_imported.push_back(CODE_TO_STRING_2(astc,w_x_h));\
+	}
+#define PROCESS_ASTC_ALPHA(w_x_h)                                                                                          \
+		if (ProjectSettings::get_singleton()->get(CODE_TO_STRING_2(rendering/textures/vram_compression/import_astc,w_x_h))\
+		{\
+			_save_stex(image, p_save_path + CODE_TO_STRING_3(.astc, w_x_h, _alpha.stex), compress_mode, lossy, Image::COMPRESS_ALPHA8_ASTC_##w_x_h, mipmaps, stream, detect_3d, detect_roughness, detect_normal, force_normal, srgb_friendly_pack, true, mipmap_limit, normal_image, roughness_channel);\
+		r_platform_variants->push_back(CODE_TO_STRING_3(astc,w_x_h,_alpha));\
+		formats_imported.push_back(CODE_TO_STRING_3(astc,w_x_h,_alpha));\
+	}
+
+		PROCESS_ASTC(4x4);
+		PROCESS_ASTC(5x4);
+		PROCESS_ASTC(5x5);
+		PROCESS_ASTC(6x5);
+		PROCESS_ASTC(6x6);
+		PROCESS_ASTC(8x5);
+		PROCESS_ASTC(8x6);
+		PROCESS_ASTC(8x8);
+		PROCESS_ASTC(10x5);
+		PROCESS_ASTC(10x6);
+		PROCESS_ASTC(10x8);
+		PROCESS_ASTC(10x10);
+		PROCESS_ASTC(12x10);
+		PROCESS_ASTC(12x12);
+		PROCESS_ASTC_ALPHA(4x4);
+		PROCESS_ASTC_ALPHA(5x4);
+		PROCESS_ASTC_ALPHA(5x5);
+		PROCESS_ASTC_ALPHA(6x5);
+		PROCESS_ASTC_ALPHA(6x6);
+		PROCESS_ASTC_ALPHA(8x5);
+		PROCESS_ASTC_ALPHA(8x6);
+		PROCESS_ASTC_ALPHA(8x8);
+		PROCESS_ASTC_ALPHA(10x5);
+		PROCESS_ASTC_ALPHA(10x6);
+		PROCESS_ASTC_ALPHA(10x8);
+		PROCESS_ASTC_ALPHA(10x10);
+		PROCESS_ASTC_ALPHA(12x10);
+		PROCESS_ASTC_ALPHA(12x12);
+#undef PROCESS_ASTC
+#undef PROCESS_ASTC_ALPHA
 
 		if (!ok_on_pc) {
 			EditorNode::add_io_error("Warning, no suitable PC VRAM compression enabled in Project Settings. This texture will not display correctly on PC.");
@@ -491,8 +531,37 @@ const char *ResourceImporterLayeredTexture::compression_formats[] = {
 	"etc",
 	"etc2",
 	"pvrtc",
+	"astc_4x4",
+	"astc_5x4", //
+	"astc_5x5",
+	"astc_6x5",
+	"astc_6x6",
+	"astc_8x5",
+	"astc_8x6",
+	"astc_8x8",
+	"astc_10x5",
+	"astc_10x6",
+	"astc_10x8",
+	"astc_10x10",
+	"astc_12x10",
+	"astc_12x12",
+	"astc_4x4_alpha",
+	"astc_5x4_alpha",
+	"astc_5x5_alpha",
+	"astc_6x5_alpha",
+	"astc_6x6_alpha",
+	"astc_8x5_alpha",
+	"astc_8x6_alpha",
+	"astc_8x8_alpha",
+	"astc_10x5_alpha",
+	"astc_10x6_alpha",
+	"astc_10x8_alpha",
+	"astc_10x10_alpha",
+	"astc_12x10_alpha",
+	"astc_12x12_alpha",
 	nullptr
 };
+
 String ResourceImporterLayeredTexture::get_import_settings_string() const {
 	String s;
 

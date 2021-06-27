@@ -2489,8 +2489,8 @@ Error Image::compress_from_channels(CompressMode p_mode, UsedChannels p_channels
 			_image_compress_bptc_func(this, p_lossy_quality, p_channels);
 		} break;
 		case COMPRESS_ASTC: {
-			ERR_FAIL_COND_V(!_image_compress_bptc_func, ERR_UNAVAILABLE);
-			_image_compress_bptc_func(this, p_lossy_quality, p_channels);
+			ERR_FAIL_COND_V(!_image_compress_astc_func, ERR_UNAVAILABLE);
+			_image_compress_astc_func(this, p_lossy_quality, p_channels);
 		} break;
 	}
 
