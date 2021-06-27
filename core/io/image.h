@@ -105,7 +105,36 @@ public:
 		FORMAT_ETC2_RGB8A1,
 		FORMAT_ETC2_RA_AS_RG, //used to make basis universal happy
 		FORMAT_DXT5_RA_AS_RG, //used to make basis universal happy
-		FORMAT_MAX
+		// astc format
+		FORMAT_RGBA_ASTC_4x4,
+		FORMAT_RGBA_ASTC_5x4,
+		FORMAT_RGBA_ASTC_5x5,
+		FORMAT_RGBA_ASTC_6x5,
+		FORMAT_RGBA_ASTC_6x6,
+		FORMAT_RGBA_ASTC_8x5,
+		FORMAT_RGBA_ASTC_8x6,
+		FORMAT_RGBA_ASTC_8x8,
+		FORMAT_RGBA_ASTC_10x5,
+		FORMAT_RGBA_ASTC_10x6,
+		FORMAT_RGBA_ASTC_10x8,
+		FORMAT_RGBA_ASTC_10x10,
+		FORMAT_RGBA_ASTC_12x10,
+		FORMAT_RGBA_ASTC_12x12,
+		FORMAT_SRGB8_ALPHA8_ASTC_4x4,
+		FORMAT_SRGB8_ALPHA8_ASTC_5x4,
+		FORMAT_SRGB8_ALPHA8_ASTC_5x5,
+		FORMAT_SRGB8_ALPHA8_ASTC_6x5,
+		FORMAT_SRGB8_ALPHA8_ASTC_6x6,
+		FORMAT_SRGB8_ALPHA8_ASTC_8x5,
+		FORMAT_SRGB8_ALPHA8_ASTC_8x6,
+		FORMAT_SRGB8_ALPHA8_ASTC_8x8,
+		FORMAT_SRGB8_ALPHA8_ASTC_10x5,
+		FORMAT_SRGB8_ALPHA8_ASTC_10x6,
+		FORMAT_SRGB8_ALPHA8_ASTC_10x8,
+		FORMAT_SRGB8_ALPHA8_ASTC_10x10,
+		FORMAT_SRGB8_ALPHA8_ASTC_12x10,
+		FORMAT_SRGB8_ALPHA8_ASTC_12x12,
+		FORMAT_MAX,
 	};
 
 	static const char *format_names[FORMAT_MAX];
@@ -141,12 +170,14 @@ public:
 	static void (*_image_compress_pvrtc1_4bpp_func)(Image *);
 	static void (*_image_compress_etc1_func)(Image *, float);
 	static void (*_image_compress_etc2_func)(Image *, float, UsedChannels p_channels);
+	static void (*_image_compress_astc_func)(Image *, float, Image::UsedChannels);
 
 	static void (*_image_decompress_pvrtc)(Image *);
 	static void (*_image_decompress_bc)(Image *);
 	static void (*_image_decompress_bptc)(Image *);
 	static void (*_image_decompress_etc1)(Image *);
 	static void (*_image_decompress_etc2)(Image *);
+	static void (*_image_decompress_astc)(Image *);
 
 	static Vector<uint8_t> (*webp_lossy_packer)(const Ref<Image> &p_image, float p_quality);
 	static Vector<uint8_t> (*webp_lossless_packer)(const Ref<Image> &p_image);
@@ -336,6 +367,7 @@ public:
 		COMPRESS_ETC,
 		COMPRESS_ETC2,
 		COMPRESS_BPTC,
+		COMPRESS_ASTC
 	};
 	enum CompressSource {
 		COMPRESS_SOURCE_GENERIC,

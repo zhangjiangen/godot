@@ -454,9 +454,15 @@ Error ResourceImporterLayeredTexture::import(const String &p_source_file, const 
 		}
 
 		if (ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_pvrtc")) {
-			_save_tex(slices, p_save_path + ".etc2." + extension, compress_mode, lossy, Image::COMPRESS_ETC2, csource, used_channels, mipmaps, true);
+			_save_tex(slices, p_save_path + ".pvrtc." + extension, compress_mode, lossy, Image::COMPRESS_PVRTC1_4, csource, used_channels, mipmaps, true);
 			r_platform_variants->push_back("pvrtc");
 			formats_imported.push_back("pvrtc");
+		}
+
+		if (ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_astc")) {
+			_save_tex(slices, p_save_path + ".etc2." + extension, compress_mode, lossy, Image::COMPRESS_ETC2, csource, used_channels, mipmaps, true);
+			r_platform_variants->push_back("astc");
+			formats_imported.push_back("astc");
 		}
 
 		if (!ok_on_pc) {

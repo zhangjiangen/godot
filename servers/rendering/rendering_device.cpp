@@ -895,4 +895,72 @@ RenderingDevice::RenderingDevice() {
 	if (singleton == nullptr) { // there may be more rendering devices later
 		singleton = this;
 	}
+} 
+RenderingDevice::DataFormat RenderingDevice::image_astc_to_datatype(const Image::Format internalFormat) {
+	switch (internalFormat) {
+		//
+		// 8 bits per component
+		//
+
+		//
+		// ASTC
+		//
+		case Image::FORMAT_RGBA_ASTC_4x4:
+			return DATA_FORMAT_ASTC_4x4_UNORM_BLOCK; // 4-component ASTC, 4x4 blocks, unsigned normalized
+		case Image::FORMAT_RGBA_ASTC_5x4:
+			return DATA_FORMAT_ASTC_5x4_UNORM_BLOCK; // 4-component ASTC, 5x4 blocks, unsigned normalized
+		case Image::FORMAT_RGBA_ASTC_5x5:
+			return DATA_FORMAT_ASTC_5x5_UNORM_BLOCK; // 4-component ASTC, 5x5 blocks, unsigned normalized
+		case Image::FORMAT_RGBA_ASTC_6x5:
+			return DATA_FORMAT_ASTC_6x5_UNORM_BLOCK; // 4-component ASTC, 6x5 blocks, unsigned normalized
+		case Image::FORMAT_RGBA_ASTC_6x6:
+			return DATA_FORMAT_ASTC_6x6_UNORM_BLOCK; // 4-component ASTC, 6x6 blocks, unsigned normalized
+		case Image::FORMAT_RGBA_ASTC_8x5:
+			return DATA_FORMAT_ASTC_8x5_UNORM_BLOCK; // 4-component ASTC, 8x5 blocks, unsigned normalized
+		case Image::FORMAT_RGBA_ASTC_8x6:
+			return DATA_FORMAT_ASTC_8x6_UNORM_BLOCK; // 4-component ASTC, 8x6 blocks, unsigned normalized
+		case Image::FORMAT_RGBA_ASTC_8x8:
+			return DATA_FORMAT_ASTC_8x8_UNORM_BLOCK; // 4-component ASTC, 8x8 blocks, unsigned normalized
+		case Image::FORMAT_RGBA_ASTC_10x5:
+			return DATA_FORMAT_ASTC_10x5_UNORM_BLOCK; // 4-component ASTC, 10x5 blocks, unsigned normalized
+		case Image::FORMAT_RGBA_ASTC_10x6:
+			return DATA_FORMAT_ASTC_10x6_UNORM_BLOCK; // 4-component ASTC, 10x6 blocks, unsigned normalized
+		case Image::FORMAT_RGBA_ASTC_10x8:
+			return DATA_FORMAT_ASTC_10x8_UNORM_BLOCK; // 4-component ASTC, 10x8 blocks, unsigned normalized
+		case Image::FORMAT_RGBA_ASTC_10x10:
+			return DATA_FORMAT_ASTC_10x10_UNORM_BLOCK; // 4-component ASTC, 10x10 blocks, unsigned normalized
+		case Image::FORMAT_RGBA_ASTC_12x10:
+			return DATA_FORMAT_ASTC_12x10_UNORM_BLOCK; // 4-component ASTC, 12x10 blocks, unsigned normalized
+		case Image::FORMAT_RGBA_ASTC_12x12:
+			return DATA_FORMAT_ASTC_12x12_UNORM_BLOCK; // 4-component ASTC, 12x12 blocks, unsigned normalized
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_4x4:
+			return DATA_FORMAT_ASTC_4x4_SRGB_BLOCK; // 4-component ASTC, 4x4 blocks, sRGB
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_5x4:
+			return DATA_FORMAT_ASTC_5x4_SRGB_BLOCK; // 4-component ASTC, 5x4 blocks, sRGB
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_5x5:
+			return DATA_FORMAT_ASTC_5x5_SRGB_BLOCK; // 4-component ASTC, 5x5 blocks, sRGB
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_6x5:
+			return DATA_FORMAT_ASTC_6x5_SRGB_BLOCK; // 4-component ASTC, 6x5 blocks, sRGB
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_6x6:
+			return DATA_FORMAT_ASTC_6x6_SRGB_BLOCK; // 4-component ASTC, 6x6 blocks, sRGB
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_8x5:
+			return DATA_FORMAT_ASTC_8x5_SRGB_BLOCK; // 4-component ASTC, 8x5 blocks, sRGB
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_8x6:
+			return DATA_FORMAT_ASTC_8x6_SRGB_BLOCK; // 4-component ASTC, 8x6 blocks, sRGB
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_8x8:
+			return DATA_FORMAT_ASTC_8x8_SRGB_BLOCK; // 4-component ASTC, 8x8 blocks, sRGB
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_10x5:
+			return DATA_FORMAT_ASTC_10x5_SRGB_BLOCK; // 4-component ASTC, 10x5 blocks, sRGB
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_10x6:
+			return DATA_FORMAT_ASTC_10x6_SRGB_BLOCK; // 4-component ASTC, 10x6 blocks, sRGB
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_10x8:
+			return DATA_FORMAT_ASTC_10x8_SRGB_BLOCK; // 4-component ASTC, 10x8 blocks, sRGB
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_10x10:
+			return DATA_FORMAT_ASTC_10x10_SRGB_BLOCK; // 4-component ASTC, 10x10 blocks, sRGB
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_12x10:
+			return DATA_FORMAT_ASTC_12x10_SRGB_BLOCK; // 4-component ASTC, 12x10 blocks, sRGB
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_12x12:
+			return DATA_FORMAT_ASTC_12x12_SRGB_BLOCK; // 4-component ASTC, 12x12 blocks, sRGB
+	}
+	return DATA_FORMAT_MAX;
 }

@@ -1491,16 +1491,17 @@ String EditorExportPlatform::test_etc2() const {
 	return String();
 }
 
-String EditorExportPlatform::test_etc2_or_pvrtc() const {
+String EditorExportPlatform::test_etc2_or_pvrtc_or_astc() const {
 	String driver = ProjectSettings::get_singleton()->get("rendering/driver/driver_name");
 	bool etc2_supported = ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_etc2");
 	bool pvrtc_supported = ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_pvrtc");
+	bool astc_supported = ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_astc");
 
 	if (driver == "GLES2" && !pvrtc_supported) {
 		return TTR("Target platform requires 'PVRTC' texture compression for GLES2. Enable 'Import Pvrtc' in Project Settings.");
-	} else if (driver == "Vulkan" && !etc2_supported && !pvrtc_supported) {
+	} else if (driver == "Vulkan" && !etc2_supported && !pvrtc_supported && !astc_supported) {
 		// FIXME: Review if this is true for Vulkan.
-		return TTR("Target platform requires 'ETC2' or 'PVRTC' texture compression for Vulkan. Enable 'Import Etc 2' or 'Import Pvrtc' in Project Settings.");
+		return TTR("Target platform requires 'ETC2' or 'PVRTC' or ASTC texture compression for Vulkan. Enable 'Import Etc 2' or 'Import Pvrtc' or Import Astc in Project Settings.");
 	}
 	return String();
 }

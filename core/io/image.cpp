@@ -182,6 +182,35 @@ int Image::get_format_pixel_size(Format p_format) {
 			return 1;
 		case FORMAT_DXT5_RA_AS_RG:
 			return 1;
+		case FORMAT_RGBA_ASTC_4x4:
+		case FORMAT_RGBA_ASTC_5x4:
+		case FORMAT_RGBA_ASTC_5x5:
+		case FORMAT_RGBA_ASTC_6x5:
+		case FORMAT_RGBA_ASTC_6x6:
+		case FORMAT_RGBA_ASTC_8x5:
+		case FORMAT_RGBA_ASTC_8x6:
+		case FORMAT_RGBA_ASTC_8x8:
+		case FORMAT_RGBA_ASTC_10x5:
+		case FORMAT_RGBA_ASTC_10x6:
+		case FORMAT_RGBA_ASTC_10x8:
+		case FORMAT_RGBA_ASTC_10x10:
+		case FORMAT_RGBA_ASTC_12x10:
+		case FORMAT_RGBA_ASTC_12x12:
+		case FORMAT_SRGB8_ALPHA8_ASTC_4x4:
+		case FORMAT_SRGB8_ALPHA8_ASTC_5x4:
+		case FORMAT_SRGB8_ALPHA8_ASTC_5x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_6x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_6x6:
+		case FORMAT_SRGB8_ALPHA8_ASTC_8x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_8x6:
+		case FORMAT_SRGB8_ALPHA8_ASTC_8x8:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x6:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x8:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x10:
+		case FORMAT_SRGB8_ALPHA8_ASTC_12x10:
+		case FORMAT_SRGB8_ALPHA8_ASTC_12x12:
+			return 1;
 		case FORMAT_MAX: {
 		}
 	}
@@ -227,7 +256,35 @@ void Image::get_format_min_pixel_size(Format p_format, int &r_w, int &r_h) {
 		case FORMAT_ETC2_RGBA8:
 		case FORMAT_ETC2_RGB8A1:
 		case FORMAT_ETC2_RA_AS_RG:
-		case FORMAT_DXT5_RA_AS_RG: {
+		case FORMAT_DXT5_RA_AS_RG:
+		case FORMAT_RGBA_ASTC_4x4:
+		case FORMAT_RGBA_ASTC_5x4:
+		case FORMAT_RGBA_ASTC_5x5:
+		case FORMAT_RGBA_ASTC_6x5:
+		case FORMAT_RGBA_ASTC_6x6:
+		case FORMAT_RGBA_ASTC_8x5:
+		case FORMAT_RGBA_ASTC_8x6:
+		case FORMAT_RGBA_ASTC_8x8:
+		case FORMAT_RGBA_ASTC_10x5:
+		case FORMAT_RGBA_ASTC_10x6:
+		case FORMAT_RGBA_ASTC_10x8:
+		case FORMAT_RGBA_ASTC_10x10:
+		case FORMAT_RGBA_ASTC_12x10:
+		case FORMAT_RGBA_ASTC_12x12:
+		case FORMAT_SRGB8_ALPHA8_ASTC_4x4:
+		case FORMAT_SRGB8_ALPHA8_ASTC_5x4:
+		case FORMAT_SRGB8_ALPHA8_ASTC_5x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_6x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_6x6:
+		case FORMAT_SRGB8_ALPHA8_ASTC_8x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_8x6:
+		case FORMAT_SRGB8_ALPHA8_ASTC_8x8:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x6:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x8:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x10:
+		case FORMAT_SRGB8_ALPHA8_ASTC_12x10:
+		case FORMAT_SRGB8_ALPHA8_ASTC_12x12: {
 			r_w = 4;
 			r_h = 4;
 
@@ -285,6 +342,34 @@ int Image::get_format_block_size(Format p_format) {
 		case FORMAT_ETC2_RGB8A1:
 		case FORMAT_ETC2_RA_AS_RG: //used to make basis universal happy
 		case FORMAT_DXT5_RA_AS_RG: //used to make basis universal happy
+		case FORMAT_RGBA_ASTC_4x4:
+		case FORMAT_RGBA_ASTC_5x4:
+		case FORMAT_RGBA_ASTC_5x5:
+		case FORMAT_RGBA_ASTC_6x5:
+		case FORMAT_RGBA_ASTC_6x6:
+		case FORMAT_RGBA_ASTC_8x5:
+		case FORMAT_RGBA_ASTC_8x6:
+		case FORMAT_RGBA_ASTC_8x8:
+		case FORMAT_RGBA_ASTC_10x5:
+		case FORMAT_RGBA_ASTC_10x6:
+		case FORMAT_RGBA_ASTC_10x8:
+		case FORMAT_RGBA_ASTC_10x10:
+		case FORMAT_RGBA_ASTC_12x10:
+		case FORMAT_RGBA_ASTC_12x12:
+		case FORMAT_SRGB8_ALPHA8_ASTC_4x4:
+		case FORMAT_SRGB8_ALPHA8_ASTC_5x4:
+		case FORMAT_SRGB8_ALPHA8_ASTC_5x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_6x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_6x6:
+		case FORMAT_SRGB8_ALPHA8_ASTC_8x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_8x6:
+		case FORMAT_SRGB8_ALPHA8_ASTC_8x8:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x6:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x8:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x10:
+		case FORMAT_SRGB8_ALPHA8_ASTC_12x10:
+		case FORMAT_SRGB8_ALPHA8_ASTC_12x12:
 
 		{
 			return 4;
@@ -2403,6 +2488,10 @@ Error Image::compress_from_channels(CompressMode p_mode, UsedChannels p_channels
 			ERR_FAIL_COND_V(!_image_compress_bptc_func, ERR_UNAVAILABLE);
 			_image_compress_bptc_func(this, p_lossy_quality, p_channels);
 		} break;
+		case COMPRESS_ASTC: {
+			ERR_FAIL_COND_V(!_image_compress_bptc_func, ERR_UNAVAILABLE);
+			_image_compress_bptc_func(this, p_lossy_quality, p_channels);
+		} break;
 	}
 
 	return OK;
@@ -2723,11 +2812,13 @@ void (*Image::_image_compress_bptc_func)(Image *, float, Image::UsedChannels) = 
 void (*Image::_image_compress_pvrtc1_4bpp_func)(Image *) = nullptr;
 void (*Image::_image_compress_etc1_func)(Image *, float) = nullptr;
 void (*Image::_image_compress_etc2_func)(Image *, float, Image::UsedChannels) = nullptr;
+void (*Image::_image_compress_astc_func)(Image *, float, Image::UsedChannels) = nullptr;
 void (*Image::_image_decompress_pvrtc)(Image *) = nullptr;
 void (*Image::_image_decompress_bc)(Image *) = nullptr;
 void (*Image::_image_decompress_bptc)(Image *) = nullptr;
 void (*Image::_image_decompress_etc1)(Image *) = nullptr;
 void (*Image::_image_decompress_etc2)(Image *) = nullptr;
+void (*Image::_image_decompress_astc)(Image *) = nullptr;
 
 Vector<uint8_t> (*Image::webp_lossy_packer)(const Ref<Image> &, float) = nullptr;
 Vector<uint8_t> (*Image::webp_lossless_packer)(const Ref<Image> &) = nullptr;
@@ -3217,6 +3308,36 @@ void Image::_bind_methods() {
 	BIND_ENUM_CONSTANT(FORMAT_ETC2_RGB8A1);
 	BIND_ENUM_CONSTANT(FORMAT_ETC2_RA_AS_RG);
 	BIND_ENUM_CONSTANT(FORMAT_DXT5_RA_AS_RG);
+	// Astc
+	BIND_ENUM_CONSTANT(FORMAT_RGBA_ASTC_4x4);
+	BIND_ENUM_CONSTANT(FORMAT_RGBA_ASTC_5x4);
+	BIND_ENUM_CONSTANT(FORMAT_RGBA_ASTC_5x5);
+	BIND_ENUM_CONSTANT(FORMAT_RGBA_ASTC_6x5);
+	BIND_ENUM_CONSTANT(FORMAT_RGBA_ASTC_6x6);
+	BIND_ENUM_CONSTANT(FORMAT_RGBA_ASTC_8x5);
+	BIND_ENUM_CONSTANT(FORMAT_RGBA_ASTC_8x6);
+	BIND_ENUM_CONSTANT(FORMAT_RGBA_ASTC_8x8);
+	BIND_ENUM_CONSTANT(FORMAT_RGBA_ASTC_10x5);
+	BIND_ENUM_CONSTANT(FORMAT_RGBA_ASTC_10x6);
+	BIND_ENUM_CONSTANT(FORMAT_RGBA_ASTC_10x8);
+	BIND_ENUM_CONSTANT(FORMAT_RGBA_ASTC_10x10);
+	BIND_ENUM_CONSTANT(FORMAT_RGBA_ASTC_12x10);
+	BIND_ENUM_CONSTANT(FORMAT_RGBA_ASTC_12x12);
+	BIND_ENUM_CONSTANT(FORMAT_SRGB8_ALPHA8_ASTC_4x4);
+	BIND_ENUM_CONSTANT(FORMAT_SRGB8_ALPHA8_ASTC_5x4);
+	BIND_ENUM_CONSTANT(FORMAT_SRGB8_ALPHA8_ASTC_5x5);
+	BIND_ENUM_CONSTANT(FORMAT_SRGB8_ALPHA8_ASTC_6x5);
+	BIND_ENUM_CONSTANT(FORMAT_SRGB8_ALPHA8_ASTC_6x6);
+	BIND_ENUM_CONSTANT(FORMAT_SRGB8_ALPHA8_ASTC_8x5);
+	BIND_ENUM_CONSTANT(FORMAT_SRGB8_ALPHA8_ASTC_8x6);
+	BIND_ENUM_CONSTANT(FORMAT_SRGB8_ALPHA8_ASTC_8x8);
+	BIND_ENUM_CONSTANT(FORMAT_SRGB8_ALPHA8_ASTC_10x5);
+	BIND_ENUM_CONSTANT(FORMAT_SRGB8_ALPHA8_ASTC_10x6);
+	BIND_ENUM_CONSTANT(FORMAT_SRGB8_ALPHA8_ASTC_10x8);
+	BIND_ENUM_CONSTANT(FORMAT_SRGB8_ALPHA8_ASTC_10x10);
+	BIND_ENUM_CONSTANT(FORMAT_SRGB8_ALPHA8_ASTC_12x10);
+	BIND_ENUM_CONSTANT(FORMAT_SRGB8_ALPHA8_ASTC_12x12);
+
 	BIND_ENUM_CONSTANT(FORMAT_MAX);
 
 	BIND_ENUM_CONSTANT(INTERPOLATE_NEAREST);

@@ -480,6 +480,7 @@ private:
 						initial_settings["rendering/driver/driver_name"] = "GLES2";
 						initial_settings["rendering/textures/vram_compression/import_etc2"] = false;
 						initial_settings["rendering/textures/vram_compression/import_etc"] = true;
+						initial_settings["rendering/textures/vram_compression/import_astc"] = true;
 					}
 					initial_settings["application/config/name"] = project_name->get_text().strip_edges();
 					initial_settings["application/config/icon"] = "res://icon.png";

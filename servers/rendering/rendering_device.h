@@ -1145,6 +1145,8 @@ public:
 	static RenderingDevice *get_singleton();
 	RenderingDevice();
 
+	static DataFormat image_astc_to_datatype(const Image::Format internalFormat);
+
 protected:
 	//binders to script API
 	RID _texture_create(const Ref<RDTextureFormat> &p_format, const Ref<RDTextureView> &p_view, const TypedArray<PackedByteArray> &p_data = Array());
