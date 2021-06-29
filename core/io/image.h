@@ -170,7 +170,6 @@ public:
 	static void (*_image_compress_pvrtc1_4bpp_func)(Image *);
 	static void (*_image_compress_etc1_func)(Image *, float);
 	static void (*_image_compress_etc2_func)(Image *, float, UsedChannels p_channels);
-	static void (*_image_compress_astc_func)(Image *, float, CompressMode, Image::UsedChannels);
 
 	static void (*_image_decompress_pvrtc)(Image *);
 	static void (*_image_decompress_bc)(Image *);
@@ -401,6 +400,8 @@ public:
 		COMPRESS_SOURCE_SRGB,
 		COMPRESS_SOURCE_NORMAL
 	};
+	static void (*_image_compress_astc_func)(Image *, float, CompressMode, Image::UsedChannels);
+	bool astc_a = true;
 
 	Error compress(CompressMode p_mode, CompressSource p_source = COMPRESS_SOURCE_GENERIC, float p_lossy_quality = 0.7);
 	Error compress_from_channels(CompressMode p_mode, UsedChannels p_channels, float p_lossy_quality = 0.7);

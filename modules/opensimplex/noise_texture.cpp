@@ -116,6 +116,7 @@ void NoiseTexture::_queue_update() {
 	if (update_queued) {
 		return;
 	}
+    return;
 
 	update_queued = true;
 	call_deferred("_update_texture");

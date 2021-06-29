@@ -554,51 +554,6 @@ Error ResourceImporterTexture::import(const String &p_source_file, const String 
 			r_platform_variants->push_back("pvrtc");
 			formats_imported.push_back("pvrtc");
 		}
-#define PROCESS_ASTC(w_x_h)                                                                                                \
-		if (ProjectSettings::get_singleton()->get(CODE_TO_STRING_2(rendering/textures/vram_compression/import_astc,w_x_h))\
-		{\
-			_save_stex(image, p_save_path + CODE_TO_STRING_3(.astc, w_x_h, .stex), compress_mode, lossy, Image::COMPRESS_ASTC_##w_x_h, mipmaps, stream, detect_3d, detect_roughness, detect_normal, force_normal, srgb_friendly_pack, true, mipmap_limit, normal_image, roughness_channel);\
-		r_platform_variants->push_back(CODE_TO_STRING_2(astc,w_x_h));\
-		formats_imported.push_back(CODE_TO_STRING_2(astc,w_x_h));\
-	}
-#define PROCESS_ASTC_ALPHA(w_x_h)                                                                                          \
-		if (ProjectSettings::get_singleton()->get(CODE_TO_STRING_2(rendering/textures/vram_compression/import_astc,w_x_h))\
-		{\
-			_save_stex(image, p_save_path + CODE_TO_STRING_3(.astc, w_x_h, _alpha.stex), compress_mode, lossy, Image::COMPRESS_ALPHA8_ASTC_##w_x_h, mipmaps, stream, detect_3d, detect_roughness, detect_normal, force_normal, srgb_friendly_pack, true, mipmap_limit, normal_image, roughness_channel);\
-		r_platform_variants->push_back(CODE_TO_STRING_3(astc,w_x_h,_alpha));\
-		formats_imported.push_back(CODE_TO_STRING_3(astc,w_x_h,_alpha));\
-	}
-
-		PROCESS_ASTC(4x4);
-		PROCESS_ASTC(5x4);
-		PROCESS_ASTC(5x5);
-		PROCESS_ASTC(6x5);
-		PROCESS_ASTC(6x6);
-		PROCESS_ASTC(8x5);
-		PROCESS_ASTC(8x6);
-		PROCESS_ASTC(8x8);
-		PROCESS_ASTC(10x5);
-		PROCESS_ASTC(10x6);
-		PROCESS_ASTC(10x8);
-		PROCESS_ASTC(10x10);
-		PROCESS_ASTC(12x10);
-		PROCESS_ASTC(12x12);
-		PROCESS_ASTC_ALPHA(4x4);
-		PROCESS_ASTC_ALPHA(5x4);
-		PROCESS_ASTC_ALPHA(5x5);
-		PROCESS_ASTC_ALPHA(6x5);
-		PROCESS_ASTC_ALPHA(6x6);
-		PROCESS_ASTC_ALPHA(8x5);
-		PROCESS_ASTC_ALPHA(8x6);
-		PROCESS_ASTC_ALPHA(8x8);
-		PROCESS_ASTC_ALPHA(10x5);
-		PROCESS_ASTC_ALPHA(10x6);
-		PROCESS_ASTC_ALPHA(10x8);
-		PROCESS_ASTC_ALPHA(10x10);
-		PROCESS_ASTC_ALPHA(12x10);
-		PROCESS_ASTC_ALPHA(12x12);
-#undef PROCESS_ASTC
-#undef PROCESS_ASTC_ALPHA
 
 		if (!ok_on_pc) {
 			EditorNode::add_io_error("Warning, no suitable PC VRAM compression enabled in Project Settings. This texture will not display correctly on PC.");
