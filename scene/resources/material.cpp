@@ -822,9 +822,9 @@ void BaseMaterial3D::_update_shader() {
 		code += "\tTANGENT+= vec3(1.0,0.0,0.0) * abs(NORMAL.z);\n";
 		code += "\tTANGENT = normalize(TANGENT);\n";
 
-		code += "\tBINORMAL = vec3(0.0,-1.0,0.0) * abs(NORMAL.x);\n";
-		code += "\tBINORMAL+= vec3(0.0,0.0,1.0) * abs(NORMAL.y);\n";
-		code += "\tBINORMAL+= vec3(0.0,-1.0,0.0) * abs(NORMAL.z);\n";
+		code += "\tBINORMAL = vec3(0.0,1.0,0.0) * abs(NORMAL.x);\n";
+		code += "\tBINORMAL+= vec3(0.0,0.0,-1.0) * abs(NORMAL.y);\n";
+		code += "\tBINORMAL+= vec3(0.0,1.0,0.0) * abs(NORMAL.z);\n";
 		code += "\tBINORMAL = normalize(BINORMAL);\n";
 	}
 
@@ -876,6 +876,20 @@ void BaseMaterial3D::_update_shader() {
 
 	if ((features[FEATURE_DETAIL] && detail_uv == DETAIL_UV_2) || (features[FEATURE_AMBIENT_OCCLUSION] && flags[FLAG_AO_ON_UV2]) || (features[FEATURE_EMISSION] && flags[FLAG_EMISSION_ON_UV2])) {
 		code += "\tvec2 base_uv2 = UV2;\n";
+	}
+
+	if (features[FEATURE_HEIGHT_MAPPING] && flags[FLAG_UV1_USE_TRIPLANAR]) {
+		// Display both resource name and albedo texture name.
+		// Materials are often built-in to scenes, so displaying the resource name alone may not be meaningful.
+		// On the other hand, albedo textures are almost always external to the scene.
+		if (textures[TEXTURE_ALBEDO].is_valid()) {
+			WARN_PRINT(vformat("%s (albedo %s): Height mapping is not supported on triplanar materials. Ignoring height mapping in favor of triplanar mapping.", get_path(), textures[TEXTURE_ALBEDO]->get_path()));
+		} else if (!get_path().is_empty()) {
+			WARN_PRINT(vformat("%s: Height mapping is not supported on triplanar materials. Ignoring height mapping in favor of triplanar mapping.", get_path()));
+		} else {
+			// Resource wasn't saved yet.
+			WARN_PRINT("Height mapping is not supported on triplanar materials. Ignoring height mapping in favor of triplanar mapping.");
+		}
 	}
 
 	if (!RenderingServer::get_singleton()->is_low_end() && features[FEATURE_HEIGHT_MAPPING] && !flags[FLAG_UV1_USE_TRIPLANAR]) { //heightmap not supported with triplanar

@@ -1241,7 +1241,7 @@ bool CanvasItemEditor::_gui_input_zoom_or_pan(const Ref<InputEvent> &p_event, bo
 
 	Ref<InputEventPanGesture> pan_gesture = p_event;
 	if (pan_gesture.is_valid() && !p_already_accepted) {
-		// If control key pressed, then zoom instead of pan
+		// If ctrl key pressed, then zoom instead of pan.
 		if (pan_gesture->is_ctrl_pressed()) {
 			const float factor = pan_gesture->get_delta().y;
 
@@ -4317,11 +4317,11 @@ void CanvasItemEditor::_button_toggle_anchor_mode(bool p_status) {
 void CanvasItemEditor::_update_override_camera_button(bool p_game_running) {
 	if (p_game_running) {
 		override_camera_button->set_disabled(false);
-		override_camera_button->set_tooltip(TTR("Game Camera Override\nOverrides game camera with editor viewport camera."));
+		override_camera_button->set_tooltip(TTR("Project Camera Override\nOverrides the running project's camera with the editor viewport camera."));
 	} else {
 		override_camera_button->set_disabled(true);
 		override_camera_button->set_pressed(false);
-		override_camera_button->set_tooltip(TTR("Game Camera Override\nNo game instance running."));
+		override_camera_button->set_tooltip(TTR("Project Camera Override\nNo project instance running. Run the project from the editor to use this feature."));
 	}
 }
 
@@ -5478,7 +5478,7 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 
 	p = view_menu->get_popup();
 	p->set_hide_on_checkable_item_selection(false);
-	p->add_check_shortcut(ED_SHORTCUT("canvas_item_editor/show_grid", TTR("Always Show Grid"), KEY_MASK_CTRL | KEY_G), SHOW_GRID);
+	p->add_check_shortcut(ED_SHORTCUT("canvas_item_editor/show_grid", TTR("Always Show Grid"), KEY_MASK_CMD | KEY_G), SHOW_GRID);
 	p->add_check_shortcut(ED_SHORTCUT("canvas_item_editor/show_helpers", TTR("Show Helpers"), KEY_H), SHOW_HELPERS);
 	p->add_check_shortcut(ED_SHORTCUT("canvas_item_editor/show_rulers", TTR("Show Rulers")), SHOW_RULERS);
 	p->add_check_shortcut(ED_SHORTCUT("canvas_item_editor/show_guides", TTR("Show Guides"), KEY_Y), SHOW_GUIDES);

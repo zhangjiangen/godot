@@ -394,11 +394,13 @@ public:
 		COMPRESS_ALPHA8_ASTC_10x10,
 		COMPRESS_ALPHA8_ASTC_12x10,
 		COMPRESS_ALPHA8_ASTC_12x12,
+		COMPRESS_MAX,
 	};
 	enum CompressSource {
 		COMPRESS_SOURCE_GENERIC,
 		COMPRESS_SOURCE_SRGB,
-		COMPRESS_SOURCE_NORMAL
+		COMPRESS_SOURCE_NORMAL,
+		COMPRESS_SOURCE_MAX,
 	};
 	static void (*_image_compress_astc_func)(Image *, float, CompressMode, Image::UsedChannels);
 	bool astc_a = true;
