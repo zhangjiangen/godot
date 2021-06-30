@@ -122,7 +122,7 @@ void RendererViewport::_draw_viewport(Viewport *p_viewport, uint32_t p_view_coun
 		}
 	}
 
-	bool can_draw_3d = RSG::scene->is_camera(p_viewport->camera);
+	bool can_draw_3d = RSG::scene->is_camera(p_viewport->camera) && !p_viewport->disable_3d;
 
 	if (p_viewport->clear_mode != RS::VIEWPORT_CLEAR_NEVER) {
 		if (p_viewport->transparent_bg) {
@@ -630,15 +630,14 @@ RID RendererViewport::viewport_allocate() {
 }
 
 void RendererViewport::viewport_initialize(RID p_rid) {
-	Viewport *viewport = memnew(Viewport);
+	viewport_owner.initialize_rid(p_rid);
+	Viewport *viewport = viewport_owner.getornull(p_rid);
 	viewport->self = p_rid;
 	viewport->hide_scenario = false;
 	viewport->hide_canvas = false;
 	viewport->render_target = RSG::storage->render_target_create();
 	viewport->shadow_atlas = RSG::scene->shadow_atlas_create();
 	viewport->viewport_render_direct_to_screen = false;
-
-	viewport_owner.initialize_rid(p_rid, viewport);
 }
 
 void RendererViewport::viewport_set_use_xr(RID p_viewport, bool p_use_xr) {
@@ -811,6 +810,13 @@ void RendererViewport::viewport_set_disable_environment(RID p_viewport, bool p_d
 	ERR_FAIL_COND(!viewport);
 
 	viewport->disable_environment = p_disable;
+}
+
+void RendererViewport::viewport_set_disable_3d(RID p_viewport, bool p_disable) {
+	Viewport *viewport = viewport_owner.getornull(p_viewport);
+	ERR_FAIL_COND(!viewport);
+
+	viewport->disable_3d = p_disable;
 }
 
 void RendererViewport::viewport_attach_camera(RID p_viewport, RID p_camera) {
@@ -1085,7 +1091,6 @@ bool RendererViewport::free(RID p_rid) {
 		}
 
 		viewport_owner.free(p_rid);
-		memdelete(viewport);
 
 		return true;
 	}
