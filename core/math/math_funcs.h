@@ -108,7 +108,41 @@ public:
 
 	static _ALWAYS_INLINE_ double exp(double p_x) { return ::exp(p_x); }
 	static _ALWAYS_INLINE_ float exp(float p_x) { return ::expf(p_x); }
-
+	static _ALWAYS_INLINE_ float saturate(float p_x) {
+		if (p_x < 0.0f)
+			return 0.0f;
+		else if (p_x > 1.0f)
+			return 1.0f;
+		return p_x;
+	}
+	static _ALWAYS_INLINE_ float clamp(float p_x, float p_min, float p_max) {
+		if (p_x < p_min)
+			return p_min;
+		else if (p_x > p_max)
+			return p_max;
+		return p_x;
+	}
+	static inline int8_t floatToSnorm8(float v) {
+		//According to D3D10 rules, the value "-1.0f" has two representations:
+		//  0x10 and 0x11
+		//This allows everyone to convert by just multiplying by 127 instead
+		//of multiplying the negative values by 128 and 127 for positive.
+		return static_cast<int8_t>(Math::clamp(v >= 0.0f ?
+														 (v * 127.0f + 0.5f) :
+														 (v * 127.0f - 0.5f),
+				-128.0f,
+				127.0f));
+	}
+	static inline float max(float p_x, float p_y) {
+		if (p_x > p_y) {
+			return p_x;
+		}
+		return p_y;
+	}
+	static inline float snorm8ToFloat(int8_t v) {
+		// -128 & -127 both map to -1 according to D3D10 rules.
+		return max(v / 127.0f, -1.0f);
+	}
 	static _ALWAYS_INLINE_ bool is_nan(double p_val) {
 #ifdef _MSC_VER
 		return _isnan(p_val);
