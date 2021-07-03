@@ -61,6 +61,9 @@ public:
 		uint32_t max_view_count;
 		uint32_t max_instance_count;
 	};
+	_FORCE_INLINE_ const VkPhysicalDeviceProperties &get_gpu_props() {
+		return gpu_props;
+	}
 
 private:
 	enum {

@@ -56,6 +56,8 @@ class RenderingDeviceVulkan : public RenderingDevice {
 	// by vulkan.
 
 	VkPhysicalDeviceLimits limits;
+
+public:
 	static const VkFormat vulkan_formats[DATA_FORMAT_MAX];
 	static const char *named_formats[DATA_FORMAT_MAX];
 	static const VkCompareOp compare_operators[COMPARE_OP_MAX];
@@ -68,6 +70,7 @@ class RenderingDeviceVulkan : public RenderingDevice {
 	static const VkBorderColor sampler_border_colors[SAMPLER_BORDER_COLOR_MAX];
 	static const VkImageType vulkan_image_type[TEXTURE_TYPE_MAX];
 
+private:
 	// Functions used for format
 	// validation, and ensures the
 	// user passes valid data.
