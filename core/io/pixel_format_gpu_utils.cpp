@@ -268,12 +268,8 @@ uint8_t PixelFormatGpuUtils::getMaxMipmapCount(uint32_t maxResolution) {
 		return 0;
 
 	uint8_t numMipmaps;
-#if (ANDROID || (OGRE_COMPILER == OGRE_COMPILER_MSVC && OGRE_COMP_VER < 1800))
 	numMipmaps = static_cast<uint8_t>(floorf(logf(static_cast<float>(maxResolution)) /
 											 logf(2.0f)));
-#else
-	numMipmaps = static_cast<uint8_t>(floorf(log2f(static_cast<float>(maxResolution))));
-#endif
 	return numMipmaps + 1u;
 }
 //-----------------------------------------------------------------------

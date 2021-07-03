@@ -256,40 +256,81 @@ void Image::get_format_min_pixel_size(Format p_format, int &r_w, int &r_h) {
 		case FORMAT_ETC2_RGBA8:
 		case FORMAT_ETC2_RGB8A1:
 		case FORMAT_ETC2_RA_AS_RG:
-		case FORMAT_DXT5_RA_AS_RG:
-		case FORMAT_RGBA_ASTC_4x4:
-		case FORMAT_RGBA_ASTC_5x4:
-		case FORMAT_RGBA_ASTC_5x5:
-		case FORMAT_RGBA_ASTC_6x5:
-		case FORMAT_RGBA_ASTC_6x6:
-		case FORMAT_RGBA_ASTC_8x5:
-		case FORMAT_RGBA_ASTC_8x6:
-		case FORMAT_RGBA_ASTC_8x8:
-		case FORMAT_RGBA_ASTC_10x5:
-		case FORMAT_RGBA_ASTC_10x6:
-		case FORMAT_RGBA_ASTC_10x8:
-		case FORMAT_RGBA_ASTC_10x10:
-		case FORMAT_RGBA_ASTC_12x10:
-		case FORMAT_RGBA_ASTC_12x12:
-		case FORMAT_SRGB8_ALPHA8_ASTC_4x4:
-		case FORMAT_SRGB8_ALPHA8_ASTC_5x4:
-		case FORMAT_SRGB8_ALPHA8_ASTC_5x5:
-		case FORMAT_SRGB8_ALPHA8_ASTC_6x5:
-		case FORMAT_SRGB8_ALPHA8_ASTC_6x6:
-		case FORMAT_SRGB8_ALPHA8_ASTC_8x5:
-		case FORMAT_SRGB8_ALPHA8_ASTC_8x6:
-		case FORMAT_SRGB8_ALPHA8_ASTC_8x8:
-		case FORMAT_SRGB8_ALPHA8_ASTC_10x5:
-		case FORMAT_SRGB8_ALPHA8_ASTC_10x6:
-		case FORMAT_SRGB8_ALPHA8_ASTC_10x8:
-		case FORMAT_SRGB8_ALPHA8_ASTC_10x10:
-		case FORMAT_SRGB8_ALPHA8_ASTC_12x10:
-		case FORMAT_SRGB8_ALPHA8_ASTC_12x12: {
+		case FORMAT_DXT5_RA_AS_RG: {
 			r_w = 4;
 			r_h = 4;
 
 		} break;
-
+		case FORMAT_RGBA_ASTC_4x4:
+		case FORMAT_SRGB8_ALPHA8_ASTC_4x4: {
+			r_w = 4;
+			r_h = 4;
+		} break;
+		case FORMAT_RGBA_ASTC_5x4:
+		case FORMAT_SRGB8_ALPHA8_ASTC_5x4: {
+			r_w = 5;
+			r_h = 4;
+		} break;
+		case FORMAT_RGBA_ASTC_5x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_5x5: {
+			r_w = 5;
+			r_h = 5;
+		} break;
+		case FORMAT_RGBA_ASTC_6x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_6x5: {
+			r_w = 6;
+			r_h = 5;
+		} break;
+		case FORMAT_RGBA_ASTC_6x6:
+		case FORMAT_SRGB8_ALPHA8_ASTC_6x6: {
+			r_w = 6;
+			r_h = 6;
+		} break;
+		case FORMAT_RGBA_ASTC_8x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_8x5: {
+			r_w = 8;
+			r_h = 5;
+		} break;
+		case FORMAT_RGBA_ASTC_8x6:
+		case FORMAT_SRGB8_ALPHA8_ASTC_8x6: {
+			r_w = 8;
+			r_h = 6;
+		} break;
+		case FORMAT_RGBA_ASTC_8x8:
+		case FORMAT_SRGB8_ALPHA8_ASTC_8x8: {
+			r_w = 8;
+			r_h = 8;
+		} break;
+		case FORMAT_RGBA_ASTC_10x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x5: {
+			r_w = 10;
+			r_h = 5;
+		} break;
+		case FORMAT_RGBA_ASTC_10x6:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x6: {
+			r_w = 10;
+			r_h = 6;
+		} break;
+		case FORMAT_RGBA_ASTC_10x8:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x8: {
+			r_w = 10;
+			r_h = 8;
+		} break;
+		case FORMAT_RGBA_ASTC_10x10:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x10: {
+			r_w = 10;
+			r_h = 10;
+		} break;
+		case FORMAT_RGBA_ASTC_12x10:
+		case FORMAT_SRGB8_ALPHA8_ASTC_12x10: {
+			r_w = 12;
+			r_h = 10;
+		} break;
+		case FORMAT_RGBA_ASTC_12x12:
+		case FORMAT_SRGB8_ALPHA8_ASTC_12x12: {
+			r_w = 12;
+			r_h = 12;
+		} break;
 		default: {
 			r_w = 1;
 			r_h = 1;
@@ -342,34 +383,6 @@ int Image::get_format_block_size(Format p_format) {
 		case FORMAT_ETC2_RGB8A1:
 		case FORMAT_ETC2_RA_AS_RG: //used to make basis universal happy
 		case FORMAT_DXT5_RA_AS_RG: //used to make basis universal happy
-		case FORMAT_RGBA_ASTC_4x4:
-		case FORMAT_RGBA_ASTC_5x4:
-		case FORMAT_RGBA_ASTC_5x5:
-		case FORMAT_RGBA_ASTC_6x5:
-		case FORMAT_RGBA_ASTC_6x6:
-		case FORMAT_RGBA_ASTC_8x5:
-		case FORMAT_RGBA_ASTC_8x6:
-		case FORMAT_RGBA_ASTC_8x8:
-		case FORMAT_RGBA_ASTC_10x5:
-		case FORMAT_RGBA_ASTC_10x6:
-		case FORMAT_RGBA_ASTC_10x8:
-		case FORMAT_RGBA_ASTC_10x10:
-		case FORMAT_RGBA_ASTC_12x10:
-		case FORMAT_RGBA_ASTC_12x12:
-		case FORMAT_SRGB8_ALPHA8_ASTC_4x4:
-		case FORMAT_SRGB8_ALPHA8_ASTC_5x4:
-		case FORMAT_SRGB8_ALPHA8_ASTC_5x5:
-		case FORMAT_SRGB8_ALPHA8_ASTC_6x5:
-		case FORMAT_SRGB8_ALPHA8_ASTC_6x6:
-		case FORMAT_SRGB8_ALPHA8_ASTC_8x5:
-		case FORMAT_SRGB8_ALPHA8_ASTC_8x6:
-		case FORMAT_SRGB8_ALPHA8_ASTC_8x8:
-		case FORMAT_SRGB8_ALPHA8_ASTC_10x5:
-		case FORMAT_SRGB8_ALPHA8_ASTC_10x6:
-		case FORMAT_SRGB8_ALPHA8_ASTC_10x8:
-		case FORMAT_SRGB8_ALPHA8_ASTC_10x10:
-		case FORMAT_SRGB8_ALPHA8_ASTC_12x10:
-		case FORMAT_SRGB8_ALPHA8_ASTC_12x12:
 
 		{
 			return 4;
@@ -380,7 +393,118 @@ int Image::get_format_block_size(Format p_format) {
 
 	return 1;
 }
+int Image::get_format_block_size_width(Format p_format) {
+	if (p_format < FORMAT_RGBA_ASTC_4x4) {
+		return get_format_block_size(p_format);
+	}
+	switch (p_format) {
+		case FORMAT_RGBA_ASTC_4x4:
+		case FORMAT_SRGB8_ALPHA8_ASTC_4x4:
+			return 4;
+		case FORMAT_RGBA_ASTC_5x4:
+		case FORMAT_SRGB8_ALPHA8_ASTC_5x4:
+		case FORMAT_RGBA_ASTC_5x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_5x5:
+			return 5;
+		case FORMAT_RGBA_ASTC_6x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_6x5:
+		case FORMAT_RGBA_ASTC_6x6:
+		case FORMAT_SRGB8_ALPHA8_ASTC_6x6:
+			return 6;
+		case FORMAT_RGBA_ASTC_8x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_8x5:
+		case FORMAT_RGBA_ASTC_8x6:
+		case FORMAT_SRGB8_ALPHA8_ASTC_8x6:
+		case FORMAT_RGBA_ASTC_8x8:
+		case FORMAT_SRGB8_ALPHA8_ASTC_8x8:
+			return 8;
+		case FORMAT_RGBA_ASTC_10x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x5:
+		case FORMAT_RGBA_ASTC_10x6:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x6:
+		case FORMAT_RGBA_ASTC_10x8:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x8:
+		case FORMAT_RGBA_ASTC_10x10:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x10:
+			return 10;
+		case FORMAT_RGBA_ASTC_12x10:
+		case FORMAT_SRGB8_ALPHA8_ASTC_12x10:
+		case FORMAT_RGBA_ASTC_12x12:
+		case FORMAT_SRGB8_ALPHA8_ASTC_12x12: {
+			return 12;
+		}
+		default: {
+		}
+	}
 
+	return 1;
+}
+
+int Image::get_format_block_size_height(Format p_format) {
+	if (p_format < FORMAT_RGBA_ASTC_4x4) {
+		return get_format_block_size(p_format);
+	}
+	switch (p_format) {
+		case FORMAT_RGBA_ASTC_4x4:
+		case FORMAT_SRGB8_ALPHA8_ASTC_4x4:
+		case FORMAT_RGBA_ASTC_5x4:
+		case FORMAT_SRGB8_ALPHA8_ASTC_5x4:
+			return 4;
+		case FORMAT_RGBA_ASTC_5x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_5x5:
+		case FORMAT_RGBA_ASTC_6x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_6x5:
+		case FORMAT_RGBA_ASTC_8x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_8x5:
+		case FORMAT_RGBA_ASTC_10x5:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x5:
+			return 5;
+		case FORMAT_RGBA_ASTC_6x6:
+		case FORMAT_SRGB8_ALPHA8_ASTC_6x6:
+		case FORMAT_RGBA_ASTC_8x6:
+		case FORMAT_SRGB8_ALPHA8_ASTC_8x6:
+		case FORMAT_RGBA_ASTC_10x6:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x6:
+			return 6;
+		case FORMAT_RGBA_ASTC_8x8:
+		case FORMAT_SRGB8_ALPHA8_ASTC_8x8:
+		case FORMAT_RGBA_ASTC_10x8:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x8:
+			return 8;
+		case FORMAT_RGBA_ASTC_10x10:
+		case FORMAT_SRGB8_ALPHA8_ASTC_10x10:
+		case FORMAT_RGBA_ASTC_12x10:
+		case FORMAT_SRGB8_ALPHA8_ASTC_12x10:
+			return 10;
+		case FORMAT_RGBA_ASTC_12x12:
+		case FORMAT_SRGB8_ALPHA8_ASTC_12x12: {
+			return 12;
+		}
+		default: {
+		}
+	}
+
+	return 1;
+}
+
+int Image::get_mipmap_count(int p_width, int p_height, Format p_format) {
+	int minw, minh;
+	get_format_min_pixel_size(p_format, minw, minh);
+	int pm = MIN(minw, minh);
+	int mipmaps = 1;
+	while (true) {
+		if (p_width <= minw && p_height <= minh) {
+			break;
+		}
+
+		p_width = MAX(minw, p_width >> 1);
+		p_height = MAX(minh, p_height >> 1);
+
+		mipmaps++;
+	};
+
+	return mipmaps;
+}
 void Image::_get_mipmap_offset_and_size(int p_mipmap, int &r_offset, int &r_width, int &r_height) const {
 	int w = width;
 	int h = height;
@@ -2074,6 +2198,8 @@ void Image::create(int p_width, int p_height, bool p_use_mipmaps, Format p_forma
 
 	int mm = 0;
 	int size = _get_dst_image_size(p_width, p_height, p_format, mm, p_use_mipmaps ? -1 : 0);
+
+	size = get_any_image_data_size(p_width, p_height, p_format, p_use_mipmaps);
 	data.resize(size);
 
 	{
@@ -2097,7 +2223,7 @@ void Image::create(int p_width, int p_height, bool p_use_mipmaps, Format p_forma
 
 	int mm;
 	int size = _get_dst_image_size(p_width, p_height, p_format, mm, p_use_mipmaps ? -1 : 0);
-
+	size = get_any_image_data_size(p_width, p_height, p_format, p_use_mipmaps);
 	ERR_FAIL_COND_MSG(p_data.size() != size, "Expected data size of " + itos(size) + " bytes in Image::create(), got instead " + itos(p_data.size()) + " bytes.");
 
 	height = p_height;
@@ -2407,6 +2533,34 @@ Error Image::save_exr(const String &p_path, bool p_grayscale) const {
 	return save_exr_func(p_path, Ref<Image>((Image *)this), p_grayscale);
 }
 
+int Image::get_any_image_data_size(int p_width, int p_height, Format p_format, bool p_mipmaps) {
+	if (p_format < FORMAT_RGBA_ASTC_4x4) {
+		return get_image_data_size(p_width, p_height, p_format, p_mipmaps);
+	}
+	// astc 需要特殊处理
+	int bx = get_format_block_size_width(p_format);
+	int by = get_format_block_size_height(p_format);
+	uint32_t blocks_x =
+			(p_width + bx - 1) / bx;
+	uint32_t blocks_y =
+			(p_height + by - 1) / by;
+	if (!p_mipmaps) {
+		return blocks_x * blocks_y * 16;
+	}
+	uint32_t size = blocks_x * blocks_y * 16;
+	uint32_t ml = Math::max(p_width, p_height);
+	while (ml < bx * 2) {
+		p_width = Math::max(p_width >> 1, bx);
+		p_height = Math::max(p_height >> 1, by);
+		ml = Math::max(p_width, p_height);
+		blocks_x =
+				(p_width + bx - 1) / bx;
+		blocks_y =
+				(p_height + by - 1) / by;
+		size += blocks_x * blocks_y * 16;
+	}
+	return size;
+}
 int Image::get_image_data_size(int p_width, int p_height, Format p_format, bool p_mipmaps) {
 	int mm;
 	return _get_dst_image_size(p_width, p_height, p_format, mm, p_mipmaps ? -1 : 0);

@@ -34,6 +34,7 @@
 #include "core/io/resource.h"
 #include "core/math/color.h"
 #include "core/math/rect2.h"
+#include "pixel_format_gpu_utils.h"
 
 /**
  *	@author Juan Linietsky <reduzio@gmail.com>
@@ -86,8 +87,8 @@ public:
 		FORMAT_DXT1, //s3tc bc1
 		FORMAT_DXT3, //bc2
 		FORMAT_DXT5, //bc3
-		FORMAT_RGTC_R,
-		FORMAT_RGTC_RG,
+		FORMAT_RGTC_R, // bc4
+		FORMAT_RGTC_RG, // bc5
 		FORMAT_BPTC_RGBA, //btpc bc7
 		FORMAT_BPTC_RGBF, //float bc6h
 		FORMAT_BPTC_RGBFU, //unsigned float bc6hu
@@ -136,7 +137,6 @@ public:
 		FORMAT_SRGB8_ALPHA8_ASTC_12x12,
 		FORMAT_MAX,
 	};
-
 	static const char *format_names[FORMAT_MAX];
 	enum Interpolation {
 		INTERPOLATE_NEAREST,
@@ -215,8 +215,9 @@ private:
 		data = p_image.data;
 	}
 
-	_FORCE_INLINE_ void _get_mipmap_offset_and_size(int p_mipmap, int &r_offset, int &r_width, int &r_height) const; //get where the mipmap begins in data
-
+public:
+	 void _get_mipmap_offset_and_size(int p_mipmap, int &r_offset, int &r_width, int &r_height) const; //get where the mipmap begins in data
+private:
 	static int _get_dst_image_size(int p_width, int p_height, Format p_format, int &r_mipmaps, int p_mipmaps = -1, int *r_mm_width = nullptr, int *r_mm_height = nullptr);
 	bool _can_modify(Format p_format) const;
 
@@ -353,6 +354,11 @@ public:
 	static int get_format_pixel_rshift(Format p_format);
 	static int get_format_block_size(Format p_format);
 	static void get_format_min_pixel_size(Format p_format, int &r_w, int &r_h);
+	// 对于压缩格式用下面的办法获取块的高度和宽度
+	static int get_format_block_size_width(Format p_format);
+	static int get_format_block_size_height(Format p_format);
+	static int get_any_image_data_size(int p_width, int p_height, Format p_format, bool p_mipmaps = false);
+	static int get_mipmap_count(int p_width, int p_height, Format p_format);
 
 	static int get_image_data_size(int p_width, int p_height, Format p_format, bool p_mipmaps = false);
 	static int get_image_required_mipmaps(int p_width, int p_height, Format p_format);
