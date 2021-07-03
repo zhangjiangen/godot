@@ -35,6 +35,7 @@
 #include "core/io/resource_loader.h"
 #include "core/math/math_defs.h"
 #include "renderer_compositor_rd.h"
+#include "servers/rendering/rendering_server_globals.h"
 #include "servers/rendering/shader_language.h"
 
 bool RendererStorageRD::can_create_resources_async() const {
@@ -929,10 +930,6 @@ void RendererStorageRD::_texture_2d_update(RID p_texture, const Ref<Image> &p_im
 	Ref<Image> validated = _validate_texture_format(p_image, f);
 
 	RD::get_singleton()->texture_update(tex->rd_texture, p_layer, validated->get_data());
-}
-
-void RendererStorageRD::texture_2d_update_immediate(RID p_texture, const Ref<Image> &p_image, int p_layer) {
-	_texture_2d_update(p_texture, p_image, p_layer, true);
 }
 
 void RendererStorageRD::texture_2d_update(RID p_texture, const Ref<Image> &p_image, int p_layer) {
@@ -2511,7 +2508,7 @@ void RendererStorageRD::mesh_add_surface(RID p_mesh, const RS::SurfaceData &p_su
 
 					} break;
 					case RS::ARRAY_COLOR: {
-						attrib_stride += sizeof(int16_t) * 4;
+						attrib_stride += sizeof(uint32_t);
 					} break;
 					case RS::ARRAY_TEX_UV: {
 						attrib_stride += sizeof(float) * 2;
@@ -2703,7 +2700,7 @@ RS::BlendShapeMode RendererStorageRD::mesh_get_blend_shape_mode(RID p_mesh) cons
 	return mesh->blend_shape_mode;
 }
 
-void RendererStorageRD::mesh_surface_update_region(RID p_mesh, int p_surface, int p_offset, const Vector<uint8_t> &p_data) {
+void RendererStorageRD::mesh_surface_update_vertex_region(RID p_mesh, int p_surface, int p_offset, const Vector<uint8_t> &p_data) {
 	Mesh *mesh = mesh_owner.getornull(p_mesh);
 	ERR_FAIL_COND(!mesh);
 	ERR_FAIL_UNSIGNED_INDEX((uint32_t)p_surface, mesh->surface_count);
@@ -2712,6 +2709,30 @@ void RendererStorageRD::mesh_surface_update_region(RID p_mesh, int p_surface, in
 	const uint8_t *r = p_data.ptr();
 
 	RD::get_singleton()->buffer_update(mesh->surfaces[p_surface]->vertex_buffer, p_offset, data_size, r);
+}
+
+void RendererStorageRD::mesh_surface_update_attribute_region(RID p_mesh, int p_surface, int p_offset, const Vector<uint8_t> &p_data) {
+	Mesh *mesh = mesh_owner.getornull(p_mesh);
+	ERR_FAIL_COND(!mesh);
+	ERR_FAIL_UNSIGNED_INDEX((uint32_t)p_surface, mesh->surface_count);
+	ERR_FAIL_COND(p_data.size() == 0);
+	ERR_FAIL_COND(mesh->surfaces[p_surface]->attribute_buffer.is_null());
+	uint64_t data_size = p_data.size();
+	const uint8_t *r = p_data.ptr();
+
+	RD::get_singleton()->buffer_update(mesh->surfaces[p_surface]->attribute_buffer, p_offset, data_size, r);
+}
+
+void RendererStorageRD::mesh_surface_update_skin_region(RID p_mesh, int p_surface, int p_offset, const Vector<uint8_t> &p_data) {
+	Mesh *mesh = mesh_owner.getornull(p_mesh);
+	ERR_FAIL_COND(!mesh);
+	ERR_FAIL_UNSIGNED_INDEX((uint32_t)p_surface, mesh->surface_count);
+	ERR_FAIL_COND(p_data.size() == 0);
+	ERR_FAIL_COND(mesh->surfaces[p_surface]->skin_buffer.is_null());
+	uint64_t data_size = p_data.size();
+	const uint8_t *r = p_data.ptr();
+
+	RD::get_singleton()->buffer_update(mesh->surfaces[p_surface]->skin_buffer, p_offset, data_size, r);
 }
 
 void RendererStorageRD::mesh_surface_set_material(RID p_mesh, int p_surface, RID p_material) {
@@ -3282,8 +3303,8 @@ void RendererStorageRD::_mesh_surface_generate_version_for_input_mask(Mesh::Surf
 				case RS::ARRAY_COLOR: {
 					vd.offset = attribute_stride;
 
-					vd.format = RD::DATA_FORMAT_R16G16B16A16_SFLOAT;
-					attribute_stride += sizeof(int16_t) * 4;
+					vd.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+					attribute_stride += sizeof(int8_t) * 4;
 					buffer = s->attribute_buffer;
 				} break;
 				case RS::ARRAY_TEX_UV: {
@@ -3945,6 +3966,7 @@ void RendererStorageRD::particles_set_emitting(RID p_particles, bool p_emitting)
 }
 
 bool RendererStorageRD::particles_get_emitting(RID p_particles) {
+	ERR_FAIL_COND_V_MSG(RSG::threaded, false, "This function should never be used with threaded rendering, as it stalls the renderer.");
 	Particles *particles = particles_owner.getornull(p_particles);
 	ERR_FAIL_COND_V(!particles, false);
 
@@ -4267,6 +4289,10 @@ void RendererStorageRD::particles_request_process(RID p_particles) {
 }
 
 AABB RendererStorageRD::particles_get_current_aabb(RID p_particles) {
+	if (RSG::threaded) {
+		WARN_PRINT_ONCE("Calling this function with threaded rendering enabled stalls the renderer, use with care.");
+	}
+
 	const Particles *particles = particles_owner.getornull(p_particles);
 	ERR_FAIL_COND_V(!particles, AABB());
 
@@ -5151,6 +5177,7 @@ void RendererStorageRD::update_particles() {
 }
 
 bool RendererStorageRD::particles_is_inactive(RID p_particles) const {
+	ERR_FAIL_COND_V_MSG(RSG::threaded, false, "This function should never be used with threaded rendering, as it stalls the renderer.");
 	const Particles *particles = particles_owner.getornull(p_particles);
 	ERR_FAIL_COND_V(!particles, false);
 	return !particles->emitting && particles->inactive;
@@ -6052,20 +6079,6 @@ RS::LightDirectionalShadowMode RendererStorageRD::light_directional_get_shadow_m
 	return light->directional_shadow_mode;
 }
 
-void RendererStorageRD::light_directional_set_shadow_depth_range_mode(RID p_light, RS::LightDirectionalShadowDepthRangeMode p_range_mode) {
-	Light *light = light_owner.getornull(p_light);
-	ERR_FAIL_COND(!light);
-
-	light->directional_range_mode = p_range_mode;
-}
-
-RS::LightDirectionalShadowDepthRangeMode RendererStorageRD::light_directional_get_shadow_depth_range_mode(RID p_light) const {
-	const Light *light = light_owner.getornull(p_light);
-	ERR_FAIL_COND_V(!light, RS::LIGHT_DIRECTIONAL_SHADOW_DEPTH_RANGE_STABLE);
-
-	return light->directional_range_mode;
-}
-
 uint32_t RendererStorageRD::light_get_max_sdfgi_cascade(RID p_light) {
 	const Light *light = light_owner.getornull(p_light);
 	ERR_FAIL_COND_V(!light, 0);
@@ -6657,32 +6670,6 @@ float RendererStorageRD::voxel_gi_get_energy(RID p_voxel_gi) const {
 	VoxelGI *voxel_gi = voxel_gi_owner.getornull(p_voxel_gi);
 	ERR_FAIL_COND_V(!voxel_gi, 0);
 	return voxel_gi->energy;
-}
-
-void RendererStorageRD::voxel_gi_set_ao(RID p_voxel_gi, float p_ao) {
-	VoxelGI *voxel_gi = voxel_gi_owner.getornull(p_voxel_gi);
-	ERR_FAIL_COND(!voxel_gi);
-
-	voxel_gi->ao = p_ao;
-}
-
-float RendererStorageRD::voxel_gi_get_ao(RID p_voxel_gi) const {
-	VoxelGI *voxel_gi = voxel_gi_owner.getornull(p_voxel_gi);
-	ERR_FAIL_COND_V(!voxel_gi, 0);
-	return voxel_gi->ao;
-}
-
-void RendererStorageRD::voxel_gi_set_ao_size(RID p_voxel_gi, float p_strength) {
-	VoxelGI *voxel_gi = voxel_gi_owner.getornull(p_voxel_gi);
-	ERR_FAIL_COND(!voxel_gi);
-
-	voxel_gi->ao_size = p_strength;
-}
-
-float RendererStorageRD::voxel_gi_get_ao_size(RID p_voxel_gi) const {
-	VoxelGI *voxel_gi = voxel_gi_owner.getornull(p_voxel_gi);
-	ERR_FAIL_COND_V(!voxel_gi, 0);
-	return voxel_gi->ao_size;
 }
 
 void RendererStorageRD::voxel_gi_set_bias(RID p_voxel_gi, float p_bias) {

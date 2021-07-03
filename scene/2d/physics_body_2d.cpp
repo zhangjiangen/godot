@@ -49,7 +49,7 @@ void PhysicsBody2D::_bind_methods() {
 
 PhysicsBody2D::PhysicsBody2D(PhysicsServer2D::BodyMode p_mode) :
 		CollisionObject2D(PhysicsServer2D::get_singleton()->body_create(), false) {
-	PhysicsServer2D::get_singleton()->body_set_mode(get_rid(), p_mode);
+	set_body_mode(p_mode);
 	set_pickable(false);
 }
 
@@ -219,9 +219,9 @@ void StaticBody2D::set_kinematic_motion_enabled(bool p_enabled) {
 	kinematic_motion = p_enabled;
 
 	if (kinematic_motion) {
-		PhysicsServer2D::get_singleton()->body_set_mode(get_rid(), PhysicsServer2D::BODY_MODE_KINEMATIC);
+		set_body_mode(PhysicsServer2D::BODY_MODE_KINEMATIC);
 	} else {
-		PhysicsServer2D::get_singleton()->body_set_mode(get_rid(), PhysicsServer2D::BODY_MODE_STATIC);
+		set_body_mode(PhysicsServer2D::BODY_MODE_STATIC);
 	}
 
 	_update_kinematic_motion();
@@ -232,28 +232,30 @@ bool StaticBody2D::is_kinematic_motion_enabled() const {
 }
 
 void StaticBody2D::_notification(int p_what) {
-	if (p_what == NOTIFICATION_INTERNAL_PHYSICS_PROCESS) {
+	switch (p_what) {
+		case NOTIFICATION_INTERNAL_PHYSICS_PROCESS: {
 #ifdef TOOLS_ENABLED
-		if (Engine::get_singleton()->is_editor_hint()) {
-			return;
-		}
+			if (Engine::get_singleton()->is_editor_hint()) {
+				return;
+			}
 #endif
 
-		ERR_FAIL_COND(!kinematic_motion);
+			ERR_FAIL_COND(!kinematic_motion);
 
-		real_t delta_time = get_physics_process_delta_time();
+			real_t delta_time = get_physics_process_delta_time();
 
-		Transform2D new_transform = get_global_transform();
+			Transform2D new_transform = get_global_transform();
 
-		new_transform.translate(constant_linear_velocity * delta_time);
-		new_transform.set_rotation(new_transform.get_rotation() + constant_angular_velocity * delta_time);
+			new_transform.translate(constant_linear_velocity * delta_time);
+			new_transform.set_rotation(new_transform.get_rotation() + constant_angular_velocity * delta_time);
 
-		PhysicsServer2D::get_singleton()->body_set_state(get_rid(), PhysicsServer2D::BODY_STATE_TRANSFORM, new_transform);
+			PhysicsServer2D::get_singleton()->body_set_state(get_rid(), PhysicsServer2D::BODY_STATE_TRANSFORM, new_transform);
 
-		// Propagate transform change to node.
-		set_block_transform_notify(true);
-		set_global_transform(new_transform);
-		set_block_transform_notify(false);
+			// Propagate transform change to node.
+			set_block_transform_notify(true);
+			set_global_transform(new_transform);
+			set_block_transform_notify(false);
+		} break;
 	}
 }
 
@@ -528,18 +530,18 @@ void RigidBody2D::set_mode(Mode p_mode) {
 	mode = p_mode;
 	switch (p_mode) {
 		case MODE_DYNAMIC: {
-			PhysicsServer2D::get_singleton()->body_set_mode(get_rid(), PhysicsServer2D::BODY_MODE_DYNAMIC);
+			set_body_mode(PhysicsServer2D::BODY_MODE_DYNAMIC);
 		} break;
 		case MODE_STATIC: {
-			PhysicsServer2D::get_singleton()->body_set_mode(get_rid(), PhysicsServer2D::BODY_MODE_STATIC);
+			set_body_mode(PhysicsServer2D::BODY_MODE_STATIC);
 
 		} break;
 		case MODE_KINEMATIC: {
-			PhysicsServer2D::get_singleton()->body_set_mode(get_rid(), PhysicsServer2D::BODY_MODE_KINEMATIC);
+			set_body_mode(PhysicsServer2D::BODY_MODE_KINEMATIC);
 
 		} break;
 		case MODE_DYNAMIC_LOCKED: {
-			PhysicsServer2D::get_singleton()->body_set_mode(get_rid(), PhysicsServer2D::BODY_MODE_DYNAMIC_LOCKED);
+			set_body_mode(PhysicsServer2D::BODY_MODE_DYNAMIC_LOCKED);
 
 		} break;
 	}
@@ -795,18 +797,19 @@ bool RigidBody2D::is_contact_monitor_enabled() const {
 
 void RigidBody2D::_notification(int p_what) {
 #ifdef TOOLS_ENABLED
-	if (p_what == NOTIFICATION_ENTER_TREE) {
-		if (Engine::get_singleton()->is_editor_hint()) {
-			set_notify_local_transform(true); //used for warnings and only in editor
-		}
-	}
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE: {
+			if (Engine::get_singleton()->is_editor_hint()) {
+				set_notify_local_transform(true); //used for warnings and only in editor
+			}
+		} break;
 
-	if (p_what == NOTIFICATION_LOCAL_TRANSFORM_CHANGED) {
-		if (Engine::get_singleton()->is_editor_hint()) {
-			update_configuration_warnings();
-		}
+		case NOTIFICATION_LOCAL_TRANSFORM_CHANGED: {
+			if (Engine::get_singleton()->is_editor_hint()) {
+				update_configuration_warnings();
+			}
+		} break;
 	}
-
 #endif
 }
 
@@ -888,8 +891,8 @@ void RigidBody2D::_bind_methods() {
 	BIND_VMETHOD(MethodInfo("_integrate_forces", PropertyInfo(Variant::OBJECT, "state", PROPERTY_HINT_RESOURCE_TYPE, "PhysicsDirectBodyState2D")));
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "mode", PROPERTY_HINT_ENUM, "Dynamic,Static,DynamicLocked,Kinematic"), "set_mode", "get_mode");
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "mass", PROPERTY_HINT_EXP_RANGE, "0.01,65535,0.01"), "set_mass", "get_mass");
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "inertia", PROPERTY_HINT_EXP_RANGE, "0.01,65535,0.01", PROPERTY_USAGE_NONE), "set_inertia", "get_inertia");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "mass", PROPERTY_HINT_RANGE, "0.01,65535,0.01,exp"), "set_mass", "get_mass");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "inertia", PROPERTY_HINT_RANGE, "0.01,65535,0.01,exp", PROPERTY_USAGE_NONE), "set_inertia", "get_inertia");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "physics_material_override", PROPERTY_HINT_RESOURCE_TYPE, "PhysicsMaterial"), "set_physics_material_override", "get_physics_material_override");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "gravity_scale", PROPERTY_HINT_RANGE, "-128,128,0.01"), "set_gravity_scale", "get_gravity_scale");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "custom_integrator"), "set_use_custom_integrator", "is_using_custom_integrator");
@@ -1244,14 +1247,6 @@ void CharacterBody2D::set_floor_max_angle(real_t p_radians) {
 	floor_max_angle = p_radians;
 }
 
-real_t CharacterBody2D::get_floor_max_angle_degrees() const {
-	return Math::rad2deg(floor_max_angle);
-}
-
-void CharacterBody2D::set_floor_max_angle_degrees(real_t p_degrees) {
-	floor_max_angle = Math::deg2rad(p_degrees);
-}
-
 const Vector2 &CharacterBody2D::get_snap() const {
 	return snap;
 }
@@ -1269,26 +1264,28 @@ void CharacterBody2D::set_up_direction(const Vector2 &p_up_direction) {
 }
 
 void CharacterBody2D::_notification(int p_what) {
-	if (p_what == NOTIFICATION_ENTER_TREE) {
-		last_valid_transform = get_global_transform();
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE: {
+			last_valid_transform = get_global_transform();
 
-		// Reset move_and_slide() data.
-		on_floor = false;
-		on_floor_body = RID();
-		on_ceiling = false;
-		on_wall = false;
-		motion_results.clear();
-		floor_velocity = Vector2();
-	}
+			// Reset move_and_slide() data.
+			on_floor = false;
+			on_floor_body = RID();
+			on_ceiling = false;
+			on_wall = false;
+			motion_results.clear();
+			floor_velocity = Vector2();
+		} break;
 
-	if (p_what == NOTIFICATION_LOCAL_TRANSFORM_CHANGED) {
-		//used by sync to physics, send the new transform to the physics
-		Transform2D new_transform = get_global_transform();
-		PhysicsServer2D::get_singleton()->body_set_state(get_rid(), PhysicsServer2D::BODY_STATE_TRANSFORM, new_transform);
-		//but then revert changes
-		set_notify_local_transform(false);
-		set_global_transform(last_valid_transform);
-		set_notify_local_transform(true);
+		case NOTIFICATION_LOCAL_TRANSFORM_CHANGED: {
+			// Used by sync to physics, send the new transform to the physics.
+			Transform2D new_transform = get_global_transform();
+			PhysicsServer2D::get_singleton()->body_set_state(get_rid(), PhysicsServer2D::BODY_STATE_TRANSFORM, new_transform);
+			// But then revert changes.
+			set_notify_local_transform(false);
+			set_global_transform(last_valid_transform);
+			set_notify_local_transform(true);
+		} break;
 	}
 }
 
@@ -1308,8 +1305,6 @@ void CharacterBody2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_max_slides", "max_slides"), &CharacterBody2D::set_max_slides);
 	ClassDB::bind_method(D_METHOD("get_floor_max_angle"), &CharacterBody2D::get_floor_max_angle);
 	ClassDB::bind_method(D_METHOD("set_floor_max_angle", "radians"), &CharacterBody2D::set_floor_max_angle);
-	ClassDB::bind_method(D_METHOD("get_floor_max_angle_degrees"), &CharacterBody2D::get_floor_max_angle_degrees);
-	ClassDB::bind_method(D_METHOD("set_floor_max_angle_degrees", "degrees"), &CharacterBody2D::set_floor_max_angle_degrees);
 	ClassDB::bind_method(D_METHOD("get_snap"), &CharacterBody2D::get_snap);
 	ClassDB::bind_method(D_METHOD("set_snap", "snap"), &CharacterBody2D::set_snap);
 	ClassDB::bind_method(D_METHOD("get_up_direction"), &CharacterBody2D::get_up_direction);
@@ -1330,8 +1325,7 @@ void CharacterBody2D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "stop_on_slope"), "set_stop_on_slope_enabled", "is_stop_on_slope_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "infinite_inertia"), "set_infinite_inertia_enabled", "is_infinite_inertia_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "max_slides"), "set_max_slides", "get_max_slides");
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "floor_max_angle", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NOEDITOR), "set_floor_max_angle", "get_floor_max_angle");
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "floor_max_angle_degrees", PROPERTY_HINT_RANGE, "0,180,0.1", PROPERTY_USAGE_EDITOR), "set_floor_max_angle_degrees", "get_floor_max_angle_degrees");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "floor_max_angle", PROPERTY_HINT_RANGE, "0,180,0.1"), "set_floor_max_angle", "get_floor_max_angle");
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "snap"), "set_snap", "get_snap");
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "up_direction"), "set_up_direction", "get_up_direction");
 

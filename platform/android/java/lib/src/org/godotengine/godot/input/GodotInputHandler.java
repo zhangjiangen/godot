@@ -45,13 +45,9 @@ import android.view.InputDevice.MotionRange;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -64,7 +60,7 @@ public class GodotInputHandler implements InputDeviceListener {
 	private final String tag = this.getClass().getSimpleName();
 
 	private final SparseIntArray mJoystickIds = new SparseIntArray(4);
-	private final SparseArray<Joystick> mJoysticksDevices = new SparseArray<Joystick>(4);
+	private final SparseArray<Joystick> mJoysticksDevices = new SparseArray<>(4);
 
 	public GodotInputHandler(GodotRenderView godotView) {
 		mRenderView = godotView;
@@ -333,7 +329,7 @@ public class GodotInputHandler implements InputDeviceListener {
 		//Helps with creating new joypad mappings.
 		Log.i(tag, "=== New Input Device: " + joystick.name);
 
-		Set<Integer> already = new HashSet<Integer>();
+		Set<Integer> already = new HashSet<>();
 		for (InputDevice.MotionRange range : device.getMotionRanges()) {
 			boolean isJoystick = range.isFromSource(InputDevice.SOURCE_JOYSTICK);
 			boolean isGamepad = range.isFromSource(InputDevice.SOURCE_GAMEPAD);

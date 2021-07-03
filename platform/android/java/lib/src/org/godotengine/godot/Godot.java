@@ -70,10 +70,8 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.provider.Settings.Secure;
 import android.view.Display;
-import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
@@ -175,7 +173,7 @@ public class Godot extends Fragment implements SensorEventListener, IDownloaderC
 	public static GodotNetUtils netUtils;
 
 	public interface ResultCallback {
-		public void callback(int requestCode, int resultCode, Intent data);
+		void callback(int requestCode, int resultCode, Intent data);
 	}
 	public ResultCallback result_callback;
 
@@ -220,7 +218,7 @@ public class Godot extends Fragment implements SensorEventListener, IDownloaderC
 		for (int i = 0; i < permissions.length; i++) {
 			GodotLib.requestPermissionResult(permissions[i], grantResults[i] == PackageManager.PERMISSION_GRANTED);
 		}
-	};
+	}
 
 	/**
 	 * Invoked on the render thread when the Godot setup is complete.
@@ -534,7 +532,7 @@ public class Godot extends Fragment implements SensorEventListener, IDownloaderC
 		String main_pack_md5 = null;
 		String main_pack_key = null;
 
-		List<String> new_args = new LinkedList<String>();
+		List<String> new_args = new LinkedList<>();
 
 		for (int i = 0; i < command_line.length; i++) {
 			boolean has_extra = i < command_line.length - 1;
@@ -780,7 +778,7 @@ public class Godot extends Fragment implements SensorEventListener, IDownloaderC
 		int displayRotation = display.getRotation();
 
 		float[] adjustedValues = new float[3];
-		final int axisSwap[][] = {
+		final int[][] axisSwap = {
 			{ 1, -1, 0, 1 }, // ROTATION_0
 			{ -1, -1, 1, 0 }, // ROTATION_90
 			{ -1, 1, 0, 1 }, // ROTATION_180
@@ -897,7 +895,7 @@ public class Godot extends Fragment implements SensorEventListener, IDownloaderC
 			byte[] messageDigest = complete.digest();
 
 			// Create Hex String
-			StringBuffer hexString = new StringBuffer();
+			StringBuilder hexString = new StringBuilder();
 			for (int i = 0; i < messageDigest.length; i++) {
 				String s = Integer.toHexString(0xFF & messageDigest[i]);
 

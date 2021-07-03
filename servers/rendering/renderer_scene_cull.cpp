@@ -330,12 +330,6 @@ void RendererSceneCull::scenario_initialize(RID p_rid) {
 	RendererSceneOcclusionCull::get_singleton()->add_scenario(p_rid);
 }
 
-void RendererSceneCull::scenario_set_debug(RID p_scenario, RS::ScenarioDebugMode p_debug_mode) {
-	Scenario *scenario = scenario_owner.getornull(p_scenario);
-	ERR_FAIL_COND(!scenario);
-	scenario->debug = p_debug_mode;
-}
-
 void RendererSceneCull::scenario_set_environment(RID p_scenario, RID p_environment) {
 	Scenario *scenario = scenario_owner.getornull(p_scenario);
 	ERR_FAIL_COND(!scenario);
@@ -478,7 +472,6 @@ void RendererSceneCull::instance_set_base(RID p_instance, RID p_base) {
 		switch (instance->base_type) {
 			case RS::INSTANCE_MESH:
 			case RS::INSTANCE_MULTIMESH:
-			case RS::INSTANCE_IMMEDIATE:
 			case RS::INSTANCE_PARTICLES: {
 				InstanceGeometryData *geom = static_cast<InstanceGeometryData *>(instance->base_data);
 				scene_render->geometry_instance_free(geom->geometry_instance);
@@ -590,7 +583,6 @@ void RendererSceneCull::instance_set_base(RID p_instance, RID p_base) {
 			} break;
 			case RS::INSTANCE_MESH:
 			case RS::INSTANCE_MULTIMESH:
-			case RS::INSTANCE_IMMEDIATE:
 			case RS::INSTANCE_PARTICLES: {
 				InstanceGeometryData *geom = memnew(InstanceGeometryData);
 				instance->base_data = geom;
@@ -888,7 +880,7 @@ void RendererSceneCull::instance_set_visible(RID p_instance, bool p_visible) {
 }
 
 inline bool is_geometry_instance(RenderingServer::InstanceType p_type) {
-	return p_type == RS::INSTANCE_MESH || p_type == RS::INSTANCE_MULTIMESH || p_type == RS::INSTANCE_PARTICLES || p_type == RS::INSTANCE_IMMEDIATE;
+	return p_type == RS::INSTANCE_MESH || p_type == RS::INSTANCE_MULTIMESH || p_type == RS::INSTANCE_PARTICLES;
 }
 
 void RendererSceneCull::instance_set_custom_aabb(RID p_instance, AABB p_aabb) {
@@ -939,9 +931,6 @@ void RendererSceneCull::instance_attach_skeleton(RID p_instance, RID p_skeleton)
 		InstanceGeometryData *geom = static_cast<InstanceGeometryData *>(instance->base_data);
 		scene_render->geometry_instance_set_skeleton(geom->geometry_instance, p_skeleton);
 	}
-}
-
-void RendererSceneCull::instance_set_exterior(RID p_instance, bool p_enabled) {
 }
 
 void RendererSceneCull::instance_set_extra_visibility_margin(RID p_instance, real_t p_margin) {
@@ -1529,7 +1518,6 @@ void RendererSceneCull::_update_instance(Instance *p_instance) {
 		switch (p_instance->base_type) {
 			case RS::INSTANCE_MESH:
 			case RS::INSTANCE_MULTIMESH:
-			case RS::INSTANCE_IMMEDIATE:
 			case RS::INSTANCE_PARTICLES: {
 				InstanceGeometryData *geom = static_cast<InstanceGeometryData *>(p_instance->base_data);
 				idata.instance_geometry = geom->geometry_instance;
@@ -1748,14 +1736,6 @@ void RendererSceneCull::_update_instance_aabb(Instance *p_instance) {
 			}
 
 		} break;
-		case RenderingServer::INSTANCE_IMMEDIATE: {
-			if (p_instance->custom_aabb) {
-				new_aabb = *p_instance->custom_aabb;
-			} else {
-				new_aabb = RSG::storage->immediate_get_aabb(p_instance->base);
-			}
-
-		} break;
 		case RenderingServer::INSTANCE_PARTICLES: {
 			if (p_instance->custom_aabb) {
 				new_aabb = *p_instance->custom_aabb;
@@ -1896,8 +1876,6 @@ void RendererSceneCull::_light_instance_setup_directional_shadow(int p_shadow_in
 	}
 	max_distance = MAX(max_distance, p_cam_projection.get_z_near() + 0.001);
 	real_t min_distance = MIN(p_cam_projection.get_z_near(), max_distance);
-
-	RS::LightDirectionalShadowDepthRangeMode depth_range_mode = RSG::storage->light_directional_get_shadow_depth_range_mode(p_instance->base);
 
 	real_t pancake_size = RSG::storage->light_get_param(p_instance->base, RS::LIGHT_PARAM_SHADOW_PANCAKE_SIZE);
 
@@ -2058,22 +2036,13 @@ void RendererSceneCull::_light_instance_setup_directional_shadow(int p_shadow_in
 				}
 			}
 
-			x_max_cam = x_vec.dot(center) + radius + soft_shadow_expand;
-			x_min_cam = x_vec.dot(center) - radius - soft_shadow_expand;
-			y_max_cam = y_vec.dot(center) + radius + soft_shadow_expand;
-			y_min_cam = y_vec.dot(center) - radius - soft_shadow_expand;
-
-			if (depth_range_mode == RS::LIGHT_DIRECTIONAL_SHADOW_DEPTH_RANGE_STABLE) {
-				//this trick here is what stabilizes the shadow (make potential jaggies to not move)
-				//at the cost of some wasted resolution. Still the quality increase is very well worth it
-
-				real_t unit = radius * 2.0 / texture_size;
-
-				x_max_cam = Math::snapped(x_max_cam, unit);
-				x_min_cam = Math::snapped(x_min_cam, unit);
-				y_max_cam = Math::snapped(y_max_cam, unit);
-				y_min_cam = Math::snapped(y_min_cam, unit);
-			}
+			// This trick here is what stabilizes the shadow (make potential jaggies to not move)
+			// at the cost of some wasted resolution. Still, the quality increase is very well worth it.
+			const real_t unit = radius * 2.0 / texture_size;
+			x_max_cam = Math::snapped(x_vec.dot(center) + radius + soft_shadow_expand, unit);
+			x_min_cam = Math::snapped(x_vec.dot(center) - radius - soft_shadow_expand, unit);
+			y_max_cam = Math::snapped(y_vec.dot(center) + radius + soft_shadow_expand, unit);
+			y_min_cam = Math::snapped(y_vec.dot(center) - radius - soft_shadow_expand, unit);
 		}
 
 		//now that we know all ranges, we can proceed to make the light frustum planes, for culling octree
@@ -3681,25 +3650,6 @@ void RendererSceneCull::_update_dirty_instance(Instance *p_instance) {
 
 						RSG::storage->base_update_dependency(mesh, &p_instance->dependency_tracker);
 					}
-				} else if (p_instance->base_type == RS::INSTANCE_IMMEDIATE) {
-					RID mat = RSG::storage->immediate_get_material(p_instance->base);
-
-					if (!(!mat.is_valid() || RSG::storage->material_casts_shadows(mat))) {
-						can_cast_shadows = false;
-					}
-
-					if (mat.is_valid() && RSG::storage->material_is_animated(mat)) {
-						is_animated = true;
-					}
-
-					if (mat.is_valid()) {
-						_update_instance_shader_parameters_from_material(isparams, p_instance->instance_shader_parameters, mat);
-					}
-
-					if (mat.is_valid()) {
-						RSG::storage->material_update_dependency(mat, &p_instance->dependency_tracker);
-					}
-
 				} else if (p_instance->base_type == RS::INSTANCE_PARTICLES) {
 					bool cast_shadows = false;
 

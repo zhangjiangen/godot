@@ -34,11 +34,9 @@ import org.godotengine.godot.input.*;
 
 import android.app.Activity;
 import android.content.*;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.AssetManager;
 import android.graphics.Point;
-import android.media.*;
 import android.net.Uri;
 import android.os.*;
 import android.util.DisplayMetrics;
@@ -323,8 +321,8 @@ public class GodotIO {
 		am = p_activity.getAssets();
 		activity = p_activity;
 		//streams = new HashMap<Integer, AssetData>();
-		streams = new SparseArray<AssetData>();
-		dirs = new SparseArray<AssetDir>();
+		streams = new SparseArray<>();
+		dirs = new SparseArray<>();
 	}
 
 	/////////////////////////
@@ -386,7 +384,7 @@ public class GodotIO {
 		Point size = new Point();
 		display.getRealSize(size);
 
-		int result[] = { 0, 0, size.x, size.y };
+		int[] result = { 0, 0, size.x, size.y };
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
 			WindowInsets insets = activity.getWindow().getDecorView().getRootWindowInsets();
 			DisplayCutout cutout = insets.getDisplayCutout();
@@ -408,12 +406,12 @@ public class GodotIO {
 
 		//InputMethodManager inputMgr = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
 		//inputMgr.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-	};
+	}
 
 	public void hideKeyboard() {
 		if (edit != null)
 			edit.hideKeyboard();
-	};
+	}
 
 	public void setScreenOrientation(int p_orientation) {
 		switch (p_orientation) {

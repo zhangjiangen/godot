@@ -1002,7 +1002,6 @@ private:
 		uint32_t cull_mask = 0xFFFFFFFF;
 		RS::LightOmniShadowMode omni_shadow_mode = RS::LIGHT_OMNI_SHADOW_DUAL_PARABOLOID;
 		RS::LightDirectionalShadowMode directional_shadow_mode = RS::LIGHT_DIRECTIONAL_SHADOW_ORTHOGONAL;
-		RS::LightDirectionalShadowDepthRangeMode directional_range_mode = RS::LIGHT_DIRECTIONAL_SHADOW_DEPTH_RANGE_STABLE;
 		bool directional_blend_splits = false;
 		bool directional_sky_only = false;
 		uint64_t version = 0;
@@ -1076,8 +1075,6 @@ private:
 
 		float dynamic_range = 4.0;
 		float energy = 1.0;
-		float ao = 0.0;
-		float ao_size = 0.5;
 		float bias = 1.4;
 		float normal_bias = 0.0;
 		float propagation = 0.7;
@@ -1298,7 +1295,6 @@ public:
 
 	virtual void _texture_2d_update(RID p_texture, const Ref<Image> &p_image, int p_layer, bool p_immediate);
 
-	virtual void texture_2d_update_immediate(RID p_texture, const Ref<Image> &p_image, int p_layer = 0); //mostly used for video and streaming
 	virtual void texture_2d_update(RID p_texture, const Ref<Image> &p_image, int p_layer = 0);
 	virtual void texture_3d_update(RID p_texture, const Vector<Ref<Image>> &p_data);
 	virtual void texture_proxy_update(RID p_texture, RID p_proxy_to);
@@ -1457,7 +1453,9 @@ public:
 	virtual void mesh_set_blend_shape_mode(RID p_mesh, RS::BlendShapeMode p_mode);
 	virtual RS::BlendShapeMode mesh_get_blend_shape_mode(RID p_mesh) const;
 
-	virtual void mesh_surface_update_region(RID p_mesh, int p_surface, int p_offset, const Vector<uint8_t> &p_data);
+	virtual void mesh_surface_update_vertex_region(RID p_mesh, int p_surface, int p_offset, const Vector<uint8_t> &p_data);
+	virtual void mesh_surface_update_attribute_region(RID p_mesh, int p_surface, int p_offset, const Vector<uint8_t> &p_data);
+	virtual void mesh_surface_update_skin_region(RID p_mesh, int p_surface, int p_offset, const Vector<uint8_t> &p_data);
 
 	virtual void mesh_surface_set_material(RID p_mesh, int p_surface, RID p_material);
 	virtual RID mesh_surface_get_material(RID p_mesh, int p_surface) const;
@@ -1746,24 +1744,6 @@ public:
 		return multimesh->uniform_set_2d;
 	}
 
-	/* IMMEDIATE API */
-
-	RID immediate_allocate() { return RID(); }
-	void immediate_initialize(RID p_immediate) {}
-
-	virtual void immediate_begin(RID p_immediate, RS::PrimitiveType p_rimitive, RID p_texture = RID()) {}
-	virtual void immediate_vertex(RID p_immediate, const Vector3 &p_vertex) {}
-	virtual void immediate_normal(RID p_immediate, const Vector3 &p_normal) {}
-	virtual void immediate_tangent(RID p_immediate, const Plane &p_tangent) {}
-	virtual void immediate_color(RID p_immediate, const Color &p_color) {}
-	virtual void immediate_uv(RID p_immediate, const Vector2 &tex_uv) {}
-	virtual void immediate_uv2(RID p_immediate, const Vector2 &tex_uv) {}
-	virtual void immediate_end(RID p_immediate) {}
-	virtual void immediate_clear(RID p_immediate) {}
-	virtual void immediate_set_material(RID p_immediate, RID p_material) {}
-	virtual RID immediate_get_material(RID p_immediate) const { return RID(); }
-	virtual AABB immediate_get_aabb(RID p_immediate) const { return AABB(); }
-
 	/* SKELETON API */
 
 	RID skeleton_allocate();
@@ -1832,8 +1812,6 @@ public:
 	bool light_directional_get_blend_splits(RID p_light) const;
 	void light_directional_set_sky_only(RID p_light, bool p_sky_only);
 	bool light_directional_is_sky_only(RID p_light) const;
-	void light_directional_set_shadow_depth_range_mode(RID p_light, RS::LightDirectionalShadowDepthRangeMode p_range_mode);
-	RS::LightDirectionalShadowDepthRangeMode light_directional_get_shadow_depth_range_mode(RID p_light) const;
 
 	RS::LightDirectionalShadowMode light_directional_get_shadow_mode(RID p_light);
 	RS::LightOmniShadowMode light_omni_get_shadow_mode(RID p_light);
@@ -2055,12 +2033,6 @@ public:
 
 	void voxel_gi_set_energy(RID p_voxel_gi, float p_energy);
 	float voxel_gi_get_energy(RID p_voxel_gi) const;
-
-	void voxel_gi_set_ao(RID p_voxel_gi, float p_ao);
-	float voxel_gi_get_ao(RID p_voxel_gi) const;
-
-	void voxel_gi_set_ao_size(RID p_voxel_gi, float p_strength);
-	float voxel_gi_get_ao_size(RID p_voxel_gi) const;
 
 	void voxel_gi_set_bias(RID p_voxel_gi, float p_bias);
 	float voxel_gi_get_bias(RID p_voxel_gi) const;

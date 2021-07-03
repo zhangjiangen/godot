@@ -58,9 +58,6 @@ class RenderingServerDefault : public RenderingServer {
 	static int changes;
 	RID test_cube;
 
-	int black_margin[4];
-	RID black_image[4];
-
 	struct FrameDrawnCallbacks {
 		ObjectID object;
 		StringName method;
@@ -69,7 +66,6 @@ class RenderingServerDefault : public RenderingServer {
 
 	List<FrameDrawnCallbacks> frame_drawn_callbacks;
 
-	void _draw_margins();
 	static void _changes_changed() {}
 
 	uint64_t frame_profile_frame;
@@ -192,8 +188,6 @@ public:
 	FUNCRIDTEX6(texture_3d, Image::Format, int, int, int, bool, const Vector<Ref<Image>> &)
 	FUNCRIDTEX1(texture_proxy, RID)
 
-	//goes pass-through
-	FUNC3(texture_2d_update_immediate, RID, const Ref<Image> &, int)
 	//these go through command queue if they are in another thread
 	FUNC3(texture_2d_update, RID, const Ref<Image> &, int)
 	FUNC2(texture_3d_update, RID, const Vector<Ref<Image>> &)
@@ -290,7 +284,9 @@ public:
 	FUNC2(mesh_set_blend_shape_mode, RID, BlendShapeMode)
 	FUNC1RC(BlendShapeMode, mesh_get_blend_shape_mode, RID)
 
-	FUNC4(mesh_surface_update_region, RID, int, int, const Vector<uint8_t> &)
+	FUNC4(mesh_surface_update_vertex_region, RID, int, int, const Vector<uint8_t> &)
+	FUNC4(mesh_surface_update_attribute_region, RID, int, int, const Vector<uint8_t> &)
+	FUNC4(mesh_surface_update_skin_region, RID, int, int, const Vector<uint8_t> &)
 
 	FUNC3(mesh_surface_set_material, RID, int, RID)
 	FUNC2RC(RID, mesh_surface_get_material, RID, int)
@@ -333,21 +329,6 @@ public:
 	FUNC2(multimesh_set_visible_instances, RID, int)
 	FUNC1RC(int, multimesh_get_visible_instances, RID)
 
-	/* IMMEDIATE API */
-
-	FUNCRIDSPLIT(immediate)
-	FUNC3(immediate_begin, RID, PrimitiveType, RID)
-	FUNC2(immediate_vertex, RID, const Vector3 &)
-	FUNC2(immediate_normal, RID, const Vector3 &)
-	FUNC2(immediate_tangent, RID, const Plane &)
-	FUNC2(immediate_color, RID, const Color &)
-	FUNC2(immediate_uv, RID, const Vector2 &)
-	FUNC2(immediate_uv2, RID, const Vector2 &)
-	FUNC1(immediate_end, RID)
-	FUNC1(immediate_clear, RID)
-	FUNC2(immediate_set_material, RID, RID)
-	FUNC1RC(RID, immediate_get_material, RID)
-
 	/* SKELETON API */
 
 	FUNCRIDSPLIT(skeleton)
@@ -381,7 +362,6 @@ public:
 	FUNC2(light_directional_set_shadow_mode, RID, LightDirectionalShadowMode)
 	FUNC2(light_directional_set_blend_splits, RID, bool)
 	FUNC2(light_directional_set_sky_only, RID, bool)
-	FUNC2(light_directional_set_shadow_depth_range_mode, RID, LightDirectionalShadowDepthRangeMode)
 
 	/* PROBE API */
 
@@ -431,34 +411,12 @@ public:
 	FUNC1RC(Transform3D, voxel_gi_get_to_cell_xform, RID)
 
 	FUNC2(voxel_gi_set_dynamic_range, RID, float)
-	FUNC1RC(float, voxel_gi_get_dynamic_range, RID)
-
 	FUNC2(voxel_gi_set_propagation, RID, float)
-	FUNC1RC(float, voxel_gi_get_propagation, RID)
-
 	FUNC2(voxel_gi_set_energy, RID, float)
-	FUNC1RC(float, voxel_gi_get_energy, RID)
-
-	FUNC2(voxel_gi_set_ao, RID, float)
-	FUNC1RC(float, voxel_gi_get_ao, RID)
-
-	FUNC2(voxel_gi_set_ao_size, RID, float)
-	FUNC1RC(float, voxel_gi_get_ao_size, RID)
-
 	FUNC2(voxel_gi_set_bias, RID, float)
-	FUNC1RC(float, voxel_gi_get_bias, RID)
-
 	FUNC2(voxel_gi_set_normal_bias, RID, float)
-	FUNC1RC(float, voxel_gi_get_normal_bias, RID)
-
 	FUNC2(voxel_gi_set_interior, RID, bool)
-	FUNC1RC(bool, voxel_gi_is_interior, RID)
-
 	FUNC2(voxel_gi_set_use_two_bounces, RID, bool)
-	FUNC1RC(bool, voxel_gi_is_using_two_bounces, RID)
-
-	FUNC2(voxel_gi_set_anisotropy_strength, RID, float)
-	FUNC1RC(float, voxel_gi_get_anisotropy_strength, RID)
 
 	/* LIGHTMAP */
 
@@ -582,8 +540,7 @@ public:
 
 	FUNC1RC(RID, viewport_get_texture, RID)
 
-	FUNC2(viewport_set_hide_scenario, RID, bool)
-	FUNC2(viewport_set_hide_canvas, RID, bool)
+	FUNC2(viewport_set_disable_2d, RID, bool)
 	FUNC2(viewport_set_disable_environment, RID, bool)
 	FUNC2(viewport_set_disable_3d, RID, bool)
 
@@ -710,7 +667,6 @@ public:
 
 	FUNCRIDSPLIT(scenario)
 
-	FUNC2(scenario_set_debug, RID, ScenarioDebugMode)
 	FUNC2(scenario_set_environment, RID, RID)
 	FUNC2(scenario_set_camera_effects, RID, RID)
 	FUNC2(scenario_set_fallback_environment, RID, RID)
@@ -730,7 +686,6 @@ public:
 	FUNC2(instance_set_custom_aabb, RID, AABB)
 
 	FUNC2(instance_attach_skeleton, RID, RID)
-	FUNC2(instance_set_exterior, RID, bool)
 
 	FUNC2(instance_set_extra_visibility_margin, RID, real_t)
 	FUNC2(instance_set_visibility_parent, RID, RID)
@@ -897,11 +852,6 @@ public:
 #undef ServerName
 #undef WRITE_ACTION
 #undef SYNC_DEBUG
-
-	/* BLACK BARS */
-
-	virtual void black_bars_set_margins(int p_left, int p_top, int p_right, int p_bottom) override;
-	virtual void black_bars_set_images(RID p_left, RID p_top, RID p_right, RID p_bottom) override;
 
 	/* FREE */
 

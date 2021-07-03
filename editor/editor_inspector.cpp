@@ -1038,7 +1038,7 @@ void EditorInspectorPlugin::parse_category(Object *p_object, const String &p_par
 	}
 }
 
-bool EditorInspectorPlugin::parse_property(Object *p_object, Variant::Type p_type, const String &p_path, PropertyHint p_hint, const String &p_hint_text, int p_usage, bool p_wide) {
+bool EditorInspectorPlugin::parse_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const uint32_t p_usage, const bool p_wide) {
 	if (get_script_instance()) {
 		Variant arg[6] = {
 			p_object, p_type, p_path, p_hint, p_hint_text, p_usage
@@ -1182,15 +1182,19 @@ void EditorInspectorSection::_notification(int p_what) {
 
 		Size2 size = get_size();
 		Point2 offset;
+		Rect2 rect;
 		offset.y = font->get_height(font_size);
 		if (arrow.is_valid()) {
 			offset.y = MAX(offset.y, arrow->get_height());
 		}
 
 		offset.y += get_theme_constant("vseparation", "Tree");
-		offset.x += get_theme_constant("inspector_margin", "Editor");
-
-		Rect2 rect(offset, size - offset);
+		if (is_layout_rtl()) {
+			rect = Rect2(offset, size - offset - Vector2(get_theme_constant("inspector_margin", "Editor"), 0));
+		} else {
+			offset.x += get_theme_constant("inspector_margin", "Editor");
+			rect = Rect2(offset, size - offset);
+		}
 
 		//set children
 		for (int i = 0; i < get_child_count(); i++) {
@@ -1433,7 +1437,7 @@ EditorInspectorSection::~EditorInspectorSection() {
 Ref<EditorInspectorPlugin> EditorInspector::inspector_plugins[MAX_PLUGINS];
 int EditorInspector::inspector_plugin_count = 0;
 
-EditorProperty *EditorInspector::instantiate_property_editor(Object *p_object, Variant::Type p_type, const String &p_path, PropertyHint p_hint, const String &p_hint_text, int p_usage, bool p_wide) {
+EditorProperty *EditorInspector::instantiate_property_editor(Object *p_object, const Variant::Type p_type, const String &p_path, PropertyHint p_hint, const String &p_hint_text, const uint32_t p_usage, const bool p_wide) {
 	for (int i = inspector_plugin_count - 1; i >= 0; i--) {
 		inspector_plugins[i]->parse_property(p_object, p_type, p_path, p_hint, p_hint_text, p_usage, p_wide);
 		if (inspector_plugins[i]->added_editors.size()) {
