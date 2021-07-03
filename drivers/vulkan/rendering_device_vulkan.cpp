@@ -40,6 +40,98 @@
 
 //#define FORCE_FULL_BARRIER
 
+static void LogVulkanInfo(VulkanContext *context) {
+	String log;
+	switch (context.gpu_props.vendorID) {
+		case 0x10DE: {
+			log += "vendor type :GPU_NVIDIA ";
+			// 10 bits = major version (up to r1023)
+			// 8 bits = minor version (up to 255)
+			// 8 bits = secondary branch version/build version (up to 255)
+			// 6 bits = tertiary branch/build version (up to 63)
+
+			log += "major : ";
+			log += itos((context.gpu_props.driverVersion >> 22u) & 0x3ff);
+			log += "minor : ";
+			log += itos((context.gpu_props.driverVersion >> 14u) & 0x0ff);
+			log += "release : ";
+			log += itos((context.gpu_props.driverVersion >> 6u) & 0x0ff);
+			log += "build : ";
+			log += itos((context.gpu_props.driverVersion) & 0x003f);
+			log += "\n";
+		} break;
+		case 0x1002:
+			log += "vendor type :AMD";
+			break;
+		case 0x8086:
+			log += "vendor type :INTEL";
+			break;
+		case 0x13B5:
+			log += "vendor type :ARM";
+			break;
+		case 0x5143:
+			log += "vendor type :QUALCOMM";
+			break;
+		case 0x1010:
+			log += "vendor type :IMGTEC";
+			break;
+		default:
+			log += "gpu:";
+			log += itos(context.gpu_props.vendorID);
+	}
+	if (context.gpu_props.vendorID != 0x10DE) {
+		log += "major : ";
+		log += itos((context.gpu_props.driverVersion >> 22u) & 0x3ff);
+		log += "minor : ";
+		log += itos((context.gpu_props.driverVersion >> 12u) & 0x3ff);
+		log += "release : ";
+		log += itos((properties.driverVersion) & 0xfff);
+		log += "build : 0\n";
+	}
+	log += "deviceName:" log += context.gpu_props.deviceName;
+	log += "\n"
+
+	// 支持的贴图格式
+	{
+		VkFormatProperties props;
+
+		vkGetPhysicalDeviceFormatProperties(context->get_physical_device()
+													vulkan_formats[DATA_FORMAT_BC1_RGB_UNORM_BLOCK],
+				&props);
+		if (props.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT)
+			log += "RSC_TEXTURE_COMPRESSION_DXT,";
+
+		vkGetPhysicalDeviceFormatProperties(context->get_physical_device(),
+				vulkan_formats[DATA_FORMAT_BC4_UNORM_BLOCK], &props);
+		if (props.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT)
+			log += "RSC_TEXTURE_COMPRESSION_BC4_BC5,";
+
+		vkGetPhysicalDeviceFormatProperties(context->get_physical_device(),
+				vulkan_formats[DATA_FORMAT_BC6H_UFLOAT_BLOCK], &props);
+		if (props.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT)
+			log += "RSC_TEXTURE_COMPRESSION_BC6H_BC7,";
+
+		// Vulkan doesn't allow supporting ETC1 without ETC2
+		vkGetPhysicalDeviceFormatProperties(context->get_physical_device(),
+				vulkan_formats[DATA_FORMAT_ETC2_R8G8B8_UNORM_BLOCK], &props);
+		if (props.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT) {
+			log += "RSC_TEXTURE_COMPRESSION_ETC1,";
+			log += "RSC_TEXTURE_COMPRESSION_ETC2,";
+		}
+
+		vkGetPhysicalDeviceFormatProperties(context->get_physical_device(),
+				vulkan_formats[PFG_PVRTC_RGB2], &props);
+		if (props.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT)
+			log += "RSC_TEXTURE_COMPRESSION_PVRTC,";
+
+		vkGetPhysicalDeviceFormatProperties(
+				context->get_physical_device() vulkan_formats[PFG_ASTC_RGBA_UNORM_4X4_LDR], &props);
+		if (props.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT)
+			log += "RSC_TEXTURE_COMPRESSION_ASTC,";
+	}
+	WARN_PRINT(log);
+}
+
 // Get the Vulkan object information and possible stage access types (bitwise OR'd with incoming values)
 RenderingDeviceVulkan::Buffer *RenderingDeviceVulkan::_get_buffer_from_owner(RID p_buffer, VkPipelineStageFlags &r_stage_mask, VkAccessFlags &r_access_mask, uint32_t p_post_barrier) {
 	Buffer *buffer = nullptr;
@@ -8255,6 +8347,7 @@ void RenderingDeviceVulkan::_flush(bool p_current_frame) {
 }
 
 void RenderingDeviceVulkan::initialize(VulkanContext *p_context, bool p_local_device) {
+	LogVulkanInfo(p_context);
 	// get our device capabilities
 	{
 		device_capabilities.version_major = p_context->get_vulkan_major();

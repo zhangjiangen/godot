@@ -577,7 +577,7 @@ Error VulkanContext::_check_capabilities() {
 			multiview_capabilities.max_view_count = multiviewProperties.maxMultiviewViewCount;
 			multiview_capabilities.max_instance_count = multiviewProperties.maxMultiviewInstanceIndex;
 
-#ifdef DEBUG_ENABLED
+#if true || defined(DEBUG_ENABLED)
 			print_line("- Vulkan multiview supported:");
 			print_line("  max view count: " + itos(multiview_capabilities.max_view_count));
 			print_line("  max instances: " + itos(multiview_capabilities.max_instance_count));
@@ -586,7 +586,7 @@ Error VulkanContext::_check_capabilities() {
 #endif
 		}
 
-#ifdef DEBUG_ENABLED
+#if true || defined(DEBUG_ENABLED)
 		print_line("- Vulkan subgroup:");
 		print_line("  size: " + itos(subgroup_capabilities.size));
 		print_line("  stages: " + subgroup_capabilities.supported_stages_desc());
@@ -601,7 +601,6 @@ Error VulkanContext::_check_capabilities() {
 
 	return OK;
 }
-
 Error VulkanContext::_create_physical_device() {
 	/* obtain version */
 	_obtain_vulkan_version();
