@@ -2713,6 +2713,33 @@ Image::Image(int p_width, int p_height, bool p_mipmaps, Format p_format, const V
 	create(p_width, p_height, p_mipmaps, p_format, p_data);
 }
 
+Image::Image(Ref<Image> p_other_image, int mipmap_start) {
+	width = 0;
+	height = 0;
+	format = FORMAT_L8;
+	if (!p_other_image.is_valid()) {
+		return;
+	}
+	mipmaps = p_other_image->has_mipmaps();
+	// 没有mipmap 怎么初始化呀
+	if (!p_other_image->has_mipmaps()) {
+		return;
+	}
+	int offset = 0;
+	int wid = 0;
+	int heg = 0;
+	p_other_image->_get_mipmap_offset_and_size(mipmap_start, offset, wid, heg);
+	int size = p_other_image->data.size() - offset;
+	// 数据貌似有点不太对头
+	if (size <= 0) {
+		return;
+	}
+	PackedByteArray t_data;
+	t_data.resize(size);
+	memcpy(&t_data.write[0], (const void *)(p_other_image->data.ptr() + offset), size);
+	// 创建图片
+	create(wid, heg, true, p_other_image->get_format(), t_data);
+}
 Rect2 Image::get_used_rect() const {
 	if (format != FORMAT_LA8 && format != FORMAT_RGBA8 && format != FORMAT_RGBAF && format != FORMAT_RGBAH && format != FORMAT_RGBA4444 && format != FORMAT_RGB565) {
 		return Rect2(Point2(), Size2(width, height));

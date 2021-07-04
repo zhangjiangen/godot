@@ -1102,11 +1102,13 @@ void ResourceLoader::initialize() {
 	thread_waiting_count = 0;
 	thread_suspended_count = 0;
 	thread_load_semaphore = memnew(Semaphore);
+	resource_process_thread.init(4);
 }
 
 void ResourceLoader::finalize() {
 	memdelete(thread_load_mutex);
 	memdelete(thread_load_semaphore);
+	resource_process_thread.finish();
 }
 
 ResourceLoadErrorNotify ResourceLoader::err_notify = nullptr;
@@ -1132,3 +1134,4 @@ HashMap<String, Vector<String>> ResourceLoader::translation_remaps;
 HashMap<String, String> ResourceLoader::path_remaps;
 
 ResourceLoaderImport ResourceLoader::import = nullptr;
+ThreadWorkPool ResourceLoader::resource_process_thread;
