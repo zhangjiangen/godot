@@ -345,8 +345,20 @@ void RenderForwardClustered::_render_list_template(RenderingDevice::DrawListID p
 			mesh_surface = surf->surface_shadow;
 
 		} else {
-			material_uniform_set = surf->material_uniform_set;
-			shader = surf->shader;
+#ifdef DEBUG_ENABLED
+			if (unlikely(get_debug_draw_mode() == RS::VIEWPORT_DEBUG_DRAW_LIGHTING)) {
+				material_uniform_set = scene_shader.default_material_uniform_set;
+				shader = scene_shader.default_material_shader_ptr;
+			} else if (unlikely(get_debug_draw_mode() == RS::VIEWPORT_DEBUG_DRAW_OVERDRAW)) {
+				material_uniform_set = scene_shader.overdraw_material_uniform_set;
+				shader = scene_shader.overdraw_material_shader_ptr;
+			} else {
+#endif
+				material_uniform_set = surf->material_uniform_set;
+				shader = surf->shader;
+#ifdef DEBUG_ENABLED
+			}
+#endif
 			mesh_surface = surf->surface;
 		}
 
@@ -1048,10 +1060,15 @@ void RenderForwardClustered::_fill_render_list(RenderListType p_render_list, con
 
 			// ADD Element
 			if (p_pass_mode == PASS_MODE_COLOR) {
-				if (surf->flags & (GeometryInstanceSurfaceDataCache::FLAG_PASS_DEPTH | GeometryInstanceSurfaceDataCache::FLAG_PASS_OPAQUE)) {
+#ifdef DEBUG_ENABLED
+				bool force_alpha = unlikely(get_debug_draw_mode() == RS::VIEWPORT_DEBUG_DRAW_OVERDRAW);
+#else
+				bool force_alpha = false;
+#endif
+				if (!force_alpha && (surf->flags & (GeometryInstanceSurfaceDataCache::FLAG_PASS_DEPTH | GeometryInstanceSurfaceDataCache::FLAG_PASS_OPAQUE))) {
 					rl->add_element(surf);
 				}
-				if (surf->flags & GeometryInstanceSurfaceDataCache::FLAG_PASS_ALPHA) {
+				if (force_alpha || (surf->flags & GeometryInstanceSurfaceDataCache::FLAG_PASS_ALPHA)) {
 					render_list[RENDER_LIST_ALPHA].add_element(surf);
 					if (uses_gi) {
 						surf->sort.uses_forward_gi = 1;
@@ -1133,6 +1150,7 @@ void RenderForwardClustered::_render_scene(RenderDataRD *p_render_data, const Co
 		render_buffer = (RenderBufferDataForwardClustered *)render_buffers_get_data(p_render_data->render_buffers);
 	}
 	RendererSceneEnvironmentRD *env = get_environment(p_render_data->environment);
+	static const int texture_multisamples[RS::VIEWPORT_MSAA_MAX] = { 1, 2, 4, 8, 16 };
 
 	//first of all, make a new render pass
 	//fill up ubo
@@ -1242,7 +1260,7 @@ void RenderForwardClustered::_render_scene(RenderDataRD *p_render_data, const Co
 
 	_fill_render_list(RENDER_LIST_OPAQUE, p_render_data, PASS_MODE_COLOR, using_sdfgi, using_sdfgi || using_voxelgi);
 	render_list[RENDER_LIST_OPAQUE].sort_by_key();
-	render_list[RENDER_LIST_ALPHA].sort_by_depth();
+	render_list[RENDER_LIST_ALPHA].sort_by_reverse_depth_and_priority();
 	_fill_instance_data(RENDER_LIST_OPAQUE, p_render_data->render_info ? p_render_data->render_info->info[RS::VIEWPORT_RENDER_INFO_TYPE_VISIBLE] : (int *)nullptr);
 	_fill_instance_data(RENDER_LIST_ALPHA);
 
@@ -1373,10 +1391,9 @@ void RenderForwardClustered::_render_scene(RenderDataRD *p_render_data, const Co
 				if (needs_pre_resolve) {
 					RD::get_singleton()->barrier(RD::BARRIER_MASK_RASTER, RD::BARRIER_MASK_COMPUTE);
 				}
-				static int texture_samples[RS::VIEWPORT_MSAA_MAX] = { 1, 2, 4, 8, 16 };
-				storage->get_effects()->resolve_gi(render_buffer->depth_msaa, render_buffer->normal_roughness_buffer_msaa, using_voxelgi ? render_buffer->voxelgi_buffer_msaa : RID(), render_buffer->depth, render_buffer->normal_roughness_buffer, using_voxelgi ? render_buffer->voxelgi_buffer : RID(), Vector2i(render_buffer->width, render_buffer->height), texture_samples[render_buffer->msaa]);
+				storage->get_effects()->resolve_gi(render_buffer->depth_msaa, render_buffer->normal_roughness_buffer_msaa, using_voxelgi ? render_buffer->voxelgi_buffer_msaa : RID(), render_buffer->depth, render_buffer->normal_roughness_buffer, using_voxelgi ? render_buffer->voxelgi_buffer : RID(), Vector2i(render_buffer->width, render_buffer->height), texture_multisamples[render_buffer->msaa]);
 			} else if (finish_depth) {
-				RD::get_singleton()->texture_resolve_multisample(render_buffer->depth_msaa, render_buffer->depth);
+				storage->get_effects()->resolve_depth(render_buffer->depth_msaa, render_buffer->depth, Vector2i(render_buffer->width, render_buffer->height), texture_multisamples[render_buffer->msaa]);
 			}
 			RD::get_singleton()->draw_command_end_label();
 		}
@@ -1480,7 +1497,7 @@ void RenderForwardClustered::_render_scene(RenderDataRD *p_render_data, const Co
 	}
 
 	if (render_buffer && !can_continue_depth && render_buffer->msaa != RS::VIEWPORT_MSAA_DISABLED) {
-		RD::get_singleton()->texture_resolve_multisample(render_buffer->depth_msaa, render_buffer->depth);
+		storage->get_effects()->resolve_depth(render_buffer->depth_msaa, render_buffer->depth, Vector2i(render_buffer->width, render_buffer->height), texture_multisamples[render_buffer->msaa]);
 	}
 
 	if (using_separate_specular) {

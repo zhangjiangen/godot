@@ -774,6 +774,7 @@ void register_scene_types() {
 	ClassDB::register_class<AtlasTexture>();
 	ClassDB::register_class<MeshTexture>();
 	ClassDB::register_class<CurveTexture>();
+	ClassDB::register_class<Curve3Texture>();
 	ClassDB::register_class<GradientTexture>();
 	ClassDB::register_class<ProxyTexture>();
 	ClassDB::register_class<AnimatedTexture>();
@@ -936,14 +937,12 @@ void register_scene_types() {
 	ClassDB::add_compatibility_class("Physics2DServerSW", "PhysicsServer2DSW");
 	ClassDB::add_compatibility_class("Physics2DServer", "PhysicsServer2D");
 	ClassDB::add_compatibility_class("Physics2DShapeQueryParameters", "PhysicsShapeQueryParameters2D");
-	ClassDB::add_compatibility_class("Physics2DShapeQueryResult", "PhysicsShapeQueryResult2D");
 	ClassDB::add_compatibility_class("Physics2DTestMotionResult", "PhysicsTestMotionResult2D");
 	ClassDB::add_compatibility_class("PhysicsBody", "PhysicsBody3D");
 	ClassDB::add_compatibility_class("PhysicsDirectBodyState", "PhysicsDirectBodyState3D");
 	ClassDB::add_compatibility_class("PhysicsDirectSpaceState", "PhysicsDirectSpaceState3D");
 	ClassDB::add_compatibility_class("PhysicsServer", "PhysicsServer3D");
 	ClassDB::add_compatibility_class("PhysicsShapeQueryParameters", "PhysicsShapeQueryParameters3D");
-	ClassDB::add_compatibility_class("PhysicsShapeQueryResult", "PhysicsShapeQueryResult3D");
 	ClassDB::add_compatibility_class("PinJoint", "PinJoint3D");
 	ClassDB::add_compatibility_class("PlaneShape", "WorldMarginShape3D");
 	ClassDB::add_compatibility_class("ProceduralSky", "Sky");
