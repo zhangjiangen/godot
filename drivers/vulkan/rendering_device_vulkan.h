@@ -159,6 +159,7 @@ private:
 	uint32_t texture_upload_region_size_px = 0;
 
 	Vector<uint8_t> _texture_get_data_from_image(Texture *tex, VkImage p_image, VmaAllocation p_allocation, uint32_t p_layer, bool p_2d = false);
+	Error _texture_update(RID p_texture, uint32_t p_layer, const Vector<uint8_t> &p_data, uint32_t p_post_barrier, bool p_use_setup_queue);
 
 	/*****************/
 	/**** SAMPLER ****/
@@ -734,6 +735,8 @@ private:
 		LocalVector<AttachableTexture> attachable_textures; //used for validation
 		Vector<Texture *> mutable_sampled_textures; //used for layout change
 		Vector<Texture *> mutable_storage_textures; //used for layout change
+		UniformSetInvalidatedCallback invalidated_callback = nullptr;
+		void *invalidated_callback_userdata = nullptr;
 	};
 
 	RID_Owner<UniformSet, true> uniform_set_owner;
@@ -1090,6 +1093,7 @@ public:
 
 	virtual RID uniform_set_create(const Vector<Uniform> &p_uniforms, RID p_shader, uint32_t p_shader_set);
 	virtual bool uniform_set_is_valid(RID p_uniform_set);
+	virtual void uniform_set_set_invalidation_callback(RID p_uniform_set, UniformSetInvalidatedCallback p_callback, void *p_userdata);
 
 	virtual Error buffer_update(RID p_buffer, uint32_t p_offset, uint32_t p_size, const void *p_data, uint32_t p_post_barrier = BARRIER_MASK_ALL); //works for any buffer
 	virtual Error buffer_clear(RID p_buffer, uint32_t p_offset, uint32_t p_size, uint32_t p_post_barrier = BARRIER_MASK_ALL);

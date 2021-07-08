@@ -2511,15 +2511,15 @@ void Node3DEditorViewport::_notification(int p_what) {
 		}
 
 		if (show_info) {
+			const String viewport_size = vformat(String::utf8("%d × %d"), viewport->get_size().x, viewport->get_size().y);
 			String text;
 			text += vformat(TTR("X: %s\n"), rtos(current_camera->get_position().x).pad_decimals(1));
 			text += vformat(TTR("Y: %s\n"), rtos(current_camera->get_position().y).pad_decimals(1));
 			text += vformat(TTR("Z: %s\n"), rtos(current_camera->get_position().z).pad_decimals(1));
 			text += "\n";
 			text += vformat(
-					TTR("Size: %dx%d (%.1fMP)\n"),
-					viewport->get_size().x,
-					viewport->get_size().y,
+					TTR("Size: %s (%.1fMP)\n"),
+					viewport_size,
 					viewport->get_size().x * viewport->get_size().y * 0.000001);
 
 			text += "\n";
@@ -6223,8 +6223,9 @@ void Node3DEditor::_add_sun_to_scene() {
 
 	Node *base = get_tree()->get_edited_scene_root();
 	if (!base) {
-		EditorNode::get_singleton()->show_warning(TTR("A root node is needed for this operation"));
-		return;
+		// Create a root node so we can add child nodes to it.
+		EditorNode::get_singleton()->get_scene_tree_dock()->add_root_node(memnew(Node3D));
+		base = get_tree()->get_edited_scene_root();
 	}
 	ERR_FAIL_COND(!base);
 	Node *new_sun = preview_sun->duplicate();
@@ -6241,8 +6242,9 @@ void Node3DEditor::_add_environment_to_scene() {
 
 	Node *base = get_tree()->get_edited_scene_root();
 	if (!base) {
-		EditorNode::get_singleton()->show_warning(TTR("A root node is needed for this operation"));
-		return;
+		// Create a root node so we can add child nodes to it.
+		EditorNode::get_singleton()->get_scene_tree_dock()->add_root_node(memnew(Node3D));
+		base = get_tree()->get_edited_scene_root();
 	}
 	ERR_FAIL_COND(!base);
 

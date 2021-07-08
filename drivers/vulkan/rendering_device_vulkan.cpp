@@ -2165,7 +2165,7 @@ RID RenderingDeviceVulkan::texture_create(const TextureFormat &p_format, const T
 
 	if (p_data.size()) {
 		for (uint32_t i = 0; i < image_create_info.arrayLayers; i++) {
-			texture_update(id, i, p_data[i]);
+			_texture_update(id, i, p_data[i], RD::BARRIER_MASK_ALL, true);
 		}
 	}
 	return id;
@@ -2412,10 +2412,14 @@ RID RenderingDeviceVulkan::texture_create_shared_from_slice(const TextureView &p
 }
 
 Error RenderingDeviceVulkan::texture_update(RID p_texture, uint32_t p_layer, const Vector<uint8_t> &p_data, uint32_t p_post_barrier) {
+	return _texture_update(p_texture, p_layer, p_data, p_post_barrier, false);
+}
+
+Error RenderingDeviceVulkan::_texture_update(RID p_texture, uint32_t p_layer, const Vector<uint8_t> &p_data, uint32_t p_post_barrier, bool p_use_setup_queue) {
 	_THREAD_SAFE_METHOD_
 
-	ERR_FAIL_COND_V_MSG(draw_list || compute_list, ERR_INVALID_PARAMETER,
-			"Updating textures in is forbidden during creation of a draw or compute list");
+	ERR_FAIL_COND_V_MSG((draw_list || compute_list) && !p_use_setup_queue, ERR_INVALID_PARAMETER,
+			"Updating textures is forbidden during creation of a draw or compute list");
 
 	Texture *texture = texture_owner.getornull(p_texture);
 	ERR_FAIL_COND_V(!texture, ERR_INVALID_PARAMETER);
@@ -2456,7 +2460,7 @@ Error RenderingDeviceVulkan::texture_update(RID p_texture, uint32_t p_layer, con
 
 	const uint8_t *r = p_data.ptr();
 
-	VkCommandBuffer command_buffer = p_post_barrier ? frames[frame].draw_command_buffer : frames[frame].setup_command_buffer;
+	VkCommandBuffer command_buffer = p_use_setup_queue ? frames[frame].setup_command_buffer : frames[frame].draw_command_buffer;
 
 	//barrier to transfer
 	{
@@ -2509,7 +2513,7 @@ Error RenderingDeviceVulkan::texture_update(RID p_texture, uint32_t p_layer, con
 					to_allocate >>= get_compressed_image_format_pixel_rshift(texture->format);
 
 					uint32_t alloc_offset, alloc_size;
-					Error err = _staging_buffer_allocate(to_allocate, required_align, alloc_offset, alloc_size, false, p_post_barrier);
+					Error err = _staging_buffer_allocate(to_allocate, required_align, alloc_offset, alloc_size, false, !p_use_setup_queue);
 					ERR_FAIL_COND_V(err, ERR_CANT_CREATE);
 
 					uint8_t *write_ptr;
@@ -5634,6 +5638,13 @@ bool RenderingDeviceVulkan::uniform_set_is_valid(RID p_uniform_set) {
 	return uniform_set_owner.owns(p_uniform_set);
 }
 
+void RenderingDeviceVulkan::uniform_set_set_invalidation_callback(RID p_uniform_set, UniformSetInvalidatedCallback p_callback, void *p_userdata) {
+	UniformSet *us = uniform_set_owner.getornull(p_uniform_set);
+	ERR_FAIL_COND(!us);
+	us->invalidated_callback = p_callback;
+	us->invalidated_callback_userdata = p_userdata;
+}
+
 Error RenderingDeviceVulkan::buffer_update(RID p_buffer, uint32_t p_offset, uint32_t p_size, const void *p_data, uint32_t p_post_barrier) {
 	_THREAD_SAFE_METHOD_
 
@@ -7973,6 +7984,10 @@ void RenderingDeviceVulkan::_free_internal(RID p_id) {
 	} else if (uniform_set_owner.owns(p_id)) {
 		UniformSet *uniform_set = uniform_set_owner.getornull(p_id);
 		frames[frame].uniform_sets_to_dispose_of.push_back(*uniform_set);
+		if (uniform_set->invalidated_callback != nullptr) {
+			uniform_set->invalidated_callback(p_id, uniform_set->invalidated_callback_userdata);
+		}
+
 		uniform_set_owner.free(p_id);
 	} else if (render_pipeline_owner.owns(p_id)) {
 		RenderPipeline *pipeline = render_pipeline_owner.getornull(p_id);
