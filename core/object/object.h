@@ -162,6 +162,16 @@ enum PropertyUsageFlags {
 		cb_func();                            \
 	}                                         \
 	type name
+// 修改属性调用一个回调
+#define DECL_PROPERTY_CK(type, name, ck_func) \
+	type _get_##name() {                      \
+		ck_func();                            \
+		return name;                          \
+	}                                         \
+	void _set_##name(type p_value_##name) {   \
+		name = p_value_##name;                \
+	}                                         \
+	type name
 // 定义一个按钮
 #define DECL_PROPERTY_BUTTON(state_name, call_function)                    \
 	bool _get_##state_name() { return state_name; }                        \
