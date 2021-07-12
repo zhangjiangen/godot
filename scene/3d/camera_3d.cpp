@@ -630,6 +630,15 @@ bool Camera3D::is_position_in_frustum(const Vector3 &p_position) const {
 	return true;
 }
 
+bool Camera3D::is_sphere_in_frustum(const Vector3 &p_position, float p_radius) const {
+	Vector<Plane> frustum = get_frustum();
+	for (int i = 0; i < frustum.size(); i++) {
+		if (frustum[i].normal.dot(p_position) + p_radius < 0.0f) {
+			return false;
+		}
+	}
+	return true;
+}
 void Camera3D::set_v_offset(float p_offset) {
 	v_offset = p_offset;
 	_update_camera();

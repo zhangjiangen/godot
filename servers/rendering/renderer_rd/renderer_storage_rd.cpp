@@ -3491,6 +3491,11 @@ void RendererStorageRD::multimesh_initialize(RID p_rid) {
 	multimesh_owner.initialize_rid(p_rid, MultiMesh());
 }
 
+void RendererStorageRD::multimesh_set_user_date(RID p_multimesh, Ref<MultMeshUserDataBase> p_user_date) const {
+	MultiMesh *multimesh = multimesh_owner.getornull(p_multimesh);
+	ERR_FAIL_COND(!multimesh);
+	multimesh->UserDate = p_user_date;
+}
 void RendererStorageRD::multimesh_allocate_data(RID p_multimesh, int p_instances, RS::MultimeshTransformFormat p_transform_format, bool p_use_colors, bool p_use_custom_data) {
 	MultiMesh *multimesh = multimesh_owner.getornull(p_multimesh);
 	ERR_FAIL_COND(!multimesh);

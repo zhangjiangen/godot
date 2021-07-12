@@ -154,7 +154,7 @@ public:
 
 	virtual Vector<Plane> get_frustum() const;
 	bool is_position_in_frustum(const Vector3 &p_position) const;
-
+	bool is_sphere_in_frustum(const Vector3 &p_position, float p_radius) const;
 	void set_environment(const Ref<Environment> &p_environment);
 	Ref<Environment> get_environment() const;
 

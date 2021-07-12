@@ -31,7 +31,12 @@
 #include "rendering_device.h"
 
 #include "rendering_device_binds.h"
-
+void MultMeshUserDataBase::_bind_methods() {
+}
+void MultMeshUserDataBase::BeginUpdate() {}
+void MultMeshUserDataBase::EndUpdate() {}
+void MultMeshUserDataBase::PreRender() {}
+/****************************************************************************/
 RenderingDevice *RenderingDevice::singleton = nullptr;
 
 RenderingDevice *RenderingDevice::get_singleton() {
@@ -901,7 +906,7 @@ RenderingDevice::RenderingDevice() {
 	if (singleton == nullptr) { // there may be more rendering devices later
 		singleton = this;
 	}
-} 
+}
 RenderingDevice::DataFormat RenderingDevice::image_astc_to_datatype(const Image::Format internalFormat) {
 	switch (internalFormat) {
 		//

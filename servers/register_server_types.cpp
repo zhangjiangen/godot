@@ -136,6 +136,7 @@ void register_server_types() {
 	ClassDB::register_class<CameraServer>();
 
 	ClassDB::register_virtual_class<RenderingDevice>();
+	ClassDB::register_virtual_class<MultMeshUserDataBase>();
 
 	ClassDB::register_virtual_class<XRInterface>();
 	ClassDB::register_class<XRPositionalTracker>();

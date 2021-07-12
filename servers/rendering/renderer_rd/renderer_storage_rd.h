@@ -44,6 +44,7 @@
 #include "servers/rendering/renderer_rd/shaders/voxel_gi_sdf.glsl.gen.h"
 #include "servers/rendering/renderer_scene_render.h"
 #include "servers/rendering/rendering_device.h"
+
 class RendererStorageRD : public RendererStorage {
 public:
 	static _FORCE_INLINE_ void store_transform(const Transform3D &p_mtx, float *p_array) {
@@ -600,6 +601,7 @@ private:
 		MultiMesh *dirty_list = nullptr;
 
 		Dependency dependency;
+		Ref<MultMeshUserDataBase> UserDate;
 	};
 
 	mutable RID_Owner<MultiMesh, true> multimesh_owner;
@@ -1691,6 +1693,7 @@ public:
 
 	void multimesh_allocate_data(RID p_multimesh, int p_instances, RS::MultimeshTransformFormat p_transform_format, bool p_use_colors = false, bool p_use_custom_data = false);
 	int multimesh_get_instance_count(RID p_multimesh) const;
+	void multimesh_set_user_date(RID p_multimesh, Ref<MultMeshUserDataBase> p_user_date) const;
 
 	void multimesh_set_mesh(RID p_multimesh, RID p_mesh);
 	void multimesh_instance_set_transform(RID p_multimesh, int p_index, const Transform3D &p_transform);
