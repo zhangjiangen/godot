@@ -1024,6 +1024,8 @@ public:
 
 	void render_camera(RID p_render_buffers, RID p_camera, RID p_scenario, RID p_viewport, Size2 p_viewport_size, float p_screen_lod_threshold, RID p_shadow_atlas, Ref<XRInterface> &p_xr_interface, RendererScene::RenderInfo *r_render_info = nullptr);
 	void update_dirty_instances();
+	virtual void _multmesh_pre_render(const RendererSceneRender::CameraData *p_camera_data);
+	virtual void _multmesh_post_render();
 
 	void render_particle_colliders();
 	virtual void render_probes();

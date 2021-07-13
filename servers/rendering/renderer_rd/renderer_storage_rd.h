@@ -605,6 +605,7 @@ private:
 	};
 
 	mutable RID_Owner<MultiMesh, true> multimesh_owner;
+	mutable Vector<RID> temp_mesh_list;
 
 	MultiMesh *multimesh_dirty_list = nullptr;
 
@@ -613,6 +614,24 @@ private:
 	_FORCE_INLINE_ void _multimesh_mark_all_dirty(MultiMesh *multimesh, bool p_data, bool p_aabb);
 	_FORCE_INLINE_ void _multimesh_re_create_aabb(MultiMesh *multimesh, const float *p_data, int p_instances);
 	void _update_dirty_multimeshes();
+	virtual void _multmesh_pre_render(const Transform3D &p_camera_transform, const CameraMatrix &p_camera_mat) {
+		temp_mesh_list.clear();
+		multimesh_owner.get_owned_array(&temp_mesh_list);
+		for (int i = 0; i < temp_mesh_list.size(); ++i) {
+			MultiMesh *multimesh = multimesh_owner.getornull(temp_mesh_list[i]);
+			if (multimesh->UserDate.is_valid())
+				multimesh->UserDate->PreRender(&p_camera_transform, &p_camera_mat, 1);
+		}
+	}
+	virtual void _multmesh_post_render() {
+		temp_mesh_list.clear();
+		multimesh_owner.get_owned_array(&temp_mesh_list);
+		for (int i = 0; i < temp_mesh_list.size(); ++i) {
+			MultiMesh *multimesh = multimesh_owner.getornull(temp_mesh_list[i]);
+			if (multimesh->UserDate.is_valid())
+				multimesh->UserDate->EndRender();
+		}
+	}
 
 	/* PARTICLES */
 

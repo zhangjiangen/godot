@@ -48,15 +48,16 @@ class RDPipelineMultisampleState;
 class RDPipelineDepthStencilState;
 class RDPipelineColorBlendState;
 class RDFramebufferPass;
-class MultMeshUserDataBase : RefCounted {
+class MultMeshUserDataBase : public RefCounted {
 	GDCLASS(MultMeshUserDataBase, RefCounted)
 protected:
 	static void _bind_methods();
 
 public:
-	virtual void BeginUpdate() {}
-	virtual void EndUpdate() {}
-	virtual void PreRender() {}
+	virtual void BeginUpdate();
+	virtual void EndUpdate();
+	virtual void PreRender(const class Transform3D *p_transform, const class CameraMatrix *p_camera_mat, int p_camera_count);
+	virtual void EndRender();
 };
 class RenderingDevice : public Object {
 	GDCLASS(RenderingDevice, Object)

@@ -289,6 +289,9 @@ public:
 
 	virtual AABB multimesh_get_aabb(RID p_multimesh) const = 0;
 
+	virtual void _multmesh_pre_render(const class Transform3D &p_camera_transform, const struct CameraMatrix &p_camera_mat) = 0;
+	virtual void _multmesh_post_render() = 0;
+
 	/* SKELETON API */
 
 	virtual RID skeleton_allocate() = 0;

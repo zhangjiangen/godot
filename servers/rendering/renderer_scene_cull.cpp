@@ -2449,6 +2449,9 @@ void RendererSceneCull::render_camera(RID p_render_buffers, RID p_camera, RID p_
 			// this won't be called (see fail check above) but keeping this comment to indicate we may support more then 2 views in the future...
 		}
 	}
+	// 更新信息实例
+	RENDER_TIMESTAMP("Update multmesh userdata")
+	_multmesh_pre_render(&camera_data);
 
 	RID environment = _render_get_environment(p_camera, p_scenario);
 
@@ -2457,9 +2460,17 @@ void RendererSceneCull::render_camera(RID p_render_buffers, RID p_camera, RID p_
 	RendererSceneOcclusionCull::get_singleton()->buffer_update(p_viewport, camera_data.main_transform, camera_data.main_projection, camera_data.is_ortogonal, RendererThreadPool::singleton->thread_work_pool);
 
 	_render_scene(&camera_data, p_render_buffers, environment, camera->effects, camera->visible_layers, p_scenario, p_viewport, p_shadow_atlas, RID(), -1, p_screen_lod_threshold, true, r_render_info);
+	// 完成实例更新
+	_multmesh_post_render();
 #endif
 }
 
+void RendererSceneCull::_multmesh_pre_render(const RendererSceneRender::CameraData *p_camera_data) {
+	RSG::storage->_multmesh_pre_render(p_camera_data->main_transform, p_camera_data->main_projection);
+}
+void RendererSceneCull::_multmesh_post_render() {
+	RSG::storage->_multmesh_post_render();
+}
 void RendererSceneCull::_visibility_cull_threaded(uint32_t p_thread, VisibilityCullData *cull_data) {
 	uint32_t total_threads = RendererThreadPool::singleton->thread_work_pool.get_thread_count();
 	uint32_t bin_from = p_thread * cull_data->cull_count / total_threads;

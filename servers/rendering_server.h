@@ -43,6 +43,14 @@
 #include "servers/rendering/rendering_device.h"
 #include "servers/rendering/shader_language.h"
 
+class RenderCallback : public RefCounted {
+	GDCLASS(RenderCallback, RefCounted)
+protected:
+	static void _bind_methods();
+
+public:
+	virtual void PreRender() {}
+};
 class RenderingServer : public Object {
 	GDCLASS(RenderingServer, Object);
 
@@ -70,6 +78,7 @@ protected:
 public:
 	static RenderingServer *get_singleton();
 	static RenderingServer *create();
+	List<Ref<RenderCallback>> render_callback;
 
 	enum {
 		NO_INDEX_ARRAY = -1,
@@ -1391,6 +1400,7 @@ public:
 	/* EVENT QUEUING */
 
 	virtual void draw(bool p_swap_buffers = true, double frame_step = 0.0) = 0;
+	virtual void pre_draw();
 	virtual void sync() = 0;
 	virtual bool has_changed() const = 0;
 	virtual void init() = 0;

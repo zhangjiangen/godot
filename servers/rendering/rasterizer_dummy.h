@@ -367,6 +367,9 @@ public:
 	void multimesh_set_visible_instances(RID p_multimesh, int p_visible) override {}
 	int multimesh_get_visible_instances(RID p_multimesh) const override { return 0; }
 
+	virtual void _multmesh_pre_render(const class Transform3D &p_camera_transform, const struct CameraMatrix &p_camera_mat) {}
+	virtual void _multmesh_post_render() {}
+
 	/* SKELETON API */
 
 	RID skeleton_allocate() override { return RID(); }

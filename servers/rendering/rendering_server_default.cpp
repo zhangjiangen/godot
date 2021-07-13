@@ -369,6 +369,7 @@ void RenderingServerDefault::sync() {
 }
 
 void RenderingServerDefault::draw(bool p_swap_buffers, double frame_step) {
+	pre_draw();
 	if (create_thread) {
 		draw_pending.increment();
 		command_queue.push(this, &RenderingServerDefault::_thread_draw, p_swap_buffers, frame_step);

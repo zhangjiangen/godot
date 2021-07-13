@@ -333,6 +333,20 @@ public:
 			spin_lock.unlock();
 		}
 	}
+	void get_owned_array(Vector<RID> *p_owned) {
+		if (THREAD_SAFE) {
+			spin_lock.lock();
+		}
+		for (size_t i = 0; i < max_alloc; i++) {
+			uint64_t validator = validator_chunks[i / elements_in_chunk][i % elements_in_chunk];
+			if (validator != 0xFFFFFFFF) {
+				p_owned->push_back(_make_from_id((validator << 32) | i));
+			}
+		}
+		if (THREAD_SAFE) {
+			spin_lock.unlock();
+		}
+	}
 
 	void set_description(const char *p_descrption) {
 		description = p_descrption;
@@ -493,6 +507,9 @@ public:
 
 	_FORCE_INLINE_ void get_owned_list(List<RID> *p_owned) {
 		return alloc.get_owned_list(p_owned);
+	}
+	_FORCE_INLINE_ void get_owned_array(Vector<RID> *p_owned) {
+		return alloc.get_owned_array(p_owned);
 	}
 
 	void set_description(const char *p_descrption) {

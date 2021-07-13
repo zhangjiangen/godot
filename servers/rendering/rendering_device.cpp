@@ -33,9 +33,14 @@
 #include "rendering_device_binds.h"
 void MultMeshUserDataBase::_bind_methods() {
 }
-void MultMeshUserDataBase::BeginUpdate() {}
-void MultMeshUserDataBase::EndUpdate() {}
-void MultMeshUserDataBase::PreRender() {}
+void MultMeshUserDataBase::BeginUpdate() {
+}
+void MultMeshUserDataBase::EndUpdate() {
+}
+void MultMeshUserDataBase::PreRender(const Transform3D *p_transform, const CameraMatrix *p_camera_mat, int p_camera_count) {
+}
+void MultMeshUserDataBase::EndRender() {
+}
 /****************************************************************************/
 RenderingDevice *RenderingDevice::singleton = nullptr;
 
