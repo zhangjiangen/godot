@@ -675,8 +675,7 @@ public:
 
 		return e->_data.value;
 	}
-	void set(const K &p_key,const V& p_value)
-	{
+	void set(const K &p_key, const V &p_value) {
 		if (!_data._root) {
 			_data._create_root();
 		}
@@ -686,7 +685,7 @@ public:
 			e = insert(p_key, V());
 		}
 
-		e->_value = p_value;
+		e->_data.value = p_value;
 	}
 
 	Element *front() const {

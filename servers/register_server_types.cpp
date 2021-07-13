@@ -135,8 +135,8 @@ void register_server_types() {
 	GDREGISTER_CLASS(XRServer);
 	GDREGISTER_CLASS(CameraServer);
 
-	GDREGISTER_VIRTUAL_CLASS<RenderingDevice>();
-	GDREGISTER_VIRTUAL_CLASS<MultMeshUserDataBase>();
+	GDREGISTER_VIRTUAL_CLASS(RenderingDevice);
+	GDREGISTER_VIRTUAL_CLASS(MultMeshUserDataBase);
 
 	GDREGISTER_VIRTUAL_CLASS(XRInterface);
 	GDREGISTER_CLASS(XRPositionalTracker);
