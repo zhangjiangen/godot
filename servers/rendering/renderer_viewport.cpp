@@ -694,7 +694,7 @@ void RendererViewport::viewport_set_active(RID p_viewport, bool p_active) {
 	ERR_FAIL_COND(!viewport);
 
 	if (p_active) {
-		ERR_FAIL_COND(active_viewports.find(viewport) != -1); //already active
+		ERR_FAIL_COND_MSG(active_viewports.find(viewport) != -1, "Can't make active a Viewport that is already active.");
 		viewport->occlusion_buffer_dirty = true;
 		active_viewports.push_back(viewport);
 	} else {
@@ -1116,9 +1116,9 @@ void RendererViewport::set_default_clear_color(const Color &p_color) {
 	RSG::storage->set_default_clear_color(p_color);
 }
 
-//workaround for setting this on thread
-void RendererViewport::call_set_use_vsync(bool p_enable) {
-	DisplayServer::get_singleton()->_set_use_vsync(p_enable);
+// Workaround for setting this on thread.
+void RendererViewport::call_set_vsync_mode(DisplayServer::VSyncMode p_mode, DisplayServer::WindowID p_window) {
+	DisplayServer::get_singleton()->window_set_vsync_mode(p_mode, p_window);
 }
 
 int RendererViewport::get_total_objects_drawn() const {

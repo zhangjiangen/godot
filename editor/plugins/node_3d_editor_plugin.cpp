@@ -467,21 +467,30 @@ void Node3DEditorViewport::_select_clicked(bool p_append, bool p_single, bool p_
 }
 
 void Node3DEditorViewport::_select(Node *p_node, bool p_append, bool p_single) {
-	if (!p_append) {
-		editor_selection->clear();
-	}
-
-	if (editor_selection->is_selected(p_node)) {
-		//erase
-		editor_selection->remove_node(p_node);
-	} else {
+	// Add or remove a single node from the selection
+	if (p_append && p_single) {
+		if (editor_selection->is_selected(p_node)) {
+			// Already in the selection, remove it from the selected nodes
+			editor_selection->remove_node(p_node);
+		} else {
+			// Add the item to the selection
+			editor_selection->add_node(p_node);
+		}
+	} else if (p_append && !p_single) {
+		// Add the item to the selection
 		editor_selection->add_node(p_node);
-	}
-
-	if (p_single) {
+	} else {
+		// No append; single select
+		editor_selection->clear();
+		editor_selection->add_node(p_node);
+		// Reselect
 		if (Engine::get_singleton()->is_editor_hint()) {
 			editor->call("edit_node", p_node);
 		}
+	}
+
+	if (editor_selection->get_selected_node_list().size() == 1) {
+		editor->push_item(editor_selection->get_selected_node_list()[0]);
 	}
 }
 
@@ -6172,7 +6181,7 @@ void Node3DEditor::snap_selected_nodes_to_floor() {
 		}
 
 		if (snapped_to_floor) {
-			undo_redo->create_action(TTR("Snap Nodes To Floor"));
+			undo_redo->create_action(TTR("Snap Nodes to Floor"));
 
 			// Perform snapping if at least one node can be snapped
 			for (int i = 0; i < keys.size(); i++) {
@@ -6218,8 +6227,13 @@ void Node3DEditor::_sun_environ_settings_pressed() {
 	sun_environ_popup->popup();
 }
 
-void Node3DEditor::_add_sun_to_scene() {
+void Node3DEditor::_add_sun_to_scene(bool p_already_added_environment) {
 	sun_environ_popup->hide();
+
+	if (!p_already_added_environment && world_env_count == 0 && Input::get_singleton()->is_key_pressed(KEY_SHIFT)) {
+		// Prevent infinite feedback loop between the sun and environment methods.
+		_add_environment_to_scene(true);
+	}
 
 	Node *base = get_tree()->get_edited_scene_root();
 	if (!base) {
@@ -6232,13 +6246,22 @@ void Node3DEditor::_add_sun_to_scene() {
 
 	undo_redo->create_action("Add Preview Sun to Scene");
 	undo_redo->add_do_method(base, "add_child", new_sun);
+	// Move to the beginning of the scene tree since more "global" nodes
+	// generally look better when placed at the top.
+	undo_redo->add_do_method(base, "move_child", new_sun, 0);
 	undo_redo->add_do_method(new_sun, "set_owner", base);
 	undo_redo->add_undo_method(base, "remove_child", new_sun);
 	undo_redo->add_do_reference(new_sun);
 	undo_redo->commit_action();
 }
-void Node3DEditor::_add_environment_to_scene() {
+
+void Node3DEditor::_add_environment_to_scene(bool p_already_added_sun) {
 	sun_environ_popup->hide();
+
+	if (!p_already_added_sun && directional_light_count == 0 && Input::get_singleton()->is_key_pressed(KEY_SHIFT)) {
+		// Prevent infinite feedback loop between the sun and environment methods.
+		_add_sun_to_scene(true);
+	}
 
 	Node *base = get_tree()->get_edited_scene_root();
 	if (!base) {
@@ -6253,6 +6276,9 @@ void Node3DEditor::_add_environment_to_scene() {
 
 	undo_redo->create_action("Add Preview Environment to Scene");
 	undo_redo->add_do_method(base, "add_child", new_env);
+	// Move to the beginning of the scene tree since more "global" nodes
+	// generally look better when placed at the top.
+	undo_redo->add_do_method(base, "move_child", new_env, 0);
 	undo_redo->add_do_method(new_env, "set_owner", base);
 	undo_redo->add_undo_method(base, "remove_child", new_env);
 	undo_redo->add_do_reference(new_env);
@@ -7111,6 +7137,7 @@ Node3DEditor::Node3DEditor(EditorNode *p_editor) {
 		sun_vb->hide();
 
 		sun_title = memnew(Label);
+		sun_title->set_theme_type_variation("HeaderSmall");
 		sun_vb->add_child(sun_title);
 		sun_title->set_text(TTR("Preview Sun"));
 		sun_title->set_align(Label::ALIGN_CENTER);
@@ -7180,7 +7207,8 @@ Node3DEditor::Node3DEditor(EditorNode *p_editor) {
 
 		sun_add_to_scene = memnew(Button);
 		sun_add_to_scene->set_text(TTR("Add Sun to Scene"));
-		sun_add_to_scene->connect("pressed", callable_mp(this, &Node3DEditor::_add_sun_to_scene));
+		sun_add_to_scene->set_tooltip(TTR("Adds a DirectionalLight3D node matching the preview sun settings to the current scene.\nHold Shift while clicking to also add the preview environment to the current scene."));
+		sun_add_to_scene->connect("pressed", callable_mp(this, &Node3DEditor::_add_sun_to_scene), varray(false));
 		sun_vb->add_spacer();
 		sun_vb->add_child(sun_add_to_scene);
 
@@ -7201,6 +7229,8 @@ Node3DEditor::Node3DEditor(EditorNode *p_editor) {
 		environ_vb->hide();
 
 		environ_title = memnew(Label);
+		environ_title->set_theme_type_variation("HeaderSmall");
+
 		environ_vb->add_child(environ_title);
 		environ_title->set_text(TTR("Preview Environment"));
 		environ_title->set_align(Label::ALIGN_CENTER);
@@ -7244,7 +7274,8 @@ Node3DEditor::Node3DEditor(EditorNode *p_editor) {
 
 		environ_add_to_scene = memnew(Button);
 		environ_add_to_scene->set_text(TTR("Add Environment to Scene"));
-		environ_add_to_scene->connect("pressed", callable_mp(this, &Node3DEditor::_add_environment_to_scene));
+		environ_add_to_scene->set_tooltip(TTR("Adds a WorldEnvironment node matching the preview environment settings to the current scene.\nHold Shift while clicking to also add the preview sun to the current scene."));
+		environ_add_to_scene->connect("pressed", callable_mp(this, &Node3DEditor::_add_environment_to_scene), varray(false));
 		environ_vb->add_spacer();
 		environ_vb->add_child(environ_add_to_scene);
 
