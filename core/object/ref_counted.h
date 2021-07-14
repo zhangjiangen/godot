@@ -622,6 +622,146 @@ inline SharedPtr<T> dynamic_pointer_cast(SharedPtr<U> const &r) {
 	return r.template dynamicCast<T>();
 }
 
+template <class T>
+class SalfRefVector {
+public:
+	SalfRefVector() {
+		ArrayData = memnew(Vector<Ref<T>>());
+		TempArrayData = memnew(Vector<Ref<T>>());
+	}
+	~SalfRefVector() {
+		memdelete(ArrayData);
+		memdelete(TempArrayData);
+		ArrayData = nullptr;
+		TempArrayData = nullptr;
+	}
+
+	// 这个函数只能在线程里面调用，并且只能在一个线程调用，不支持多个线程同时调用
+	const Vector<Ref<T>> &GetData() {
+		_mutex.lock();
+		if (AddData.size() > 0 || RemoveData.size() > 0) {
+			for (int i = 0; i < AddData.size(); ++i) {
+				ArrayData->push_back(AddData[i]);
+			}
+			bool is_change = RemoveData.size() > 0;
+			Ref<T> nullref;
+			for (int i = 0; i < RemoveData.size(); ++i) {
+				for (int j = 0; j < (*ArrayData).size(); ++j) {
+					if ((*ArrayData)[j] == RemoveData[i]) {
+						ArrayData->write[j] = nullref;
+						break;
+					}
+				}
+			}
+			if (is_change) {
+				for (int i = 0; i < ArrayData->size(); ++i) {
+					if ((*ArrayData)[i].ptr() != nullptr) {
+						TempArrayData->push_back((*ArrayData)[i]);
+					}
+				}
+				ArrayData->clear();
+				Vector<Ref<T>> *t = ArrayData;
+				ArrayData = TempArrayData;
+				TempArrayData = t;
+			}
+		}
+		_mutex.unlock();
+		return *ArrayData;
+	}
+	// 这个函数只能在线程里面调用，调用之前必须调用GetData，支持多个线程同时调用
+	const Vector<Ref<T>> &OnlyGetData() {
+		return *ArrayData;
+	}
+	// 增加一个数据
+	void Add(const Ref<T> &p_data) {
+		_mutex.lock();
+		AddData.push_back(p_data);
+		_mutex.unlock();
+	}
+	// 删除一个数据
+	void Remove(const Ref<T> &p_data) {
+		_mutex.lock();
+		RemoveData.push_back(p_data);
+		_mutex.unlock();
+	}
+
+private:
+	Mutex _mutex;
+	Vector<Ref<T>> AddData;
+	Vector<Ref<T>> RemoveData;
+	Vector<Ref<T>> *ArrayData;
+	Vector<Ref<T>> *TempArrayData;
+};
+template <class T>
+class SalfSharedVector {
+public:
+	SalfSharedVector() {
+		ArrayData = memnew(Vector<SharedPtr<T>>());
+		TempArrayData = memnew(Vector<SharedPtr<T>>());
+	}
+	~SalfSharedVector() {
+		memdelete(ArrayData);
+		memdelete(TempArrayData);
+		ArrayData = nullptr;
+		TempArrayData = nullptr;
+	}
+
+	// 这个函数只能在线程里面调用，并且只能在一个线程调用，不支持多个线程同时调用
+	const Vector<SharedPtr<T>> &OnlyGetData() {
+		return *ArrayData;
+	}
+	// 这个函数只能在线程里面调用，并且只能在一个线程调用，不支持多个线程同时调用
+	const Vector<SharedPtr<T>> &GetData() {
+		_mutex.lock();
+		if (AddData.size() > 0 || RemoveData.size() > 0) {
+			for (int i = 0; i < AddData.size(); ++i) {
+				ArrayData->push_back(AddData[i]);
+			}
+			bool is_change = RemoveData.size() > 0;
+			for (int i = 0; i < RemoveData.size(); ++i) {
+				for (int j = 0; j < (*ArrayData).size(); ++j) {
+					if ((*ArrayData)[j] == RemoveData[i]) {
+						ArrayData->write[j] = nullptr;
+						break;
+					}
+				}
+			}
+			if (is_change) {
+				for (int i = 0; i < ArrayData->size(); ++i) {
+					if ((*ArrayData)[i].get() != nullptr) {
+						TempArrayData->push_back((*ArrayData)[i]);
+					}
+				}
+				ArrayData->clear();
+				Vector<Ref<T>> *t = ArrayData;
+				ArrayData = TempArrayData;
+				TempArrayData = t;
+			}
+		}
+		_mutex.unlock();
+		return *ArrayData;
+	}
+	// 增加一个数据
+	void Add(const SharedPtr<T> &p_data) {
+		_mutex.lock();
+		AddData.push_back(p_data);
+		_mutex.unlock();
+	}
+	// 删除一个数据
+	void Remove(const SharedPtr<T> &p_data) {
+		_mutex.lock();
+		RemoveData.push_back(p_data);
+		_mutex.unlock();
+	}
+
+private:
+	Mutex _mutex;
+	Vector<SharedPtr<T>> AddData;
+	Vector<SharedPtr<T>> RemoveData;
+	Vector<SharedPtr<T>> *ArrayData;
+	Vector<SharedPtr<T>> *TempArrayData;
+};
+
 #ifdef DEBUG_METHODS_ENABLED
 
 template <class T>

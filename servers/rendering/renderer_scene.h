@@ -34,6 +34,15 @@
 #include "servers/rendering/renderer_compositor.h"
 #include "servers/xr/xr_interface.h"
 
+class RenderCallback : public RefCounted {
+	GDCLASS(RenderCallback, RefCounted)
+protected:
+	static void _bind_methods();
+
+public:
+	virtual void PreRender(const Transform3D &p_camera_transform, const CameraMatrix &p_camera_mat) {}
+	virtual void PostRender() {}
+};
 class RendererScene {
 public:
 	virtual RID camera_allocate() = 0;
@@ -216,6 +225,32 @@ public:
 
 	RendererScene();
 	virtual ~RendererScene();
+	//
+	virtual void pre_draw(const Transform3D &p_camera_transform, const CameraMatrix &p_camera_mat) {
+		const Vector<Ref<RenderCallback>> &cb = render_callback.GetData();
+		for (int i = 0; i < cb.size(); ++i) {
+			Ref<RenderCallback> t = cb[i];
+			t->PreRender(p_camera_transform, p_camera_mat);
+		}
+	}
+	virtual void post_draw() {
+		const Vector<Ref<RenderCallback>> &cb = render_callback.OnlyGetData();
+		for (int i = 0; i < cb.size(); ++i) {
+			Ref<RenderCallback> t = cb[i];
+			t->PostRender();
+		}
+	}
+	// 增加一个渲染回调
+	void AddRenderCallback(const Ref<RenderCallback> &cb) {
+		render_callback.Add(cb);
+	}
+	// 删除一个渲染回调
+	void RemoveRenderCallback(const Ref<RenderCallback> &cb) {
+		render_callback.Remove(cb);
+	}
+
+protected:
+	SalfRefVector<RenderCallback> render_callback;
 };
 
 #endif // RENDERINGSERVERSCENE_H

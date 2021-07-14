@@ -556,6 +556,7 @@ void ShaderRD::_compile_version(Version *p_version) {
 		}
 		if (p_version->variants[i].is_null()) {
 			all_valid = false;
+			WARN_DEPRECATED_MSG(variant_defines[i].ptr());
 			break;
 		}
 	}

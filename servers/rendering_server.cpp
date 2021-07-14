@@ -50,18 +50,6 @@ RenderingServer *RenderingServer::create() {
 
 	return nullptr;
 }
-
-void RenderingServer::pre_draw() {
-	List<Ref<RenderCallback>>::Element *node = render_callback.front();
-	Ref<RenderCallback> t;
-	while (node) {
-		t = node->get();
-		if (t.is_valid()) {
-			t->PreRender();
-		}
-		node = node->next();
-	}
-}
 Array RenderingServer::_texture_debug_usage_bind() {
 	List<TextureInfo> list;
 	texture_debug_usage(&list);

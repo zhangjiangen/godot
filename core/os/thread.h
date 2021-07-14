@@ -39,7 +39,6 @@
 #endif
 
 class String;
-
 class Thread {
 public:
 	typedef void (*Callback)(void *p_userdata);

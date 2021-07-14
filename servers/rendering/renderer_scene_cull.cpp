@@ -2449,6 +2449,9 @@ void RendererSceneCull::render_camera(RID p_render_buffers, RID p_camera, RID p_
 			// this won't be called (see fail check above) but keeping this comment to indicate we may support more then 2 views in the future...
 		}
 	}
+	// 开始渲染
+	RENDER_TIMESTAMP("pre draw")
+	pre_draw(camera_data.main_transform, camera_data.main_projection);
 	// 更新信息实例
 	RENDER_TIMESTAMP("Update multmesh userdata")
 	_multmesh_pre_render(&camera_data);
@@ -2462,6 +2465,9 @@ void RendererSceneCull::render_camera(RID p_render_buffers, RID p_camera, RID p_
 	_render_scene(&camera_data, p_render_buffers, environment, camera->effects, camera->visible_layers, p_scenario, p_viewport, p_shadow_atlas, RID(), -1, p_screen_lod_threshold, true, r_render_info);
 	// 完成实例更新
 	_multmesh_post_render();
+	// 完成渲染
+	RENDER_TIMESTAMP("post draw")
+	post_draw();
 #endif
 }
 

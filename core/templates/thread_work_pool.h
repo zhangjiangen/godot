@@ -36,7 +36,6 @@
 #include "core/os/thread.h"
 
 #include <atomic>
-
 class ThreadWorkPool {
 	std::atomic<uint32_t> index;
 
