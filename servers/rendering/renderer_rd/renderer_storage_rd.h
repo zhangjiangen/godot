@@ -1910,6 +1910,13 @@ public:
 		return light->shadow;
 	}
 
+	_FORCE_INLINE_ bool light_has_projector(RID p_light) const {
+		const Light *light = light_owner.getornull(p_light);
+		ERR_FAIL_COND_V(!light, RS::LIGHT_DIRECTIONAL);
+
+		return texture_owner.owns(light->projector);
+	}
+
 	_FORCE_INLINE_ bool light_is_negative(RID p_light) const {
 		const Light *light = light_owner.getornull(p_light);
 		ERR_FAIL_COND_V(!light, RS::LIGHT_DIRECTIONAL);
