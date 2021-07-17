@@ -172,11 +172,12 @@ void main() {
 	for (uint i = 0; i < SH_SIZE * 3; i++) {
 		sh_accum[probe_index].c[i] = 0.0;
 	}
-
+	// 根据整数世界位置，快速确保每个探针对 vogel 函数具有不同的“偏移量”
 	// quickly ensure each probe has a different "offset" for the vogel function, based on integer world position
 	uvec3 h3 = hash3(uvec3(params.world_offset + probe_cell));
 	float offset = hashf3(vec3(h3 & uvec3(0xFFFFF)));
 
+	//对于更均匀的半球，根据历史框架交替
 	//for a more homogeneous hemisphere, alternate based on history frames
 	uint ray_offset = params.history_index;
 	uint ray_mult = params.history_size;
@@ -312,6 +313,7 @@ void main() {
 	}
 
 	for (uint i = 0; i < SH_SIZE; i++) {
+		// 存储在历史纹理中
 		// store in history texture
 		ivec3 prev_pos = ivec3(pos.x, pos.y * SH_SIZE + i, int(params.history_index));
 		ivec2 average_pos = prev_pos.xy;
@@ -339,7 +341,9 @@ void main() {
 #endif // MODE PROCESS
 
 #ifdef MODE_STORE
-
+	// 这一步需要转换为八面体，因为
+	// 从屏幕上读取八面体比球谐函数要快得多，
+	// 尽管质量损失很小
 	// converting to octahedral in this step is required because
 	// octahedral is much faster to read from the screen than spherical harmonics,
 	// despite the very slight quality loss
@@ -347,10 +351,11 @@ void main() {
 	ivec2 sh_pos = (pos / OCT_SIZE) * ivec2(1, SH_SIZE);
 	ivec2 oct_pos = (pos / OCT_SIZE) * (OCT_SIZE + 2) + ivec2(1);
 	ivec2 local_pos = pos % OCT_SIZE;
-
+	//计算这个体素的八面体法线
 	//compute the octahedral normal for this texel
 	vec3 normal = octahedron_encode(vec2(local_pos) / float(OCT_SIZE));
 
+	//读取球谐函数
 	// read the spherical harmonic
 
 	vec3 normal2 = normal * normal;
@@ -404,6 +409,7 @@ void main() {
 	vec3 radiance = vec3(0.0);
 
 	for (uint i = 0; i < SH_SIZE; i++) {
+		// 存储在历史纹理中
 		// store in history texture
 		ivec2 average_pos = sh_pos + ivec2(0, i);
 		ivec4 average = imageLoad(lightprobe_average_texture, average_pos);
@@ -415,12 +421,13 @@ void main() {
 		irradiance += m * l_mult[i];
 		radiance += m;
 	}
-
+	//为最终纹理编码RGBE9995
 	//encode RGBE9995 for the final texture
 
 	uint irradiance_rgbe = rgbe_encode(irradiance);
 	uint radiance_rgbe = rgbe_encode(radiance);
 
+	//存储在八面体图中
 	//store in octahedral map
 
 	ivec3 texture_pos = ivec3(oct_pos, int(params.cascade));
@@ -481,6 +488,8 @@ void main() {
 		//scroll
 		for (uint j = 0; j < params.history_size; j++) {
 			for (int i = 0; i < SH_SIZE; i++) {
+
+			// 从历史纹理复制
 				// copy from history texture
 				ivec3 src_pos = ivec3(tex_pos.x, tex_pos.y * SH_SIZE + i, int(j));
 				ivec3 dst_pos = ivec3(pos.x, pos.y * SH_SIZE + i, int(j));
@@ -490,6 +499,7 @@ void main() {
 		}
 
 		for (int i = 0; i < SH_SIZE; i++) {
+			// 从平均纹理复制
 			// copy from average texture
 			ivec2 src_pos = ivec2(tex_pos.x, tex_pos.y * SH_SIZE + i);
 			ivec2 dst_pos = ivec2(pos.x, pos.y * SH_SIZE + i);
@@ -497,20 +507,23 @@ void main() {
 			imageStore(lightprobe_average_scroll_texture, dst_pos, value);
 		}
 	} else if (params.cascade < params.max_cascades - 1) {
+		//不能滚动，必须在父级联中寻找位置
 		//can't scroll, must look for position in parent cascade
-
+		//全局坐标
 		//to global coords
 		float cell_to_probe = float(params.grid_size.x / float(params.probe_axis_size - 1));
 
 		float probe_cell_size = cell_to_probe / cascades.data[params.cascade].to_cell;
 		vec3 probe_pos = cascades.data[params.cascade].offset + vec3(probe_cell) * probe_cell_size;
 
+		//父本地坐标
 		//to parent local coords
 		float probe_cell_size_next = cell_to_probe / cascades.data[params.cascade + 1].to_cell;
 		probe_pos -= cascades.data[params.cascade + 1].offset;
 		probe_pos /= probe_cell_size_next;
 
 		ivec3 probe_posi = ivec3(probe_pos);
+		//把所有的光加起来，这里不需要使用遮挡，因为遮挡会在之后完成它的工作
 		//add up all light, no need to use occlusion here, since occlusion will do its work afterwards
 
 		vec4 average_light[SH_SIZE] = vec4[](vec4(0), vec4(0), vec4(0), vec4(0), vec4(0), vec4(0), vec4(0), vec4(0), vec4(0)
@@ -532,6 +545,8 @@ void main() {
 			tex_pos.x += offset.z * int(params.probe_axis_size);
 
 			for (int j = 0; j < SH_SIZE; j++) {
+
+				// 从历史纹理复制
 				// copy from history texture
 				ivec2 src_pos = ivec2(tex_pos.x, tex_pos.y * SH_SIZE + j);
 				ivec4 average = imageLoad(lightprobe_average_parent_texture, src_pos);
@@ -545,10 +560,13 @@ void main() {
 		if (total_weight > 0.0) {
 			total_weight = 1.0 / total_weight;
 		}
+		// 将平均值存储在任何地方
 		//store the averaged values everywhere
 
 		for (int i = 0; i < SH_SIZE; i++) {
 			ivec4 ivalue = clamp(ivec4(average_light[i] * total_weight * float(1 << HISTORY_BITS)), ivec4(-32768), ivec4(32767)); //clamp to 16 bits, so higher values don't break average
+			
+			// 从历史纹理复制
 			// copy from history texture
 			ivec3 dst_pos = ivec3(pos.x, pos.y * SH_SIZE + i, 0);
 			for (uint j = 0; j < params.history_size; j++) {
@@ -561,6 +579,8 @@ void main() {
 		}
 
 	} else {
+		//在最高级联的边缘滚动，只需复制那里的内容，
+		//因为它是我们最接近的
 		//scroll at the edge of the highest cascade, just copy what is there,
 		//since its the closest we have anyway
 
@@ -570,6 +590,7 @@ void main() {
 			tex_pos.x += probe_cell.z * int(params.probe_axis_size);
 
 			for (int i = 0; i < SH_SIZE; i++) {
+				// 从历史纹理复制
 				// copy from history texture
 				ivec3 src_pos = ivec3(tex_pos.x, tex_pos.y * SH_SIZE + i, int(j));
 				ivec3 dst_pos = ivec3(pos.x, pos.y * SH_SIZE + i, int(j));
@@ -579,6 +600,7 @@ void main() {
 		}
 
 		for (int i = 0; i < SH_SIZE; i++) {
+			// 从平均纹理复制
 			// copy from average texture
 			ivec2 spos = ivec2(pos.x, pos.y * SH_SIZE + i);
 			ivec4 average = imageLoad(lightprobe_average_texture, spos);
@@ -589,11 +611,12 @@ void main() {
 #endif
 
 #ifdef MODE_SCROLL_STORE
-
+	//不更新探针纹理，因为这些将在以后更新
 	//do not update probe texture, as these will be updated later
 
 	for (uint j = 0; j < params.history_size; j++) {
 		for (int i = 0; i < SH_SIZE; i++) {
+			// 从历史纹理复制
 			// copy from history texture
 			ivec3 spos = ivec3(pos.x, pos.y * SH_SIZE + i, int(j));
 			ivec4 value = imageLoad(lightprobe_history_scroll_texture, spos);
@@ -602,6 +625,7 @@ void main() {
 	}
 
 	for (int i = 0; i < SH_SIZE; i++) {
+		// 从平均纹理复制
 		// copy from average texture
 		ivec2 spos = ivec2(pos.x, pos.y * SH_SIZE + i);
 		ivec4 average = imageLoad(lightprobe_average_scroll_texture, spos);

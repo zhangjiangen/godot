@@ -1248,7 +1248,9 @@ void RendererSceneSkyRD::draw(RendererSceneEnvironmentRD *p_env, bool p_can_cont
 	ERR_FAIL_COND(p_view_count > RendererSceneRender::MAX_RENDER_VIEWS);
 
 	Sky *sky = get_sky(p_env->sky);
-	ERR_FAIL_COND(!sky);
+	if (!sky) {
+		return;
+	}
 
 	SkyMaterialData *material = nullptr;
 	RID sky_material;
