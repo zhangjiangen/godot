@@ -2015,6 +2015,12 @@ void ThemeTypeDialog::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			_update_add_type_options();
 		} break;
+
+		case NOTIFICATION_VISIBILITY_CHANGED: {
+			if (is_visible()) {
+				add_type_filter->grab_focus();
+			}
+		} break;
 	}
 }
 
@@ -3299,7 +3305,7 @@ ThemeEditor::ThemeEditor() {
 
 	theme_type_editor = memnew(ThemeTypeEditor);
 	main_hs->add_child(theme_type_editor);
-	theme_type_editor->set_custom_minimum_size(Size2(360, 0) * EDSCALE);
+	theme_type_editor->set_custom_minimum_size(Size2(280, 0) * EDSCALE);
 }
 
 void ThemeEditorPlugin::edit(Object *p_node) {
