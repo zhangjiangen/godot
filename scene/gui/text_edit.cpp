@@ -542,8 +542,8 @@ void TextEdit::_notification(int p_what) {
 		} break;
 		case NOTIFICATION_VISIBILITY_CHANGED: {
 			if (is_visible()) {
-				call_deferred("_update_scrollbars");
-				call_deferred("_update_wrap_at");
+				call_deferred(SNAME("_update_scrollbars"));
+				call_deferred(SNAME("_update_wrap_at"));
 			}
 		} break;
 		case NOTIFICATION_LAYOUT_DIRECTION_CHANGED:
@@ -1119,7 +1119,7 @@ void TextEdit::_notification(int p_what) {
 									}
 									tl->draw(ci, Point2(gutter_offset + ofs_x, yofs), get_line_gutter_item_color(line, g));
 								} break;
-								case GUTTER_TPYE_ICON: {
+								case GUTTER_TYPE_ICON: {
 									const Ref<Texture2D> icon = get_line_gutter_icon(line, g);
 									if (icon.is_null()) {
 										break;
@@ -1147,7 +1147,7 @@ void TextEdit::_notification(int p_what) {
 
 									icon->draw_rect(ci, gutter_rect, false, get_line_gutter_item_color(line, g));
 								} break;
-								case GUTTER_TPYE_CUSTOM: {
+								case GUTTER_TYPE_CUSTOM: {
 									if (gutter.custom_draw_obj.is_valid()) {
 										Object *cdo = ObjectDB::get_instance(gutter.custom_draw_obj);
 										if (cdo) {
@@ -2361,7 +2361,7 @@ void TextEdit::_gui_input(const Ref<InputEvent> &p_gui_input) {
 					}
 
 					if (mpos.x > left_margin && mpos.x <= (left_margin + gutters[i].width) - 3) {
-						emit_signal("gutter_clicked", row, i);
+						emit_signal(SNAME("gutter_clicked"), row, i);
 						return;
 					}
 
@@ -2473,7 +2473,6 @@ void TextEdit::_gui_input(const Ref<InputEvent> &p_gui_input) {
 				_ensure_menu();
 				menu->set_position(get_screen_transform().xform(mpos));
 				menu->set_size(Vector2(1, 1));
-				_generate_context_menu();
 				menu->popup();
 				grab_focus();
 			}
@@ -2483,7 +2482,7 @@ void TextEdit::_gui_input(const Ref<InputEvent> &p_gui_input) {
 					int row, col;
 					_get_mouse_pos(Point2i(mpos.x, mpos.y), row, col);
 
-					emit_signal("symbol_lookup", highlighted_word, row, col);
+					emit_signal(SNAME("symbol_lookup"), highlighted_word, row, col);
 					return;
 				}
 
@@ -2525,7 +2524,7 @@ void TextEdit::_gui_input(const Ref<InputEvent> &p_gui_input) {
 			if (!dragging_minimap && !dragging_selection && mm->is_command_pressed() && mm->get_button_mask() == 0) {
 				String new_word = get_word_at_pos(mpos);
 				if (new_word != highlighted_word) {
-					emit_signal("symbol_validate", new_word);
+					emit_signal(SNAME("symbol_validate"), new_word);
 				}
 			} else {
 				if (highlighted_word != String()) {
@@ -2576,7 +2575,7 @@ void TextEdit::_gui_input(const Ref<InputEvent> &p_gui_input) {
 			if (select_identifiers_enabled) {
 				if (k->is_pressed() && !dragging_minimap && !dragging_selection) {
 					Point2 mp = _get_local_mouse_pos();
-					emit_signal("symbol_validate", get_word_at_pos(mp));
+					emit_signal(SNAME("symbol_validate"), get_word_at_pos(mp));
 				} else {
 					set_highlighted_word(String());
 				}
@@ -2713,7 +2712,6 @@ void TextEdit::_gui_input(const Ref<InputEvent> &p_gui_input) {
 				_ensure_menu();
 				menu->set_position(get_screen_transform().xform(_get_cursor_pixel_pos()));
 				menu->set_size(Vector2(1, 1));
-				_generate_context_menu();
 				menu->popup();
 				menu->grab_focus();
 			}
@@ -2992,7 +2990,7 @@ void TextEdit::_base_insert_text(int p_line, int p_char, const String &p_text, i
 		}
 		text_changed_dirty = true;
 	}
-	emit_signal("lines_edited_from", p_line, r_end_line);
+	emit_signal(SNAME("lines_edited_from"), p_line, r_end_line);
 }
 
 String TextEdit::_base_get_text(int p_from_line, int p_from_column, int p_to_line, int p_to_column) const {
@@ -3043,7 +3041,7 @@ void TextEdit::_base_remove_text(int p_from_line, int p_from_column, int p_to_li
 		}
 		text_changed_dirty = true;
 	}
-	emit_signal("lines_edited_from", p_to_line, p_from_line);
+	emit_signal(SNAME("lines_edited_from"), p_to_line, p_from_line);
 }
 
 void TextEdit::_insert_text(int p_line, int p_char, const String &p_text, int *r_end_line, int *r_end_char) {
@@ -3211,36 +3209,6 @@ int TextEdit::_get_menu_action_accelerator(const String &p_action) {
 		return event->get_physical_keycode_with_modifiers();
 	} else {
 		return event->get_keycode_with_modifiers();
-	}
-}
-
-void TextEdit::_generate_context_menu() {
-	// Reorganize context menu.
-	_ensure_menu();
-	menu->clear();
-	if (!readonly) {
-		menu->add_item(RTR("Cut"), MENU_CUT, is_shortcut_keys_enabled() ? _get_menu_action_accelerator("ui_cut") : 0);
-	}
-	menu->add_item(RTR("Copy"), MENU_COPY, is_shortcut_keys_enabled() ? _get_menu_action_accelerator("ui_copy") : 0);
-	if (!readonly) {
-		menu->add_item(RTR("Paste"), MENU_PASTE, is_shortcut_keys_enabled() ? _get_menu_action_accelerator("ui_paste") : 0);
-	}
-	menu->add_separator();
-	if (is_selecting_enabled()) {
-		menu->add_item(RTR("Select All"), MENU_SELECT_ALL, is_shortcut_keys_enabled() ? _get_menu_action_accelerator("ui_text_select_all") : 0);
-	}
-	if (!readonly) {
-		menu->add_item(RTR("Clear"), MENU_CLEAR);
-		menu->add_separator();
-		menu->add_item(RTR("Undo"), MENU_UNDO, is_shortcut_keys_enabled() ? _get_menu_action_accelerator("ui_undo") : 0);
-		menu->add_item(RTR("Redo"), MENU_REDO, is_shortcut_keys_enabled() ? _get_menu_action_accelerator("ui_redo") : 0);
-	}
-	menu->add_separator();
-	menu->add_submenu_item(RTR("Text writing direction"), "DirMenu");
-	menu->add_separator();
-	menu->add_check_item(RTR("Display control characters"), MENU_DISPLAY_UCC);
-	if (!readonly) {
-		menu->add_submenu_item(RTR("Insert control character"), "CTLMenu");
 	}
 }
 
@@ -3995,7 +3963,6 @@ void TextEdit::set_readonly(bool p_readonly) {
 	}
 
 	readonly = p_readonly;
-	_generate_context_menu();
 
 	update();
 }
@@ -4034,35 +4001,35 @@ void TextEdit::_toggle_draw_caret() {
 }
 
 void TextEdit::_update_caches() {
-	cache.style_normal = get_theme_stylebox("normal");
-	cache.style_focus = get_theme_stylebox("focus");
-	cache.style_readonly = get_theme_stylebox("read_only");
-	cache.font = get_theme_font("font");
-	cache.font_size = get_theme_font_size("font_size");
-	cache.outline_color = get_theme_color("font_outline_color");
-	cache.outline_size = get_theme_constant("outline_size");
-	cache.caret_color = get_theme_color("caret_color");
-	cache.caret_background_color = get_theme_color("caret_background_color");
-	cache.font_color = get_theme_color("font_color");
-	cache.font_selected_color = get_theme_color("font_selected_color");
-	cache.font_readonly_color = get_theme_color("font_readonly_color");
-	cache.selection_color = get_theme_color("selection_color");
-	cache.current_line_color = get_theme_color("current_line_color");
-	cache.line_length_guideline_color = get_theme_color("line_length_guideline_color");
-	cache.code_folding_color = get_theme_color("code_folding_color", "CodeEdit");
-	cache.brace_mismatch_color = get_theme_color("brace_mismatch_color");
-	cache.word_highlighted_color = get_theme_color("word_highlighted_color");
-	cache.search_result_color = get_theme_color("search_result_color");
-	cache.search_result_border_color = get_theme_color("search_result_border_color");
-	cache.background_color = get_theme_color("background_color");
+	cache.style_normal = get_theme_stylebox(SNAME("normal"));
+	cache.style_focus = get_theme_stylebox(SNAME("focus"));
+	cache.style_readonly = get_theme_stylebox(SNAME("read_only"));
+	cache.font = get_theme_font(SNAME("font"));
+	cache.font_size = get_theme_font_size(SNAME("font_size"));
+	cache.outline_color = get_theme_color(SNAME("font_outline_color"));
+	cache.outline_size = get_theme_constant(SNAME("outline_size"));
+	cache.caret_color = get_theme_color(SNAME("caret_color"));
+	cache.caret_background_color = get_theme_color(SNAME("caret_background_color"));
+	cache.font_color = get_theme_color(SNAME("font_color"));
+	cache.font_selected_color = get_theme_color(SNAME("font_selected_color"));
+	cache.font_readonly_color = get_theme_color(SNAME("font_readonly_color"));
+	cache.selection_color = get_theme_color(SNAME("selection_color"));
+	cache.current_line_color = get_theme_color(SNAME("current_line_color"));
+	cache.line_length_guideline_color = get_theme_color(SNAME("line_length_guideline_color"));
+	cache.code_folding_color = get_theme_color(SNAME("code_folding_color"), SNAME("CodeEdit"));
+	cache.brace_mismatch_color = get_theme_color(SNAME("brace_mismatch_color"));
+	cache.word_highlighted_color = get_theme_color(SNAME("word_highlighted_color"));
+	cache.search_result_color = get_theme_color(SNAME("search_result_color"));
+	cache.search_result_border_color = get_theme_color(SNAME("search_result_border_color"));
+	cache.background_color = get_theme_color(SNAME("background_color"));
 #ifdef TOOLS_ENABLED
-	cache.line_spacing = get_theme_constant("line_spacing") * EDSCALE;
+	cache.line_spacing = get_theme_constant(SNAME("line_spacing")) * EDSCALE;
 #else
-	cache.line_spacing = get_theme_constant("line_spacing");
+	cache.line_spacing = get_theme_constant(SNAME("line_spacing"));
 #endif
-	cache.tab_icon = get_theme_icon("tab");
-	cache.space_icon = get_theme_icon("space");
-	cache.folded_eol_icon = get_theme_icon("folded_eol_icon", "CodeEdit");
+	cache.tab_icon = get_theme_icon(SNAME("tab"));
+	cache.space_icon = get_theme_icon(SNAME("space"));
+	cache.folded_eol_icon = get_theme_icon(SNAME("folded_eol_icon"), SNAME("CodeEdit"));
 
 	TextServer::Direction dir;
 	if (text_direction == Control::TEXT_DIRECTION_INHERITED) {
@@ -4119,7 +4086,7 @@ void TextEdit::add_gutter(int p_at) {
 	for (int i = 0; i < text.size() + 1; i++) {
 		text.add_gutter(p_at);
 	}
-	emit_signal("gutter_added");
+	emit_signal(SNAME("gutter_added"));
 	update();
 }
 
@@ -4131,7 +4098,7 @@ void TextEdit::remove_gutter(int p_gutter) {
 	for (int i = 0; i < text.size() + 1; i++) {
 		text.remove_gutter(p_gutter);
 	}
-	emit_signal("gutter_removed");
+	emit_signal(SNAME("gutter_removed"));
 	update();
 }
 
@@ -4755,12 +4722,12 @@ bool TextEdit::search(const String &p_key, uint32_t p_search_flags, int p_from_l
 }
 
 void TextEdit::_cursor_changed_emit() {
-	emit_signal("cursor_changed");
+	emit_signal(SNAME("cursor_changed"));
 	cursor_changed_dirty = false;
 }
 
 void TextEdit::_text_changed_emit() {
-	emit_signal("text_changed");
+	emit_signal(SNAME("text_changed"));
 	text_changed_dirty = false;
 }
 
@@ -5571,8 +5538,6 @@ bool TextEdit::is_context_menu_enabled() {
 
 void TextEdit::set_shortcut_keys_enabled(bool p_enabled) {
 	shortcut_keys_enabled = p_enabled;
-
-	_generate_context_menu();
 }
 
 void TextEdit::set_virtual_keyboard_enabled(bool p_enable) {
@@ -5585,8 +5550,6 @@ void TextEdit::set_selecting_enabled(bool p_enabled) {
 	if (!selecting_enabled) {
 		deselect();
 	}
-
-	_generate_context_menu();
 }
 
 bool TextEdit::is_selecting_enabled() const {
@@ -5794,8 +5757,8 @@ void TextEdit::_bind_methods() {
 
 	/* Gutters. */
 	BIND_ENUM_CONSTANT(GUTTER_TYPE_STRING);
-	BIND_ENUM_CONSTANT(GUTTER_TPYE_ICON);
-	BIND_ENUM_CONSTANT(GUTTER_TPYE_CUSTOM);
+	BIND_ENUM_CONSTANT(GUTTER_TYPE_ICON);
+	BIND_ENUM_CONSTANT(GUTTER_TYPE_CUSTOM);
 
 	ClassDB::bind_method(D_METHOD("add_gutter", "at"), &TextEdit::add_gutter, DEFVAL(-1));
 	ClassDB::bind_method(D_METHOD("remove_gutter", "gutter"), &TextEdit::remove_gutter);
@@ -5935,47 +5898,72 @@ void TextEdit::_bind_methods() {
 }
 
 void TextEdit::_ensure_menu() {
-	if (menu) {
-		return;
+	if (!menu) {
+		menu = memnew(PopupMenu);
+		add_child(menu);
+
+		menu_dir = memnew(PopupMenu);
+		menu_dir->set_name("DirMenu");
+		menu_dir->add_radio_check_item(RTR("Same as layout direction"), MENU_DIR_INHERITED);
+		menu_dir->add_radio_check_item(RTR("Auto-detect direction"), MENU_DIR_AUTO);
+		menu_dir->add_radio_check_item(RTR("Left-to-right"), MENU_DIR_LTR);
+		menu_dir->add_radio_check_item(RTR("Right-to-left"), MENU_DIR_RTL);
+		menu->add_child(menu_dir);
+
+		menu_ctl = memnew(PopupMenu);
+		menu_ctl->set_name("CTLMenu");
+		menu_ctl->add_item(RTR("Left-to-right mark (LRM)"), MENU_INSERT_LRM);
+		menu_ctl->add_item(RTR("Right-to-left mark (RLM)"), MENU_INSERT_RLM);
+		menu_ctl->add_item(RTR("Start of left-to-right embedding (LRE)"), MENU_INSERT_LRE);
+		menu_ctl->add_item(RTR("Start of right-to-left embedding (RLE)"), MENU_INSERT_RLE);
+		menu_ctl->add_item(RTR("Start of left-to-right override (LRO)"), MENU_INSERT_LRO);
+		menu_ctl->add_item(RTR("Start of right-to-left override (RLO)"), MENU_INSERT_RLO);
+		menu_ctl->add_item(RTR("Pop direction formatting (PDF)"), MENU_INSERT_PDF);
+		menu_ctl->add_separator();
+		menu_ctl->add_item(RTR("Arabic letter mark (ALM)"), MENU_INSERT_ALM);
+		menu_ctl->add_item(RTR("Left-to-right isolate (LRI)"), MENU_INSERT_LRI);
+		menu_ctl->add_item(RTR("Right-to-left isolate (RLI)"), MENU_INSERT_RLI);
+		menu_ctl->add_item(RTR("First strong isolate (FSI)"), MENU_INSERT_FSI);
+		menu_ctl->add_item(RTR("Pop direction isolate (PDI)"), MENU_INSERT_PDI);
+		menu_ctl->add_separator();
+		menu_ctl->add_item(RTR("Zero width joiner (ZWJ)"), MENU_INSERT_ZWJ);
+		menu_ctl->add_item(RTR("Zero width non-joiner (ZWNJ)"), MENU_INSERT_ZWNJ);
+		menu_ctl->add_item(RTR("Word joiner (WJ)"), MENU_INSERT_WJ);
+		menu_ctl->add_item(RTR("Soft hyphen (SHY)"), MENU_INSERT_SHY);
+		menu->add_child(menu_ctl);
+
+		menu->connect("id_pressed", callable_mp(this, &TextEdit::menu_option));
+		menu_dir->connect("id_pressed", callable_mp(this, &TextEdit::menu_option));
+		menu_ctl->connect("id_pressed", callable_mp(this, &TextEdit::menu_option));
 	}
 
-	menu = memnew(PopupMenu);
-	add_child(menu);
-
-	menu_dir = memnew(PopupMenu);
-	menu_dir->set_name("DirMenu");
-	menu_dir->add_radio_check_item(RTR("Same as layout direction"), MENU_DIR_INHERITED);
-	menu_dir->add_radio_check_item(RTR("Auto-detect direction"), MENU_DIR_AUTO);
-	menu_dir->add_radio_check_item(RTR("Left-to-right"), MENU_DIR_LTR);
-	menu_dir->add_radio_check_item(RTR("Right-to-left"), MENU_DIR_RTL);
-	menu->add_child(menu_dir);
-
-	menu_ctl = memnew(PopupMenu);
-	menu_ctl->set_name("CTLMenu");
-	menu_ctl->add_item(RTR("Left-to-right mark (LRM)"), MENU_INSERT_LRM);
-	menu_ctl->add_item(RTR("Right-to-left mark (RLM)"), MENU_INSERT_RLM);
-	menu_ctl->add_item(RTR("Start of left-to-right embedding (LRE)"), MENU_INSERT_LRE);
-	menu_ctl->add_item(RTR("Start of right-to-left embedding (RLE)"), MENU_INSERT_RLE);
-	menu_ctl->add_item(RTR("Start of left-to-right override (LRO)"), MENU_INSERT_LRO);
-	menu_ctl->add_item(RTR("Start of right-to-left override (RLO)"), MENU_INSERT_RLO);
-	menu_ctl->add_item(RTR("Pop direction formatting (PDF)"), MENU_INSERT_PDF);
-	menu_ctl->add_separator();
-	menu_ctl->add_item(RTR("Arabic letter mark (ALM)"), MENU_INSERT_ALM);
-	menu_ctl->add_item(RTR("Left-to-right isolate (LRI)"), MENU_INSERT_LRI);
-	menu_ctl->add_item(RTR("Right-to-left isolate (RLI)"), MENU_INSERT_RLI);
-	menu_ctl->add_item(RTR("First strong isolate (FSI)"), MENU_INSERT_FSI);
-	menu_ctl->add_item(RTR("Pop direction isolate (PDI)"), MENU_INSERT_PDI);
-	menu_ctl->add_separator();
-	menu_ctl->add_item(RTR("Zero width joiner (ZWJ)"), MENU_INSERT_ZWJ);
-	menu_ctl->add_item(RTR("Zero width non-joiner (ZWNJ)"), MENU_INSERT_ZWNJ);
-	menu_ctl->add_item(RTR("Word joiner (WJ)"), MENU_INSERT_WJ);
-	menu_ctl->add_item(RTR("Soft hyphen (SHY)"), MENU_INSERT_SHY);
-	menu->add_child(menu_ctl);
-
-	menu->connect("id_pressed", callable_mp(this, &TextEdit::menu_option));
-	menu_dir->connect("id_pressed", callable_mp(this, &TextEdit::menu_option));
-	menu_ctl->connect("id_pressed", callable_mp(this, &TextEdit::menu_option));
-
+	// Reorganize context menu.
+	menu->clear();
+	if (!readonly) {
+		menu->add_item(RTR("Cut"), MENU_CUT, is_shortcut_keys_enabled() ? _get_menu_action_accelerator("ui_cut") : 0);
+	}
+	menu->add_item(RTR("Copy"), MENU_COPY, is_shortcut_keys_enabled() ? _get_menu_action_accelerator("ui_copy") : 0);
+	if (!readonly) {
+		menu->add_item(RTR("Paste"), MENU_PASTE, is_shortcut_keys_enabled() ? _get_menu_action_accelerator("ui_paste") : 0);
+	}
+	menu->add_separator();
+	if (is_selecting_enabled()) {
+		menu->add_item(RTR("Select All"), MENU_SELECT_ALL, is_shortcut_keys_enabled() ? _get_menu_action_accelerator("ui_text_select_all") : 0);
+	}
+	if (!readonly) {
+		menu->add_item(RTR("Clear"), MENU_CLEAR);
+		menu->add_separator();
+		menu->add_item(RTR("Undo"), MENU_UNDO, is_shortcut_keys_enabled() ? _get_menu_action_accelerator("ui_undo") : 0);
+		menu->add_item(RTR("Redo"), MENU_REDO, is_shortcut_keys_enabled() ? _get_menu_action_accelerator("ui_redo") : 0);
+	}
+	menu->add_separator();
+	menu->add_submenu_item(RTR("Text writing direction"), "DirMenu");
+	menu->add_separator();
+	menu->add_check_item(RTR("Display control characters"), MENU_DISPLAY_UCC);
+	menu->set_item_checked(menu->get_item_index(MENU_DISPLAY_UCC), draw_control_chars);
+	if (!readonly) {
+		menu->add_submenu_item(RTR("Insert control character"), "CTLMenu");
+	}
 	menu_dir->set_item_checked(menu_dir->get_item_index(MENU_DIR_INHERITED), text_direction == TEXT_DIRECTION_INHERITED);
 	menu_dir->set_item_checked(menu_dir->get_item_index(MENU_DIR_AUTO), text_direction == TEXT_DIRECTION_AUTO);
 	menu_dir->set_item_checked(menu_dir->get_item_index(MENU_DIR_LTR), text_direction == TEXT_DIRECTION_LTR);

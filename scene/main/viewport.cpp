@@ -37,6 +37,7 @@
 #include "core/os/os.h"
 #include "core/string/translation.h"
 
+#include "scene/2d/camera_2d.h"
 #include "scene/2d/collision_object_2d.h"
 #include "scene/3d/camera_3d.h"
 #include "scene/3d/collision_object_3d.h"
@@ -195,7 +196,7 @@ void Viewport::_collision_object_input_event(CollisionObject3D *p_object, Camera
 			return; //discarded
 		}
 	}
-	p_object->_input_event(camera, p_input_event, p_pos, p_normal, p_shape);
+	p_object->_input_event(camera_3d, p_input_event, p_pos, p_normal, p_shape);
 	physics_last_object_transform = object_transform;
 	physics_last_camera_transform = camera_transform;
 	physics_last_id = id;
@@ -248,16 +249,16 @@ void Viewport::_sub_window_update(Window *p_window) {
 	Rect2i r = Rect2i(p_window->get_position(), sw.window->get_size());
 
 	if (!p_window->get_flag(Window::FLAG_BORDERLESS)) {
-		Ref<StyleBox> panel = p_window->get_theme_stylebox("panel_window");
+		Ref<StyleBox> panel = p_window->get_theme_stylebox(SNAME("panel_window"));
 		panel->draw(sw.canvas_item, r);
 
 		// Draw the title bar text.
-		Ref<Font> title_font = p_window->get_theme_font("title_font");
-		int font_size = p_window->get_theme_font_size("title_font_size");
-		Color title_color = p_window->get_theme_color("title_color");
-		int title_height = p_window->get_theme_constant("title_height");
-		int close_h_ofs = p_window->get_theme_constant("close_h_ofs");
-		int close_v_ofs = p_window->get_theme_constant("close_v_ofs");
+		Ref<Font> title_font = p_window->get_theme_font(SNAME("title_font"));
+		int font_size = p_window->get_theme_font_size(SNAME("title_font_size"));
+		Color title_color = p_window->get_theme_color(SNAME("title_color"));
+		int title_height = p_window->get_theme_constant(SNAME("title_height"));
+		int close_h_ofs = p_window->get_theme_constant(SNAME("close_h_ofs"));
+		int close_v_ofs = p_window->get_theme_constant(SNAME("close_v_ofs"));
 
 		TextLine title_text = TextLine(p_window->get_title(), title_font, font_size, Dictionary(), TranslationServer::get_singleton()->get_tool_locale());
 		title_text.set_width(r.size.width - panel->get_minimum_size().x - close_h_ofs);
@@ -265,8 +266,8 @@ void Viewport::_sub_window_update(Window *p_window) {
 		int x = (r.size.width - title_text.get_size().x) / 2;
 		int y = (-title_height - title_text.get_size().y) / 2;
 
-		Color font_outline_color = p_window->get_theme_color("title_outline_modulate");
-		int outline_size = p_window->get_theme_constant("title_outline_size");
+		Color font_outline_color = p_window->get_theme_color(SNAME("title_outline_modulate"));
+		int outline_size = p_window->get_theme_constant(SNAME("title_outline_size"));
 		if (outline_size > 0 && font_outline_color.a > 0) {
 			title_text.draw_outline(sw.canvas_item, r.position + Point2(x, y), outline_size, font_outline_color);
 		}
@@ -444,6 +445,7 @@ void Viewport::_notification(int p_what) {
 				RenderingServer::get_singleton()->instance_set_base(contact_3d_debug_instance, contact_3d_debug_multimesh);
 				RenderingServer::get_singleton()->instance_set_scenario(contact_3d_debug_instance, find_world_3d()->get_scenario());
 				//RenderingServer::get_singleton()->instance_geometry_set_flag(contact_3d_debug_instance, RS::INSTANCE_FLAG_VISIBLE_IN_ALL_ROOMS, true);
+				set_physics_process_internal(true);
 			}
 
 		} break;
@@ -462,7 +464,7 @@ void Viewport::_notification(int p_what) {
 				}
 			}
 
-			if (cameras.size() && !camera) {
+			if (cameras.size() && !camera_3d) {
 				//there are cameras but no current camera, pick first in tree and make it current
 				Camera3D *first = nullptr;
 				for (Set<Camera3D *>::Element *E = cameras.front(); E; E = E->next()) {
@@ -476,10 +478,6 @@ void Viewport::_notification(int p_what) {
 				}
 			}
 #endif
-
-			// Enable processing for tooltips, collision debugging, physics object picking, etc.
-			set_process_internal(true);
-			set_physics_process_internal(true);
 
 		} break;
 		case NOTIFICATION_EXIT_TREE: {
@@ -500,6 +498,7 @@ void Viewport::_notification(int p_what) {
 			}
 
 			remove_from_group("_viewports");
+			set_physics_process_internal(false);
 
 			RS::get_singleton()->viewport_set_active(viewport, false);
 			RenderingServer::get_singleton()->viewport_set_parent_viewport(viewport, RID());
@@ -510,6 +509,7 @@ void Viewport::_notification(int p_what) {
 				gui.tooltip_timer -= get_process_delta_time();
 				if (gui.tooltip_timer < 0) {
 					_gui_show_tooltip();
+					set_process_internal(false);
 				}
 			}
 
@@ -743,8 +743,8 @@ void Viewport::_process_picking() {
 
 		if (physics_object_capture.is_valid()) {
 			CollisionObject3D *co = Object::cast_to<CollisionObject3D>(ObjectDB::get_instance(physics_object_capture));
-			if (co && camera) {
-				_collision_object_input_event(co, camera, ev, Vector3(), Vector3(), 0);
+			if (co && camera_3d) {
+				_collision_object_input_event(co, camera_3d, ev, Vector3(), Vector3(), 0);
 				captured = true;
 				if (mb.is_valid() && mb->get_button_index() == 1 && !mb->is_pressed()) {
 					physics_object_capture = ObjectID();
@@ -761,16 +761,16 @@ void Viewport::_process_picking() {
 			if (last_id.is_valid()) {
 				if (ObjectDB::get_instance(last_id) && last_object) {
 					//good, exists
-					_collision_object_input_event(last_object, camera, ev, result.position, result.normal, result.shape);
+					_collision_object_input_event(last_object, camera_3d, ev, result.position, result.normal, result.shape);
 					if (last_object->get_capture_input_on_drag() && mb.is_valid() && mb->get_button_index() == 1 && mb->is_pressed()) {
 						physics_object_capture = last_id;
 					}
 				}
 			}
 		} else {
-			if (camera) {
-				Vector3 from = camera->project_ray_origin(pos);
-				Vector3 dir = camera->project_ray_normal(pos);
+			if (camera_3d) {
+				Vector3 from = camera_3d->project_ray_origin(pos);
+				Vector3 dir = camera_3d->project_ray_normal(pos);
 
 				PhysicsDirectSpaceState3D *space = PhysicsServer3D::get_singleton()->space_get_direct_state(find_world_3d()->get_space());
 				if (space) {
@@ -778,8 +778,8 @@ void Viewport::_process_picking() {
 					ObjectID new_collider;
 					if (col) {
 						CollisionObject3D *co = Object::cast_to<CollisionObject3D>(result.collider);
-						if (co && co->can_process()) {
-							_collision_object_input_event(co, camera, ev, result.position, result.normal, result.shape);
+						if (co) {
+							_collision_object_input_event(co, camera_3d, ev, result.position, result.normal, result.shape);
 							last_object = co;
 							last_id = result.collider_id;
 							new_collider = last_id;
@@ -847,7 +847,7 @@ void Viewport::_set_size(const Size2i &p_size, const Size2i &p_size_2d_override,
 
 	update_canvas_items();
 
-	emit_signal("size_changed");
+	emit_signal(SNAME("size_changed"));
 }
 
 Size2i Viewport::_get_size() const {
@@ -1033,64 +1033,68 @@ void Viewport::_listener_make_next_current(Listener3D *p_exclude) {
 		}
 	} else {
 		// Attempt to reset listener to the camera position
-		if (camera != nullptr) {
+		if (camera_3d != nullptr) {
 			_update_listener();
-			_camera_transform_changed_notify();
+			_camera_3d_transform_changed_notify();
 		}
 	}
 }
 #endif
 
-void Viewport::_camera_transform_changed_notify() {
+void Viewport::_camera_3d_transform_changed_notify() {
 #ifndef _3D_DISABLED
 #endif
 }
 
-void Viewport::_camera_set(Camera3D *p_camera) {
+void Viewport::_camera_3d_set(Camera3D *p_camera) {
 #ifndef _3D_DISABLED
 
-	if (camera == p_camera) {
+	if (camera_3d == p_camera) {
 		return;
 	}
 
-	if (camera) {
-		camera->notification(Camera3D::NOTIFICATION_LOST_CURRENT);
+	if (camera_3d) {
+		camera_3d->notification(Camera3D::NOTIFICATION_LOST_CURRENT);
 	}
 
-	camera = p_camera;
+	camera_3d = p_camera;
 
 	if (!camera_override) {
-		if (camera) {
-			RenderingServer::get_singleton()->viewport_attach_camera(viewport, camera->get_camera());
+		if (camera_3d) {
+			RenderingServer::get_singleton()->viewport_attach_camera(viewport, camera_3d->get_camera());
 		} else {
 			RenderingServer::get_singleton()->viewport_attach_camera(viewport, RID());
 		}
 	}
 
-	if (camera) {
-		camera->notification(Camera3D::NOTIFICATION_BECAME_CURRENT);
+	if (camera_3d) {
+		camera_3d->notification(Camera3D::NOTIFICATION_BECAME_CURRENT);
 	}
 
 	_update_listener();
-	_camera_transform_changed_notify();
+	_camera_3d_transform_changed_notify();
 #endif
 }
 
-bool Viewport::_camera_add(Camera3D *p_camera) {
+void Viewport::_camera_2d_set(Camera2D *p_camera_2d) {
+	camera_2d = p_camera_2d;
+}
+
+bool Viewport::_camera_3d_add(Camera3D *p_camera) {
 	cameras.insert(p_camera);
 	return cameras.size() == 1;
 }
 
-void Viewport::_camera_remove(Camera3D *p_camera) {
+void Viewport::_camera_3d_remove(Camera3D *p_camera) {
 	cameras.erase(p_camera);
-	if (camera == p_camera) {
-		camera->notification(Camera3D::NOTIFICATION_LOST_CURRENT);
-		camera = nullptr;
+	if (camera_3d == p_camera) {
+		camera_3d->notification(Camera3D::NOTIFICATION_LOST_CURRENT);
+		camera_3d = nullptr;
 	}
 }
 
 #ifndef _3D_DISABLED
-void Viewport::_camera_make_next_current(Camera3D *p_exclude) {
+void Viewport::_camera_3d_make_next_current(Camera3D *p_exclude) {
 	for (Set<Camera3D *>::Element *E = cameras.front(); E; E = E->next()) {
 		if (p_exclude == E->get()) {
 			continue;
@@ -1098,7 +1102,7 @@ void Viewport::_camera_make_next_current(Camera3D *p_exclude) {
 		if (!E->get()->is_inside_tree()) {
 			continue;
 		}
-		if (camera != nullptr) {
+		if (camera_3d != nullptr) {
 			return;
 		}
 
@@ -1287,8 +1291,12 @@ Listener3D *Viewport::get_listener() const {
 	return listener;
 }
 
-Camera3D *Viewport::get_camera() const {
-	return camera;
+Camera3D *Viewport::get_camera_3d() const {
+	return camera_3d;
+}
+
+Camera2D *Viewport::get_camera_2d() const {
+	return camera_2d;
 }
 
 void Viewport::enable_camera_override(bool p_enable) {
@@ -1306,8 +1314,8 @@ void Viewport::enable_camera_override(bool p_enable) {
 
 	if (p_enable) {
 		RenderingServer::get_singleton()->viewport_attach_camera(viewport, camera_override.rid);
-	} else if (camera) {
-		RenderingServer::get_singleton()->viewport_attach_camera(viewport, camera->get_camera());
+	} else if (camera_3d) {
+		RenderingServer::get_singleton()->viewport_attach_camera(viewport, camera_3d->get_camera());
 	} else {
 		RenderingServer::get_singleton()->viewport_attach_camera(viewport, RID());
 	}
@@ -1482,6 +1490,7 @@ void Viewport::_gui_sort_roots() {
 void Viewport::_gui_cancel_tooltip() {
 	gui.tooltip_control = nullptr;
 	gui.tooltip_timer = -1;
+	set_process_internal(false);
 	if (gui.tooltip_popup) {
 		gui.tooltip_popup->queue_delete();
 		gui.tooltip_popup = nullptr;
@@ -1550,6 +1559,9 @@ void Viewport::_gui_show_tooltip() {
 		return;
 	}
 
+	// Popup window which houses the tooltip content.
+	TooltipPanel *panel = memnew(TooltipPanel);
+
 	// Controls can implement `make_custom_tooltip` to provide their own tooltip.
 	// This should be a Control node which will be added as child to a TooltipPanel.
 	Control *base_tooltip = tooltip_owner->make_custom_tooltip(tooltip_text);
@@ -1559,11 +1571,11 @@ void Viewport::_gui_show_tooltip() {
 		gui.tooltip_label = memnew(TooltipLabel);
 		gui.tooltip_label->set_text(tooltip_text);
 		base_tooltip = gui.tooltip_label;
+		panel->connect("mouse_entered", callable_mp(this, &Viewport::_gui_cancel_tooltip));
 	}
 
 	base_tooltip->set_anchors_and_offsets_preset(Control::PRESET_WIDE);
 
-	TooltipPanel *panel = memnew(TooltipPanel);
 	panel->set_transient(false);
 	panel->set_flag(Window::FLAG_NO_FOCUS, true);
 	panel->set_wrap_controls(true);
@@ -2130,6 +2142,7 @@ void Viewport::_gui_input_event(Ref<InputEvent> p_event) {
 					gui.tooltip_control = over;
 					gui.tooltip_pos = over->get_screen_transform().xform(pos);
 					gui.tooltip_timer = gui.tooltip_delay;
+					set_process_internal(true);
 				}
 			}
 
@@ -2211,7 +2224,7 @@ void Viewport::_gui_input_event(Ref<InputEvent> p_event) {
 					Window *sw = embedder->gui.sub_windows[i].window;
 					Rect2 swrect = Rect2i(sw->get_position(), sw->get_size());
 					if (!sw->get_flag(Window::FLAG_BORDERLESS)) {
-						int title_height = sw->get_theme_constant("title_height");
+						int title_height = sw->get_theme_constant(SNAME("title_height"));
 						swrect.position.y -= title_height;
 						swrect.size.y += title_height;
 					}
@@ -2560,7 +2573,7 @@ void Viewport::_gui_control_grab_focus(Control *p_control) {
 	}
 	get_tree()->call_group_flags(SceneTree::GROUP_CALL_REALTIME, "_viewports", "_gui_remove_focus_for_window", (Node *)get_base_window());
 	gui.key_focus = p_control;
-	emit_signal("gui_focus_changed", p_control);
+	emit_signal(SNAME("gui_focus_changed"), p_control);
 	p_control->notification(Control::NOTIFICATION_FOCUS_ENTER);
 	p_control->update();
 }
@@ -2670,7 +2683,7 @@ Control *Viewport::_gui_get_focus_owner() {
 
 void Viewport::_gui_grab_click_focus(Control *p_control) {
 	gui.mouse_click_grabber = p_control;
-	call_deferred("_post_gui_grab_click_focus");
+	call_deferred(SNAME("_post_gui_grab_click_focus"));
 }
 
 void Viewport::_post_gui_grab_click_focus() {
@@ -2743,7 +2756,7 @@ Viewport::SubWindowResize Viewport::_sub_window_get_resize_margin(Window *p_subw
 
 	Rect2i r = Rect2i(p_subwindow->get_position(), p_subwindow->get_size());
 
-	int title_height = p_subwindow->get_theme_constant("title_height");
+	int title_height = p_subwindow->get_theme_constant(SNAME("title_height"));
 
 	r.position.y -= title_height;
 	r.size.y += title_height;
@@ -2755,7 +2768,7 @@ Viewport::SubWindowResize Viewport::_sub_window_get_resize_margin(Window *p_subw
 	int dist_x = p_point.x < r.position.x ? (p_point.x - r.position.x) : (p_point.x > (r.position.x + r.size.x) ? (p_point.x - (r.position.x + r.size.x)) : 0);
 	int dist_y = p_point.y < r.position.y ? (p_point.y - r.position.y) : (p_point.y > (r.position.y + r.size.y) ? (p_point.y - (r.position.y + r.size.y)) : 0);
 
-	int limit = p_subwindow->get_theme_constant("resize_margin");
+	int limit = p_subwindow->get_theme_constant(SNAME("resize_margin"));
 
 	if (ABS(dist_x) > limit) {
 		return SUB_WINDOW_RESIZE_DISABLED;
@@ -2837,7 +2850,7 @@ bool Viewport::_sub_windows_forward_input(const Ref<InputEvent> &p_event) {
 						new_rect.position.x = 0;
 					}
 
-					int title_height = gui.subwindow_focused->get_flag(Window::FLAG_BORDERLESS) ? 0 : gui.subwindow_focused->get_theme_constant("title_height");
+					int title_height = gui.subwindow_focused->get_flag(Window::FLAG_BORDERLESS) ? 0 : gui.subwindow_focused->get_theme_constant(SNAME("title_height"));
 
 					if (new_rect.position.y < title_height) {
 						new_rect.position.y = title_height;
@@ -2941,7 +2954,7 @@ bool Viewport::_sub_windows_forward_input(const Ref<InputEvent> &p_event) {
 
 			if (!sw.window->get_flag(Window::FLAG_BORDERLESS)) {
 				//check top bar
-				int title_height = sw.window->get_theme_constant("title_height");
+				int title_height = sw.window->get_theme_constant(SNAME("title_height"));
 				Rect2i title_bar = r;
 				title_bar.position.y -= title_height;
 				title_bar.size.y = title_height;
@@ -2949,9 +2962,9 @@ bool Viewport::_sub_windows_forward_input(const Ref<InputEvent> &p_event) {
 				if (title_bar.has_point(mb->get_position())) {
 					click_on_window = true;
 
-					int close_h_ofs = sw.window->get_theme_constant("close_h_ofs");
-					int close_v_ofs = sw.window->get_theme_constant("close_v_ofs");
-					Ref<Texture2D> close_icon = sw.window->get_theme_icon("close");
+					int close_h_ofs = sw.window->get_theme_constant(SNAME("close_h_ofs"));
+					int close_v_ofs = sw.window->get_theme_constant(SNAME("close_v_ofs"));
+					Ref<Texture2D> close_icon = sw.window->get_theme_icon(SNAME("close"));
 
 					Rect2 close_rect;
 					close_rect.position = Vector2(r.position.x + r.size.x - close_v_ofs, r.position.y - close_h_ofs);
@@ -3169,8 +3182,13 @@ bool Viewport::is_using_own_world_3d() const {
 
 void Viewport::set_physics_object_picking(bool p_enable) {
 	physics_object_picking = p_enable;
-	if (!physics_object_picking) {
+	if (physics_object_picking) {
+		add_to_group("_picking_viewports");
+	} else {
 		physics_picking_events.clear();
+		if (is_in_group("_picking_viewports")) {
+			remove_from_group("_picking_viewports");
+		}
 	}
 }
 
@@ -3539,7 +3557,8 @@ void Viewport::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_use_own_world_3d", "enable"), &Viewport::set_use_own_world_3d);
 	ClassDB::bind_method(D_METHOD("is_using_own_world_3d"), &Viewport::is_using_own_world_3d);
 
-	ClassDB::bind_method(D_METHOD("get_camera"), &Viewport::get_camera);
+	ClassDB::bind_method(D_METHOD("get_camera_3d"), &Viewport::get_camera_3d);
+	ClassDB::bind_method(D_METHOD("get_camera_2d"), &Viewport::get_camera_2d);
 
 	ClassDB::bind_method(D_METHOD("set_as_audio_listener", "enable"), &Viewport::set_as_audio_listener);
 	ClassDB::bind_method(D_METHOD("is_audio_listener"), &Viewport::is_audio_listener);

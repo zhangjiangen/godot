@@ -169,8 +169,8 @@ void SceneTree::_flush_ugc() {
 			v[i] = E->get()[i];
 		}
 
-		static_assert(VARIANT_ARG_MAX == 5, "This code needs to be updated if VARIANT_ARG_MAX != 5");
-		call_group_flags(GROUP_CALL_REALTIME, E->key().group, E->key().call, v[0], v[1], v[2], v[3], v[4]);
+		static_assert(VARIANT_ARG_MAX == 8, "This code needs to be updated if VARIANT_ARG_MAX != 8");
+		call_group_flags(GROUP_CALL_REALTIME, E->key().group, E->key().call, v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7]);
 
 		unique_group_calls.erase(E);
 	}
@@ -406,11 +406,11 @@ bool SceneTree::physics_process(float p_time) {
 	MainLoop::physics_process(p_time);
 	physics_process_time = p_time;
 
-	emit_signal("physics_frame");
+	emit_signal(SNAME("physics_frame"));
 
-	_notify_group_pause("physics_process_internal", Node::NOTIFICATION_INTERNAL_PHYSICS_PROCESS);
-	call_group_flags(GROUP_CALL_REALTIME, "_viewports", "_process_picking");
-	_notify_group_pause("physics_process", Node::NOTIFICATION_PHYSICS_PROCESS);
+	_notify_group_pause(SNAME("physics_process_internal"), Node::NOTIFICATION_INTERNAL_PHYSICS_PROCESS);
+	call_group_flags(GROUP_CALL_REALTIME, SNAME("_picking_viewports"), SNAME("_process_picking"));
+	_notify_group_pause(SNAME("physics_process"), Node::NOTIFICATION_PHYSICS_PROCESS);
 	_flush_ugc();
 	MessageQueue::get_singleton()->flush(); //small little hack
 
@@ -436,14 +436,14 @@ bool SceneTree::process(float p_time) {
 		multiplayer->poll();
 	}
 
-	emit_signal("process_frame");
+	emit_signal(SNAME("process_frame"));
 
 	MessageQueue::get_singleton()->flush(); //small little hack
 
 	flush_transform_notifications();
 
-	_notify_group_pause("process_internal", Node::NOTIFICATION_INTERNAL_PROCESS);
-	_notify_group_pause("process", Node::NOTIFICATION_PROCESS);
+	_notify_group_pause(SNAME("process_internal"), Node::NOTIFICATION_INTERNAL_PROCESS);
+	_notify_group_pause(SNAME("process"), Node::NOTIFICATION_PROCESS);
 
 	_flush_ugc();
 	MessageQueue::get_singleton()->flush(); //small little hack
@@ -471,7 +471,7 @@ bool SceneTree::process(float p_time) {
 		E->get()->set_time_left(time_left);
 
 		if (time_left < 0) {
-			E->get()->emit_signal("timeout");
+			E->get()->emit_signal(SNAME("timeout"));
 			timers.erase(E);
 		}
 		if (E == L) {
@@ -490,7 +490,7 @@ bool SceneTree::process(float p_time) {
 
 	if (Engine::get_singleton()->is_editor_hint()) {
 		//simple hack to reload fallback environment if it changed from editor
-		String env_path = ProjectSettings::get_singleton()->get("rendering/environment/defaults/default_environment");
+		String env_path = ProjectSettings::get_singleton()->get(SNAME("rendering/environment/defaults/default_environment"));
 		env_path = env_path.strip_edges(); //user may have added a space or two
 		String cpath;
 		Ref<Environment> fallback = get_root()->get_world_3d()->get_fallback_environment();
@@ -927,8 +927,8 @@ Variant SceneTree::_call_group_flags(const Variant **p_args, int p_argcount, Cal
 		v[i] = *p_args[i + 3];
 	}
 
-	static_assert(VARIANT_ARG_MAX == 5, "This code needs to be updated if VARIANT_ARG_MAX != 5");
-	call_group_flags(flags, group, method, v[0], v[1], v[2], v[3], v[4]);
+	static_assert(VARIANT_ARG_MAX == 8, "This code needs to be updated if VARIANT_ARG_MAX != 8");
+	call_group_flags(flags, group, method, v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7]);
 	return Variant();
 }
 
@@ -947,8 +947,8 @@ Variant SceneTree::_call_group(const Variant **p_args, int p_argcount, Callable:
 		v[i] = *p_args[i + 2];
 	}
 
-	static_assert(VARIANT_ARG_MAX == 5, "This code needs to be updated if VARIANT_ARG_MAX != 5");
-	call_group_flags(0, group, method, v[0], v[1], v[2], v[3], v[4]);
+	static_assert(VARIANT_ARG_MAX == 8, "This code needs to be updated if VARIANT_ARG_MAX != 8");
+	call_group_flags(0, group, method, v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7]);
 	return Variant();
 }
 
@@ -1097,7 +1097,7 @@ Error SceneTree::change_scene_to(const Ref<PackedScene> &p_scene) {
 		ERR_FAIL_COND_V(!new_scene, ERR_CANT_CREATE);
 	}
 
-	call_deferred("_change_scene", new_scene);
+	call_deferred(SNAME("_change_scene"), new_scene);
 	return OK;
 }
 

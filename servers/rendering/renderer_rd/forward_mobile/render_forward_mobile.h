@@ -42,6 +42,18 @@ namespace RendererSceneRenderImplementation {
 class RenderForwardMobile : public RendererSceneRenderRD {
 	friend SceneShaderForwardMobile;
 
+	struct ForwardIDAllocator {
+		LocalVector<bool> allocations;
+		LocalVector<uint8_t> map;
+	};
+
+	ForwardIDAllocator forward_id_allocators[FORWARD_ID_MAX];
+
+	virtual ForwardID _allocate_forward_id(ForwardIDType p_type) override;
+	virtual void _free_forward_id(ForwardIDType p_type, ForwardID p_id) override;
+	virtual void _map_forward_id(ForwardIDType p_type, ForwardID p_id, uint32_t p_index) override;
+	virtual bool _uses_forward_ids() const override { return true; }
+
 protected:
 	/* Scene Shader */
 
@@ -50,6 +62,15 @@ protected:
 		RENDER_PASS_UNIFORM_SET = 1,
 		TRANSFORMS_UNIFORM_SET = 2,
 		MATERIAL_UNIFORM_SET = 3
+	};
+
+	enum {
+		SPEC_CONSTANT_SOFT_SHADOW_SAMPLES = 6,
+		SPEC_CONSTANT_PENUMBRA_SHADOW_SAMPLES = 7,
+		SPEC_CONSTANT_DIRECTIONAL_SOFT_SHADOW_SAMPLES = 8,
+		SPEC_CONSTANT_DIRECTIONAL_PENUMBRA_SHADOW_SAMPLES = 9,
+		SPEC_CONSTANT_DECAL_FILTER = 10,
+		SPEC_CONSTANT_PROJECTOR_FILTER = 11,
 	};
 
 	enum {
@@ -152,6 +173,7 @@ protected:
 	};
 
 	virtual RD::DataFormat _render_buffers_get_color_format() override;
+	virtual bool _render_buffers_can_be_storage() override;
 
 	RID _setup_render_pass_uniform_set(RenderListType p_render_list, const RenderDataRD *p_render_data, RID p_radiance_texture, bool p_use_directional_shadow_atlas = false, int p_index = 0);
 	virtual void _render_scene(RenderDataRD *p_render_data, const Color &p_default_bg_color) override;
@@ -214,11 +236,6 @@ protected:
 			float directional_soft_shadow_kernel[128];
 			float penumbra_shadow_kernel[128];
 			float soft_shadow_kernel[128];
-
-			uint32_t directional_penumbra_shadow_samples;
-			uint32_t directional_soft_shadow_samples;
-			uint32_t penumbra_shadow_samples;
-			uint32_t soft_shadow_samples;
 
 			float ambient_light_color_energy[4];
 
@@ -515,14 +532,14 @@ protected:
 		GeometryInstanceLightmapSH *lightmap_sh = nullptr;
 
 		// culled light info
-		uint32_t reflection_probe_count;
-		RID reflection_probes[MAX_RDL_CULL];
-		uint32_t omni_light_count;
-		RID omni_lights[MAX_RDL_CULL];
-		uint32_t spot_light_count;
-		RID spot_lights[MAX_RDL_CULL];
-		uint32_t decals_count;
-		RID decals[MAX_RDL_CULL];
+		uint32_t reflection_probe_count = 0;
+		ForwardID reflection_probes[MAX_RDL_CULL];
+		uint32_t omni_light_count = 0;
+		ForwardID omni_lights[MAX_RDL_CULL];
+		uint32_t spot_light_count = 0;
+		ForwardID spot_lights[MAX_RDL_CULL];
+		uint32_t decals_count = 0;
+		ForwardID decals[MAX_RDL_CULL];
 
 		GeometryInstanceSurfaceDataCache *surface_caches = nullptr;
 
@@ -553,6 +570,10 @@ protected:
 		GeometryInstanceForwardMobile() :
 				dirty_list_element(this) {}
 	};
+
+	_FORCE_INLINE_ void _fill_push_constant_instance_indices(GeometryInstanceForwardMobile::PushConstant *p_push_constant, const GeometryInstanceForwardMobile *p_instance);
+
+	void _update_shader_quality_settings() override;
 
 public:
 	static void _geometry_instance_dependency_changed(RendererStorage::DependencyChangedNotification p_notification, RendererStorage::DependencyTracker *p_tracker);

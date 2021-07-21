@@ -140,7 +140,7 @@ void CSGShape3D::_make_dirty() {
 	if (parent) {
 		parent->_make_dirty();
 	} else if (!dirty) {
-		call_deferred("_update_shape");
+		call_deferred(SNAME("_update_shape"));
 	}
 
 	dirty = true;
@@ -778,7 +778,7 @@ CSGBrush *CSGMesh3D::_build_brush() {
 					}
 				}
 
-				bool flat = normal[0].distance_to(normal[1]) < CMP_EPSILON && normal[0].distance_to(normal[2]) < CMP_EPSILON;
+				bool flat = normal[0].is_equal_approx(normal[1]) && normal[0].is_equal_approx(normal[2]);
 
 				vw[as + j + 0] = vertex[0];
 				vw[as + j + 1] = vertex[1];
@@ -820,7 +820,7 @@ CSGBrush *CSGMesh3D::_build_brush() {
 					}
 				}
 
-				bool flat = normal[0].distance_to(normal[1]) < CMP_EPSILON && normal[0].distance_to(normal[2]) < CMP_EPSILON;
+				bool flat = normal[0].is_equal_approx(normal[1]) && normal[0].is_equal_approx(normal[2]);
 
 				vw[as + j + 0] = vertex[0];
 				vw[as + j + 1] = vertex[1];

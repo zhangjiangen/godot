@@ -351,7 +351,7 @@ Error RenderingServer::_surface_set_data(Array p_arrays, uint32_t p_format, uint
 
 					{
 						for (int i = 0; i < p_vertex_array_len; i++) {
-							float vector[2] = { src[i].x, src[i].y };
+							float vector[2] = { (float)src[i].x, (float)src[i].y };
 
 							memcpy(&vw[p_offsets[ai] + i * p_vertex_stride], vector, sizeof(float) * 2);
 
@@ -376,7 +376,7 @@ Error RenderingServer::_surface_set_data(Array p_arrays, uint32_t p_format, uint
 
 					{
 						for (int i = 0; i < p_vertex_array_len; i++) {
-							float vector[3] = { src[i].x, src[i].y, src[i].z };
+							float vector[3] = { (float)src[i].x, (float)src[i].y, (float)src[i].z };
 
 							memcpy(&vw[p_offsets[ai] + i * p_vertex_stride], vector, sizeof(float) * 3);
 
@@ -462,7 +462,7 @@ Error RenderingServer::_surface_set_data(Array p_arrays, uint32_t p_format, uint
 				const Vector2 *src = array.ptr();
 
 				for (int i = 0; i < p_vertex_array_len; i++) {
-					float uv[2] = { src[i].x, src[i].y };
+					float uv[2] = { (float)src[i].x, (float)src[i].y };
 
 					memcpy(&aw[p_offsets[ai] + i * p_attrib_stride], uv, 2 * 4);
 				}
@@ -479,7 +479,7 @@ Error RenderingServer::_surface_set_data(Array p_arrays, uint32_t p_format, uint
 				const Vector2 *src = array.ptr();
 
 				for (int i = 0; i < p_vertex_array_len; i++) {
-					float uv[2] = { src[i].x, src[i].y };
+					float uv[2] = { (float)src[i].x, (float)src[i].y };
 					memcpy(&aw[p_offsets[ai] + i * p_attrib_stride], uv, 2 * 4);
 				}
 			} break;
@@ -1855,6 +1855,14 @@ void RenderingServer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("light_directional_set_blend_splits", "light", "enable"), &RenderingServer::light_directional_set_blend_splits);
 	ClassDB::bind_method(D_METHOD("light_directional_set_sky_only", "light", "enable"), &RenderingServer::light_directional_set_sky_only);
 
+	ClassDB::bind_method(D_METHOD("light_projectors_set_filter", "filter"), &RenderingServer::light_projectors_set_filter);
+
+	BIND_ENUM_CONSTANT(LIGHT_PROJECTOR_FILTER_NEAREST);
+	BIND_ENUM_CONSTANT(LIGHT_PROJECTOR_FILTER_NEAREST_MIPMAPS);
+	BIND_ENUM_CONSTANT(LIGHT_PROJECTOR_FILTER_LINEAR);
+	BIND_ENUM_CONSTANT(LIGHT_PROJECTOR_FILTER_LINEAR_MIPMAPS);
+	BIND_ENUM_CONSTANT(LIGHT_PROJECTOR_FILTER_LINEAR_MIPMAPS_ANISOTROPIC);
+
 	BIND_ENUM_CONSTANT(LIGHT_DIRECTIONAL);
 	BIND_ENUM_CONSTANT(LIGHT_OMNI);
 	BIND_ENUM_CONSTANT(LIGHT_SPOT);
@@ -1940,11 +1948,19 @@ void RenderingServer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("decal_set_fade", "decal", "above", "below"), &RenderingServer::decal_set_fade);
 	ClassDB::bind_method(D_METHOD("decal_set_normal_fade", "decal", "fade"), &RenderingServer::decal_set_normal_fade);
 
+	ClassDB::bind_method(D_METHOD("decals_set_filter", "filter"), &RenderingServer::decals_set_filter);
+
 	BIND_ENUM_CONSTANT(DECAL_TEXTURE_ALBEDO);
 	BIND_ENUM_CONSTANT(DECAL_TEXTURE_NORMAL);
 	BIND_ENUM_CONSTANT(DECAL_TEXTURE_ORM);
 	BIND_ENUM_CONSTANT(DECAL_TEXTURE_EMISSION);
 	BIND_ENUM_CONSTANT(DECAL_TEXTURE_MAX);
+
+	BIND_ENUM_CONSTANT(DECAL_FILTER_NEAREST);
+	BIND_ENUM_CONSTANT(DECAL_FILTER_NEAREST_MIPMAPS);
+	BIND_ENUM_CONSTANT(DECAL_FILTER_LINEAR);
+	BIND_ENUM_CONSTANT(DECAL_FILTER_LINEAR_MIPMAPS);
+	BIND_ENUM_CONSTANT(DECAL_FILTER_LINEAR_MIPMAPS_ANISOTROPIC);
 
 	/* VOXEL GI API */
 
@@ -2815,6 +2831,11 @@ RenderingServer::RenderingServer() {
 	GLOBAL_DEF("rendering/anti_aliasing/screen_space_roughness_limiter/limit", 0.18);
 	ProjectSettings::get_singleton()->set_custom_property_info("rendering/anti_aliasing/screen_space_roughness_limiter/amount", PropertyInfo(Variant::FLOAT, "rendering/anti_aliasing/screen_space_roughness_limiter/amount", PROPERTY_HINT_RANGE, "0.01,4.0,0.01"));
 	ProjectSettings::get_singleton()->set_custom_property_info("rendering/anti_aliasing/screen_space_roughness_limiter/limit", PropertyInfo(Variant::FLOAT, "rendering/anti_aliasing/screen_space_roughness_limiter/limit", PROPERTY_HINT_RANGE, "0.01,1.0,0.01"));
+
+	GLOBAL_DEF("rendering/textures/decals/filter", DECAL_FILTER_LINEAR_MIPMAPS);
+	ProjectSettings::get_singleton()->set_custom_property_info("rendering/textures/decals/filter", PropertyInfo(Variant::INT, "rendering/textures/decals/filter", PROPERTY_HINT_ENUM, "Nearest (Fast),Nearest+Mipmaps,Linear,Linear+Mipmaps,Linear+Mipmaps Anisotropic (Slow)"));
+	GLOBAL_DEF("rendering/textures/light_projectors/filter", LIGHT_PROJECTOR_FILTER_LINEAR_MIPMAPS);
+	ProjectSettings::get_singleton()->set_custom_property_info("rendering/textures/light_projectors/filter", PropertyInfo(Variant::INT, "rendering/textures/light_projectors/filter", PROPERTY_HINT_ENUM, "Nearest (Fast),Nearest+Mipmaps,Linear,Linear+Mipmaps,Linear+Mipmaps Anisotropic (Slow)"));
 
 	GLOBAL_DEF_RST("rendering/occlusion_culling/occlusion_rays_per_thread", 512);
 	GLOBAL_DEF_RST("rendering/occlusion_culling/bvh_build_quality", 2);

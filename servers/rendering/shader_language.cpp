@@ -946,7 +946,9 @@ void ShaderLanguage::_parse_used_identifier(const StringName &p_identifier, Iden
 			break;
 		case IdentifierType::IDENTIFIER_VARYING:
 			if (HAS_WARNING(ShaderWarning::UNUSED_VARYING_FLAG) && used_varyings.has(p_identifier)) {
-				used_varyings[p_identifier].used = true;
+				if (shader->varyings[p_identifier].stage != ShaderNode::Varying::STAGE_VERTEX && shader->varyings[p_identifier].stage != ShaderNode::Varying::STAGE_FRAGMENT) {
+					used_varyings[p_identifier].used = true;
+				}
 			}
 			break;
 		case IdentifierType::IDENTIFIER_UNIFORM:
@@ -2434,6 +2436,10 @@ bool ShaderLanguage::_validate_function_call(BlockNode *p_block, const FunctionI
 										if (shader->uniforms.has(varname)) {
 											fail = true;
 										} else {
+											if (shader->varyings.has(varname)) {
+												_set_error(vformat("Varyings cannot be passed for '%s' parameter!", "out"));
+												return false;
+											}
 											if (p_function_info.built_ins.has(varname)) {
 												BuiltInInfo info = p_function_info.built_ins[varname];
 												if (info.constant) {
@@ -3306,8 +3312,8 @@ bool ShaderLanguage::_is_operator_assign(Operator p_op) const {
 }
 
 bool ShaderLanguage::_validate_varying_assign(ShaderNode::Varying &p_varying, String *r_message) {
-	if (current_function == String("light")) {
-		*r_message = RTR("Varying may not be assigned in the 'light' function.");
+	if (current_function != String("vertex") && current_function != String("fragment")) {
+		*r_message = vformat(RTR("Varying may not be assigned in the '%s' function."), current_function);
 		return false;
 	}
 	switch (p_varying.stage) {
@@ -3318,12 +3324,15 @@ bool ShaderLanguage::_validate_varying_assign(ShaderNode::Varying &p_varying, St
 				p_varying.stage = ShaderNode::Varying::STAGE_FRAGMENT;
 			}
 			break;
+		case ShaderNode::Varying::STAGE_VERTEX_TO_FRAGMENT:
+		case ShaderNode::Varying::STAGE_VERTEX_TO_LIGHT:
 		case ShaderNode::Varying::STAGE_VERTEX:
 			if (current_function == varying_function_names.fragment) {
 				*r_message = RTR("Varyings which assigned in 'vertex' function may not be reassigned in 'fragment' or 'light'.");
 				return false;
 			}
 			break;
+		case ShaderNode::Varying::STAGE_FRAGMENT_TO_LIGHT:
 		case ShaderNode::Varying::STAGE_FRAGMENT:
 			if (current_function == varying_function_names.vertex) {
 				*r_message = RTR("Varyings which assigned in 'fragment' function may not be reassigned in 'vertex' or 'light'.");
@@ -4117,6 +4126,10 @@ ShaderLanguage::Node *ShaderLanguage::_parse_expression(BlockNode *p_block, cons
 												} else if (shader->uniforms.has(varname)) {
 													error = true;
 												} else {
+													if (shader->varyings.has(varname)) {
+														_set_error(vformat("Varyings cannot be passed for '%s' parameter!", _get_qualifier_str(call_function->arguments[i].qualifier)));
+														return nullptr;
+													}
 													if (p_function_info.built_ins.has(varname)) {
 														BuiltInInfo info = p_function_info.built_ins[varname];
 														if (info.constant) {
@@ -7865,15 +7878,6 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 
 		tk = _get_token();
 	}
-
-	for (Map<StringName, ShaderNode::Varying>::Element *E = shader->varyings.front(); E; E = E->next()) {
-		if (E->get().stage == ShaderNode::Varying::STAGE_VERTEX || E->get().stage == ShaderNode::Varying::STAGE_FRAGMENT) {
-			_set_tkpos(E->get().tkpos);
-			_set_error(RTR("Varying must only be used in two different stages, which can be 'vertex' 'fragment' and 'light'"));
-			return ERR_PARSE_ERROR;
-		}
-	}
-
 	return OK;
 }
 

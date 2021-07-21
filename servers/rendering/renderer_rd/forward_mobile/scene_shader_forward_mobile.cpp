@@ -318,7 +318,7 @@ void SceneShaderForwardMobile::ShaderData::set_code(const String &p_code) {
 				}
 
 				RID shader_variant = shader_singleton->shader.version_get_shader(version, k);
-				pipelines[i][j][k].setup(shader_variant, primitive_rd, raster_state, multisample_state, depth_stencil, blend_state, 0);
+				pipelines[i][j][k].setup(shader_variant, primitive_rd, raster_state, multisample_state, depth_stencil, blend_state, 0, singleton->default_specialization_constants);
 			}
 		}
 	}
@@ -402,7 +402,8 @@ RS::ShaderNativeSourceCode SceneShaderForwardMobile::ShaderData::get_native_sour
 	return shader_singleton->shader.version_get_native_source_code(version);
 }
 
-SceneShaderForwardMobile::ShaderData::ShaderData() {
+SceneShaderForwardMobile::ShaderData::ShaderData() :
+		shader_list_element(this) {
 	valid = false;
 	uses_screen_texture = false;
 }
@@ -418,6 +419,7 @@ SceneShaderForwardMobile::ShaderData::~ShaderData() {
 
 RendererStorageRD::ShaderData *SceneShaderForwardMobile::_create_shader_func() {
 	ShaderData *shader_data = memnew(ShaderData);
+	singleton->shader_list.add(&shader_data->shader_list_element);
 	return shader_data;
 }
 
@@ -671,7 +673,19 @@ void SceneShaderForwardMobile::init(RendererStorageRD *p_storage, const String p
 		//default material and shader
 		default_shader = storage->shader_allocate();
 		storage->shader_initialize(default_shader);
-		storage->shader_set_code(default_shader, "shader_type spatial; void vertex() { ROUGHNESS = 0.8; } void fragment() { ALBEDO=vec3(0.6); ROUGHNESS=0.8; METALLIC=0.2; } \n");
+		storage->shader_set_code(default_shader, R"(
+shader_type spatial;
+
+void vertex() {
+	ROUGHNESS = 0.8;
+}
+
+void fragment() {
+	ALBEDO = vec3(0.6);
+	ROUGHNESS = 0.8;
+	METALLIC = 0.2;
+}
+)");
 		default_material = storage->material_allocate();
 		storage->material_initialize(default_material);
 		storage->material_set_shader(default_material, default_shader);
@@ -687,7 +701,16 @@ void SceneShaderForwardMobile::init(RendererStorageRD *p_storage, const String p
 		overdraw_material_shader = storage->shader_allocate();
 		storage->shader_initialize(overdraw_material_shader);
 		// Use relatively low opacity so that more "layers" of overlapping objects can be distinguished.
-		storage->shader_set_code(overdraw_material_shader, "shader_type spatial;\nrender_mode blend_add,unshaded;\n void fragment() { ALBEDO=vec3(0.4,0.8,0.8); ALPHA=0.1; }");
+		storage->shader_set_code(overdraw_material_shader, R"(
+shader_type spatial;
+
+render_mode blend_add, unshaded;
+
+void fragment() {
+	ALBEDO = vec3(0.4, 0.8, 0.8);
+	ALPHA = 0.1;
+}
+)");
 		overdraw_material = storage->material_allocate();
 		storage->material_initialize(overdraw_material);
 		storage->material_set_shader(overdraw_material, overdraw_material_shader);
@@ -715,6 +738,19 @@ void SceneShaderForwardMobile::init(RendererStorageRD *p_storage, const String p
 		sampler.enable_compare = true;
 		sampler.compare_op = RD::COMPARE_OP_LESS;
 		shadow_sampler = RD::get_singleton()->sampler_create(sampler);
+	}
+}
+
+void SceneShaderForwardMobile::set_default_specialization_constants(const Vector<RD::PipelineSpecializationConstant> &p_constants) {
+	default_specialization_constants = p_constants;
+	for (SelfList<ShaderData> *E = shader_list.first(); E; E = E->next()) {
+		for (int i = 0; i < ShaderData::CULL_VARIANT_MAX; i++) {
+			for (int j = 0; j < RS::PRIMITIVE_MAX; j++) {
+				for (int k = 0; k < SHADER_VERSION_MAX; k++) {
+					E->self()->pipelines[i][j][k].update_specialization_constants(default_specialization_constants);
+				}
+			}
+		}
 	}
 }
 

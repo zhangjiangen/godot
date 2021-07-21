@@ -44,8 +44,8 @@ class TextEdit : public Control {
 public:
 	enum GutterType {
 		GUTTER_TYPE_STRING,
-		GUTTER_TPYE_ICON,
-		GUTTER_TPYE_CUSTOM
+		GUTTER_TYPE_ICON,
+		GUTTER_TYPE_CUSTOM
 	};
 
 	enum SelectionMode {
@@ -335,8 +335,6 @@ private:
 	bool context_menu_enabled = true;
 	bool shortcut_keys_enabled = true;
 	bool virtual_keyboard_enabled = true;
-
-	void _generate_context_menu();
 
 	int get_visible_rows() const;
 	int get_total_visible_rows() const;
