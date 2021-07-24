@@ -502,17 +502,6 @@ void Viewport::_notification(int p_what) {
 
 			RS::get_singleton()->viewport_set_active(viewport, false);
 			RenderingServer::get_singleton()->viewport_set_parent_viewport(viewport, RID());
-
-		} break;
-		case NOTIFICATION_INTERNAL_PROCESS: {
-			if (gui.tooltip_timer >= 0) {
-				gui.tooltip_timer -= get_process_delta_time();
-				if (gui.tooltip_timer < 0) {
-					_gui_show_tooltip();
-					set_process_internal(false);
-				}
-			}
-
 		} break;
 		case NOTIFICATION_INTERNAL_PHYSICS_PROCESS: {
 			if (get_tree()->is_debugging_collisions_hint() && contact_2d_debug.is_valid()) {
@@ -1489,8 +1478,10 @@ void Viewport::_gui_sort_roots() {
 
 void Viewport::_gui_cancel_tooltip() {
 	gui.tooltip_control = nullptr;
-	gui.tooltip_timer = -1;
-	set_process_internal(false);
+	if (gui.tooltip_timer.is_valid()) {
+		gui.tooltip_timer->release_connections();
+		gui.tooltip_timer = Ref<SceneTreeTimer>();
+	}
 	if (gui.tooltip_popup) {
 		gui.tooltip_popup->queue_delete();
 		gui.tooltip_popup = nullptr;
@@ -1710,7 +1701,7 @@ void Viewport::_gui_call_notification(Control *p_control, int p_what) {
 	//_unblock();
 }
 
-Control *Viewport::_gui_find_control(const Point2 &p_global) {
+Control *Viewport::gui_find_control(const Point2 &p_global) {
 	//aca va subwindows
 	_gui_sort_roots();
 
@@ -1850,7 +1841,7 @@ void Viewport::_gui_input_event(Ref<InputEvent> p_event) {
 					parent_xform=data.parent_canvas_item->get_global_transform();
 				*/
 
-				gui.mouse_focus = _gui_find_control(pos);
+				gui.mouse_focus = gui_find_control(pos);
 				gui.last_mouse_focus = gui.mouse_focus;
 
 				if (!gui.mouse_focus) {
@@ -1991,7 +1982,7 @@ void Viewport::_gui_input_event(Ref<InputEvent> p_event) {
 			if (gui.mouse_focus) {
 				over = gui.mouse_focus;
 			} else {
-				over = _gui_find_control(mpos);
+				over = gui_find_control(mpos);
 			}
 
 			if (gui.mouse_focus_mask == 0 && over != gui.mouse_over) {
@@ -2074,7 +2065,7 @@ void Viewport::_gui_input_event(Ref<InputEvent> p_event) {
 		if (gui.mouse_focus) {
 			over = gui.mouse_focus;
 		} else {
-			over = _gui_find_control(mpos);
+			over = gui_find_control(mpos);
 		}
 
 		if (over != gui.mouse_over) {
@@ -2139,10 +2130,15 @@ void Viewport::_gui_input_event(Ref<InputEvent> p_event) {
 				}
 
 				if (can_tooltip && !is_tooltip_shown) {
+					if (gui.tooltip_timer.is_valid()) {
+						gui.tooltip_timer->release_connections();
+						gui.tooltip_timer = Ref<SceneTreeTimer>();
+					}
 					gui.tooltip_control = over;
 					gui.tooltip_pos = over->get_screen_transform().xform(pos);
-					gui.tooltip_timer = gui.tooltip_delay;
-					set_process_internal(true);
+					gui.tooltip_timer = get_tree()->create_timer(gui.tooltip_delay);
+					gui.tooltip_timer->set_ignore_time_scale(true);
+					gui.tooltip_timer->connect("timeout", callable_mp(this, &Viewport::_gui_show_tooltip));
 				}
 			}
 
@@ -2262,7 +2258,7 @@ void Viewport::_gui_input_event(Ref<InputEvent> p_event) {
 				Transform2D ai = (viewport_under->get_final_transform().affine_inverse() * viewport_under->_get_input_pre_xform());
 				viewport_pos = ai.xform(viewport_pos);
 				//find control under at pos
-				gui.drag_mouse_over = viewport_under->_gui_find_control(viewport_pos);
+				gui.drag_mouse_over = viewport_under->gui_find_control(viewport_pos);
 				if (gui.drag_mouse_over) {
 					Transform2D localizer = gui.drag_mouse_over->get_global_transform_with_canvas().affine_inverse();
 					gui.drag_mouse_over_pos = localizer.xform(viewport_pos);
@@ -2290,7 +2286,7 @@ void Viewport::_gui_input_event(Ref<InputEvent> p_event) {
 	if (touch_event.is_valid()) {
 		Size2 pos = touch_event->get_position();
 		if (touch_event->is_pressed()) {
-			Control *over = _gui_find_control(pos);
+			Control *over = gui_find_control(pos);
 			if (over) {
 				if (over->can_process()) {
 					touch_event = touch_event->xformed_by(Transform2D()); //make a copy
@@ -2325,7 +2321,7 @@ void Viewport::_gui_input_event(Ref<InputEvent> p_event) {
 
 		Size2 pos = gesture_event->get_position();
 
-		Control *over = _gui_find_control(pos);
+		Control *over = gui_find_control(pos);
 		if (over) {
 			if (over->can_process()) {
 				gesture_event = gesture_event->xformed_by(Transform2D()); //make a copy
@@ -2346,7 +2342,7 @@ void Viewport::_gui_input_event(Ref<InputEvent> p_event) {
 	if (drag_event.is_valid()) {
 		Control *over = gui.mouse_focus;
 		if (!over) {
-			over = _gui_find_control(drag_event->get_position());
+			over = gui_find_control(drag_event->get_position());
 		}
 		if (over) {
 			if (over->can_process()) {

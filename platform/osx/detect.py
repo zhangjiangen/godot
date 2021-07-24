@@ -24,18 +24,25 @@ def get_opts():
     return [
         ("osxcross_sdk", "OSXCross SDK version", "darwin16"),
         ("MACOS_SDK_PATH", "Path to the macOS SDK", ""),
+        ("VULKAN_SDK_PATH", "Path to the Vulkan SDK", ""),
         BoolVariable(
             "use_static_mvk",
             "Link MoltenVK statically as Level-0 driver (better portability) or use Vulkan ICD loader (enables"
             " validation layers)",
             False,
         ),
-        EnumVariable("macports_clang", "Build using Clang from MacPorts", "no", ("no", "5.0", "devel")),
-        BoolVariable("debug_symbols", "Add debugging symbols to release/release_debug builds", True),
-        BoolVariable("separate_debug_symbols", "Create a separate file containing debugging symbols", False),
-        BoolVariable("use_ubsan", "Use LLVM/GCC compiler undefined behavior sanitizer (UBSAN)", False),
-        BoolVariable("use_asan", "Use LLVM/GCC compiler address sanitizer (ASAN)", False),
-        BoolVariable("use_tsan", "Use LLVM/GCC compiler thread sanitizer (TSAN)", False),
+        EnumVariable("macports_clang", "Build using Clang from MacPorts",
+                     "no", ("no", "5.0", "devel")),
+        BoolVariable(
+            "debug_symbols", "Add debugging symbols to release/release_debug builds", True),
+        BoolVariable("separate_debug_symbols",
+                     "Create a separate file containing debugging symbols", False),
+        BoolVariable(
+            "use_ubsan", "Use LLVM/GCC compiler undefined behavior sanitizer (UBSAN)", False),
+        BoolVariable(
+            "use_asan", "Use LLVM/GCC compiler address sanitizer (ASAN)", False),
+        BoolVariable(
+            "use_tsan", "Use LLVM/GCC compiler thread sanitizer (TSAN)", False),
     ]
 
 
@@ -44,11 +51,12 @@ def get_flags():
 
 
 def configure(env):
-    ## Build type
+    # Build type
 
     if env["target"] == "release":
         if env["optimize"] == "speed":  # optimize for speed (default)
-            env.Prepend(CCFLAGS=["-O3", "-fomit-frame-pointer", "-ftree-vectorize"])
+            env.Prepend(
+                CCFLAGS=["-O3", "-fomit-frame-pointer", "-ftree-vectorize"])
         elif env["optimize"] == "size":  # optimize for size
             env.Prepend(CCFLAGS=["-Os", "-ftree-vectorize"])
         if env["arch"] != "arm64":
@@ -71,13 +79,13 @@ def configure(env):
         env.Prepend(CPPDEFINES=["DEBUG_ENABLED"])
         env.Prepend(LINKFLAGS=["-Xlinker", "-no_deduplicate"])
 
-    ## Architecture
+    # Architecture
 
     # Mac OS X no longer runs on 32-bit since 10.7 which is unsupported since 2014
     # As such, we only support 64-bit
     env["bits"] = "64"
 
-    ## Compiler configuration
+    # Compiler configuration
     # Save this in environment for use by other modules
     if "OSXCROSS_ROOT" in os.environ:
         env["osxcross"] = True
@@ -96,11 +104,16 @@ def configure(env):
             mpprefix = os.environ.get("MACPORTS_PREFIX", "/opt/local")
             mpclangver = env["macports_clang"]
             env["CC"] = mpprefix + "/libexec/llvm-" + mpclangver + "/bin/clang"
-            env["CXX"] = mpprefix + "/libexec/llvm-" + mpclangver + "/bin/clang++"
-            env["AR"] = mpprefix + "/libexec/llvm-" + mpclangver + "/bin/llvm-ar"
-            env["RANLIB"] = mpprefix + "/libexec/llvm-" + mpclangver + "/bin/llvm-ranlib"
-            env["AS"] = mpprefix + "/libexec/llvm-" + mpclangver + "/bin/llvm-as"
-            env.Append(CPPDEFINES=["__MACPORTS__"])  # hack to fix libvpx MM256_BROADCASTSI128_SI256 define
+            env["CXX"] = mpprefix + "/libexec/llvm-" + \
+                mpclangver + "/bin/clang++"
+            env["AR"] = mpprefix + "/libexec/llvm-" + \
+                mpclangver + "/bin/llvm-ar"
+            env["RANLIB"] = mpprefix + "/libexec/llvm-" + \
+                mpclangver + "/bin/llvm-ranlib"
+            env["AS"] = mpprefix + "/libexec/llvm-" + \
+                mpclangver + "/bin/llvm-as"
+            # hack to fix libvpx MM256_BROADCASTSI128_SI256 define
+            env.Append(CPPDEFINES=["__MACPORTS__"])
         else:
             env["CC"] = "clang"
             env["CXX"] = "clang++"
@@ -112,9 +125,11 @@ def configure(env):
     else:  # osxcross build
         root = os.environ.get("OSXCROSS_ROOT", 0)
         if env["arch"] == "arm64":
-            basecmd = root + "/target/bin/arm64-apple-" + env["osxcross_sdk"] + "-"
+            basecmd = root + "/target/bin/arm64-apple-" + \
+                env["osxcross_sdk"] + "-"
         else:
-            basecmd = root + "/target/bin/x86_64-apple-" + env["osxcross_sdk"] + "-"
+            basecmd = root + "/target/bin/x86_64-apple-" + \
+                env["osxcross_sdk"] + "-"
 
         ccache_path = os.environ.get("CCACHE")
         if ccache_path is None:
@@ -128,7 +143,8 @@ def configure(env):
         env["AR"] = basecmd + "ar"
         env["RANLIB"] = basecmd + "ranlib"
         env["AS"] = basecmd + "as"
-        env.Append(CPPDEFINES=["__MACPORTS__"])  # hack to fix libvpx MM256_BROADCASTSI128_SI256 define
+        # hack to fix libvpx MM256_BROADCASTSI128_SI256 define
+        env.Append(CPPDEFINES=["__MACPORTS__"])
 
     if env["use_ubsan"] or env["use_asan"] or env["use_tsan"]:
         env.extra_suffix += "s"
@@ -140,26 +156,29 @@ def configure(env):
                 ]
             )
             env.Append(LINKFLAGS=["-fsanitize=undefined"])
-            env.Append(CCFLAGS=["-fsanitize=nullability-return,nullability-arg,function,nullability-assign"])
+            env.Append(CCFLAGS=[
+                       "-fsanitize=nullability-return,nullability-arg,function,nullability-assign"])
 
         if env["use_asan"]:
-            env.Append(CCFLAGS=["-fsanitize=address,pointer-subtract,pointer-compare"])
+            env.Append(
+                CCFLAGS=["-fsanitize=address,pointer-subtract,pointer-compare"])
             env.Append(LINKFLAGS=["-fsanitize=address"])
 
         if env["use_tsan"]:
             env.Append(CCFLAGS=["-fsanitize=thread"])
             env.Append(LINKFLAGS=["-fsanitize=thread"])
 
-    ## Dependencies
+    # Dependencies
 
     if env["builtin_libtheora"]:
         if env["arch"] != "arm64":
             env["x86_libtheora_opt_gcc"] = True
 
-    ## Flags
+    # Flags
 
     env.Prepend(CPPPATH=["#platform/osx"])
-    env.Append(CPPDEFINES=["OSX_ENABLED", "UNIX_ENABLED", "APPLE_STYLE_KEYS", "COREAUDIO_ENABLED", "COREMIDI_ENABLED"])
+    env.Append(CPPDEFINES=["OSX_ENABLED", "UNIX_ENABLED",
+               "APPLE_STYLE_KEYS", "COREAUDIO_ENABLED", "COREMIDI_ENABLED"])
     env.Append(
         LINKFLAGS=[
             "-framework",
@@ -187,10 +206,14 @@ def configure(env):
     env.Append(LIBS=["pthread", "z"])
 
     env.Append(CPPDEFINES=["VULKAN_ENABLED"])
-    env.Append(LINKFLAGS=["-framework", "Metal", "-framework", "QuartzCore", "-framework", "IOSurface"])
+    env.Append(LINKFLAGS=["-framework", "Metal", "-framework",
+               "QuartzCore", "-framework", "IOSurface"])
     if env["use_static_mvk"]:
-        #env.Append(LINKFLAGS=["-framework", "MoltenVK"])
-        env.Append(LINKFLAGS="/Users/zhangjiangen/Downloads/vulkansdk-macos-1.2.135.0/MoltenVK/macOS/static/libMoltenVK.a")
+
+        # env.Append(LINKFLAGS=["-framework", "MoltenVK"])
+        # env.Append(LINKFLAGS="/Users/zhangjiangen/Downloads/vulkansdk-macos-1.2.135.0/MoltenVK/macOS/static/libMoltenVK.a")
+        env.Append(LINKFLAGS=[
+                   "-L$VULKAN_SDK_PATH/MoltenVK/MoltenVK.xcframework/macos-arm64_x86_64/", "-lMoltenVK"])
         env["builtin_vulkan"] = False
     elif not env["builtin_vulkan"]:
         env.Append(LIBS=["vulkan"])

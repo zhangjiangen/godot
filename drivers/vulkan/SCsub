@@ -8,7 +8,8 @@ thirdparty_obj = []
 if env["platform"] == "android":
     print("android using builtin thirdparty/vulkan.......")
     # Use NDK Vulkan headers
-    thirdparty_dir = env["ANDROID_NDK_ROOT"] + "/sources/third_party/vulkan/src"
+    thirdparty_dir = env["ANDROID_NDK_ROOT"] + \
+        "/sources/third_party/vulkan/src"
     thirdparty_includes = [
         thirdparty_dir,
         thirdparty_dir + "/include",
@@ -29,7 +30,8 @@ elif env["platform"] == "iphone":
     print("iphone using builtin thirdparty/vulkan.......")
     # Use bundled Vulkan headers
     thirdparty_dir = "#thirdparty/vulkan"
-    env.Prepend(CPPPATH=[thirdparty_dir, thirdparty_dir + "/include", thirdparty_dir + "/loader"])
+    env.Prepend(CPPPATH=[thirdparty_dir, thirdparty_dir +
+                "/include", thirdparty_dir + "/loader"])
 
     # Build Vulkan memory allocator
     env_thirdparty = env.Clone()
@@ -42,7 +44,8 @@ elif env["builtin_vulkan"]:
     print("using builtin valkan.......")
     # Use bundled Vulkan headers
     thirdparty_dir = "#thirdparty/vulkan"
-    env.Prepend(CPPPATH=[thirdparty_dir, thirdparty_dir + "/include", thirdparty_dir + "/loader"])
+    env.Prepend(CPPPATH=[thirdparty_dir, thirdparty_dir +
+                "/include", thirdparty_dir + "/loader"])
 
     # Build Vulkan loader library
     env_thirdparty = env.Clone()
@@ -74,7 +77,8 @@ elif env["builtin_vulkan"]:
         )
         if not env.msvc:  # Windows 7+, missing in mingw headers
             env_thirdparty.AppendUnique(
-                CPPDEFINES=["CM_GETIDLIST_FILTER_CLASS=0x00000200", "CM_GETIDLIST_FILTER_PRESENT=0x00000100"]
+                CPPDEFINES=["CM_GETIDLIST_FILTER_CLASS=0x00000200",
+                            "CM_GETIDLIST_FILTER_PRESENT=0x00000100"]
             )
     elif env["platform"] == "osx":
         env_thirdparty.AppendUnique(
@@ -102,17 +106,19 @@ elif env["builtin_vulkan"]:
             # In glibc since 2.17 and musl libc since 1.1.24. Used by loader.c.
             env_thirdparty.AppendUnique(CPPDEFINES=["HAVE_SECURE_GETENV"])
 
-    loader_sources = [thirdparty_dir + "/loader/" + file for file in loader_sources]
+    loader_sources = [thirdparty_dir + "/loader/" +
+                      file for file in loader_sources]
     env_thirdparty.add_source_files(thirdparty_obj, loader_sources)
     env_thirdparty.add_source_files(thirdparty_obj, vma_sources)
 
 else:  # Always build VMA.
     print("using thirdparty/vulkan.......")
     thirdparty_dir = "#thirdparty/vulkan"
-    if env["platform"] == "osx":
-        env.Prepend(CPPPATH='/Users/zhangjiangen/VulkanSDK/1.2.176.1/MoltenVK/include')
-    
-    env.Prepend(CPPPATH=[thirdparty_dir])
+    # if env["platform"] == "osx":
+    #   env.Prepend(CPPPATH='/Users/zhangjiangen/VulkanSDK/1.2.176.1/MoltenVK/include')
+
+    # env.Prepend(CPPPATH=[thirdparty_dir])
+    env.Prepend(CPPPATH=[thirdparty_dir, thirdparty_dir + "/include"])
 
     # Build Vulkan loader library
     env_thirdparty = env.Clone()
