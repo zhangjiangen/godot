@@ -210,10 +210,10 @@ def configure(env):
                "QuartzCore", "-framework", "IOSurface"])
     if env["use_static_mvk"]:
 
-        # env.Append(LINKFLAGS=["-framework", "MoltenVK"])
-        # env.Append(LINKFLAGS="/Users/zhangjiangen/Downloads/vulkansdk-macos-1.2.135.0/MoltenVK/macOS/static/libMoltenVK.a")
-        env.Append(LINKFLAGS=[
-                   "-L$VULKAN_SDK_PATH/MoltenVK/MoltenVK.xcframework/macos-arm64_x86_64/", "-lMoltenVK"])
+        #env.Append(LINKFLAGS=["-framework", "MoltenVK"])
+        env.Append(
+            LINKFLAGS="/Users/zhangjiangen/Downloads/vulkansdk-macos-1.2.135.0/MoltenVK/macOS/static/libMoltenVK.a")
+        #env.Append(LINKFLAGS=["-L$VULKAN_SDK_PATH/MoltenVK/MoltenVK.xcframework/macos-arm64_x86_64/", "-lMoltenVK"])
         env["builtin_vulkan"] = False
     elif not env["builtin_vulkan"]:
         env.Append(LIBS=["vulkan"])

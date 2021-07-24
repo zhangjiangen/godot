@@ -943,7 +943,7 @@ String ShaderCompilerRD::_dump_node_code(const SL::Node *p_node, int p_level, Ge
 
 				} else {
 					if (use_fragment_varying) {
-						code = "frag_to_light.";
+						//code = "frag_to_light.";
 					}
 					code += _mkid(vnode->name); //its something else (local var most likely) use as is
 				}
@@ -1075,7 +1075,7 @@ String ShaderCompilerRD::_dump_node_code(const SL::Node *p_node, int p_level, Ge
 				code = p_default_actions.renames[anode->name];
 			} else {
 				if (use_fragment_varying) {
-					code = "frag_to_light.";
+					//code = "frag_to_light.";
 				}
 				code += _mkid(anode->name);
 			}
