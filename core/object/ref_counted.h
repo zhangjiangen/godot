@@ -571,7 +571,6 @@ public:
 protected:
 	inline void release(void) {
 		if (pRep) {
-			assert(pInfo);
 			if (pInfo->useCount.unrefval() == 0)
 				destroy();
 		}
