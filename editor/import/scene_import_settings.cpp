@@ -447,7 +447,7 @@ void SceneImportSettings::open_settings(const String &p_path) {
 				if (E == "_subresources") {
 					base_subresource_settings = value;
 				} else {
-					defaults->set(E->get(), value);
+					defaults->set(E, value);
 				}
 			}
 		}
