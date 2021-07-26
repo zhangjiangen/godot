@@ -912,6 +912,8 @@ void ShaderLanguage::clear() {
 	completion_class = SubClassTag::TAG_GLOBAL;
 	completion_struct = StringName();
 
+	unknown_varying_usages.clear();
+
 #ifdef DEBUG_ENABLED
 	used_constants.clear();
 	used_varyings.clear();
@@ -2818,6 +2820,20 @@ bool ShaderLanguage::is_token_operator(TokenType p_type) {
 			p_type == TK_COLON);
 }
 
+bool ShaderLanguage::is_token_operator_assign(TokenType p_type) {
+	return (p_type == TK_OP_ASSIGN ||
+			p_type == TK_OP_ASSIGN_ADD ||
+			p_type == TK_OP_ASSIGN_SUB ||
+			p_type == TK_OP_ASSIGN_MUL ||
+			p_type == TK_OP_ASSIGN_DIV ||
+			p_type == TK_OP_ASSIGN_MOD ||
+			p_type == TK_OP_ASSIGN_SHIFT_LEFT ||
+			p_type == TK_OP_ASSIGN_SHIFT_RIGHT ||
+			p_type == TK_OP_ASSIGN_BIT_AND ||
+			p_type == TK_OP_ASSIGN_BIT_OR ||
+			p_type == TK_OP_ASSIGN_BIT_XOR);
+}
+
 bool ShaderLanguage::convert_constant(ConstantNode *p_constant, DataType p_to_type, ConstantNode::Value *p_value) {
 	if (p_constant->datatype == p_to_type) {
 		if (p_value) {
@@ -3324,8 +3340,7 @@ bool ShaderLanguage::_validate_varying_assign(ShaderNode::Varying &p_varying, St
 				p_varying.stage = ShaderNode::Varying::STAGE_FRAGMENT;
 			}
 			break;
-		case ShaderNode::Varying::STAGE_VERTEX_TO_FRAGMENT:
-		case ShaderNode::Varying::STAGE_VERTEX_TO_LIGHT:
+		case ShaderNode::Varying::STAGE_VERTEX_TO_FRAGMENT_LIGHT:
 		case ShaderNode::Varying::STAGE_VERTEX:
 			if (current_function == varying_function_names.fragment) {
 				*r_message = RTR("Varyings which assigned in 'vertex' function may not be reassigned in 'fragment' or 'light'.");
@@ -3351,13 +3366,14 @@ bool ShaderLanguage::_validate_varying_using(ShaderNode::Varying &p_varying, Str
 	}
 	switch (p_varying.stage) {
 		case ShaderNode::Varying::STAGE_UNKNOWN:
-			*r_message = RTR("Varying must be assigned before using!");
-			return false;
+			VaryingUsage usage;
+			usage.var = &p_varying;
+			usage.line = tk_line;
+			unknown_varying_usages.push_back(usage);
+			break;
 		case ShaderNode::Varying::STAGE_VERTEX:
-			if (current_function == varying_function_names.fragment) {
-				p_varying.stage = ShaderNode::Varying::STAGE_VERTEX_TO_FRAGMENT;
-			} else if (current_function == varying_function_names.light) {
-				p_varying.stage = ShaderNode::Varying::STAGE_VERTEX_TO_LIGHT;
+			if (current_function == varying_function_names.fragment || current_function == varying_function_names.light) {
+				p_varying.stage = ShaderNode::Varying::STAGE_VERTEX_TO_FRAGMENT_LIGHT;
 			}
 			break;
 		case ShaderNode::Varying::STAGE_FRAGMENT:
@@ -3365,21 +3381,22 @@ bool ShaderLanguage::_validate_varying_using(ShaderNode::Varying &p_varying, Str
 				p_varying.stage = ShaderNode::Varying::STAGE_FRAGMENT_TO_LIGHT;
 			}
 			break;
-		case ShaderNode::Varying::STAGE_VERTEX_TO_FRAGMENT:
-			if (current_function == varying_function_names.light) {
-				*r_message = RTR("Varying must only be used in two different stages, which can be 'vertex' 'fragment' and 'light'");
-				return false;
-			}
-			break;
-		case ShaderNode::Varying::STAGE_VERTEX_TO_LIGHT:
-			if (current_function == varying_function_names.fragment) {
-				*r_message = RTR("Varying must only be used in two different stages, which can be 'vertex' 'fragment' and 'light'");
-				return false;
-			}
-			break;
 		default:
 			break;
 	}
+	return true;
+}
+
+bool ShaderLanguage::_check_varying_usages(int *r_error_line, String *r_error_message) const {
+	for (const List<ShaderLanguage::VaryingUsage>::Element *E = unknown_varying_usages.front(); E; E = E->next()) {
+		ShaderNode::Varying::Stage stage = E->get().var->stage;
+		if (stage != ShaderNode::Varying::STAGE_UNKNOWN && stage != ShaderNode::Varying::STAGE_VERTEX && stage != ShaderNode::Varying::STAGE_VERTEX_TO_FRAGMENT_LIGHT) {
+			*r_error_line = E->get().line;
+			*r_error_message = RTR("Fragment-stage varying could not been accessed in custom function!");
+			return false;
+		}
+	}
+
 	return true;
 }
 
@@ -4240,7 +4257,8 @@ ShaderLanguage::Node *ShaderLanguage::_parse_expression(BlockNode *p_block, cons
 						Token next_token = _get_token();
 						_set_tkpos(prev_pos);
 						String error;
-						if (next_token.type == TK_OP_ASSIGN) {
+
+						if (is_token_operator_assign(next_token.type)) {
 							if (!_validate_varying_assign(shader->varyings[identifier], &error)) {
 								_set_error(error);
 								return nullptr;
@@ -7878,6 +7896,15 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 
 		tk = _get_token();
 	}
+
+	int error_line;
+	String error_message;
+	if (!_check_varying_usages(&error_line, &error_message)) {
+		_set_tkpos({ 0, error_line });
+		_set_error(error_message);
+		return ERR_PARSE_ERROR;
+	}
+
 	return OK;
 }
 
