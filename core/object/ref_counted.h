@@ -535,12 +535,10 @@ public:
 	}
 
 	inline bool unique() const {
-		assert(pInfo && pInfo->useCount.get());
 		return pInfo->useCount.get() == 1;
 	}
 
 	unsigned int use_count() const {
-		assert(pInfo && pInfo->useCount.get());
 		return pInfo->useCount.get();
 	}
 
