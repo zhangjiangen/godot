@@ -816,13 +816,18 @@ String ResourceLoaderBinary::get_unicode_string() {
 }
 
 void ResourceLoaderBinary::get_dependencies(FileAccess *p_f, List<String> *p_dependencies, bool p_add_types) {
-	open(p_f);
+	open(p_f, false, true);
 	if (error) {
 		return;
 	}
 
 	for (int i = 0; i < external_resources.size(); i++) {
-		String dep = external_resources[i].path;
+		String dep;
+		if (external_resources[i].uid != ResourceUID::INVALID_ID) {
+			dep = ResourceUID::get_singleton()->id_to_text(external_resources[i].uid);
+		} else {
+			dep = external_resources[i].path;
+		}
 
 		if (p_add_types && external_resources[i].type != String()) {
 			dep += "::" + external_resources[i].type;
@@ -832,7 +837,7 @@ void ResourceLoaderBinary::get_dependencies(FileAccess *p_f, List<String> *p_dep
 	}
 }
 
-void ResourceLoaderBinary::open(FileAccess *p_f) {
+void ResourceLoaderBinary::open(FileAccess *p_f, bool p_no_resources, bool p_keep_uuid_paths) {
 	error = OK;
 
 	f = p_f;
@@ -891,8 +896,22 @@ void ResourceLoaderBinary::open(FileAccess *p_f) {
 	if (flags & ResourceFormatSaverBinaryInstance::FORMAT_FLAG_NAMED_SCENE_IDS) {
 		using_named_scene_ids = true;
 	}
-	for (int i = 0; i < 13; i++) {
+	if (flags & ResourceFormatSaverBinaryInstance::FORMAT_FLAG_UIDS) {
+		using_uids = true;
+	}
+
+	if (using_uids) {
+		uid = f->get_64();
+	} else {
+		uid = ResourceUID::INVALID_ID;
+	}
+
+	for (int i = 0; i < 5; i++) {
 		f->get_32(); //skip a few reserved fields
+	}
+
+	if (p_no_resources) {
+		return;
 	}
 
 	uint32_t string_table_size = f->get_32();
@@ -908,8 +927,18 @@ void ResourceLoaderBinary::open(FileAccess *p_f) {
 	for (uint32_t i = 0; i < ext_resources_size; i++) {
 		ExtResource er;
 		er.type = get_unicode_string();
-
 		er.path = get_unicode_string();
+		if (using_uids) {
+			er.uid = f->get_64();
+			if (!p_keep_uuid_paths && er.uid != ResourceUID::INVALID_ID) {
+				if (ResourceUID::get_singleton()->has_id(er.uid)) {
+					// If a UID is found and the path is valid, it will be used, otherwise, it falls back to the path.
+					er.path = ResourceUID::get_singleton()->get_id_path(er.uid);
+				} else {
+					WARN_PRINT(String(res_path + ": In external resouce #" + itos(i) + ", invalid UUID: " + ResourceUID::get_singleton()->id_to_text(er.uid) + " - using text path instead: " + er.path).utf8().get_data());
+				}
+			}
+		}
 
 		external_resources.push_back(er);
 	}
@@ -1025,8 +1054,8 @@ void ResourceFormatLoaderBinary::get_recognized_extensions_for_type(const String
 
 	extensions.sort();
 
-	for (List<String>::Element *E = extensions.front(); E; E = E->next()) {
-		String ext = E->get().to_lower();
+	for (const String &E : extensions) {
+		String ext = E.to_lower();
 		p_extensions->push_back(ext);
 	}
 }
@@ -1036,8 +1065,8 @@ void ResourceFormatLoaderBinary::get_recognized_extensions(List<String> *p_exten
 	ClassDB::get_resource_base_extensions(&extensions);
 	extensions.sort();
 
-	for (List<String>::Element *E = extensions.front(); E; E = E->next()) {
-		String ext = E->get().to_lower();
+	for (const String &E : extensions) {
+		String ext = E.to_lower();
 		p_extensions->push_back(ext);
 	}
 }
@@ -1173,8 +1202,15 @@ Error ResourceFormatLoaderBinary::rename_dependencies(const String &p_path, cons
 	uint64_t importmd_ofs = f->get_64();
 	fw->store_64(0); //metadata offset
 
-	for (int i = 0; i < 14; i++) {
-		fw->store_32(0);
+	uint32_t flags = f->get_32();
+	bool using_uids = (flags & ResourceFormatSaverBinaryInstance::FORMAT_FLAG_UIDS);
+	uint64_t uid_data = f->get_64();
+
+	fw->store_32(flags);
+	fw->store_64(uid_data);
+
+	for (int i = 0; i < 5; i++) {
+		f->store_32(0); // reserved
 		f->get_32();
 	}
 
@@ -1195,6 +1231,16 @@ Error ResourceFormatLoaderBinary::rename_dependencies(const String &p_path, cons
 		String type = get_ustring(f);
 		String path = get_ustring(f);
 
+		if (using_uids) {
+			ResourceUID::ID uid = f->get_64();
+			if (uid != ResourceUID::INVALID_ID) {
+				if (ResourceUID::get_singleton()->has_id(uid)) {
+					// If a UID is found and the path is valid, it will be used, otherwise, it falls back to the path.
+					path = ResourceUID::get_singleton()->get_id_path(uid);
+				}
+			}
+		}
+
 		bool relative = false;
 		if (!path.begins_with("res://")) {
 			path = local_path.plus_file(path).simplify_path();
@@ -1206,6 +1252,8 @@ Error ResourceFormatLoaderBinary::rename_dependencies(const String &p_path, cons
 			path = np;
 		}
 
+		String full_path = path;
+
 		if (relative) {
 			//restore relative
 			path = local_path.path_to_file(path);
@@ -1213,6 +1261,11 @@ Error ResourceFormatLoaderBinary::rename_dependencies(const String &p_path, cons
 
 		save_ustring(fw, type);
 		save_ustring(fw, path);
+
+		if (using_uids) {
+			ResourceUID::ID uid = ResourceSaver::get_resource_id_for_path(full_path);
+			f->store_64(uid);
+		}
 	}
 
 	int64_t size_diff = (int64_t)fw->get_position() - (int64_t)f->get_position();
@@ -1266,6 +1319,28 @@ String ResourceFormatLoaderBinary::get_resource_type(const String &p_path) const
 	//loader.set_local_path( Globals::get_singleton()->localize_path(p_path) );
 	String r = loader.recognize(f);
 	return ClassDB::get_compatibility_remapped_class(r);
+}
+
+ResourceUID::ID ResourceFormatLoaderBinary::get_resource_uid(const String &p_path) const {
+	String ext = p_path.get_extension().to_lower();
+	if (!ClassDB::is_resource_extension(ext)) {
+		return ResourceUID::INVALID_ID;
+	}
+
+	FileAccess *f = FileAccess::open(p_path, FileAccess::READ);
+	if (!f) {
+		return ResourceUID::INVALID_ID; //could not read
+	}
+
+	ResourceLoaderBinary loader;
+	loader.local_path = ProjectSettings::get_singleton()->localize_path(p_path);
+	loader.res_path = loader.local_path;
+	//loader.set_local_path( Globals::get_singleton()->localize_path(p_path) );
+	loader.open(f, true);
+	if (loader.error != OK) {
+		return ResourceUID::INVALID_ID; //could not read
+	}
+	return loader.uid;
 }
 
 ///////////////////////////////////////////////////////////
@@ -1528,14 +1603,14 @@ void ResourceFormatSaverBinaryInstance::write_variant(FileAccess *f, const Varia
 			List<Variant> keys;
 			d.get_key_list(&keys);
 
-			for (List<Variant>::Element *E = keys.front(); E; E = E->next()) {
+			for (const Variant &E : keys) {
 				/*
-				if (!_check_type(dict[E->get()]))
+				if (!_check_type(dict[E]))
 					continue;
 				*/
 
-				write_variant(f, E->get(), resource_map, external_resources, string_map);
-				write_variant(f, d[E->get()], resource_map, external_resources, string_map);
+				write_variant(f, E, resource_map, external_resources, string_map);
+				write_variant(f, d[E], resource_map, external_resources, string_map);
 			}
 
 		} break;
@@ -1685,15 +1760,15 @@ void ResourceFormatSaverBinaryInstance::_find_resources(const Variant &p_variant
 
 			res->get_property_list(&property_list);
 
-			for (List<PropertyInfo>::Element *E = property_list.front(); E; E = E->next()) {
-				if (E->get().usage & PROPERTY_USAGE_STORAGE) {
-					Variant value = res->get(E->get().name);
-					if (E->get().usage & PROPERTY_USAGE_RESOURCE_NOT_PERSISTENT) {
+			for (const PropertyInfo &E : property_list) {
+				if (E.usage & PROPERTY_USAGE_STORAGE) {
+					Variant value = res->get(E.name);
+					if (E.usage & PROPERTY_USAGE_RESOURCE_NOT_PERSISTENT) {
 						RES sres = value;
 						if (sres.is_valid()) {
 							NonPersistentKey npk;
 							npk.base = res;
-							npk.property = E->get().name;
+							npk.property = E.name;
 							non_persistent_map[npk] = sres;
 							resource_set.insert(sres);
 							saved_resources.push_back(sres);
@@ -1723,9 +1798,9 @@ void ResourceFormatSaverBinaryInstance::_find_resources(const Variant &p_variant
 			Dictionary d = p_variant;
 			List<Variant> keys;
 			d.get_key_list(&keys);
-			for (List<Variant>::Element *E = keys.front(); E; E = E->next()) {
-				_find_resources(E->get());
-				Variant v = d[E->get()];
+			for (const Variant &E : keys) {
+				_find_resources(E);
+				Variant v = d[E];
 				_find_resources(v);
 			}
 		} break;
@@ -1824,47 +1899,49 @@ Error ResourceFormatSaverBinaryInstance::save(const String &p_path, const RES &p
 
 	save_unicode_string(f, p_resource->get_class());
 	f->store_64(0); //offset to import metadata
-	f->store_32(FORMAT_FLAG_NAMED_SCENE_IDS);
-	for (int i = 0; i < 13; i++) {
+	f->store_32(FORMAT_FLAG_NAMED_SCENE_IDS | FORMAT_FLAG_UIDS);
+	ResourceUID::ID uid = ResourceSaver::get_resource_id_for_path(p_path, true);
+	f->store_64(uid);
+	for (int i = 0; i < 5; i++) {
 		f->store_32(0); // reserved
 	}
 
 	List<ResourceData> resources;
 
 	{
-		for (List<RES>::Element *E = saved_resources.front(); E; E = E->next()) {
+		for (const RES &E : saved_resources) {
 			ResourceData &rd = resources.push_back(ResourceData())->get();
-			rd.type = E->get()->get_class();
+			rd.type = E->get_class();
 
 			List<PropertyInfo> property_list;
-			E->get()->get_property_list(&property_list);
+			E->get_property_list(&property_list);
 
-			for (List<PropertyInfo>::Element *F = property_list.front(); F; F = F->next()) {
-				if (skip_editor && F->get().name.begins_with("__editor")) {
+			for (const PropertyInfo &F : property_list) {
+				if (skip_editor && F.name.begins_with("__editor")) {
 					continue;
 				}
-				if ((F->get().usage & PROPERTY_USAGE_STORAGE)) {
+				if ((F.usage & PROPERTY_USAGE_STORAGE)) {
 					Property p;
-					p.name_idx = get_string_index(F->get().name);
+					p.name_idx = get_string_index(F.name);
 
-					if (F->get().usage & PROPERTY_USAGE_RESOURCE_NOT_PERSISTENT) {
+					if (F.usage & PROPERTY_USAGE_RESOURCE_NOT_PERSISTENT) {
 						NonPersistentKey npk;
-						npk.base = E->get();
-						npk.property = F->get().name;
+						npk.base = E;
+						npk.property = F.name;
 						if (non_persistent_map.has(npk)) {
 							p.value = non_persistent_map[npk];
 						}
 					} else {
-						p.value = E->get()->get(F->get().name);
+						p.value = E->get(F.name);
 					}
 
-					Variant default_value = ClassDB::class_get_default_property_value(E->get()->get_class(), F->get().name);
+					Variant default_value = ClassDB::class_get_default_property_value(E->get_class(), F.name);
 
 					if (default_value.get_type() != Variant::NIL && bool(Variant::evaluate(Variant::OP_EQUAL, p.value, default_value))) {
 						continue;
 					}
 
-					p.pi = F->get();
+					p.pi = F;
 
 					rd.properties.push_back(p);
 				}
@@ -1891,14 +1968,15 @@ Error ResourceFormatSaverBinaryInstance::save(const String &p_path, const RES &p
 		String path = save_order[i]->get_path();
 		path = relative_paths ? local_path.path_to_file(path) : path;
 		save_unicode_string(f, path);
+		ResourceUID::ID ruid = ResourceSaver::get_resource_id_for_path(save_order[i]->get_path(), false);
+		f->store_64(ruid);
 	}
 	// save internal resource table
 	f->store_32(saved_resources.size()); //amount of internal resources
 	Vector<uint64_t> ofs_pos;
 	Set<String> used_unique_ids;
 
-	for (List<RES>::Element *E = saved_resources.front(); E; E = E->next()) {
-		RES r = E->get();
+	for (RES &r : saved_resources) {
 		if (r->get_path() == "" || r->get_path().find("::") != -1) {
 			if (r->get_scene_unique_id() != "") {
 				if (used_unique_ids.has(r->get_scene_unique_id())) {
@@ -1912,8 +1990,7 @@ Error ResourceFormatSaverBinaryInstance::save(const String &p_path, const RES &p
 
 	Map<RES, int> resource_map;
 	int res_index = 0;
-	for (List<RES>::Element *E = saved_resources.front(); E; E = E->next()) {
-		RES r = E->get();
+	for (RES &r : saved_resources) {
 		if (r->get_path() == "" || r->get_path().find("::") != -1) {
 			if (r->get_scene_unique_id() == "") {
 				String new_id;
@@ -1947,17 +2024,14 @@ Error ResourceFormatSaverBinaryInstance::save(const String &p_path, const RES &p
 	Vector<uint64_t> ofs_table;
 
 	//now actually save the resources
-	for (List<ResourceData>::Element *E = resources.front(); E; E = E->next()) {
-		ResourceData &rd = E->get();
-
+	for (const ResourceData &rd : resources) {
 		ofs_table.push_back(f->get_position());
 		save_unicode_string(f, rd.type);
 		f->store_32(rd.properties.size());
 
-		for (List<Property>::Element *F = rd.properties.front(); F; F = F->next()) {
-			Property &p = F->get();
+		for (const Property &p : rd.properties) {
 			f->store_32(p.name_idx);
-			write_variant(f, p.value, resource_map, external_resources, string_map, F->get().pi);
+			write_variant(f, p.value, resource_map, external_resources, string_map, p.pi);
 		}
 	}
 

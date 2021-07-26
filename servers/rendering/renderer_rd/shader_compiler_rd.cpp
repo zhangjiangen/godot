@@ -571,7 +571,7 @@ String ShaderCompilerRD::_dump_node_code(const SL::Node *p_node, int p_level, Ge
 					max_texture_uniforms++;
 				} else {
 					if (E->get().scope == SL::ShaderNode::Uniform::SCOPE_INSTANCE) {
-						continue; //instances are indexed directly, dont need index uniforms
+						continue; // Instances are indexed directly, don't need index uniforms.
 					}
 
 					max_uniforms++;
@@ -605,7 +605,7 @@ String ShaderCompilerRD::_dump_node_code(const SL::Node *p_node, int p_level, Ge
 				if (uniform.scope == SL::ShaderNode::Uniform::SCOPE_INSTANCE) {
 					//insert, but don't generate any code.
 					p_actions.uniforms->insert(uniform_name, uniform);
-					continue; //instances are indexed directly, dont need index uniforms
+					continue; // Instances are indexed directly, don't need index uniforms.
 				}
 				if (SL::is_sampler_type(uniform.type)) {
 					ucode = "layout(set = " + itos(actions.texture_layout_set) + ", binding = " + itos(actions.base_texture_binding_index + uniform.texture_order) + ") uniform ";
@@ -760,11 +760,11 @@ String ShaderCompilerRD::_dump_node_code(const SL::Node *p_node, int p_level, Ge
 
 			if (var_frag_to_light.size() > 0) {
 				String gcode = "\n\nstruct {\n";
-				for (List<Pair<StringName, SL::ShaderNode::Varying>>::Element *E = var_frag_to_light.front(); E; E = E->next()) {
-					gcode += "\t" + _prestr(E->get().second.precision) + _typestr(E->get().second.type) + " " + _mkid(E->get().first);
-					if (E->get().second.array_size > 0) {
+				for (const Pair<StringName, SL::ShaderNode::Varying> &E : var_frag_to_light) {
+					gcode += "\t" + _prestr(E.second.precision) + _typestr(E.second.type) + " " + _mkid(E.first);
+					if (E.second.array_size > 0) {
 						gcode += "[";
-						gcode += itos(E->get().second.array_size);
+						gcode += itos(E.second.array_size);
 						gcode += "]";
 					}
 					gcode += ";\n";
@@ -1394,8 +1394,8 @@ void ShaderCompilerRD::initialize(DefaultIdentifierActions p_actions) {
 
 	ShaderLanguage::get_builtin_funcs(&func_list);
 
-	for (List<String>::Element *E = func_list.front(); E; E = E->next()) {
-		internal_functions.insert(E->get());
+	for (const String &E : func_list) {
+		internal_functions.insert(E);
 	}
 	texture_functions.insert("texture");
 	texture_functions.insert("textureProj");

@@ -2764,9 +2764,7 @@ void RendererStorageRD::mesh_add_surface(RID p_mesh, const RS::SurfaceData &p_su
 	mesh->surfaces[mesh->surface_count] = s;
 	mesh->surface_count++;
 
-	for (List<MeshInstance *>::Element *E = mesh->instances.front(); E; E = E->next()) {
-		//update instances
-		MeshInstance *mi = E->get();
+	for (MeshInstance *mi : mesh->instances) {
 		_mesh_instance_add_surface(mi, mesh, mesh->surface_count - 1);
 	}
 
@@ -3077,8 +3075,7 @@ void RendererStorageRD::mesh_clear(RID p_mesh) {
 	mesh->surface_count = 0;
 	mesh->material_cache.clear();
 	//clear instance data
-	for (List<MeshInstance *>::Element *E = mesh->instances.front(); E; E = E->next()) {
-		MeshInstance *mi = E->get();
+	for (MeshInstance *mi : mesh->instances) {
 		_mesh_instance_clear(mi);
 	}
 	mesh->has_bone_weights = false;
@@ -5015,7 +5012,7 @@ void RendererStorageRD::particles_set_view_axis(RID p_particles, const Vector3 &
 		RD::get_singleton()->compute_list_dispatch_threads(compute_list, particles->amount, 1, 1);
 
 		RD::get_singleton()->compute_list_end();
-		effects.sort_buffer(particles->particles_sort_uniform_set, particles->amount);
+		effects->sort_buffer(particles->particles_sort_uniform_set, particles->amount);
 	}
 
 	copy_push_constant.total_particles *= copy_push_constant.total_particles;
@@ -7591,7 +7588,7 @@ void RendererStorageRD::render_target_copy_to_back_buffer(RID p_render_target, c
 
 	//single texture copy for backbuffer
 	//RD::get_singleton()->texture_copy(rt->color, rt->backbuffer_mipmap0, Vector3(region.position.x, region.position.y, 0), Vector3(region.position.x, region.position.y, 0), Vector3(region.size.x, region.size.y, 1), 0, 0, 0, 0, true);
-	effects.copy_to_rect(rt->color, rt->backbuffer_mipmap0, region, false, false, false, true, true);
+	effects->copy_to_rect(rt->color, rt->backbuffer_mipmap0, region, false, false, false, true, true);
 
 	if (!p_gen_mipmaps) {
 		return;
@@ -7607,7 +7604,7 @@ void RendererStorageRD::render_target_copy_to_back_buffer(RID p_render_target, c
 		region.size.y = MAX(1, region.size.y >> 1);
 
 		const RenderTarget::BackbufferMipmap &mm = rt->backbuffer_mipmaps[i];
-		effects.gaussian_blur(prev_texture, mm.mipmap, mm.mipmap_copy, region, true);
+		effects->gaussian_blur(prev_texture, mm.mipmap, mm.mipmap_copy, region, true);
 		prev_texture = mm.mipmap;
 	}
 }
@@ -7630,7 +7627,7 @@ void RendererStorageRD::render_target_clear_back_buffer(RID p_render_target, con
 	}
 
 	//single texture copy for backbuffer
-	effects.set_color(rt->backbuffer_mipmap0, p_color, region, true);
+	effects->set_color(rt->backbuffer_mipmap0, p_color, region, true);
 }
 
 void RendererStorageRD::render_target_gen_back_buffer_mipmaps(RID p_render_target, const Rect2i &p_region) {
@@ -7660,7 +7657,7 @@ void RendererStorageRD::render_target_gen_back_buffer_mipmaps(RID p_render_targe
 		region.size.y = MAX(1, region.size.y >> 1);
 
 		const RenderTarget::BackbufferMipmap &mm = rt->backbuffer_mipmaps[i];
-		effects.gaussian_blur(prev_texture, mm.mipmap, mm.mipmap_copy, region, true);
+		effects->gaussian_blur(prev_texture, mm.mipmap, mm.mipmap_copy, region, true);
 		prev_texture = mm.mipmap;
 	}
 }
@@ -7981,14 +7978,14 @@ void RendererStorageRD::_update_decal_atlas() {
 				while ((K = decal_atlas.textures.next(K))) {
 					DecalAtlas::Texture *t = decal_atlas.textures.getptr(*K);
 					Texture *src_tex = texture_owner.getornull(*K);
-					effects.copy_to_atlas_fb(src_tex->rd_texture, mm.fb, t->uv_rect, draw_list, false, t->panorama_to_dp_users > 0);
+					effects->copy_to_atlas_fb(src_tex->rd_texture, mm.fb, t->uv_rect, draw_list, false, t->panorama_to_dp_users > 0);
 				}
 
 				RD::get_singleton()->draw_list_end();
 
 				prev_texture = mm.texture;
 			} else {
-				effects.copy_to_fb_rect(prev_texture, mm.fb, Rect2i(Point2i(), mm.size));
+				effects->copy_to_fb_rect(prev_texture, mm.fb, Rect2i(Point2i(), mm.size));
 				prev_texture = mm.texture;
 			}
 		} else {
@@ -8466,10 +8463,10 @@ void RendererStorageRD::global_variables_load_settings(bool p_load_textures) {
 	List<PropertyInfo> settings;
 	ProjectSettings::get_singleton()->get_property_list(&settings);
 
-	for (List<PropertyInfo>::Element *E = settings.front(); E; E = E->next()) {
-		if (E->get().name.begins_with("shader_globals/")) {
-			StringName name = E->get().name.get_slice("/", 1);
-			Dictionary d = ProjectSettings::get_singleton()->get(E->get().name);
+	for (const PropertyInfo &E : settings) {
+		if (E.name.begins_with("shader_globals/")) {
+			StringName name = E.name.get_slice("/", 1);
+			Dictionary d = ProjectSettings::get_singleton()->get(E.name);
 
 			ERR_CONTINUE(!d.has("type"));
 			ERR_CONTINUE(!d.has("value"));
@@ -8637,8 +8634,8 @@ void RendererStorageRD::_update_global_variables() {
 	if (global_variables.must_update_buffer_materials) {
 		// only happens in the case of a buffer variable added or removed,
 		// so not often.
-		for (List<RID>::Element *E = global_variables.materials_using_buffer.front(); E; E = E->next()) {
-			Material *material = material_owner.getornull(E->get());
+		for (const RID &E : global_variables.materials_using_buffer) {
+			Material *material = material_owner.getornull(E);
 			ERR_CONTINUE(!material); //wtf
 
 			_material_queue_update(material, true, false);
@@ -8650,8 +8647,8 @@ void RendererStorageRD::_update_global_variables() {
 	if (global_variables.must_update_texture_materials) {
 		// only happens in the case of a buffer variable added or removed,
 		// so not often.
-		for (List<RID>::Element *E = global_variables.materials_using_texture.front(); E; E = E->next()) {
-			Material *material = material_owner.getornull(E->get());
+		for (const RID &E : global_variables.materials_using_texture) {
+			Material *material = material_owner.getornull(E);
 			ERR_CONTINUE(!material); //wtf
 
 			_material_queue_update(material, false, true);
@@ -8860,8 +8857,13 @@ bool RendererStorageRD::free(RID p_rid) {
 	return true;
 }
 
+void RendererStorageRD::init_effects(bool p_prefer_raster_effects) {
+	effects = memnew(EffectsRD(p_prefer_raster_effects));
+}
+
 EffectsRD *RendererStorageRD::get_effects() {
-	return &effects;
+	ERR_FAIL_NULL_V_MSG(effects, nullptr, "Effects haven't been initialised yet.");
+	return effects;
 }
 
 void RendererStorageRD::capture_timestamps_begin() {
@@ -9590,5 +9592,10 @@ RendererStorageRD::~RendererStorageRD() {
 
 	if (decal_atlas.texture.is_valid()) {
 		RD::get_singleton()->free(decal_atlas.texture);
+	}
+
+	if (effects) {
+		memdelete(effects);
+		effects = NULL;
 	}
 }

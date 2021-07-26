@@ -55,8 +55,8 @@ void DependencyEditor::_load_pressed(Object *p_item, int p_cell, int p_button) {
 	search->clear_filters();
 	List<String> ext;
 	ResourceLoader::get_recognized_extensions_for_type(ti->get_metadata(0), &ext);
-	for (List<String>::Element *E = ext.front(); E; E = E->next()) {
-		search->add_filter("*" + E->get());
+	for (const String &E : ext) {
+		search->add_filter("*" + E);
 	}
 	search->popup_file_dialog();
 }
@@ -120,13 +120,13 @@ void DependencyEditor::_fix_all() {
 
 	Map<String, Map<String, String>> candidates;
 
-	for (List<String>::Element *E = missing.front(); E; E = E->next()) {
-		String base = E->get().get_file();
+	for (const String &E : missing) {
+		String base = E.get_file();
 		if (!candidates.has(base)) {
 			candidates[base] = Map<String, String>();
 		}
 
-		candidates[base][E->get()] = "";
+		candidates[base][E] = "";
 	}
 
 	_fix_and_find(EditorFileSystem::get_singleton()->get_filesystem(), candidates);
@@ -166,10 +166,8 @@ void DependencyEditor::_update_list() {
 
 	bool broken = false;
 
-	for (List<String>::Element *E = deps.front(); E; E = E->next()) {
+	for (const String &n : deps) {
 		TreeItem *item = tree->create_item(root);
-
-		String n = E->get();
 		String path;
 		String type;
 
@@ -180,6 +178,15 @@ void DependencyEditor::_update_list() {
 			path = n;
 			type = "Resource";
 		}
+
+		ResourceUID::ID uid = ResourceUID::get_singleton()->text_to_id(path);
+		if (uid != ResourceUID::INVALID_ID) {
+			// dependency is in uid format, obtain proper path
+			ERR_CONTINUE(!ResourceUID::get_singleton()->has_id(uid));
+
+			path = ResourceUID::get_singleton()->get_id_path(uid);
+		}
+
 		String name = path.get_file();
 
 		Ref<Texture2D> icon = EditorNode::get_singleton()->get_class_icon(type);
@@ -741,9 +748,9 @@ void OrphanResourcesDialog::_find_to_delete(TreeItem *p_item, List<String> &path
 
 void OrphanResourcesDialog::_delete_confirm() {
 	DirAccess *da = DirAccess::create(DirAccess::ACCESS_RESOURCES);
-	for (List<String>::Element *E = paths.front(); E; E = E->next()) {
-		da->remove(E->get());
-		EditorFileSystem::get_singleton()->update_file(E->get());
+	for (const String &E : paths) {
+		da->remove(E);
+		EditorFileSystem::get_singleton()->update_file(E);
 	}
 	memdelete(da);
 	refresh();

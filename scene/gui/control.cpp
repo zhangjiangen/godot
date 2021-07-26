@@ -343,73 +343,73 @@ void Control::_get_property_list(List<PropertyInfo> *p_list) const {
 	{
 		List<StringName> names;
 		theme->get_icon_list(get_class_name(), &names);
-		for (List<StringName>::Element *E = names.front(); E; E = E->next()) {
+		for (const StringName &E : names) {
 			uint32_t usage = PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CHECKABLE;
-			if (data.icon_override.has(E->get())) {
+			if (data.icon_override.has(E)) {
 				usage |= PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_CHECKED;
 			}
 
-			p_list->push_back(PropertyInfo(Variant::OBJECT, "custom_icons/" + E->get(), PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", usage));
+			p_list->push_back(PropertyInfo(Variant::OBJECT, "custom_icons/" + E, PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", usage));
 		}
 	}
 	{
 		List<StringName> names;
 		theme->get_stylebox_list(get_class_name(), &names);
-		for (List<StringName>::Element *E = names.front(); E; E = E->next()) {
+		for (const StringName &E : names) {
 			uint32_t usage = PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CHECKABLE;
-			if (data.style_override.has(E->get())) {
+			if (data.style_override.has(E)) {
 				usage |= PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_CHECKED;
 			}
 
-			p_list->push_back(PropertyInfo(Variant::OBJECT, "custom_styles/" + E->get(), PROPERTY_HINT_RESOURCE_TYPE, "StyleBox", usage));
+			p_list->push_back(PropertyInfo(Variant::OBJECT, "custom_styles/" + E, PROPERTY_HINT_RESOURCE_TYPE, "StyleBox", usage));
 		}
 	}
 	{
 		List<StringName> names;
 		theme->get_font_list(get_class_name(), &names);
-		for (List<StringName>::Element *E = names.front(); E; E = E->next()) {
+		for (const StringName &E : names) {
 			uint32_t usage = PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CHECKABLE;
-			if (data.font_override.has(E->get())) {
+			if (data.font_override.has(E)) {
 				usage |= PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_CHECKED;
 			}
 
-			p_list->push_back(PropertyInfo(Variant::OBJECT, "custom_fonts/" + E->get(), PROPERTY_HINT_RESOURCE_TYPE, "Font", usage));
+			p_list->push_back(PropertyInfo(Variant::OBJECT, "custom_fonts/" + E, PROPERTY_HINT_RESOURCE_TYPE, "Font", usage));
 		}
 	}
 	{
 		List<StringName> names;
 		theme->get_font_size_list(get_class_name(), &names);
-		for (List<StringName>::Element *E = names.front(); E; E = E->next()) {
+		for (const StringName &E : names) {
 			uint32_t usage = PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CHECKABLE;
-			if (data.font_size_override.has(E->get())) {
+			if (data.font_size_override.has(E)) {
 				usage |= PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_CHECKED;
 			}
 
-			p_list->push_back(PropertyInfo(Variant::INT, "custom_font_sizes/" + E->get(), PROPERTY_HINT_NONE, "", usage));
+			p_list->push_back(PropertyInfo(Variant::INT, "custom_font_sizes/" + E, PROPERTY_HINT_NONE, "", usage));
 		}
 	}
 	{
 		List<StringName> names;
 		theme->get_color_list(get_class_name(), &names);
-		for (List<StringName>::Element *E = names.front(); E; E = E->next()) {
+		for (const StringName &E : names) {
 			uint32_t usage = PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CHECKABLE;
-			if (data.color_override.has(E->get())) {
+			if (data.color_override.has(E)) {
 				usage |= PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_CHECKED;
 			}
 
-			p_list->push_back(PropertyInfo(Variant::COLOR, "custom_colors/" + E->get(), PROPERTY_HINT_NONE, "", usage));
+			p_list->push_back(PropertyInfo(Variant::COLOR, "custom_colors/" + E, PROPERTY_HINT_NONE, "", usage));
 		}
 	}
 	{
 		List<StringName> names;
 		theme->get_constant_list(get_class_name(), &names);
-		for (List<StringName>::Element *E = names.front(); E; E = E->next()) {
+		for (const StringName &E : names) {
 			uint32_t usage = PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CHECKABLE;
-			if (data.constant_override.has(E->get())) {
+			if (data.constant_override.has(E)) {
 				usage |= PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_CHECKED;
 			}
 
-			p_list->push_back(PropertyInfo(Variant::INT, "custom_constants/" + E->get(), PROPERTY_HINT_RANGE, "-16384,16384", usage));
+			p_list->push_back(PropertyInfo(Variant::INT, "custom_constants/" + E, PROPERTY_HINT_RANGE, "-16384,16384", usage));
 		}
 	}
 }
@@ -428,14 +428,14 @@ void Control::_validate_property(PropertyInfo &property) const {
 
 		Vector<StringName> unique_names;
 		String hint_string;
-		for (List<StringName>::Element *E = names.front(); E; E = E->next()) {
+		for (const StringName &E : names) {
 			// Skip duplicate values.
-			if (unique_names.has(E->get())) {
+			if (unique_names.has(E)) {
 				continue;
 			}
 
-			hint_string += String(E->get()) + ",";
-			unique_names.append(E->get());
+			hint_string += String(E) + ",";
+			unique_names.append(E);
 		}
 
 		property.hint_string = hint_string;
@@ -454,6 +454,8 @@ void Control::set_layout_direction(Control::LayoutDirection p_direction) {
 	ERR_FAIL_INDEX((int)p_direction, 4);
 
 	data.layout_dir = p_direction;
+	data.is_rtl_dirty = true;
+
 	propagate_notification(NOTIFICATION_LAYOUT_DIRECTION_CHANGED);
 }
 
@@ -462,29 +464,35 @@ Control::LayoutDirection Control::get_layout_direction() const {
 }
 
 bool Control::is_layout_rtl() const {
-	if (data.layout_dir == LAYOUT_DIRECTION_INHERITED) {
-		Window *parent_window = get_parent_window();
-		Control *parent_control = get_parent_control();
-		if (parent_control) {
-			return parent_control->is_layout_rtl();
-		} else if (parent_window) {
-			return parent_window->is_layout_rtl();
-		} else {
-			if (GLOBAL_GET(SNAME("internationalization/rendering/force_right_to_left_layout_direction"))) {
-				return true;
+	if (data.is_rtl_dirty) {
+		const_cast<Control *>(this)->data.is_rtl_dirty = false;
+		if (data.layout_dir == LAYOUT_DIRECTION_INHERITED) {
+			Window *parent_window = get_parent_window();
+			Control *parent_control = get_parent_control();
+			if (parent_control) {
+				const_cast<Control *>(this)->data.is_rtl = parent_control->is_layout_rtl();
+			} else if (parent_window) {
+				const_cast<Control *>(this)->data.is_rtl = parent_window->is_layout_rtl();
+			} else {
+				if (GLOBAL_GET(SNAME("internationalization/rendering/force_right_to_left_layout_direction"))) {
+					const_cast<Control *>(this)->data.is_rtl = true;
+				} else {
+					String locale = TranslationServer::get_singleton()->get_tool_locale();
+					const_cast<Control *>(this)->data.is_rtl = TS->is_locale_right_to_left(locale);
+				}
 			}
-			String locale = TranslationServer::get_singleton()->get_tool_locale();
-			return TS->is_locale_right_to_left(locale);
+		} else if (data.layout_dir == LAYOUT_DIRECTION_LOCALE) {
+			if (GLOBAL_GET(SNAME("internationalization/rendering/force_right_to_left_layout_direction"))) {
+				const_cast<Control *>(this)->data.is_rtl = true;
+			} else {
+				String locale = TranslationServer::get_singleton()->get_tool_locale();
+				const_cast<Control *>(this)->data.is_rtl = TS->is_locale_right_to_left(locale);
+			}
+		} else {
+			const_cast<Control *>(this)->data.is_rtl = (data.layout_dir == LAYOUT_DIRECTION_RTL);
 		}
-	} else if (data.layout_dir == LAYOUT_DIRECTION_LOCALE) {
-		if (GLOBAL_GET(SNAME("internationalization/rendering/force_right_to_left_layout_direction"))) {
-			return true;
-		}
-		String locale = TranslationServer::get_singleton()->get_tool_locale();
-		return TS->is_locale_right_to_left(locale);
-	} else {
-		return (data.layout_dir == LAYOUT_DIRECTION_RTL);
 	}
+	return data.is_rtl;
 }
 
 void Control::_clear_size_warning() {
@@ -534,6 +542,7 @@ void Control::_notification(int p_notification) {
 		} break;
 		case NOTIFICATION_POST_ENTER_TREE: {
 			data.minimum_size_valid = false;
+			data.is_rtl_dirty = true;
 			_size_changed();
 		} break;
 		case NOTIFICATION_EXIT_TREE: {
@@ -548,6 +557,7 @@ void Control::_notification(int p_notification) {
 		case NOTIFICATION_ENTER_CANVAS: {
 			data.parent = Object::cast_to<Control>(get_parent());
 			data.parent_window = Object::cast_to<Window>(get_parent());
+			data.is_rtl_dirty = true;
 
 			Node *parent = this; //meh
 			Control *parent_control = nullptr;
@@ -613,6 +623,7 @@ void Control::_notification(int p_notification) {
 			data.parent = nullptr;
 			data.parent_canvas_item = nullptr;
 			data.parent_window = nullptr;
+			data.is_rtl_dirty = true;
 
 		} break;
 		case NOTIFICATION_MOVED_IN_PARENT: {
@@ -672,6 +683,7 @@ void Control::_notification(int p_notification) {
 		} break;
 		case NOTIFICATION_TRANSLATION_CHANGED:
 		case NOTIFICATION_LAYOUT_DIRECTION_CHANGED: {
+			data.is_rtl_dirty = true;
 			_size_changed();
 		} break;
 	}
@@ -793,13 +805,13 @@ T Control::get_theme_item_in_types(Control *p_theme_owner, Window *p_theme_owner
 	Window *theme_owner_window = p_theme_owner_window;
 
 	while (theme_owner || theme_owner_window) {
-		for (List<StringName>::Element *E = p_theme_types.front(); E; E = E->next()) {
-			if (theme_owner && theme_owner->data.theme->has_theme_item(p_data_type, p_name, E->get())) {
-				return theme_owner->data.theme->get_theme_item(p_data_type, p_name, E->get());
+		for (const StringName &E : p_theme_types) {
+			if (theme_owner && theme_owner->data.theme->has_theme_item(p_data_type, p_name, E)) {
+				return theme_owner->data.theme->get_theme_item(p_data_type, p_name, E);
 			}
 
-			if (theme_owner_window && theme_owner_window->theme->has_theme_item(p_data_type, p_name, E->get())) {
-				return theme_owner_window->theme->get_theme_item(p_data_type, p_name, E->get());
+			if (theme_owner_window && theme_owner_window->theme->has_theme_item(p_data_type, p_name, E)) {
+				return theme_owner_window->theme->get_theme_item(p_data_type, p_name, E);
 			}
 		}
 
@@ -822,17 +834,17 @@ T Control::get_theme_item_in_types(Control *p_theme_owner, Window *p_theme_owner
 
 	// Secondly, check the project-defined Theme resource.
 	if (Theme::get_project_default().is_valid()) {
-		for (List<StringName>::Element *E = p_theme_types.front(); E; E = E->next()) {
-			if (Theme::get_project_default()->has_theme_item(p_data_type, p_name, E->get())) {
-				return Theme::get_project_default()->get_theme_item(p_data_type, p_name, E->get());
+		for (const StringName &E : p_theme_types) {
+			if (Theme::get_project_default()->has_theme_item(p_data_type, p_name, E)) {
+				return Theme::get_project_default()->get_theme_item(p_data_type, p_name, E);
 			}
 		}
 	}
 
 	// Lastly, fall back on the items defined in the default Theme, if they exist.
-	for (List<StringName>::Element *E = p_theme_types.front(); E; E = E->next()) {
-		if (Theme::get_default()->has_theme_item(p_data_type, p_name, E->get())) {
-			return Theme::get_default()->get_theme_item(p_data_type, p_name, E->get());
+	for (const StringName &E : p_theme_types) {
+		if (Theme::get_default()->has_theme_item(p_data_type, p_name, E)) {
+			return Theme::get_default()->get_theme_item(p_data_type, p_name, E);
 		}
 	}
 	// If they don't exist, use any type to return the default/empty value.
@@ -848,12 +860,12 @@ bool Control::has_theme_item_in_types(Control *p_theme_owner, Window *p_theme_ow
 	Window *theme_owner_window = p_theme_owner_window;
 
 	while (theme_owner || theme_owner_window) {
-		for (List<StringName>::Element *E = p_theme_types.front(); E; E = E->next()) {
-			if (theme_owner && theme_owner->data.theme->has_theme_item(p_data_type, p_name, E->get())) {
+		for (const StringName &E : p_theme_types) {
+			if (theme_owner && theme_owner->data.theme->has_theme_item(p_data_type, p_name, E)) {
 				return true;
 			}
 
-			if (theme_owner_window && theme_owner_window->theme->has_theme_item(p_data_type, p_name, E->get())) {
+			if (theme_owner_window && theme_owner_window->theme->has_theme_item(p_data_type, p_name, E)) {
 				return true;
 			}
 		}
@@ -877,16 +889,16 @@ bool Control::has_theme_item_in_types(Control *p_theme_owner, Window *p_theme_ow
 
 	// Secondly, check the project-defined Theme resource.
 	if (Theme::get_project_default().is_valid()) {
-		for (List<StringName>::Element *E = p_theme_types.front(); E; E = E->next()) {
-			if (Theme::get_project_default()->has_theme_item(p_data_type, p_name, E->get())) {
+		for (const StringName &E : p_theme_types) {
+			if (Theme::get_project_default()->has_theme_item(p_data_type, p_name, E)) {
 				return true;
 			}
 		}
 	}
 
 	// Lastly, fall back on the items defined in the default Theme, if they exist.
-	for (List<StringName>::Element *E = p_theme_types.front(); E; E = E->next()) {
-		if (Theme::get_default()->has_theme_item(p_data_type, p_name, E->get())) {
+	for (const StringName &E : p_theme_types) {
+		if (Theme::get_default()->has_theme_item(p_data_type, p_name, E)) {
 			return true;
 		}
 	}
@@ -1594,7 +1606,7 @@ void Control::set_rect(const Rect2 &p_rect) {
 void Control::_set_size(const Size2 &p_size) {
 #ifdef DEBUG_ENABLED
 	if (data.size_warning && (data.anchor[SIDE_LEFT] != data.anchor[SIDE_RIGHT] || data.anchor[SIDE_TOP] != data.anchor[SIDE_BOTTOM])) {
-		WARN_PRINT("Nodes with non-equal opposite anchors will have their size overriden after _ready(). \nIf you want to set size, change the anchors or consider using set_deferred().");
+		WARN_PRINT("Nodes with non-equal opposite anchors will have their size overridden after _ready(). \nIf you want to set size, change the anchors or consider using set_deferred().");
 	}
 #endif
 	set_size(p_size);
@@ -2580,8 +2592,8 @@ void Control::get_argument_options(const StringName &p_function, int p_idx, List
 		}
 
 		sn.sort_custom<StringName::AlphCompare>();
-		for (List<StringName>::Element *E = sn.front(); E; E = E->next()) {
-			r_options->push_back(quote_style + E->get() + quote_style);
+		for (const StringName &E : sn) {
+			r_options->push_back(quote_style + E + quote_style);
 		}
 	}
 }

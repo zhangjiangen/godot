@@ -1089,6 +1089,8 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 	// Initialize user data dir.
 	OS::get_singleton()->ensure_user_data_dir();
 
+	ResourceUID::get_singleton()->load_from_cache(); // load UUIDs from cache.
+
 	GLOBAL_DEF("memory/limits/multithreaded_server/rid_pool_prealloc", 60);
 	ProjectSettings::get_singleton()->set_custom_property_info("memory/limits/multithreaded_server/rid_pool_prealloc",
 			PropertyInfo(Variant::INT,
@@ -2169,8 +2171,8 @@ bool Main::start() {
 					}
 				}
 
-				for (List<Node *>::Element *E = to_add.front(); E; E = E->next()) {
-					sml->get_root()->add_child(E->get());
+				for (Node *E : to_add) {
+					sml->get_root()->add_child(E);
 				}
 			}
 		}

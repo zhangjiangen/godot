@@ -2128,7 +2128,7 @@ int CodeEdit::_is_in_delimiter(int p_line, int p_column, DelimiterType p_type) c
 	int region = (p_line <= 0 || delimiter_cache[p_line - 1].size() < 1) ? -1 : delimiter_cache[p_line - 1].back()->value();
 	bool in_region = region != -1 && delimiters[region].type == p_type;
 	for (Map<int, int>::Element *E = delimiter_cache[p_line].front(); E; E = E->next()) {
-		/* If column is specified, loop untill the key is larger then the column. */
+		/* If column is specified, loop until the key is larger then the column. */
 		if (p_column != -1) {
 			if (E->key() > p_column) {
 				break;
@@ -2138,7 +2138,7 @@ int CodeEdit::_is_in_delimiter(int p_line, int p_column, DelimiterType p_type) c
 			continue;
 		}
 
-		/* If no column, calulate if the entire line is a region       */
+		/* If no column, calculate if the entire line is a region       */
 		/* excluding whitespace.                                       */
 		const String line = get_line(p_line);
 		if (!in_region) {
@@ -2288,14 +2288,14 @@ void CodeEdit::_filter_code_completion_candidates() {
 		TypedArray<Dictionary> completion_options_sources;
 		completion_options_sources.resize(code_completion_option_sources.size());
 		int i = 0;
-		for (List<ScriptCodeCompletionOption>::Element *E = code_completion_option_sources.front(); E; E = E->next()) {
+		for (const ScriptCodeCompletionOption &E : code_completion_option_sources) {
 			Dictionary option;
-			option["kind"] = E->get().kind;
-			option["display_text"] = E->get().display;
-			option["insert_text"] = E->get().insert_text;
-			option["font_color"] = E->get().font_color;
-			option["icon"] = E->get().icon;
-			option["default_value"] = E->get().default_value;
+			option["kind"] = E.kind;
+			option["display_text"] = E.display;
+			option["insert_text"] = E.insert_text;
+			option["font_color"] = E.font_color;
+			option["icon"] = E.icon;
+			option["default_value"] = E.default_value;
 			completion_options_sources[i] = option;
 			i++;
 		}
@@ -2406,9 +2406,7 @@ void CodeEdit::_filter_code_completion_candidates() {
 
 	int max_width = 0;
 	String string_to_complete_lower = string_to_complete.to_lower();
-	for (List<ScriptCodeCompletionOption>::Element *E = code_completion_option_sources.front(); E; E = E->next()) {
-		ScriptCodeCompletionOption &option = E->get();
-
+	for (ScriptCodeCompletionOption &option : code_completion_option_sources) {
 		if (single_quote && option.display.is_quoted()) {
 			option.display = option.display.unquote().quote("'");
 		}
@@ -2527,8 +2525,7 @@ void CodeEdit::_lines_edited_from(int p_from_line, int p_to_line) {
 	int line_count = (p_to_line - p_from_line);
 	List<int> breakpoints;
 	breakpointed_lines.get_key_list(&breakpoints);
-	for (const List<int>::Element *E = breakpoints.front(); E; E = E->next()) {
-		int line = E->get();
+	for (const int line : breakpoints) {
 		if (line <= from_line) {
 			continue;
 		}

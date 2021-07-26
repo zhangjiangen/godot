@@ -118,11 +118,11 @@ void ShaderTextEditor::_load_theme_settings() {
 	const Color keyword_color = EDITOR_GET("text_editor/highlighting/keyword_color");
 	const Color control_flow_keyword_color = EDITOR_GET("text_editor/highlighting/control_flow_keyword_color");
 
-	for (List<String>::Element *E = keywords.front(); E; E = E->next()) {
-		if (ShaderLanguage::is_control_flow_keyword(E->get())) {
-			syntax_highlighter->add_keyword_color(E->get(), control_flow_keyword_color);
+	for (const String &E : keywords) {
+		if (ShaderLanguage::is_control_flow_keyword(E)) {
+			syntax_highlighter->add_keyword_color(E, control_flow_keyword_color);
 		} else {
-			syntax_highlighter->add_keyword_color(E->get(), keyword_color);
+			syntax_highlighter->add_keyword_color(E, keyword_color);
 		}
 	}
 
@@ -144,8 +144,8 @@ void ShaderTextEditor::_load_theme_settings() {
 
 	const Color member_variable_color = EDITOR_GET("text_editor/highlighting/member_variable_color");
 
-	for (List<String>::Element *E = built_ins.front(); E; E = E->next()) {
-		syntax_highlighter->add_keyword_color(E->get(), member_variable_color);
+	for (const String &E : built_ins) {
+		syntax_highlighter->add_keyword_color(E, member_variable_color);
 	}
 
 	// Colorize comments.
@@ -770,7 +770,7 @@ ShaderEditor::ShaderEditor(EditorNode *p_node) {
 	disk_changed->add_child(vbc);
 
 	Label *dl = memnew(Label);
-	dl->set_text(TTR("This shader has been modified on on disk.\nWhat action should be taken?"));
+	dl->set_text(TTR("This shader has been modified on disk.\nWhat action should be taken?"));
 	vbc->add_child(dl);
 
 	disk_changed->connect("confirmed", callable_mp(this, &ShaderEditor::_reload_shader_from_disk));
