@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1250"
+   LastUpgradeVersion = "2000"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,16 +14,16 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "54C6DF8526B301A40074AC0E"
-               BuildableName = "GodotXcode"
-               BlueprintName = "GodotXcode"
-               ReferencedContainer = "container:godot4.xcodeproj">
+               BlueprintIdentifier = "1D725AA3F0182D573CE35F4C"
+               BuildableName = "UE4_Build"
+               BlueprintName = "UE4_Build"
+               ReferencedContainer = "container:Godot4.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
-      buildConfiguration = "Debug"
+      buildConfiguration = "Development Editor"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
@@ -31,7 +31,7 @@
       </Testables>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Debug"
+      buildConfiguration = "Development Editor"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
@@ -40,39 +40,47 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <PathRunnable
+         runnableDebuggingMode = "0"
+         FilePath = "/Users/zhangjiangen/Documents/godot3/bin/godot_osx_tools_x86_64">
+      </PathRunnable>
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "54C6DF8526B301A40074AC0E"
-            BuildableName = "GodotXcode"
-            BlueprintName = "GodotXcode"
-            ReferencedContainer = "container:godot4.xcodeproj">
+            BlueprintIdentifier = "1D725AA3F0182D573CE35F4C"
+            BuildableName = "UE4_Build"
+            BlueprintName = "UE4_Build"
+            ReferencedContainer = "container:Godot4.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
+      <CommandLineArguments>
+         <CommandLineArgument
+            argument = " /Users/zhangjiangen/Documents/Godot4Test/project.godot"
+            isEnabled = "YES">
+         </CommandLineArgument>
+      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
-      buildConfiguration = "Release"
+      buildConfiguration = "Development Editor"
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "54C6DF8526B301A40074AC0E"
-            BuildableName = "GodotXcode"
-            BlueprintName = "GodotXcode"
-            ReferencedContainer = "container:godot4.xcodeproj">
+            BlueprintIdentifier = "1D725AA3F0182D573CE35F4C"
+            BuildableName = "UE4_Build"
+            BlueprintName = "UE4_Build"
+            ReferencedContainer = "container:Godot4.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
-      buildConfiguration = "Debug">
+      buildConfiguration = "Development Editor">
    </AnalyzeAction>
    <ArchiveAction
-      buildConfiguration = "Release"
+      buildConfiguration = "Development Editor"
       revealArchiveInOrganizer = "YES">
    </ArchiveAction>
 </Scheme>

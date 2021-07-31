@@ -155,8 +155,8 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanContext::_debug_messenger_callback(
 			break;
 		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
 			ERR_PRINT(error_message);
-			CRASH_COND_MSG(Engine::get_singleton()->is_abort_on_gpu_errors_enabled(),
-					"Crashing, because abort on GPU errors is enabled.");
+			// CRASH_COND_MSG(Engine::get_singleton()->is_abort_on_gpu_errors_enabled(),
+			// 		"Crashing, because abort on GPU errors is enabled.");
 			break;
 		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT:
 			break; // Shouldn't happen, only handling to make compilers happy.
