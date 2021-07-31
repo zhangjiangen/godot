@@ -1,0 +1,724 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		94D29B8FD3DA0C27FF867097 /* UE4EditorServicesMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 79FAE6A9EAC96DAFB48049C1 /* UE4EditorServicesMain.cpp */; };
+		9EC85D7E6B5B926798B3EEF6 /* UE4EditorServicesAppDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 39CB7F860F619E18BA1C9B89 /* UE4EditorServicesAppDelegate.cpp */; };
+		CCAC38F1FBCD431388DAF00B /* UE4EditorServicesAppDelegate.h in Sources */ = {isa = PBXBuildFile; fileRef = 7C8EBBA3F408FFC60CF0701F /* UE4EditorServicesAppDelegate.h */; };
+		4AE7A053E23106812CD4B1BF /* UE4EditorServicesMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 22A06BCA6FDA6D5FDB730981 /* UE4EditorServicesMain.cpp */; };
+		A5FA23B21DD47CDC3B19A714 /* UE4EditorServicesMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2DF03157D36EDEA8DCFC8054 /* UE4EditorServicesMain.cpp */; };
+		9C345632821144D6DD1FAEE7 /* Info.plist in Sources */ = {isa = PBXBuildFile; fileRef = 0D54645857D58409F9579D7F /* Info.plist */; };
+		D115AB82C8D45A53611B899D /* UE4EditorServices.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 9E2AB41483B25523BB697DF8 /* UE4EditorServices.Build.cs */; };
+		FCB5379EFF31DE82B2A9BDC3 /* UE4EditorServices.Target.cs in Sources */ = {isa = PBXBuildFile; fileRef = 62ACFD69815D15DD10468BAA /* UE4EditorServices.Target.cs */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		79FAE6A9EAC96DAFB48049C1 /* UE4EditorServicesMain.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "UE4EditorServicesMain.cpp"; path = "../../Source/Programs/Mac/UE4EditorServices/Private/Linux/UE4EditorServicesMain.cpp"; sourceTree = SOURCE_ROOT; };
+		39CB7F860F619E18BA1C9B89 /* UE4EditorServicesAppDelegate.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "UE4EditorServicesAppDelegate.cpp"; path = "../../Source/Programs/Mac/UE4EditorServices/Private/Mac/UE4EditorServicesAppDelegate.cpp"; sourceTree = SOURCE_ROOT; };
+		7C8EBBA3F408FFC60CF0701F /* UE4EditorServicesAppDelegate.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "UE4EditorServicesAppDelegate.h"; path = "../../Source/Programs/Mac/UE4EditorServices/Private/Mac/UE4EditorServicesAppDelegate.h"; sourceTree = SOURCE_ROOT; };
+		22A06BCA6FDA6D5FDB730981 /* UE4EditorServicesMain.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "UE4EditorServicesMain.cpp"; path = "../../Source/Programs/Mac/UE4EditorServices/Private/Mac/UE4EditorServicesMain.cpp"; sourceTree = SOURCE_ROOT; };
+		2DF03157D36EDEA8DCFC8054 /* UE4EditorServicesMain.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "UE4EditorServicesMain.cpp"; path = "../../Source/Programs/Mac/UE4EditorServices/Private/Windows/UE4EditorServicesMain.cpp"; sourceTree = SOURCE_ROOT; };
+		0D54645857D58409F9579D7F /* Info.plist */ = {isa = PBXFileReference; explicitFileType = text.plist.xml; name = "Info.plist"; path = "../../Source/Programs/Mac/UE4EditorServices/Resources/Mac/Info.plist"; sourceTree = SOURCE_ROOT; };
+		9E2AB41483B25523BB697DF8 /* UE4EditorServices.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "UE4EditorServices.Build.cs"; path = "../../Source/Programs/Mac/UE4EditorServices/UE4EditorServices.Build.cs"; sourceTree = SOURCE_ROOT; };
+		62ACFD69815D15DD10468BAA /* UE4EditorServices.Target.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "UE4EditorServices.Target.cs"; path = "../../Source/Programs/Mac/UE4EditorServices/UE4EditorServices.Target.cs"; sourceTree = SOURCE_ROOT; };
+		A534F083B13DB9A7EEFE9C99 /* UE4EditorServices */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = UE4EditorServices; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D3DBEC5F004E2EACF66B5387 = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9EC85D7E6B5B926798B3EEF6 /* UE4EditorServicesAppDelegate.cpp in Sources */,
+				4AE7A053E23106812CD4B1BF /* UE4EditorServicesMain.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+	FD8BAB617E97D24327D4F04A /* Embed App Extensions */ = {
+		isa = PBXCopyFilesBuildPhase;
+		buildActionMask = 2147483647;
+		dstPath = "";
+		dstSubfolderSpec = 13;
+		files = (
+		);
+		name = "Embed App Extensions";
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXCopyFilesBuildPhase section */
+/* Begin PBXContainerItemProxy section */
+		10F2A5078E420CD8F1483697 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4D91CA14BC9837CBB2F92BD6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 663FB68DBFE4DF811B69F323;
+			remoteInfo = "UE4EditorServices_Build";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		4C983332F1526B52BF582208 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 663FB68DBFE4DF811B69F323 /* UE4EditorServices_Build */;
+			targetProxy = 10F2A5078E420CD8F1483697 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXGroup section */
+		C1349BAC1F507B940400350D = {
+			isa = PBXGroup;
+			children = (
+				B336530FD2A3F763FDE74ADC /* Private */,
+				5B4EB46065A95F9CFD632C23 /* Resources */,
+				9E2AB41483B25523BB697DF8 /* UE4EditorServices.Build.cs */,
+				62ACFD69815D15DD10468BAA /* UE4EditorServices.Target.cs */,
+				B00455BDD3D59C925342C90B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B336530FD2A3F763FDE74ADC = {
+			isa = PBXGroup;
+			children = (
+				C4A0E6D33F2470C6471639EF /* Linux */,
+				E3AE05743C7290BB114B2E16 /* Mac */,
+				BB3B9B08753DAFADEA2360FA /* Windows */,
+			);
+			name = "Private";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Mac/UE4EditorServices/Private";
+			sourceTree = "<absolute>";
+		};
+		C4A0E6D33F2470C6471639EF = {
+			isa = PBXGroup;
+			children = (
+				79FAE6A9EAC96DAFB48049C1 /* UE4EditorServicesMain.cpp */,
+			);
+			name = "Linux";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Mac/UE4EditorServices/Private/Linux";
+			sourceTree = "<absolute>";
+		};
+		E3AE05743C7290BB114B2E16 = {
+			isa = PBXGroup;
+			children = (
+				39CB7F860F619E18BA1C9B89 /* UE4EditorServicesAppDelegate.cpp */,
+				7C8EBBA3F408FFC60CF0701F /* UE4EditorServicesAppDelegate.h */,
+				22A06BCA6FDA6D5FDB730981 /* UE4EditorServicesMain.cpp */,
+			);
+			name = "Mac";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Mac/UE4EditorServices/Private/Mac";
+			sourceTree = "<absolute>";
+		};
+		BB3B9B08753DAFADEA2360FA = {
+			isa = PBXGroup;
+			children = (
+				2DF03157D36EDEA8DCFC8054 /* UE4EditorServicesMain.cpp */,
+			);
+			name = "Windows";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Mac/UE4EditorServices/Private/Windows";
+			sourceTree = "<absolute>";
+		};
+		5B4EB46065A95F9CFD632C23 = {
+			isa = PBXGroup;
+			children = (
+				9E83268A568FCA7872D01704 /* Mac */,
+			);
+			name = "Resources";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Mac/UE4EditorServices/Resources";
+			sourceTree = "<absolute>";
+		};
+		9E83268A568FCA7872D01704 = {
+			isa = PBXGroup;
+			children = (
+				0D54645857D58409F9579D7F /* Info.plist */,
+			);
+			name = "Mac";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Mac/UE4EditorServices/Resources/Mac";
+			sourceTree = "<absolute>";
+		};
+		B00455BDD3D59C925342C90B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A534F083B13DB9A7EEFE9C99 /* UE4EditorServices */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		663FB68DBFE4DF811B69F323 /* UE4EditorServices_Build */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION) $(UE_BUILD_TARGET_NAME) $(PLATFORM_NAME) $(UE_BUILD_TARGET_CONFIG)";
+			buildConfigurationList = A011EF27DDDA4104629B8DBC /* Build configuration list for PBXLegacyTarget "UE4EditorServices_Build" */;
+			buildPhases = (
+			);
+			buildToolPath = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Build/BatchFiles/Mac/XcodeBuild.sh";
+			buildWorkingDirectory = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425";
+			dependencies = (
+			);
+			name = "UE4EditorServices_Build";
+			passBuildSettingsInEnvironment = 1;
+			productName = "UE4EditorServices_Build";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		91A131E9329972A7E02B369F /* UE4EditorServices */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DA3D71031645197D6AEAB233 /* Build configuration list for PBXNativeTarget "UE4EditorServices" */;
+			buildPhases = (
+				FD8BAB617E97D24327D4F04A /* Embed App Extensions */, 
+				8C0FC19B04090B7F6B8FD944 /* Shell Script */, 
+			);
+			dependencies = (
+				4C983332F1526B52BF582208 /* PBXTargetDependency */,
+			);
+			name = "UE4EditorServices";
+			passBuildSettingsInEnvironment = 1;
+			productName = "UE4EditorServices";
+			productReference = "A534F083B13DB9A7EEFE9C99";
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXNativeTarget section */
+		61E8A0829F7A1911560BA04E /* UE4EditorServices_Index */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8C7F190D68B57C3C41CDE3A0 /* Build configuration list for PBXNativeTarget "UE4EditorServices_Index" */;
+			buildPhases = (
+				D3DBEC5F004E2EACF66B5387 /* Sources */,
+			);
+			dependencies = (
+			);
+			name = "UE4EditorServices_Index";
+			passBuildSettingsInEnvironment = 1;
+			productName = "UE4EditorServices_Index";
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4D91CA14BC9837CBB2F92BD6 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2000;
+				ORGANIZATIONNAME = "Epic Games, Inc.";
+				TargetAttributes = {
+					91A131E9329972A7E02B369F = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 435DE2A04FE1CD9471A09B5E /* Build configuration list for PBXProject "UE4EditorServices" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en
+			);
+			mainGroup = C1349BAC1F507B940400350D;
+			productRefGroup = B00455BDD3D59C925342C90B;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			91A131E9329972A7E02B369F /* UE4EditorServices */,
+			663FB68DBFE4DF811B69F323 /* UE4EditorServices_Build */,
+			61E8A0829F7A1911560BA04E /* UE4EditorServices_Index */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		631B93B6D1881644B1CDC048 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/Mac/UE4EditorServices/Private",
+					"../Build/Mac/UE4EditorServices/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UE4EditorServices/Inc/TraceLog",
+					"../Build/Mac/UE4EditorServices/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UE4EditorServices/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UE4EditorServices/Inc/DesktopPlatform",
+					"../../Source/Developer",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/UE4EditorServices/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UE4EditorServices/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UE4EditorServices/Inc/UE4EditorServices",
+					"../../Source/Programs/Mac",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Runtime/Launch/Private",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				ENABLE_TESTABILITY = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Debug";
+		};
+		F54F0FE5ABDA59C148A3293E /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/Mac/UE4EditorServices/Private",
+					"../Build/Mac/UE4EditorServices/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UE4EditorServices/Inc/TraceLog",
+					"../Build/Mac/UE4EditorServices/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UE4EditorServices/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UE4EditorServices/Inc/DesktopPlatform",
+					"../../Source/Developer",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/UE4EditorServices/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UE4EditorServices/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UE4EditorServices/Inc/UE4EditorServices",
+					"../../Source/Programs/Mac",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Runtime/Launch/Private",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "DebugGame";
+		};
+		C8BB0DFDE2AD8C4596BAD166 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/Mac/UE4EditorServices/Private",
+					"../Build/Mac/UE4EditorServices/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UE4EditorServices/Inc/TraceLog",
+					"../Build/Mac/UE4EditorServices/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UE4EditorServices/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UE4EditorServices/Inc/DesktopPlatform",
+					"../../Source/Developer",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/UE4EditorServices/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UE4EditorServices/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UE4EditorServices/Inc/UE4EditorServices",
+					"../../Source/Programs/Mac",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Runtime/Launch/Private",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Development";
+		};
+		82E65FDD18BD60F6A3926D22 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/Mac/UE4EditorServices/Private",
+					"../Build/Mac/UE4EditorServices/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UE4EditorServices/Inc/TraceLog",
+					"../Build/Mac/UE4EditorServices/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UE4EditorServices/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UE4EditorServices/Inc/DesktopPlatform",
+					"../../Source/Developer",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/UE4EditorServices/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UE4EditorServices/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UE4EditorServices/Inc/UE4EditorServices",
+					"../../Source/Programs/Mac",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Runtime/Launch/Private",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Shipping";
+		};
+		003BB0737C4E5216BA01FA71 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/Mac/UE4EditorServices/Private",
+					"../Build/Mac/UE4EditorServices/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UE4EditorServices/Inc/TraceLog",
+					"../Build/Mac/UE4EditorServices/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UE4EditorServices/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UE4EditorServices/Inc/DesktopPlatform",
+					"../../Source/Developer",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/UE4EditorServices/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UE4EditorServices/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UE4EditorServices/Inc/UE4EditorServices",
+					"../../Source/Programs/Mac",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Runtime/Launch/Private",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Test";
+		};
+		2A3A13BB6F85E4FEEBA2D3F0 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UE4EditorServices-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		E02AE3DDB15296C33DB0B854 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UE4EditorServices-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		9A19B83301151B0133D1187A /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UE4EditorServices";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		F78AB03F59F1E0EDA16B2C5D /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UE4EditorServices-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		0FDE9F957C3B9F360C0146D5 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UE4EditorServices-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+		8D93A8EC60D41C6EB166FD63 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UE4EditorServices";
+				UE_BUILD_TARGET_CONFIG = "Debug";
+			};
+			name = "Debug";
+		};
+		1344403F0814A11422DEF611 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UE4EditorServices";
+				UE_BUILD_TARGET_CONFIG = "DebugGame";
+			};
+			name = "DebugGame";
+		};
+		8FBFB501955761DF85AC774D /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UE4EditorServices";
+				UE_BUILD_TARGET_CONFIG = "Development";
+			};
+			name = "Development";
+		};
+		E3A7AE82560E153283C17EAE /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UE4EditorServices";
+				UE_BUILD_TARGET_CONFIG = "Shipping";
+			};
+			name = "Shipping";
+		};
+		2918A120C2B726D32AE6811B /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UE4EditorServices";
+				UE_BUILD_TARGET_CONFIG = "Test";
+			};
+			name = "Test";
+		};
+		031B719FBDAB99BE4F7871C9 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UE4EditorServices-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		C536C2D60D3B1A60F233BF93 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UE4EditorServices-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		07A4317452B17A0A655C3CF4 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UE4EditorServices";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		F883C7C84B81A975360F7CC7 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UE4EditorServices-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		5DA2B6346E67F4F68956B96D /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UE4EditorServices-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		435DE2A04FE1CD9471A09B5E /* Build configuration list for PBXProject "UE4EditorServices" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				631B93B6D1881644B1CDC048 /* "Debug" */,
+				F54F0FE5ABDA59C148A3293E /* "DebugGame" */,
+				C8BB0DFDE2AD8C4596BAD166 /* "Development" */,
+				82E65FDD18BD60F6A3926D22 /* "Shipping" */,
+				003BB0737C4E5216BA01FA71 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		A011EF27DDDA4104629B8DBC /* Build configuration list for PBXLegacyTarget "UE4EditorServices_Build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8D93A8EC60D41C6EB166FD63 /* "Debug" */,
+				1344403F0814A11422DEF611 /* "DebugGame" */,
+				8FBFB501955761DF85AC774D /* "Development" */,
+				E3A7AE82560E153283C17EAE /* "Shipping" */,
+				2918A120C2B726D32AE6811B /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		DA3D71031645197D6AEAB233 /* Build configuration list for PBXNativeTarget "UE4EditorServices" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2A3A13BB6F85E4FEEBA2D3F0 /* "Debug" */,
+				E02AE3DDB15296C33DB0B854 /* "DebugGame" */,
+				9A19B83301151B0133D1187A /* "Development" */,
+				F78AB03F59F1E0EDA16B2C5D /* "Shipping" */,
+				0FDE9F957C3B9F360C0146D5 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		8C7F190D68B57C3C41CDE3A0 /* Build configuration list for PBXNativeTarget "UE4EditorServices_Index" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				031B719FBDAB99BE4F7871C9 /* "Debug" */,
+				C536C2D60D3B1A60F233BF93 /* "DebugGame" */,
+				07A4317452B17A0A655C3CF4 /* "Development" */,
+				F883C7C84B81A975360F7CC7 /* "Shipping" */,
+				5DA2B6346E67F4F68956B96D /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 4D91CA14BC9837CBB2F92BD6 /* Project object */;
+}

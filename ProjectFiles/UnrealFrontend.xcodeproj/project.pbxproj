@@ -1,0 +1,1179 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		9D335F07AE96FA4CAF1CE9F4 /* DefaultEngine.ini in Sources */ = {isa = PBXBuildFile; fileRef = A551B73EE864821055D6D088 /* DefaultEngine.ini */; };
+		B297C2B3D9DC6A5C29D05D82 /* DeployCommand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24CB6A47DCAF1B356159A0C5 /* DeployCommand.cpp */; };
+		B2FF6BBBC1F8F970142E4463 /* DeployCommand.h in Sources */ = {isa = PBXBuildFile; fileRef = 62BB45A89D22B42686D579B5 /* DeployCommand.h */; };
+		652A92CF71F98459F7FD00D9 /* LaunchCommand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 71AE9A30D6EC6DF68606E420 /* LaunchCommand.cpp */; };
+		6A72973EA5793FDC86B55697 /* LaunchCommand.h in Sources */ = {isa = PBXBuildFile; fileRef = 6629FF1AA9EB6C65BA6B36EF /* LaunchCommand.h */; };
+		87834F9968822E5E467165FE /* LaunchFromProfileCommand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6246B47DBE2353BB5803CAAD /* LaunchFromProfileCommand.cpp */; };
+		ED534D9B9A7E65FE3CA8B721 /* LaunchFromProfileCommand.h in Sources */ = {isa = PBXBuildFile; fileRef = 2AA5740487F850F5C400B862 /* LaunchFromProfileCommand.h */; };
+		36EFA796187A9683B9A2AB14 /* PackageCommand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3592C3C70B67C1B98F925318 /* PackageCommand.cpp */; };
+		AF4F345FB2D4E8EC9AEA64AB /* PackageCommand.h in Sources */ = {isa = PBXBuildFile; fileRef = D7CFE6C111336787F95FCEF4 /* PackageCommand.h */; };
+		3489E95C3EFFD3A39C8EE7C8 /* StatsConvertCommand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4636D1E4B9BE794A2E18EF3C /* StatsConvertCommand.cpp */; };
+		8000A75B2BCB1E4F80402B29 /* StatsConvertCommand.h in Sources */ = {isa = PBXBuildFile; fileRef = EB8CAD9B16C00F48E71D7BDA /* StatsConvertCommand.h */; };
+		6282CE3BE584C61B99ADDC3E /* StatsDumpMemoryCommand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 577778D0709748050BA7F92D /* StatsDumpMemoryCommand.cpp */; };
+		10DE336D09A7546385CCF9A8 /* StatsDumpMemoryCommand.h in Sources */ = {isa = PBXBuildFile; fileRef = FDE369FB7A108F3EAF6F449E /* StatsDumpMemoryCommand.h */; };
+		483ED84FD475CFBA89A02A07 /* UserInterfaceCommand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 505811F25879B88A7DCFD38C /* UserInterfaceCommand.cpp */; };
+		2D4C8BFA18BB7DA1999524CB /* UserInterfaceCommand.h in Sources */ = {isa = PBXBuildFile; fileRef = CE058E10FC3F1F5CB962AB21 /* UserInterfaceCommand.h */; };
+		FE9DE536B6B920786A4B2188 /* LinuxUnrealFrontendMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9D4A2CD22886DBB34462352 /* LinuxUnrealFrontendMain.cpp */; };
+		EAA88E3EB077D3CBA16AFC7A /* MacUnrealFrontendMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D547EAE074AC6083E3062627 /* MacUnrealFrontendMain.cpp */; };
+		90904959C639C2666C4BCDA0 /* UnrealFrontendMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DE03797A90A9DEB8C346778 /* UnrealFrontendMain.cpp */; };
+		FC4314F6FB256F1E84087FDD /* UnrealFrontendMain.h in Sources */ = {isa = PBXBuildFile; fileRef = F7E3589D80D0726E7F8C2FE6 /* UnrealFrontendMain.h */; };
+		9D513930F4F0EDB879924B0E /* WindowsUnrealFrontendMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BE2C7F37855E67ED827F8DB /* WindowsUnrealFrontendMain.cpp */; };
+		9E8D4687E5A06FE48166A15F /* Info.plist in Sources */ = {isa = PBXBuildFile; fileRef = 3DA2D7B17D440142FBDCB492 /* Info.plist */; };
+		954DFE106E403D1ED64236DF /* UnrealFrontend.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = BA4D2C6DC6E92F6BBE76C8F6 /* UnrealFrontend.Build.cs */; };
+		4637BA210DB97BC47BDD3ED9 /* UnrealFrontend.Target.cs in Sources */ = {isa = PBXBuildFile; fileRef = 96B65163C4997D9AE94A5642 /* UnrealFrontend.Target.cs */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A551B73EE864821055D6D088 /* DefaultEngine.ini */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DefaultEngine.ini"; path = "../../Programs/UnrealFrontend/Config/DefaultEngine.ini"; sourceTree = SOURCE_ROOT; };
+		24CB6A47DCAF1B356159A0C5 /* DeployCommand.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DeployCommand.cpp"; path = "../../Source/Programs/UnrealFrontend/Private/Commands/DeployCommand.cpp"; sourceTree = SOURCE_ROOT; };
+		62BB45A89D22B42686D579B5 /* DeployCommand.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DeployCommand.h"; path = "../../Source/Programs/UnrealFrontend/Private/Commands/DeployCommand.h"; sourceTree = SOURCE_ROOT; };
+		71AE9A30D6EC6DF68606E420 /* LaunchCommand.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "LaunchCommand.cpp"; path = "../../Source/Programs/UnrealFrontend/Private/Commands/LaunchCommand.cpp"; sourceTree = SOURCE_ROOT; };
+		6629FF1AA9EB6C65BA6B36EF /* LaunchCommand.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "LaunchCommand.h"; path = "../../Source/Programs/UnrealFrontend/Private/Commands/LaunchCommand.h"; sourceTree = SOURCE_ROOT; };
+		6246B47DBE2353BB5803CAAD /* LaunchFromProfileCommand.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "LaunchFromProfileCommand.cpp"; path = "../../Source/Programs/UnrealFrontend/Private/Commands/LaunchFromProfileCommand.cpp"; sourceTree = SOURCE_ROOT; };
+		2AA5740487F850F5C400B862 /* LaunchFromProfileCommand.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "LaunchFromProfileCommand.h"; path = "../../Source/Programs/UnrealFrontend/Private/Commands/LaunchFromProfileCommand.h"; sourceTree = SOURCE_ROOT; };
+		3592C3C70B67C1B98F925318 /* PackageCommand.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "PackageCommand.cpp"; path = "../../Source/Programs/UnrealFrontend/Private/Commands/PackageCommand.cpp"; sourceTree = SOURCE_ROOT; };
+		D7CFE6C111336787F95FCEF4 /* PackageCommand.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "PackageCommand.h"; path = "../../Source/Programs/UnrealFrontend/Private/Commands/PackageCommand.h"; sourceTree = SOURCE_ROOT; };
+		4636D1E4B9BE794A2E18EF3C /* StatsConvertCommand.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "StatsConvertCommand.cpp"; path = "../../Source/Programs/UnrealFrontend/Private/Commands/StatsConvertCommand.cpp"; sourceTree = SOURCE_ROOT; };
+		EB8CAD9B16C00F48E71D7BDA /* StatsConvertCommand.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "StatsConvertCommand.h"; path = "../../Source/Programs/UnrealFrontend/Private/Commands/StatsConvertCommand.h"; sourceTree = SOURCE_ROOT; };
+		577778D0709748050BA7F92D /* StatsDumpMemoryCommand.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "StatsDumpMemoryCommand.cpp"; path = "../../Source/Programs/UnrealFrontend/Private/Commands/StatsDumpMemoryCommand.cpp"; sourceTree = SOURCE_ROOT; };
+		FDE369FB7A108F3EAF6F449E /* StatsDumpMemoryCommand.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "StatsDumpMemoryCommand.h"; path = "../../Source/Programs/UnrealFrontend/Private/Commands/StatsDumpMemoryCommand.h"; sourceTree = SOURCE_ROOT; };
+		505811F25879B88A7DCFD38C /* UserInterfaceCommand.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "UserInterfaceCommand.cpp"; path = "../../Source/Programs/UnrealFrontend/Private/Commands/UserInterfaceCommand.cpp"; sourceTree = SOURCE_ROOT; };
+		CE058E10FC3F1F5CB962AB21 /* UserInterfaceCommand.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "UserInterfaceCommand.h"; path = "../../Source/Programs/UnrealFrontend/Private/Commands/UserInterfaceCommand.h"; sourceTree = SOURCE_ROOT; };
+		E9D4A2CD22886DBB34462352 /* LinuxUnrealFrontendMain.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "LinuxUnrealFrontendMain.cpp"; path = "../../Source/Programs/UnrealFrontend/Private/Linux/LinuxUnrealFrontendMain.cpp"; sourceTree = SOURCE_ROOT; };
+		D547EAE074AC6083E3062627 /* MacUnrealFrontendMain.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "MacUnrealFrontendMain.cpp"; path = "../../Source/Programs/UnrealFrontend/Private/Mac/MacUnrealFrontendMain.cpp"; sourceTree = SOURCE_ROOT; };
+		3DE03797A90A9DEB8C346778 /* UnrealFrontendMain.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "UnrealFrontendMain.cpp"; path = "../../Source/Programs/UnrealFrontend/Private/UnrealFrontendMain.cpp"; sourceTree = SOURCE_ROOT; };
+		F7E3589D80D0726E7F8C2FE6 /* UnrealFrontendMain.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "UnrealFrontendMain.h"; path = "../../Source/Programs/UnrealFrontend/Private/UnrealFrontendMain.h"; sourceTree = SOURCE_ROOT; };
+		2BE2C7F37855E67ED827F8DB /* WindowsUnrealFrontendMain.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "WindowsUnrealFrontendMain.cpp"; path = "../../Source/Programs/UnrealFrontend/Private/Windows/WindowsUnrealFrontendMain.cpp"; sourceTree = SOURCE_ROOT; };
+		3DA2D7B17D440142FBDCB492 /* Info.plist */ = {isa = PBXFileReference; explicitFileType = text.plist.xml; name = "Info.plist"; path = "../../Source/Programs/UnrealFrontend/Resources/Mac/Info.plist"; sourceTree = SOURCE_ROOT; };
+		BA4D2C6DC6E92F6BBE76C8F6 /* UnrealFrontend.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "UnrealFrontend.Build.cs"; path = "../../Source/Programs/UnrealFrontend/UnrealFrontend.Build.cs"; sourceTree = SOURCE_ROOT; };
+		96B65163C4997D9AE94A5642 /* UnrealFrontend.Target.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "UnrealFrontend.Target.cs"; path = "../../Source/Programs/UnrealFrontend/UnrealFrontend.Target.cs"; sourceTree = SOURCE_ROOT; };
+		CFB54CB1D54A348B77C97BEC /* UnrealFrontend */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = UnrealFrontend; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4A82AC7A844C05CFFCCE685D = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B297C2B3D9DC6A5C29D05D82 /* DeployCommand.cpp in Sources */,
+				652A92CF71F98459F7FD00D9 /* LaunchCommand.cpp in Sources */,
+				87834F9968822E5E467165FE /* LaunchFromProfileCommand.cpp in Sources */,
+				36EFA796187A9683B9A2AB14 /* PackageCommand.cpp in Sources */,
+				3489E95C3EFFD3A39C8EE7C8 /* StatsConvertCommand.cpp in Sources */,
+				6282CE3BE584C61B99ADDC3E /* StatsDumpMemoryCommand.cpp in Sources */,
+				483ED84FD475CFBA89A02A07 /* UserInterfaceCommand.cpp in Sources */,
+				EAA88E3EB077D3CBA16AFC7A /* MacUnrealFrontendMain.cpp in Sources */,
+				90904959C639C2666C4BCDA0 /* UnrealFrontendMain.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+	7010145D945EE077AD20ADB1 /* Embed App Extensions */ = {
+		isa = PBXCopyFilesBuildPhase;
+		buildActionMask = 2147483647;
+		dstPath = "";
+		dstSubfolderSpec = 13;
+		files = (
+		);
+		name = "Embed App Extensions";
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXCopyFilesBuildPhase section */
+/* Begin PBXContainerItemProxy section */
+		301826A37BC0B294848C14EC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A77630EE0E4C702D3596FF47 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 16B17CB9907B3AF81D2BD132;
+			remoteInfo = "UnrealFrontend_Build";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		BA90D54B9B07FAEAE45B5BAB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 16B17CB9907B3AF81D2BD132 /* UnrealFrontend_Build */;
+			targetProxy = 301826A37BC0B294848C14EC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXGroup section */
+		85B1DC5F19D702A067EEF2B0 = {
+			isa = PBXGroup;
+			children = (
+				2D155EC5700C6793AB0D714C /* Programs */,
+				F2A5B447E85B2FE78AA5EEC1 /* Source */,
+				9F455850CA5F94ADF9BCA2B2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2D155EC5700C6793AB0D714C = {
+			isa = PBXGroup;
+			children = (
+				E940AECAB132990CD03F28BA /* UnrealFrontend */,
+			);
+			name = "Programs";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Programs";
+			sourceTree = "<absolute>";
+		};
+		E940AECAB132990CD03F28BA = {
+			isa = PBXGroup;
+			children = (
+				2091AE3247EF0271B9708BF6 /* Config */,
+			);
+			name = "UnrealFrontend";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Programs/UnrealFrontend";
+			sourceTree = "<absolute>";
+		};
+		2091AE3247EF0271B9708BF6 = {
+			isa = PBXGroup;
+			children = (
+				A551B73EE864821055D6D088 /* DefaultEngine.ini */,
+			);
+			name = "Config";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Programs/UnrealFrontend/Config";
+			sourceTree = "<absolute>";
+		};
+		F2A5B447E85B2FE78AA5EEC1 = {
+			isa = PBXGroup;
+			children = (
+				26E463D3FAC3A8EEECA3A5DF /* Programs */,
+			);
+			name = "Source";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source";
+			sourceTree = "<absolute>";
+		};
+		26E463D3FAC3A8EEECA3A5DF = {
+			isa = PBXGroup;
+			children = (
+				5D344BBB0BFF9378B4B8D70B /* UnrealFrontend */,
+			);
+			name = "Programs";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs";
+			sourceTree = "<absolute>";
+		};
+		5D344BBB0BFF9378B4B8D70B = {
+			isa = PBXGroup;
+			children = (
+				7D52247510412F7AA2EC0C63 /* Private */,
+				65A4682CDF9F5635D8D05795 /* Resources */,
+				BA4D2C6DC6E92F6BBE76C8F6 /* UnrealFrontend.Build.cs */,
+				96B65163C4997D9AE94A5642 /* UnrealFrontend.Target.cs */,
+			);
+			name = "UnrealFrontend";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealFrontend";
+			sourceTree = "<absolute>";
+		};
+		7D52247510412F7AA2EC0C63 = {
+			isa = PBXGroup;
+			children = (
+				8C2E77F6C89D094FFFD5E9B3 /* Commands */,
+				0F73DB8B12760D6D0C5756A7 /* Linux */,
+				9F32DEAB732B3C7027E82EDD /* Mac */,
+				879CAF17AE870CA86970659C /* Windows */,
+				3DE03797A90A9DEB8C346778 /* UnrealFrontendMain.cpp */,
+				F7E3589D80D0726E7F8C2FE6 /* UnrealFrontendMain.h */,
+			);
+			name = "Private";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealFrontend/Private";
+			sourceTree = "<absolute>";
+		};
+		8C2E77F6C89D094FFFD5E9B3 = {
+			isa = PBXGroup;
+			children = (
+				24CB6A47DCAF1B356159A0C5 /* DeployCommand.cpp */,
+				62BB45A89D22B42686D579B5 /* DeployCommand.h */,
+				71AE9A30D6EC6DF68606E420 /* LaunchCommand.cpp */,
+				6629FF1AA9EB6C65BA6B36EF /* LaunchCommand.h */,
+				6246B47DBE2353BB5803CAAD /* LaunchFromProfileCommand.cpp */,
+				2AA5740487F850F5C400B862 /* LaunchFromProfileCommand.h */,
+				3592C3C70B67C1B98F925318 /* PackageCommand.cpp */,
+				D7CFE6C111336787F95FCEF4 /* PackageCommand.h */,
+				4636D1E4B9BE794A2E18EF3C /* StatsConvertCommand.cpp */,
+				EB8CAD9B16C00F48E71D7BDA /* StatsConvertCommand.h */,
+				577778D0709748050BA7F92D /* StatsDumpMemoryCommand.cpp */,
+				FDE369FB7A108F3EAF6F449E /* StatsDumpMemoryCommand.h */,
+				505811F25879B88A7DCFD38C /* UserInterfaceCommand.cpp */,
+				CE058E10FC3F1F5CB962AB21 /* UserInterfaceCommand.h */,
+			);
+			name = "Commands";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealFrontend/Private/Commands";
+			sourceTree = "<absolute>";
+		};
+		0F73DB8B12760D6D0C5756A7 = {
+			isa = PBXGroup;
+			children = (
+				E9D4A2CD22886DBB34462352 /* LinuxUnrealFrontendMain.cpp */,
+			);
+			name = "Linux";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealFrontend/Private/Linux";
+			sourceTree = "<absolute>";
+		};
+		9F32DEAB732B3C7027E82EDD = {
+			isa = PBXGroup;
+			children = (
+				D547EAE074AC6083E3062627 /* MacUnrealFrontendMain.cpp */,
+			);
+			name = "Mac";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealFrontend/Private/Mac";
+			sourceTree = "<absolute>";
+		};
+		879CAF17AE870CA86970659C = {
+			isa = PBXGroup;
+			children = (
+				2BE2C7F37855E67ED827F8DB /* WindowsUnrealFrontendMain.cpp */,
+			);
+			name = "Windows";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealFrontend/Private/Windows";
+			sourceTree = "<absolute>";
+		};
+		65A4682CDF9F5635D8D05795 = {
+			isa = PBXGroup;
+			children = (
+				BE5EDBD499788B2744FE0375 /* Mac */,
+			);
+			name = "Resources";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealFrontend/Resources";
+			sourceTree = "<absolute>";
+		};
+		BE5EDBD499788B2744FE0375 = {
+			isa = PBXGroup;
+			children = (
+				3DA2D7B17D440142FBDCB492 /* Info.plist */,
+			);
+			name = "Mac";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealFrontend/Resources/Mac";
+			sourceTree = "<absolute>";
+		};
+		9F455850CA5F94ADF9BCA2B2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CFB54CB1D54A348B77C97BEC /* UnrealFrontend */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		16B17CB9907B3AF81D2BD132 /* UnrealFrontend_Build */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION) $(UE_BUILD_TARGET_NAME) $(PLATFORM_NAME) $(UE_BUILD_TARGET_CONFIG)";
+			buildConfigurationList = CFAEA2BE5A89BA2E7BE87CE6 /* Build configuration list for PBXLegacyTarget "UnrealFrontend_Build" */;
+			buildPhases = (
+			);
+			buildToolPath = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Build/BatchFiles/Mac/XcodeBuild.sh";
+			buildWorkingDirectory = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425";
+			dependencies = (
+			);
+			name = "UnrealFrontend_Build";
+			passBuildSettingsInEnvironment = 1;
+			productName = "UnrealFrontend_Build";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		989508367CEBFC18C18A661E /* UnrealFrontend */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5378D6024BF6511D7E0D1D3E /* Build configuration list for PBXNativeTarget "UnrealFrontend" */;
+			buildPhases = (
+				7010145D945EE077AD20ADB1 /* Embed App Extensions */, 
+				1045CBC143CC68C80E2A1496 /* Shell Script */, 
+			);
+			dependencies = (
+				BA90D54B9B07FAEAE45B5BAB /* PBXTargetDependency */,
+			);
+			name = "UnrealFrontend";
+			passBuildSettingsInEnvironment = 1;
+			productName = "UnrealFrontend";
+			productReference = "CFB54CB1D54A348B77C97BEC";
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXNativeTarget section */
+		BA48159A26D033679D3A8DCA /* UnrealFrontend_Index */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 44F80408511CCFA4E41AE127 /* Build configuration list for PBXNativeTarget "UnrealFrontend_Index" */;
+			buildPhases = (
+				4A82AC7A844C05CFFCCE685D /* Sources */,
+			);
+			dependencies = (
+			);
+			name = "UnrealFrontend_Index";
+			passBuildSettingsInEnvironment = 1;
+			productName = "UnrealFrontend_Index";
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A77630EE0E4C702D3596FF47 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2000;
+				ORGANIZATIONNAME = "Epic Games, Inc.";
+				TargetAttributes = {
+					989508367CEBFC18C18A661E = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 669FD14CF769959521D87A62 /* Build configuration list for PBXProject "UnrealFrontend" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en
+			);
+			mainGroup = 85B1DC5F19D702A067EEF2B0;
+			productRefGroup = 9F455850CA5F94ADF9BCA2B2;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			989508367CEBFC18C18A661E /* UnrealFrontend */,
+			16B17CB9907B3AF81D2BD132 /* UnrealFrontend_Build */,
+			BA48159A26D033679D3A8DCA /* UnrealFrontend_Index */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		2A871B1AE822B4D0DCFBDFB9 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/UnrealFrontend/Private",
+					"../../Source/Programs/UnrealFrontend/Private/Commands",
+					"../../Source/Runtime/Launch/Private",
+					"../Build/Mac/UnrealFrontend/Inc/AutomationController",
+					"../../Source/Developer",
+					"../../Source/Developer/AutomationController/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealFrontend/Inc/TraceLog",
+					"../Build/Mac/UnrealFrontend/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealFrontend/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealFrontend/Inc/DeviceManager",
+					"../../Source/Developer/DeviceManager/Public",
+					"../Build/Mac/UnrealFrontend/Inc/TargetDeviceServices",
+					"../../Source/Developer/TargetDeviceServices/Public",
+					"../Build/Mac/UnrealFrontend/Inc/LauncherServices",
+					"../../Source/Developer/LauncherServices/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Messaging",
+					"../../Source/Runtime/Messaging/Public",
+					"../Build/Mac/UnrealFrontend/Inc/OutputLog",
+					"../../Source/Developer/OutputLog/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Profiler",
+					"../../Source/Developer/Profiler/Public",
+					"../Build/Mac/UnrealFrontend/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/UnrealFrontend/Inc/RenderCore",
+					"../../Source/Runtime/RenderCore/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/UnrealFrontend/Inc/EditorStyle",
+					"../../Source/Editor",
+					"../../Source/Editor/EditorStyle/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ProfilerClient",
+					"../../Source/Developer/ProfilerClient/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ProfilerService",
+					"../../Source/Developer/ProfilerService/Public",
+					"../Build/Mac/UnrealFrontend/Inc/DesktopPlatform",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ProjectLauncher",
+					"../../Source/Developer/ProjectLauncher/Public",
+					"../Build/Mac/UnrealFrontend/Inc/TargetPlatform",
+					"../../Source/Developer/TargetPlatform/Public",
+					"../Build/Mac/UnrealFrontend/Inc/AudioPlatformConfiguration",
+					"../../Source/Runtime/AudioPlatformConfiguration/Public",
+					"../Build/Mac/UnrealFrontend/Inc/LauncherPlatform",
+					"../../Source/Runtime/Portal",
+					"../../Source/Runtime/Portal/LauncherPlatform/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SessionFrontend",
+					"../../Source/Developer/SessionFrontend/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SessionServices",
+					"../../Source/Runtime/SessionServices/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SourceCodeAccess",
+					"../../Source/Developer/SourceCodeAccess/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Settings",
+					"../../Source/Developer/Settings/Public",
+					"../Build/Mac/UnrealFrontend/Inc/StandaloneRenderer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Intermediate/Build/Mac/UnrealFrontend/Inc/XCodeSourceCodeAccess",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Source",
+					"../Build/Mac/UnrealFrontend/Inc/Networking",
+					"../../Source/Runtime/Networking/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Sockets",
+					"../../Source/Runtime/Sockets/Public",
+					"../../Plugins/Messaging/UdpMessaging/Intermediate/Build/Mac/UnrealFrontend/Inc/UdpMessaging",
+					"../../Plugins/Messaging/UdpMessaging/Source",
+					"../../Plugins/Messaging/UdpMessaging/Source/UdpMessaging/Public",
+					"../../Plugins/Messaging/TcpMessaging/Intermediate/Build/Mac/UnrealFrontend/Inc/TcpMessaging",
+					"../../Plugins/Messaging/TcpMessaging/Source",
+					"../../Plugins/Messaging/TcpMessaging/Source/TcpMessaging/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SlateReflector",
+					"../../Source/Developer/SlateReflector/Public",
+					"../Build/Mac/UnrealFrontend/Inc/UnrealFrontend",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				ENABLE_TESTABILITY = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Debug";
+		};
+		B2CDEBE426EAC12F1DDC9AA4 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/UnrealFrontend/Private",
+					"../../Source/Programs/UnrealFrontend/Private/Commands",
+					"../../Source/Runtime/Launch/Private",
+					"../Build/Mac/UnrealFrontend/Inc/AutomationController",
+					"../../Source/Developer",
+					"../../Source/Developer/AutomationController/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealFrontend/Inc/TraceLog",
+					"../Build/Mac/UnrealFrontend/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealFrontend/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealFrontend/Inc/DeviceManager",
+					"../../Source/Developer/DeviceManager/Public",
+					"../Build/Mac/UnrealFrontend/Inc/TargetDeviceServices",
+					"../../Source/Developer/TargetDeviceServices/Public",
+					"../Build/Mac/UnrealFrontend/Inc/LauncherServices",
+					"../../Source/Developer/LauncherServices/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Messaging",
+					"../../Source/Runtime/Messaging/Public",
+					"../Build/Mac/UnrealFrontend/Inc/OutputLog",
+					"../../Source/Developer/OutputLog/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Profiler",
+					"../../Source/Developer/Profiler/Public",
+					"../Build/Mac/UnrealFrontend/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/UnrealFrontend/Inc/RenderCore",
+					"../../Source/Runtime/RenderCore/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/UnrealFrontend/Inc/EditorStyle",
+					"../../Source/Editor",
+					"../../Source/Editor/EditorStyle/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ProfilerClient",
+					"../../Source/Developer/ProfilerClient/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ProfilerService",
+					"../../Source/Developer/ProfilerService/Public",
+					"../Build/Mac/UnrealFrontend/Inc/DesktopPlatform",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ProjectLauncher",
+					"../../Source/Developer/ProjectLauncher/Public",
+					"../Build/Mac/UnrealFrontend/Inc/TargetPlatform",
+					"../../Source/Developer/TargetPlatform/Public",
+					"../Build/Mac/UnrealFrontend/Inc/AudioPlatformConfiguration",
+					"../../Source/Runtime/AudioPlatformConfiguration/Public",
+					"../Build/Mac/UnrealFrontend/Inc/LauncherPlatform",
+					"../../Source/Runtime/Portal",
+					"../../Source/Runtime/Portal/LauncherPlatform/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SessionFrontend",
+					"../../Source/Developer/SessionFrontend/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SessionServices",
+					"../../Source/Runtime/SessionServices/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SourceCodeAccess",
+					"../../Source/Developer/SourceCodeAccess/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Settings",
+					"../../Source/Developer/Settings/Public",
+					"../Build/Mac/UnrealFrontend/Inc/StandaloneRenderer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Intermediate/Build/Mac/UnrealFrontend/Inc/XCodeSourceCodeAccess",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Source",
+					"../Build/Mac/UnrealFrontend/Inc/Networking",
+					"../../Source/Runtime/Networking/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Sockets",
+					"../../Source/Runtime/Sockets/Public",
+					"../../Plugins/Messaging/UdpMessaging/Intermediate/Build/Mac/UnrealFrontend/Inc/UdpMessaging",
+					"../../Plugins/Messaging/UdpMessaging/Source",
+					"../../Plugins/Messaging/UdpMessaging/Source/UdpMessaging/Public",
+					"../../Plugins/Messaging/TcpMessaging/Intermediate/Build/Mac/UnrealFrontend/Inc/TcpMessaging",
+					"../../Plugins/Messaging/TcpMessaging/Source",
+					"../../Plugins/Messaging/TcpMessaging/Source/TcpMessaging/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SlateReflector",
+					"../../Source/Developer/SlateReflector/Public",
+					"../Build/Mac/UnrealFrontend/Inc/UnrealFrontend",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "DebugGame";
+		};
+		719868CB55A907A475D448AC /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/UnrealFrontend/Private",
+					"../../Source/Programs/UnrealFrontend/Private/Commands",
+					"../../Source/Runtime/Launch/Private",
+					"../Build/Mac/UnrealFrontend/Inc/AutomationController",
+					"../../Source/Developer",
+					"../../Source/Developer/AutomationController/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealFrontend/Inc/TraceLog",
+					"../Build/Mac/UnrealFrontend/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealFrontend/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealFrontend/Inc/DeviceManager",
+					"../../Source/Developer/DeviceManager/Public",
+					"../Build/Mac/UnrealFrontend/Inc/TargetDeviceServices",
+					"../../Source/Developer/TargetDeviceServices/Public",
+					"../Build/Mac/UnrealFrontend/Inc/LauncherServices",
+					"../../Source/Developer/LauncherServices/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Messaging",
+					"../../Source/Runtime/Messaging/Public",
+					"../Build/Mac/UnrealFrontend/Inc/OutputLog",
+					"../../Source/Developer/OutputLog/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Profiler",
+					"../../Source/Developer/Profiler/Public",
+					"../Build/Mac/UnrealFrontend/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/UnrealFrontend/Inc/RenderCore",
+					"../../Source/Runtime/RenderCore/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/UnrealFrontend/Inc/EditorStyle",
+					"../../Source/Editor",
+					"../../Source/Editor/EditorStyle/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ProfilerClient",
+					"../../Source/Developer/ProfilerClient/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ProfilerService",
+					"../../Source/Developer/ProfilerService/Public",
+					"../Build/Mac/UnrealFrontend/Inc/DesktopPlatform",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ProjectLauncher",
+					"../../Source/Developer/ProjectLauncher/Public",
+					"../Build/Mac/UnrealFrontend/Inc/TargetPlatform",
+					"../../Source/Developer/TargetPlatform/Public",
+					"../Build/Mac/UnrealFrontend/Inc/AudioPlatformConfiguration",
+					"../../Source/Runtime/AudioPlatformConfiguration/Public",
+					"../Build/Mac/UnrealFrontend/Inc/LauncherPlatform",
+					"../../Source/Runtime/Portal",
+					"../../Source/Runtime/Portal/LauncherPlatform/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SessionFrontend",
+					"../../Source/Developer/SessionFrontend/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SessionServices",
+					"../../Source/Runtime/SessionServices/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SourceCodeAccess",
+					"../../Source/Developer/SourceCodeAccess/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Settings",
+					"../../Source/Developer/Settings/Public",
+					"../Build/Mac/UnrealFrontend/Inc/StandaloneRenderer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Intermediate/Build/Mac/UnrealFrontend/Inc/XCodeSourceCodeAccess",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Source",
+					"../Build/Mac/UnrealFrontend/Inc/Networking",
+					"../../Source/Runtime/Networking/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Sockets",
+					"../../Source/Runtime/Sockets/Public",
+					"../../Plugins/Messaging/UdpMessaging/Intermediate/Build/Mac/UnrealFrontend/Inc/UdpMessaging",
+					"../../Plugins/Messaging/UdpMessaging/Source",
+					"../../Plugins/Messaging/UdpMessaging/Source/UdpMessaging/Public",
+					"../../Plugins/Messaging/TcpMessaging/Intermediate/Build/Mac/UnrealFrontend/Inc/TcpMessaging",
+					"../../Plugins/Messaging/TcpMessaging/Source",
+					"../../Plugins/Messaging/TcpMessaging/Source/TcpMessaging/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SlateReflector",
+					"../../Source/Developer/SlateReflector/Public",
+					"../Build/Mac/UnrealFrontend/Inc/UnrealFrontend",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Development";
+		};
+		FA2462FE12DEE09D112650AA /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/UnrealFrontend/Private",
+					"../../Source/Programs/UnrealFrontend/Private/Commands",
+					"../../Source/Runtime/Launch/Private",
+					"../Build/Mac/UnrealFrontend/Inc/AutomationController",
+					"../../Source/Developer",
+					"../../Source/Developer/AutomationController/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealFrontend/Inc/TraceLog",
+					"../Build/Mac/UnrealFrontend/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealFrontend/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealFrontend/Inc/DeviceManager",
+					"../../Source/Developer/DeviceManager/Public",
+					"../Build/Mac/UnrealFrontend/Inc/TargetDeviceServices",
+					"../../Source/Developer/TargetDeviceServices/Public",
+					"../Build/Mac/UnrealFrontend/Inc/LauncherServices",
+					"../../Source/Developer/LauncherServices/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Messaging",
+					"../../Source/Runtime/Messaging/Public",
+					"../Build/Mac/UnrealFrontend/Inc/OutputLog",
+					"../../Source/Developer/OutputLog/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Profiler",
+					"../../Source/Developer/Profiler/Public",
+					"../Build/Mac/UnrealFrontend/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/UnrealFrontend/Inc/RenderCore",
+					"../../Source/Runtime/RenderCore/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/UnrealFrontend/Inc/EditorStyle",
+					"../../Source/Editor",
+					"../../Source/Editor/EditorStyle/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ProfilerClient",
+					"../../Source/Developer/ProfilerClient/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ProfilerService",
+					"../../Source/Developer/ProfilerService/Public",
+					"../Build/Mac/UnrealFrontend/Inc/DesktopPlatform",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ProjectLauncher",
+					"../../Source/Developer/ProjectLauncher/Public",
+					"../Build/Mac/UnrealFrontend/Inc/TargetPlatform",
+					"../../Source/Developer/TargetPlatform/Public",
+					"../Build/Mac/UnrealFrontend/Inc/AudioPlatformConfiguration",
+					"../../Source/Runtime/AudioPlatformConfiguration/Public",
+					"../Build/Mac/UnrealFrontend/Inc/LauncherPlatform",
+					"../../Source/Runtime/Portal",
+					"../../Source/Runtime/Portal/LauncherPlatform/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SessionFrontend",
+					"../../Source/Developer/SessionFrontend/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SessionServices",
+					"../../Source/Runtime/SessionServices/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SourceCodeAccess",
+					"../../Source/Developer/SourceCodeAccess/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Settings",
+					"../../Source/Developer/Settings/Public",
+					"../Build/Mac/UnrealFrontend/Inc/StandaloneRenderer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Intermediate/Build/Mac/UnrealFrontend/Inc/XCodeSourceCodeAccess",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Source",
+					"../Build/Mac/UnrealFrontend/Inc/Networking",
+					"../../Source/Runtime/Networking/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Sockets",
+					"../../Source/Runtime/Sockets/Public",
+					"../../Plugins/Messaging/UdpMessaging/Intermediate/Build/Mac/UnrealFrontend/Inc/UdpMessaging",
+					"../../Plugins/Messaging/UdpMessaging/Source",
+					"../../Plugins/Messaging/UdpMessaging/Source/UdpMessaging/Public",
+					"../../Plugins/Messaging/TcpMessaging/Intermediate/Build/Mac/UnrealFrontend/Inc/TcpMessaging",
+					"../../Plugins/Messaging/TcpMessaging/Source",
+					"../../Plugins/Messaging/TcpMessaging/Source/TcpMessaging/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SlateReflector",
+					"../../Source/Developer/SlateReflector/Public",
+					"../Build/Mac/UnrealFrontend/Inc/UnrealFrontend",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Shipping";
+		};
+		539EF8894A90B47F456EEB5E /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/UnrealFrontend/Private",
+					"../../Source/Programs/UnrealFrontend/Private/Commands",
+					"../../Source/Runtime/Launch/Private",
+					"../Build/Mac/UnrealFrontend/Inc/AutomationController",
+					"../../Source/Developer",
+					"../../Source/Developer/AutomationController/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealFrontend/Inc/TraceLog",
+					"../Build/Mac/UnrealFrontend/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealFrontend/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealFrontend/Inc/DeviceManager",
+					"../../Source/Developer/DeviceManager/Public",
+					"../Build/Mac/UnrealFrontend/Inc/TargetDeviceServices",
+					"../../Source/Developer/TargetDeviceServices/Public",
+					"../Build/Mac/UnrealFrontend/Inc/LauncherServices",
+					"../../Source/Developer/LauncherServices/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Messaging",
+					"../../Source/Runtime/Messaging/Public",
+					"../Build/Mac/UnrealFrontend/Inc/OutputLog",
+					"../../Source/Developer/OutputLog/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Profiler",
+					"../../Source/Developer/Profiler/Public",
+					"../Build/Mac/UnrealFrontend/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/UnrealFrontend/Inc/RenderCore",
+					"../../Source/Runtime/RenderCore/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/UnrealFrontend/Inc/EditorStyle",
+					"../../Source/Editor",
+					"../../Source/Editor/EditorStyle/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ProfilerClient",
+					"../../Source/Developer/ProfilerClient/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ProfilerService",
+					"../../Source/Developer/ProfilerService/Public",
+					"../Build/Mac/UnrealFrontend/Inc/DesktopPlatform",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/UnrealFrontend/Inc/ProjectLauncher",
+					"../../Source/Developer/ProjectLauncher/Public",
+					"../Build/Mac/UnrealFrontend/Inc/TargetPlatform",
+					"../../Source/Developer/TargetPlatform/Public",
+					"../Build/Mac/UnrealFrontend/Inc/AudioPlatformConfiguration",
+					"../../Source/Runtime/AudioPlatformConfiguration/Public",
+					"../Build/Mac/UnrealFrontend/Inc/LauncherPlatform",
+					"../../Source/Runtime/Portal",
+					"../../Source/Runtime/Portal/LauncherPlatform/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SessionFrontend",
+					"../../Source/Developer/SessionFrontend/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SessionServices",
+					"../../Source/Runtime/SessionServices/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SourceCodeAccess",
+					"../../Source/Developer/SourceCodeAccess/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Settings",
+					"../../Source/Developer/Settings/Public",
+					"../Build/Mac/UnrealFrontend/Inc/StandaloneRenderer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Intermediate/Build/Mac/UnrealFrontend/Inc/XCodeSourceCodeAccess",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Source",
+					"../Build/Mac/UnrealFrontend/Inc/Networking",
+					"../../Source/Runtime/Networking/Public",
+					"../Build/Mac/UnrealFrontend/Inc/Sockets",
+					"../../Source/Runtime/Sockets/Public",
+					"../../Plugins/Messaging/UdpMessaging/Intermediate/Build/Mac/UnrealFrontend/Inc/UdpMessaging",
+					"../../Plugins/Messaging/UdpMessaging/Source",
+					"../../Plugins/Messaging/UdpMessaging/Source/UdpMessaging/Public",
+					"../../Plugins/Messaging/TcpMessaging/Intermediate/Build/Mac/UnrealFrontend/Inc/TcpMessaging",
+					"../../Plugins/Messaging/TcpMessaging/Source",
+					"../../Plugins/Messaging/TcpMessaging/Source/TcpMessaging/Public",
+					"../Build/Mac/UnrealFrontend/Inc/SlateReflector",
+					"../../Source/Developer/SlateReflector/Public",
+					"../Build/Mac/UnrealFrontend/Inc/UnrealFrontend",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Test";
+		};
+		4B37199ADC2A042AD5FB693F /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealFrontend-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		96846B3CAC9ABDCD040D5817 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealFrontend-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		2CC808C9032CD71606D38642 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealFrontend";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		99058583E8982755407ADEF4 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealFrontend-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		40B2EC6B0547E47DFE8BF4FB /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealFrontend-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+		80438C2F65A04E45FC7D320C /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealFrontend";
+				UE_BUILD_TARGET_CONFIG = "Debug";
+			};
+			name = "Debug";
+		};
+		9B79BEF82654D96ECD807D97 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealFrontend";
+				UE_BUILD_TARGET_CONFIG = "DebugGame";
+			};
+			name = "DebugGame";
+		};
+		7BAB10011FF2ECB084D6878E /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealFrontend";
+				UE_BUILD_TARGET_CONFIG = "Development";
+			};
+			name = "Development";
+		};
+		13B49D2DB1A62008C51B07FA /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealFrontend";
+				UE_BUILD_TARGET_CONFIG = "Shipping";
+			};
+			name = "Shipping";
+		};
+		FA815F55FE1A36A42A2BDA13 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealFrontend";
+				UE_BUILD_TARGET_CONFIG = "Test";
+			};
+			name = "Test";
+		};
+		42C58F8A6CDCD4156512760C /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealFrontend-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		B56A1F11BC03EE652BEAF4E7 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealFrontend-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		EB0E192378D821E02172E5F4 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealFrontend";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		8FED9DA6F5EA7CC4BE6F8972 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealFrontend-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		AE97BE356787B421013F6643 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealFrontend-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		669FD14CF769959521D87A62 /* Build configuration list for PBXProject "UnrealFrontend" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2A871B1AE822B4D0DCFBDFB9 /* "Debug" */,
+				B2CDEBE426EAC12F1DDC9AA4 /* "DebugGame" */,
+				719868CB55A907A475D448AC /* "Development" */,
+				FA2462FE12DEE09D112650AA /* "Shipping" */,
+				539EF8894A90B47F456EEB5E /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		CFAEA2BE5A89BA2E7BE87CE6 /* Build configuration list for PBXLegacyTarget "UnrealFrontend_Build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				80438C2F65A04E45FC7D320C /* "Debug" */,
+				9B79BEF82654D96ECD807D97 /* "DebugGame" */,
+				7BAB10011FF2ECB084D6878E /* "Development" */,
+				13B49D2DB1A62008C51B07FA /* "Shipping" */,
+				FA815F55FE1A36A42A2BDA13 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		5378D6024BF6511D7E0D1D3E /* Build configuration list for PBXNativeTarget "UnrealFrontend" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4B37199ADC2A042AD5FB693F /* "Debug" */,
+				96846B3CAC9ABDCD040D5817 /* "DebugGame" */,
+				2CC808C9032CD71606D38642 /* "Development" */,
+				99058583E8982755407ADEF4 /* "Shipping" */,
+				40B2EC6B0547E47DFE8BF4FB /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		44F80408511CCFA4E41AE127 /* Build configuration list for PBXNativeTarget "UnrealFrontend_Index" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				42C58F8A6CDCD4156512760C /* "Debug" */,
+				B56A1F11BC03EE652BEAF4E7 /* "DebugGame" */,
+				EB0E192378D821E02172E5F4 /* "Development" */,
+				8FED9DA6F5EA7CC4BE6F8972 /* "Shipping" */,
+				AE97BE356787B421013F6643 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A77630EE0E4C702D3596FF47 /* Project object */;
+}

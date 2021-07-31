@@ -27,7 +27,8 @@ def get_opts():
         ("ANDROID_NDK_ROOT", "Path to the Android NDK", get_android_ndk_root()),
         ("ANDROID_SDK_ROOT", "Path to the Android SDK", get_android_sdk_root()),
         ("ndk_platform", 'Target platform (android-<api>, e.g. "android-24")', "android-24"),
-        EnumVariable("android_arch", "Target architecture", "armv7", ("armv7", "arm64v8", "x86", "x86_64")),
+        EnumVariable("android_arch", "Target architecture",
+                     "armv7", ("armv7", "arm64v8", "x86", "x86_64")),
         BoolVariable("android_neon", "Enable NEON support (armv7 only)", True),
     ]
 
@@ -81,11 +82,13 @@ def install_ndk_if_needed(env):
         import subprocess
 
         extension = ".bat" if os.name == "nt" else ""
-        sdkmanager_path = env["ANDROID_SDK_ROOT"] + "/cmdline-tools/latest/bin/sdkmanager" + extension
+        sdkmanager_path = env["ANDROID_SDK_ROOT"] + \
+            "/cmdline-tools/latest/bin/sdkmanager" + extension
         ndk_download_args = "ndk;" + get_project_ndk_version()
         subprocess.check_call([sdkmanager_path, ndk_download_args])
 
-        env["ANDROID_NDK_ROOT"] = env["ANDROID_SDK_ROOT"] + "/ndk/" + get_project_ndk_version()
+        env["ANDROID_NDK_ROOT"] = env["ANDROID_SDK_ROOT"] + \
+            "/ndk/" + get_project_ndk_version()
         print("ANDROID_NDK_ROOT: " + env["ANDROID_NDK_ROOT"])
 
 
@@ -146,12 +149,13 @@ def configure(env):
     neon_text = ""
     if env["android_arch"] == "armv7" and env["android_neon"]:
         neon_text = " (with NEON)"
-    print("Building for Android, platform " + env["ndk_platform"] + " (" + env["android_arch"] + ")" + neon_text)
+    print("Building for Android, platform " +
+          env["ndk_platform"] + " (" + env["android_arch"] + ")" + neon_text)
 
     can_vectorize = True
     if env["android_arch"] == "x86":
         env["ARCH"] = "arch-x86"
-        env.extra_suffix = ".x86" + env.extra_suffix
+        env.extra_suffix = "_x86" + env.extra_suffix
         target_subpath = "x86-4.9"
         abi_subpath = "i686-linux-android"
         arch_subpath = "x86"
@@ -164,7 +168,7 @@ def configure(env):
             )
             env["ndk_platform"] = "android-21"
         env["ARCH"] = "arch-x86_64"
-        env.extra_suffix = ".x86_64" + env.extra_suffix
+        env.extra_suffix = "_x86_64" + env.extra_suffix
         target_subpath = "x86_64-4.9"
         abi_subpath = "x86_64-linux-android"
         arch_subpath = "x86_64"
@@ -175,9 +179,9 @@ def configure(env):
         abi_subpath = "arm-linux-androideabi"
         arch_subpath = "armeabi-v7a"
         if env["android_neon"]:
-            env.extra_suffix = ".armv7.neon" + env.extra_suffix
+            env.extra_suffix = "_armv7_neon" + env.extra_suffix
         else:
-            env.extra_suffix = ".armv7" + env.extra_suffix
+            env.extra_suffix = "_armv7" + env.extra_suffix
     elif env["android_arch"] == "arm64v8":
         if get_platform(env["ndk_platform"]) < 21:
             print(
@@ -189,7 +193,7 @@ def configure(env):
         target_subpath = "aarch64-linux-android-4.9"
         abi_subpath = "aarch64-linux-android"
         arch_subpath = "arm64-v8a"
-        env.extra_suffix = ".armv8" + env.extra_suffix
+        env.extra_suffix = "_armv8" + env.extra_suffix
 
     # Build type
 
@@ -230,8 +234,10 @@ def configure(env):
         else:
             host_subpath = "windows"
 
-    compiler_path = env["ANDROID_NDK_ROOT"] + "/toolchains/llvm/prebuilt/" + host_subpath + "/bin"
-    gcc_toolchain_path = env["ANDROID_NDK_ROOT"] + "/toolchains/" + target_subpath + "/prebuilt/" + host_subpath
+    compiler_path = env["ANDROID_NDK_ROOT"] + \
+        "/toolchains/llvm/prebuilt/" + host_subpath + "/bin"
+    gcc_toolchain_path = env["ANDROID_NDK_ROOT"] + \
+        "/toolchains/" + target_subpath + "/prebuilt/" + host_subpath
     tools_path = gcc_toolchain_path + "/" + abi_subpath + "/bin"
 
     # For Clang to find NDK tools in preference of those system-wide
@@ -254,8 +260,10 @@ def configure(env):
 
     # Compile flags
 
-    env.Append(CPPFLAGS=["-isystem", env["ANDROID_NDK_ROOT"] + "/sources/cxx-stl/llvm-libc++/include"])
-    env.Append(CPPFLAGS=["-isystem", env["ANDROID_NDK_ROOT"] + "/sources/cxx-stl/llvm-libc++abi/include"])
+    env.Append(CPPFLAGS=["-isystem", env["ANDROID_NDK_ROOT"] +
+               "/sources/cxx-stl/llvm-libc++/include"])
+    env.Append(CPPFLAGS=["-isystem", env["ANDROID_NDK_ROOT"] +
+               "/sources/cxx-stl/llvm-libc++abi/include"])
 
     # Disable exceptions and rtti on non-tools (template) builds
     if env["tools"]:
@@ -267,15 +275,18 @@ def configure(env):
         # Don't use dynamic_cast, necessary with no-rtti.
         env.Append(CPPDEFINES=["NO_SAFE_CAST"])
 
-    lib_sysroot = env["ANDROID_NDK_ROOT"] + "/platforms/" + env["ndk_platform"] + "/" + env["ARCH"]
+    lib_sysroot = env["ANDROID_NDK_ROOT"] + "/platforms/" + \
+        env["ndk_platform"] + "/" + env["ARCH"]
 
     # Using NDK unified headers (NDK r15+)
     sysroot = env["ANDROID_NDK_ROOT"] + "/sysroot"
     env.Append(CPPFLAGS=["--sysroot=" + sysroot])
     env.Append(CPPFLAGS=["-isystem", sysroot + "/usr/include/" + abi_subpath])
-    env.Append(CPPFLAGS=["-isystem", env["ANDROID_NDK_ROOT"] + "/sources/android/support/include"])
+    env.Append(CPPFLAGS=["-isystem", env["ANDROID_NDK_ROOT"] +
+               "/sources/android/support/include"])
     # For unified headers this define has to be set manually
-    env.Append(CPPDEFINES=[("__ANDROID_API__", str(get_platform(env["ndk_platform"])))])
+    env.Append(
+        CPPDEFINES=[("__ANDROID_API__", str(get_platform(env["ndk_platform"])))])
 
     env.Append(
         CCFLAGS=(
@@ -320,23 +331,30 @@ def configure(env):
 
     ndk_version = get_env_ndk_version(env["ANDROID_NDK_ROOT"])
     if ndk_version != None and LooseVersion(ndk_version) >= LooseVersion("17.1.4828580"):
-        env.Append(LINKFLAGS=["-Wl,--exclude-libs,libgcc.a", "-Wl,--exclude-libs,libatomic.a", "-nostdlib++"])
+        env.Append(LINKFLAGS=["-Wl,--exclude-libs,libgcc.a",
+                   "-Wl,--exclude-libs,libatomic.a", "-nostdlib++"])
     else:
         env.Append(
             LINKFLAGS=[
-                env["ANDROID_NDK_ROOT"] + "/sources/cxx-stl/llvm-libc++/libs/" + arch_subpath + "/libandroid_support.a"
+                env["ANDROID_NDK_ROOT"] + "/sources/cxx-stl/llvm-libc++/libs/" +
+                arch_subpath + "/libandroid_support.a"
             ]
         )
-    env.Append(LINKFLAGS=["-shared", "--sysroot=" + lib_sysroot, "-Wl,--warn-shared-textrel"])
-    env.Append(LIBPATH=[env["ANDROID_NDK_ROOT"] + "/sources/cxx-stl/llvm-libc++/libs/" + arch_subpath + "/"])
+    env.Append(LINKFLAGS=["-shared", "--sysroot=" +
+               lib_sysroot, "-Wl,--warn-shared-textrel"])
+    env.Append(LIBPATH=[env["ANDROID_NDK_ROOT"] +
+               "/sources/cxx-stl/llvm-libc++/libs/" + arch_subpath + "/"])
     env.Append(
-        LINKFLAGS=[env["ANDROID_NDK_ROOT"] + "/sources/cxx-stl/llvm-libc++/libs/" + arch_subpath + "/libc++_shared.so"]
+        LINKFLAGS=[env["ANDROID_NDK_ROOT"] +
+                   "/sources/cxx-stl/llvm-libc++/libs/" + arch_subpath + "/libc++_shared.so"]
     )
 
     if env["android_arch"] == "armv7":
         env.Append(LINKFLAGS="-Wl,--fix-cortex-a8".split())
-    env.Append(LINKFLAGS="-Wl,--no-undefined -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now".split())
-    env.Append(LINKFLAGS="-Wl,-soname,libgodot_android.so -Wl,--gc-sections".split())
+    env.Append(
+        LINKFLAGS="-Wl,--no-undefined -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now".split())
+    env.Append(
+        LINKFLAGS="-Wl,-soname,libgodot_android.so -Wl,--gc-sections".split())
 
     env.Append(LINKFLAGS=target_opts)
     env.Append(LINKFLAGS=common_opts)
@@ -367,8 +385,10 @@ def configure(env):
     )
 
     env.Prepend(CPPPATH=["#platform/android"])
-    env.Append(CPPDEFINES=["ANDROID_ENABLED", "UNIX_ENABLED", "VULKAN_ENABLED", "NO_FCNTL"])
-    env.Append(LIBS=["OpenSLES", "EGL", "GLESv2", "vulkan", "android", "log", "z", "dl"])
+    env.Append(CPPDEFINES=["ANDROID_ENABLED",
+               "UNIX_ENABLED", "VULKAN_ENABLED", "NO_FCNTL"])
+    env.Append(LIBS=["OpenSLES", "EGL", "GLESv2",
+               "vulkan", "android", "log", "z", "dl"])
 
 
 # Return the project NDK version.

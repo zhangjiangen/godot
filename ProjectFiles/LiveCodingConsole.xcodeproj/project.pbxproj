@@ -1,0 +1,767 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0E11D807920FC999A1C7429B /* LiveCodingConsole.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 64DB7A8D85EC3927BE465CDB /* LiveCodingConsole.Build.cs */; };
+		ED919D817E39F45CF2134C56 /* LiveCodingConsole.Target.cs in Sources */ = {isa = PBXBuildFile; fileRef = 9813951E92457905106BDFF4 /* LiveCodingConsole.Target.cs */; };
+		C15A551F7178A61EFFBBE9EF /* LiveCodingConsole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6AAE5E998D192CC96E14A78 /* LiveCodingConsole.cpp */; };
+		987B87A482B790C7B4FC4638 /* LiveCodingConsole.h in Sources */ = {isa = PBXBuildFile; fileRef = BAAA272920249CA9F28AD6DB /* LiveCodingConsole.h */; };
+		074F8EEDB48F45DF0FDC86F6 /* LiveCodingConsoleStyle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F0029B472A213AB963AD2EEE /* LiveCodingConsoleStyle.cpp */; };
+		A969AB7145A0860DA4AB9D32 /* LiveCodingConsoleStyle.h in Sources */ = {isa = PBXBuildFile; fileRef = 28A31325B76728DE2331381E /* LiveCodingConsoleStyle.h */; };
+		88547FD1501C775A20A0434A /* LiveCodingManifest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E3D3996E5679514565691F87 /* LiveCodingManifest.cpp */; };
+		0D1502FC8450CB78318DE9F1 /* LiveCodingManifest.h in Sources */ = {isa = PBXBuildFile; fileRef = 21B4BD88334311885FC841E3 /* LiveCodingManifest.h */; };
+		CDB988A9DFF2B91E35F8C33A /* SLogWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A7BD5D0D4CB1956EAA84DA1 /* SLogWidget.cpp */; };
+		BCC9112257962744D31F2FCA /* SLogWidget.h in Sources */ = {isa = PBXBuildFile; fileRef = C822983ED3CABC29F1826EB8 /* SLogWidget.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		64DB7A8D85EC3927BE465CDB /* LiveCodingConsole.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "LiveCodingConsole.Build.cs"; path = "../../Source/Programs/LiveCodingConsole/LiveCodingConsole.Build.cs"; sourceTree = SOURCE_ROOT; };
+		9813951E92457905106BDFF4 /* LiveCodingConsole.Target.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "LiveCodingConsole.Target.cs"; path = "../../Source/Programs/LiveCodingConsole/LiveCodingConsole.Target.cs"; sourceTree = SOURCE_ROOT; };
+		B6AAE5E998D192CC96E14A78 /* LiveCodingConsole.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "LiveCodingConsole.cpp"; path = "../../Source/Programs/LiveCodingConsole/Private/LiveCodingConsole.cpp"; sourceTree = SOURCE_ROOT; };
+		BAAA272920249CA9F28AD6DB /* LiveCodingConsole.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "LiveCodingConsole.h"; path = "../../Source/Programs/LiveCodingConsole/Private/LiveCodingConsole.h"; sourceTree = SOURCE_ROOT; };
+		F0029B472A213AB963AD2EEE /* LiveCodingConsoleStyle.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "LiveCodingConsoleStyle.cpp"; path = "../../Source/Programs/LiveCodingConsole/Private/LiveCodingConsoleStyle.cpp"; sourceTree = SOURCE_ROOT; };
+		28A31325B76728DE2331381E /* LiveCodingConsoleStyle.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "LiveCodingConsoleStyle.h"; path = "../../Source/Programs/LiveCodingConsole/Private/LiveCodingConsoleStyle.h"; sourceTree = SOURCE_ROOT; };
+		E3D3996E5679514565691F87 /* LiveCodingManifest.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "LiveCodingManifest.cpp"; path = "../../Source/Programs/LiveCodingConsole/Private/LiveCodingManifest.cpp"; sourceTree = SOURCE_ROOT; };
+		21B4BD88334311885FC841E3 /* LiveCodingManifest.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "LiveCodingManifest.h"; path = "../../Source/Programs/LiveCodingConsole/Private/LiveCodingManifest.h"; sourceTree = SOURCE_ROOT; };
+		1A7BD5D0D4CB1956EAA84DA1 /* SLogWidget.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "SLogWidget.cpp"; path = "../../Source/Programs/LiveCodingConsole/Private/SLogWidget.cpp"; sourceTree = SOURCE_ROOT; };
+		C822983ED3CABC29F1826EB8 /* SLogWidget.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "SLogWidget.h"; path = "../../Source/Programs/LiveCodingConsole/Private/SLogWidget.h"; sourceTree = SOURCE_ROOT; };
+		8BD7792285CF6AF4AAA1D624 /* LiveCodingConsole */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = LiveCodingConsole; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DCC6FB93BC0201367A8F78C0 = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C15A551F7178A61EFFBBE9EF /* LiveCodingConsole.cpp in Sources */,
+				074F8EEDB48F45DF0FDC86F6 /* LiveCodingConsoleStyle.cpp in Sources */,
+				88547FD1501C775A20A0434A /* LiveCodingManifest.cpp in Sources */,
+				CDB988A9DFF2B91E35F8C33A /* SLogWidget.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+	5D50C9D54888531F6A4322B7 /* Embed App Extensions */ = {
+		isa = PBXCopyFilesBuildPhase;
+		buildActionMask = 2147483647;
+		dstPath = "";
+		dstSubfolderSpec = 13;
+		files = (
+		);
+		name = "Embed App Extensions";
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXCopyFilesBuildPhase section */
+/* Begin PBXContainerItemProxy section */
+		A33A9802EB200BEB9E916F2E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 970F82A37DB0AB7F06B69645 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5414598D1137BE500FAEA291;
+			remoteInfo = "LiveCodingConsole_Build";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		B7E902997A70ED07C579AC77 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5414598D1137BE500FAEA291 /* LiveCodingConsole_Build */;
+			targetProxy = A33A9802EB200BEB9E916F2E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXGroup section */
+		2BBC525BB6316D0EF2955EFE = {
+			isa = PBXGroup;
+			children = (
+				22DED8520A3575786272C453 /* Private */,
+				64DB7A8D85EC3927BE465CDB /* LiveCodingConsole.Build.cs */,
+				9813951E92457905106BDFF4 /* LiveCodingConsole.Target.cs */,
+				352984B4C82ED10FE794B10A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		22DED8520A3575786272C453 = {
+			isa = PBXGroup;
+			children = (
+				B6AAE5E998D192CC96E14A78 /* LiveCodingConsole.cpp */,
+				BAAA272920249CA9F28AD6DB /* LiveCodingConsole.h */,
+				F0029B472A213AB963AD2EEE /* LiveCodingConsoleStyle.cpp */,
+				28A31325B76728DE2331381E /* LiveCodingConsoleStyle.h */,
+				E3D3996E5679514565691F87 /* LiveCodingManifest.cpp */,
+				21B4BD88334311885FC841E3 /* LiveCodingManifest.h */,
+				1A7BD5D0D4CB1956EAA84DA1 /* SLogWidget.cpp */,
+				C822983ED3CABC29F1826EB8 /* SLogWidget.h */,
+			);
+			name = "Private";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/LiveCodingConsole/Private";
+			sourceTree = "<absolute>";
+		};
+		352984B4C82ED10FE794B10A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8BD7792285CF6AF4AAA1D624 /* LiveCodingConsole */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		5414598D1137BE500FAEA291 /* LiveCodingConsole_Build */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION) $(UE_BUILD_TARGET_NAME) $(PLATFORM_NAME) $(UE_BUILD_TARGET_CONFIG)";
+			buildConfigurationList = 4999385B7106242579D40DA2 /* Build configuration list for PBXLegacyTarget "LiveCodingConsole_Build" */;
+			buildPhases = (
+			);
+			buildToolPath = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Build/BatchFiles/Mac/XcodeBuild.sh";
+			buildWorkingDirectory = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425";
+			dependencies = (
+			);
+			name = "LiveCodingConsole_Build";
+			passBuildSettingsInEnvironment = 1;
+			productName = "LiveCodingConsole_Build";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		709C648D0E56ADD4FDFE3E83 /* LiveCodingConsole */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CABC2646CBE19B247B7CF1C2 /* Build configuration list for PBXNativeTarget "LiveCodingConsole" */;
+			buildPhases = (
+				5D50C9D54888531F6A4322B7 /* Embed App Extensions */, 
+				1C770DBC8F840B960B487EEF /* Shell Script */, 
+			);
+			dependencies = (
+				B7E902997A70ED07C579AC77 /* PBXTargetDependency */,
+			);
+			name = "LiveCodingConsole";
+			passBuildSettingsInEnvironment = 1;
+			productName = "LiveCodingConsole";
+			productReference = "8BD7792285CF6AF4AAA1D624";
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXNativeTarget section */
+		F6CB81F50EB8CD016473AED7 /* LiveCodingConsole_Index */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C67EDA67D31E1EDC34E8D8EC /* Build configuration list for PBXNativeTarget "LiveCodingConsole_Index" */;
+			buildPhases = (
+				DCC6FB93BC0201367A8F78C0 /* Sources */,
+			);
+			dependencies = (
+			);
+			name = "LiveCodingConsole_Index";
+			passBuildSettingsInEnvironment = 1;
+			productName = "LiveCodingConsole_Index";
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		970F82A37DB0AB7F06B69645 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2000;
+				ORGANIZATIONNAME = "Epic Games, Inc.";
+				TargetAttributes = {
+					709C648D0E56ADD4FDFE3E83 = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = B5C84257E1A12CD5EA6094F3 /* Build configuration list for PBXProject "LiveCodingConsole" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en
+			);
+			mainGroup = 2BBC525BB6316D0EF2955EFE;
+			productRefGroup = 352984B4C82ED10FE794B10A;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			709C648D0E56ADD4FDFE3E83 /* LiveCodingConsole */,
+			5414598D1137BE500FAEA291 /* LiveCodingConsole_Build */,
+			F6CB81F50EB8CD016473AED7 /* LiveCodingConsole_Index */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		35DA51EF942784A5B1C35678 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/LiveCodingConsole/Private",
+					"../Build/Mac/LiveCodingConsole/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/TraceLog",
+					"../Build/Mac/LiveCodingConsole/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/StandaloneRenderer",
+					"../../Source/Developer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/MessageLog",
+					"../../Source/Developer/MessageLog/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/LiveCodingServer",
+					"../../Source/Developer/Windows",
+					"../../Source/Developer/Windows/LiveCodingServer/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/LiveCodingConsole",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				ENABLE_TESTABILITY = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Debug";
+		};
+		BDAC5578A9E54BF1630DFA50 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/LiveCodingConsole/Private",
+					"../Build/Mac/LiveCodingConsole/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/TraceLog",
+					"../Build/Mac/LiveCodingConsole/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/StandaloneRenderer",
+					"../../Source/Developer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/MessageLog",
+					"../../Source/Developer/MessageLog/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/LiveCodingServer",
+					"../../Source/Developer/Windows",
+					"../../Source/Developer/Windows/LiveCodingServer/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/LiveCodingConsole",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "DebugGame";
+		};
+		5A364BDFEECD36658376704D /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/LiveCodingConsole/Private",
+					"../Build/Mac/LiveCodingConsole/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/TraceLog",
+					"../Build/Mac/LiveCodingConsole/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/StandaloneRenderer",
+					"../../Source/Developer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/MessageLog",
+					"../../Source/Developer/MessageLog/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/LiveCodingServer",
+					"../../Source/Developer/Windows",
+					"../../Source/Developer/Windows/LiveCodingServer/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/LiveCodingConsole",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Development";
+		};
+		F9C53FCED655DC10F37A0933 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/LiveCodingConsole/Private",
+					"../Build/Mac/LiveCodingConsole/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/TraceLog",
+					"../Build/Mac/LiveCodingConsole/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/StandaloneRenderer",
+					"../../Source/Developer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/MessageLog",
+					"../../Source/Developer/MessageLog/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/LiveCodingServer",
+					"../../Source/Developer/Windows",
+					"../../Source/Developer/Windows/LiveCodingServer/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/LiveCodingConsole",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Shipping";
+		};
+		BBCF14296A7B154B5199A590 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/LiveCodingConsole/Private",
+					"../Build/Mac/LiveCodingConsole/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/TraceLog",
+					"../Build/Mac/LiveCodingConsole/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/StandaloneRenderer",
+					"../../Source/Developer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/MessageLog",
+					"../../Source/Developer/MessageLog/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/LiveCodingServer",
+					"../../Source/Developer/Windows",
+					"../../Source/Developer/Windows/LiveCodingServer/Public",
+					"../Build/Mac/LiveCodingConsole/Inc/LiveCodingConsole",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Test";
+		};
+		64FCC75F41929F98A4437644 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "LiveCodingConsole-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		808D21CF0E41A68A5C5828DE /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "LiveCodingConsole-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		0C23B445EA9A646C544A43D1 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "LiveCodingConsole";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		D288188400A2B46455AE73A5 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "LiveCodingConsole-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		C65B1AC575515742D491C559 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "LiveCodingConsole-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+		F544A7F684E1B515D1DA9F6E /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "LiveCodingConsole";
+				UE_BUILD_TARGET_CONFIG = "Debug";
+			};
+			name = "Debug";
+		};
+		075BD9273D1D2360EC1338D7 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "LiveCodingConsole";
+				UE_BUILD_TARGET_CONFIG = "DebugGame";
+			};
+			name = "DebugGame";
+		};
+		D6BBFBAE4CFF75CD99A7CD06 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "LiveCodingConsole";
+				UE_BUILD_TARGET_CONFIG = "Development";
+			};
+			name = "Development";
+		};
+		28458F81F62D04B7DB90B487 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "LiveCodingConsole";
+				UE_BUILD_TARGET_CONFIG = "Shipping";
+			};
+			name = "Shipping";
+		};
+		AB7099989B1B6AE9F93BC526 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "LiveCodingConsole";
+				UE_BUILD_TARGET_CONFIG = "Test";
+			};
+			name = "Test";
+		};
+		36638A43BF7C065921955893 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "LiveCodingConsole-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		8C3D6BEB8EAE0B29683AC231 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "LiveCodingConsole-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		D244711EDDD35315CC1EDF6B /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "LiveCodingConsole";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		BFA7F743CABC12583B3E4C54 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "LiveCodingConsole-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		19DB4D5F7A68352602677D6F /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "LiveCodingConsole-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B5C84257E1A12CD5EA6094F3 /* Build configuration list for PBXProject "LiveCodingConsole" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				35DA51EF942784A5B1C35678 /* "Debug" */,
+				BDAC5578A9E54BF1630DFA50 /* "DebugGame" */,
+				5A364BDFEECD36658376704D /* "Development" */,
+				F9C53FCED655DC10F37A0933 /* "Shipping" */,
+				BBCF14296A7B154B5199A590 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		4999385B7106242579D40DA2 /* Build configuration list for PBXLegacyTarget "LiveCodingConsole_Build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F544A7F684E1B515D1DA9F6E /* "Debug" */,
+				075BD9273D1D2360EC1338D7 /* "DebugGame" */,
+				D6BBFBAE4CFF75CD99A7CD06 /* "Development" */,
+				28458F81F62D04B7DB90B487 /* "Shipping" */,
+				AB7099989B1B6AE9F93BC526 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		CABC2646CBE19B247B7CF1C2 /* Build configuration list for PBXNativeTarget "LiveCodingConsole" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				64FCC75F41929F98A4437644 /* "Debug" */,
+				808D21CF0E41A68A5C5828DE /* "DebugGame" */,
+				0C23B445EA9A646C544A43D1 /* "Development" */,
+				D288188400A2B46455AE73A5 /* "Shipping" */,
+				C65B1AC575515742D491C559 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		C67EDA67D31E1EDC34E8D8EC /* Build configuration list for PBXNativeTarget "LiveCodingConsole_Index" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				36638A43BF7C065921955893 /* "Debug" */,
+				8C3D6BEB8EAE0B29683AC231 /* "DebugGame" */,
+				D244711EDDD35315CC1EDF6B /* "Development" */,
+				BFA7F743CABC12583B3E4C54 /* "Shipping" */,
+				19DB4D5F7A68352602677D6F /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 970F82A37DB0AB7F06B69645 /* Project object */;
+}

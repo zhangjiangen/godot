@@ -1,0 +1,810 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		43FBF9F97E30D0DB18952617 /* DefaultEngine.ini in Sources */ = {isa = PBXBuildFile; fileRef = 3D591FEF2411FA58FC3692CB /* DefaultEngine.ini */; };
+		C89229C752ECF449CED92E88 /* UnrealRecoverySvc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CBF433C6AD458E1E85CCF516 /* UnrealRecoverySvc.cpp */; };
+		70D0078BC6CF95996ED59B0B /* UnrealRecoverySvc.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 0952AD091C0A1239DE8430B9 /* UnrealRecoverySvc.Build.cs */; };
+		05FE6BC1FCF37B72FA7D6CCD /* UnrealRecoverySvc.Target.cs in Sources */ = {isa = PBXBuildFile; fileRef = DA94D1C66419E2C0C8AC16A0 /* UnrealRecoverySvc.Target.cs */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		3D591FEF2411FA58FC3692CB /* DefaultEngine.ini */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DefaultEngine.ini"; path = "../../Programs/UnrealRecoverySvc/Config/DefaultEngine.ini"; sourceTree = SOURCE_ROOT; };
+		CBF433C6AD458E1E85CCF516 /* UnrealRecoverySvc.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "UnrealRecoverySvc.cpp"; path = "../../Source/Programs/UnrealRecoverySvc/Private/UnrealRecoverySvc.cpp"; sourceTree = SOURCE_ROOT; };
+		0952AD091C0A1239DE8430B9 /* UnrealRecoverySvc.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "UnrealRecoverySvc.Build.cs"; path = "../../Source/Programs/UnrealRecoverySvc/UnrealRecoverySvc.Build.cs"; sourceTree = SOURCE_ROOT; };
+		DA94D1C66419E2C0C8AC16A0 /* UnrealRecoverySvc.Target.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "UnrealRecoverySvc.Target.cs"; path = "../../Source/Programs/UnrealRecoverySvc/UnrealRecoverySvc.Target.cs"; sourceTree = SOURCE_ROOT; };
+		7F77D94EA20CC7B75D9F3F11 /* UnrealRecoverySvc */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = UnrealRecoverySvc; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0F5DE4687971FFD5FAFFFD1F = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C89229C752ECF449CED92E88 /* UnrealRecoverySvc.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+	F88AD6461210E3E3A72AD08A /* Embed App Extensions */ = {
+		isa = PBXCopyFilesBuildPhase;
+		buildActionMask = 2147483647;
+		dstPath = "";
+		dstSubfolderSpec = 13;
+		files = (
+		);
+		name = "Embed App Extensions";
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXCopyFilesBuildPhase section */
+/* Begin PBXContainerItemProxy section */
+		677F14928A72166115CDB0FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C8DE3D1507B874F9763AF0DB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 363A6DD9306505FCE3EA6BD0;
+			remoteInfo = "UnrealRecoverySvc_Build";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		544D3A43AAC2A4749F1FDF98 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 363A6DD9306505FCE3EA6BD0 /* UnrealRecoverySvc_Build */;
+			targetProxy = 677F14928A72166115CDB0FD /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXGroup section */
+		17E7BFE9232F27DFF7AFCA79 = {
+			isa = PBXGroup;
+			children = (
+				CE0148B6A4210932CCE8625B /* Programs */,
+				E3E01E6E0AEACC0795CEA09D /* Source */,
+				EA25C1888E62DAC94D551D55 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		CE0148B6A4210932CCE8625B = {
+			isa = PBXGroup;
+			children = (
+				21A744DCB65DE9C227E167C7 /* UnrealRecoverySvc */,
+			);
+			name = "Programs";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Programs";
+			sourceTree = "<absolute>";
+		};
+		21A744DCB65DE9C227E167C7 = {
+			isa = PBXGroup;
+			children = (
+				849EF9B82A1A6CEF9B59C55A /* Config */,
+			);
+			name = "UnrealRecoverySvc";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Programs/UnrealRecoverySvc";
+			sourceTree = "<absolute>";
+		};
+		849EF9B82A1A6CEF9B59C55A = {
+			isa = PBXGroup;
+			children = (
+				3D591FEF2411FA58FC3692CB /* DefaultEngine.ini */,
+			);
+			name = "Config";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Programs/UnrealRecoverySvc/Config";
+			sourceTree = "<absolute>";
+		};
+		E3E01E6E0AEACC0795CEA09D = {
+			isa = PBXGroup;
+			children = (
+				BAAD24E7D04C82EC9A813206 /* Programs */,
+			);
+			name = "Source";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source";
+			sourceTree = "<absolute>";
+		};
+		BAAD24E7D04C82EC9A813206 = {
+			isa = PBXGroup;
+			children = (
+				285007B17C73BFC7E1EAF8D5 /* UnrealRecoverySvc */,
+			);
+			name = "Programs";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs";
+			sourceTree = "<absolute>";
+		};
+		285007B17C73BFC7E1EAF8D5 = {
+			isa = PBXGroup;
+			children = (
+				3F7AB73C156031B5FD5BFE7C /* Private */,
+				0952AD091C0A1239DE8430B9 /* UnrealRecoverySvc.Build.cs */,
+				DA94D1C66419E2C0C8AC16A0 /* UnrealRecoverySvc.Target.cs */,
+			);
+			name = "UnrealRecoverySvc";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealRecoverySvc";
+			sourceTree = "<absolute>";
+		};
+		3F7AB73C156031B5FD5BFE7C = {
+			isa = PBXGroup;
+			children = (
+				CBF433C6AD458E1E85CCF516 /* UnrealRecoverySvc.cpp */,
+			);
+			name = "Private";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealRecoverySvc/Private";
+			sourceTree = "<absolute>";
+		};
+		EA25C1888E62DAC94D551D55 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7F77D94EA20CC7B75D9F3F11 /* UnrealRecoverySvc */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		363A6DD9306505FCE3EA6BD0 /* UnrealRecoverySvc_Build */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION) $(UE_BUILD_TARGET_NAME) $(PLATFORM_NAME) $(UE_BUILD_TARGET_CONFIG)";
+			buildConfigurationList = EF7F43E87A4898879D3DC433 /* Build configuration list for PBXLegacyTarget "UnrealRecoverySvc_Build" */;
+			buildPhases = (
+			);
+			buildToolPath = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Build/BatchFiles/Mac/XcodeBuild.sh";
+			buildWorkingDirectory = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425";
+			dependencies = (
+			);
+			name = "UnrealRecoverySvc_Build";
+			passBuildSettingsInEnvironment = 1;
+			productName = "UnrealRecoverySvc_Build";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		47074C935F717D189CD5D9A5 /* UnrealRecoverySvc */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1BC382D34F0312CE5A90A9AD /* Build configuration list for PBXNativeTarget "UnrealRecoverySvc" */;
+			buildPhases = (
+				F88AD6461210E3E3A72AD08A /* Embed App Extensions */, 
+				E1085FC1181AF0C2CA69D9C6 /* Shell Script */, 
+			);
+			dependencies = (
+				544D3A43AAC2A4749F1FDF98 /* PBXTargetDependency */,
+			);
+			name = "UnrealRecoverySvc";
+			passBuildSettingsInEnvironment = 1;
+			productName = "UnrealRecoverySvc";
+			productReference = "7F77D94EA20CC7B75D9F3F11";
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXNativeTarget section */
+		E955D29358273AC840025B50 /* UnrealRecoverySvc_Index */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 043D30B0C7B319940B095E22 /* Build configuration list for PBXNativeTarget "UnrealRecoverySvc_Index" */;
+			buildPhases = (
+				0F5DE4687971FFD5FAFFFD1F /* Sources */,
+			);
+			dependencies = (
+			);
+			name = "UnrealRecoverySvc_Index";
+			passBuildSettingsInEnvironment = 1;
+			productName = "UnrealRecoverySvc_Index";
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C8DE3D1507B874F9763AF0DB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2000;
+				ORGANIZATIONNAME = "Epic Games, Inc.";
+				TargetAttributes = {
+					47074C935F717D189CD5D9A5 = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 9272A3BBAFA390ED23F2E43D /* Build configuration list for PBXProject "UnrealRecoverySvc" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en
+			);
+			mainGroup = 17E7BFE9232F27DFF7AFCA79;
+			productRefGroup = EA25C1888E62DAC94D551D55;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			47074C935F717D189CD5D9A5 /* UnrealRecoverySvc */,
+			363A6DD9306505FCE3EA6BD0 /* UnrealRecoverySvc_Build */,
+			E955D29358273AC840025B50 /* UnrealRecoverySvc_Index */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		4ABF6685B0F47EEB27A28F03 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/UnrealRecoverySvc/Private",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/TraceLog",
+					"../Build/Mac/UnrealRecoverySvc/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Concert",
+					"../../Plugins/Developer/Concert/ConcertMain/Source",
+					"../../Plugins/Developer/Concert/ConcertMain/Source/Concert/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ConcertTransport",
+					"../../Plugins/Developer/Concert/ConcertMain/Source/ConcertTransport/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Serialization",
+					"../../Source/Runtime/Serialization/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Cbor",
+					"../../Source/Runtime/Cbor/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ConcertSyncCore",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Source",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Source/ConcertSyncCore/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Launch",
+					"../../Source/Runtime/Launch/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ProfilerService",
+					"../../Source/Developer",
+					"../../Source/Developer/ProfilerService/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ConcertSyncServer",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Source",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Source/ConcertSyncServer/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/UnrealRecoverySvc",
+					"../../Source/Programs",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				ENABLE_TESTABILITY = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Debug";
+		};
+		63B35190BBF439F038F57372 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/UnrealRecoverySvc/Private",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/TraceLog",
+					"../Build/Mac/UnrealRecoverySvc/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Concert",
+					"../../Plugins/Developer/Concert/ConcertMain/Source",
+					"../../Plugins/Developer/Concert/ConcertMain/Source/Concert/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ConcertTransport",
+					"../../Plugins/Developer/Concert/ConcertMain/Source/ConcertTransport/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Serialization",
+					"../../Source/Runtime/Serialization/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Cbor",
+					"../../Source/Runtime/Cbor/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ConcertSyncCore",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Source",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Source/ConcertSyncCore/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Launch",
+					"../../Source/Runtime/Launch/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ProfilerService",
+					"../../Source/Developer",
+					"../../Source/Developer/ProfilerService/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ConcertSyncServer",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Source",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Source/ConcertSyncServer/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/UnrealRecoverySvc",
+					"../../Source/Programs",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "DebugGame";
+		};
+		0A76F17809B9ECFF1F3D89C0 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/UnrealRecoverySvc/Private",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/TraceLog",
+					"../Build/Mac/UnrealRecoverySvc/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Concert",
+					"../../Plugins/Developer/Concert/ConcertMain/Source",
+					"../../Plugins/Developer/Concert/ConcertMain/Source/Concert/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ConcertTransport",
+					"../../Plugins/Developer/Concert/ConcertMain/Source/ConcertTransport/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Serialization",
+					"../../Source/Runtime/Serialization/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Cbor",
+					"../../Source/Runtime/Cbor/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ConcertSyncCore",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Source",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Source/ConcertSyncCore/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Launch",
+					"../../Source/Runtime/Launch/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ProfilerService",
+					"../../Source/Developer",
+					"../../Source/Developer/ProfilerService/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ConcertSyncServer",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Source",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Source/ConcertSyncServer/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/UnrealRecoverySvc",
+					"../../Source/Programs",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Development";
+		};
+		1329B52D567DEA8B73684A73 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/UnrealRecoverySvc/Private",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/TraceLog",
+					"../Build/Mac/UnrealRecoverySvc/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Concert",
+					"../../Plugins/Developer/Concert/ConcertMain/Source",
+					"../../Plugins/Developer/Concert/ConcertMain/Source/Concert/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ConcertTransport",
+					"../../Plugins/Developer/Concert/ConcertMain/Source/ConcertTransport/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Serialization",
+					"../../Source/Runtime/Serialization/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Cbor",
+					"../../Source/Runtime/Cbor/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ConcertSyncCore",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Source",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Source/ConcertSyncCore/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Launch",
+					"../../Source/Runtime/Launch/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ProfilerService",
+					"../../Source/Developer",
+					"../../Source/Developer/ProfilerService/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ConcertSyncServer",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Source",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Source/ConcertSyncServer/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/UnrealRecoverySvc",
+					"../../Source/Programs",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Shipping";
+		};
+		C6FC98F5D2744C9C90371E3A /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/UnrealRecoverySvc/Private",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/TraceLog",
+					"../Build/Mac/UnrealRecoverySvc/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Concert",
+					"../../Plugins/Developer/Concert/ConcertMain/Source",
+					"../../Plugins/Developer/Concert/ConcertMain/Source/Concert/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ConcertTransport",
+					"../../Plugins/Developer/Concert/ConcertMain/Source/ConcertTransport/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Serialization",
+					"../../Source/Runtime/Serialization/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Cbor",
+					"../../Source/Runtime/Cbor/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ConcertSyncCore",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Source",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Source/ConcertSyncCore/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/Launch",
+					"../../Source/Runtime/Launch/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ProfilerService",
+					"../../Source/Developer",
+					"../../Source/Developer/ProfilerService/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/ConcertSyncServer",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Source",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Source/ConcertSyncServer/Public",
+					"../Build/Mac/UnrealRecoverySvc/Inc/UnrealRecoverySvc",
+					"../../Source/Programs",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Test";
+		};
+		8B93B63C7139AEE58C5A8670 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealRecoverySvc-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		379EDBEC4D00527C97639313 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealRecoverySvc-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		BA93F8F0FDBC6AFD227E0289 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealRecoverySvc";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		1360B6401444408DF677997E /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealRecoverySvc-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		CC44491D1930E0B0E8961618 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealRecoverySvc-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+		123DBDE00F3B548EB00FFC52 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealRecoverySvc";
+				UE_BUILD_TARGET_CONFIG = "Debug";
+			};
+			name = "Debug";
+		};
+		06FB39A6F748F8B607397C5C /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealRecoverySvc";
+				UE_BUILD_TARGET_CONFIG = "DebugGame";
+			};
+			name = "DebugGame";
+		};
+		2D95A58B49DF29457F2C9C81 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealRecoverySvc";
+				UE_BUILD_TARGET_CONFIG = "Development";
+			};
+			name = "Development";
+		};
+		0F1CB0A542564E1A9362781F /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealRecoverySvc";
+				UE_BUILD_TARGET_CONFIG = "Shipping";
+			};
+			name = "Shipping";
+		};
+		553E4BE669AA49D4E1C4DF45 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealRecoverySvc";
+				UE_BUILD_TARGET_CONFIG = "Test";
+			};
+			name = "Test";
+		};
+		A95D33B2ABE5623E785B3584 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealRecoverySvc-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		E9C4D3BCD60B1AB3EAC17B0C /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealRecoverySvc-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		567FAD4E4D7C3CAC3A120243 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealRecoverySvc";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		29FBEE0242100DEE343A3AEC /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealRecoverySvc-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		BD58481E16DC8FF1DDB435FD /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealRecoverySvc-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9272A3BBAFA390ED23F2E43D /* Build configuration list for PBXProject "UnrealRecoverySvc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4ABF6685B0F47EEB27A28F03 /* "Debug" */,
+				63B35190BBF439F038F57372 /* "DebugGame" */,
+				0A76F17809B9ECFF1F3D89C0 /* "Development" */,
+				1329B52D567DEA8B73684A73 /* "Shipping" */,
+				C6FC98F5D2744C9C90371E3A /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		EF7F43E87A4898879D3DC433 /* Build configuration list for PBXLegacyTarget "UnrealRecoverySvc_Build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				123DBDE00F3B548EB00FFC52 /* "Debug" */,
+				06FB39A6F748F8B607397C5C /* "DebugGame" */,
+				2D95A58B49DF29457F2C9C81 /* "Development" */,
+				0F1CB0A542564E1A9362781F /* "Shipping" */,
+				553E4BE669AA49D4E1C4DF45 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		1BC382D34F0312CE5A90A9AD /* Build configuration list for PBXNativeTarget "UnrealRecoverySvc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8B93B63C7139AEE58C5A8670 /* "Debug" */,
+				379EDBEC4D00527C97639313 /* "DebugGame" */,
+				BA93F8F0FDBC6AFD227E0289 /* "Development" */,
+				1360B6401444408DF677997E /* "Shipping" */,
+				CC44491D1930E0B0E8961618 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		043D30B0C7B319940B095E22 /* Build configuration list for PBXNativeTarget "UnrealRecoverySvc_Index" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A95D33B2ABE5623E785B3584 /* "Debug" */,
+				E9C4D3BCD60B1AB3EAC17B0C /* "DebugGame" */,
+				567FAD4E4D7C3CAC3A120243 /* "Development" */,
+				29FBEE0242100DEE343A3AEC /* "Shipping" */,
+				BD58481E16DC8FF1DDB435FD /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C8DE3D1507B874F9763AF0DB /* Project object */;
+}

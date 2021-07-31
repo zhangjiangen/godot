@@ -16,7 +16,7 @@
 		5431A0612684E86B009E60B7 /* servers */ = {isa = PBXFileReference; lastKnownFileType = folder; name = servers; path = ../servers; sourceTree = "<group>"; };
 		5431A0622684E86B009E60B7 /* scene */ = {isa = PBXFileReference; lastKnownFileType = folder; name = scene; path = ../scene; sourceTree = "<group>"; };
 		5431A0632684E86B009E60B7 /* core */ = {isa = PBXFileReference; lastKnownFileType = folder; name = core; path = ../core; sourceTree = "<group>"; };
-		5431A0642684E86B009E60B7 /* godot4 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = godot4; sourceTree = "<group>"; };
+		5431A0642684E86B009E60B7 /* godot4 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = godot4; sourceTree = "<group>"; };
 		5431A0652684E86B009E60B7 /* doc */ = {isa = PBXFileReference; lastKnownFileType = folder; name = doc; path = ../doc; sourceTree = "<group>"; };
 		5431A0662684E86C009E60B7 /* drivers */ = {isa = PBXFileReference; lastKnownFileType = folder; name = drivers; path = ../drivers; sourceTree = "<group>"; };
 		5431A0672684E86C009E60B7 /* main */ = {isa = PBXFileReference; lastKnownFileType = folder; name = main; path = ../main; sourceTree = "<group>"; };
@@ -47,15 +47,16 @@
 /* Begin PBXLegacyTarget section */
 		5431A0552684E817009E60B7 /* godot4 */ = {
 			isa = PBXLegacyTarget;
-			buildArgumentsString = "$(ACTION)";
+			buildArgumentsString = "platform=osx bits=64 target=debug tools=yes --jobs=$(sysctl -n hw.logicalcpu) use_static_mvk=yes driver=Vulkan use_llvm=yes use_lsan=yes use_asan=yes use_ubsan=yes";
 			buildConfigurationList = 5431A0582684E817009E60B7 /* Build configuration list for PBXLegacyTarget "godot4" */;
 			buildPhases = (
 			);
 			buildToolPath = /usr/local/bin/scons;
+			buildWorkingDirectory = /Users/zhangjiangen/Documents/godot3;
 			dependencies = (
 			);
 			name = godot4;
-			passBuildSettingsInEnvironment = 1;
+			passBuildSettingsInEnvironment = 0;
 			productName = godot4;
 		};
 /* End PBXLegacyTarget section */
@@ -80,6 +81,7 @@
 				Base,
 			);
 			mainGroup = 5431A0502684E817009E60B7;
+			productRefGroup = 5431A0502684E817009E60B7;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (

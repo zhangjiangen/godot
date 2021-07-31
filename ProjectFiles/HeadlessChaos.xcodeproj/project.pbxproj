@@ -1,0 +1,1273 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		7174574DD10F5C3D7ADAED2F /* HeadlessChaos.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 807F991DF47839A507277F16 /* HeadlessChaos.Build.cs */; };
+		904689B4CE4204764EFBC41C /* HeadlessChaos.Target.cs in Sources */ = {isa = PBXBuildFile; fileRef = 4F0CE3BB730A930BD9335375 /* HeadlessChaos.Target.cs */; };
+		90B2921C31E3083B70CD0827 /* HeadlessChaosApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A83A0C51855E536AB212306 /* HeadlessChaosApp.cpp */; };
+		78CF7898D1D92E49F441BD1F /* HeadlessChaosCollisionConstraints.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C3F0C96D2B2BFB276721271 /* HeadlessChaosCollisionConstraints.cpp */; };
+		D8738DB242496A6F8E8CA462 /* HeadlessChaosTestBP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6B6F6A969EBF32C9C68049D8 /* HeadlessChaosTestBP.cpp */; };
+		494E63F961719005BC07C05D /* HeadlessChaosTestBroadphase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C7C06ABD64D90EF9BA92B63 /* HeadlessChaosTestBroadphase.cpp */; };
+		472913B74048AA572AB468F3 /* HeadlessChaosTestCloth.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E5700E1DFC9EA563AF0C4A22 /* HeadlessChaosTestCloth.cpp */; };
+		B886F379F0593DA02300B138 /* HeadlessChaosTestClustering.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DD8C5735C6833971413C665 /* HeadlessChaosTestClustering.cpp */; };
+		3E73F3FC03C7B33BDEF1FFB9 /* HeadlessChaosTestCollisions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 553167D076C8D0E4BED6C023 /* HeadlessChaosTestCollisions.cpp */; };
+		D9320646D8B20DA5C08D3A7D /* HeadlessChaosTestConstraintHandle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65419C5B4C76596CD90B1D2B /* HeadlessChaosTestConstraintHandle.cpp */; };
+		0062204C42E1A768B3D022D1 /* HeadlessChaosTestConstraints.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C06C622CE359F9C8F6EA6A34 /* HeadlessChaosTestConstraints.cpp */; };
+		2B7497487C5349CD14DB4675 /* HeadlessChaosTestDenseMatrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91C162DFE6D1CA951FCA9BE0 /* HeadlessChaosTestDenseMatrix.cpp */; };
+		132D887F12553416F7EB20CE /* HeadlessChaosTestDirtyParticle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 495EEB5F8654BDE426EC9A22 /* HeadlessChaosTestDirtyParticle.cpp */; };
+		F719E22420D51561D9B7354F /* HeadlessChaosTestEPA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CBCABBBEA72F7EA6A1939587 /* HeadlessChaosTestEPA.cpp */; };
+		E66B0ECA0DB6B926926687F8 /* HeadlessChaosTestForces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 730FF522D5BFF591299C93BC /* HeadlessChaosTestForces.cpp */; };
+		99FE3DF66EF48064845A3EB5 /* HeadlessChaosTestGJK.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C64B5322FE0EBC6542C24B98 /* HeadlessChaosTestGJK.cpp */; };
+		395BD0E29E035E49D752310F /* HeadlessChaosTestGJKDistance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78C2B79EE5237418D0405B8A /* HeadlessChaosTestGJKDistance.cpp */; };
+		6CD2931ADF2E7AD6B2A5BC13 /* HeadlessChaosTestGraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 239EC580FCF5DD731943A93B /* HeadlessChaosTestGraph.cpp */; };
+		571D7F1E4E32C7F9FF4575CB /* HeadlessChaosTestHandles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 704369A9D85B5CD306A47B46 /* HeadlessChaosTestHandles.cpp */; };
+		5EF31CDA63E871282858C3C2 /* HeadlessChaosTestHeightfield.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE5B8780DDC313DE28FA10B8 /* HeadlessChaosTestHeightfield.cpp */; };
+		8B349BBEE6D635B2A239C05A /* HeadlessChaosTestImplicits.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15ED9617D44DA21880A7FA7C /* HeadlessChaosTestImplicits.cpp */; };
+		0B50F56F8785E1A671061594 /* HeadlessChaosTestJoints.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92420CEA2C6AF52EC738732F /* HeadlessChaosTestJoints.cpp */; };
+		D3DCF642909C1D63E3644F2E /* HeadlessChaosTestJointSolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB2425222101F759B2D6AF0 /* HeadlessChaosTestJointSolver.cpp */; };
+		2DFB0ADB57F837E4391EEB0A /* HeadlessChaosTestJointUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF322061B5C77B19E67CA21 /* HeadlessChaosTestJointUtilities.cpp */; };
+		EE195A3FB5B951C531E8D007 /* HeadlessChaosTestMassProperties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C75CB33D4498D8DD8D73D8 /* HeadlessChaosTestMassProperties.cpp */; };
+		508C8433729C5AD3DDC6816E /* HeadlessChaosTestMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BA1F0B7B44F63A97105E864 /* HeadlessChaosTestMath.cpp */; };
+		0E41F0829F9A5161A581EF29 /* HeadlessChaosTestMinEvolution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 351E53948EFD2A3C46EE889B /* HeadlessChaosTestMinEvolution.cpp */; };
+		54E0248D29C9674BA41F2531 /* HeadlessChaosTestMostOpposing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ABD733427420C8A9B2C78296 /* HeadlessChaosTestMostOpposing.cpp */; };
+		FCCE1B74DBAB1E1FB8552DBF /* HeadlessChaosTestMultiply.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 76C437DC1AA48515F922E9B6 /* HeadlessChaosTestMultiply.cpp */; };
+		C9E7C82625DEE88D5D8D915A /* HeadlessChaosTestParticleHandle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEF270F801057856A974CCB0 /* HeadlessChaosTestParticleHandle.cpp */; };
+		E8EC8F0E426C9DDAE564AAF3 /* HeadlessChaosTestRaycast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E3F7FAD96CA061E832DC2D27 /* HeadlessChaosTestRaycast.cpp */; };
+		348C14F3A9930D551A173E39 /* HeadlessChaosTestRotation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FDA4BF1F0B6754A487C1409 /* HeadlessChaosTestRotation.cpp */; };
+		0B9EE90813E47D0BBE68DAB5 /* HeadlessChaosTestSerialization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58A930525655D9CBB9C08A92 /* HeadlessChaosTestSerialization.cpp */; };
+		556FF77C67E3DFB8770BE80A /* HeadlessChaosTestSim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A90442359A327BE7FF969947 /* HeadlessChaosTestSim.cpp */; };
+		8623F3F3A2494F4A1457B3A3 /* HeadlessChaosTestSolverCommandList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED01A4DA88223D4DC025A852 /* HeadlessChaosTestSolverCommandList.cpp */; };
+		12A4308745A392BFD6AFF643 /* HeadlessChaosTestSolverProxies.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F0EC152EBB9EF652509E4799 /* HeadlessChaosTestSolverProxies.cpp */; };
+		8DA05EDC584B86607AA0E0FD /* HeadlessChaosTestSpatialHashing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18C80471C4F4CC3D0B61EA9C /* HeadlessChaosTestSpatialHashing.cpp */; };
+		0C0F91222F5601735D97F9A5 /* HeadlessChaosTestUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44B6668A2995C84F0B1815F3 /* HeadlessChaosTestUtility.cpp */; };
+		9A858D5CD2098D2CB5C1D049 /* HeadlessChaos.h in Sources */ = {isa = PBXBuildFile; fileRef = BA6431249F6CA080CE5E2C0E /* HeadlessChaos.h */; };
+		8D411475989A91F4F99E87A9 /* HeadlessChaosApp.h in Sources */ = {isa = PBXBuildFile; fileRef = C9A4A15309CCEF83E61DD0C4 /* HeadlessChaosApp.h */; };
+		64A4B09F7895243B597FCF90 /* HeadlessChaosCollisionConstraints.h in Sources */ = {isa = PBXBuildFile; fileRef = F418931B30DB501BDC875BFA /* HeadlessChaosCollisionConstraints.h */; };
+		CA4C76026FA92870715011F4 /* HeadlessChaosTestBP.h in Sources */ = {isa = PBXBuildFile; fileRef = EAF17B637A4C4F49D5115FF1 /* HeadlessChaosTestBP.h */; };
+		38D4520ACCB4E7DC48B5D42B /* HeadlessChaosTestBroadphase.h in Sources */ = {isa = PBXBuildFile; fileRef = 1E21CCB0575F1FA4069F303E /* HeadlessChaosTestBroadphase.h */; };
+		5FECA190381125B9ED84C99A /* HeadlessChaosTestCloth.h in Sources */ = {isa = PBXBuildFile; fileRef = 561DA3BC6934AB341D504558 /* HeadlessChaosTestCloth.h */; };
+		7F9FF276F1BAEA99A313AAE0 /* HeadlessChaosTestClustering.h in Sources */ = {isa = PBXBuildFile; fileRef = 1356A437901B3E9958315939 /* HeadlessChaosTestClustering.h */; };
+		BC633BD2F3FC210FA6481198 /* HeadlessChaosTestCollisions.h in Sources */ = {isa = PBXBuildFile; fileRef = 1FAFC7329930F74373C2A812 /* HeadlessChaosTestCollisions.h */; };
+		9074A40211AC004D46B9BA8E /* HeadlessChaosTestConstraints.h in Sources */ = {isa = PBXBuildFile; fileRef = 7F18A5A7F19A39CB450B18E1 /* HeadlessChaosTestConstraints.h */; };
+		530BFF273A15C5F9BB28417E /* HeadlessChaosTestEPA.h in Sources */ = {isa = PBXBuildFile; fileRef = 581FFEFA47C35265F439B281 /* HeadlessChaosTestEPA.h */; };
+		8A5051D989DDCD845CC2AE05 /* HeadlessChaosTestForces.h in Sources */ = {isa = PBXBuildFile; fileRef = ACD81230F3C1D356D7274ED2 /* HeadlessChaosTestForces.h */; };
+		9C3E8381B9B2EC19597E9DEA /* HeadlessChaosTestGJK.h in Sources */ = {isa = PBXBuildFile; fileRef = C4EC6FDD5BBD229570F84E6F /* HeadlessChaosTestGJK.h */; };
+		B1227233665CA963017F3D4B /* HeadlessChaosTestHandles.h in Sources */ = {isa = PBXBuildFile; fileRef = 594BCBAAD595AC2D3B286B07 /* HeadlessChaosTestHandles.h */; };
+		51F5FA1A04B861A3EF14D096 /* HeadlessChaosTestImplicits.h in Sources */ = {isa = PBXBuildFile; fileRef = 3FB8B3FCD43AE844AE248310 /* HeadlessChaosTestImplicits.h */; };
+		F178BFDB4C203488B66AE271 /* HeadlessChaosTestMostOpposing.h in Sources */ = {isa = PBXBuildFile; fileRef = 618F5E481E9A5B457B346A1D /* HeadlessChaosTestMostOpposing.h */; };
+		E1AF59003F27582C71EA288C /* HeadlessChaosTestParticleHandle.h in Sources */ = {isa = PBXBuildFile; fileRef = F88556CFDF47E0D5D6429B44 /* HeadlessChaosTestParticleHandle.h */; };
+		DCA02514C93E95BC0DA2F99C /* HeadlessChaosTestRaycast.h in Sources */ = {isa = PBXBuildFile; fileRef = C733498E12B5FF7667D14F98 /* HeadlessChaosTestRaycast.h */; };
+		438B65335495469F1314249E /* HeadlessChaosTestSerialization.h in Sources */ = {isa = PBXBuildFile; fileRef = 01436333556B7F568BBA08AC /* HeadlessChaosTestSerialization.h */; };
+		FE51C3204225DD0A508CD13D /* HeadlessChaosTestSolverCommandList.h in Sources */ = {isa = PBXBuildFile; fileRef = D86168785C5A89B20FAA8CCE /* HeadlessChaosTestSolverCommandList.h */; };
+		52CC20FB52F90C8983B93503 /* HeadlessChaosTestSolverProxies.h in Sources */ = {isa = PBXBuildFile; fileRef = D2265DEE371A4D7572255BF4 /* HeadlessChaosTestSolverProxies.h */; };
+		0306F93130559D54C4F4CE75 /* HeadlessChaosTestSpatialHashing.h in Sources */ = {isa = PBXBuildFile; fileRef = 04E1B7577F48BA1E2C64A536 /* HeadlessChaosTestSpatialHashing.h */; };
+		FC9A7BF45C175C2C712CF84C /* HeadlessChaosTestUtility.h in Sources */ = {isa = PBXBuildFile; fileRef = FFDB582E1CE03FDD57E7EA55 /* HeadlessChaosTestUtility.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		807F991DF47839A507277F16 /* HeadlessChaos.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "HeadlessChaos.Build.cs"; path = "../../Source/Programs/HeadlessChaos/HeadlessChaos.Build.cs"; sourceTree = SOURCE_ROOT; };
+		4F0CE3BB730A930BD9335375 /* HeadlessChaos.Target.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "HeadlessChaos.Target.cs"; path = "../../Source/Programs/HeadlessChaos/HeadlessChaos.Target.cs"; sourceTree = SOURCE_ROOT; };
+		0A83A0C51855E536AB212306 /* HeadlessChaosApp.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosApp.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosApp.cpp"; sourceTree = SOURCE_ROOT; };
+		7C3F0C96D2B2BFB276721271 /* HeadlessChaosCollisionConstraints.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosCollisionConstraints.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosCollisionConstraints.cpp"; sourceTree = SOURCE_ROOT; };
+		6B6F6A969EBF32C9C68049D8 /* HeadlessChaosTestBP.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestBP.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestBP.cpp"; sourceTree = SOURCE_ROOT; };
+		4C7C06ABD64D90EF9BA92B63 /* HeadlessChaosTestBroadphase.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestBroadphase.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestBroadphase.cpp"; sourceTree = SOURCE_ROOT; };
+		E5700E1DFC9EA563AF0C4A22 /* HeadlessChaosTestCloth.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestCloth.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestCloth.cpp"; sourceTree = SOURCE_ROOT; };
+		5DD8C5735C6833971413C665 /* HeadlessChaosTestClustering.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestClustering.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestClustering.cpp"; sourceTree = SOURCE_ROOT; };
+		553167D076C8D0E4BED6C023 /* HeadlessChaosTestCollisions.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestCollisions.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestCollisions.cpp"; sourceTree = SOURCE_ROOT; };
+		65419C5B4C76596CD90B1D2B /* HeadlessChaosTestConstraintHandle.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestConstraintHandle.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestConstraintHandle.cpp"; sourceTree = SOURCE_ROOT; };
+		C06C622CE359F9C8F6EA6A34 /* HeadlessChaosTestConstraints.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestConstraints.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestConstraints.cpp"; sourceTree = SOURCE_ROOT; };
+		91C162DFE6D1CA951FCA9BE0 /* HeadlessChaosTestDenseMatrix.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestDenseMatrix.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestDenseMatrix.cpp"; sourceTree = SOURCE_ROOT; };
+		495EEB5F8654BDE426EC9A22 /* HeadlessChaosTestDirtyParticle.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestDirtyParticle.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestDirtyParticle.cpp"; sourceTree = SOURCE_ROOT; };
+		CBCABBBEA72F7EA6A1939587 /* HeadlessChaosTestEPA.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestEPA.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestEPA.cpp"; sourceTree = SOURCE_ROOT; };
+		730FF522D5BFF591299C93BC /* HeadlessChaosTestForces.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestForces.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestForces.cpp"; sourceTree = SOURCE_ROOT; };
+		C64B5322FE0EBC6542C24B98 /* HeadlessChaosTestGJK.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestGJK.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestGJK.cpp"; sourceTree = SOURCE_ROOT; };
+		78C2B79EE5237418D0405B8A /* HeadlessChaosTestGJKDistance.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestGJKDistance.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestGJKDistance.cpp"; sourceTree = SOURCE_ROOT; };
+		239EC580FCF5DD731943A93B /* HeadlessChaosTestGraph.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestGraph.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestGraph.cpp"; sourceTree = SOURCE_ROOT; };
+		704369A9D85B5CD306A47B46 /* HeadlessChaosTestHandles.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestHandles.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestHandles.cpp"; sourceTree = SOURCE_ROOT; };
+		AE5B8780DDC313DE28FA10B8 /* HeadlessChaosTestHeightfield.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestHeightfield.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestHeightfield.cpp"; sourceTree = SOURCE_ROOT; };
+		15ED9617D44DA21880A7FA7C /* HeadlessChaosTestImplicits.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestImplicits.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestImplicits.cpp"; sourceTree = SOURCE_ROOT; };
+		92420CEA2C6AF52EC738732F /* HeadlessChaosTestJoints.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestJoints.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestJoints.cpp"; sourceTree = SOURCE_ROOT; };
+		4CB2425222101F759B2D6AF0 /* HeadlessChaosTestJointSolver.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestJointSolver.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestJointSolver.cpp"; sourceTree = SOURCE_ROOT; };
+		DFF322061B5C77B19E67CA21 /* HeadlessChaosTestJointUtilities.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestJointUtilities.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestJointUtilities.cpp"; sourceTree = SOURCE_ROOT; };
+		02C75CB33D4498D8DD8D73D8 /* HeadlessChaosTestMassProperties.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestMassProperties.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestMassProperties.cpp"; sourceTree = SOURCE_ROOT; };
+		2BA1F0B7B44F63A97105E864 /* HeadlessChaosTestMath.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestMath.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestMath.cpp"; sourceTree = SOURCE_ROOT; };
+		351E53948EFD2A3C46EE889B /* HeadlessChaosTestMinEvolution.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestMinEvolution.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestMinEvolution.cpp"; sourceTree = SOURCE_ROOT; };
+		ABD733427420C8A9B2C78296 /* HeadlessChaosTestMostOpposing.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestMostOpposing.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestMostOpposing.cpp"; sourceTree = SOURCE_ROOT; };
+		76C437DC1AA48515F922E9B6 /* HeadlessChaosTestMultiply.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestMultiply.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestMultiply.cpp"; sourceTree = SOURCE_ROOT; };
+		AEF270F801057856A974CCB0 /* HeadlessChaosTestParticleHandle.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestParticleHandle.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestParticleHandle.cpp"; sourceTree = SOURCE_ROOT; };
+		E3F7FAD96CA061E832DC2D27 /* HeadlessChaosTestRaycast.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestRaycast.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestRaycast.cpp"; sourceTree = SOURCE_ROOT; };
+		4FDA4BF1F0B6754A487C1409 /* HeadlessChaosTestRotation.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestRotation.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestRotation.cpp"; sourceTree = SOURCE_ROOT; };
+		58A930525655D9CBB9C08A92 /* HeadlessChaosTestSerialization.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestSerialization.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestSerialization.cpp"; sourceTree = SOURCE_ROOT; };
+		A90442359A327BE7FF969947 /* HeadlessChaosTestSim.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestSim.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestSim.cpp"; sourceTree = SOURCE_ROOT; };
+		ED01A4DA88223D4DC025A852 /* HeadlessChaosTestSolverCommandList.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestSolverCommandList.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestSolverCommandList.cpp"; sourceTree = SOURCE_ROOT; };
+		F0EC152EBB9EF652509E4799 /* HeadlessChaosTestSolverProxies.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestSolverProxies.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestSolverProxies.cpp"; sourceTree = SOURCE_ROOT; };
+		18C80471C4F4CC3D0B61EA9C /* HeadlessChaosTestSpatialHashing.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestSpatialHashing.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestSpatialHashing.cpp"; sourceTree = SOURCE_ROOT; };
+		44B6668A2995C84F0B1815F3 /* HeadlessChaosTestUtility.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "HeadlessChaosTestUtility.cpp"; path = "../../Source/Programs/HeadlessChaos/Private/HeadlessChaosTestUtility.cpp"; sourceTree = SOURCE_ROOT; };
+		BA6431249F6CA080CE5E2C0E /* HeadlessChaos.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "HeadlessChaos.h"; path = "../../Source/Programs/HeadlessChaos/Public/HeadlessChaos.h"; sourceTree = SOURCE_ROOT; };
+		C9A4A15309CCEF83E61DD0C4 /* HeadlessChaosApp.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "HeadlessChaosApp.h"; path = "../../Source/Programs/HeadlessChaos/Public/HeadlessChaosApp.h"; sourceTree = SOURCE_ROOT; };
+		F418931B30DB501BDC875BFA /* HeadlessChaosCollisionConstraints.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "HeadlessChaosCollisionConstraints.h"; path = "../../Source/Programs/HeadlessChaos/Public/HeadlessChaosCollisionConstraints.h"; sourceTree = SOURCE_ROOT; };
+		EAF17B637A4C4F49D5115FF1 /* HeadlessChaosTestBP.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "HeadlessChaosTestBP.h"; path = "../../Source/Programs/HeadlessChaos/Public/HeadlessChaosTestBP.h"; sourceTree = SOURCE_ROOT; };
+		1E21CCB0575F1FA4069F303E /* HeadlessChaosTestBroadphase.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "HeadlessChaosTestBroadphase.h"; path = "../../Source/Programs/HeadlessChaos/Public/HeadlessChaosTestBroadphase.h"; sourceTree = SOURCE_ROOT; };
+		561DA3BC6934AB341D504558 /* HeadlessChaosTestCloth.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "HeadlessChaosTestCloth.h"; path = "../../Source/Programs/HeadlessChaos/Public/HeadlessChaosTestCloth.h"; sourceTree = SOURCE_ROOT; };
+		1356A437901B3E9958315939 /* HeadlessChaosTestClustering.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "HeadlessChaosTestClustering.h"; path = "../../Source/Programs/HeadlessChaos/Public/HeadlessChaosTestClustering.h"; sourceTree = SOURCE_ROOT; };
+		1FAFC7329930F74373C2A812 /* HeadlessChaosTestCollisions.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "HeadlessChaosTestCollisions.h"; path = "../../Source/Programs/HeadlessChaos/Public/HeadlessChaosTestCollisions.h"; sourceTree = SOURCE_ROOT; };
+		7F18A5A7F19A39CB450B18E1 /* HeadlessChaosTestConstraints.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "HeadlessChaosTestConstraints.h"; path = "../../Source/Programs/HeadlessChaos/Public/HeadlessChaosTestConstraints.h"; sourceTree = SOURCE_ROOT; };
+		581FFEFA47C35265F439B281 /* HeadlessChaosTestEPA.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "HeadlessChaosTestEPA.h"; path = "../../Source/Programs/HeadlessChaos/Public/HeadlessChaosTestEPA.h"; sourceTree = SOURCE_ROOT; };
+		ACD81230F3C1D356D7274ED2 /* HeadlessChaosTestForces.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "HeadlessChaosTestForces.h"; path = "../../Source/Programs/HeadlessChaos/Public/HeadlessChaosTestForces.h"; sourceTree = SOURCE_ROOT; };
+		C4EC6FDD5BBD229570F84E6F /* HeadlessChaosTestGJK.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "HeadlessChaosTestGJK.h"; path = "../../Source/Programs/HeadlessChaos/Public/HeadlessChaosTestGJK.h"; sourceTree = SOURCE_ROOT; };
+		594BCBAAD595AC2D3B286B07 /* HeadlessChaosTestHandles.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "HeadlessChaosTestHandles.h"; path = "../../Source/Programs/HeadlessChaos/Public/HeadlessChaosTestHandles.h"; sourceTree = SOURCE_ROOT; };
+		3FB8B3FCD43AE844AE248310 /* HeadlessChaosTestImplicits.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "HeadlessChaosTestImplicits.h"; path = "../../Source/Programs/HeadlessChaos/Public/HeadlessChaosTestImplicits.h"; sourceTree = SOURCE_ROOT; };
+		618F5E481E9A5B457B346A1D /* HeadlessChaosTestMostOpposing.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "HeadlessChaosTestMostOpposing.h"; path = "../../Source/Programs/HeadlessChaos/Public/HeadlessChaosTestMostOpposing.h"; sourceTree = SOURCE_ROOT; };
+		F88556CFDF47E0D5D6429B44 /* HeadlessChaosTestParticleHandle.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "HeadlessChaosTestParticleHandle.h"; path = "../../Source/Programs/HeadlessChaos/Public/HeadlessChaosTestParticleHandle.h"; sourceTree = SOURCE_ROOT; };
+		C733498E12B5FF7667D14F98 /* HeadlessChaosTestRaycast.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "HeadlessChaosTestRaycast.h"; path = "../../Source/Programs/HeadlessChaos/Public/HeadlessChaosTestRaycast.h"; sourceTree = SOURCE_ROOT; };
+		01436333556B7F568BBA08AC /* HeadlessChaosTestSerialization.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "HeadlessChaosTestSerialization.h"; path = "../../Source/Programs/HeadlessChaos/Public/HeadlessChaosTestSerialization.h"; sourceTree = SOURCE_ROOT; };
+		D86168785C5A89B20FAA8CCE /* HeadlessChaosTestSolverCommandList.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "HeadlessChaosTestSolverCommandList.h"; path = "../../Source/Programs/HeadlessChaos/Public/HeadlessChaosTestSolverCommandList.h"; sourceTree = SOURCE_ROOT; };
+		D2265DEE371A4D7572255BF4 /* HeadlessChaosTestSolverProxies.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "HeadlessChaosTestSolverProxies.h"; path = "../../Source/Programs/HeadlessChaos/Public/HeadlessChaosTestSolverProxies.h"; sourceTree = SOURCE_ROOT; };
+		04E1B7577F48BA1E2C64A536 /* HeadlessChaosTestSpatialHashing.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "HeadlessChaosTestSpatialHashing.h"; path = "../../Source/Programs/HeadlessChaos/Public/HeadlessChaosTestSpatialHashing.h"; sourceTree = SOURCE_ROOT; };
+		FFDB582E1CE03FDD57E7EA55 /* HeadlessChaosTestUtility.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "HeadlessChaosTestUtility.h"; path = "../../Source/Programs/HeadlessChaos/Public/HeadlessChaosTestUtility.h"; sourceTree = SOURCE_ROOT; };
+		D841809BE1B660EA44E001EE /* HeadlessChaos */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = HeadlessChaos; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3A372E3ECE36FCFFB3DF7C06 = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				90B2921C31E3083B70CD0827 /* HeadlessChaosApp.cpp in Sources */,
+				78CF7898D1D92E49F441BD1F /* HeadlessChaosCollisionConstraints.cpp in Sources */,
+				D8738DB242496A6F8E8CA462 /* HeadlessChaosTestBP.cpp in Sources */,
+				494E63F961719005BC07C05D /* HeadlessChaosTestBroadphase.cpp in Sources */,
+				472913B74048AA572AB468F3 /* HeadlessChaosTestCloth.cpp in Sources */,
+				B886F379F0593DA02300B138 /* HeadlessChaosTestClustering.cpp in Sources */,
+				3E73F3FC03C7B33BDEF1FFB9 /* HeadlessChaosTestCollisions.cpp in Sources */,
+				D9320646D8B20DA5C08D3A7D /* HeadlessChaosTestConstraintHandle.cpp in Sources */,
+				0062204C42E1A768B3D022D1 /* HeadlessChaosTestConstraints.cpp in Sources */,
+				2B7497487C5349CD14DB4675 /* HeadlessChaosTestDenseMatrix.cpp in Sources */,
+				132D887F12553416F7EB20CE /* HeadlessChaosTestDirtyParticle.cpp in Sources */,
+				F719E22420D51561D9B7354F /* HeadlessChaosTestEPA.cpp in Sources */,
+				E66B0ECA0DB6B926926687F8 /* HeadlessChaosTestForces.cpp in Sources */,
+				99FE3DF66EF48064845A3EB5 /* HeadlessChaosTestGJK.cpp in Sources */,
+				395BD0E29E035E49D752310F /* HeadlessChaosTestGJKDistance.cpp in Sources */,
+				6CD2931ADF2E7AD6B2A5BC13 /* HeadlessChaosTestGraph.cpp in Sources */,
+				571D7F1E4E32C7F9FF4575CB /* HeadlessChaosTestHandles.cpp in Sources */,
+				5EF31CDA63E871282858C3C2 /* HeadlessChaosTestHeightfield.cpp in Sources */,
+				8B349BBEE6D635B2A239C05A /* HeadlessChaosTestImplicits.cpp in Sources */,
+				0B50F56F8785E1A671061594 /* HeadlessChaosTestJoints.cpp in Sources */,
+				D3DCF642909C1D63E3644F2E /* HeadlessChaosTestJointSolver.cpp in Sources */,
+				2DFB0ADB57F837E4391EEB0A /* HeadlessChaosTestJointUtilities.cpp in Sources */,
+				EE195A3FB5B951C531E8D007 /* HeadlessChaosTestMassProperties.cpp in Sources */,
+				508C8433729C5AD3DDC6816E /* HeadlessChaosTestMath.cpp in Sources */,
+				0E41F0829F9A5161A581EF29 /* HeadlessChaosTestMinEvolution.cpp in Sources */,
+				54E0248D29C9674BA41F2531 /* HeadlessChaosTestMostOpposing.cpp in Sources */,
+				FCCE1B74DBAB1E1FB8552DBF /* HeadlessChaosTestMultiply.cpp in Sources */,
+				C9E7C82625DEE88D5D8D915A /* HeadlessChaosTestParticleHandle.cpp in Sources */,
+				E8EC8F0E426C9DDAE564AAF3 /* HeadlessChaosTestRaycast.cpp in Sources */,
+				348C14F3A9930D551A173E39 /* HeadlessChaosTestRotation.cpp in Sources */,
+				0B9EE90813E47D0BBE68DAB5 /* HeadlessChaosTestSerialization.cpp in Sources */,
+				556FF77C67E3DFB8770BE80A /* HeadlessChaosTestSim.cpp in Sources */,
+				8623F3F3A2494F4A1457B3A3 /* HeadlessChaosTestSolverCommandList.cpp in Sources */,
+				12A4308745A392BFD6AFF643 /* HeadlessChaosTestSolverProxies.cpp in Sources */,
+				8DA05EDC584B86607AA0E0FD /* HeadlessChaosTestSpatialHashing.cpp in Sources */,
+				0C0F91222F5601735D97F9A5 /* HeadlessChaosTestUtility.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+	C20EAEDBBA9FB83946915767 /* Embed App Extensions */ = {
+		isa = PBXCopyFilesBuildPhase;
+		buildActionMask = 2147483647;
+		dstPath = "";
+		dstSubfolderSpec = 13;
+		files = (
+		);
+		name = "Embed App Extensions";
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXCopyFilesBuildPhase section */
+/* Begin PBXContainerItemProxy section */
+		B66225AAC7017D614E6B5A7E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6445A54F5014FA2DA2EF9395 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8BD87AFF3E08CF519E69EC09;
+			remoteInfo = "HeadlessChaos_Build";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		584FDC0FCCEC45782DE3E06D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8BD87AFF3E08CF519E69EC09 /* HeadlessChaos_Build */;
+			targetProxy = B66225AAC7017D614E6B5A7E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXGroup section */
+		D24951EB7EC635F4DC38123D = {
+			isa = PBXGroup;
+			children = (
+				18A2B55D68C9060A77D3B7CE /* Private */,
+				AAC858D94553D95257B7422D /* Public */,
+				807F991DF47839A507277F16 /* HeadlessChaos.Build.cs */,
+				4F0CE3BB730A930BD9335375 /* HeadlessChaos.Target.cs */,
+				50D9854C3CF24C98EA8ED442 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		18A2B55D68C9060A77D3B7CE = {
+			isa = PBXGroup;
+			children = (
+				0A83A0C51855E536AB212306 /* HeadlessChaosApp.cpp */,
+				7C3F0C96D2B2BFB276721271 /* HeadlessChaosCollisionConstraints.cpp */,
+				6B6F6A969EBF32C9C68049D8 /* HeadlessChaosTestBP.cpp */,
+				4C7C06ABD64D90EF9BA92B63 /* HeadlessChaosTestBroadphase.cpp */,
+				E5700E1DFC9EA563AF0C4A22 /* HeadlessChaosTestCloth.cpp */,
+				5DD8C5735C6833971413C665 /* HeadlessChaosTestClustering.cpp */,
+				553167D076C8D0E4BED6C023 /* HeadlessChaosTestCollisions.cpp */,
+				65419C5B4C76596CD90B1D2B /* HeadlessChaosTestConstraintHandle.cpp */,
+				C06C622CE359F9C8F6EA6A34 /* HeadlessChaosTestConstraints.cpp */,
+				91C162DFE6D1CA951FCA9BE0 /* HeadlessChaosTestDenseMatrix.cpp */,
+				495EEB5F8654BDE426EC9A22 /* HeadlessChaosTestDirtyParticle.cpp */,
+				CBCABBBEA72F7EA6A1939587 /* HeadlessChaosTestEPA.cpp */,
+				730FF522D5BFF591299C93BC /* HeadlessChaosTestForces.cpp */,
+				C64B5322FE0EBC6542C24B98 /* HeadlessChaosTestGJK.cpp */,
+				78C2B79EE5237418D0405B8A /* HeadlessChaosTestGJKDistance.cpp */,
+				239EC580FCF5DD731943A93B /* HeadlessChaosTestGraph.cpp */,
+				704369A9D85B5CD306A47B46 /* HeadlessChaosTestHandles.cpp */,
+				AE5B8780DDC313DE28FA10B8 /* HeadlessChaosTestHeightfield.cpp */,
+				15ED9617D44DA21880A7FA7C /* HeadlessChaosTestImplicits.cpp */,
+				92420CEA2C6AF52EC738732F /* HeadlessChaosTestJoints.cpp */,
+				4CB2425222101F759B2D6AF0 /* HeadlessChaosTestJointSolver.cpp */,
+				DFF322061B5C77B19E67CA21 /* HeadlessChaosTestJointUtilities.cpp */,
+				02C75CB33D4498D8DD8D73D8 /* HeadlessChaosTestMassProperties.cpp */,
+				2BA1F0B7B44F63A97105E864 /* HeadlessChaosTestMath.cpp */,
+				351E53948EFD2A3C46EE889B /* HeadlessChaosTestMinEvolution.cpp */,
+				ABD733427420C8A9B2C78296 /* HeadlessChaosTestMostOpposing.cpp */,
+				76C437DC1AA48515F922E9B6 /* HeadlessChaosTestMultiply.cpp */,
+				AEF270F801057856A974CCB0 /* HeadlessChaosTestParticleHandle.cpp */,
+				E3F7FAD96CA061E832DC2D27 /* HeadlessChaosTestRaycast.cpp */,
+				4FDA4BF1F0B6754A487C1409 /* HeadlessChaosTestRotation.cpp */,
+				58A930525655D9CBB9C08A92 /* HeadlessChaosTestSerialization.cpp */,
+				A90442359A327BE7FF969947 /* HeadlessChaosTestSim.cpp */,
+				ED01A4DA88223D4DC025A852 /* HeadlessChaosTestSolverCommandList.cpp */,
+				F0EC152EBB9EF652509E4799 /* HeadlessChaosTestSolverProxies.cpp */,
+				18C80471C4F4CC3D0B61EA9C /* HeadlessChaosTestSpatialHashing.cpp */,
+				44B6668A2995C84F0B1815F3 /* HeadlessChaosTestUtility.cpp */,
+			);
+			name = "Private";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/HeadlessChaos/Private";
+			sourceTree = "<absolute>";
+		};
+		AAC858D94553D95257B7422D = {
+			isa = PBXGroup;
+			children = (
+				BA6431249F6CA080CE5E2C0E /* HeadlessChaos.h */,
+				C9A4A15309CCEF83E61DD0C4 /* HeadlessChaosApp.h */,
+				F418931B30DB501BDC875BFA /* HeadlessChaosCollisionConstraints.h */,
+				EAF17B637A4C4F49D5115FF1 /* HeadlessChaosTestBP.h */,
+				1E21CCB0575F1FA4069F303E /* HeadlessChaosTestBroadphase.h */,
+				561DA3BC6934AB341D504558 /* HeadlessChaosTestCloth.h */,
+				1356A437901B3E9958315939 /* HeadlessChaosTestClustering.h */,
+				1FAFC7329930F74373C2A812 /* HeadlessChaosTestCollisions.h */,
+				7F18A5A7F19A39CB450B18E1 /* HeadlessChaosTestConstraints.h */,
+				581FFEFA47C35265F439B281 /* HeadlessChaosTestEPA.h */,
+				ACD81230F3C1D356D7274ED2 /* HeadlessChaosTestForces.h */,
+				C4EC6FDD5BBD229570F84E6F /* HeadlessChaosTestGJK.h */,
+				594BCBAAD595AC2D3B286B07 /* HeadlessChaosTestHandles.h */,
+				3FB8B3FCD43AE844AE248310 /* HeadlessChaosTestImplicits.h */,
+				618F5E481E9A5B457B346A1D /* HeadlessChaosTestMostOpposing.h */,
+				F88556CFDF47E0D5D6429B44 /* HeadlessChaosTestParticleHandle.h */,
+				C733498E12B5FF7667D14F98 /* HeadlessChaosTestRaycast.h */,
+				01436333556B7F568BBA08AC /* HeadlessChaosTestSerialization.h */,
+				D86168785C5A89B20FAA8CCE /* HeadlessChaosTestSolverCommandList.h */,
+				D2265DEE371A4D7572255BF4 /* HeadlessChaosTestSolverProxies.h */,
+				04E1B7577F48BA1E2C64A536 /* HeadlessChaosTestSpatialHashing.h */,
+				FFDB582E1CE03FDD57E7EA55 /* HeadlessChaosTestUtility.h */,
+			);
+			name = "Public";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/HeadlessChaos/Public";
+			sourceTree = "<absolute>";
+		};
+		50D9854C3CF24C98EA8ED442 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D841809BE1B660EA44E001EE /* HeadlessChaos */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		8BD87AFF3E08CF519E69EC09 /* HeadlessChaos_Build */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION) $(UE_BUILD_TARGET_NAME) $(PLATFORM_NAME) $(UE_BUILD_TARGET_CONFIG)";
+			buildConfigurationList = CE82521A44F590EDF45E368A /* Build configuration list for PBXLegacyTarget "HeadlessChaos_Build" */;
+			buildPhases = (
+			);
+			buildToolPath = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Build/BatchFiles/Mac/XcodeBuild.sh";
+			buildWorkingDirectory = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425";
+			dependencies = (
+			);
+			name = "HeadlessChaos_Build";
+			passBuildSettingsInEnvironment = 1;
+			productName = "HeadlessChaos_Build";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		AB9CBF593D68E746EB8480FD /* HeadlessChaos */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 357FD6A26BF42C191CC157DF /* Build configuration list for PBXNativeTarget "HeadlessChaos" */;
+			buildPhases = (
+				C20EAEDBBA9FB83946915767 /* Embed App Extensions */, 
+				915B5A7017FADC44750FB147 /* Shell Script */, 
+			);
+			dependencies = (
+				584FDC0FCCEC45782DE3E06D /* PBXTargetDependency */,
+			);
+			name = "HeadlessChaos";
+			passBuildSettingsInEnvironment = 1;
+			productName = "HeadlessChaos";
+			productReference = "D841809BE1B660EA44E001EE";
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXNativeTarget section */
+		6BA9977683F628D560371FEE /* HeadlessChaos_Index */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 877D23469B08DF6F5576CD5F /* Build configuration list for PBXNativeTarget "HeadlessChaos_Index" */;
+			buildPhases = (
+				3A372E3ECE36FCFFB3DF7C06 /* Sources */,
+			);
+			dependencies = (
+			);
+			name = "HeadlessChaos_Index";
+			passBuildSettingsInEnvironment = 1;
+			productName = "HeadlessChaos_Index";
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6445A54F5014FA2DA2EF9395 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2000;
+				ORGANIZATIONNAME = "Epic Games, Inc.";
+				TargetAttributes = {
+					AB9CBF593D68E746EB8480FD = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 7159CEA84017A897626492C6 /* Build configuration list for PBXProject "HeadlessChaos" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en
+			);
+			mainGroup = D24951EB7EC635F4DC38123D;
+			productRefGroup = 50D9854C3CF24C98EA8ED442;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			AB9CBF593D68E746EB8480FD /* HeadlessChaos */,
+			8BD87AFF3E08CF519E69EC09 /* HeadlessChaos_Build */,
+			6BA9977683F628D560371FEE /* HeadlessChaos_Index */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		97F726A63B128A715C7F8A2E /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/GoogleTest/include",
+					"../../Source/ThirdParty/PhysX3/PxShared/include",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/cudamanager",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/filebuf",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/foundation",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/pvd",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/task",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include/cooking",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include/common",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include/extensions",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include/geometry",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include/clothing",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include/nvparameterized",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include/legacy",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include/PhysX3",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/common/include",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/common/include/autogen",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/framework/include",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/framework/include/autogen",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/shared/general/RenderDebug/public",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/shared/general/PairFilter/include",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/shared/internal/include",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/HeadlessChaos/Private",
+					"../Build/Mac/HeadlessChaos/Inc/ApplicationCore",
+					"../../Source/Runtime",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/Core",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/HeadlessChaos/Inc/TraceLog",
+					"../Build/Mac/HeadlessChaos/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/HeadlessChaos/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/HeadlessChaos/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../../Source/ThirdParty",
+					"../Build/Mac/HeadlessChaos/Inc/Chaos",
+					"../../Source/Runtime/Experimental",
+					"../../Source/Runtime/Experimental/Chaos/Public",
+					"../Build/Mac/HeadlessChaos/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/HeadlessChaos/Inc/ChaosCore",
+					"../../Source/Runtime/Experimental/ChaosCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/Voronoi",
+					"../../Source/Runtime/Experimental/Voronoi/Public",
+					"../Build/Mac/HeadlessChaos/Inc/ChaosSolvers",
+					"../../Source/Runtime/Experimental/ChaosSolvers/Public",
+					"../Build/Mac/HeadlessChaos/Inc/FieldSystemCore",
+					"../../Source/Runtime/Experimental/FieldSystem/Source",
+					"../../Source/Runtime/Experimental/FieldSystem/Source/FieldSystemCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/GeometryCollectionCore",
+					"../../Source/Runtime/Experimental/GeometryCollectionCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/GeometryCollectionSimulationCore",
+					"../../Source/Runtime/Experimental/GeometryCollectionSimulationCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/PhysicsCore",
+					"../../Source/Runtime/PhysicsCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/HeadlessChaos",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Programs/HeadlessChaos/Public",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				ENABLE_TESTABILITY = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Debug";
+		};
+		1C916FD9130866D04AB4CAB0 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/GoogleTest/include",
+					"../../Source/ThirdParty/PhysX3/PxShared/include",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/cudamanager",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/filebuf",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/foundation",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/pvd",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/task",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include/cooking",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include/common",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include/extensions",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include/geometry",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include/clothing",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include/nvparameterized",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include/legacy",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include/PhysX3",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/common/include",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/common/include/autogen",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/framework/include",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/framework/include/autogen",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/shared/general/RenderDebug/public",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/shared/general/PairFilter/include",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/shared/internal/include",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/HeadlessChaos/Private",
+					"../Build/Mac/HeadlessChaos/Inc/ApplicationCore",
+					"../../Source/Runtime",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/Core",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/HeadlessChaos/Inc/TraceLog",
+					"../Build/Mac/HeadlessChaos/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/HeadlessChaos/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/HeadlessChaos/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../../Source/ThirdParty",
+					"../Build/Mac/HeadlessChaos/Inc/Chaos",
+					"../../Source/Runtime/Experimental",
+					"../../Source/Runtime/Experimental/Chaos/Public",
+					"../Build/Mac/HeadlessChaos/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/HeadlessChaos/Inc/ChaosCore",
+					"../../Source/Runtime/Experimental/ChaosCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/Voronoi",
+					"../../Source/Runtime/Experimental/Voronoi/Public",
+					"../Build/Mac/HeadlessChaos/Inc/ChaosSolvers",
+					"../../Source/Runtime/Experimental/ChaosSolvers/Public",
+					"../Build/Mac/HeadlessChaos/Inc/FieldSystemCore",
+					"../../Source/Runtime/Experimental/FieldSystem/Source",
+					"../../Source/Runtime/Experimental/FieldSystem/Source/FieldSystemCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/GeometryCollectionCore",
+					"../../Source/Runtime/Experimental/GeometryCollectionCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/GeometryCollectionSimulationCore",
+					"../../Source/Runtime/Experimental/GeometryCollectionSimulationCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/PhysicsCore",
+					"../../Source/Runtime/PhysicsCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/HeadlessChaos",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Programs/HeadlessChaos/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "DebugGame";
+		};
+		76E624FA5A507701BFAC3B4C /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/GoogleTest/include",
+					"../../Source/ThirdParty/PhysX3/PxShared/include",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/cudamanager",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/filebuf",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/foundation",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/pvd",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/task",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include/cooking",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include/common",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include/extensions",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include/geometry",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include/clothing",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include/nvparameterized",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include/legacy",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include/PhysX3",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/common/include",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/common/include/autogen",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/framework/include",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/framework/include/autogen",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/shared/general/RenderDebug/public",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/shared/general/PairFilter/include",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/shared/internal/include",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/HeadlessChaos/Private",
+					"../Build/Mac/HeadlessChaos/Inc/ApplicationCore",
+					"../../Source/Runtime",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/Core",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/HeadlessChaos/Inc/TraceLog",
+					"../Build/Mac/HeadlessChaos/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/HeadlessChaos/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/HeadlessChaos/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../../Source/ThirdParty",
+					"../Build/Mac/HeadlessChaos/Inc/Chaos",
+					"../../Source/Runtime/Experimental",
+					"../../Source/Runtime/Experimental/Chaos/Public",
+					"../Build/Mac/HeadlessChaos/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/HeadlessChaos/Inc/ChaosCore",
+					"../../Source/Runtime/Experimental/ChaosCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/Voronoi",
+					"../../Source/Runtime/Experimental/Voronoi/Public",
+					"../Build/Mac/HeadlessChaos/Inc/ChaosSolvers",
+					"../../Source/Runtime/Experimental/ChaosSolvers/Public",
+					"../Build/Mac/HeadlessChaos/Inc/FieldSystemCore",
+					"../../Source/Runtime/Experimental/FieldSystem/Source",
+					"../../Source/Runtime/Experimental/FieldSystem/Source/FieldSystemCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/GeometryCollectionCore",
+					"../../Source/Runtime/Experimental/GeometryCollectionCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/GeometryCollectionSimulationCore",
+					"../../Source/Runtime/Experimental/GeometryCollectionSimulationCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/PhysicsCore",
+					"../../Source/Runtime/PhysicsCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/HeadlessChaos",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Programs/HeadlessChaos/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Development";
+		};
+		5EC6AF2DFA21FF788BEEC3DD /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/GoogleTest/include",
+					"../../Source/ThirdParty/PhysX3/PxShared/include",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/cudamanager",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/filebuf",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/foundation",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/pvd",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/task",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include/cooking",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include/common",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include/extensions",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include/geometry",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include/clothing",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include/nvparameterized",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include/legacy",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include/PhysX3",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/common/include",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/common/include/autogen",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/framework/include",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/framework/include/autogen",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/shared/general/RenderDebug/public",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/shared/general/PairFilter/include",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/shared/internal/include",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/HeadlessChaos/Private",
+					"../Build/Mac/HeadlessChaos/Inc/ApplicationCore",
+					"../../Source/Runtime",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/Core",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/HeadlessChaos/Inc/TraceLog",
+					"../Build/Mac/HeadlessChaos/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/HeadlessChaos/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/HeadlessChaos/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../../Source/ThirdParty",
+					"../Build/Mac/HeadlessChaos/Inc/Chaos",
+					"../../Source/Runtime/Experimental",
+					"../../Source/Runtime/Experimental/Chaos/Public",
+					"../Build/Mac/HeadlessChaos/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/HeadlessChaos/Inc/ChaosCore",
+					"../../Source/Runtime/Experimental/ChaosCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/Voronoi",
+					"../../Source/Runtime/Experimental/Voronoi/Public",
+					"../Build/Mac/HeadlessChaos/Inc/ChaosSolvers",
+					"../../Source/Runtime/Experimental/ChaosSolvers/Public",
+					"../Build/Mac/HeadlessChaos/Inc/FieldSystemCore",
+					"../../Source/Runtime/Experimental/FieldSystem/Source",
+					"../../Source/Runtime/Experimental/FieldSystem/Source/FieldSystemCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/GeometryCollectionCore",
+					"../../Source/Runtime/Experimental/GeometryCollectionCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/GeometryCollectionSimulationCore",
+					"../../Source/Runtime/Experimental/GeometryCollectionSimulationCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/PhysicsCore",
+					"../../Source/Runtime/PhysicsCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/HeadlessChaos",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Programs/HeadlessChaos/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Shipping";
+		};
+		3B01E991C4F2AD208A4067B5 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/GoogleTest/include",
+					"../../Source/ThirdParty/PhysX3/PxShared/include",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/cudamanager",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/filebuf",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/foundation",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/pvd",
+					"../../Source/ThirdParty/PhysX3/PxShared/include/task",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include/cooking",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include/common",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include/extensions",
+					"../../Source/ThirdParty/PhysX3/PhysX_3.4/Include/geometry",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include/clothing",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include/nvparameterized",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include/legacy",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/include/PhysX3",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/common/include",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/common/include/autogen",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/framework/include",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/framework/include/autogen",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/shared/general/RenderDebug/public",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/shared/general/PairFilter/include",
+					"../../Source/ThirdParty/PhysX3/APEX_1.4/shared/internal/include",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/HeadlessChaos/Private",
+					"../Build/Mac/HeadlessChaos/Inc/ApplicationCore",
+					"../../Source/Runtime",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/Core",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/HeadlessChaos/Inc/TraceLog",
+					"../Build/Mac/HeadlessChaos/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/HeadlessChaos/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/HeadlessChaos/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../../Source/ThirdParty",
+					"../Build/Mac/HeadlessChaos/Inc/Chaos",
+					"../../Source/Runtime/Experimental",
+					"../../Source/Runtime/Experimental/Chaos/Public",
+					"../Build/Mac/HeadlessChaos/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/HeadlessChaos/Inc/ChaosCore",
+					"../../Source/Runtime/Experimental/ChaosCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/Voronoi",
+					"../../Source/Runtime/Experimental/Voronoi/Public",
+					"../Build/Mac/HeadlessChaos/Inc/ChaosSolvers",
+					"../../Source/Runtime/Experimental/ChaosSolvers/Public",
+					"../Build/Mac/HeadlessChaos/Inc/FieldSystemCore",
+					"../../Source/Runtime/Experimental/FieldSystem/Source",
+					"../../Source/Runtime/Experimental/FieldSystem/Source/FieldSystemCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/GeometryCollectionCore",
+					"../../Source/Runtime/Experimental/GeometryCollectionCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/GeometryCollectionSimulationCore",
+					"../../Source/Runtime/Experimental/GeometryCollectionSimulationCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/PhysicsCore",
+					"../../Source/Runtime/PhysicsCore/Public",
+					"../Build/Mac/HeadlessChaos/Inc/HeadlessChaos",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Programs/HeadlessChaos/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Test";
+		};
+		4371DD4AD59BFBA8E0C7AC72 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				"PRODUCT_NAME[sdk=iphoneos*]" = "HeadlessChaos";
+				"TARGETED_DEVICE_FAMILY[sdk=iphoneos*]" = "1,2";
+				"SDKROOT[sdk=iphoneos]" = iphoneos;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				"PRODUCT_NAME[sdk=appletvos*]" = "HeadlessChaos";
+				"TARGETED_DEVICE_FAMILY[sdk=appletvos*]" = "3";
+				"SDKROOT[sdk=appletvos]" = appletvos;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"PRODUCT_NAME[sdk=macosx*]" = "HeadlessChaos-Mac-Debug";
+				"CONFIGURATION_BUILD_DIR[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				"SDKROOT[sdk=macosx]" = macosx;
+				"CONFIGURATION_BUILD_DIR[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/IOS/Payload";
+				"CONFIGURATION_BUILD_DIR[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/TVOS/Payload";
+				"INFOPLIST_FILE[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/Mac/HeadlessChaos-Mac-Debug-Info.plist";
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/IOS/HeadlessChaos-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "";
+				"INFOPLIST_FILE[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/TVOS/HeadlessChaos-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=appletvos*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		2AD16F24EDD6D1DC2E1BD2C2 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				"PRODUCT_NAME[sdk=iphoneos*]" = "HeadlessChaos";
+				"TARGETED_DEVICE_FAMILY[sdk=iphoneos*]" = "1,2";
+				"SDKROOT[sdk=iphoneos]" = iphoneos;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				"PRODUCT_NAME[sdk=appletvos*]" = "HeadlessChaos";
+				"TARGETED_DEVICE_FAMILY[sdk=appletvos*]" = "3";
+				"SDKROOT[sdk=appletvos]" = appletvos;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"PRODUCT_NAME[sdk=macosx*]" = "HeadlessChaos-Mac-DebugGame";
+				"CONFIGURATION_BUILD_DIR[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				"SDKROOT[sdk=macosx]" = macosx;
+				"CONFIGURATION_BUILD_DIR[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/IOS/Payload";
+				"CONFIGURATION_BUILD_DIR[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/TVOS/Payload";
+				"INFOPLIST_FILE[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/Mac/HeadlessChaos-Mac-DebugGame-Info.plist";
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/IOS/HeadlessChaos-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "";
+				"INFOPLIST_FILE[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/TVOS/HeadlessChaos-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=appletvos*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		666B13B1141A52E835FD5B36 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				"PRODUCT_NAME[sdk=iphoneos*]" = "HeadlessChaos";
+				"TARGETED_DEVICE_FAMILY[sdk=iphoneos*]" = "1,2";
+				"SDKROOT[sdk=iphoneos]" = iphoneos;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				"PRODUCT_NAME[sdk=appletvos*]" = "HeadlessChaos";
+				"TARGETED_DEVICE_FAMILY[sdk=appletvos*]" = "3";
+				"SDKROOT[sdk=appletvos]" = appletvos;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"PRODUCT_NAME[sdk=macosx*]" = "HeadlessChaos";
+				"CONFIGURATION_BUILD_DIR[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				"SDKROOT[sdk=macosx]" = macosx;
+				"CONFIGURATION_BUILD_DIR[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/IOS/Payload";
+				"CONFIGURATION_BUILD_DIR[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/TVOS/Payload";
+				"INFOPLIST_FILE[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/Mac/HeadlessChaos-Info.plist";
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/IOS/HeadlessChaos-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "";
+				"INFOPLIST_FILE[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/TVOS/HeadlessChaos-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=appletvos*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		75BC5EB032EA8EFAE73E3C6E /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				"PRODUCT_NAME[sdk=iphoneos*]" = "HeadlessChaos";
+				"TARGETED_DEVICE_FAMILY[sdk=iphoneos*]" = "1,2";
+				"SDKROOT[sdk=iphoneos]" = iphoneos;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				"PRODUCT_NAME[sdk=appletvos*]" = "HeadlessChaos";
+				"TARGETED_DEVICE_FAMILY[sdk=appletvos*]" = "3";
+				"SDKROOT[sdk=appletvos]" = appletvos;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"PRODUCT_NAME[sdk=macosx*]" = "HeadlessChaos-Mac-Shipping";
+				"CONFIGURATION_BUILD_DIR[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				"SDKROOT[sdk=macosx]" = macosx;
+				"CONFIGURATION_BUILD_DIR[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/IOS/Payload";
+				"CONFIGURATION_BUILD_DIR[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/TVOS/Payload";
+				"INFOPLIST_FILE[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/Mac/HeadlessChaos-Mac-Shipping-Info.plist";
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/IOS/HeadlessChaos-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "";
+				"INFOPLIST_FILE[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/TVOS/HeadlessChaos-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=appletvos*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		02642C4C34E04C2D5F8251E5 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				"PRODUCT_NAME[sdk=iphoneos*]" = "HeadlessChaos";
+				"TARGETED_DEVICE_FAMILY[sdk=iphoneos*]" = "1,2";
+				"SDKROOT[sdk=iphoneos]" = iphoneos;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				"PRODUCT_NAME[sdk=appletvos*]" = "HeadlessChaos";
+				"TARGETED_DEVICE_FAMILY[sdk=appletvos*]" = "3";
+				"SDKROOT[sdk=appletvos]" = appletvos;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"PRODUCT_NAME[sdk=macosx*]" = "HeadlessChaos-Mac-Test";
+				"CONFIGURATION_BUILD_DIR[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				"SDKROOT[sdk=macosx]" = macosx;
+				"CONFIGURATION_BUILD_DIR[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/IOS/Payload";
+				"CONFIGURATION_BUILD_DIR[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/TVOS/Payload";
+				"INFOPLIST_FILE[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/Mac/HeadlessChaos-Mac-Test-Info.plist";
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/IOS/HeadlessChaos-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "";
+				"INFOPLIST_FILE[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/TVOS/HeadlessChaos-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=appletvos*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+		DB8BE8B8023891B35C6743C2 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "HeadlessChaos";
+				UE_BUILD_TARGET_CONFIG = "Debug";
+			};
+			name = "Debug";
+		};
+		9DC7A1FABC99A0AF5E419B71 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "HeadlessChaos";
+				UE_BUILD_TARGET_CONFIG = "DebugGame";
+			};
+			name = "DebugGame";
+		};
+		367DDBBBA30E7A50BD6C84D5 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "HeadlessChaos";
+				UE_BUILD_TARGET_CONFIG = "Development";
+			};
+			name = "Development";
+		};
+		C5451E9B4B3EBAE390475CDC /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "HeadlessChaos";
+				UE_BUILD_TARGET_CONFIG = "Shipping";
+			};
+			name = "Shipping";
+		};
+		95F28EDBF3B58D4DAD105F4A /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "HeadlessChaos";
+				UE_BUILD_TARGET_CONFIG = "Test";
+			};
+			name = "Test";
+		};
+		7812FD3407E50A12D12B2DA6 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				"PRODUCT_NAME[sdk=iphoneos*]" = "HeadlessChaos";
+				"TARGETED_DEVICE_FAMILY[sdk=iphoneos*]" = "1,2";
+				"SDKROOT[sdk=iphoneos]" = iphoneos;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				"PRODUCT_NAME[sdk=appletvos*]" = "HeadlessChaos";
+				"TARGETED_DEVICE_FAMILY[sdk=appletvos*]" = "3";
+				"SDKROOT[sdk=appletvos]" = appletvos;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"PRODUCT_NAME[sdk=macosx*]" = "HeadlessChaos-Mac-Debug";
+				"CONFIGURATION_BUILD_DIR[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				"SDKROOT[sdk=macosx]" = macosx;
+				"CONFIGURATION_BUILD_DIR[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/IOS/Payload";
+				"CONFIGURATION_BUILD_DIR[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/TVOS/Payload";
+				"INFOPLIST_FILE[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/Mac/HeadlessChaos-Mac-Debug-Info.plist";
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/IOS/HeadlessChaos-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "";
+				"INFOPLIST_FILE[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/TVOS/HeadlessChaos-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=appletvos*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		C9B79F54007278C3484D0935 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				"PRODUCT_NAME[sdk=iphoneos*]" = "HeadlessChaos";
+				"TARGETED_DEVICE_FAMILY[sdk=iphoneos*]" = "1,2";
+				"SDKROOT[sdk=iphoneos]" = iphoneos;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				"PRODUCT_NAME[sdk=appletvos*]" = "HeadlessChaos";
+				"TARGETED_DEVICE_FAMILY[sdk=appletvos*]" = "3";
+				"SDKROOT[sdk=appletvos]" = appletvos;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"PRODUCT_NAME[sdk=macosx*]" = "HeadlessChaos-Mac-DebugGame";
+				"CONFIGURATION_BUILD_DIR[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				"SDKROOT[sdk=macosx]" = macosx;
+				"CONFIGURATION_BUILD_DIR[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/IOS/Payload";
+				"CONFIGURATION_BUILD_DIR[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/TVOS/Payload";
+				"INFOPLIST_FILE[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/Mac/HeadlessChaos-Mac-DebugGame-Info.plist";
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/IOS/HeadlessChaos-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "";
+				"INFOPLIST_FILE[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/TVOS/HeadlessChaos-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=appletvos*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		74A5550DC99AB21C7C53ED94 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				"PRODUCT_NAME[sdk=iphoneos*]" = "HeadlessChaos";
+				"TARGETED_DEVICE_FAMILY[sdk=iphoneos*]" = "1,2";
+				"SDKROOT[sdk=iphoneos]" = iphoneos;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				"PRODUCT_NAME[sdk=appletvos*]" = "HeadlessChaos";
+				"TARGETED_DEVICE_FAMILY[sdk=appletvos*]" = "3";
+				"SDKROOT[sdk=appletvos]" = appletvos;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"PRODUCT_NAME[sdk=macosx*]" = "HeadlessChaos";
+				"CONFIGURATION_BUILD_DIR[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				"SDKROOT[sdk=macosx]" = macosx;
+				"CONFIGURATION_BUILD_DIR[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/IOS/Payload";
+				"CONFIGURATION_BUILD_DIR[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/TVOS/Payload";
+				"INFOPLIST_FILE[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/Mac/HeadlessChaos-Info.plist";
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/IOS/HeadlessChaos-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "";
+				"INFOPLIST_FILE[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/TVOS/HeadlessChaos-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=appletvos*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		5F4C559C6C0C4A86E178970D /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				"PRODUCT_NAME[sdk=iphoneos*]" = "HeadlessChaos";
+				"TARGETED_DEVICE_FAMILY[sdk=iphoneos*]" = "1,2";
+				"SDKROOT[sdk=iphoneos]" = iphoneos;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				"PRODUCT_NAME[sdk=appletvos*]" = "HeadlessChaos";
+				"TARGETED_DEVICE_FAMILY[sdk=appletvos*]" = "3";
+				"SDKROOT[sdk=appletvos]" = appletvos;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"PRODUCT_NAME[sdk=macosx*]" = "HeadlessChaos-Mac-Shipping";
+				"CONFIGURATION_BUILD_DIR[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				"SDKROOT[sdk=macosx]" = macosx;
+				"CONFIGURATION_BUILD_DIR[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/IOS/Payload";
+				"CONFIGURATION_BUILD_DIR[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/TVOS/Payload";
+				"INFOPLIST_FILE[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/Mac/HeadlessChaos-Mac-Shipping-Info.plist";
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/IOS/HeadlessChaos-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "";
+				"INFOPLIST_FILE[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/TVOS/HeadlessChaos-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=appletvos*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		54291E9D9A3C511EE5A09907 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				"PRODUCT_NAME[sdk=iphoneos*]" = "HeadlessChaos";
+				"TARGETED_DEVICE_FAMILY[sdk=iphoneos*]" = "1,2";
+				"SDKROOT[sdk=iphoneos]" = iphoneos;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				"PRODUCT_NAME[sdk=appletvos*]" = "HeadlessChaos";
+				"TARGETED_DEVICE_FAMILY[sdk=appletvos*]" = "3";
+				"SDKROOT[sdk=appletvos]" = appletvos;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"PRODUCT_NAME[sdk=macosx*]" = "HeadlessChaos-Mac-Test";
+				"CONFIGURATION_BUILD_DIR[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				"SDKROOT[sdk=macosx]" = macosx;
+				"CONFIGURATION_BUILD_DIR[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/IOS/Payload";
+				"CONFIGURATION_BUILD_DIR[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/TVOS/Payload";
+				"INFOPLIST_FILE[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/Mac/HeadlessChaos-Mac-Test-Info.plist";
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/IOS/HeadlessChaos-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "";
+				"INFOPLIST_FILE[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/TVOS/HeadlessChaos-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=appletvos*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7159CEA84017A897626492C6 /* Build configuration list for PBXProject "HeadlessChaos" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				97F726A63B128A715C7F8A2E /* "Debug" */,
+				1C916FD9130866D04AB4CAB0 /* "DebugGame" */,
+				76E624FA5A507701BFAC3B4C /* "Development" */,
+				5EC6AF2DFA21FF788BEEC3DD /* "Shipping" */,
+				3B01E991C4F2AD208A4067B5 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		CE82521A44F590EDF45E368A /* Build configuration list for PBXLegacyTarget "HeadlessChaos_Build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DB8BE8B8023891B35C6743C2 /* "Debug" */,
+				9DC7A1FABC99A0AF5E419B71 /* "DebugGame" */,
+				367DDBBBA30E7A50BD6C84D5 /* "Development" */,
+				C5451E9B4B3EBAE390475CDC /* "Shipping" */,
+				95F28EDBF3B58D4DAD105F4A /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		357FD6A26BF42C191CC157DF /* Build configuration list for PBXNativeTarget "HeadlessChaos" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4371DD4AD59BFBA8E0C7AC72 /* "Debug" */,
+				2AD16F24EDD6D1DC2E1BD2C2 /* "DebugGame" */,
+				666B13B1141A52E835FD5B36 /* "Development" */,
+				75BC5EB032EA8EFAE73E3C6E /* "Shipping" */,
+				02642C4C34E04C2D5F8251E5 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		877D23469B08DF6F5576CD5F /* Build configuration list for PBXNativeTarget "HeadlessChaos_Index" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7812FD3407E50A12D12B2DA6 /* "Debug" */,
+				C9B79F54007278C3484D0935 /* "DebugGame" */,
+				74A5550DC99AB21C7C53ED94 /* "Development" */,
+				5F4C559C6C0C4A86E178970D /* "Shipping" */,
+				54291E9D9A3C511EE5A09907 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6445A54F5014FA2DA2EF9395 /* Project object */;
+}

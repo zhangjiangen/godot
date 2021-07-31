@@ -1,0 +1,652 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C7380C4CAA5674055119C9CC /* BenchmarkTool.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 14B839D2D856C23D9E54999A /* BenchmarkTool.Build.cs */; };
+		1A0C466F5D75E4D8AD6765D5 /* BenchmarkTool.Target.cs in Sources */ = {isa = PBXBuildFile; fileRef = F519DBC82B7C343B37F88500 /* BenchmarkTool.Target.cs */; };
+		13226580BF6DE6EE311432F8 /* BenchmarkTool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9671E91F459A84248C5A6C23 /* BenchmarkTool.cpp */; };
+		4973C5060F8B7B739E713887 /* BenchmarkTool.h in Sources */ = {isa = PBXBuildFile; fileRef = F1F346E332DB9B0086413B67 /* BenchmarkTool.h */; };
+		6CA2F803D0750EB9B542364C /* BenchmarkTool.ico in Sources */ = {isa = PBXBuildFile; fileRef = A8E0DEA599BF592439612E51 /* BenchmarkTool.ico */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		14B839D2D856C23D9E54999A /* BenchmarkTool.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "BenchmarkTool.Build.cs"; path = "../../Source/Programs/BenchmarkTool/BenchmarkTool.Build.cs"; sourceTree = SOURCE_ROOT; };
+		F519DBC82B7C343B37F88500 /* BenchmarkTool.Target.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "BenchmarkTool.Target.cs"; path = "../../Source/Programs/BenchmarkTool/BenchmarkTool.Target.cs"; sourceTree = SOURCE_ROOT; };
+		9671E91F459A84248C5A6C23 /* BenchmarkTool.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "BenchmarkTool.cpp"; path = "../../Source/Programs/BenchmarkTool/Private/BenchmarkTool.cpp"; sourceTree = SOURCE_ROOT; };
+		F1F346E332DB9B0086413B67 /* BenchmarkTool.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "BenchmarkTool.h"; path = "../../Source/Programs/BenchmarkTool/Private/BenchmarkTool.h"; sourceTree = SOURCE_ROOT; };
+		A8E0DEA599BF592439612E51 /* BenchmarkTool.ico */ = {isa = PBXFileReference; explicitFileType = file.text; name = "BenchmarkTool.ico"; path = "../../Source/Programs/BenchmarkTool/Resources/Windows/BenchmarkTool.ico"; sourceTree = SOURCE_ROOT; };
+		4EEF8BE457E97EB41C2A0759 /* BenchmarkTool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = BenchmarkTool; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7F6803B0B591B1DC4AF6BF04 = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				13226580BF6DE6EE311432F8 /* BenchmarkTool.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+	687B46A6895F4FCFC1CF4A49 /* Embed App Extensions */ = {
+		isa = PBXCopyFilesBuildPhase;
+		buildActionMask = 2147483647;
+		dstPath = "";
+		dstSubfolderSpec = 13;
+		files = (
+		);
+		name = "Embed App Extensions";
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXCopyFilesBuildPhase section */
+/* Begin PBXContainerItemProxy section */
+		4445C9337E400A28228F01C1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C64761993EC4FECD9FA60025 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7D4506227F6FA82998A2AC09;
+			remoteInfo = "BenchmarkTool_Build";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		D15C71F44FAD3E7BC04E8C15 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7D4506227F6FA82998A2AC09 /* BenchmarkTool_Build */;
+			targetProxy = 4445C9337E400A28228F01C1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXGroup section */
+		DA395B8286F81DA0D67B1089 = {
+			isa = PBXGroup;
+			children = (
+				F035068A4137F4CB5F19C2FB /* Private */,
+				55B24F4FA90E879A165FA3F5 /* Resources */,
+				14B839D2D856C23D9E54999A /* BenchmarkTool.Build.cs */,
+				F519DBC82B7C343B37F88500 /* BenchmarkTool.Target.cs */,
+				755FDB7972E89A93E7826714 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F035068A4137F4CB5F19C2FB = {
+			isa = PBXGroup;
+			children = (
+				9671E91F459A84248C5A6C23 /* BenchmarkTool.cpp */,
+				F1F346E332DB9B0086413B67 /* BenchmarkTool.h */,
+			);
+			name = "Private";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/BenchmarkTool/Private";
+			sourceTree = "<absolute>";
+		};
+		55B24F4FA90E879A165FA3F5 = {
+			isa = PBXGroup;
+			children = (
+				E4518B9341776B17F8C0ADE1 /* Windows */,
+			);
+			name = "Resources";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/BenchmarkTool/Resources";
+			sourceTree = "<absolute>";
+		};
+		E4518B9341776B17F8C0ADE1 = {
+			isa = PBXGroup;
+			children = (
+				A8E0DEA599BF592439612E51 /* BenchmarkTool.ico */,
+			);
+			name = "Windows";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/BenchmarkTool/Resources/Windows";
+			sourceTree = "<absolute>";
+		};
+		755FDB7972E89A93E7826714 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4EEF8BE457E97EB41C2A0759 /* BenchmarkTool */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		7D4506227F6FA82998A2AC09 /* BenchmarkTool_Build */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION) $(UE_BUILD_TARGET_NAME) $(PLATFORM_NAME) $(UE_BUILD_TARGET_CONFIG)";
+			buildConfigurationList = 61AE23365383EC425BB0A560 /* Build configuration list for PBXLegacyTarget "BenchmarkTool_Build" */;
+			buildPhases = (
+			);
+			buildToolPath = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Build/BatchFiles/Mac/XcodeBuild.sh";
+			buildWorkingDirectory = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425";
+			dependencies = (
+			);
+			name = "BenchmarkTool_Build";
+			passBuildSettingsInEnvironment = 1;
+			productName = "BenchmarkTool_Build";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		12C839D9B6EE3956CFBDEB68 /* BenchmarkTool */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7724B7F04F2BE1A2775DAB0E /* Build configuration list for PBXNativeTarget "BenchmarkTool" */;
+			buildPhases = (
+				687B46A6895F4FCFC1CF4A49 /* Embed App Extensions */, 
+				B6527F0F4F6A8357D146021D /* Shell Script */, 
+			);
+			dependencies = (
+				D15C71F44FAD3E7BC04E8C15 /* PBXTargetDependency */,
+			);
+			name = "BenchmarkTool";
+			passBuildSettingsInEnvironment = 1;
+			productName = "BenchmarkTool";
+			productReference = "4EEF8BE457E97EB41C2A0759";
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXNativeTarget section */
+		215924D6D0D7F8193E70B639 /* BenchmarkTool_Index */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 39E8A8B2E6D829AC428182A9 /* Build configuration list for PBXNativeTarget "BenchmarkTool_Index" */;
+			buildPhases = (
+				7F6803B0B591B1DC4AF6BF04 /* Sources */,
+			);
+			dependencies = (
+			);
+			name = "BenchmarkTool_Index";
+			passBuildSettingsInEnvironment = 1;
+			productName = "BenchmarkTool_Index";
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C64761993EC4FECD9FA60025 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2000;
+				ORGANIZATIONNAME = "Epic Games, Inc.";
+				TargetAttributes = {
+					12C839D9B6EE3956CFBDEB68 = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 4BD158C0A992CBF1F7EAFD6B /* Build configuration list for PBXProject "BenchmarkTool" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en
+			);
+			mainGroup = DA395B8286F81DA0D67B1089;
+			productRefGroup = 755FDB7972E89A93E7826714;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			12C839D9B6EE3956CFBDEB68 /* BenchmarkTool */,
+			7D4506227F6FA82998A2AC09 /* BenchmarkTool_Build */,
+			215924D6D0D7F8193E70B639 /* BenchmarkTool_Index */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		F56DEA45C9343E7FA0D610F6 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/BenchmarkTool/Private",
+					"../Build/Mac/BenchmarkTool/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/BenchmarkTool/Inc/TraceLog",
+					"../Build/Mac/BenchmarkTool/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/BenchmarkTool/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/BenchmarkTool/Inc/BenchmarkTool",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				ENABLE_TESTABILITY = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Debug";
+		};
+		60FB2339F352FF3B73873327 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/BenchmarkTool/Private",
+					"../Build/Mac/BenchmarkTool/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/BenchmarkTool/Inc/TraceLog",
+					"../Build/Mac/BenchmarkTool/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/BenchmarkTool/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/BenchmarkTool/Inc/BenchmarkTool",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "DebugGame";
+		};
+		BE703C510BF31872E8F9A72E /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/BenchmarkTool/Private",
+					"../Build/Mac/BenchmarkTool/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/BenchmarkTool/Inc/TraceLog",
+					"../Build/Mac/BenchmarkTool/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/BenchmarkTool/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/BenchmarkTool/Inc/BenchmarkTool",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Development";
+		};
+		4A4D882CEC6F54297C9390B5 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/BenchmarkTool/Private",
+					"../Build/Mac/BenchmarkTool/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/BenchmarkTool/Inc/TraceLog",
+					"../Build/Mac/BenchmarkTool/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/BenchmarkTool/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/BenchmarkTool/Inc/BenchmarkTool",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Shipping";
+		};
+		E0CCA55FB0AC64C0D0F2003B /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/BenchmarkTool/Private",
+					"../Build/Mac/BenchmarkTool/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/BenchmarkTool/Inc/TraceLog",
+					"../Build/Mac/BenchmarkTool/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/BenchmarkTool/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/BenchmarkTool/Inc/BenchmarkTool",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Test";
+		};
+		A2F30987339853B01EB9F963 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "BenchmarkTool-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		A75E0C38A3EF7D7942ED132A /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "BenchmarkTool-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		33AC2A5A65A9F276DE95F3A8 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "BenchmarkTool";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		A34B2DC2A5F34F46178A7D95 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "BenchmarkTool-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		108322D33DCE52CEC835247F /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "BenchmarkTool-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+		12A28CE0726733217928B11C /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "BenchmarkTool";
+				UE_BUILD_TARGET_CONFIG = "Debug";
+			};
+			name = "Debug";
+		};
+		91C51F531019228935308077 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "BenchmarkTool";
+				UE_BUILD_TARGET_CONFIG = "DebugGame";
+			};
+			name = "DebugGame";
+		};
+		C15650CD452553B3DFEC94A0 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "BenchmarkTool";
+				UE_BUILD_TARGET_CONFIG = "Development";
+			};
+			name = "Development";
+		};
+		2CB05ED006A856C162D482F7 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "BenchmarkTool";
+				UE_BUILD_TARGET_CONFIG = "Shipping";
+			};
+			name = "Shipping";
+		};
+		2CDFAEAC663455631292F039 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "BenchmarkTool";
+				UE_BUILD_TARGET_CONFIG = "Test";
+			};
+			name = "Test";
+		};
+		7409068D90CBA9DF41886D5B /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "BenchmarkTool-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		44FA2D262875A8EDD6DEE632 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "BenchmarkTool-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		DCD07D41180D8F4B52FFF37C /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "BenchmarkTool";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		9D26C76F986B23493FC89ECC /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "BenchmarkTool-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		03F611B670C227AA258C5F15 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "BenchmarkTool-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4BD158C0A992CBF1F7EAFD6B /* Build configuration list for PBXProject "BenchmarkTool" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F56DEA45C9343E7FA0D610F6 /* "Debug" */,
+				60FB2339F352FF3B73873327 /* "DebugGame" */,
+				BE703C510BF31872E8F9A72E /* "Development" */,
+				4A4D882CEC6F54297C9390B5 /* "Shipping" */,
+				E0CCA55FB0AC64C0D0F2003B /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		61AE23365383EC425BB0A560 /* Build configuration list for PBXLegacyTarget "BenchmarkTool_Build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				12A28CE0726733217928B11C /* "Debug" */,
+				91C51F531019228935308077 /* "DebugGame" */,
+				C15650CD452553B3DFEC94A0 /* "Development" */,
+				2CB05ED006A856C162D482F7 /* "Shipping" */,
+				2CDFAEAC663455631292F039 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		7724B7F04F2BE1A2775DAB0E /* Build configuration list for PBXNativeTarget "BenchmarkTool" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A2F30987339853B01EB9F963 /* "Debug" */,
+				A75E0C38A3EF7D7942ED132A /* "DebugGame" */,
+				33AC2A5A65A9F276DE95F3A8 /* "Development" */,
+				A34B2DC2A5F34F46178A7D95 /* "Shipping" */,
+				108322D33DCE52CEC835247F /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		39E8A8B2E6D829AC428182A9 /* Build configuration list for PBXNativeTarget "BenchmarkTool_Index" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7409068D90CBA9DF41886D5B /* "Debug" */,
+				44FA2D262875A8EDD6DEE632 /* "DebugGame" */,
+				DCD07D41180D8F4B52FFF37C /* "Development" */,
+				9D26C76F986B23493FC89ECC /* "Shipping" */,
+				03F611B670C227AA258C5F15 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C64761993EC4FECD9FA60025 /* Project object */;
+}

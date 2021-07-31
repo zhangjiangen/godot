@@ -1,0 +1,738 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		70A6FE7014D47E5D271E7275 /* DatasmithFacadeCSharp.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 87916DDC12E512035BF6D8A5 /* DatasmithFacadeCSharp.Build.cs */; };
+		B7E241744C607A28EBDCB752 /* DatasmithFacadeCSharp.i in Sources */ = {isa = PBXBuildFile; fileRef = D39589E75577FBB3EDA46CBA /* DatasmithFacadeCSharp.i */; };
+		1CA02256E208777020EF3683 /* DatasmithFacadeCSharp.Target.cs in Sources */ = {isa = PBXBuildFile; fileRef = 5873D72E80F5FC38B15BAE4B /* DatasmithFacadeCSharp.Target.cs */; };
+		5B2BADE4FA25B8137586A0F6 /* DatasmithFacadeCSharp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAAAE3D7183C847ADC57534C /* DatasmithFacadeCSharp.cpp */; };
+		66340FA319C2DFB84CF87519 /* DatasmithFacadeCSharp.h in Sources */ = {isa = PBXBuildFile; fileRef = 66DF80A9A0A5BC0C6919DCF9 /* DatasmithFacadeCSharp.h */; };
+		67B3919E968EA003D7617DC5 /* DatasmithFacadeDLL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1514FAB3A7E7AAF134C97138 /* DatasmithFacadeDLL.cpp */; };
+		BCDAD9379B46E24C58163B66 /* DatasmithFacadeCSharp.cs in Sources */ = {isa = PBXBuildFile; fileRef = 304122BD5871420462BA938B /* DatasmithFacadeCSharp.cs */; };
+		AB0965816FEAC49E4158E1BC /* DatasmithFacadeCSharpPINVOKE.cs in Sources */ = {isa = PBXBuildFile; fileRef = B56968907E316CFFD9938265 /* DatasmithFacadeCSharpPINVOKE.cs */; };
+		C5EC99C3866DD602464D8C92 /* FDatasmithFacadeActor.cs in Sources */ = {isa = PBXBuildFile; fileRef = E160DC6E519D24D75F6508EE /* FDatasmithFacadeActor.cs */; };
+		09B185304D94B21786FFBC83 /* FDatasmithFacadeActorCamera.cs in Sources */ = {isa = PBXBuildFile; fileRef = 500117D482DF7567DDD5AF1D /* FDatasmithFacadeActorCamera.cs */; };
+		54FEAD3B6EAA065FE3ABB9D4 /* FDatasmithFacadeActorLight.cs in Sources */ = {isa = PBXBuildFile; fileRef = E7A5B4B19B740BE1A4591D4F /* FDatasmithFacadeActorLight.cs */; };
+		86505580F0A111330267DC4F /* FDatasmithFacadeActorMesh.cs in Sources */ = {isa = PBXBuildFile; fileRef = E777A8DBF95D9FA54842EDDC /* FDatasmithFacadeActorMesh.cs */; };
+		2AC3CB69C9CD79FAE05DB51E /* FDatasmithFacadeElement.cs in Sources */ = {isa = PBXBuildFile; fileRef = 55856E429985D180C965CA24 /* FDatasmithFacadeElement.cs */; };
+		CB30E847BA7707436279552D /* FDatasmithFacadeLog.cs in Sources */ = {isa = PBXBuildFile; fileRef = D5A86935EDE16E89C28A8573 /* FDatasmithFacadeLog.cs */; };
+		EE5D0BC2716C13C5F8A79D99 /* FDatasmithFacadeMaterial.cs in Sources */ = {isa = PBXBuildFile; fileRef = E53140685672BBDC30406CF1 /* FDatasmithFacadeMaterial.cs */; };
+		1B9C92E7F6406241AA74595C /* FDatasmithFacadeMesh.cs in Sources */ = {isa = PBXBuildFile; fileRef = 6C45D2F6668F352D0AD04FBC /* FDatasmithFacadeMesh.cs */; };
+		A106334FCEA943ADF01AA6D4 /* FDatasmithFacadeScene.cs in Sources */ = {isa = PBXBuildFile; fileRef = DA2BCFB7455CEE71D8E3FC10 /* FDatasmithFacadeScene.cs */; };
+		D35676D04513C47ACE58B832 /* ReadMe.txt in Sources */ = {isa = PBXBuildFile; fileRef = 930910C6A34A8AAADA1A097D /* ReadMe.txt */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		87916DDC12E512035BF6D8A5 /* DatasmithFacadeCSharp.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithFacadeCSharp.Build.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/DatasmithFacadeCSharp.Build.cs"; sourceTree = SOURCE_ROOT; };
+		D39589E75577FBB3EDA46CBA /* DatasmithFacadeCSharp.i */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithFacadeCSharp.i"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/DatasmithFacadeCSharp.i"; sourceTree = SOURCE_ROOT; };
+		5873D72E80F5FC38B15BAE4B /* DatasmithFacadeCSharp.Target.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithFacadeCSharp.Target.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/DatasmithFacadeCSharp.Target.cs"; sourceTree = SOURCE_ROOT; };
+		EAAAE3D7183C847ADC57534C /* DatasmithFacadeCSharp.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithFacadeCSharp.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Private/DatasmithFacadeCSharp.cpp"; sourceTree = SOURCE_ROOT; };
+		66DF80A9A0A5BC0C6919DCF9 /* DatasmithFacadeCSharp.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithFacadeCSharp.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Private/DatasmithFacadeCSharp.h"; sourceTree = SOURCE_ROOT; };
+		1514FAB3A7E7AAF134C97138 /* DatasmithFacadeDLL.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithFacadeDLL.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Private/DatasmithFacadeDLL.cpp"; sourceTree = SOURCE_ROOT; };
+		304122BD5871420462BA938B /* DatasmithFacadeCSharp.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithFacadeCSharp.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Public/DatasmithFacadeCSharp.cs"; sourceTree = SOURCE_ROOT; };
+		B56968907E316CFFD9938265 /* DatasmithFacadeCSharpPINVOKE.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithFacadeCSharpPINVOKE.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Public/DatasmithFacadeCSharpPINVOKE.cs"; sourceTree = SOURCE_ROOT; };
+		E160DC6E519D24D75F6508EE /* FDatasmithFacadeActor.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "FDatasmithFacadeActor.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Public/FDatasmithFacadeActor.cs"; sourceTree = SOURCE_ROOT; };
+		500117D482DF7567DDD5AF1D /* FDatasmithFacadeActorCamera.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "FDatasmithFacadeActorCamera.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Public/FDatasmithFacadeActorCamera.cs"; sourceTree = SOURCE_ROOT; };
+		E7A5B4B19B740BE1A4591D4F /* FDatasmithFacadeActorLight.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "FDatasmithFacadeActorLight.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Public/FDatasmithFacadeActorLight.cs"; sourceTree = SOURCE_ROOT; };
+		E777A8DBF95D9FA54842EDDC /* FDatasmithFacadeActorMesh.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "FDatasmithFacadeActorMesh.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Public/FDatasmithFacadeActorMesh.cs"; sourceTree = SOURCE_ROOT; };
+		55856E429985D180C965CA24 /* FDatasmithFacadeElement.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "FDatasmithFacadeElement.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Public/FDatasmithFacadeElement.cs"; sourceTree = SOURCE_ROOT; };
+		D5A86935EDE16E89C28A8573 /* FDatasmithFacadeLog.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "FDatasmithFacadeLog.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Public/FDatasmithFacadeLog.cs"; sourceTree = SOURCE_ROOT; };
+		E53140685672BBDC30406CF1 /* FDatasmithFacadeMaterial.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "FDatasmithFacadeMaterial.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Public/FDatasmithFacadeMaterial.cs"; sourceTree = SOURCE_ROOT; };
+		6C45D2F6668F352D0AD04FBC /* FDatasmithFacadeMesh.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "FDatasmithFacadeMesh.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Public/FDatasmithFacadeMesh.cs"; sourceTree = SOURCE_ROOT; };
+		DA2BCFB7455CEE71D8E3FC10 /* FDatasmithFacadeScene.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "FDatasmithFacadeScene.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Public/FDatasmithFacadeScene.cs"; sourceTree = SOURCE_ROOT; };
+		930910C6A34A8AAADA1A097D /* ReadMe.txt */ = {isa = PBXFileReference; explicitFileType = file.text; name = "ReadMe.txt"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/ReadMe.txt"; sourceTree = SOURCE_ROOT; };
+		73A49699B789BB96C19CD130 /* DatasmithFacadeCSharp */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = DatasmithFacadeCSharp; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D9760B5BEA0C19C0E5046A8C = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5B2BADE4FA25B8137586A0F6 /* DatasmithFacadeCSharp.cpp in Sources */,
+				67B3919E968EA003D7617DC5 /* DatasmithFacadeDLL.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+	147EFAC8291A71021EAF85B8 /* Embed App Extensions */ = {
+		isa = PBXCopyFilesBuildPhase;
+		buildActionMask = 2147483647;
+		dstPath = "";
+		dstSubfolderSpec = 13;
+		files = (
+		);
+		name = "Embed App Extensions";
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXCopyFilesBuildPhase section */
+/* Begin PBXContainerItemProxy section */
+		F4029D5C2D6D1EBDE2E7D000 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A8B6F57FB73E18F15D4770B2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BC34396E8F287E512C32D0EE;
+			remoteInfo = "DatasmithFacadeCSharp_Build";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		7AE8CC4A969376568D6764BD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BC34396E8F287E512C32D0EE /* DatasmithFacadeCSharp_Build */;
+			targetProxy = F4029D5C2D6D1EBDE2E7D000 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXGroup section */
+		142A2A99F6951D5540865BF5 = {
+			isa = PBXGroup;
+			children = (
+				8BA19BB897CE36E13A878084 /* Private */,
+				1ACF901AE9DAF59D96ED321D /* Public */,
+				87916DDC12E512035BF6D8A5 /* DatasmithFacadeCSharp.Build.cs */,
+				D39589E75577FBB3EDA46CBA /* DatasmithFacadeCSharp.i */,
+				5873D72E80F5FC38B15BAE4B /* DatasmithFacadeCSharp.Target.cs */,
+				930910C6A34A8AAADA1A097D /* ReadMe.txt */,
+				D87DA0F154AE9BED3F7B30EE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		8BA19BB897CE36E13A878084 = {
+			isa = PBXGroup;
+			children = (
+				EAAAE3D7183C847ADC57534C /* DatasmithFacadeCSharp.cpp */,
+				66DF80A9A0A5BC0C6919DCF9 /* DatasmithFacadeCSharp.h */,
+				1514FAB3A7E7AAF134C97138 /* DatasmithFacadeDLL.cpp */,
+			);
+			name = "Private";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Private";
+			sourceTree = "<absolute>";
+		};
+		1ACF901AE9DAF59D96ED321D = {
+			isa = PBXGroup;
+			children = (
+				304122BD5871420462BA938B /* DatasmithFacadeCSharp.cs */,
+				B56968907E316CFFD9938265 /* DatasmithFacadeCSharpPINVOKE.cs */,
+				E160DC6E519D24D75F6508EE /* FDatasmithFacadeActor.cs */,
+				500117D482DF7567DDD5AF1D /* FDatasmithFacadeActorCamera.cs */,
+				E7A5B4B19B740BE1A4591D4F /* FDatasmithFacadeActorLight.cs */,
+				E777A8DBF95D9FA54842EDDC /* FDatasmithFacadeActorMesh.cs */,
+				55856E429985D180C965CA24 /* FDatasmithFacadeElement.cs */,
+				D5A86935EDE16E89C28A8573 /* FDatasmithFacadeLog.cs */,
+				E53140685672BBDC30406CF1 /* FDatasmithFacadeMaterial.cs */,
+				6C45D2F6668F352D0AD04FBC /* FDatasmithFacadeMesh.cs */,
+				DA2BCFB7455CEE71D8E3FC10 /* FDatasmithFacadeScene.cs */,
+			);
+			name = "Public";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Public";
+			sourceTree = "<absolute>";
+		};
+		D87DA0F154AE9BED3F7B30EE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				73A49699B789BB96C19CD130 /* DatasmithFacadeCSharp */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		BC34396E8F287E512C32D0EE /* DatasmithFacadeCSharp_Build */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION) $(UE_BUILD_TARGET_NAME) $(PLATFORM_NAME) $(UE_BUILD_TARGET_CONFIG)";
+			buildConfigurationList = FD9EE005A142E59318CBD6F1 /* Build configuration list for PBXLegacyTarget "DatasmithFacadeCSharp_Build" */;
+			buildPhases = (
+			);
+			buildToolPath = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Build/BatchFiles/Mac/XcodeBuild.sh";
+			buildWorkingDirectory = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425";
+			dependencies = (
+			);
+			name = "DatasmithFacadeCSharp_Build";
+			passBuildSettingsInEnvironment = 1;
+			productName = "DatasmithFacadeCSharp_Build";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		56C0644C19897ECF02057E0B /* DatasmithFacadeCSharp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B890F0C4F09AFB0E72BFFFC8 /* Build configuration list for PBXNativeTarget "DatasmithFacadeCSharp" */;
+			buildPhases = (
+				147EFAC8291A71021EAF85B8 /* Embed App Extensions */, 
+				D8CB3B4F4BE3B198FA3BBF7F /* Shell Script */, 
+			);
+			dependencies = (
+				7AE8CC4A969376568D6764BD /* PBXTargetDependency */,
+			);
+			name = "DatasmithFacadeCSharp";
+			passBuildSettingsInEnvironment = 1;
+			productName = "DatasmithFacadeCSharp";
+			productReference = "73A49699B789BB96C19CD130";
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXNativeTarget section */
+		FDDD9F04ABCEFC57306CA0F9 /* DatasmithFacadeCSharp_Index */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 34B02DBA697ED441D4A79C18 /* Build configuration list for PBXNativeTarget "DatasmithFacadeCSharp_Index" */;
+			buildPhases = (
+				D9760B5BEA0C19C0E5046A8C /* Sources */,
+			);
+			dependencies = (
+			);
+			name = "DatasmithFacadeCSharp_Index";
+			passBuildSettingsInEnvironment = 1;
+			productName = "DatasmithFacadeCSharp_Index";
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A8B6F57FB73E18F15D4770B2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2000;
+				ORGANIZATIONNAME = "Epic Games, Inc.";
+				TargetAttributes = {
+					56C0644C19897ECF02057E0B = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 897AA55D3678BD90FEE7D0F1 /* Build configuration list for PBXProject "DatasmithFacadeCSharp" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en
+			);
+			mainGroup = 142A2A99F6951D5540865BF5;
+			productRefGroup = D87DA0F154AE9BED3F7B30EE;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			56C0644C19897ECF02057E0B /* DatasmithFacadeCSharp */,
+			BC34396E8F287E512C32D0EE /* DatasmithFacadeCSharp_Build */,
+			FDDD9F04ABCEFC57306CA0F9 /* DatasmithFacadeCSharp_Index */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		8AC26B346D9A10D41213DDD5 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Private",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/TraceLog",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/DatasmithFacade",
+					"../../Source/Developer/Datasmith/DatasmithFacade/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/DatasmithFacadeCSharp",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Public",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				ENABLE_TESTABILITY = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Debug";
+		};
+		1F8C8FCC6B958E373F4D63A3 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Private",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/TraceLog",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/DatasmithFacade",
+					"../../Source/Developer/Datasmith/DatasmithFacade/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/DatasmithFacadeCSharp",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "DebugGame";
+		};
+		2E6544E84F61E3C316C3341E /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Private",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/TraceLog",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/DatasmithFacade",
+					"../../Source/Developer/Datasmith/DatasmithFacade/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/DatasmithFacadeCSharp",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Development";
+		};
+		7BA644E07D346672668A5061 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Private",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/TraceLog",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/DatasmithFacade",
+					"../../Source/Developer/Datasmith/DatasmithFacade/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/DatasmithFacadeCSharp",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Shipping";
+		};
+		90AEAD011E0D65389E7003D5 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Private",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/TraceLog",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/DatasmithFacade",
+					"../../Source/Developer/Datasmith/DatasmithFacade/Public",
+					"../Build/Mac/DatasmithFacadeCSharp/Inc/DatasmithFacadeCSharp",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Test";
+		};
+		B4D3C325092DD02AF152821E /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithFacadeCSharp-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		250D824080051639955C76CC /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithFacadeCSharp-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		0A4C8A811CF874292BBCFEBA /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithFacadeCSharp";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		14548F01D18F3010394308D4 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithFacadeCSharp-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		255A65E661069266420132BF /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithFacadeCSharp-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+		D0C9740252D192D8BE7A3E67 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithFacadeCSharp";
+				UE_BUILD_TARGET_CONFIG = "Debug";
+			};
+			name = "Debug";
+		};
+		974C8A41ACBD306A2EFCE2C6 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithFacadeCSharp";
+				UE_BUILD_TARGET_CONFIG = "DebugGame";
+			};
+			name = "DebugGame";
+		};
+		98ED4D8E3414F2A5EEF91247 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithFacadeCSharp";
+				UE_BUILD_TARGET_CONFIG = "Development";
+			};
+			name = "Development";
+		};
+		DDA80F0B0C7F2949CFAD128D /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithFacadeCSharp";
+				UE_BUILD_TARGET_CONFIG = "Shipping";
+			};
+			name = "Shipping";
+		};
+		68767D996219DD23EF4A7A5E /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithFacadeCSharp";
+				UE_BUILD_TARGET_CONFIG = "Test";
+			};
+			name = "Test";
+		};
+		AE3D95839FB0A5C5ED659B78 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithFacadeCSharp-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		42C66D29EC062861D9F25D91 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithFacadeCSharp-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		78481BCC191FAF7F914E1E9F /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithFacadeCSharp";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		CF1127B993A0E1EEF7B9B8C5 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithFacadeCSharp-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		D1272BC247DAEE5F0D519439 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithFacadeCSharp-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		897AA55D3678BD90FEE7D0F1 /* Build configuration list for PBXProject "DatasmithFacadeCSharp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8AC26B346D9A10D41213DDD5 /* "Debug" */,
+				1F8C8FCC6B958E373F4D63A3 /* "DebugGame" */,
+				2E6544E84F61E3C316C3341E /* "Development" */,
+				7BA644E07D346672668A5061 /* "Shipping" */,
+				90AEAD011E0D65389E7003D5 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		FD9EE005A142E59318CBD6F1 /* Build configuration list for PBXLegacyTarget "DatasmithFacadeCSharp_Build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D0C9740252D192D8BE7A3E67 /* "Debug" */,
+				974C8A41ACBD306A2EFCE2C6 /* "DebugGame" */,
+				98ED4D8E3414F2A5EEF91247 /* "Development" */,
+				DDA80F0B0C7F2949CFAD128D /* "Shipping" */,
+				68767D996219DD23EF4A7A5E /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		B890F0C4F09AFB0E72BFFFC8 /* Build configuration list for PBXNativeTarget "DatasmithFacadeCSharp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B4D3C325092DD02AF152821E /* "Debug" */,
+				250D824080051639955C76CC /* "DebugGame" */,
+				0A4C8A811CF874292BBCFEBA /* "Development" */,
+				14548F01D18F3010394308D4 /* "Shipping" */,
+				255A65E661069266420132BF /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		34B02DBA697ED441D4A79C18 /* Build configuration list for PBXNativeTarget "DatasmithFacadeCSharp_Index" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AE3D95839FB0A5C5ED659B78 /* "Debug" */,
+				42C66D29EC062861D9F25D91 /* "DebugGame" */,
+				78481BCC191FAF7F914E1E9F /* "Development" */,
+				CF1127B993A0E1EEF7B9B8C5 /* "Shipping" */,
+				D1272BC247DAEE5F0D519439 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A8B6F57FB73E18F15D4770B2 /* Project object */;
+}

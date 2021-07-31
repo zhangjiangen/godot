@@ -1,0 +1,666 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C4D8E7F01281F206DC9C04A8 /* UnrealPak.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7CBC8224DA9F9292152A6912 /* UnrealPak.cpp */; };
+		5407779F58D380F99643DEFD /* UnrealPak.h in Sources */ = {isa = PBXBuildFile; fileRef = F421D7FF694DD87C1D0A389D /* UnrealPak.h */; };
+		52F8EEA3D5DB11EA815B54B5 /* UnrealPak.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 1921B3B55AF3F5E22B5862AB /* UnrealPak.Build.cs */; };
+		C20C9CBB6B288E8CF77DC14D /* UnrealPak.Target.cs in Sources */ = {isa = PBXBuildFile; fileRef = EDD4807BF99FE3E971748182 /* UnrealPak.Target.cs */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		7CBC8224DA9F9292152A6912 /* UnrealPak.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "UnrealPak.cpp"; path = "../../Source/Programs/UnrealPak/Private/UnrealPak.cpp"; sourceTree = SOURCE_ROOT; };
+		F421D7FF694DD87C1D0A389D /* UnrealPak.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "UnrealPak.h"; path = "../../Source/Programs/UnrealPak/Private/UnrealPak.h"; sourceTree = SOURCE_ROOT; };
+		1921B3B55AF3F5E22B5862AB /* UnrealPak.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "UnrealPak.Build.cs"; path = "../../Source/Programs/UnrealPak/UnrealPak.Build.cs"; sourceTree = SOURCE_ROOT; };
+		EDD4807BF99FE3E971748182 /* UnrealPak.Target.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "UnrealPak.Target.cs"; path = "../../Source/Programs/UnrealPak/UnrealPak.Target.cs"; sourceTree = SOURCE_ROOT; };
+		37FEBA9229817545237384E2 /* UnrealPak */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = UnrealPak; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C6A218F5D682CCA037CF2345 = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C4D8E7F01281F206DC9C04A8 /* UnrealPak.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+	FF13738B1D0397F7D2FB54E3 /* Embed App Extensions */ = {
+		isa = PBXCopyFilesBuildPhase;
+		buildActionMask = 2147483647;
+		dstPath = "";
+		dstSubfolderSpec = 13;
+		files = (
+		);
+		name = "Embed App Extensions";
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXCopyFilesBuildPhase section */
+/* Begin PBXContainerItemProxy section */
+		8BDEA546D7463933E43996CE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BC666B26371CB140564BF1D3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0C2E67FA3899EC03CF2B109E;
+			remoteInfo = "UnrealPak_Build";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		A1C79A101AC3F7296CACB85A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0C2E67FA3899EC03CF2B109E /* UnrealPak_Build */;
+			targetProxy = 8BDEA546D7463933E43996CE /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXGroup section */
+		02F11C9ECDCB2DED3BA22FD0 = {
+			isa = PBXGroup;
+			children = (
+				36EF72CCC0014A2952B4DA21 /* Private */,
+				1921B3B55AF3F5E22B5862AB /* UnrealPak.Build.cs */,
+				EDD4807BF99FE3E971748182 /* UnrealPak.Target.cs */,
+				0711E03D10FA52934D27B14A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		36EF72CCC0014A2952B4DA21 = {
+			isa = PBXGroup;
+			children = (
+				7CBC8224DA9F9292152A6912 /* UnrealPak.cpp */,
+				F421D7FF694DD87C1D0A389D /* UnrealPak.h */,
+			);
+			name = "Private";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealPak/Private";
+			sourceTree = "<absolute>";
+		};
+		0711E03D10FA52934D27B14A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				37FEBA9229817545237384E2 /* UnrealPak */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		0C2E67FA3899EC03CF2B109E /* UnrealPak_Build */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION) $(UE_BUILD_TARGET_NAME) $(PLATFORM_NAME) $(UE_BUILD_TARGET_CONFIG)";
+			buildConfigurationList = 69CBC50EDAFD3C6831CBD81B /* Build configuration list for PBXLegacyTarget "UnrealPak_Build" */;
+			buildPhases = (
+			);
+			buildToolPath = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Build/BatchFiles/Mac/XcodeBuild.sh";
+			buildWorkingDirectory = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425";
+			dependencies = (
+			);
+			name = "UnrealPak_Build";
+			passBuildSettingsInEnvironment = 1;
+			productName = "UnrealPak_Build";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		59549426AAA63F81BE30C259 /* UnrealPak */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B088859B7D0E129D54133120 /* Build configuration list for PBXNativeTarget "UnrealPak" */;
+			buildPhases = (
+				FF13738B1D0397F7D2FB54E3 /* Embed App Extensions */, 
+				18089697CA9B4EDA3FD1D72A /* Shell Script */, 
+			);
+			dependencies = (
+				A1C79A101AC3F7296CACB85A /* PBXTargetDependency */,
+			);
+			name = "UnrealPak";
+			passBuildSettingsInEnvironment = 1;
+			productName = "UnrealPak";
+			productReference = "37FEBA9229817545237384E2";
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXNativeTarget section */
+		0965FFEB3773371759C23AA8 /* UnrealPak_Index */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DF3EFB4B4C92FE0CEE1B295D /* Build configuration list for PBXNativeTarget "UnrealPak_Index" */;
+			buildPhases = (
+				C6A218F5D682CCA037CF2345 /* Sources */,
+			);
+			dependencies = (
+			);
+			name = "UnrealPak_Index";
+			passBuildSettingsInEnvironment = 1;
+			productName = "UnrealPak_Index";
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BC666B26371CB140564BF1D3 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2000;
+				ORGANIZATIONNAME = "Epic Games, Inc.";
+				TargetAttributes = {
+					59549426AAA63F81BE30C259 = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 9901CB5CF4F945A6911C2F9B /* Build configuration list for PBXProject "UnrealPak" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en
+			);
+			mainGroup = 02F11C9ECDCB2DED3BA22FD0;
+			productRefGroup = 0711E03D10FA52934D27B14A;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			59549426AAA63F81BE30C259 /* UnrealPak */,
+			0C2E67FA3899EC03CF2B109E /* UnrealPak_Build */,
+			0965FFEB3773371759C23AA8 /* UnrealPak_Index */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		B23816B9D68F9938ED9A3DFD /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/UnrealPak/Private",
+					"../Build/Mac/UnrealPak/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealPak/Inc/TraceLog",
+					"../Build/Mac/UnrealPak/Inc/PakFile",
+					"../../Source/Runtime/PakFile/Public",
+					"../Build/Mac/UnrealPak/Inc/RSA",
+					"../../Source/Runtime/RSA/Public",
+					"../Build/Mac/UnrealPak/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealPak/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealPak/Inc/PakFileUtilities",
+					"../../Source/Developer",
+					"../../Source/Developer/PakFileUtilities/Public",
+					"../Build/Mac/UnrealPak/Inc/UnrealPak",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				ENABLE_TESTABILITY = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Debug";
+		};
+		24044A85590CDB7D5C48CDA1 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/UnrealPak/Private",
+					"../Build/Mac/UnrealPak/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealPak/Inc/TraceLog",
+					"../Build/Mac/UnrealPak/Inc/PakFile",
+					"../../Source/Runtime/PakFile/Public",
+					"../Build/Mac/UnrealPak/Inc/RSA",
+					"../../Source/Runtime/RSA/Public",
+					"../Build/Mac/UnrealPak/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealPak/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealPak/Inc/PakFileUtilities",
+					"../../Source/Developer",
+					"../../Source/Developer/PakFileUtilities/Public",
+					"../Build/Mac/UnrealPak/Inc/UnrealPak",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "DebugGame";
+		};
+		6452E9BBD6D11593A797EB23 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/UnrealPak/Private",
+					"../Build/Mac/UnrealPak/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealPak/Inc/TraceLog",
+					"../Build/Mac/UnrealPak/Inc/PakFile",
+					"../../Source/Runtime/PakFile/Public",
+					"../Build/Mac/UnrealPak/Inc/RSA",
+					"../../Source/Runtime/RSA/Public",
+					"../Build/Mac/UnrealPak/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealPak/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealPak/Inc/PakFileUtilities",
+					"../../Source/Developer",
+					"../../Source/Developer/PakFileUtilities/Public",
+					"../Build/Mac/UnrealPak/Inc/UnrealPak",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Development";
+		};
+		1D895F9703A3DE2AADD58143 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/UnrealPak/Private",
+					"../Build/Mac/UnrealPak/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealPak/Inc/TraceLog",
+					"../Build/Mac/UnrealPak/Inc/PakFile",
+					"../../Source/Runtime/PakFile/Public",
+					"../Build/Mac/UnrealPak/Inc/RSA",
+					"../../Source/Runtime/RSA/Public",
+					"../Build/Mac/UnrealPak/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealPak/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealPak/Inc/PakFileUtilities",
+					"../../Source/Developer",
+					"../../Source/Developer/PakFileUtilities/Public",
+					"../Build/Mac/UnrealPak/Inc/UnrealPak",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Shipping";
+		};
+		5BE770C339EFEACCFE629AD9 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/UnrealPak/Private",
+					"../Build/Mac/UnrealPak/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealPak/Inc/TraceLog",
+					"../Build/Mac/UnrealPak/Inc/PakFile",
+					"../../Source/Runtime/PakFile/Public",
+					"../Build/Mac/UnrealPak/Inc/RSA",
+					"../../Source/Runtime/RSA/Public",
+					"../Build/Mac/UnrealPak/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealPak/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealPak/Inc/PakFileUtilities",
+					"../../Source/Developer",
+					"../../Source/Developer/PakFileUtilities/Public",
+					"../Build/Mac/UnrealPak/Inc/UnrealPak",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Test";
+		};
+		87C6764990BA78CB4E35DCCE /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealPak-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		B9FDB7A3940FC13EEE915CB2 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealPak-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		A2A83DFE44797CE68539A413 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealPak";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		008289EEF6D1789DDA508AFD /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealPak-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		7A3DC77157F83DF30C0896EC /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealPak-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+		EC34D59C8149052E3B48D8E4 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealPak";
+				UE_BUILD_TARGET_CONFIG = "Debug";
+			};
+			name = "Debug";
+		};
+		993569333F5D035324D2777D /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealPak";
+				UE_BUILD_TARGET_CONFIG = "DebugGame";
+			};
+			name = "DebugGame";
+		};
+		3A92D19209B8A119AB05CEED /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealPak";
+				UE_BUILD_TARGET_CONFIG = "Development";
+			};
+			name = "Development";
+		};
+		FC2929A1633C7E88060C7580 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealPak";
+				UE_BUILD_TARGET_CONFIG = "Shipping";
+			};
+			name = "Shipping";
+		};
+		BA70773611EC36C3D7EE467C /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealPak";
+				UE_BUILD_TARGET_CONFIG = "Test";
+			};
+			name = "Test";
+		};
+		ECDE2143611BF57ECA981003 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealPak-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		FF80D42F6D5B88A4107F8964 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealPak-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		74477C52BDE4D66795B18CC4 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealPak";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		5809160826A33F9EC638523A /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealPak-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		CCBA4F1622A882F56F3D8DE8 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealPak-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9901CB5CF4F945A6911C2F9B /* Build configuration list for PBXProject "UnrealPak" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B23816B9D68F9938ED9A3DFD /* "Debug" */,
+				24044A85590CDB7D5C48CDA1 /* "DebugGame" */,
+				6452E9BBD6D11593A797EB23 /* "Development" */,
+				1D895F9703A3DE2AADD58143 /* "Shipping" */,
+				5BE770C339EFEACCFE629AD9 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		69CBC50EDAFD3C6831CBD81B /* Build configuration list for PBXLegacyTarget "UnrealPak_Build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EC34D59C8149052E3B48D8E4 /* "Debug" */,
+				993569333F5D035324D2777D /* "DebugGame" */,
+				3A92D19209B8A119AB05CEED /* "Development" */,
+				FC2929A1633C7E88060C7580 /* "Shipping" */,
+				BA70773611EC36C3D7EE467C /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		B088859B7D0E129D54133120 /* Build configuration list for PBXNativeTarget "UnrealPak" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				87C6764990BA78CB4E35DCCE /* "Debug" */,
+				B9FDB7A3940FC13EEE915CB2 /* "DebugGame" */,
+				A2A83DFE44797CE68539A413 /* "Development" */,
+				008289EEF6D1789DDA508AFD /* "Shipping" */,
+				7A3DC77157F83DF30C0896EC /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		DF3EFB4B4C92FE0CEE1B295D /* Build configuration list for PBXNativeTarget "UnrealPak_Index" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ECDE2143611BF57ECA981003 /* "Debug" */,
+				FF80D42F6D5B88A4107F8964 /* "DebugGame" */,
+				74477C52BDE4D66795B18CC4 /* "Development" */,
+				5809160826A33F9EC638523A /* "Shipping" */,
+				CCBA4F1622A882F56F3D8DE8 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BC666B26371CB140564BF1D3 /* Project object */;
+}

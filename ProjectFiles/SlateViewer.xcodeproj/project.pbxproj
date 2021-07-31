@@ -1,0 +1,1038 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AE6554EE46C9F6E3909557D0 /* IOSSlateViewerMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5D483E7974561AD7ADA4E93D /* IOSSlateViewerMain.cpp */; };
+		96D7D72BEBA879F4D38CB044 /* SlateViewerMainLinux.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 73135090B35257325A419497 /* SlateViewerMainLinux.cpp */; };
+		9E233A71B0311F097C16576F /* SlateViewerMainMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1CBF8E81B62FDD098FA0561 /* SlateViewerMainMac.cpp */; };
+		BEDC595EAAC7019759AA36E8 /* SlateViewerApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7B112F2E0DD9CAEC7CA08CD /* SlateViewerApp.cpp */; };
+		0589235A4CB6E354423F8CC7 /* SlateViewerMainWindows.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E0844A16CA6C85DBBE19EE8 /* SlateViewerMainWindows.cpp */; };
+		5A6F17F744C4FFA41ED86B26 /* SlateViewer.h in Sources */ = {isa = PBXBuildFile; fileRef = 0EC5BCC533022DB23E307A12 /* SlateViewer.h */; };
+		1E5C63F131A8A523EB3B00DD /* SlateViewerApp.h in Sources */ = {isa = PBXBuildFile; fileRef = 9EEB107D40E8A9959D1E92A7 /* SlateViewerApp.h */; };
+		6CE7D616ADB6A7E94075EE73 /* SlateViewer.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 81E38DB1EFA9C9B808885641 /* SlateViewer.Build.cs */; };
+		6D050190ABA180050907CECA /* SlateViewer.Target.cs in Sources */ = {isa = PBXBuildFile; fileRef = CEEAFB17A79680C697008E6E /* SlateViewer.Target.cs */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		5D483E7974561AD7ADA4E93D /* IOSSlateViewerMain.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "IOSSlateViewerMain.cpp"; path = "../../Source/Programs/SlateViewer/Private/IOS/IOSSlateViewerMain.cpp"; sourceTree = SOURCE_ROOT; };
+		73135090B35257325A419497 /* SlateViewerMainLinux.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "SlateViewerMainLinux.cpp"; path = "../../Source/Programs/SlateViewer/Private/Linux/SlateViewerMainLinux.cpp"; sourceTree = SOURCE_ROOT; };
+		F1CBF8E81B62FDD098FA0561 /* SlateViewerMainMac.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "SlateViewerMainMac.cpp"; path = "../../Source/Programs/SlateViewer/Private/Mac/SlateViewerMainMac.cpp"; sourceTree = SOURCE_ROOT; };
+		C7B112F2E0DD9CAEC7CA08CD /* SlateViewerApp.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "SlateViewerApp.cpp"; path = "../../Source/Programs/SlateViewer/Private/SlateViewerApp.cpp"; sourceTree = SOURCE_ROOT; };
+		6E0844A16CA6C85DBBE19EE8 /* SlateViewerMainWindows.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "SlateViewerMainWindows.cpp"; path = "../../Source/Programs/SlateViewer/Private/Windows/SlateViewerMainWindows.cpp"; sourceTree = SOURCE_ROOT; };
+		0EC5BCC533022DB23E307A12 /* SlateViewer.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "SlateViewer.h"; path = "../../Source/Programs/SlateViewer/Public/SlateViewer.h"; sourceTree = SOURCE_ROOT; };
+		9EEB107D40E8A9959D1E92A7 /* SlateViewerApp.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "SlateViewerApp.h"; path = "../../Source/Programs/SlateViewer/Public/SlateViewerApp.h"; sourceTree = SOURCE_ROOT; };
+		81E38DB1EFA9C9B808885641 /* SlateViewer.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "SlateViewer.Build.cs"; path = "../../Source/Programs/SlateViewer/SlateViewer.Build.cs"; sourceTree = SOURCE_ROOT; };
+		CEEAFB17A79680C697008E6E /* SlateViewer.Target.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "SlateViewer.Target.cs"; path = "../../Source/Programs/SlateViewer/SlateViewer.Target.cs"; sourceTree = SOURCE_ROOT; };
+		FC830C517DF876CB66ADCB17 /* SlateViewer */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = SlateViewer; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1F2C62F57C6D52D5E7C0A587 = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AE6554EE46C9F6E3909557D0 /* IOSSlateViewerMain.cpp in Sources */,
+				9E233A71B0311F097C16576F /* SlateViewerMainMac.cpp in Sources */,
+				BEDC595EAAC7019759AA36E8 /* SlateViewerApp.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+	D6445EB267779A60DD125BB4 /* Embed App Extensions */ = {
+		isa = PBXCopyFilesBuildPhase;
+		buildActionMask = 2147483647;
+		dstPath = "";
+		dstSubfolderSpec = 13;
+		files = (
+		);
+		name = "Embed App Extensions";
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXCopyFilesBuildPhase section */
+/* Begin PBXContainerItemProxy section */
+		903C42A2301C229FBEECCE2C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D87133203DC66697FF9E3492 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B313A1FED304D63F4835B900;
+			remoteInfo = "SlateViewer_Build";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		F180481086D69207E1455B37 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B313A1FED304D63F4835B900 /* SlateViewer_Build */;
+			targetProxy = 903C42A2301C229FBEECCE2C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXGroup section */
+		7BB5F022384D37BDF719105D = {
+			isa = PBXGroup;
+			children = (
+				4FD7052BA2AC45391571139A /* Private */,
+				8B5C20D0B979F577E6F441BB /* Public */,
+				81E38DB1EFA9C9B808885641 /* SlateViewer.Build.cs */,
+				CEEAFB17A79680C697008E6E /* SlateViewer.Target.cs */,
+				5CB0A6A9C4581DDDEF383F27 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		4FD7052BA2AC45391571139A = {
+			isa = PBXGroup;
+			children = (
+				82FE02F2956B1D18F47B28EE /* IOS */,
+				38E821E91944B89AA50A180E /* Linux */,
+				B1D93D779536D4761834BB64 /* Mac */,
+				3F0DA453E4AC82D4AE16F3BA /* Windows */,
+				C7B112F2E0DD9CAEC7CA08CD /* SlateViewerApp.cpp */,
+			);
+			name = "Private";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/SlateViewer/Private";
+			sourceTree = "<absolute>";
+		};
+		82FE02F2956B1D18F47B28EE = {
+			isa = PBXGroup;
+			children = (
+				5D483E7974561AD7ADA4E93D /* IOSSlateViewerMain.cpp */,
+			);
+			name = "IOS";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/SlateViewer/Private/IOS";
+			sourceTree = "<absolute>";
+		};
+		38E821E91944B89AA50A180E = {
+			isa = PBXGroup;
+			children = (
+				73135090B35257325A419497 /* SlateViewerMainLinux.cpp */,
+			);
+			name = "Linux";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/SlateViewer/Private/Linux";
+			sourceTree = "<absolute>";
+		};
+		B1D93D779536D4761834BB64 = {
+			isa = PBXGroup;
+			children = (
+				F1CBF8E81B62FDD098FA0561 /* SlateViewerMainMac.cpp */,
+			);
+			name = "Mac";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/SlateViewer/Private/Mac";
+			sourceTree = "<absolute>";
+		};
+		3F0DA453E4AC82D4AE16F3BA = {
+			isa = PBXGroup;
+			children = (
+				6E0844A16CA6C85DBBE19EE8 /* SlateViewerMainWindows.cpp */,
+			);
+			name = "Windows";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/SlateViewer/Private/Windows";
+			sourceTree = "<absolute>";
+		};
+		8B5C20D0B979F577E6F441BB = {
+			isa = PBXGroup;
+			children = (
+				0EC5BCC533022DB23E307A12 /* SlateViewer.h */,
+				9EEB107D40E8A9959D1E92A7 /* SlateViewerApp.h */,
+			);
+			name = "Public";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/SlateViewer/Public";
+			sourceTree = "<absolute>";
+		};
+		5CB0A6A9C4581DDDEF383F27 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FC830C517DF876CB66ADCB17 /* SlateViewer */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		B313A1FED304D63F4835B900 /* SlateViewer_Build */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION) $(UE_BUILD_TARGET_NAME) $(PLATFORM_NAME) $(UE_BUILD_TARGET_CONFIG)";
+			buildConfigurationList = 070D200597466F05B11C1302 /* Build configuration list for PBXLegacyTarget "SlateViewer_Build" */;
+			buildPhases = (
+			);
+			buildToolPath = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Build/BatchFiles/Mac/XcodeBuild.sh";
+			buildWorkingDirectory = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425";
+			dependencies = (
+			);
+			name = "SlateViewer_Build";
+			passBuildSettingsInEnvironment = 1;
+			productName = "SlateViewer_Build";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		854CDBBD98FC2327D5660BB8 /* SlateViewer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 84A36D493C4AB05022BAE52E /* Build configuration list for PBXNativeTarget "SlateViewer" */;
+			buildPhases = (
+				D6445EB267779A60DD125BB4 /* Embed App Extensions */, 
+				2FE618C5E6AC834275C8020C /* Shell Script */, 
+			);
+			dependencies = (
+				F180481086D69207E1455B37 /* PBXTargetDependency */,
+			);
+			name = "SlateViewer";
+			passBuildSettingsInEnvironment = 1;
+			productName = "SlateViewer";
+			productReference = "FC830C517DF876CB66ADCB17";
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXNativeTarget section */
+		C94189E8CE90D0E3702AEF1C /* SlateViewer_Index */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7B24CBBA158FE4C6CA0C4A70 /* Build configuration list for PBXNativeTarget "SlateViewer_Index" */;
+			buildPhases = (
+				1F2C62F57C6D52D5E7C0A587 /* Sources */,
+			);
+			dependencies = (
+			);
+			name = "SlateViewer_Index";
+			passBuildSettingsInEnvironment = 1;
+			productName = "SlateViewer_Index";
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D87133203DC66697FF9E3492 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2000;
+				ORGANIZATIONNAME = "Epic Games, Inc.";
+				TargetAttributes = {
+					854CDBBD98FC2327D5660BB8 = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 7AED70B864D58FDC1E038973 /* Build configuration list for PBXProject "SlateViewer" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en
+			);
+			mainGroup = 7BB5F022384D37BDF719105D;
+			productRefGroup = 5CB0A6A9C4581DDDEF383F27;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			854CDBBD98FC2327D5660BB8 /* SlateViewer */,
+			B313A1FED304D63F4835B900 /* SlateViewer_Build */,
+			C94189E8CE90D0E3702AEF1C /* SlateViewer_Index */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		EA424089C73B759C0B1ED280 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/CEF3/cef_binary_3.3071.1611.g4a19305_macosx64",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/SlateViewer/Private",
+					"../Build/Mac/SlateViewer/Inc/AppFramework",
+					"../../Source/Runtime",
+					"../../Source/Runtime/AppFramework/Public",
+					"../Build/Mac/SlateViewer/Inc/Core",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/SlateViewer/Inc/TraceLog",
+					"../Build/Mac/SlateViewer/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/SlateViewer/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/SlateViewer/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/SlateViewer/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/SlateViewer/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/SlateViewer/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/SlateViewer/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/SlateViewer/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/SlateViewer/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/SlateViewer/Inc/StandaloneRenderer",
+					"../../Source/Developer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../Build/Mac/SlateViewer/Inc/SourceCodeAccess",
+					"../../Source/Developer/SourceCodeAccess/Public",
+					"../Build/Mac/SlateViewer/Inc/Settings",
+					"../../Source/Developer/Settings/Public",
+					"../Build/Mac/SlateViewer/Inc/WebBrowser",
+					"../../Source/Runtime/WebBrowser/Public",
+					"../Build/Mac/SlateViewer/Inc/XCodeSourceCodeAccess",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Source",
+					"../../Source/ThirdParty",
+					"../Build/Mac/SlateViewer/Inc/SlateReflector",
+					"../../Source/Developer/SlateReflector/Public",
+					"../Build/Mac/SlateViewer/Inc/SlateViewer",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Programs/SlateViewer/Public",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				ENABLE_TESTABILITY = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Debug";
+		};
+		360AA3967EF63B3C7CAA343B /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/CEF3/cef_binary_3.3071.1611.g4a19305_macosx64",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/SlateViewer/Private",
+					"../Build/Mac/SlateViewer/Inc/AppFramework",
+					"../../Source/Runtime",
+					"../../Source/Runtime/AppFramework/Public",
+					"../Build/Mac/SlateViewer/Inc/Core",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/SlateViewer/Inc/TraceLog",
+					"../Build/Mac/SlateViewer/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/SlateViewer/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/SlateViewer/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/SlateViewer/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/SlateViewer/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/SlateViewer/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/SlateViewer/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/SlateViewer/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/SlateViewer/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/SlateViewer/Inc/StandaloneRenderer",
+					"../../Source/Developer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../Build/Mac/SlateViewer/Inc/SourceCodeAccess",
+					"../../Source/Developer/SourceCodeAccess/Public",
+					"../Build/Mac/SlateViewer/Inc/Settings",
+					"../../Source/Developer/Settings/Public",
+					"../Build/Mac/SlateViewer/Inc/WebBrowser",
+					"../../Source/Runtime/WebBrowser/Public",
+					"../Build/Mac/SlateViewer/Inc/XCodeSourceCodeAccess",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Source",
+					"../../Source/ThirdParty",
+					"../Build/Mac/SlateViewer/Inc/SlateReflector",
+					"../../Source/Developer/SlateReflector/Public",
+					"../Build/Mac/SlateViewer/Inc/SlateViewer",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Programs/SlateViewer/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "DebugGame";
+		};
+		5E01044E5924D7E6C81650D7 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/CEF3/cef_binary_3.3071.1611.g4a19305_macosx64",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/SlateViewer/Private",
+					"../Build/Mac/SlateViewer/Inc/AppFramework",
+					"../../Source/Runtime",
+					"../../Source/Runtime/AppFramework/Public",
+					"../Build/Mac/SlateViewer/Inc/Core",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/SlateViewer/Inc/TraceLog",
+					"../Build/Mac/SlateViewer/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/SlateViewer/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/SlateViewer/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/SlateViewer/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/SlateViewer/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/SlateViewer/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/SlateViewer/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/SlateViewer/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/SlateViewer/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/SlateViewer/Inc/StandaloneRenderer",
+					"../../Source/Developer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../Build/Mac/SlateViewer/Inc/SourceCodeAccess",
+					"../../Source/Developer/SourceCodeAccess/Public",
+					"../Build/Mac/SlateViewer/Inc/Settings",
+					"../../Source/Developer/Settings/Public",
+					"../Build/Mac/SlateViewer/Inc/WebBrowser",
+					"../../Source/Runtime/WebBrowser/Public",
+					"../Build/Mac/SlateViewer/Inc/XCodeSourceCodeAccess",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Source",
+					"../../Source/ThirdParty",
+					"../Build/Mac/SlateViewer/Inc/SlateReflector",
+					"../../Source/Developer/SlateReflector/Public",
+					"../Build/Mac/SlateViewer/Inc/SlateViewer",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Programs/SlateViewer/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Development";
+		};
+		52E16465E27D2D2F19731865 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/CEF3/cef_binary_3.3071.1611.g4a19305_macosx64",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/SlateViewer/Private",
+					"../Build/Mac/SlateViewer/Inc/AppFramework",
+					"../../Source/Runtime",
+					"../../Source/Runtime/AppFramework/Public",
+					"../Build/Mac/SlateViewer/Inc/Core",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/SlateViewer/Inc/TraceLog",
+					"../Build/Mac/SlateViewer/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/SlateViewer/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/SlateViewer/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/SlateViewer/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/SlateViewer/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/SlateViewer/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/SlateViewer/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/SlateViewer/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/SlateViewer/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/SlateViewer/Inc/StandaloneRenderer",
+					"../../Source/Developer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../Build/Mac/SlateViewer/Inc/SourceCodeAccess",
+					"../../Source/Developer/SourceCodeAccess/Public",
+					"../Build/Mac/SlateViewer/Inc/Settings",
+					"../../Source/Developer/Settings/Public",
+					"../Build/Mac/SlateViewer/Inc/WebBrowser",
+					"../../Source/Runtime/WebBrowser/Public",
+					"../Build/Mac/SlateViewer/Inc/XCodeSourceCodeAccess",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Source",
+					"../../Source/ThirdParty",
+					"../Build/Mac/SlateViewer/Inc/SlateReflector",
+					"../../Source/Developer/SlateReflector/Public",
+					"../Build/Mac/SlateViewer/Inc/SlateViewer",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Programs/SlateViewer/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Shipping";
+		};
+		DF5542C2324D761ECB715302 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/CEF3/cef_binary_3.3071.1611.g4a19305_macosx64",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/SlateViewer/Private",
+					"../Build/Mac/SlateViewer/Inc/AppFramework",
+					"../../Source/Runtime",
+					"../../Source/Runtime/AppFramework/Public",
+					"../Build/Mac/SlateViewer/Inc/Core",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/SlateViewer/Inc/TraceLog",
+					"../Build/Mac/SlateViewer/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/SlateViewer/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/SlateViewer/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/SlateViewer/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/SlateViewer/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/SlateViewer/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/SlateViewer/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/SlateViewer/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/SlateViewer/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/SlateViewer/Inc/StandaloneRenderer",
+					"../../Source/Developer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../Build/Mac/SlateViewer/Inc/SourceCodeAccess",
+					"../../Source/Developer/SourceCodeAccess/Public",
+					"../Build/Mac/SlateViewer/Inc/Settings",
+					"../../Source/Developer/Settings/Public",
+					"../Build/Mac/SlateViewer/Inc/WebBrowser",
+					"../../Source/Runtime/WebBrowser/Public",
+					"../Build/Mac/SlateViewer/Inc/XCodeSourceCodeAccess",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Source",
+					"../../Source/ThirdParty",
+					"../Build/Mac/SlateViewer/Inc/SlateReflector",
+					"../../Source/Developer/SlateReflector/Public",
+					"../Build/Mac/SlateViewer/Inc/SlateViewer",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Programs/SlateViewer/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Test";
+		};
+		F96A75789EDF490CD0ADC596 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				"PRODUCT_NAME[sdk=iphoneos*]" = "SlateViewer";
+				"TARGETED_DEVICE_FAMILY[sdk=iphoneos*]" = "1,2";
+				"SDKROOT[sdk=iphoneos]" = iphoneos;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				"PRODUCT_NAME[sdk=appletvos*]" = "SlateViewer";
+				"TARGETED_DEVICE_FAMILY[sdk=appletvos*]" = "3";
+				"SDKROOT[sdk=appletvos]" = appletvos;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"PRODUCT_NAME[sdk=macosx*]" = "SlateViewer-Mac-Debug";
+				"CONFIGURATION_BUILD_DIR[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				"SDKROOT[sdk=macosx]" = macosx;
+				"CONFIGURATION_BUILD_DIR[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/IOS/Payload";
+				"CONFIGURATION_BUILD_DIR[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/TVOS/Payload";
+				"INFOPLIST_FILE[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/Mac/SlateViewer-Mac-Debug-Info.plist";
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/IOS/SlateViewer-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "";
+				"INFOPLIST_FILE[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/TVOS/SlateViewer-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=appletvos*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		4C3A60A70CC43EA7A350428D /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				"PRODUCT_NAME[sdk=iphoneos*]" = "SlateViewer";
+				"TARGETED_DEVICE_FAMILY[sdk=iphoneos*]" = "1,2";
+				"SDKROOT[sdk=iphoneos]" = iphoneos;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				"PRODUCT_NAME[sdk=appletvos*]" = "SlateViewer";
+				"TARGETED_DEVICE_FAMILY[sdk=appletvos*]" = "3";
+				"SDKROOT[sdk=appletvos]" = appletvos;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"PRODUCT_NAME[sdk=macosx*]" = "SlateViewer-Mac-DebugGame";
+				"CONFIGURATION_BUILD_DIR[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				"SDKROOT[sdk=macosx]" = macosx;
+				"CONFIGURATION_BUILD_DIR[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/IOS/Payload";
+				"CONFIGURATION_BUILD_DIR[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/TVOS/Payload";
+				"INFOPLIST_FILE[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/Mac/SlateViewer-Mac-DebugGame-Info.plist";
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/IOS/SlateViewer-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "";
+				"INFOPLIST_FILE[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/TVOS/SlateViewer-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=appletvos*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		852937C727767BD8342EE891 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				"PRODUCT_NAME[sdk=iphoneos*]" = "SlateViewer";
+				"TARGETED_DEVICE_FAMILY[sdk=iphoneos*]" = "1,2";
+				"SDKROOT[sdk=iphoneos]" = iphoneos;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				"PRODUCT_NAME[sdk=appletvos*]" = "SlateViewer";
+				"TARGETED_DEVICE_FAMILY[sdk=appletvos*]" = "3";
+				"SDKROOT[sdk=appletvos]" = appletvos;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"PRODUCT_NAME[sdk=macosx*]" = "SlateViewer";
+				"CONFIGURATION_BUILD_DIR[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				"SDKROOT[sdk=macosx]" = macosx;
+				"CONFIGURATION_BUILD_DIR[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/IOS/Payload";
+				"CONFIGURATION_BUILD_DIR[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/TVOS/Payload";
+				"INFOPLIST_FILE[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/Mac/SlateViewer-Info.plist";
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/IOS/SlateViewer-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "";
+				"INFOPLIST_FILE[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/TVOS/SlateViewer-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=appletvos*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		94BF3F1365678577763416F3 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				"PRODUCT_NAME[sdk=iphoneos*]" = "SlateViewer";
+				"TARGETED_DEVICE_FAMILY[sdk=iphoneos*]" = "1,2";
+				"SDKROOT[sdk=iphoneos]" = iphoneos;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				"PRODUCT_NAME[sdk=appletvos*]" = "SlateViewer";
+				"TARGETED_DEVICE_FAMILY[sdk=appletvos*]" = "3";
+				"SDKROOT[sdk=appletvos]" = appletvos;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"PRODUCT_NAME[sdk=macosx*]" = "SlateViewer-Mac-Shipping";
+				"CONFIGURATION_BUILD_DIR[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				"SDKROOT[sdk=macosx]" = macosx;
+				"CONFIGURATION_BUILD_DIR[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/IOS/Payload";
+				"CONFIGURATION_BUILD_DIR[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/TVOS/Payload";
+				"INFOPLIST_FILE[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/Mac/SlateViewer-Mac-Shipping-Info.plist";
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/IOS/SlateViewer-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "";
+				"INFOPLIST_FILE[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/TVOS/SlateViewer-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=appletvos*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		401769D90C9A37F0F979C21A /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				"PRODUCT_NAME[sdk=iphoneos*]" = "SlateViewer";
+				"TARGETED_DEVICE_FAMILY[sdk=iphoneos*]" = "1,2";
+				"SDKROOT[sdk=iphoneos]" = iphoneos;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				"PRODUCT_NAME[sdk=appletvos*]" = "SlateViewer";
+				"TARGETED_DEVICE_FAMILY[sdk=appletvos*]" = "3";
+				"SDKROOT[sdk=appletvos]" = appletvos;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"PRODUCT_NAME[sdk=macosx*]" = "SlateViewer-Mac-Test";
+				"CONFIGURATION_BUILD_DIR[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				"SDKROOT[sdk=macosx]" = macosx;
+				"CONFIGURATION_BUILD_DIR[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/IOS/Payload";
+				"CONFIGURATION_BUILD_DIR[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/TVOS/Payload";
+				"INFOPLIST_FILE[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/Mac/SlateViewer-Mac-Test-Info.plist";
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/IOS/SlateViewer-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "";
+				"INFOPLIST_FILE[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/TVOS/SlateViewer-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=appletvos*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+		558CEE3B3C63110D4152C725 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "SlateViewer";
+				UE_BUILD_TARGET_CONFIG = "Debug";
+			};
+			name = "Debug";
+		};
+		46A7701104B582BDC0730531 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "SlateViewer";
+				UE_BUILD_TARGET_CONFIG = "DebugGame";
+			};
+			name = "DebugGame";
+		};
+		35F39018A7B5B0E8510EB303 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "SlateViewer";
+				UE_BUILD_TARGET_CONFIG = "Development";
+			};
+			name = "Development";
+		};
+		12E03C16C63F667E2EA3C6C5 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "SlateViewer";
+				UE_BUILD_TARGET_CONFIG = "Shipping";
+			};
+			name = "Shipping";
+		};
+		61B097F34AD8D713D95F3670 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "SlateViewer";
+				UE_BUILD_TARGET_CONFIG = "Test";
+			};
+			name = "Test";
+		};
+		361098A29CBEA9101397CC7B /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				"PRODUCT_NAME[sdk=iphoneos*]" = "SlateViewer";
+				"TARGETED_DEVICE_FAMILY[sdk=iphoneos*]" = "1,2";
+				"SDKROOT[sdk=iphoneos]" = iphoneos;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				"PRODUCT_NAME[sdk=appletvos*]" = "SlateViewer";
+				"TARGETED_DEVICE_FAMILY[sdk=appletvos*]" = "3";
+				"SDKROOT[sdk=appletvos]" = appletvos;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"PRODUCT_NAME[sdk=macosx*]" = "SlateViewer-Mac-Debug";
+				"CONFIGURATION_BUILD_DIR[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				"SDKROOT[sdk=macosx]" = macosx;
+				"CONFIGURATION_BUILD_DIR[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/IOS/Payload";
+				"CONFIGURATION_BUILD_DIR[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/TVOS/Payload";
+				"INFOPLIST_FILE[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/Mac/SlateViewer-Mac-Debug-Info.plist";
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/IOS/SlateViewer-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "";
+				"INFOPLIST_FILE[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/TVOS/SlateViewer-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=appletvos*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		BF7B8E4B168AA88CDC5D5562 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				"PRODUCT_NAME[sdk=iphoneos*]" = "SlateViewer";
+				"TARGETED_DEVICE_FAMILY[sdk=iphoneos*]" = "1,2";
+				"SDKROOT[sdk=iphoneos]" = iphoneos;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				"PRODUCT_NAME[sdk=appletvos*]" = "SlateViewer";
+				"TARGETED_DEVICE_FAMILY[sdk=appletvos*]" = "3";
+				"SDKROOT[sdk=appletvos]" = appletvos;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"PRODUCT_NAME[sdk=macosx*]" = "SlateViewer-Mac-DebugGame";
+				"CONFIGURATION_BUILD_DIR[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				"SDKROOT[sdk=macosx]" = macosx;
+				"CONFIGURATION_BUILD_DIR[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/IOS/Payload";
+				"CONFIGURATION_BUILD_DIR[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/TVOS/Payload";
+				"INFOPLIST_FILE[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/Mac/SlateViewer-Mac-DebugGame-Info.plist";
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/IOS/SlateViewer-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "";
+				"INFOPLIST_FILE[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/TVOS/SlateViewer-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=appletvos*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		B034649B9B1E68A82AB7C5EC /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				"PRODUCT_NAME[sdk=iphoneos*]" = "SlateViewer";
+				"TARGETED_DEVICE_FAMILY[sdk=iphoneos*]" = "1,2";
+				"SDKROOT[sdk=iphoneos]" = iphoneos;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				"PRODUCT_NAME[sdk=appletvos*]" = "SlateViewer";
+				"TARGETED_DEVICE_FAMILY[sdk=appletvos*]" = "3";
+				"SDKROOT[sdk=appletvos]" = appletvos;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"PRODUCT_NAME[sdk=macosx*]" = "SlateViewer";
+				"CONFIGURATION_BUILD_DIR[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				"SDKROOT[sdk=macosx]" = macosx;
+				"CONFIGURATION_BUILD_DIR[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/IOS/Payload";
+				"CONFIGURATION_BUILD_DIR[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/TVOS/Payload";
+				"INFOPLIST_FILE[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/Mac/SlateViewer-Info.plist";
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/IOS/SlateViewer-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "";
+				"INFOPLIST_FILE[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/TVOS/SlateViewer-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=appletvos*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		504B06D4E083EA3D1BFE06DC /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				"PRODUCT_NAME[sdk=iphoneos*]" = "SlateViewer";
+				"TARGETED_DEVICE_FAMILY[sdk=iphoneos*]" = "1,2";
+				"SDKROOT[sdk=iphoneos]" = iphoneos;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				"PRODUCT_NAME[sdk=appletvos*]" = "SlateViewer";
+				"TARGETED_DEVICE_FAMILY[sdk=appletvos*]" = "3";
+				"SDKROOT[sdk=appletvos]" = appletvos;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"PRODUCT_NAME[sdk=macosx*]" = "SlateViewer-Mac-Shipping";
+				"CONFIGURATION_BUILD_DIR[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				"SDKROOT[sdk=macosx]" = macosx;
+				"CONFIGURATION_BUILD_DIR[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/IOS/Payload";
+				"CONFIGURATION_BUILD_DIR[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/TVOS/Payload";
+				"INFOPLIST_FILE[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/Mac/SlateViewer-Mac-Shipping-Info.plist";
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/IOS/SlateViewer-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "";
+				"INFOPLIST_FILE[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/TVOS/SlateViewer-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=appletvos*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		FCA34BE02DA7FADFF70494C9 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64 arm64 armv7 armv7s";
+				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				"PRODUCT_NAME[sdk=iphoneos*]" = "SlateViewer";
+				"TARGETED_DEVICE_FAMILY[sdk=iphoneos*]" = "1,2";
+				"SDKROOT[sdk=iphoneos]" = iphoneos;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				"PRODUCT_NAME[sdk=appletvos*]" = "SlateViewer";
+				"TARGETED_DEVICE_FAMILY[sdk=appletvos*]" = "3";
+				"SDKROOT[sdk=appletvos]" = appletvos;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"PRODUCT_NAME[sdk=macosx*]" = "SlateViewer-Mac-Test";
+				"CONFIGURATION_BUILD_DIR[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				"SDKROOT[sdk=macosx]" = macosx;
+				"CONFIGURATION_BUILD_DIR[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/IOS/Payload";
+				"CONFIGURATION_BUILD_DIR[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/TVOS/Payload";
+				"INFOPLIST_FILE[sdk=macosx*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/Mac/SlateViewer-Mac-Test-Info.plist";
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/IOS/SlateViewer-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "";
+				"INFOPLIST_FILE[sdk=appletvos*]" = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Intermediate/TVOS/SlateViewer-Info.plist";
+				"CODE_SIGN_ENTITLEMENTS[sdk=appletvos*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7AED70B864D58FDC1E038973 /* Build configuration list for PBXProject "SlateViewer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EA424089C73B759C0B1ED280 /* "Debug" */,
+				360AA3967EF63B3C7CAA343B /* "DebugGame" */,
+				5E01044E5924D7E6C81650D7 /* "Development" */,
+				52E16465E27D2D2F19731865 /* "Shipping" */,
+				DF5542C2324D761ECB715302 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		070D200597466F05B11C1302 /* Build configuration list for PBXLegacyTarget "SlateViewer_Build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				558CEE3B3C63110D4152C725 /* "Debug" */,
+				46A7701104B582BDC0730531 /* "DebugGame" */,
+				35F39018A7B5B0E8510EB303 /* "Development" */,
+				12E03C16C63F667E2EA3C6C5 /* "Shipping" */,
+				61B097F34AD8D713D95F3670 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		84A36D493C4AB05022BAE52E /* Build configuration list for PBXNativeTarget "SlateViewer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F96A75789EDF490CD0ADC596 /* "Debug" */,
+				4C3A60A70CC43EA7A350428D /* "DebugGame" */,
+				852937C727767BD8342EE891 /* "Development" */,
+				94BF3F1365678577763416F3 /* "Shipping" */,
+				401769D90C9A37F0F979C21A /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		7B24CBBA158FE4C6CA0C4A70 /* Build configuration list for PBXNativeTarget "SlateViewer_Index" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				361098A29CBEA9101397CC7B /* "Debug" */,
+				BF7B8E4B168AA88CDC5D5562 /* "DebugGame" */,
+				B034649B9B1E68A82AB7C5EC /* "Development" */,
+				504B06D4E083EA3D1BFE06DC /* "Shipping" */,
+				FCA34BE02DA7FADFF70494C9 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D87133203DC66697FF9E3492 /* Project object */;
+}

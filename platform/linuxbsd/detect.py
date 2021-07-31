@@ -64,21 +64,32 @@ def get_opts():
         BoolVariable("use_llvm", "Use the LLVM compiler", False),
         BoolVariable("use_lld", "Use the LLD linker", False),
         BoolVariable("use_thinlto", "Use ThinLTO", False),
-        BoolVariable("use_static_cpp", "Link libgcc and libstdc++ statically for better portability", True),
+        BoolVariable(
+            "use_static_cpp", "Link libgcc and libstdc++ statically for better portability", True),
         BoolVariable("use_coverage", "Test Godot coverage", False),
-        BoolVariable("use_ubsan", "Use LLVM/GCC compiler undefined behavior sanitizer (UBSAN)", False),
-        BoolVariable("use_asan", "Use LLVM/GCC compiler address sanitizer (ASAN)", False),
-        BoolVariable("use_lsan", "Use LLVM/GCC compiler leak sanitizer (LSAN)", False),
-        BoolVariable("use_tsan", "Use LLVM/GCC compiler thread sanitizer (TSAN)", False),
-        BoolVariable("use_msan", "Use LLVM compiler memory sanitizer (MSAN)", False),
+        BoolVariable(
+            "use_ubsan", "Use LLVM/GCC compiler undefined behavior sanitizer (UBSAN)", False),
+        BoolVariable(
+            "use_asan", "Use LLVM/GCC compiler address sanitizer (ASAN)", False),
+        BoolVariable(
+            "use_lsan", "Use LLVM/GCC compiler leak sanitizer (LSAN)", False),
+        BoolVariable(
+            "use_tsan", "Use LLVM/GCC compiler thread sanitizer (TSAN)", False),
+        BoolVariable(
+            "use_msan", "Use LLVM compiler memory sanitizer (MSAN)", False),
         BoolVariable("pulseaudio", "Detect and use PulseAudio", True),
-        BoolVariable("dbus", "Detect and use D-Bus to handle screensaver", True),
-        BoolVariable("udev", "Use udev for gamepad connection callbacks", True),
+        BoolVariable(
+            "dbus", "Detect and use D-Bus to handle screensaver", True),
+        BoolVariable(
+            "udev", "Use udev for gamepad connection callbacks", True),
         BoolVariable("x11", "Enable X11 display", True),
-        BoolVariable("debug_symbols", "Add debugging symbols to release/release_debug builds", True),
-        BoolVariable("separate_debug_symbols", "Create a separate file containing debugging symbols", False),
+        BoolVariable(
+            "debug_symbols", "Add debugging symbols to release/release_debug builds", True),
+        BoolVariable("separate_debug_symbols",
+                     "Create a separate file containing debugging symbols", False),
         BoolVariable("touch", "Enable touch events", True),
-        BoolVariable("execinfo", "Use libexecinfo on systems where glibc is not available", False),
+        BoolVariable(
+            "execinfo", "Use libexecinfo on systems where glibc is not available", False),
     ]
 
 
@@ -87,7 +98,7 @@ def get_flags():
 
 
 def configure(env):
-    ## Build type
+    # Build type
 
     if env["target"] == "release":
         if env["optimize"] == "speed":  # optimize for speed (default)
@@ -113,13 +124,13 @@ def configure(env):
         env.Prepend(CPPDEFINES=["DEBUG_ENABLED"])
         env.Append(LINKFLAGS=["-rdynamic"])
 
-    ## Architecture
+    # Architecture
 
     is64 = sys.maxsize > 2 ** 32
     if env["bits"] == "default":
         env["bits"] = "64" if is64 else "32"
 
-    ## Compiler configuration
+    # Compiler configuration
 
     if "CXX" in env and "clang" in os.path.basename(env["CXX"]):
         # Convenience check to enforce the use_llvm overrides when CXX is clang(++)
@@ -129,7 +140,7 @@ def configure(env):
         if "clang++" not in os.path.basename(env["CXX"]):
             env["CC"] = "clang"
             env["CXX"] = "clang++"
-        env.extra_suffix = ".llvm" + env.extra_suffix
+        env.extra_suffix = "_llvm" + env.extra_suffix
 
     if env["use_lld"]:
         if env["use_llvm"]:
@@ -138,7 +149,8 @@ def configure(env):
                 # A convenience so you don't need to write use_lto too when using SCons
                 env["use_lto"] = True
         else:
-            print("Using LLD with GCC is not supported yet, try compiling with 'use_llvm=yes'.")
+            print(
+                "Using LLD with GCC is not supported yet, try compiling with 'use_llvm=yes'.")
             sys.exit(255)
 
     if env["use_coverage"]:
@@ -165,7 +177,8 @@ def configure(env):
                 env.Append(CCFLAGS=["-fsanitize=bounds-strict"])
 
         if env["use_asan"]:
-            env.Append(CCFLAGS=["-fsanitize=address,pointer-subtract,pointer-compare"])
+            env.Append(
+                CCFLAGS=["-fsanitize=address,pointer-subtract,pointer-compare"])
             env.Append(LINKFLAGS=["-fsanitize=address"])
 
         if env["use_lsan"]:
@@ -206,7 +219,7 @@ def configure(env):
     env.Append(CCFLAGS=["-fpie"])
     env.Append(LINKFLAGS=["-no-pie"])
 
-    ## Dependencies
+    # Dependencies
 
     env.ParseConfig("pkg-config x11 --cflags --libs")
     env.ParseConfig("pkg-config xcursor --cflags --libs")
@@ -257,7 +270,8 @@ def configure(env):
 
         import subprocess
 
-        bullet_version = subprocess.check_output(["pkg-config", "bullet", "--modversion"]).strip()
+        bullet_version = subprocess.check_output(
+            ["pkg-config", "bullet", "--modversion"]).strip()
         if str(bullet_version) < min_bullet_version:
             # Abort as system bullet was requested but too old
             print(
@@ -285,8 +299,10 @@ def configure(env):
     # Keep the order as it triggers chained dependencies (ogg needed by others, etc.)
 
     if not env["builtin_libtheora"]:
-        env["builtin_libogg"] = False  # Needed to link against system libtheora
-        env["builtin_libvorbis"] = False  # Needed to link against system libtheora
+        # Needed to link against system libtheora
+        env["builtin_libogg"] = False
+        # Needed to link against system libtheora
+        env["builtin_libvorbis"] = False
         env.ParseConfig("pkg-config theora theoradec --cflags --libs")
     else:
         list_of_x86 = ["x86_64", "x86", "i386", "i586"]
@@ -297,7 +313,8 @@ def configure(env):
         env.ParseConfig("pkg-config vpx --cflags --libs")
 
     if not env["builtin_libvorbis"]:
-        env["builtin_libogg"] = False  # Needed to link against system libvorbis
+        # Needed to link against system libvorbis
+        env["builtin_libogg"] = False
         env.ParseConfig("pkg-config vorbis vorbisfile --cflags --libs")
 
     if not env["builtin_opus"]:
@@ -331,7 +348,7 @@ def configure(env):
         # No pkgconfig file so far, hardcode expected lib name.
         env.Append(LIBS=["embree3"])
 
-    ## Flags
+    # Flags
 
     if os.system("pkg-config --exists alsa") == 0:  # 0 means found
         print("Enabling ALSA")
@@ -408,8 +425,10 @@ def configure(env):
         import subprocess
         import re
 
-        linker_version_str = subprocess.check_output([env.subst(env["LINK"]), "-Wl,--version"]).decode("utf-8")
-        gnu_ld_version = re.search("^GNU ld [^$]*(\d+\.\d+)$", linker_version_str, re.MULTILINE)
+        linker_version_str = subprocess.check_output(
+            [env.subst(env["LINK"]), "-Wl,--version"]).decode("utf-8")
+        gnu_ld_version = re.search(
+            "^GNU ld [^$]*(\d+\.\d+)$", linker_version_str, re.MULTILINE)
         if not gnu_ld_version:
             print(
                 "Warning: Creating template binaries enabled for PCK embedding is currently only supported with GNU ld"
@@ -418,9 +437,10 @@ def configure(env):
             if float(gnu_ld_version.group(1)) >= 2.30:
                 env.Append(LINKFLAGS=["-T", "platform/linuxbsd/pck_embed.ld"])
             else:
-                env.Append(LINKFLAGS=["-T", "platform/linuxbsd/pck_embed.legacy.ld"])
+                env.Append(
+                    LINKFLAGS=["-T", "platform/linuxbsd/pck_embed.legacy.ld"])
 
-    ## Cross-compilation
+    # Cross-compilation
 
     if is64 and env["bits"] == "32":
         env.Append(CCFLAGS=["-m32"])

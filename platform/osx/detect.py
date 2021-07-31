@@ -212,7 +212,7 @@ def configure(env):
 
         #env.Append(LINKFLAGS=["-framework", "MoltenVK"])
         env.Append(
-            LINKFLAGS="/Users/zhangjiangen/Downloads/vulkansdk-macos-1.2.135.0/MoltenVK/macOS/static/libMoltenVK.a")
+            LINKFLAGS="/Users/zhangjiangen/Downloads/vulkansdk-macos-1.2.135.0/lib/macos-arm64_x86_64/libMoltenVK.a")
         #env.Append(LINKFLAGS=["-L$VULKAN_SDK_PATH/MoltenVK/MoltenVK.xcframework/macos-arm64_x86_64/", "-lMoltenVK"])
         env["builtin_vulkan"] = False
     elif not env["builtin_vulkan"]:

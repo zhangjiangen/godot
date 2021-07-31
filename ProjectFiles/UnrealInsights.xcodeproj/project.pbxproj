@@ -1,0 +1,1001 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C7200FC49DE691C762D634DF /* DefaultEngine.ini in Sources */ = {isa = PBXBuildFile; fileRef = FBC4DE7BC5C784864169CC42 /* DefaultEngine.ini */; };
+		4FB4D6127334FDEDABBCCFD4 /* IOSUnrealInsightsMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3118BEFC748DDD9721F3A7F6 /* IOSUnrealInsightsMain.cpp */; };
+		334A4F5C3E0F457482C66B8E /* LinuxUnrealInsightsMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC68B0121A1D2C45DC1F0F1E /* LinuxUnrealInsightsMain.cpp */; };
+		BC85C9165F2BBB5B0CE0DE29 /* MacUnrealInsightsMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4A1AE9C765A526AAD2F4F0C /* MacUnrealInsightsMain.cpp */; };
+		A47BA3D2289DE39E51CF35A0 /* UnrealInsightsMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9256C17A3D12B8ACD7A1FBB4 /* UnrealInsightsMain.cpp */; };
+		2103EDB7D2A72C0E150B7E00 /* UnrealInsightsMain.h in Sources */ = {isa = PBXBuildFile; fileRef = 2D546073081C5E7839FEBCD5 /* UnrealInsightsMain.h */; };
+		ADF9A5801AD4D3027FEEB024 /* UserInterfaceCommand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AF2BCCA9A2278A87D8C04DE9 /* UserInterfaceCommand.cpp */; };
+		B145A3BB43837A2347180AD8 /* UserInterfaceCommand.h in Sources */ = {isa = PBXBuildFile; fileRef = 01ACF440377B813EA33CC3DC /* UserInterfaceCommand.h */; };
+		DCCA7D03C66219143A319FB9 /* WindowsUnrealInsightsMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 452F15560A0F82CB89872D79 /* WindowsUnrealInsightsMain.cpp */; };
+		6E90CE82CCA4718C35BD3A94 /* Info.plist in Sources */ = {isa = PBXBuildFile; fileRef = AEB894A9C7CAEEB301F55747 /* Info.plist */; };
+		E196B6227CD0268910ECBBAF /* UnrealInsights.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 486F9E4F2C6E74E293D281AB /* UnrealInsights.Build.cs */; };
+		AAF80A3AE04FE2FBE07822FD /* UnrealInsights.Target.cs in Sources */ = {isa = PBXBuildFile; fileRef = 65F4F8958A0FCBA8BA6D0918 /* UnrealInsights.Target.cs */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		FBC4DE7BC5C784864169CC42 /* DefaultEngine.ini */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DefaultEngine.ini"; path = "../../Programs/UnrealInsights/Config/DefaultEngine.ini"; sourceTree = SOURCE_ROOT; };
+		3118BEFC748DDD9721F3A7F6 /* IOSUnrealInsightsMain.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "IOSUnrealInsightsMain.cpp"; path = "../../Source/Programs/UnrealInsights/Private/IOS/IOSUnrealInsightsMain.cpp"; sourceTree = SOURCE_ROOT; };
+		AC68B0121A1D2C45DC1F0F1E /* LinuxUnrealInsightsMain.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "LinuxUnrealInsightsMain.cpp"; path = "../../Source/Programs/UnrealInsights/Private/Linux/LinuxUnrealInsightsMain.cpp"; sourceTree = SOURCE_ROOT; };
+		E4A1AE9C765A526AAD2F4F0C /* MacUnrealInsightsMain.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "MacUnrealInsightsMain.cpp"; path = "../../Source/Programs/UnrealInsights/Private/Mac/MacUnrealInsightsMain.cpp"; sourceTree = SOURCE_ROOT; };
+		9256C17A3D12B8ACD7A1FBB4 /* UnrealInsightsMain.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "UnrealInsightsMain.cpp"; path = "../../Source/Programs/UnrealInsights/Private/UnrealInsightsMain.cpp"; sourceTree = SOURCE_ROOT; };
+		2D546073081C5E7839FEBCD5 /* UnrealInsightsMain.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "UnrealInsightsMain.h"; path = "../../Source/Programs/UnrealInsights/Private/UnrealInsightsMain.h"; sourceTree = SOURCE_ROOT; };
+		AF2BCCA9A2278A87D8C04DE9 /* UserInterfaceCommand.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "UserInterfaceCommand.cpp"; path = "../../Source/Programs/UnrealInsights/Private/UserInterfaceCommand.cpp"; sourceTree = SOURCE_ROOT; };
+		01ACF440377B813EA33CC3DC /* UserInterfaceCommand.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "UserInterfaceCommand.h"; path = "../../Source/Programs/UnrealInsights/Private/UserInterfaceCommand.h"; sourceTree = SOURCE_ROOT; };
+		452F15560A0F82CB89872D79 /* WindowsUnrealInsightsMain.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "WindowsUnrealInsightsMain.cpp"; path = "../../Source/Programs/UnrealInsights/Private/Windows/WindowsUnrealInsightsMain.cpp"; sourceTree = SOURCE_ROOT; };
+		AEB894A9C7CAEEB301F55747 /* Info.plist */ = {isa = PBXFileReference; explicitFileType = text.plist.xml; name = "Info.plist"; path = "../../Source/Programs/UnrealInsights/Resources/Mac/Info.plist"; sourceTree = SOURCE_ROOT; };
+		486F9E4F2C6E74E293D281AB /* UnrealInsights.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "UnrealInsights.Build.cs"; path = "../../Source/Programs/UnrealInsights/UnrealInsights.Build.cs"; sourceTree = SOURCE_ROOT; };
+		65F4F8958A0FCBA8BA6D0918 /* UnrealInsights.Target.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "UnrealInsights.Target.cs"; path = "../../Source/Programs/UnrealInsights/UnrealInsights.Target.cs"; sourceTree = SOURCE_ROOT; };
+		B5D101E4CA78203F1EA74F0A /* UnrealInsights */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = UnrealInsights; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6B10B0C601B9D4B2C74E74CA = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4FB4D6127334FDEDABBCCFD4 /* IOSUnrealInsightsMain.cpp in Sources */,
+				BC85C9165F2BBB5B0CE0DE29 /* MacUnrealInsightsMain.cpp in Sources */,
+				A47BA3D2289DE39E51CF35A0 /* UnrealInsightsMain.cpp in Sources */,
+				ADF9A5801AD4D3027FEEB024 /* UserInterfaceCommand.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+	31539022AEEA6DB2B00ABBD7 /* Embed App Extensions */ = {
+		isa = PBXCopyFilesBuildPhase;
+		buildActionMask = 2147483647;
+		dstPath = "";
+		dstSubfolderSpec = 13;
+		files = (
+		);
+		name = "Embed App Extensions";
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXCopyFilesBuildPhase section */
+/* Begin PBXContainerItemProxy section */
+		177E757D8362398E70A6831A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1463391F782204422FEECF87 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8881411E39EE6A2D8570BD97;
+			remoteInfo = "UnrealInsights_Build";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		D389600625509713E06441FB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8881411E39EE6A2D8570BD97 /* UnrealInsights_Build */;
+			targetProxy = 177E757D8362398E70A6831A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXGroup section */
+		AAADF1B0B20C3FE519F352DF = {
+			isa = PBXGroup;
+			children = (
+				7454B14B21D2755994DBA122 /* Programs */,
+				FCDC3F7C3A6C37E73388950D /* Source */,
+				C8BCF80C65B2D2324BCDDB38 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7454B14B21D2755994DBA122 = {
+			isa = PBXGroup;
+			children = (
+				35FFA87F0E8AE1ADDA9DE9E9 /* UnrealInsights */,
+			);
+			name = "Programs";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Programs";
+			sourceTree = "<absolute>";
+		};
+		35FFA87F0E8AE1ADDA9DE9E9 = {
+			isa = PBXGroup;
+			children = (
+				9DDF4C171AD2C65E6D03A023 /* Config */,
+			);
+			name = "UnrealInsights";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Programs/UnrealInsights";
+			sourceTree = "<absolute>";
+		};
+		9DDF4C171AD2C65E6D03A023 = {
+			isa = PBXGroup;
+			children = (
+				FBC4DE7BC5C784864169CC42 /* DefaultEngine.ini */,
+			);
+			name = "Config";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Programs/UnrealInsights/Config";
+			sourceTree = "<absolute>";
+		};
+		FCDC3F7C3A6C37E73388950D = {
+			isa = PBXGroup;
+			children = (
+				E6C1434582C7FDD76BC7AD42 /* Programs */,
+			);
+			name = "Source";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source";
+			sourceTree = "<absolute>";
+		};
+		E6C1434582C7FDD76BC7AD42 = {
+			isa = PBXGroup;
+			children = (
+				865D3EC21443B4325F848331 /* UnrealInsights */,
+			);
+			name = "Programs";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs";
+			sourceTree = "<absolute>";
+		};
+		865D3EC21443B4325F848331 = {
+			isa = PBXGroup;
+			children = (
+				4A64726E6501B515493E3159 /* Private */,
+				2FC442E690CE1A7D86BD5077 /* Resources */,
+				486F9E4F2C6E74E293D281AB /* UnrealInsights.Build.cs */,
+				65F4F8958A0FCBA8BA6D0918 /* UnrealInsights.Target.cs */,
+			);
+			name = "UnrealInsights";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealInsights";
+			sourceTree = "<absolute>";
+		};
+		4A64726E6501B515493E3159 = {
+			isa = PBXGroup;
+			children = (
+				8F81DBA506C9B8342FFDF6DD /* IOS */,
+				2D75D2F0D363AE623E11FA1D /* Linux */,
+				548E71691197F8472CE53293 /* Mac */,
+				670F2B96CC4E024D6E9540F0 /* Windows */,
+				9256C17A3D12B8ACD7A1FBB4 /* UnrealInsightsMain.cpp */,
+				2D546073081C5E7839FEBCD5 /* UnrealInsightsMain.h */,
+				AF2BCCA9A2278A87D8C04DE9 /* UserInterfaceCommand.cpp */,
+				01ACF440377B813EA33CC3DC /* UserInterfaceCommand.h */,
+			);
+			name = "Private";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealInsights/Private";
+			sourceTree = "<absolute>";
+		};
+		8F81DBA506C9B8342FFDF6DD = {
+			isa = PBXGroup;
+			children = (
+				3118BEFC748DDD9721F3A7F6 /* IOSUnrealInsightsMain.cpp */,
+			);
+			name = "IOS";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealInsights/Private/IOS";
+			sourceTree = "<absolute>";
+		};
+		2D75D2F0D363AE623E11FA1D = {
+			isa = PBXGroup;
+			children = (
+				AC68B0121A1D2C45DC1F0F1E /* LinuxUnrealInsightsMain.cpp */,
+			);
+			name = "Linux";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealInsights/Private/Linux";
+			sourceTree = "<absolute>";
+		};
+		548E71691197F8472CE53293 = {
+			isa = PBXGroup;
+			children = (
+				E4A1AE9C765A526AAD2F4F0C /* MacUnrealInsightsMain.cpp */,
+			);
+			name = "Mac";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealInsights/Private/Mac";
+			sourceTree = "<absolute>";
+		};
+		670F2B96CC4E024D6E9540F0 = {
+			isa = PBXGroup;
+			children = (
+				452F15560A0F82CB89872D79 /* WindowsUnrealInsightsMain.cpp */,
+			);
+			name = "Windows";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealInsights/Private/Windows";
+			sourceTree = "<absolute>";
+		};
+		2FC442E690CE1A7D86BD5077 = {
+			isa = PBXGroup;
+			children = (
+				574E239704AEB048423E89C4 /* Mac */,
+			);
+			name = "Resources";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealInsights/Resources";
+			sourceTree = "<absolute>";
+		};
+		574E239704AEB048423E89C4 = {
+			isa = PBXGroup;
+			children = (
+				AEB894A9C7CAEEB301F55747 /* Info.plist */,
+			);
+			name = "Mac";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealInsights/Resources/Mac";
+			sourceTree = "<absolute>";
+		};
+		C8BCF80C65B2D2324BCDDB38 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B5D101E4CA78203F1EA74F0A /* UnrealInsights */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		8881411E39EE6A2D8570BD97 /* UnrealInsights_Build */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION) $(UE_BUILD_TARGET_NAME) $(PLATFORM_NAME) $(UE_BUILD_TARGET_CONFIG)";
+			buildConfigurationList = 4A7563BC06FF2E2D06465153 /* Build configuration list for PBXLegacyTarget "UnrealInsights_Build" */;
+			buildPhases = (
+			);
+			buildToolPath = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Build/BatchFiles/Mac/XcodeBuild.sh";
+			buildWorkingDirectory = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425";
+			dependencies = (
+			);
+			name = "UnrealInsights_Build";
+			passBuildSettingsInEnvironment = 1;
+			productName = "UnrealInsights_Build";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		7EAD462394E988676ED1014B /* UnrealInsights */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 92C76BD516BFF2E61F3F8E9F /* Build configuration list for PBXNativeTarget "UnrealInsights" */;
+			buildPhases = (
+				31539022AEEA6DB2B00ABBD7 /* Embed App Extensions */, 
+				555C7ACE8F6A9FDCD1B845A1 /* Shell Script */, 
+			);
+			dependencies = (
+				D389600625509713E06441FB /* PBXTargetDependency */,
+			);
+			name = "UnrealInsights";
+			passBuildSettingsInEnvironment = 1;
+			productName = "UnrealInsights";
+			productReference = "B5D101E4CA78203F1EA74F0A";
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXNativeTarget section */
+		4EB248674302DC702F6AF401 /* UnrealInsights_Index */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 201B55813C55944413699955 /* Build configuration list for PBXNativeTarget "UnrealInsights_Index" */;
+			buildPhases = (
+				6B10B0C601B9D4B2C74E74CA /* Sources */,
+			);
+			dependencies = (
+			);
+			name = "UnrealInsights_Index";
+			passBuildSettingsInEnvironment = 1;
+			productName = "UnrealInsights_Index";
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1463391F782204422FEECF87 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2000;
+				ORGANIZATIONNAME = "Epic Games, Inc.";
+				TargetAttributes = {
+					7EAD462394E988676ED1014B = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = A503EA83944D68E080629CEB /* Build configuration list for PBXProject "UnrealInsights" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en
+			);
+			mainGroup = AAADF1B0B20C3FE519F352DF;
+			productRefGroup = C8BCF80C65B2D2324BCDDB38;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			7EAD462394E988676ED1014B /* UnrealInsights */,
+			8881411E39EE6A2D8570BD97 /* UnrealInsights_Build */,
+			4EB248674302DC702F6AF401 /* UnrealInsights_Index */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		5C79E35F1E9F187A482DDA12 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/CEF3/cef_binary_3.3071.1611.g4a19305_macosx64",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/UnrealInsights/Private",
+					"../Build/Mac/UnrealInsights/Inc/AppFramework",
+					"../../Source/Runtime",
+					"../../Source/Runtime/AppFramework/Public",
+					"../Build/Mac/UnrealInsights/Inc/Core",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealInsights/Inc/TraceLog",
+					"../Build/Mac/UnrealInsights/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/UnrealInsights/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealInsights/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealInsights/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/UnrealInsights/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/UnrealInsights/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealInsights/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/UnrealInsights/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/UnrealInsights/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealInsights/Inc/SourceCodeAccess",
+					"../../Source/Developer",
+					"../../Source/Developer/SourceCodeAccess/Public",
+					"../Build/Mac/UnrealInsights/Inc/Settings",
+					"../../Source/Developer/Settings/Public",
+					"../Build/Mac/UnrealInsights/Inc/StandaloneRenderer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../Build/Mac/UnrealInsights/Inc/TraceInsights",
+					"../../Source/Developer/TraceInsights/Public",
+					"../Build/Mac/UnrealInsights/Inc/RenderCore",
+					"../../Source/Runtime/RenderCore/Public",
+					"../Build/Mac/UnrealInsights/Inc/Sockets",
+					"../../Source/Runtime/Sockets/Public",
+					"../Build/Mac/UnrealInsights/Inc/EditorStyle",
+					"../../Source/Editor",
+					"../../Source/Editor/EditorStyle/Public",
+					"../Build/Mac/UnrealInsights/Inc/TraceAnalysis",
+					"../../Source/Developer/TraceAnalysis/Public",
+					"../Build/Mac/UnrealInsights/Inc/TraceServices",
+					"../../Source/Developer/TraceServices/Public",
+					"../Build/Mac/UnrealInsights/Inc/DesktopPlatform",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/UnrealInsights/Inc/WorkspaceMenuStructure",
+					"../../Source/Editor/WorkspaceMenuStructure/Public",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Intermediate/Build/Mac/UnrealInsights/Inc/XCodeSourceCodeAccess",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Source",
+					"../../Source/ThirdParty",
+					"../Build/Mac/UnrealInsights/Inc/SlateReflector",
+					"../../Source/Developer/SlateReflector/Public",
+					"../Build/Mac/UnrealInsights/Inc/UnrealInsights",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				ENABLE_TESTABILITY = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Debug";
+		};
+		E63D7CA72FE44B82083E2018 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/CEF3/cef_binary_3.3071.1611.g4a19305_macosx64",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/UnrealInsights/Private",
+					"../Build/Mac/UnrealInsights/Inc/AppFramework",
+					"../../Source/Runtime",
+					"../../Source/Runtime/AppFramework/Public",
+					"../Build/Mac/UnrealInsights/Inc/Core",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealInsights/Inc/TraceLog",
+					"../Build/Mac/UnrealInsights/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/UnrealInsights/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealInsights/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealInsights/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/UnrealInsights/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/UnrealInsights/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealInsights/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/UnrealInsights/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/UnrealInsights/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealInsights/Inc/SourceCodeAccess",
+					"../../Source/Developer",
+					"../../Source/Developer/SourceCodeAccess/Public",
+					"../Build/Mac/UnrealInsights/Inc/Settings",
+					"../../Source/Developer/Settings/Public",
+					"../Build/Mac/UnrealInsights/Inc/StandaloneRenderer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../Build/Mac/UnrealInsights/Inc/TraceInsights",
+					"../../Source/Developer/TraceInsights/Public",
+					"../Build/Mac/UnrealInsights/Inc/RenderCore",
+					"../../Source/Runtime/RenderCore/Public",
+					"../Build/Mac/UnrealInsights/Inc/Sockets",
+					"../../Source/Runtime/Sockets/Public",
+					"../Build/Mac/UnrealInsights/Inc/EditorStyle",
+					"../../Source/Editor",
+					"../../Source/Editor/EditorStyle/Public",
+					"../Build/Mac/UnrealInsights/Inc/TraceAnalysis",
+					"../../Source/Developer/TraceAnalysis/Public",
+					"../Build/Mac/UnrealInsights/Inc/TraceServices",
+					"../../Source/Developer/TraceServices/Public",
+					"../Build/Mac/UnrealInsights/Inc/DesktopPlatform",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/UnrealInsights/Inc/WorkspaceMenuStructure",
+					"../../Source/Editor/WorkspaceMenuStructure/Public",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Intermediate/Build/Mac/UnrealInsights/Inc/XCodeSourceCodeAccess",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Source",
+					"../../Source/ThirdParty",
+					"../Build/Mac/UnrealInsights/Inc/SlateReflector",
+					"../../Source/Developer/SlateReflector/Public",
+					"../Build/Mac/UnrealInsights/Inc/UnrealInsights",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "DebugGame";
+		};
+		76DEF41F6478F896E12B11B8 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/CEF3/cef_binary_3.3071.1611.g4a19305_macosx64",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/UnrealInsights/Private",
+					"../Build/Mac/UnrealInsights/Inc/AppFramework",
+					"../../Source/Runtime",
+					"../../Source/Runtime/AppFramework/Public",
+					"../Build/Mac/UnrealInsights/Inc/Core",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealInsights/Inc/TraceLog",
+					"../Build/Mac/UnrealInsights/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/UnrealInsights/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealInsights/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealInsights/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/UnrealInsights/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/UnrealInsights/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealInsights/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/UnrealInsights/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/UnrealInsights/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealInsights/Inc/SourceCodeAccess",
+					"../../Source/Developer",
+					"../../Source/Developer/SourceCodeAccess/Public",
+					"../Build/Mac/UnrealInsights/Inc/Settings",
+					"../../Source/Developer/Settings/Public",
+					"../Build/Mac/UnrealInsights/Inc/StandaloneRenderer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../Build/Mac/UnrealInsights/Inc/TraceInsights",
+					"../../Source/Developer/TraceInsights/Public",
+					"../Build/Mac/UnrealInsights/Inc/RenderCore",
+					"../../Source/Runtime/RenderCore/Public",
+					"../Build/Mac/UnrealInsights/Inc/Sockets",
+					"../../Source/Runtime/Sockets/Public",
+					"../Build/Mac/UnrealInsights/Inc/EditorStyle",
+					"../../Source/Editor",
+					"../../Source/Editor/EditorStyle/Public",
+					"../Build/Mac/UnrealInsights/Inc/TraceAnalysis",
+					"../../Source/Developer/TraceAnalysis/Public",
+					"../Build/Mac/UnrealInsights/Inc/TraceServices",
+					"../../Source/Developer/TraceServices/Public",
+					"../Build/Mac/UnrealInsights/Inc/DesktopPlatform",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/UnrealInsights/Inc/WorkspaceMenuStructure",
+					"../../Source/Editor/WorkspaceMenuStructure/Public",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Intermediate/Build/Mac/UnrealInsights/Inc/XCodeSourceCodeAccess",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Source",
+					"../../Source/ThirdParty",
+					"../Build/Mac/UnrealInsights/Inc/SlateReflector",
+					"../../Source/Developer/SlateReflector/Public",
+					"../Build/Mac/UnrealInsights/Inc/UnrealInsights",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Development";
+		};
+		0C6CABA3BE5AF11D4A130789 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/CEF3/cef_binary_3.3071.1611.g4a19305_macosx64",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/UnrealInsights/Private",
+					"../Build/Mac/UnrealInsights/Inc/AppFramework",
+					"../../Source/Runtime",
+					"../../Source/Runtime/AppFramework/Public",
+					"../Build/Mac/UnrealInsights/Inc/Core",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealInsights/Inc/TraceLog",
+					"../Build/Mac/UnrealInsights/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/UnrealInsights/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealInsights/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealInsights/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/UnrealInsights/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/UnrealInsights/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealInsights/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/UnrealInsights/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/UnrealInsights/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealInsights/Inc/SourceCodeAccess",
+					"../../Source/Developer",
+					"../../Source/Developer/SourceCodeAccess/Public",
+					"../Build/Mac/UnrealInsights/Inc/Settings",
+					"../../Source/Developer/Settings/Public",
+					"../Build/Mac/UnrealInsights/Inc/StandaloneRenderer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../Build/Mac/UnrealInsights/Inc/TraceInsights",
+					"../../Source/Developer/TraceInsights/Public",
+					"../Build/Mac/UnrealInsights/Inc/RenderCore",
+					"../../Source/Runtime/RenderCore/Public",
+					"../Build/Mac/UnrealInsights/Inc/Sockets",
+					"../../Source/Runtime/Sockets/Public",
+					"../Build/Mac/UnrealInsights/Inc/EditorStyle",
+					"../../Source/Editor",
+					"../../Source/Editor/EditorStyle/Public",
+					"../Build/Mac/UnrealInsights/Inc/TraceAnalysis",
+					"../../Source/Developer/TraceAnalysis/Public",
+					"../Build/Mac/UnrealInsights/Inc/TraceServices",
+					"../../Source/Developer/TraceServices/Public",
+					"../Build/Mac/UnrealInsights/Inc/DesktopPlatform",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/UnrealInsights/Inc/WorkspaceMenuStructure",
+					"../../Source/Editor/WorkspaceMenuStructure/Public",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Intermediate/Build/Mac/UnrealInsights/Inc/XCodeSourceCodeAccess",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Source",
+					"../../Source/ThirdParty",
+					"../Build/Mac/UnrealInsights/Inc/SlateReflector",
+					"../../Source/Developer/SlateReflector/Public",
+					"../Build/Mac/UnrealInsights/Inc/UnrealInsights",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Shipping";
+		};
+		6C41294ABB7AD240FF94CCE2 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/CEF3/cef_binary_3.3071.1611.g4a19305_macosx64",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/UnrealInsights/Private",
+					"../Build/Mac/UnrealInsights/Inc/AppFramework",
+					"../../Source/Runtime",
+					"../../Source/Runtime/AppFramework/Public",
+					"../Build/Mac/UnrealInsights/Inc/Core",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealInsights/Inc/TraceLog",
+					"../Build/Mac/UnrealInsights/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/UnrealInsights/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealInsights/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealInsights/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/UnrealInsights/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/UnrealInsights/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealInsights/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/UnrealInsights/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/UnrealInsights/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealInsights/Inc/SourceCodeAccess",
+					"../../Source/Developer",
+					"../../Source/Developer/SourceCodeAccess/Public",
+					"../Build/Mac/UnrealInsights/Inc/Settings",
+					"../../Source/Developer/Settings/Public",
+					"../Build/Mac/UnrealInsights/Inc/StandaloneRenderer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../Build/Mac/UnrealInsights/Inc/TraceInsights",
+					"../../Source/Developer/TraceInsights/Public",
+					"../Build/Mac/UnrealInsights/Inc/RenderCore",
+					"../../Source/Runtime/RenderCore/Public",
+					"../Build/Mac/UnrealInsights/Inc/Sockets",
+					"../../Source/Runtime/Sockets/Public",
+					"../Build/Mac/UnrealInsights/Inc/EditorStyle",
+					"../../Source/Editor",
+					"../../Source/Editor/EditorStyle/Public",
+					"../Build/Mac/UnrealInsights/Inc/TraceAnalysis",
+					"../../Source/Developer/TraceAnalysis/Public",
+					"../Build/Mac/UnrealInsights/Inc/TraceServices",
+					"../../Source/Developer/TraceServices/Public",
+					"../Build/Mac/UnrealInsights/Inc/DesktopPlatform",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/UnrealInsights/Inc/WorkspaceMenuStructure",
+					"../../Source/Editor/WorkspaceMenuStructure/Public",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Intermediate/Build/Mac/UnrealInsights/Inc/XCodeSourceCodeAccess",
+					"../../Plugins/Developer/XCodeSourceCodeAccess/Source",
+					"../../Source/ThirdParty",
+					"../Build/Mac/UnrealInsights/Inc/SlateReflector",
+					"../../Source/Developer/SlateReflector/Public",
+					"../Build/Mac/UnrealInsights/Inc/UnrealInsights",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Test";
+		};
+		22AF84615F29886155D970A4 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealInsights-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		7CBBCAB033610433E84F5B51 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealInsights-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		743737BF1B49BD3A445994E1 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealInsights";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		E853734DC7F6D53A99CC6C17 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealInsights-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		6A8C53A6738064C4BCBC6507 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealInsights-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+		3F06235DAF98F9790DEEC634 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealInsights";
+				UE_BUILD_TARGET_CONFIG = "Debug";
+			};
+			name = "Debug";
+		};
+		96776F144A4823D65A427671 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealInsights";
+				UE_BUILD_TARGET_CONFIG = "DebugGame";
+			};
+			name = "DebugGame";
+		};
+		18DA90A42394631AE3399E6B /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealInsights";
+				UE_BUILD_TARGET_CONFIG = "Development";
+			};
+			name = "Development";
+		};
+		D7DBEF64C9A3A087252497B7 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealInsights";
+				UE_BUILD_TARGET_CONFIG = "Shipping";
+			};
+			name = "Shipping";
+		};
+		9A4CF218AB2B1BEEE1F9F887 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealInsights";
+				UE_BUILD_TARGET_CONFIG = "Test";
+			};
+			name = "Test";
+		};
+		060E9310F1418E288168ACE0 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealInsights-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		1B524929A3442CC7ED7B9435 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealInsights-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		530372E14ADF8FF04091B46B /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealInsights";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		E8BF5C8848802140FBE8F9F6 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealInsights-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		7A56CBAB5157B754F3791EBC /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealInsights-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A503EA83944D68E080629CEB /* Build configuration list for PBXProject "UnrealInsights" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5C79E35F1E9F187A482DDA12 /* "Debug" */,
+				E63D7CA72FE44B82083E2018 /* "DebugGame" */,
+				76DEF41F6478F896E12B11B8 /* "Development" */,
+				0C6CABA3BE5AF11D4A130789 /* "Shipping" */,
+				6C41294ABB7AD240FF94CCE2 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		4A7563BC06FF2E2D06465153 /* Build configuration list for PBXLegacyTarget "UnrealInsights_Build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3F06235DAF98F9790DEEC634 /* "Debug" */,
+				96776F144A4823D65A427671 /* "DebugGame" */,
+				18DA90A42394631AE3399E6B /* "Development" */,
+				D7DBEF64C9A3A087252497B7 /* "Shipping" */,
+				9A4CF218AB2B1BEEE1F9F887 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		92C76BD516BFF2E61F3F8E9F /* Build configuration list for PBXNativeTarget "UnrealInsights" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				22AF84615F29886155D970A4 /* "Debug" */,
+				7CBBCAB033610433E84F5B51 /* "DebugGame" */,
+				743737BF1B49BD3A445994E1 /* "Development" */,
+				E853734DC7F6D53A99CC6C17 /* "Shipping" */,
+				6A8C53A6738064C4BCBC6507 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		201B55813C55944413699955 /* Build configuration list for PBXNativeTarget "UnrealInsights_Index" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				060E9310F1418E288168ACE0 /* "Debug" */,
+				1B524929A3442CC7ED7B9435 /* "DebugGame" */,
+				530372E14ADF8FF04091B46B /* "Development" */,
+				E8BF5C8848802140FBE8F9F6 /* "Shipping" */,
+				7A56CBAB5157B754F3791EBC /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1463391F782204422FEECF87 /* Project object */;
+}

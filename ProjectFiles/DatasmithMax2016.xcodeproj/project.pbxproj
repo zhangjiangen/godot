@@ -1,0 +1,1124 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A0C575A00B3EE74B4DD646F0 /* DatasmithMax2016.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 0D12720030AB6B519EFD1B3A /* DatasmithMax2016.Build.cs */; };
+		2C4E399CAD3837ECD0F8CBD6 /* DatasmithMax2016.Target.cs in Sources */ = {isa = PBXBuildFile; fileRef = 4E6FC01DBECF6EAFE3EBE34A /* DatasmithMax2016.Target.cs */; };
+		C07DE7ADE2DEE3BD0922AF08 /* DatasmithMax2017.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 34A3A1B2335B8704E5DFAA33 /* DatasmithMax2017.Build.cs */; };
+		E9ED412D77AA72A2AA3BDF8E /* DatasmithMax2018.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 5639696EF388E6EA6269CC8C /* DatasmithMax2018.Build.cs */; };
+		09B91E43761755E1D3B4C4F4 /* DatasmithMax2019.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 9DB5465EB00D5EF8C3135BFA /* DatasmithMax2019.Build.cs */; };
+		F218115DF8BFD18020B423BD /* DatasmithMax2020.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 8C2F2B92E5FEBBA27574D13D /* DatasmithMax2020.Build.cs */; };
+		41883A540BD3C8F65E24515E /* DatasmithMax2021.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 06F7E913E243D3E89288D280 /* DatasmithMax2021.Build.cs */; };
+		E1CB13C558B8847D46D41B70 /* DatasmithMaxExporter.def in Sources */ = {isa = PBXBuildFile; fileRef = 847C744DEB2C5F67DECD8CED /* DatasmithMaxExporter.def */; };
+		15A7BF31A1E9AAB9B5B9723F /* UnrealStudio_Datasmith_Attributes_Holder_Modifier.ms in Sources */ = {isa = PBXBuildFile; fileRef = C0039EA59FD41732DC788E65 /* UnrealStudio_Datasmith_Attributes_Holder_Modifier.ms */; };
+		CF86FC65296AA2143E25B0B0 /* CustomActions.wxs in Sources */ = {isa = PBXBuildFile; fileRef = F953DB5D2961BACB0A358CE8 /* CustomActions.wxs */; };
+		8EB9C80AB55A119C1859621A /* CustomExitDialog.wxs in Sources */ = {isa = PBXBuildFile; fileRef = EC44904B165E009B52EDAC4B /* CustomExitDialog.wxs */; };
+		F8BA087ABEC35B9AFA13D770 /* CustomInstallDirDlg.wxs in Sources */ = {isa = PBXBuildFile; fileRef = A2985EE31314979FF1C070E5 /* CustomInstallDirDlg.wxs */; };
+		D16FB4AB34F096A00C7C11FB /* CustomLicenseAgreementDlg.wxs in Sources */ = {isa = PBXBuildFile; fileRef = 5296DE55FDC720D86C1FA87E /* CustomLicenseAgreementDlg.wxs */; };
+		001D873E560D5A374923A84E /* CustomWelcomeDialog.wxs in Sources */ = {isa = PBXBuildFile; fileRef = 0FB066097D3763268662917D /* CustomWelcomeDialog.wxs */; };
+		3542A129A09778B1C636AA16 /* CustomWixUI_InstallDir.wxs in Sources */ = {isa = PBXBuildFile; fileRef = 69574AFE21DAB12FED8F464D /* CustomWixUI_InstallDir.wxs */; };
+		61175A35BC82F79D8B0A0813 /* GenericUiBrandDialog.wxs in Sources */ = {isa = PBXBuildFile; fileRef = 6C3097B1AAF788D9054FA026 /* GenericUiBrandDialog.wxs */; };
+		EC6404ACB1618FA6FC53C788 /* Installer.wixproj in Sources */ = {isa = PBXBuildFile; fileRef = 3C43F5433E0D8B5F4E3692F1 /* Installer.wixproj */; };
+		2161E4EC1F7A88338A1DF5C2 /* en-us.wxl in Sources */ = {isa = PBXBuildFile; fileRef = D24F4E365D92846BE03A4CE0 /* en-us.wxl */; };
+		42FF84F6066D471277344857 /* MaxExporter.wxs in Sources */ = {isa = PBXBuildFile; fileRef = 7E4AEC297A611718680E7467 /* MaxExporter.wxs */; };
+		01449AF8C341D7B6D2136AB1 /* ReadMe.txt in Sources */ = {isa = PBXBuildFile; fileRef = DC99A08F0CB51108FA9EC5F4 /* ReadMe.txt */; };
+		C1880CB3FD6C6D627FA6D662 /* Banner.bmp in Sources */ = {isa = PBXBuildFile; fileRef = 5CEA97578A3626BFA4DDBCBC /* Banner.bmp */; };
+		F5A00126B35F6655BEF47BA7 /* default_small_banner.bmp in Sources */ = {isa = PBXBuildFile; fileRef = B774F6D750D70A814F058E4E /* default_small_banner.bmp */; };
+		66DBAB68195A14E614042A96 /* Dialog.bmp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED5361EB093432C78ECD972 /* Dialog.bmp */; };
+		FB2DE1A9138D3CE4CC4F4C21 /* Exporter Plugin End User License Agreement.docx in Sources */ = {isa = PBXBuildFile; fileRef = C105482491F04D58C000E9B4 /* Exporter Plugin End User License Agreement.docx */; };
+		FF080E119A8F437A01396CEC /* Exporter Plugin End User License Agreement.rtf in Sources */ = {isa = PBXBuildFile; fileRef = 796AD286C746CA1E89145CAB /* Exporter Plugin End User License Agreement.rtf */; };
+		AC2E4C0268EC373046C1C154 /* banner.bmp in Sources */ = {isa = PBXBuildFile; fileRef = D3EC3B130D1518FDBD1DC28B /* banner.bmp */; };
+		C888CB8DC1C602F011B37985 /* unreal-logo.jpg in Sources */ = {isa = PBXBuildFile; fileRef = 1264EDD1BC4A61F6B3A10363 /* unreal-logo.jpg */; };
+		27464072BCCCD8268467F1CA /* 28190.bmp in Sources */ = {isa = PBXBuildFile; fileRef = 52C8048022EA1952290EAF13 /* 28190.bmp */; };
+		DBE137E35EE3F0E5F7CA12A5 /* 28402.bmp in Sources */ = {isa = PBXBuildFile; fileRef = 501ED39FE8135BBAB7A42DF6 /* 28402.bmp */; };
+		CCC2FE889DAE7F19962D96DA /* 28674.bmp in Sources */ = {isa = PBXBuildFile; fileRef = 95F5C8A1770CD387B55E2F03 /* 28674.bmp */; };
+		17796A16B2F55B37B440169B /* 30668.bmp in Sources */ = {isa = PBXBuildFile; fileRef = E56748494BF80F2387F80AF2 /* 30668.bmp */; };
+		4ABA43ABD1A5406D92FA7123 /* 30725.bmp in Sources */ = {isa = PBXBuildFile; fileRef = 436866A1D15F2654DE2DBB0F /* 30725.bmp */; };
+		9BF77339EC91908F6BC03ADF /* Epic_Games_logo.bmp in Sources */ = {isa = PBXBuildFile; fileRef = 21A96F7FBFD0432072B600A9 /* Epic_Games_logo.bmp */; };
+		C48A3CBD4F0C7C1E6F77CCF8 /* banner.bmp in Sources */ = {isa = PBXBuildFile; fileRef = B2B0650FFFA808EBF62405E3 /* banner.bmp */; };
+		926D5127D2B5141CFE34E647 /* unreal-logo.jpg in Sources */ = {isa = PBXBuildFile; fileRef = 68831E867D53B3CC9B6DEF21 /* unreal-logo.jpg */; };
+		4A1E9A889E81B2FA442CA90B /* Microsoft_VC140_CRT_x64.msm in Sources */ = {isa = PBXBuildFile; fileRef = 7E2B493C0CD21F88985BAB27 /* Microsoft_VC140_CRT_x64.msm */; };
+		1DC7907935CA2BEBAB63C67C /* Microsoft_VC140_OpenMP_x64.msm in Sources */ = {isa = PBXBuildFile; fileRef = F4BADC7F8771A84CC0C7089C /* Microsoft_VC140_OpenMP_x64.msm */; };
+		FD8E12B7F4D413EE72736BD7 /* UnrealEngine.ico in Sources */ = {isa = PBXBuildFile; fileRef = F138C57A00BE5F1B65CC4751 /* UnrealEngine.ico */; };
+		F916553525D0189F84592BE1 /* DatasmithMaxArnold.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA544BBA62AFFA7DC91EA67B /* DatasmithMaxArnold.cpp */; };
+		8A826DA3713847247E2F2EBB /* DatasmithMaxAttributes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 60DEF72E1B47C20F583CCB29 /* DatasmithMaxAttributes.cpp */; };
+		07F96AEC737158DA70D9ABA3 /* DatasmithMaxAttributes.h in Sources */ = {isa = PBXBuildFile; fileRef = 62752E4C1207638A268F5A83 /* DatasmithMaxAttributes.h */; };
+		B8CB62825C96234DB6449B77 /* DatasmithMaxCameraExporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE5BB00CD7534B863354CBA6 /* DatasmithMaxCameraExporter.cpp */; };
+		1875FD51D94002789FE633A8 /* DatasmithMaxCorona.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FD57ED9B65DEC1EDAB67EB6 /* DatasmithMaxCorona.cpp */; };
+		5656B3D344D35063FFBB69E6 /* DatasmithMaxExporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 99D173764122D8E82708FD02 /* DatasmithMaxExporter.cpp */; };
+		D471CFD568ADCB62F746FA82 /* DatasmithMaxHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8D2F34CB95D0A8536C9740E4 /* DatasmithMaxHelper.cpp */; };
+		E976DCB7DD958F4E59B1FED2 /* DatasmithMaxLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 047BFB51F006EF52D7F1E812 /* DatasmithMaxLogger.cpp */; };
+		EE0C52575FA9953D31EBEBF2 /* DatasmithMaxMental.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D0138561B7AB29DC3061C71A /* DatasmithMaxMental.cpp */; };
+		D4566365A7ED0DF88DCAC9D0 /* DatasmithMaxMeshExporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4338EFB01BC1A1198F0980DC /* DatasmithMaxMeshExporter.cpp */; };
+		818E9B2BC80CE18C45388208 /* DatasmithMaxProgressManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46309543DDF364064AB41E7F /* DatasmithMaxProgressManager.cpp */; };
+		BC79C06EC0AE8BCBD586E319 /* DatasmithMaxScanline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52E13080E83C8B0AB5E769EB /* DatasmithMaxScanline.cpp */; };
+		2C5D3B9CA47A92CD6F1C6F4F /* DatasmithMaxSceneExporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4B73CC96ADB732BF4C7BF1FC /* DatasmithMaxSceneExporter.cpp */; };
+		C2E41E0D2913C9D50FD54263 /* DatasmithMaxSceneParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 73EE265BF416A93571E13475 /* DatasmithMaxSceneParser.cpp */; };
+		70F45DFDB4AA9EB06B3ED9C0 /* DatasmithMaxTexmapParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C85A45C529A3F75306923BE /* DatasmithMaxTexmapParser.cpp */; };
+		90D7CB35D1BC8BE1AFA89C34 /* DatasmithMaxTexmapParser.h in Sources */ = {isa = PBXBuildFile; fileRef = B5CB20653692F7351466FE6F /* DatasmithMaxTexmapParser.h */; };
+		724DE2D6A1BF4407D09F6DDC /* DatasmithMaxThea.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DE69DEAFB2F810B3E86FA686 /* DatasmithMaxThea.cpp */; };
+		79DA3F9E71EEA929D85CC384 /* DatasmithMaxVRay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9B440F0649463165E4386CD /* DatasmithMaxVRay.cpp */; };
+		B347821C564B8602A75C5CC6 /* DatasmithMaxWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7FA696E2F5430482A55AD6FD /* DatasmithMaxWriter.cpp */; };
+		FE81211A3F04275970846435 /* DatasmithMaxMaterialsToUEPbr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB33F6173326720EBC6B7668 /* DatasmithMaxMaterialsToUEPbr.cpp */; };
+		6F77ACE47D59A53EAF91548A /* DatasmithMaxMaterialsToUEPbr.h in Sources */ = {isa = PBXBuildFile; fileRef = 6E0DF64F4990B9E6289E91A2 /* DatasmithMaxMaterialsToUEPbr.h */; };
+		CAC54931066201920AB8ABC8 /* DatasmithMaxScanlineMaterialsToUEPbr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5843DC17DF258569DE6CA926 /* DatasmithMaxScanlineMaterialsToUEPbr.cpp */; };
+		2F23C42CB2903FD1E5091AB7 /* DatasmithMaxScanlineMaterialsToUEPbr.h in Sources */ = {isa = PBXBuildFile; fileRef = 1073384D90C180B5622EF606 /* DatasmithMaxScanlineMaterialsToUEPbr.h */; };
+		B3A107031827C45D1C2302E3 /* DatasmithMaxTexmapToUEPbr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9DD5DF7A78D9E24E2825066C /* DatasmithMaxTexmapToUEPbr.cpp */; };
+		ED38D91CEBF3C3012CBE7810 /* DatasmithMaxTexmapToUEPbr.h in Sources */ = {isa = PBXBuildFile; fileRef = 883CB9BE45BC9BED7154AFBB /* DatasmithMaxTexmapToUEPbr.h */; };
+		4B728E709ED05F1215016927 /* DatasmithMaxVrayMaterialsToUEPbr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D720482A07D57306D8C7225 /* DatasmithMaxVrayMaterialsToUEPbr.cpp */; };
+		4A31FF7259031546B36C2017 /* DatasmithMaxVrayMaterialsToUEPbr.h in Sources */ = {isa = PBXBuildFile; fileRef = 8A89FAB7BE27D0B5D18DE76E /* DatasmithMaxVrayMaterialsToUEPbr.h */; };
+		E1063D894BA7DD8E9B9B15E0 /* DatasmithMaxVRayTexmapToUEPbr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4EA771295F00B6DF5CCFF13C /* DatasmithMaxVRayTexmapToUEPbr.cpp */; };
+		1F24096B8919FA98881D3AE5 /* DatasmithMaxVRayTexmapToUEPbr.h in Sources */ = {isa = PBXBuildFile; fileRef = B63AB585E0EA75ED26D9709D /* DatasmithMaxVRayTexmapToUEPbr.h */; };
+		B8204F530B8F28365371EA2A /* VRayLights.h in Sources */ = {isa = PBXBuildFile; fileRef = 6B8CD38DD5C0DD7C587970BD /* VRayLights.h */; };
+		E5F34DA9813F2FBEFF68266C /* DatasmithMaxCameraExporter.h in Sources */ = {isa = PBXBuildFile; fileRef = D1ECB911EB22743151EDF716 /* DatasmithMaxCameraExporter.h */; };
+		83A07245BBBD54BC4A918D66 /* DatasmithMaxClassIDs.h in Sources */ = {isa = PBXBuildFile; fileRef = B66CC4743C611722638DE6D1 /* DatasmithMaxClassIDs.h */; };
+		6EBEC9AE19B51CF7FB3626E1 /* DatasmithMaxExporter.h in Sources */ = {isa = PBXBuildFile; fileRef = CDE90341146922405F525B7F /* DatasmithMaxExporter.h */; };
+		5D00F4F0D5D5B2F5B9A1D7FD /* DatasmithMaxExporterDefines.h in Sources */ = {isa = PBXBuildFile; fileRef = F4A5A29474956A7F46E3A652 /* DatasmithMaxExporterDefines.h */; };
+		5ED60DFA6AA5711B634A5019 /* DatasmithMaxHelper.h in Sources */ = {isa = PBXBuildFile; fileRef = C02B22268430272C12054D6E /* DatasmithMaxHelper.h */; };
+		C68ECBCAE7DC397A59A291FF /* DatasmithMaxLogger.h in Sources */ = {isa = PBXBuildFile; fileRef = C8B88B142FBC99A95589D348 /* DatasmithMaxLogger.h */; };
+		7244FB15BB7A4058889E34DC /* DatasmithMaxMeshExporter.h in Sources */ = {isa = PBXBuildFile; fileRef = DAA7338710D5C01E99235ECB /* DatasmithMaxMeshExporter.h */; };
+		A513FC556CA4193DBA8257A3 /* DatasmithMaxProgressManager.h in Sources */ = {isa = PBXBuildFile; fileRef = E023BFDE6139762984AE3A87 /* DatasmithMaxProgressManager.h */; };
+		88129880C8B5AE4FE62F70A7 /* DatasmithMaxSceneExporter.h in Sources */ = {isa = PBXBuildFile; fileRef = 7DEAECE485F722575090A6ED /* DatasmithMaxSceneExporter.h */; };
+		16E1BD60AC3447F6D975CD59 /* DatasmithMaxSceneParser.h in Sources */ = {isa = PBXBuildFile; fileRef = 0B997404D307BDB1B3176176 /* DatasmithMaxSceneParser.h */; };
+		4D92A48C8CE237F86CAB69E7 /* DatasmithMaxWriter.h in Sources */ = {isa = PBXBuildFile; fileRef = F84EA3B1E779CD081D92D9EC /* DatasmithMaxWriter.h */; };
+		821D8348D2F439FE80461319 /* Resource.aps in Sources */ = {isa = PBXBuildFile; fileRef = 90BA6AF63DD4ED5F2F8D0C85 /* Resource.aps */; };
+		AE75EDC3265B4AD9EB9D2C72 /* resource.h in Sources */ = {isa = PBXBuildFile; fileRef = 8D101440FB145D60095F4C73 /* resource.h */; };
+		630CCA3A495859BAB9B80A6E /* Resource.rc in Sources */ = {isa = PBXBuildFile; fileRef = 5EEE2677726B66B13B8A202C /* Resource.rc */; };
+		0ED6CA48A579BCF510FEE5C6 /* UE4.ico in Sources */ = {isa = PBXBuildFile; fileRef = 2AFFB428ED585FD8B0FC984F /* UE4.ico */; };
+		45A7ACFD84BFA075A3E79D0A /* forestitreesinterface.h in Sources */ = {isa = PBXBuildFile; fileRef = 6CDF7207354A0612EDE61F4C /* forestitreesinterface.h */; };
+		B73EC4E22A487B113E7B992F /* ForestPackRailcloneAPI.tps in Sources */ = {isa = PBXBuildFile; fileRef = 8CF9CFB5B40BDB8DD2419ADC /* ForestPackRailcloneAPI.tps */; };
+		5C396BB80D88655F6BDA57F7 /* ircinterface.h in Sources */ = {isa = PBXBuildFile; fileRef = 8B48CA69D99644AECAA43542 /* ircinterface.h */; };
+		441FDC9C9F37464E287A0CE8 /* Itoo.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 9668AFA2211A331176E5B302 /* Itoo.Build.cs */; };
+		A72CDC2BDEA1145E8860A04B /* itreesinterface.H in Sources */ = {isa = PBXBuildFile; fileRef = 54E7681A813E9E91887B7CEC /* itreesinterface.H */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0D12720030AB6B519EFD1B3A /* DatasmithMax2016.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithMax2016.Build.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/DatasmithMax2016.Build.cs"; sourceTree = SOURCE_ROOT; };
+		4E6FC01DBECF6EAFE3EBE34A /* DatasmithMax2016.Target.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithMax2016.Target.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/DatasmithMax2016.Target.cs"; sourceTree = SOURCE_ROOT; };
+		34A3A1B2335B8704E5DFAA33 /* DatasmithMax2017.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithMax2017.Build.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/DatasmithMax2017.Build.cs"; sourceTree = SOURCE_ROOT; };
+		5639696EF388E6EA6269CC8C /* DatasmithMax2018.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithMax2018.Build.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/DatasmithMax2018.Build.cs"; sourceTree = SOURCE_ROOT; };
+		9DB5465EB00D5EF8C3135BFA /* DatasmithMax2019.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithMax2019.Build.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/DatasmithMax2019.Build.cs"; sourceTree = SOURCE_ROOT; };
+		8C2F2B92E5FEBBA27574D13D /* DatasmithMax2020.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithMax2020.Build.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/DatasmithMax2020.Build.cs"; sourceTree = SOURCE_ROOT; };
+		06F7E913E243D3E89288D280 /* DatasmithMax2021.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithMax2021.Build.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/DatasmithMax2021.Build.cs"; sourceTree = SOURCE_ROOT; };
+		847C744DEB2C5F67DECD8CED /* DatasmithMaxExporter.def */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithMaxExporter.def"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/DatasmithMaxExporter.def"; sourceTree = SOURCE_ROOT; };
+		C0039EA59FD41732DC788E65 /* UnrealStudio_Datasmith_Attributes_Holder_Modifier.ms */ = {isa = PBXFileReference; explicitFileType = file.text; name = "UnrealStudio_Datasmith_Attributes_Holder_Modifier.ms"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Extras/3dsMaxScripts/UnrealStudio_Datasmith_Attributes_Holder_Modifier.ms"; sourceTree = SOURCE_ROOT; };
+		F953DB5D2961BACB0A358CE8 /* CustomActions.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "CustomActions.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/CustomActions.wxs"; sourceTree = SOURCE_ROOT; };
+		EC44904B165E009B52EDAC4B /* CustomExitDialog.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "CustomExitDialog.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/CustomExitDialog.wxs"; sourceTree = SOURCE_ROOT; };
+		A2985EE31314979FF1C070E5 /* CustomInstallDirDlg.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "CustomInstallDirDlg.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/CustomInstallDirDlg.wxs"; sourceTree = SOURCE_ROOT; };
+		5296DE55FDC720D86C1FA87E /* CustomLicenseAgreementDlg.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "CustomLicenseAgreementDlg.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/CustomLicenseAgreementDlg.wxs"; sourceTree = SOURCE_ROOT; };
+		0FB066097D3763268662917D /* CustomWelcomeDialog.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "CustomWelcomeDialog.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/CustomWelcomeDialog.wxs"; sourceTree = SOURCE_ROOT; };
+		69574AFE21DAB12FED8F464D /* CustomWixUI_InstallDir.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "CustomWixUI_InstallDir.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/CustomWixUI_InstallDir.wxs"; sourceTree = SOURCE_ROOT; };
+		6C3097B1AAF788D9054FA026 /* GenericUiBrandDialog.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "GenericUiBrandDialog.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/GenericUiBrandDialog.wxs"; sourceTree = SOURCE_ROOT; };
+		3C43F5433E0D8B5F4E3692F1 /* Installer.wixproj */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Installer.wixproj"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Installer.wixproj"; sourceTree = SOURCE_ROOT; };
+		D24F4E365D92846BE03A4CE0 /* en-us.wxl */ = {isa = PBXFileReference; explicitFileType = file.text; name = "en-us.wxl"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Localization/en-us.wxl"; sourceTree = SOURCE_ROOT; };
+		7E4AEC297A611718680E7467 /* MaxExporter.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "MaxExporter.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/MaxExporter.wxs"; sourceTree = SOURCE_ROOT; };
+		DC99A08F0CB51108FA9EC5F4 /* ReadMe.txt */ = {isa = PBXFileReference; explicitFileType = file.text; name = "ReadMe.txt"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/ReadMe.txt"; sourceTree = SOURCE_ROOT; };
+		5CEA97578A3626BFA4DDBCBC /* Banner.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Banner.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources/Banner.bmp"; sourceTree = SOURCE_ROOT; };
+		B774F6D750D70A814F058E4E /* default_small_banner.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "default_small_banner.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources/default_small_banner.bmp"; sourceTree = SOURCE_ROOT; };
+		6ED5361EB093432C78ECD972 /* Dialog.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Dialog.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources/Dialog.bmp"; sourceTree = SOURCE_ROOT; };
+		C105482491F04D58C000E9B4 /* Exporter Plugin End User License Agreement.docx */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Exporter Plugin End User License Agreement.docx"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources/Exporter Plugin End User License Agreement.docx"; sourceTree = SOURCE_ROOT; };
+		796AD286C746CA1E89145CAB /* Exporter Plugin End User License Agreement.rtf */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Exporter Plugin End User License Agreement.rtf"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources/Exporter Plugin End User License Agreement.rtf"; sourceTree = SOURCE_ROOT; };
+		D3EC3B130D1518FDBD1DC28B /* banner.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "banner.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources/General/banner.bmp"; sourceTree = SOURCE_ROOT; };
+		1264EDD1BC4A61F6B3A10363 /* unreal-logo.jpg */ = {isa = PBXFileReference; explicitFileType = file.text; name = "unreal-logo.jpg"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources/General/unreal-logo.jpg"; sourceTree = SOURCE_ROOT; };
+		52C8048022EA1952290EAF13 /* 28190.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "28190.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources/Images/Background/28190.bmp"; sourceTree = SOURCE_ROOT; };
+		501ED39FE8135BBAB7A42DF6 /* 28402.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "28402.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources/Images/Background/28402.bmp"; sourceTree = SOURCE_ROOT; };
+		95F5C8A1770CD387B55E2F03 /* 28674.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "28674.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources/Images/Background/28674.bmp"; sourceTree = SOURCE_ROOT; };
+		E56748494BF80F2387F80AF2 /* 30668.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "30668.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources/Images/Background/30668.bmp"; sourceTree = SOURCE_ROOT; };
+		436866A1D15F2654DE2DBB0F /* 30725.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "30725.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources/Images/Background/30725.bmp"; sourceTree = SOURCE_ROOT; };
+		21A96F7FBFD0432072B600A9 /* Epic_Games_logo.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Epic_Games_logo.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources/Images/Epic_Games_logo.bmp"; sourceTree = SOURCE_ROOT; };
+		B2B0650FFFA808EBF62405E3 /* banner.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "banner.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources/Images/General/banner.bmp"; sourceTree = SOURCE_ROOT; };
+		68831E867D53B3CC9B6DEF21 /* unreal-logo.jpg */ = {isa = PBXFileReference; explicitFileType = file.text; name = "unreal-logo.jpg"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources/Images/General/unreal-logo.jpg"; sourceTree = SOURCE_ROOT; };
+		7E2B493C0CD21F88985BAB27 /* Microsoft_VC140_CRT_x64.msm */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Microsoft_VC140_CRT_x64.msm"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources/Microsoft_VC140_CRT_x64.msm"; sourceTree = SOURCE_ROOT; };
+		F4BADC7F8771A84CC0C7089C /* Microsoft_VC140_OpenMP_x64.msm */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Microsoft_VC140_OpenMP_x64.msm"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources/Microsoft_VC140_OpenMP_x64.msm"; sourceTree = SOURCE_ROOT; };
+		F138C57A00BE5F1B65CC4751 /* UnrealEngine.ico */ = {isa = PBXFileReference; explicitFileType = file.text; name = "UnrealEngine.ico"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources/UnrealEngine.ico"; sourceTree = SOURCE_ROOT; };
+		BA544BBA62AFFA7DC91EA67B /* DatasmithMaxArnold.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithMaxArnold.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/DatasmithMaxArnold.cpp"; sourceTree = SOURCE_ROOT; };
+		60DEF72E1B47C20F583CCB29 /* DatasmithMaxAttributes.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithMaxAttributes.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/DatasmithMaxAttributes.cpp"; sourceTree = SOURCE_ROOT; };
+		62752E4C1207638A268F5A83 /* DatasmithMaxAttributes.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithMaxAttributes.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/DatasmithMaxAttributes.h"; sourceTree = SOURCE_ROOT; };
+		CE5BB00CD7534B863354CBA6 /* DatasmithMaxCameraExporter.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithMaxCameraExporter.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/DatasmithMaxCameraExporter.cpp"; sourceTree = SOURCE_ROOT; };
+		0FD57ED9B65DEC1EDAB67EB6 /* DatasmithMaxCorona.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithMaxCorona.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/DatasmithMaxCorona.cpp"; sourceTree = SOURCE_ROOT; };
+		99D173764122D8E82708FD02 /* DatasmithMaxExporter.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithMaxExporter.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/DatasmithMaxExporter.cpp"; sourceTree = SOURCE_ROOT; };
+		8D2F34CB95D0A8536C9740E4 /* DatasmithMaxHelper.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithMaxHelper.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/DatasmithMaxHelper.cpp"; sourceTree = SOURCE_ROOT; };
+		047BFB51F006EF52D7F1E812 /* DatasmithMaxLogger.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithMaxLogger.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/DatasmithMaxLogger.cpp"; sourceTree = SOURCE_ROOT; };
+		D0138561B7AB29DC3061C71A /* DatasmithMaxMental.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithMaxMental.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/DatasmithMaxMental.cpp"; sourceTree = SOURCE_ROOT; };
+		4338EFB01BC1A1198F0980DC /* DatasmithMaxMeshExporter.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithMaxMeshExporter.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/DatasmithMaxMeshExporter.cpp"; sourceTree = SOURCE_ROOT; };
+		46309543DDF364064AB41E7F /* DatasmithMaxProgressManager.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithMaxProgressManager.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/DatasmithMaxProgressManager.cpp"; sourceTree = SOURCE_ROOT; };
+		52E13080E83C8B0AB5E769EB /* DatasmithMaxScanline.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithMaxScanline.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/DatasmithMaxScanline.cpp"; sourceTree = SOURCE_ROOT; };
+		4B73CC96ADB732BF4C7BF1FC /* DatasmithMaxSceneExporter.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithMaxSceneExporter.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/DatasmithMaxSceneExporter.cpp"; sourceTree = SOURCE_ROOT; };
+		73EE265BF416A93571E13475 /* DatasmithMaxSceneParser.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithMaxSceneParser.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/DatasmithMaxSceneParser.cpp"; sourceTree = SOURCE_ROOT; };
+		5C85A45C529A3F75306923BE /* DatasmithMaxTexmapParser.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithMaxTexmapParser.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/DatasmithMaxTexmapParser.cpp"; sourceTree = SOURCE_ROOT; };
+		B5CB20653692F7351466FE6F /* DatasmithMaxTexmapParser.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithMaxTexmapParser.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/DatasmithMaxTexmapParser.h"; sourceTree = SOURCE_ROOT; };
+		DE69DEAFB2F810B3E86FA686 /* DatasmithMaxThea.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithMaxThea.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/DatasmithMaxThea.cpp"; sourceTree = SOURCE_ROOT; };
+		D9B440F0649463165E4386CD /* DatasmithMaxVRay.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithMaxVRay.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/DatasmithMaxVRay.cpp"; sourceTree = SOURCE_ROOT; };
+		7FA696E2F5430482A55AD6FD /* DatasmithMaxWriter.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithMaxWriter.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/DatasmithMaxWriter.cpp"; sourceTree = SOURCE_ROOT; };
+		FB33F6173326720EBC6B7668 /* DatasmithMaxMaterialsToUEPbr.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithMaxMaterialsToUEPbr.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/MaxMaterialsToUEPbr/DatasmithMaxMaterialsToUEPbr.cpp"; sourceTree = SOURCE_ROOT; };
+		6E0DF64F4990B9E6289E91A2 /* DatasmithMaxMaterialsToUEPbr.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithMaxMaterialsToUEPbr.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/MaxMaterialsToUEPbr/DatasmithMaxMaterialsToUEPbr.h"; sourceTree = SOURCE_ROOT; };
+		5843DC17DF258569DE6CA926 /* DatasmithMaxScanlineMaterialsToUEPbr.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithMaxScanlineMaterialsToUEPbr.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/MaxMaterialsToUEPbr/DatasmithMaxScanlineMaterialsToUEPbr.cpp"; sourceTree = SOURCE_ROOT; };
+		1073384D90C180B5622EF606 /* DatasmithMaxScanlineMaterialsToUEPbr.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithMaxScanlineMaterialsToUEPbr.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/MaxMaterialsToUEPbr/DatasmithMaxScanlineMaterialsToUEPbr.h"; sourceTree = SOURCE_ROOT; };
+		9DD5DF7A78D9E24E2825066C /* DatasmithMaxTexmapToUEPbr.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithMaxTexmapToUEPbr.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/MaxMaterialsToUEPbr/DatasmithMaxTexmapToUEPbr.cpp"; sourceTree = SOURCE_ROOT; };
+		883CB9BE45BC9BED7154AFBB /* DatasmithMaxTexmapToUEPbr.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithMaxTexmapToUEPbr.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/MaxMaterialsToUEPbr/DatasmithMaxTexmapToUEPbr.h"; sourceTree = SOURCE_ROOT; };
+		9D720482A07D57306D8C7225 /* DatasmithMaxVrayMaterialsToUEPbr.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithMaxVrayMaterialsToUEPbr.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/MaxMaterialsToUEPbr/DatasmithMaxVrayMaterialsToUEPbr.cpp"; sourceTree = SOURCE_ROOT; };
+		8A89FAB7BE27D0B5D18DE76E /* DatasmithMaxVrayMaterialsToUEPbr.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithMaxVrayMaterialsToUEPbr.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/MaxMaterialsToUEPbr/DatasmithMaxVrayMaterialsToUEPbr.h"; sourceTree = SOURCE_ROOT; };
+		4EA771295F00B6DF5CCFF13C /* DatasmithMaxVRayTexmapToUEPbr.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithMaxVRayTexmapToUEPbr.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/MaxMaterialsToUEPbr/DatasmithMaxVRayTexmapToUEPbr.cpp"; sourceTree = SOURCE_ROOT; };
+		B63AB585E0EA75ED26D9709D /* DatasmithMaxVRayTexmapToUEPbr.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithMaxVRayTexmapToUEPbr.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/MaxMaterialsToUEPbr/DatasmithMaxVRayTexmapToUEPbr.h"; sourceTree = SOURCE_ROOT; };
+		6B8CD38DD5C0DD7C587970BD /* VRayLights.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "VRayLights.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/VRayLights.h"; sourceTree = SOURCE_ROOT; };
+		D1ECB911EB22743151EDF716 /* DatasmithMaxCameraExporter.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithMaxCameraExporter.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Public/DatasmithMaxCameraExporter.h"; sourceTree = SOURCE_ROOT; };
+		B66CC4743C611722638DE6D1 /* DatasmithMaxClassIDs.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithMaxClassIDs.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Public/DatasmithMaxClassIDs.h"; sourceTree = SOURCE_ROOT; };
+		CDE90341146922405F525B7F /* DatasmithMaxExporter.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithMaxExporter.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Public/DatasmithMaxExporter.h"; sourceTree = SOURCE_ROOT; };
+		F4A5A29474956A7F46E3A652 /* DatasmithMaxExporterDefines.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithMaxExporterDefines.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Public/DatasmithMaxExporterDefines.h"; sourceTree = SOURCE_ROOT; };
+		C02B22268430272C12054D6E /* DatasmithMaxHelper.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithMaxHelper.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Public/DatasmithMaxHelper.h"; sourceTree = SOURCE_ROOT; };
+		C8B88B142FBC99A95589D348 /* DatasmithMaxLogger.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithMaxLogger.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Public/DatasmithMaxLogger.h"; sourceTree = SOURCE_ROOT; };
+		DAA7338710D5C01E99235ECB /* DatasmithMaxMeshExporter.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithMaxMeshExporter.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Public/DatasmithMaxMeshExporter.h"; sourceTree = SOURCE_ROOT; };
+		E023BFDE6139762984AE3A87 /* DatasmithMaxProgressManager.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithMaxProgressManager.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Public/DatasmithMaxProgressManager.h"; sourceTree = SOURCE_ROOT; };
+		7DEAECE485F722575090A6ED /* DatasmithMaxSceneExporter.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithMaxSceneExporter.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Public/DatasmithMaxSceneExporter.h"; sourceTree = SOURCE_ROOT; };
+		0B997404D307BDB1B3176176 /* DatasmithMaxSceneParser.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithMaxSceneParser.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Public/DatasmithMaxSceneParser.h"; sourceTree = SOURCE_ROOT; };
+		F84EA3B1E779CD081D92D9EC /* DatasmithMaxWriter.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithMaxWriter.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Public/DatasmithMaxWriter.h"; sourceTree = SOURCE_ROOT; };
+		90BA6AF63DD4ED5F2F8D0C85 /* Resource.aps */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Resource.aps"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Resources/Windows/Resource.aps"; sourceTree = SOURCE_ROOT; };
+		8D101440FB145D60095F4C73 /* resource.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "resource.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Resources/Windows/resource.h"; sourceTree = SOURCE_ROOT; };
+		5EEE2677726B66B13B8A202C /* Resource.rc */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Resource.rc"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Resources/Windows/Resource.rc"; sourceTree = SOURCE_ROOT; };
+		2AFFB428ED585FD8B0FC984F /* UE4.ico */ = {isa = PBXFileReference; explicitFileType = file.text; name = "UE4.ico"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Resources/Windows/UE4.ico"; sourceTree = SOURCE_ROOT; };
+		6CDF7207354A0612EDE61F4C /* forestitreesinterface.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "forestitreesinterface.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/ThirdParty/Itoo/forestitreesinterface.h"; sourceTree = SOURCE_ROOT; };
+		8CF9CFB5B40BDB8DD2419ADC /* ForestPackRailcloneAPI.tps */ = {isa = PBXFileReference; explicitFileType = file.text; name = "ForestPackRailcloneAPI.tps"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/ThirdParty/Itoo/ForestPackRailcloneAPI.tps"; sourceTree = SOURCE_ROOT; };
+		8B48CA69D99644AECAA43542 /* ircinterface.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "ircinterface.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/ThirdParty/Itoo/ircinterface.h"; sourceTree = SOURCE_ROOT; };
+		9668AFA2211A331176E5B302 /* Itoo.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Itoo.Build.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/ThirdParty/Itoo/Itoo.Build.cs"; sourceTree = SOURCE_ROOT; };
+		54E7681A813E9E91887B7CEC /* itreesinterface.H */ = {isa = PBXFileReference; explicitFileType = file.text; name = "itreesinterface.H"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/ThirdParty/Itoo/itreesinterface.H"; sourceTree = SOURCE_ROOT; };
+		E20D01D56EE1FEA69D8E849F /* DatasmithMax2016 */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = DatasmithMax2016; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXSourcesBuildPhase section */
+		32DBC31BCF5952C7B0D55FC5 = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F916553525D0189F84592BE1 /* DatasmithMaxArnold.cpp in Sources */,
+				8A826DA3713847247E2F2EBB /* DatasmithMaxAttributes.cpp in Sources */,
+				B8CB62825C96234DB6449B77 /* DatasmithMaxCameraExporter.cpp in Sources */,
+				1875FD51D94002789FE633A8 /* DatasmithMaxCorona.cpp in Sources */,
+				5656B3D344D35063FFBB69E6 /* DatasmithMaxExporter.cpp in Sources */,
+				D471CFD568ADCB62F746FA82 /* DatasmithMaxHelper.cpp in Sources */,
+				E976DCB7DD958F4E59B1FED2 /* DatasmithMaxLogger.cpp in Sources */,
+				EE0C52575FA9953D31EBEBF2 /* DatasmithMaxMental.cpp in Sources */,
+				D4566365A7ED0DF88DCAC9D0 /* DatasmithMaxMeshExporter.cpp in Sources */,
+				818E9B2BC80CE18C45388208 /* DatasmithMaxProgressManager.cpp in Sources */,
+				BC79C06EC0AE8BCBD586E319 /* DatasmithMaxScanline.cpp in Sources */,
+				2C5D3B9CA47A92CD6F1C6F4F /* DatasmithMaxSceneExporter.cpp in Sources */,
+				C2E41E0D2913C9D50FD54263 /* DatasmithMaxSceneParser.cpp in Sources */,
+				70F45DFDB4AA9EB06B3ED9C0 /* DatasmithMaxTexmapParser.cpp in Sources */,
+				724DE2D6A1BF4407D09F6DDC /* DatasmithMaxThea.cpp in Sources */,
+				79DA3F9E71EEA929D85CC384 /* DatasmithMaxVRay.cpp in Sources */,
+				B347821C564B8602A75C5CC6 /* DatasmithMaxWriter.cpp in Sources */,
+				FE81211A3F04275970846435 /* DatasmithMaxMaterialsToUEPbr.cpp in Sources */,
+				CAC54931066201920AB8ABC8 /* DatasmithMaxScanlineMaterialsToUEPbr.cpp in Sources */,
+				B3A107031827C45D1C2302E3 /* DatasmithMaxTexmapToUEPbr.cpp in Sources */,
+				4B728E709ED05F1215016927 /* DatasmithMaxVrayMaterialsToUEPbr.cpp in Sources */,
+				E1063D894BA7DD8E9B9B15E0 /* DatasmithMaxVRayTexmapToUEPbr.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+	2E7AF0B9511D714D51C31E2E /* Embed App Extensions */ = {
+		isa = PBXCopyFilesBuildPhase;
+		buildActionMask = 2147483647;
+		dstPath = "";
+		dstSubfolderSpec = 13;
+		files = (
+		);
+		name = "Embed App Extensions";
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXCopyFilesBuildPhase section */
+/* Begin PBXContainerItemProxy section */
+		24838C31423FA2F6A88AF8E8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D31F6B6A1ADFE243206C194F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B241CFFDCF8997A3CD28C318;
+			remoteInfo = "DatasmithMax2016_Build";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		2EB5560370E5549D6E7E34CF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B241CFFDCF8997A3CD28C318 /* DatasmithMax2016_Build */;
+			targetProxy = 24838C31423FA2F6A88AF8E8 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXGroup section */
+		0B55B16753661AFBDE0DB95F = {
+			isa = PBXGroup;
+			children = (
+				2C36FBDB9121509EB7F7811E /* Extras */,
+				AFC9CA2CA62C16D46B9ABBF5 /* Installer */,
+				9957866D3A506F4CF5A75191 /* Private */,
+				67E3B8092649FA5B498A887E /* Public */,
+				595426592ACABF031FCC3890 /* Resources */,
+				986625ACACF547AB08CDA403 /* ThirdParty */,
+				0D12720030AB6B519EFD1B3A /* DatasmithMax2016.Build.cs */,
+				4E6FC01DBECF6EAFE3EBE34A /* DatasmithMax2016.Target.cs */,
+				34A3A1B2335B8704E5DFAA33 /* DatasmithMax2017.Build.cs */,
+				5639696EF388E6EA6269CC8C /* DatasmithMax2018.Build.cs */,
+				9DB5465EB00D5EF8C3135BFA /* DatasmithMax2019.Build.cs */,
+				8C2F2B92E5FEBBA27574D13D /* DatasmithMax2020.Build.cs */,
+				06F7E913E243D3E89288D280 /* DatasmithMax2021.Build.cs */,
+				847C744DEB2C5F67DECD8CED /* DatasmithMaxExporter.def */,
+				21C77B1F0B3BE1048BD7C3E8 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2C36FBDB9121509EB7F7811E = {
+			isa = PBXGroup;
+			children = (
+				BC970FEDE925DE8A1051036E /* 3dsMaxScripts */,
+			);
+			name = "Extras";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Extras";
+			sourceTree = "<absolute>";
+		};
+		BC970FEDE925DE8A1051036E = {
+			isa = PBXGroup;
+			children = (
+				C0039EA59FD41732DC788E65 /* UnrealStudio_Datasmith_Attributes_Holder_Modifier.ms */,
+			);
+			name = "3dsMaxScripts";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Extras/3dsMaxScripts";
+			sourceTree = "<absolute>";
+		};
+		AFC9CA2CA62C16D46B9ABBF5 = {
+			isa = PBXGroup;
+			children = (
+				EED5626DD9A3FC3D1CD571C0 /* Localization */,
+				FE55F2C85D49C4DB338D2BC8 /* Resources */,
+				F953DB5D2961BACB0A358CE8 /* CustomActions.wxs */,
+				EC44904B165E009B52EDAC4B /* CustomExitDialog.wxs */,
+				A2985EE31314979FF1C070E5 /* CustomInstallDirDlg.wxs */,
+				5296DE55FDC720D86C1FA87E /* CustomLicenseAgreementDlg.wxs */,
+				0FB066097D3763268662917D /* CustomWelcomeDialog.wxs */,
+				69574AFE21DAB12FED8F464D /* CustomWixUI_InstallDir.wxs */,
+				6C3097B1AAF788D9054FA026 /* GenericUiBrandDialog.wxs */,
+				3C43F5433E0D8B5F4E3692F1 /* Installer.wixproj */,
+				7E4AEC297A611718680E7467 /* MaxExporter.wxs */,
+				DC99A08F0CB51108FA9EC5F4 /* ReadMe.txt */,
+			);
+			name = "Installer";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer";
+			sourceTree = "<absolute>";
+		};
+		EED5626DD9A3FC3D1CD571C0 = {
+			isa = PBXGroup;
+			children = (
+				D24F4E365D92846BE03A4CE0 /* en-us.wxl */,
+			);
+			name = "Localization";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Localization";
+			sourceTree = "<absolute>";
+		};
+		FE55F2C85D49C4DB338D2BC8 = {
+			isa = PBXGroup;
+			children = (
+				5624F88BE0ADB322DC1AFF14 /* General */,
+				C371B06D55C552DA580A2E50 /* Images */,
+				5CEA97578A3626BFA4DDBCBC /* Banner.bmp */,
+				B774F6D750D70A814F058E4E /* default_small_banner.bmp */,
+				6ED5361EB093432C78ECD972 /* Dialog.bmp */,
+				C105482491F04D58C000E9B4 /* Exporter Plugin End User License Agreement.docx */,
+				796AD286C746CA1E89145CAB /* Exporter Plugin End User License Agreement.rtf */,
+				7E2B493C0CD21F88985BAB27 /* Microsoft_VC140_CRT_x64.msm */,
+				F4BADC7F8771A84CC0C7089C /* Microsoft_VC140_OpenMP_x64.msm */,
+				F138C57A00BE5F1B65CC4751 /* UnrealEngine.ico */,
+			);
+			name = "Resources";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources";
+			sourceTree = "<absolute>";
+		};
+		5624F88BE0ADB322DC1AFF14 = {
+			isa = PBXGroup;
+			children = (
+				D3EC3B130D1518FDBD1DC28B /* banner.bmp */,
+				1264EDD1BC4A61F6B3A10363 /* unreal-logo.jpg */,
+			);
+			name = "General";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources/General";
+			sourceTree = "<absolute>";
+		};
+		C371B06D55C552DA580A2E50 = {
+			isa = PBXGroup;
+			children = (
+				394E7721D5DFC261AA9A16B5 /* Background */,
+				AA705D6E224FE3E456DE05EC /* General */,
+				21A96F7FBFD0432072B600A9 /* Epic_Games_logo.bmp */,
+			);
+			name = "Images";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources/Images";
+			sourceTree = "<absolute>";
+		};
+		394E7721D5DFC261AA9A16B5 = {
+			isa = PBXGroup;
+			children = (
+				52C8048022EA1952290EAF13 /* 28190.bmp */,
+				501ED39FE8135BBAB7A42DF6 /* 28402.bmp */,
+				95F5C8A1770CD387B55E2F03 /* 28674.bmp */,
+				E56748494BF80F2387F80AF2 /* 30668.bmp */,
+				436866A1D15F2654DE2DBB0F /* 30725.bmp */,
+			);
+			name = "Background";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources/Images/Background";
+			sourceTree = "<absolute>";
+		};
+		AA705D6E224FE3E456DE05EC = {
+			isa = PBXGroup;
+			children = (
+				B2B0650FFFA808EBF62405E3 /* banner.bmp */,
+				68831E867D53B3CC9B6DEF21 /* unreal-logo.jpg */,
+			);
+			name = "General";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Installer/Resources/Images/General";
+			sourceTree = "<absolute>";
+		};
+		9957866D3A506F4CF5A75191 = {
+			isa = PBXGroup;
+			children = (
+				36914CFD589D69285AFAC2E4 /* MaxMaterialsToUEPbr */,
+				BA544BBA62AFFA7DC91EA67B /* DatasmithMaxArnold.cpp */,
+				60DEF72E1B47C20F583CCB29 /* DatasmithMaxAttributes.cpp */,
+				62752E4C1207638A268F5A83 /* DatasmithMaxAttributes.h */,
+				CE5BB00CD7534B863354CBA6 /* DatasmithMaxCameraExporter.cpp */,
+				0FD57ED9B65DEC1EDAB67EB6 /* DatasmithMaxCorona.cpp */,
+				99D173764122D8E82708FD02 /* DatasmithMaxExporter.cpp */,
+				8D2F34CB95D0A8536C9740E4 /* DatasmithMaxHelper.cpp */,
+				047BFB51F006EF52D7F1E812 /* DatasmithMaxLogger.cpp */,
+				D0138561B7AB29DC3061C71A /* DatasmithMaxMental.cpp */,
+				4338EFB01BC1A1198F0980DC /* DatasmithMaxMeshExporter.cpp */,
+				46309543DDF364064AB41E7F /* DatasmithMaxProgressManager.cpp */,
+				52E13080E83C8B0AB5E769EB /* DatasmithMaxScanline.cpp */,
+				4B73CC96ADB732BF4C7BF1FC /* DatasmithMaxSceneExporter.cpp */,
+				73EE265BF416A93571E13475 /* DatasmithMaxSceneParser.cpp */,
+				5C85A45C529A3F75306923BE /* DatasmithMaxTexmapParser.cpp */,
+				B5CB20653692F7351466FE6F /* DatasmithMaxTexmapParser.h */,
+				DE69DEAFB2F810B3E86FA686 /* DatasmithMaxThea.cpp */,
+				D9B440F0649463165E4386CD /* DatasmithMaxVRay.cpp */,
+				7FA696E2F5430482A55AD6FD /* DatasmithMaxWriter.cpp */,
+				6B8CD38DD5C0DD7C587970BD /* VRayLights.h */,
+			);
+			name = "Private";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private";
+			sourceTree = "<absolute>";
+		};
+		36914CFD589D69285AFAC2E4 = {
+			isa = PBXGroup;
+			children = (
+				FB33F6173326720EBC6B7668 /* DatasmithMaxMaterialsToUEPbr.cpp */,
+				6E0DF64F4990B9E6289E91A2 /* DatasmithMaxMaterialsToUEPbr.h */,
+				5843DC17DF258569DE6CA926 /* DatasmithMaxScanlineMaterialsToUEPbr.cpp */,
+				1073384D90C180B5622EF606 /* DatasmithMaxScanlineMaterialsToUEPbr.h */,
+				9DD5DF7A78D9E24E2825066C /* DatasmithMaxTexmapToUEPbr.cpp */,
+				883CB9BE45BC9BED7154AFBB /* DatasmithMaxTexmapToUEPbr.h */,
+				9D720482A07D57306D8C7225 /* DatasmithMaxVrayMaterialsToUEPbr.cpp */,
+				8A89FAB7BE27D0B5D18DE76E /* DatasmithMaxVrayMaterialsToUEPbr.h */,
+				4EA771295F00B6DF5CCFF13C /* DatasmithMaxVRayTexmapToUEPbr.cpp */,
+				B63AB585E0EA75ED26D9709D /* DatasmithMaxVRayTexmapToUEPbr.h */,
+			);
+			name = "MaxMaterialsToUEPbr";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private/MaxMaterialsToUEPbr";
+			sourceTree = "<absolute>";
+		};
+		67E3B8092649FA5B498A887E = {
+			isa = PBXGroup;
+			children = (
+				D1ECB911EB22743151EDF716 /* DatasmithMaxCameraExporter.h */,
+				B66CC4743C611722638DE6D1 /* DatasmithMaxClassIDs.h */,
+				CDE90341146922405F525B7F /* DatasmithMaxExporter.h */,
+				F4A5A29474956A7F46E3A652 /* DatasmithMaxExporterDefines.h */,
+				C02B22268430272C12054D6E /* DatasmithMaxHelper.h */,
+				C8B88B142FBC99A95589D348 /* DatasmithMaxLogger.h */,
+				DAA7338710D5C01E99235ECB /* DatasmithMaxMeshExporter.h */,
+				E023BFDE6139762984AE3A87 /* DatasmithMaxProgressManager.h */,
+				7DEAECE485F722575090A6ED /* DatasmithMaxSceneExporter.h */,
+				0B997404D307BDB1B3176176 /* DatasmithMaxSceneParser.h */,
+				F84EA3B1E779CD081D92D9EC /* DatasmithMaxWriter.h */,
+			);
+			name = "Public";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Public";
+			sourceTree = "<absolute>";
+		};
+		595426592ACABF031FCC3890 = {
+			isa = PBXGroup;
+			children = (
+				02E68CB874DC929E95A20657 /* Windows */,
+			);
+			name = "Resources";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Resources";
+			sourceTree = "<absolute>";
+		};
+		02E68CB874DC929E95A20657 = {
+			isa = PBXGroup;
+			children = (
+				90BA6AF63DD4ED5F2F8D0C85 /* Resource.aps */,
+				8D101440FB145D60095F4C73 /* resource.h */,
+				5EEE2677726B66B13B8A202C /* Resource.rc */,
+				2AFFB428ED585FD8B0FC984F /* UE4.ico */,
+			);
+			name = "Windows";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Resources/Windows";
+			sourceTree = "<absolute>";
+		};
+		986625ACACF547AB08CDA403 = {
+			isa = PBXGroup;
+			children = (
+				7710FD8F3ABEC49BAA270640 /* Itoo */,
+			);
+			name = "ThirdParty";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/ThirdParty";
+			sourceTree = "<absolute>";
+		};
+		7710FD8F3ABEC49BAA270640 = {
+			isa = PBXGroup;
+			children = (
+				6CDF7207354A0612EDE61F4C /* forestitreesinterface.h */,
+				8CF9CFB5B40BDB8DD2419ADC /* ForestPackRailcloneAPI.tps */,
+				8B48CA69D99644AECAA43542 /* ircinterface.h */,
+				9668AFA2211A331176E5B302 /* Itoo.Build.cs */,
+				54E7681A813E9E91887B7CEC /* itreesinterface.H */,
+			);
+			name = "Itoo";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/ThirdParty/Itoo";
+			sourceTree = "<absolute>";
+		};
+		21C77B1F0B3BE1048BD7C3E8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E20D01D56EE1FEA69D8E849F /* DatasmithMax2016 */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		B241CFFDCF8997A3CD28C318 /* DatasmithMax2016_Build */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION) $(UE_BUILD_TARGET_NAME) $(PLATFORM_NAME) $(UE_BUILD_TARGET_CONFIG)";
+			buildConfigurationList = 344D0EDF3A3373A4BD6E2063 /* Build configuration list for PBXLegacyTarget "DatasmithMax2016_Build" */;
+			buildPhases = (
+			);
+			buildToolPath = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Build/BatchFiles/Mac/XcodeBuild.sh";
+			buildWorkingDirectory = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425";
+			dependencies = (
+			);
+			name = "DatasmithMax2016_Build";
+			passBuildSettingsInEnvironment = 1;
+			productName = "DatasmithMax2016_Build";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		83C7AAB255084440E2232706 /* DatasmithMax2016 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2101F8E89CC17E501EDD291B /* Build configuration list for PBXNativeTarget "DatasmithMax2016" */;
+			buildPhases = (
+				2E7AF0B9511D714D51C31E2E /* Embed App Extensions */, 
+				B2F93C932A6A0A3392C93577 /* Shell Script */, 
+			);
+			dependencies = (
+				2EB5560370E5549D6E7E34CF /* PBXTargetDependency */,
+			);
+			name = "DatasmithMax2016";
+			passBuildSettingsInEnvironment = 1;
+			productName = "DatasmithMax2016";
+			productReference = "E20D01D56EE1FEA69D8E849F";
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXNativeTarget section */
+		E47F2E8D7F8D3296FFED7F01 /* DatasmithMax2016_Index */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 70A4271EF2551BBA49E8A021 /* Build configuration list for PBXNativeTarget "DatasmithMax2016_Index" */;
+			buildPhases = (
+				32DBC31BCF5952C7B0D55FC5 /* Sources */,
+			);
+			dependencies = (
+			);
+			name = "DatasmithMax2016_Index";
+			passBuildSettingsInEnvironment = 1;
+			productName = "DatasmithMax2016_Index";
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D31F6B6A1ADFE243206C194F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2000;
+				ORGANIZATIONNAME = "Epic Games, Inc.";
+				TargetAttributes = {
+					83C7AAB255084440E2232706 = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 5A0A233FF62D1847CE0C6E96 /* Build configuration list for PBXProject "DatasmithMax2016" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en
+			);
+			mainGroup = 0B55B16753661AFBDE0DB95F;
+			productRefGroup = 21C77B1F0B3BE1048BD7C3E8;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			83C7AAB255084440E2232706 /* DatasmithMax2016 */,
+			B241CFFDCF8997A3CD28C318 /* DatasmithMax2016_Build */,
+			E47F2E8D7F8D3296FFED7F01 /* DatasmithMax2016_Index */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		A2FE2C84BAF2AF4B68B6F190 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/ThirdParty/Itoo",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private",
+					"../Build/Mac/DatasmithMax2016/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/TraceLog",
+					"../Build/Mac/DatasmithMax2016/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/DatasmithMax2016",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Public",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				ENABLE_TESTABILITY = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Debug";
+		};
+		B89CCD1C32C6BA0D945567FB /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/ThirdParty/Itoo",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private",
+					"../Build/Mac/DatasmithMax2016/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/TraceLog",
+					"../Build/Mac/DatasmithMax2016/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/DatasmithMax2016",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "DebugGame";
+		};
+		5289787A6177F15A205339FA /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/ThirdParty/Itoo",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private",
+					"../Build/Mac/DatasmithMax2016/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/TraceLog",
+					"../Build/Mac/DatasmithMax2016/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/DatasmithMax2016",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Development";
+		};
+		CA97158E124ECE00AA0A2094 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/ThirdParty/Itoo",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private",
+					"../Build/Mac/DatasmithMax2016/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/TraceLog",
+					"../Build/Mac/DatasmithMax2016/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/DatasmithMax2016",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Shipping";
+		};
+		78CDAAEE6A52B8D065E2A98C /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/ThirdParty/Itoo",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Private",
+					"../Build/Mac/DatasmithMax2016/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/TraceLog",
+					"../Build/Mac/DatasmithMax2016/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/DatasmithMax2016/Inc/DatasmithMax2016",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithMaxExporter/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Test";
+		};
+		4A28B26D6675966EBD9569D6 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithMax2016-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		5569803D838C4AD1115E7C79 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithMax2016-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		6DCF3E2786F684BBDC51DF6D /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithMax2016";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		65E9BA405FEDCDBE36F93132 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithMax2016-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		3C25BCD579FDDA42ACB275F9 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithMax2016-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+		1DBF9C45CB2B326445791653 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithMax2016";
+				UE_BUILD_TARGET_CONFIG = "Debug";
+			};
+			name = "Debug";
+		};
+		E33759EACE6DCE71769A8D2E /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithMax2016";
+				UE_BUILD_TARGET_CONFIG = "DebugGame";
+			};
+			name = "DebugGame";
+		};
+		5ACC12079FE0F44B2DAE9845 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithMax2016";
+				UE_BUILD_TARGET_CONFIG = "Development";
+			};
+			name = "Development";
+		};
+		E58612A944D49123BA223D08 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithMax2016";
+				UE_BUILD_TARGET_CONFIG = "Shipping";
+			};
+			name = "Shipping";
+		};
+		B5EEDE9E5F46FF6AED533176 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithMax2016";
+				UE_BUILD_TARGET_CONFIG = "Test";
+			};
+			name = "Test";
+		};
+		F1EC925F14D2C6FB07AB4902 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithMax2016-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		5D16327EBE09BE9B859709AB /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithMax2016-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		F55410FEA8320D0ADC3711EF /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithMax2016";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		CA6538DFDF989AEA337B98BF /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithMax2016-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		2AA2B8676A6CA2E8BCACA2BA /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithMax2016-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5A0A233FF62D1847CE0C6E96 /* Build configuration list for PBXProject "DatasmithMax2016" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A2FE2C84BAF2AF4B68B6F190 /* "Debug" */,
+				B89CCD1C32C6BA0D945567FB /* "DebugGame" */,
+				5289787A6177F15A205339FA /* "Development" */,
+				CA97158E124ECE00AA0A2094 /* "Shipping" */,
+				78CDAAEE6A52B8D065E2A98C /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		344D0EDF3A3373A4BD6E2063 /* Build configuration list for PBXLegacyTarget "DatasmithMax2016_Build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DBF9C45CB2B326445791653 /* "Debug" */,
+				E33759EACE6DCE71769A8D2E /* "DebugGame" */,
+				5ACC12079FE0F44B2DAE9845 /* "Development" */,
+				E58612A944D49123BA223D08 /* "Shipping" */,
+				B5EEDE9E5F46FF6AED533176 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		2101F8E89CC17E501EDD291B /* Build configuration list for PBXNativeTarget "DatasmithMax2016" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4A28B26D6675966EBD9569D6 /* "Debug" */,
+				5569803D838C4AD1115E7C79 /* "DebugGame" */,
+				6DCF3E2786F684BBDC51DF6D /* "Development" */,
+				65E9BA405FEDCDBE36F93132 /* "Shipping" */,
+				3C25BCD579FDDA42ACB275F9 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		70A4271EF2551BBA49E8A021 /* Build configuration list for PBXNativeTarget "DatasmithMax2016_Index" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F1EC925F14D2C6FB07AB4902 /* "Debug" */,
+				5D16327EBE09BE9B859709AB /* "DebugGame" */,
+				F55410FEA8320D0ADC3711EF /* "Development" */,
+				CA6538DFDF989AEA337B98BF /* "Shipping" */,
+				2AA2B8676A6CA2E8BCACA2BA /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D31F6B6A1ADFE243206C194F /* Project object */;
+}

@@ -1,0 +1,976 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A771162541ABE0E6C3B3027F /* DatasmithSketchUp2017.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = D8DF25D7357ADED48E23F02F /* DatasmithSketchUp2017.Build.cs */; };
+		BE2F8C00B1449007CE1E99ED /* DatasmithSketchUp2017.Target.cs in Sources */ = {isa = PBXBuildFile; fileRef = 3C369DF99F5272C9721C0DE5 /* DatasmithSketchUp2017.Target.cs */; };
+		C46BEE66D74C8F2DEAC32915 /* DatasmithSketchUp2018.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = B2ADB22EE8C1256A9336225A /* DatasmithSketchUp2018.Build.cs */; };
+		E5CD0658A131398480E761D5 /* DatasmithSketchUp2019.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = BC7A0F7624D59514B50F2587 /* DatasmithSketchUp2019.Build.cs */; };
+		C8B0ECCDFE869B8E49948009 /* DatasmithSketchUp2020.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 45368CB889A595CB4CDD716D /* DatasmithSketchUp2020.Build.cs */; };
+		B2AE46BEA00EA4D6A87F90F1 /* DatasmithSketchUpExporter.def in Sources */ = {isa = PBXBuildFile; fileRef = 456C86FA4BD38C28FA0531ED /* DatasmithSketchUpExporter.def */; };
+		49DC8A1079593BEA3E7E1A4F /* CustomActions.wxs in Sources */ = {isa = PBXBuildFile; fileRef = 40DCED3BEFA960C5A69A731D /* CustomActions.wxs */; };
+		1E9B7F78514973AC7C5875C4 /* CustomExitDialog.wxs in Sources */ = {isa = PBXBuildFile; fileRef = 83945C4F44A5B3C65136B96E /* CustomExitDialog.wxs */; };
+		E6503950A56B46AE686DF1DE /* CustomInstallDirDlg.wxs in Sources */ = {isa = PBXBuildFile; fileRef = D9C299F40B6ED3E76728B85A /* CustomInstallDirDlg.wxs */; };
+		4C118101E7ADCBE8E1119200 /* CustomLicenseAgreementDlg.wxs in Sources */ = {isa = PBXBuildFile; fileRef = 1022071011C65C15A27E7581 /* CustomLicenseAgreementDlg.wxs */; };
+		0BBEBBE363D206BE98DE0393 /* CustomWelcomeDialog.wxs in Sources */ = {isa = PBXBuildFile; fileRef = EA45C7BAA209FCC83099E4E8 /* CustomWelcomeDialog.wxs */; };
+		66C2D5A1CCA2B8CE9CFFF528 /* CustomWixUI_InstallDir.wxs in Sources */ = {isa = PBXBuildFile; fileRef = F1E8840F0AD367321E7326CC /* CustomWixUI_InstallDir.wxs */; };
+		FEA1739881AC5172DAD37CA0 /* GenericUiBrandDialog.wxs in Sources */ = {isa = PBXBuildFile; fileRef = FD65F2F52535F7EA509FC8B9 /* GenericUiBrandDialog.wxs */; };
+		85EDBE5C31B1C9F29B09A22A /* Installer.wixproj in Sources */ = {isa = PBXBuildFile; fileRef = 2F204CEFAD824D1E6BE311A4 /* Installer.wixproj */; };
+		E8083CCE51AA4EA1DB1A7ABF /* en-us.wxl in Sources */ = {isa = PBXBuildFile; fileRef = A5DF765F8D4351750CB801B8 /* en-us.wxl */; };
+		402514E1DE1EE11AAB070074 /* Banner.bmp in Sources */ = {isa = PBXBuildFile; fileRef = FEAD0E2E6B72B7D37A818329 /* Banner.bmp */; };
+		FD2C8FB015795CDE6BA4A0FD /* default_small_banner.bmp in Sources */ = {isa = PBXBuildFile; fileRef = 66A2DCCAA1F4B29C9B71B52A /* default_small_banner.bmp */; };
+		13A5667F7550F82F06838D2C /* Dialog.bmp in Sources */ = {isa = PBXBuildFile; fileRef = 956CC2BD3860149DDF0260E0 /* Dialog.bmp */; };
+		34230A9A012D3EBFA1EBCE39 /* Epic_Games_logo.png in Sources */ = {isa = PBXBuildFile; fileRef = B761A45A0ED06D7A1FE299FE /* Epic_Games_logo.png */; };
+		AFFA9B1A6DE64A1144854B51 /* Exporter Plugin End User License Agreement.docx in Sources */ = {isa = PBXBuildFile; fileRef = 455E2ED945CE8AAA9E8905D7 /* Exporter Plugin End User License Agreement.docx */; };
+		BBB98E0E94E5C0528A0BEA06 /* Exporter Plugin End User License Agreement.rtf in Sources */ = {isa = PBXBuildFile; fileRef = 922451BBA0BDF432165214B0 /* Exporter Plugin End User License Agreement.rtf */; };
+		1A44D7D9CA12B98B77647F23 /* 28190.bmp in Sources */ = {isa = PBXBuildFile; fileRef = AF8E4E800DDD154E817E7F15 /* 28190.bmp */; };
+		90DEE3A654734B9C3768B34B /* 28402.bmp in Sources */ = {isa = PBXBuildFile; fileRef = 12BDF9D65E94E6E60C402429 /* 28402.bmp */; };
+		A69D34027E6BDF9BC5C149EB /* 28674.bmp in Sources */ = {isa = PBXBuildFile; fileRef = 2E12370418E3EB46DA036D50 /* 28674.bmp */; };
+		E33FEFEC9798094FB9B9FFB6 /* 30668.bmp in Sources */ = {isa = PBXBuildFile; fileRef = 3F491DCC89188651730EA74C /* 30668.bmp */; };
+		5DE2CD2854DE4FA32FE41E3F /* 30725.bmp in Sources */ = {isa = PBXBuildFile; fileRef = 7BF3032CB8FA31741380C4CF /* 30725.bmp */; };
+		30F1CACD8FEA97C3E818205E /* Epic_Games_logo.bmp in Sources */ = {isa = PBXBuildFile; fileRef = 4B8B63D3B8F51D41DF94B961 /* Epic_Games_logo.bmp */; };
+		C61FBDC27C1CDCD598A38FB5 /* banner.bmp in Sources */ = {isa = PBXBuildFile; fileRef = CAE1FADB6A5C875B2BDE5096 /* banner.bmp */; };
+		14599979DC3338DC1DFE6235 /* unreal-logo.jpg in Sources */ = {isa = PBXBuildFile; fileRef = 218D26130748A6D8634E62D6 /* unreal-logo.jpg */; };
+		A194355057EF6026F4C45FB3 /* Microsoft_VC140_CRT_x64.msm in Sources */ = {isa = PBXBuildFile; fileRef = 573B7C5EC4F8C73A74284721 /* Microsoft_VC140_CRT_x64.msm */; };
+		7CCE09E094D3C068A4DE6DFF /* Microsoft_VC140_OpenMP_x64.msm in Sources */ = {isa = PBXBuildFile; fileRef = B06FFA9AAAC312CDC59E6365 /* Microsoft_VC140_OpenMP_x64.msm */; };
+		40966D1E8BDA3C794D14D488 /* UnrealEngine.ico in Sources */ = {isa = PBXBuildFile; fileRef = E57F922003F70E79CD7CAE55 /* UnrealEngine.ico */; };
+		E1710CE97C3B7B5FD8B91393 /* SketchUpExporter.wxs in Sources */ = {isa = PBXBuildFile; fileRef = EEF44128098905F3C2C7C605 /* SketchUpExporter.wxs */; };
+		FF550AB7F969A4E8CE26AE22 /* DatasmithSketchUpAFXDialogs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8363F9646AB297CB7FC5B9DD /* DatasmithSketchUpAFXDialogs.cpp */; };
+		357353E3377832C5F7C27986 /* DatasmithSketchUpCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2981E3B45A7A67FADE048FA3 /* DatasmithSketchUpCamera.cpp */; };
+		4E426DB1B79657399C2C8185 /* DatasmithSketchUpCamera.h in Sources */ = {isa = PBXBuildFile; fileRef = 16C1B056F4E82BC1EA723BE8 /* DatasmithSketchUpCamera.h */; };
+		CEE371055EBEFE30E3AF94F5 /* DatasmithSketchUpComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A800D616A3FEAFCFF5D9E98 /* DatasmithSketchUpComponent.cpp */; };
+		C91106F5D9CEB9DC0684E2D4 /* DatasmithSketchUpComponent.h in Sources */ = {isa = PBXBuildFile; fileRef = 2452DBDD2E51A2662DBB4B74 /* DatasmithSketchUpComponent.h */; };
+		DBCA56AA873FE97145D93B4C /* DatasmithSketchUpDialogs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8085714F6B7EE859D383C18 /* DatasmithSketchUpDialogs.cpp */; };
+		630DCEAEBB376B0DC5921A0E /* DatasmithSketchUpDialogs.h in Sources */ = {isa = PBXBuildFile; fileRef = 780F54C79B718F4B168F2425 /* DatasmithSketchUpDialogs.h */; };
+		F98D6F75CCC5D6A28D3E467A /* DatasmithSketchUpExporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 713AB50D6D2D8626EE489CE6 /* DatasmithSketchUpExporter.cpp */; };
+		6227EA2BA9F101D4E8A8B52E /* DatasmithSketchUpExporter.h in Sources */ = {isa = PBXBuildFile; fileRef = C7F54100BB77813AC8DA5561 /* DatasmithSketchUpExporter.h */; };
+		BC82DDE808FD37B0F08913A5 /* DatasmithSketchUpExporterDLL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAAAF99C3C7192C885874578 /* DatasmithSketchUpExporterDLL.cpp */; };
+		EC866A76C7611D88D1896F26 /* DatasmithSketchUpExporterDLL.h in Sources */ = {isa = PBXBuildFile; fileRef = 1418CCEA70043D3EE29C2511 /* DatasmithSketchUpExporterDLL.h */; };
+		7EE5FE57478CDC353C64FC82 /* DatasmithSketchUpExporterInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92C1E98F6B8AD3513BD28723 /* DatasmithSketchUpExporterInterface.cpp */; };
+		A5A75780490696506059F7E2 /* DatasmithSketchUpExporterInterface.h in Sources */ = {isa = PBXBuildFile; fileRef = 63C64044AC3AEAAF1C4A57AF /* DatasmithSketchUpExporterInterface.h */; };
+		1BAED357C9D3D6AC5DDAB1A0 /* DatasmithSketchUpMaterial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 355BEB35CEAB2139C9062BA4 /* DatasmithSketchUpMaterial.cpp */; };
+		498EA500E8D8075B4FA8649B /* DatasmithSketchUpMaterial.h in Sources */ = {isa = PBXBuildFile; fileRef = 333E878C834A858914A00F51 /* DatasmithSketchUpMaterial.h */; };
+		4EB4E170281EE515822E0E3B /* DatasmithSketchUpMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2ED5C484D356518CF7500290 /* DatasmithSketchUpMesh.cpp */; };
+		2495B57F81A28FA97E54B134 /* DatasmithSketchUpMesh.h in Sources */ = {isa = PBXBuildFile; fileRef = F7963331C24F1804304C5DAD /* DatasmithSketchUpMesh.h */; };
+		8600B6BE4E8259FEB1504C92 /* DatasmithSketchUpMetadata.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 686693E09F64BCDA23908D3C /* DatasmithSketchUpMetadata.cpp */; };
+		231FCAA737FE60D73708F881 /* DatasmithSketchUpMetadata.h in Sources */ = {isa = PBXBuildFile; fileRef = EBD15AFBFAB382A64AA0C85B /* DatasmithSketchUpMetadata.h */; };
+		BC3765CB8F838AF672799A2E /* DatasmithSketchUpOptions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8B2C7B3F0745B606E11F4CD /* DatasmithSketchUpOptions.cpp */; };
+		09C1E0700DE6F283576FEBFF /* DatasmithSketchUpOptions.h in Sources */ = {isa = PBXBuildFile; fileRef = 989448B37D020F72372B4348 /* DatasmithSketchUpOptions.h */; };
+		EBCFB6D54468EDAA4297C2CE /* DatasmithSketchUpSDKBegins.h in Sources */ = {isa = PBXBuildFile; fileRef = A319E88B8717D748C6C71A5B /* DatasmithSketchUpSDKBegins.h */; };
+		2BA7E26B028296DD7E98843E /* DatasmithSketchUpSDKCeases.h in Sources */ = {isa = PBXBuildFile; fileRef = 301C3EEF8241BC00D27A1063 /* DatasmithSketchUpSDKCeases.h */; };
+		1A83EA1F54FA8124B45AAA9C /* DatasmithSketchUpString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8581A7C001E44F0B95A95A6B /* DatasmithSketchUpString.cpp */; };
+		D8E8C6850A1A89B1967E517F /* DatasmithSketchUpString.h in Sources */ = {isa = PBXBuildFile; fileRef = 9876898416608AD672A26900 /* DatasmithSketchUpString.h */; };
+		9AFCFFEE2A05CE70287F476B /* DatasmithSketchUpSummary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 33FC199AD1F806072F28278A /* DatasmithSketchUpSummary.cpp */; };
+		5BCBF4341F84F9357FC5EA0E /* DatasmithSketchUpSummary.h in Sources */ = {isa = PBXBuildFile; fileRef = 1A9A8791AFE156182E1D5119 /* DatasmithSketchUpSummary.h */; };
+		47EF04799C62D171D474935F /* resource.h in Sources */ = {isa = PBXBuildFile; fileRef = 119950A48611EC6D110B7F36 /* resource.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		D8DF25D7357ADED48E23F02F /* DatasmithSketchUp2017.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithSketchUp2017.Build.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/DatasmithSketchUp2017.Build.cs"; sourceTree = SOURCE_ROOT; };
+		3C369DF99F5272C9721C0DE5 /* DatasmithSketchUp2017.Target.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithSketchUp2017.Target.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/DatasmithSketchUp2017.Target.cs"; sourceTree = SOURCE_ROOT; };
+		B2ADB22EE8C1256A9336225A /* DatasmithSketchUp2018.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithSketchUp2018.Build.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/DatasmithSketchUp2018.Build.cs"; sourceTree = SOURCE_ROOT; };
+		BC7A0F7624D59514B50F2587 /* DatasmithSketchUp2019.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithSketchUp2019.Build.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/DatasmithSketchUp2019.Build.cs"; sourceTree = SOURCE_ROOT; };
+		45368CB889A595CB4CDD716D /* DatasmithSketchUp2020.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithSketchUp2020.Build.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/DatasmithSketchUp2020.Build.cs"; sourceTree = SOURCE_ROOT; };
+		456C86FA4BD38C28FA0531ED /* DatasmithSketchUpExporter.def */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithSketchUpExporter.def"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/DatasmithSketchUpExporter.def"; sourceTree = SOURCE_ROOT; };
+		40DCED3BEFA960C5A69A731D /* CustomActions.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "CustomActions.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/CustomActions.wxs"; sourceTree = SOURCE_ROOT; };
+		83945C4F44A5B3C65136B96E /* CustomExitDialog.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "CustomExitDialog.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/CustomExitDialog.wxs"; sourceTree = SOURCE_ROOT; };
+		D9C299F40B6ED3E76728B85A /* CustomInstallDirDlg.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "CustomInstallDirDlg.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/CustomInstallDirDlg.wxs"; sourceTree = SOURCE_ROOT; };
+		1022071011C65C15A27E7581 /* CustomLicenseAgreementDlg.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "CustomLicenseAgreementDlg.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/CustomLicenseAgreementDlg.wxs"; sourceTree = SOURCE_ROOT; };
+		EA45C7BAA209FCC83099E4E8 /* CustomWelcomeDialog.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "CustomWelcomeDialog.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/CustomWelcomeDialog.wxs"; sourceTree = SOURCE_ROOT; };
+		F1E8840F0AD367321E7326CC /* CustomWixUI_InstallDir.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "CustomWixUI_InstallDir.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/CustomWixUI_InstallDir.wxs"; sourceTree = SOURCE_ROOT; };
+		FD65F2F52535F7EA509FC8B9 /* GenericUiBrandDialog.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "GenericUiBrandDialog.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/GenericUiBrandDialog.wxs"; sourceTree = SOURCE_ROOT; };
+		2F204CEFAD824D1E6BE311A4 /* Installer.wixproj */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Installer.wixproj"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Installer.wixproj"; sourceTree = SOURCE_ROOT; };
+		A5DF765F8D4351750CB801B8 /* en-us.wxl */ = {isa = PBXFileReference; explicitFileType = file.text; name = "en-us.wxl"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Localization/en-us.wxl"; sourceTree = SOURCE_ROOT; };
+		FEAD0E2E6B72B7D37A818329 /* Banner.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Banner.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Resources/Banner.bmp"; sourceTree = SOURCE_ROOT; };
+		66A2DCCAA1F4B29C9B71B52A /* default_small_banner.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "default_small_banner.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Resources/default_small_banner.bmp"; sourceTree = SOURCE_ROOT; };
+		956CC2BD3860149DDF0260E0 /* Dialog.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Dialog.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Resources/Dialog.bmp"; sourceTree = SOURCE_ROOT; };
+		B761A45A0ED06D7A1FE299FE /* Epic_Games_logo.png */ = {isa = PBXFileReference; explicitFileType = image.png; name = "Epic_Games_logo.png"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Resources/Epic_Games_logo.png"; sourceTree = SOURCE_ROOT; };
+		455E2ED945CE8AAA9E8905D7 /* Exporter Plugin End User License Agreement.docx */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Exporter Plugin End User License Agreement.docx"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Resources/Exporter Plugin End User License Agreement.docx"; sourceTree = SOURCE_ROOT; };
+		922451BBA0BDF432165214B0 /* Exporter Plugin End User License Agreement.rtf */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Exporter Plugin End User License Agreement.rtf"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Resources/Exporter Plugin End User License Agreement.rtf"; sourceTree = SOURCE_ROOT; };
+		AF8E4E800DDD154E817E7F15 /* 28190.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "28190.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Resources/Images/Background/28190.bmp"; sourceTree = SOURCE_ROOT; };
+		12BDF9D65E94E6E60C402429 /* 28402.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "28402.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Resources/Images/Background/28402.bmp"; sourceTree = SOURCE_ROOT; };
+		2E12370418E3EB46DA036D50 /* 28674.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "28674.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Resources/Images/Background/28674.bmp"; sourceTree = SOURCE_ROOT; };
+		3F491DCC89188651730EA74C /* 30668.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "30668.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Resources/Images/Background/30668.bmp"; sourceTree = SOURCE_ROOT; };
+		7BF3032CB8FA31741380C4CF /* 30725.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "30725.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Resources/Images/Background/30725.bmp"; sourceTree = SOURCE_ROOT; };
+		4B8B63D3B8F51D41DF94B961 /* Epic_Games_logo.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Epic_Games_logo.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Resources/Images/Epic_Games_logo.bmp"; sourceTree = SOURCE_ROOT; };
+		CAE1FADB6A5C875B2BDE5096 /* banner.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "banner.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Resources/Images/General/banner.bmp"; sourceTree = SOURCE_ROOT; };
+		218D26130748A6D8634E62D6 /* unreal-logo.jpg */ = {isa = PBXFileReference; explicitFileType = file.text; name = "unreal-logo.jpg"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Resources/Images/General/unreal-logo.jpg"; sourceTree = SOURCE_ROOT; };
+		573B7C5EC4F8C73A74284721 /* Microsoft_VC140_CRT_x64.msm */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Microsoft_VC140_CRT_x64.msm"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Resources/Microsoft_VC140_CRT_x64.msm"; sourceTree = SOURCE_ROOT; };
+		B06FFA9AAAC312CDC59E6365 /* Microsoft_VC140_OpenMP_x64.msm */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Microsoft_VC140_OpenMP_x64.msm"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Resources/Microsoft_VC140_OpenMP_x64.msm"; sourceTree = SOURCE_ROOT; };
+		E57F922003F70E79CD7CAE55 /* UnrealEngine.ico */ = {isa = PBXFileReference; explicitFileType = file.text; name = "UnrealEngine.ico"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Resources/UnrealEngine.ico"; sourceTree = SOURCE_ROOT; };
+		EEF44128098905F3C2C7C605 /* SketchUpExporter.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "SketchUpExporter.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/SketchUpExporter.wxs"; sourceTree = SOURCE_ROOT; };
+		8363F9646AB297CB7FC5B9DD /* DatasmithSketchUpAFXDialogs.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithSketchUpAFXDialogs.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpAFXDialogs.cpp"; sourceTree = SOURCE_ROOT; };
+		2981E3B45A7A67FADE048FA3 /* DatasmithSketchUpCamera.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithSketchUpCamera.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpCamera.cpp"; sourceTree = SOURCE_ROOT; };
+		16C1B056F4E82BC1EA723BE8 /* DatasmithSketchUpCamera.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithSketchUpCamera.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpCamera.h"; sourceTree = SOURCE_ROOT; };
+		0A800D616A3FEAFCFF5D9E98 /* DatasmithSketchUpComponent.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithSketchUpComponent.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpComponent.cpp"; sourceTree = SOURCE_ROOT; };
+		2452DBDD2E51A2662DBB4B74 /* DatasmithSketchUpComponent.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithSketchUpComponent.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpComponent.h"; sourceTree = SOURCE_ROOT; };
+		B8085714F6B7EE859D383C18 /* DatasmithSketchUpDialogs.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithSketchUpDialogs.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpDialogs.cpp"; sourceTree = SOURCE_ROOT; };
+		780F54C79B718F4B168F2425 /* DatasmithSketchUpDialogs.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithSketchUpDialogs.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpDialogs.h"; sourceTree = SOURCE_ROOT; };
+		713AB50D6D2D8626EE489CE6 /* DatasmithSketchUpExporter.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithSketchUpExporter.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpExporter.cpp"; sourceTree = SOURCE_ROOT; };
+		C7F54100BB77813AC8DA5561 /* DatasmithSketchUpExporter.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithSketchUpExporter.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpExporter.h"; sourceTree = SOURCE_ROOT; };
+		DAAAF99C3C7192C885874578 /* DatasmithSketchUpExporterDLL.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithSketchUpExporterDLL.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpExporterDLL.cpp"; sourceTree = SOURCE_ROOT; };
+		1418CCEA70043D3EE29C2511 /* DatasmithSketchUpExporterDLL.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithSketchUpExporterDLL.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpExporterDLL.h"; sourceTree = SOURCE_ROOT; };
+		92C1E98F6B8AD3513BD28723 /* DatasmithSketchUpExporterInterface.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithSketchUpExporterInterface.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpExporterInterface.cpp"; sourceTree = SOURCE_ROOT; };
+		63C64044AC3AEAAF1C4A57AF /* DatasmithSketchUpExporterInterface.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithSketchUpExporterInterface.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpExporterInterface.h"; sourceTree = SOURCE_ROOT; };
+		355BEB35CEAB2139C9062BA4 /* DatasmithSketchUpMaterial.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithSketchUpMaterial.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpMaterial.cpp"; sourceTree = SOURCE_ROOT; };
+		333E878C834A858914A00F51 /* DatasmithSketchUpMaterial.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithSketchUpMaterial.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpMaterial.h"; sourceTree = SOURCE_ROOT; };
+		2ED5C484D356518CF7500290 /* DatasmithSketchUpMesh.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithSketchUpMesh.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpMesh.cpp"; sourceTree = SOURCE_ROOT; };
+		F7963331C24F1804304C5DAD /* DatasmithSketchUpMesh.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithSketchUpMesh.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpMesh.h"; sourceTree = SOURCE_ROOT; };
+		686693E09F64BCDA23908D3C /* DatasmithSketchUpMetadata.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithSketchUpMetadata.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpMetadata.cpp"; sourceTree = SOURCE_ROOT; };
+		EBD15AFBFAB382A64AA0C85B /* DatasmithSketchUpMetadata.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithSketchUpMetadata.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpMetadata.h"; sourceTree = SOURCE_ROOT; };
+		B8B2C7B3F0745B606E11F4CD /* DatasmithSketchUpOptions.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithSketchUpOptions.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpOptions.cpp"; sourceTree = SOURCE_ROOT; };
+		989448B37D020F72372B4348 /* DatasmithSketchUpOptions.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithSketchUpOptions.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpOptions.h"; sourceTree = SOURCE_ROOT; };
+		A319E88B8717D748C6C71A5B /* DatasmithSketchUpSDKBegins.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithSketchUpSDKBegins.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpSDKBegins.h"; sourceTree = SOURCE_ROOT; };
+		301C3EEF8241BC00D27A1063 /* DatasmithSketchUpSDKCeases.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithSketchUpSDKCeases.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpSDKCeases.h"; sourceTree = SOURCE_ROOT; };
+		8581A7C001E44F0B95A95A6B /* DatasmithSketchUpString.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithSketchUpString.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpString.cpp"; sourceTree = SOURCE_ROOT; };
+		9876898416608AD672A26900 /* DatasmithSketchUpString.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithSketchUpString.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpString.h"; sourceTree = SOURCE_ROOT; };
+		33FC199AD1F806072F28278A /* DatasmithSketchUpSummary.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithSketchUpSummary.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpSummary.cpp"; sourceTree = SOURCE_ROOT; };
+		1A9A8791AFE156182E1D5119 /* DatasmithSketchUpSummary.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithSketchUpSummary.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private/DatasmithSketchUpSummary.h"; sourceTree = SOURCE_ROOT; };
+		119950A48611EC6D110B7F36 /* resource.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "resource.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Resources/Windows/resource.h"; sourceTree = SOURCE_ROOT; };
+		CAF8CA79E589DCCB99F846EE /* DatasmithSketchUp2017 */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = DatasmithSketchUp2017; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXSourcesBuildPhase section */
+		22CB873AD0E36EFA8E1C821C = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF550AB7F969A4E8CE26AE22 /* DatasmithSketchUpAFXDialogs.cpp in Sources */,
+				357353E3377832C5F7C27986 /* DatasmithSketchUpCamera.cpp in Sources */,
+				CEE371055EBEFE30E3AF94F5 /* DatasmithSketchUpComponent.cpp in Sources */,
+				DBCA56AA873FE97145D93B4C /* DatasmithSketchUpDialogs.cpp in Sources */,
+				F98D6F75CCC5D6A28D3E467A /* DatasmithSketchUpExporter.cpp in Sources */,
+				BC82DDE808FD37B0F08913A5 /* DatasmithSketchUpExporterDLL.cpp in Sources */,
+				7EE5FE57478CDC353C64FC82 /* DatasmithSketchUpExporterInterface.cpp in Sources */,
+				1BAED357C9D3D6AC5DDAB1A0 /* DatasmithSketchUpMaterial.cpp in Sources */,
+				4EB4E170281EE515822E0E3B /* DatasmithSketchUpMesh.cpp in Sources */,
+				8600B6BE4E8259FEB1504C92 /* DatasmithSketchUpMetadata.cpp in Sources */,
+				BC3765CB8F838AF672799A2E /* DatasmithSketchUpOptions.cpp in Sources */,
+				1A83EA1F54FA8124B45AAA9C /* DatasmithSketchUpString.cpp in Sources */,
+				9AFCFFEE2A05CE70287F476B /* DatasmithSketchUpSummary.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+	D90E277CDD6A4895FFA2AA9D /* Embed App Extensions */ = {
+		isa = PBXCopyFilesBuildPhase;
+		buildActionMask = 2147483647;
+		dstPath = "";
+		dstSubfolderSpec = 13;
+		files = (
+		);
+		name = "Embed App Extensions";
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXCopyFilesBuildPhase section */
+/* Begin PBXContainerItemProxy section */
+		5EF4D15E407EA3270AF5E3E5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5A15BCE1C7C4E0CADE9BD4AC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8F723F35CD845EA7C29811D4;
+			remoteInfo = "DatasmithSketchUp2017_Build";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		76F1AB5E9C2B9AFDE66A3588 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8F723F35CD845EA7C29811D4 /* DatasmithSketchUp2017_Build */;
+			targetProxy = 5EF4D15E407EA3270AF5E3E5 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXGroup section */
+		5EABEBD1A262BD6A63D50277 = {
+			isa = PBXGroup;
+			children = (
+				9B81E20394128DA98FC41329 /* Installer */,
+				4BBCAF27B21574E9EEB25BD6 /* Private */,
+				465AB14765E9EFD830119986 /* Resources */,
+				D8DF25D7357ADED48E23F02F /* DatasmithSketchUp2017.Build.cs */,
+				3C369DF99F5272C9721C0DE5 /* DatasmithSketchUp2017.Target.cs */,
+				B2ADB22EE8C1256A9336225A /* DatasmithSketchUp2018.Build.cs */,
+				BC7A0F7624D59514B50F2587 /* DatasmithSketchUp2019.Build.cs */,
+				45368CB889A595CB4CDD716D /* DatasmithSketchUp2020.Build.cs */,
+				456C86FA4BD38C28FA0531ED /* DatasmithSketchUpExporter.def */,
+				AD0C9DE90304EFA398AC1A94 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		9B81E20394128DA98FC41329 = {
+			isa = PBXGroup;
+			children = (
+				8CFA4CCD1A019411193B761D /* Localization */,
+				B4F0D3B1BD01C3E5185249FA /* Resources */,
+				40DCED3BEFA960C5A69A731D /* CustomActions.wxs */,
+				83945C4F44A5B3C65136B96E /* CustomExitDialog.wxs */,
+				D9C299F40B6ED3E76728B85A /* CustomInstallDirDlg.wxs */,
+				1022071011C65C15A27E7581 /* CustomLicenseAgreementDlg.wxs */,
+				EA45C7BAA209FCC83099E4E8 /* CustomWelcomeDialog.wxs */,
+				F1E8840F0AD367321E7326CC /* CustomWixUI_InstallDir.wxs */,
+				FD65F2F52535F7EA509FC8B9 /* GenericUiBrandDialog.wxs */,
+				2F204CEFAD824D1E6BE311A4 /* Installer.wixproj */,
+				EEF44128098905F3C2C7C605 /* SketchUpExporter.wxs */,
+			);
+			name = "Installer";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer";
+			sourceTree = "<absolute>";
+		};
+		8CFA4CCD1A019411193B761D = {
+			isa = PBXGroup;
+			children = (
+				A5DF765F8D4351750CB801B8 /* en-us.wxl */,
+			);
+			name = "Localization";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Localization";
+			sourceTree = "<absolute>";
+		};
+		B4F0D3B1BD01C3E5185249FA = {
+			isa = PBXGroup;
+			children = (
+				9D7FB5D861F18961A9CB0120 /* Images */,
+				FEAD0E2E6B72B7D37A818329 /* Banner.bmp */,
+				66A2DCCAA1F4B29C9B71B52A /* default_small_banner.bmp */,
+				956CC2BD3860149DDF0260E0 /* Dialog.bmp */,
+				B761A45A0ED06D7A1FE299FE /* Epic_Games_logo.png */,
+				455E2ED945CE8AAA9E8905D7 /* Exporter Plugin End User License Agreement.docx */,
+				922451BBA0BDF432165214B0 /* Exporter Plugin End User License Agreement.rtf */,
+				573B7C5EC4F8C73A74284721 /* Microsoft_VC140_CRT_x64.msm */,
+				B06FFA9AAAC312CDC59E6365 /* Microsoft_VC140_OpenMP_x64.msm */,
+				E57F922003F70E79CD7CAE55 /* UnrealEngine.ico */,
+			);
+			name = "Resources";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Resources";
+			sourceTree = "<absolute>";
+		};
+		9D7FB5D861F18961A9CB0120 = {
+			isa = PBXGroup;
+			children = (
+				56E7BA6934D0ED5F0AC44EA4 /* Background */,
+				3FDBEB8D002D1139B151309B /* General */,
+				4B8B63D3B8F51D41DF94B961 /* Epic_Games_logo.bmp */,
+			);
+			name = "Images";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Resources/Images";
+			sourceTree = "<absolute>";
+		};
+		56E7BA6934D0ED5F0AC44EA4 = {
+			isa = PBXGroup;
+			children = (
+				AF8E4E800DDD154E817E7F15 /* 28190.bmp */,
+				12BDF9D65E94E6E60C402429 /* 28402.bmp */,
+				2E12370418E3EB46DA036D50 /* 28674.bmp */,
+				3F491DCC89188651730EA74C /* 30668.bmp */,
+				7BF3032CB8FA31741380C4CF /* 30725.bmp */,
+			);
+			name = "Background";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Resources/Images/Background";
+			sourceTree = "<absolute>";
+		};
+		3FDBEB8D002D1139B151309B = {
+			isa = PBXGroup;
+			children = (
+				CAE1FADB6A5C875B2BDE5096 /* banner.bmp */,
+				218D26130748A6D8634E62D6 /* unreal-logo.jpg */,
+			);
+			name = "General";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Installer/Resources/Images/General";
+			sourceTree = "<absolute>";
+		};
+		4BBCAF27B21574E9EEB25BD6 = {
+			isa = PBXGroup;
+			children = (
+				8363F9646AB297CB7FC5B9DD /* DatasmithSketchUpAFXDialogs.cpp */,
+				2981E3B45A7A67FADE048FA3 /* DatasmithSketchUpCamera.cpp */,
+				16C1B056F4E82BC1EA723BE8 /* DatasmithSketchUpCamera.h */,
+				0A800D616A3FEAFCFF5D9E98 /* DatasmithSketchUpComponent.cpp */,
+				2452DBDD2E51A2662DBB4B74 /* DatasmithSketchUpComponent.h */,
+				B8085714F6B7EE859D383C18 /* DatasmithSketchUpDialogs.cpp */,
+				780F54C79B718F4B168F2425 /* DatasmithSketchUpDialogs.h */,
+				713AB50D6D2D8626EE489CE6 /* DatasmithSketchUpExporter.cpp */,
+				C7F54100BB77813AC8DA5561 /* DatasmithSketchUpExporter.h */,
+				DAAAF99C3C7192C885874578 /* DatasmithSketchUpExporterDLL.cpp */,
+				1418CCEA70043D3EE29C2511 /* DatasmithSketchUpExporterDLL.h */,
+				92C1E98F6B8AD3513BD28723 /* DatasmithSketchUpExporterInterface.cpp */,
+				63C64044AC3AEAAF1C4A57AF /* DatasmithSketchUpExporterInterface.h */,
+				355BEB35CEAB2139C9062BA4 /* DatasmithSketchUpMaterial.cpp */,
+				333E878C834A858914A00F51 /* DatasmithSketchUpMaterial.h */,
+				2ED5C484D356518CF7500290 /* DatasmithSketchUpMesh.cpp */,
+				F7963331C24F1804304C5DAD /* DatasmithSketchUpMesh.h */,
+				686693E09F64BCDA23908D3C /* DatasmithSketchUpMetadata.cpp */,
+				EBD15AFBFAB382A64AA0C85B /* DatasmithSketchUpMetadata.h */,
+				B8B2C7B3F0745B606E11F4CD /* DatasmithSketchUpOptions.cpp */,
+				989448B37D020F72372B4348 /* DatasmithSketchUpOptions.h */,
+				A319E88B8717D748C6C71A5B /* DatasmithSketchUpSDKBegins.h */,
+				301C3EEF8241BC00D27A1063 /* DatasmithSketchUpSDKCeases.h */,
+				8581A7C001E44F0B95A95A6B /* DatasmithSketchUpString.cpp */,
+				9876898416608AD672A26900 /* DatasmithSketchUpString.h */,
+				33FC199AD1F806072F28278A /* DatasmithSketchUpSummary.cpp */,
+				1A9A8791AFE156182E1D5119 /* DatasmithSketchUpSummary.h */,
+			);
+			name = "Private";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private";
+			sourceTree = "<absolute>";
+		};
+		465AB14765E9EFD830119986 = {
+			isa = PBXGroup;
+			children = (
+				05FB617CBAC76F04B61E1D78 /* Windows */,
+			);
+			name = "Resources";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Resources";
+			sourceTree = "<absolute>";
+		};
+		05FB617CBAC76F04B61E1D78 = {
+			isa = PBXGroup;
+			children = (
+				119950A48611EC6D110B7F36 /* resource.h */,
+			);
+			name = "Windows";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Resources/Windows";
+			sourceTree = "<absolute>";
+		};
+		AD0C9DE90304EFA398AC1A94 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CAF8CA79E589DCCB99F846EE /* DatasmithSketchUp2017 */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		8F723F35CD845EA7C29811D4 /* DatasmithSketchUp2017_Build */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION) $(UE_BUILD_TARGET_NAME) $(PLATFORM_NAME) $(UE_BUILD_TARGET_CONFIG)";
+			buildConfigurationList = BCA22EC60EB831810EC593A4 /* Build configuration list for PBXLegacyTarget "DatasmithSketchUp2017_Build" */;
+			buildPhases = (
+			);
+			buildToolPath = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Build/BatchFiles/Mac/XcodeBuild.sh";
+			buildWorkingDirectory = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425";
+			dependencies = (
+			);
+			name = "DatasmithSketchUp2017_Build";
+			passBuildSettingsInEnvironment = 1;
+			productName = "DatasmithSketchUp2017_Build";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		7C7934BCE03BD0DC60678145 /* DatasmithSketchUp2017 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 11F8216FC98E006F45B1DF3B /* Build configuration list for PBXNativeTarget "DatasmithSketchUp2017" */;
+			buildPhases = (
+				D90E277CDD6A4895FFA2AA9D /* Embed App Extensions */, 
+				0E3BD5D070E307B19056AED7 /* Shell Script */, 
+			);
+			dependencies = (
+				76F1AB5E9C2B9AFDE66A3588 /* PBXTargetDependency */,
+			);
+			name = "DatasmithSketchUp2017";
+			passBuildSettingsInEnvironment = 1;
+			productName = "DatasmithSketchUp2017";
+			productReference = "CAF8CA79E589DCCB99F846EE";
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXNativeTarget section */
+		6020185C8D6AEE65AEE3CECE /* DatasmithSketchUp2017_Index */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3E6D5986963C2331E6F6BC42 /* Build configuration list for PBXNativeTarget "DatasmithSketchUp2017_Index" */;
+			buildPhases = (
+				22CB873AD0E36EFA8E1C821C /* Sources */,
+			);
+			dependencies = (
+			);
+			name = "DatasmithSketchUp2017_Index";
+			passBuildSettingsInEnvironment = 1;
+			productName = "DatasmithSketchUp2017_Index";
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5A15BCE1C7C4E0CADE9BD4AC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2000;
+				ORGANIZATIONNAME = "Epic Games, Inc.";
+				TargetAttributes = {
+					7C7934BCE03BD0DC60678145 = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 6B011958AAAC25D9D46087A0 /* Build configuration list for PBXProject "DatasmithSketchUp2017" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en
+			);
+			mainGroup = 5EABEBD1A262BD6A63D50277;
+			productRefGroup = AD0C9DE90304EFA398AC1A94;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			7C7934BCE03BD0DC60678145 /* DatasmithSketchUp2017 */,
+			8F723F35CD845EA7C29811D4 /* DatasmithSketchUp2017_Build */,
+			6020185C8D6AEE65AEE3CECE /* DatasmithSketchUp2017_Index */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		DA8399806707E9918A8110F4 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/openexr/Deploy/OpenEXR-2.3.0",
+					"../../Source/ThirdParty/openexr/Deploy/OpenEXR-2.3.0/OpenEXR/include",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/TraceLog",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../../Source/ThirdParty",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/DatasmithSketchUp2017",
+					"../../Source/Programs/Enterprise/Datasmith",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				ENABLE_TESTABILITY = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Debug";
+		};
+		1DD94D0BC12DB6F1570472C9 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/openexr/Deploy/OpenEXR-2.3.0",
+					"../../Source/ThirdParty/openexr/Deploy/OpenEXR-2.3.0/OpenEXR/include",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/TraceLog",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../../Source/ThirdParty",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/DatasmithSketchUp2017",
+					"../../Source/Programs/Enterprise/Datasmith",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "DebugGame";
+		};
+		9C5A979E4C672CB07CB2B524 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/openexr/Deploy/OpenEXR-2.3.0",
+					"../../Source/ThirdParty/openexr/Deploy/OpenEXR-2.3.0/OpenEXR/include",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/TraceLog",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../../Source/ThirdParty",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/DatasmithSketchUp2017",
+					"../../Source/Programs/Enterprise/Datasmith",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Development";
+		};
+		954931104586C85A2522D3EA /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/openexr/Deploy/OpenEXR-2.3.0",
+					"../../Source/ThirdParty/openexr/Deploy/OpenEXR-2.3.0/OpenEXR/include",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/TraceLog",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../../Source/ThirdParty",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/DatasmithSketchUp2017",
+					"../../Source/Programs/Enterprise/Datasmith",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Shipping";
+		};
+		95D264069CB2A4F69862AC6A /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/openexr/Deploy/OpenEXR-2.3.0",
+					"../../Source/ThirdParty/openexr/Deploy/OpenEXR-2.3.0/OpenEXR/include",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithSketchUpExporter/Private",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/TraceLog",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../../Source/ThirdParty",
+					"../Build/Mac/DatasmithSketchUp2017/Inc/DatasmithSketchUp2017",
+					"../../Source/Programs/Enterprise/Datasmith",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Test";
+		};
+		DC73C62E6484948020E92B95 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithSketchUp2017-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		7E3E7CB8F58C948CD16C5D9B /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithSketchUp2017-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		66AF1AB89A451FF2B1423575 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithSketchUp2017";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		740B46EB6CC30019459FB1CF /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithSketchUp2017-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		F2F3D6C077A6546B7F268C37 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithSketchUp2017-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+		0E9E89AA14D18B836050A159 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithSketchUp2017";
+				UE_BUILD_TARGET_CONFIG = "Debug";
+			};
+			name = "Debug";
+		};
+		569DC707D69E692DAA8B8D3A /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithSketchUp2017";
+				UE_BUILD_TARGET_CONFIG = "DebugGame";
+			};
+			name = "DebugGame";
+		};
+		CA61F221699045F1234D6A7B /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithSketchUp2017";
+				UE_BUILD_TARGET_CONFIG = "Development";
+			};
+			name = "Development";
+		};
+		64DB93D58364AA2D95088B1F /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithSketchUp2017";
+				UE_BUILD_TARGET_CONFIG = "Shipping";
+			};
+			name = "Shipping";
+		};
+		1763943448CDD86D0C3F3FB1 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithSketchUp2017";
+				UE_BUILD_TARGET_CONFIG = "Test";
+			};
+			name = "Test";
+		};
+		D0C82EF7B919138D2BE0F3FD /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithSketchUp2017-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		837FC13299B002CC5564797A /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithSketchUp2017-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		06CAE0435FDCBED1CA9DCCE9 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithSketchUp2017";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		5E34AB9D841056E4F7F6CF54 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithSketchUp2017-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		FFA491E2649587FC8841AA91 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithSketchUp2017-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		6B011958AAAC25D9D46087A0 /* Build configuration list for PBXProject "DatasmithSketchUp2017" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DA8399806707E9918A8110F4 /* "Debug" */,
+				1DD94D0BC12DB6F1570472C9 /* "DebugGame" */,
+				9C5A979E4C672CB07CB2B524 /* "Development" */,
+				954931104586C85A2522D3EA /* "Shipping" */,
+				95D264069CB2A4F69862AC6A /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		BCA22EC60EB831810EC593A4 /* Build configuration list for PBXLegacyTarget "DatasmithSketchUp2017_Build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0E9E89AA14D18B836050A159 /* "Debug" */,
+				569DC707D69E692DAA8B8D3A /* "DebugGame" */,
+				CA61F221699045F1234D6A7B /* "Development" */,
+				64DB93D58364AA2D95088B1F /* "Shipping" */,
+				1763943448CDD86D0C3F3FB1 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		11F8216FC98E006F45B1DF3B /* Build configuration list for PBXNativeTarget "DatasmithSketchUp2017" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DC73C62E6484948020E92B95 /* "Debug" */,
+				7E3E7CB8F58C948CD16C5D9B /* "DebugGame" */,
+				66AF1AB89A451FF2B1423575 /* "Development" */,
+				740B46EB6CC30019459FB1CF /* "Shipping" */,
+				F2F3D6C077A6546B7F268C37 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		3E6D5986963C2331E6F6BC42 /* Build configuration list for PBXNativeTarget "DatasmithSketchUp2017_Index" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D0C82EF7B919138D2BE0F3FD /* "Debug" */,
+				837FC13299B002CC5564797A /* "DebugGame" */,
+				06CAE0435FDCBED1CA9DCCE9 /* "Development" */,
+				5E34AB9D841056E4F7F6CF54 /* "Shipping" */,
+				FFA491E2649587FC8841AA91 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 5A15BCE1C7C4E0CADE9BD4AC /* Project object */;
+}

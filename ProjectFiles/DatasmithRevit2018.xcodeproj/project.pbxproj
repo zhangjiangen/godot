@@ -1,0 +1,970 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		809D3856A17081B8032910E1 /* DatasmithRevit2018.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = AC3A80CAC5F86E2AA87F14F2 /* DatasmithRevit2018.Build.cs */; };
+		DE3F921150CC8D8B6329672C /* DatasmithRevit2018.Target.cs in Sources */ = {isa = PBXBuildFile; fileRef = 626E002216CD5D0D39A20148 /* DatasmithRevit2018.Target.cs */; };
+		35E8BCF355B1B87D73C454B5 /* DatasmithRevit2018.addin in Sources */ = {isa = PBXBuildFile; fileRef = 0484CA9F2B81BB5D29818744 /* DatasmithRevit2018.addin */; };
+		C3D212E4893E72F581648A4E /* AssemblyInfo.cs in Sources */ = {isa = PBXBuildFile; fileRef = 2D27510A2C4FBE13D56A5926 /* AssemblyInfo.cs */; };
+		2E2A2D8B05A3B92CB0EFAB40 /* DatasmithRevit2019.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 69BDBD18DEE8482BD7866E47 /* DatasmithRevit2019.Build.cs */; };
+		DF17F7138A77BEB460772F83 /* DatasmithRevit2019.addin in Sources */ = {isa = PBXBuildFile; fileRef = 9FD3F334515E349FF97C7203 /* DatasmithRevit2019.addin */; };
+		2FB131D9C2746F5978EC0572 /* AssemblyInfo.cs in Sources */ = {isa = PBXBuildFile; fileRef = 465E6B0AA6D6EDB6F8CE6B58 /* AssemblyInfo.cs */; };
+		BED4CC8F0C51440189462877 /* DatasmithRevit2020.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 43F6B25F6FE431BC8E406107 /* DatasmithRevit2020.Build.cs */; };
+		5C89C17635BA2C62A5F3E4D8 /* DatasmithRevit2020.addin in Sources */ = {isa = PBXBuildFile; fileRef = 45E4F1EB07D50AB3CE81EEF3 /* DatasmithRevit2020.addin */; };
+		F32AF9228EBB0B6146D97D39 /* AssemblyInfo.cs in Sources */ = {isa = PBXBuildFile; fileRef = B3F824BEBFA2CC537A92C4C1 /* AssemblyInfo.cs */; };
+		E501AE23C3B78ADA9BCD830A /* CustomActions.wxs in Sources */ = {isa = PBXBuildFile; fileRef = C009D4E9E883926C67B7370E /* CustomActions.wxs */; };
+		B14BF32BB49B796066373D8D /* CustomExitDialog.wxs in Sources */ = {isa = PBXBuildFile; fileRef = 0DE79D8E4FA29DE57519FDB5 /* CustomExitDialog.wxs */; };
+		CEE36AF600585A2DC99F7277 /* CustomInstallDirDlg.wxs in Sources */ = {isa = PBXBuildFile; fileRef = C45E26005423A489CC46DB00 /* CustomInstallDirDlg.wxs */; };
+		E6031DC5195299984E3D5CD1 /* CustomLicenseAgreementDlg.wxs in Sources */ = {isa = PBXBuildFile; fileRef = 30825F0EDD0FC36D7525CAF0 /* CustomLicenseAgreementDlg.wxs */; };
+		7C9D91527474E987076910FC /* CustomWelcomeDialog.wxs in Sources */ = {isa = PBXBuildFile; fileRef = 3B95147706D929860154CFD2 /* CustomWelcomeDialog.wxs */; };
+		C396ACBD836E8BC0392C487C /* CustomWixUI_InstallDir.wxs in Sources */ = {isa = PBXBuildFile; fileRef = C14723D954D5C9C77163D347 /* CustomWixUI_InstallDir.wxs */; };
+		FB4B679BFB44EF27CDBE8FDD /* GenericUiBrandDialog.wxs in Sources */ = {isa = PBXBuildFile; fileRef = C72B0499DE50C30E4C97B6BE /* GenericUiBrandDialog.wxs */; };
+		B650312C8A08615FC364C237 /* Installer.wixproj in Sources */ = {isa = PBXBuildFile; fileRef = 06EFC5F43C20AE02B8461129 /* Installer.wixproj */; };
+		8ACED22BE9B306703E075B5A /* en-us.wxl in Sources */ = {isa = PBXBuildFile; fileRef = 1F40BFFF695FA25D0919E179 /* en-us.wxl */; };
+		83E8A6882BAEC0039DFA96D1 /* Banner.bmp in Sources */ = {isa = PBXBuildFile; fileRef = F1CF79E1A2756D0B6742A61B /* Banner.bmp */; };
+		1D6967DBF208D46BC71115BF /* default_small_banner.bmp in Sources */ = {isa = PBXBuildFile; fileRef = E7F1CE7B387FC725C73F793B /* default_small_banner.bmp */; };
+		6F1AF9092A35E571EC58A700 /* Dialog.bmp in Sources */ = {isa = PBXBuildFile; fileRef = 0D7D448F4658BC25AAED0D9A /* Dialog.bmp */; };
+		E5C0BB93ACD51241428A1910 /* Exporter Plugin End User License Agreement.docx in Sources */ = {isa = PBXBuildFile; fileRef = B4B7D8671525E5992779D424 /* Exporter Plugin End User License Agreement.docx */; };
+		31DDC50E858171820D5F2469 /* Exporter Plugin End User License Agreement.rtf in Sources */ = {isa = PBXBuildFile; fileRef = 7A51C4174566BD826433DB8F /* Exporter Plugin End User License Agreement.rtf */; };
+		9551A2F5C32B65DEF02CD311 /* 28190.bmp in Sources */ = {isa = PBXBuildFile; fileRef = FC49429C44F513A941085C17 /* 28190.bmp */; };
+		6167AD0DCC6A9E162B26F5D6 /* 28402.bmp in Sources */ = {isa = PBXBuildFile; fileRef = 89D75C80D7D2D5F24E0B632D /* 28402.bmp */; };
+		76D6C9A6DD0AA48CF48B935C /* 28674.bmp in Sources */ = {isa = PBXBuildFile; fileRef = 7D5711868EBDE5D5546C126D /* 28674.bmp */; };
+		9992D26E336AC956038096F6 /* 30668.bmp in Sources */ = {isa = PBXBuildFile; fileRef = A0F738218269E2FE43FF037F /* 30668.bmp */; };
+		C04F6390258ED90AC35C0D4B /* 30725.bmp in Sources */ = {isa = PBXBuildFile; fileRef = 3836588AC13D58FDC11BE596 /* 30725.bmp */; };
+		07E00C8B282BCC1FAB3DB0C5 /* Epic_Games_logo.bmp in Sources */ = {isa = PBXBuildFile; fileRef = 1E211D5F77B9720E9CF1B4E5 /* Epic_Games_logo.bmp */; };
+		84C453EA8A142A998F53ADE4 /* banner.bmp in Sources */ = {isa = PBXBuildFile; fileRef = 06383075A68C3244EAEDE84B /* banner.bmp */; };
+		10573C05A706BEA569CD0B60 /* unreal-logo.jpg in Sources */ = {isa = PBXBuildFile; fileRef = 3BEE80AF3173BBE588748389 /* unreal-logo.jpg */; };
+		7F550F850873726CEC9662CF /* Microsoft_VC140_CRT_x64.msm in Sources */ = {isa = PBXBuildFile; fileRef = 1004BBC119970354936FECC3 /* Microsoft_VC140_CRT_x64.msm */; };
+		60CE53C0BB51BFFE02358F30 /* Microsoft_VC140_OpenMP_x64.msm in Sources */ = {isa = PBXBuildFile; fileRef = 71EC7999EDB87CE4EEF50641 /* Microsoft_VC140_OpenMP_x64.msm */; };
+		ABFC69CD2F86FC10684C243A /* UnrealEngine.ico in Sources */ = {isa = PBXBuildFile; fileRef = 20B2B09BD763CDDB748B502C /* UnrealEngine.ico */; };
+		D030E921A0C4FB6395A8E5AB /* RevitExporter.wxs in Sources */ = {isa = PBXBuildFile; fileRef = 13C29CC55C2F1A6368CC93EE /* RevitExporter.wxs */; };
+		0CE35634E9A0AC97DC07DA32 /* DatasmithDynamoNode.cs in Sources */ = {isa = PBXBuildFile; fileRef = D824F28994087A392CD039B8 /* DatasmithDynamoNode.cs */; };
+		0B8212763103C39BD4B2F9C4 /* DatasmithRevitApplication.cs in Sources */ = {isa = PBXBuildFile; fileRef = AF89BCC920748434134ED60D /* DatasmithRevitApplication.cs */; };
+		8132507FF9495D3CA99D2966 /* DatasmithRevitCommand.cs in Sources */ = {isa = PBXBuildFile; fileRef = 8D3666D8433E5D252B2DD90B /* DatasmithRevitCommand.cs */; };
+		4CB118B84C05A4BDAB05F4FE /* DatasmithRevitExportContext.cs in Sources */ = {isa = PBXBuildFile; fileRef = B343A28A55BC1A1160553BEA /* DatasmithRevitExportContext.cs */; };
+		0DABF0D4F1B1E15359453347 /* DatasmithRevitExportMessages.cs in Sources */ = {isa = PBXBuildFile; fileRef = 30A4F0A4F96CBA88416825FF /* DatasmithRevitExportMessages.cs */; };
+		9CD2D06E13C7AAF6762EAAA0 /* DatasmithRevitExportOptions.cs in Sources */ = {isa = PBXBuildFile; fileRef = 14CFCBFA24A0A46D0F5A59B0 /* DatasmithRevitExportOptions.cs */; };
+		CC7518F49BB3A9A486F0381E /* DatasmithRevitLight.cs in Sources */ = {isa = PBXBuildFile; fileRef = E17240929A3DD102FA4F9029 /* DatasmithRevitLight.cs */; };
+		A0BF63A0C3B7EF41781FA29D /* DatasmithRevitMaterial.cs in Sources */ = {isa = PBXBuildFile; fileRef = AEB65AC38506192397AD19B1 /* DatasmithRevitMaterial.cs */; };
+		3B564CC036E91AA7BBE5CD31 /* ReadMe.txt in Sources */ = {isa = PBXBuildFile; fileRef = D72A205EAAA9B7229545D5E7 /* ReadMe.txt */; };
+		6012D3D28957B67CE5EF54DB /* DatasmithBatchExporter.dyn in Sources */ = {isa = PBXBuildFile; fileRef = 4F08E1CE00F6A5C1D0A2E3E4 /* DatasmithBatchExporter.dyn */; };
+		E20E7DF4356C92F2A6B240B1 /* DatasmithIcon32.png in Sources */ = {isa = PBXBuildFile; fileRef = E41DB8216925B8BF627E737D /* DatasmithIcon32.png */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AC3A80CAC5F86E2AA87F14F2 /* DatasmithRevit2018.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithRevit2018.Build.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/DatasmithRevit2018.Build.cs"; sourceTree = SOURCE_ROOT; };
+		626E002216CD5D0D39A20148 /* DatasmithRevit2018.Target.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithRevit2018.Target.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/DatasmithRevit2018.Target.cs"; sourceTree = SOURCE_ROOT; };
+		0484CA9F2B81BB5D29818744 /* DatasmithRevit2018.addin */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithRevit2018.addin"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/DatasmithRevit2018/DatasmithRevit2018.addin"; sourceTree = SOURCE_ROOT; };
+		2D27510A2C4FBE13D56A5926 /* AssemblyInfo.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "AssemblyInfo.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/DatasmithRevit2018/Properties/AssemblyInfo.cs"; sourceTree = SOURCE_ROOT; };
+		69BDBD18DEE8482BD7866E47 /* DatasmithRevit2019.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithRevit2019.Build.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/DatasmithRevit2019.Build.cs"; sourceTree = SOURCE_ROOT; };
+		9FD3F334515E349FF97C7203 /* DatasmithRevit2019.addin */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithRevit2019.addin"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/DatasmithRevit2019/DatasmithRevit2019.addin"; sourceTree = SOURCE_ROOT; };
+		465E6B0AA6D6EDB6F8CE6B58 /* AssemblyInfo.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "AssemblyInfo.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/DatasmithRevit2019/Properties/AssemblyInfo.cs"; sourceTree = SOURCE_ROOT; };
+		43F6B25F6FE431BC8E406107 /* DatasmithRevit2020.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithRevit2020.Build.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/DatasmithRevit2020.Build.cs"; sourceTree = SOURCE_ROOT; };
+		45E4F1EB07D50AB3CE81EEF3 /* DatasmithRevit2020.addin */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithRevit2020.addin"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/DatasmithRevit2020/DatasmithRevit2020.addin"; sourceTree = SOURCE_ROOT; };
+		B3F824BEBFA2CC537A92C4C1 /* AssemblyInfo.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "AssemblyInfo.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/DatasmithRevit2020/Properties/AssemblyInfo.cs"; sourceTree = SOURCE_ROOT; };
+		C009D4E9E883926C67B7370E /* CustomActions.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "CustomActions.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/CustomActions.wxs"; sourceTree = SOURCE_ROOT; };
+		0DE79D8E4FA29DE57519FDB5 /* CustomExitDialog.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "CustomExitDialog.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/CustomExitDialog.wxs"; sourceTree = SOURCE_ROOT; };
+		C45E26005423A489CC46DB00 /* CustomInstallDirDlg.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "CustomInstallDirDlg.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/CustomInstallDirDlg.wxs"; sourceTree = SOURCE_ROOT; };
+		30825F0EDD0FC36D7525CAF0 /* CustomLicenseAgreementDlg.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "CustomLicenseAgreementDlg.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/CustomLicenseAgreementDlg.wxs"; sourceTree = SOURCE_ROOT; };
+		3B95147706D929860154CFD2 /* CustomWelcomeDialog.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "CustomWelcomeDialog.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/CustomWelcomeDialog.wxs"; sourceTree = SOURCE_ROOT; };
+		C14723D954D5C9C77163D347 /* CustomWixUI_InstallDir.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "CustomWixUI_InstallDir.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/CustomWixUI_InstallDir.wxs"; sourceTree = SOURCE_ROOT; };
+		C72B0499DE50C30E4C97B6BE /* GenericUiBrandDialog.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "GenericUiBrandDialog.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/GenericUiBrandDialog.wxs"; sourceTree = SOURCE_ROOT; };
+		06EFC5F43C20AE02B8461129 /* Installer.wixproj */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Installer.wixproj"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Installer.wixproj"; sourceTree = SOURCE_ROOT; };
+		1F40BFFF695FA25D0919E179 /* en-us.wxl */ = {isa = PBXFileReference; explicitFileType = file.text; name = "en-us.wxl"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Localization/en-us.wxl"; sourceTree = SOURCE_ROOT; };
+		F1CF79E1A2756D0B6742A61B /* Banner.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Banner.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Resources/Banner.bmp"; sourceTree = SOURCE_ROOT; };
+		E7F1CE7B387FC725C73F793B /* default_small_banner.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "default_small_banner.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Resources/default_small_banner.bmp"; sourceTree = SOURCE_ROOT; };
+		0D7D448F4658BC25AAED0D9A /* Dialog.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Dialog.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Resources/Dialog.bmp"; sourceTree = SOURCE_ROOT; };
+		B4B7D8671525E5992779D424 /* Exporter Plugin End User License Agreement.docx */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Exporter Plugin End User License Agreement.docx"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Resources/Exporter Plugin End User License Agreement.docx"; sourceTree = SOURCE_ROOT; };
+		7A51C4174566BD826433DB8F /* Exporter Plugin End User License Agreement.rtf */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Exporter Plugin End User License Agreement.rtf"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Resources/Exporter Plugin End User License Agreement.rtf"; sourceTree = SOURCE_ROOT; };
+		FC49429C44F513A941085C17 /* 28190.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "28190.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Resources/Images/Background/28190.bmp"; sourceTree = SOURCE_ROOT; };
+		89D75C80D7D2D5F24E0B632D /* 28402.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "28402.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Resources/Images/Background/28402.bmp"; sourceTree = SOURCE_ROOT; };
+		7D5711868EBDE5D5546C126D /* 28674.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "28674.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Resources/Images/Background/28674.bmp"; sourceTree = SOURCE_ROOT; };
+		A0F738218269E2FE43FF037F /* 30668.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "30668.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Resources/Images/Background/30668.bmp"; sourceTree = SOURCE_ROOT; };
+		3836588AC13D58FDC11BE596 /* 30725.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "30725.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Resources/Images/Background/30725.bmp"; sourceTree = SOURCE_ROOT; };
+		1E211D5F77B9720E9CF1B4E5 /* Epic_Games_logo.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Epic_Games_logo.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Resources/Images/Epic_Games_logo.bmp"; sourceTree = SOURCE_ROOT; };
+		06383075A68C3244EAEDE84B /* banner.bmp */ = {isa = PBXFileReference; explicitFileType = file.text; name = "banner.bmp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Resources/Images/General/banner.bmp"; sourceTree = SOURCE_ROOT; };
+		3BEE80AF3173BBE588748389 /* unreal-logo.jpg */ = {isa = PBXFileReference; explicitFileType = file.text; name = "unreal-logo.jpg"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Resources/Images/General/unreal-logo.jpg"; sourceTree = SOURCE_ROOT; };
+		1004BBC119970354936FECC3 /* Microsoft_VC140_CRT_x64.msm */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Microsoft_VC140_CRT_x64.msm"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Resources/Microsoft_VC140_CRT_x64.msm"; sourceTree = SOURCE_ROOT; };
+		71EC7999EDB87CE4EEF50641 /* Microsoft_VC140_OpenMP_x64.msm */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Microsoft_VC140_OpenMP_x64.msm"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Resources/Microsoft_VC140_OpenMP_x64.msm"; sourceTree = SOURCE_ROOT; };
+		20B2B09BD763CDDB748B502C /* UnrealEngine.ico */ = {isa = PBXFileReference; explicitFileType = file.text; name = "UnrealEngine.ico"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Resources/UnrealEngine.ico"; sourceTree = SOURCE_ROOT; };
+		13C29CC55C2F1A6368CC93EE /* RevitExporter.wxs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "RevitExporter.wxs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/RevitExporter.wxs"; sourceTree = SOURCE_ROOT; };
+		D824F28994087A392CD039B8 /* DatasmithDynamoNode.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithDynamoNode.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Private/DatasmithDynamoNode.cs"; sourceTree = SOURCE_ROOT; };
+		AF89BCC920748434134ED60D /* DatasmithRevitApplication.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithRevitApplication.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Private/DatasmithRevitApplication.cs"; sourceTree = SOURCE_ROOT; };
+		8D3666D8433E5D252B2DD90B /* DatasmithRevitCommand.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithRevitCommand.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Private/DatasmithRevitCommand.cs"; sourceTree = SOURCE_ROOT; };
+		B343A28A55BC1A1160553BEA /* DatasmithRevitExportContext.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithRevitExportContext.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Private/DatasmithRevitExportContext.cs"; sourceTree = SOURCE_ROOT; };
+		30A4F0A4F96CBA88416825FF /* DatasmithRevitExportMessages.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithRevitExportMessages.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Private/DatasmithRevitExportMessages.cs"; sourceTree = SOURCE_ROOT; };
+		14CFCBFA24A0A46D0F5A59B0 /* DatasmithRevitExportOptions.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithRevitExportOptions.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Private/DatasmithRevitExportOptions.cs"; sourceTree = SOURCE_ROOT; };
+		E17240929A3DD102FA4F9029 /* DatasmithRevitLight.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithRevitLight.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Private/DatasmithRevitLight.cs"; sourceTree = SOURCE_ROOT; };
+		AEB65AC38506192397AD19B1 /* DatasmithRevitMaterial.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithRevitMaterial.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Private/DatasmithRevitMaterial.cs"; sourceTree = SOURCE_ROOT; };
+		D72A205EAAA9B7229545D5E7 /* ReadMe.txt */ = {isa = PBXFileReference; explicitFileType = file.text; name = "ReadMe.txt"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/ReadMe.txt"; sourceTree = SOURCE_ROOT; };
+		4F08E1CE00F6A5C1D0A2E3E4 /* DatasmithBatchExporter.dyn */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithBatchExporter.dyn"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Resources/Windows/DatasmithBatchExporter.dyn"; sourceTree = SOURCE_ROOT; };
+		E41DB8216925B8BF627E737D /* DatasmithIcon32.png */ = {isa = PBXFileReference; explicitFileType = image.png; name = "DatasmithIcon32.png"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Resources/Windows/DatasmithIcon32.png"; sourceTree = SOURCE_ROOT; };
+		5C7AD5DA998C79170B807BE6 /* DatasmithRevit2018 */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = DatasmithRevit2018; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4A41311BB0253490C30885E6 = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+	47A53988C43F94F77160669D /* Embed App Extensions */ = {
+		isa = PBXCopyFilesBuildPhase;
+		buildActionMask = 2147483647;
+		dstPath = "";
+		dstSubfolderSpec = 13;
+		files = (
+		);
+		name = "Embed App Extensions";
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXCopyFilesBuildPhase section */
+/* Begin PBXContainerItemProxy section */
+		9F730733B3830303D1EC06EA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B28482A781BAB103A42CB172 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3EFC4EE9C16D9DDE7A20BE0E;
+			remoteInfo = "DatasmithRevit2018_Build";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		AD3B25B49C0E28CBFB7A6220 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3EFC4EE9C16D9DDE7A20BE0E /* DatasmithRevit2018_Build */;
+			targetProxy = 9F730733B3830303D1EC06EA /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXGroup section */
+		219B720CCA1B6771DE45BC7C = {
+			isa = PBXGroup;
+			children = (
+				AC52C9F7253E08F1179F7CA1 /* DatasmithRevit2018 */,
+				8705918181D2B19DBD408AB9 /* DatasmithRevit2019 */,
+				8CB6FDF37C01BFD15D45701F /* DatasmithRevit2020 */,
+				06DD1169F9A81ADBDF8CF5CB /* Installer */,
+				E0A7F246CB0840B12D30CBA1 /* Private */,
+				D3EFB8D3BEF2EBB2427B6B9A /* Resources */,
+				AC3A80CAC5F86E2AA87F14F2 /* DatasmithRevit2018.Build.cs */,
+				626E002216CD5D0D39A20148 /* DatasmithRevit2018.Target.cs */,
+				69BDBD18DEE8482BD7866E47 /* DatasmithRevit2019.Build.cs */,
+				43F6B25F6FE431BC8E406107 /* DatasmithRevit2020.Build.cs */,
+				D72A205EAAA9B7229545D5E7 /* ReadMe.txt */,
+				C86D9C3D6EF1120868CE2720 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AC52C9F7253E08F1179F7CA1 = {
+			isa = PBXGroup;
+			children = (
+				AAF2D1625831B36A2FDBF584 /* Properties */,
+				0484CA9F2B81BB5D29818744 /* DatasmithRevit2018.addin */,
+			);
+			name = "DatasmithRevit2018";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/DatasmithRevit2018";
+			sourceTree = "<absolute>";
+		};
+		AAF2D1625831B36A2FDBF584 = {
+			isa = PBXGroup;
+			children = (
+				2D27510A2C4FBE13D56A5926 /* AssemblyInfo.cs */,
+			);
+			name = "Properties";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/DatasmithRevit2018/Properties";
+			sourceTree = "<absolute>";
+		};
+		8705918181D2B19DBD408AB9 = {
+			isa = PBXGroup;
+			children = (
+				624B2BD659C5E14C69AC2504 /* Properties */,
+				9FD3F334515E349FF97C7203 /* DatasmithRevit2019.addin */,
+			);
+			name = "DatasmithRevit2019";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/DatasmithRevit2019";
+			sourceTree = "<absolute>";
+		};
+		624B2BD659C5E14C69AC2504 = {
+			isa = PBXGroup;
+			children = (
+				465E6B0AA6D6EDB6F8CE6B58 /* AssemblyInfo.cs */,
+			);
+			name = "Properties";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/DatasmithRevit2019/Properties";
+			sourceTree = "<absolute>";
+		};
+		8CB6FDF37C01BFD15D45701F = {
+			isa = PBXGroup;
+			children = (
+				AD876F44EDDFE3696717000C /* Properties */,
+				45E4F1EB07D50AB3CE81EEF3 /* DatasmithRevit2020.addin */,
+			);
+			name = "DatasmithRevit2020";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/DatasmithRevit2020";
+			sourceTree = "<absolute>";
+		};
+		AD876F44EDDFE3696717000C = {
+			isa = PBXGroup;
+			children = (
+				B3F824BEBFA2CC537A92C4C1 /* AssemblyInfo.cs */,
+			);
+			name = "Properties";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/DatasmithRevit2020/Properties";
+			sourceTree = "<absolute>";
+		};
+		06DD1169F9A81ADBDF8CF5CB = {
+			isa = PBXGroup;
+			children = (
+				D5BE20BC81B95C1CDB0B29D2 /* Localization */,
+				569C5F8AC8BC9D74B6F0ED9F /* Resources */,
+				C009D4E9E883926C67B7370E /* CustomActions.wxs */,
+				0DE79D8E4FA29DE57519FDB5 /* CustomExitDialog.wxs */,
+				C45E26005423A489CC46DB00 /* CustomInstallDirDlg.wxs */,
+				30825F0EDD0FC36D7525CAF0 /* CustomLicenseAgreementDlg.wxs */,
+				3B95147706D929860154CFD2 /* CustomWelcomeDialog.wxs */,
+				C14723D954D5C9C77163D347 /* CustomWixUI_InstallDir.wxs */,
+				C72B0499DE50C30E4C97B6BE /* GenericUiBrandDialog.wxs */,
+				06EFC5F43C20AE02B8461129 /* Installer.wixproj */,
+				13C29CC55C2F1A6368CC93EE /* RevitExporter.wxs */,
+			);
+			name = "Installer";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer";
+			sourceTree = "<absolute>";
+		};
+		D5BE20BC81B95C1CDB0B29D2 = {
+			isa = PBXGroup;
+			children = (
+				1F40BFFF695FA25D0919E179 /* en-us.wxl */,
+			);
+			name = "Localization";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Localization";
+			sourceTree = "<absolute>";
+		};
+		569C5F8AC8BC9D74B6F0ED9F = {
+			isa = PBXGroup;
+			children = (
+				F055D8B42A95402091A46F2F /* Images */,
+				F1CF79E1A2756D0B6742A61B /* Banner.bmp */,
+				E7F1CE7B387FC725C73F793B /* default_small_banner.bmp */,
+				0D7D448F4658BC25AAED0D9A /* Dialog.bmp */,
+				B4B7D8671525E5992779D424 /* Exporter Plugin End User License Agreement.docx */,
+				7A51C4174566BD826433DB8F /* Exporter Plugin End User License Agreement.rtf */,
+				1004BBC119970354936FECC3 /* Microsoft_VC140_CRT_x64.msm */,
+				71EC7999EDB87CE4EEF50641 /* Microsoft_VC140_OpenMP_x64.msm */,
+				20B2B09BD763CDDB748B502C /* UnrealEngine.ico */,
+			);
+			name = "Resources";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Resources";
+			sourceTree = "<absolute>";
+		};
+		F055D8B42A95402091A46F2F = {
+			isa = PBXGroup;
+			children = (
+				BE27E8AEBBE331FAB43E135C /* Background */,
+				49901223EF8114E5D180CB2B /* General */,
+				1E211D5F77B9720E9CF1B4E5 /* Epic_Games_logo.bmp */,
+			);
+			name = "Images";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Resources/Images";
+			sourceTree = "<absolute>";
+		};
+		BE27E8AEBBE331FAB43E135C = {
+			isa = PBXGroup;
+			children = (
+				FC49429C44F513A941085C17 /* 28190.bmp */,
+				89D75C80D7D2D5F24E0B632D /* 28402.bmp */,
+				7D5711868EBDE5D5546C126D /* 28674.bmp */,
+				A0F738218269E2FE43FF037F /* 30668.bmp */,
+				3836588AC13D58FDC11BE596 /* 30725.bmp */,
+			);
+			name = "Background";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Resources/Images/Background";
+			sourceTree = "<absolute>";
+		};
+		49901223EF8114E5D180CB2B = {
+			isa = PBXGroup;
+			children = (
+				06383075A68C3244EAEDE84B /* banner.bmp */,
+				3BEE80AF3173BBE588748389 /* unreal-logo.jpg */,
+			);
+			name = "General";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Installer/Resources/Images/General";
+			sourceTree = "<absolute>";
+		};
+		E0A7F246CB0840B12D30CBA1 = {
+			isa = PBXGroup;
+			children = (
+				D824F28994087A392CD039B8 /* DatasmithDynamoNode.cs */,
+				AF89BCC920748434134ED60D /* DatasmithRevitApplication.cs */,
+				8D3666D8433E5D252B2DD90B /* DatasmithRevitCommand.cs */,
+				B343A28A55BC1A1160553BEA /* DatasmithRevitExportContext.cs */,
+				30A4F0A4F96CBA88416825FF /* DatasmithRevitExportMessages.cs */,
+				14CFCBFA24A0A46D0F5A59B0 /* DatasmithRevitExportOptions.cs */,
+				E17240929A3DD102FA4F9029 /* DatasmithRevitLight.cs */,
+				AEB65AC38506192397AD19B1 /* DatasmithRevitMaterial.cs */,
+			);
+			name = "Private";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Private";
+			sourceTree = "<absolute>";
+		};
+		D3EFB8D3BEF2EBB2427B6B9A = {
+			isa = PBXGroup;
+			children = (
+				821C31108F8A5D3E5CBDCD14 /* Windows */,
+			);
+			name = "Resources";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Resources";
+			sourceTree = "<absolute>";
+		};
+		821C31108F8A5D3E5CBDCD14 = {
+			isa = PBXGroup;
+			children = (
+				4F08E1CE00F6A5C1D0A2E3E4 /* DatasmithBatchExporter.dyn */,
+				E41DB8216925B8BF627E737D /* DatasmithIcon32.png */,
+			);
+			name = "Windows";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Resources/Windows";
+			sourceTree = "<absolute>";
+		};
+		C86D9C3D6EF1120868CE2720 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5C7AD5DA998C79170B807BE6 /* DatasmithRevit2018 */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		3EFC4EE9C16D9DDE7A20BE0E /* DatasmithRevit2018_Build */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION) $(UE_BUILD_TARGET_NAME) $(PLATFORM_NAME) $(UE_BUILD_TARGET_CONFIG)";
+			buildConfigurationList = 6AADD9F59463FFC1343B5822 /* Build configuration list for PBXLegacyTarget "DatasmithRevit2018_Build" */;
+			buildPhases = (
+			);
+			buildToolPath = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Build/BatchFiles/Mac/XcodeBuild.sh";
+			buildWorkingDirectory = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425";
+			dependencies = (
+			);
+			name = "DatasmithRevit2018_Build";
+			passBuildSettingsInEnvironment = 1;
+			productName = "DatasmithRevit2018_Build";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		AF7251292264B1EBF8E93999 /* DatasmithRevit2018 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 58DC415D8171E18C789866D0 /* Build configuration list for PBXNativeTarget "DatasmithRevit2018" */;
+			buildPhases = (
+				47A53988C43F94F77160669D /* Embed App Extensions */, 
+				03D9DBC610B811537351C188 /* Shell Script */, 
+			);
+			dependencies = (
+				AD3B25B49C0E28CBFB7A6220 /* PBXTargetDependency */,
+			);
+			name = "DatasmithRevit2018";
+			passBuildSettingsInEnvironment = 1;
+			productName = "DatasmithRevit2018";
+			productReference = "5C7AD5DA998C79170B807BE6";
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXNativeTarget section */
+		384E316F004B151EF720F5B6 /* DatasmithRevit2018_Index */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 341A41634E28703CBBC66FEC /* Build configuration list for PBXNativeTarget "DatasmithRevit2018_Index" */;
+			buildPhases = (
+				4A41311BB0253490C30885E6 /* Sources */,
+			);
+			dependencies = (
+			);
+			name = "DatasmithRevit2018_Index";
+			passBuildSettingsInEnvironment = 1;
+			productName = "DatasmithRevit2018_Index";
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B28482A781BAB103A42CB172 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2000;
+				ORGANIZATIONNAME = "Epic Games, Inc.";
+				TargetAttributes = {
+					AF7251292264B1EBF8E93999 = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 3C2EDD2E0BA01649B822C07A /* Build configuration list for PBXProject "DatasmithRevit2018" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en
+			);
+			mainGroup = 219B720CCA1B6771DE45BC7C;
+			productRefGroup = C86D9C3D6EF1120868CE2720;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			AF7251292264B1EBF8E93999 /* DatasmithRevit2018 */,
+			3EFC4EE9C16D9DDE7A20BE0E /* DatasmithRevit2018_Build */,
+			384E316F004B151EF720F5B6 /* DatasmithRevit2018_Index */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		EA4BC1B9102CB9C0E7B6F5C9 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Private",
+					"../Build/Mac/DatasmithRevit2018/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/TraceLog",
+					"../Build/Mac/DatasmithRevit2018/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/DatasmithFacadeCSharp",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/DatasmithRevit2018",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				ENABLE_TESTABILITY = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Debug";
+		};
+		74E71843A2D7AD5734EB6EA2 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Private",
+					"../Build/Mac/DatasmithRevit2018/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/TraceLog",
+					"../Build/Mac/DatasmithRevit2018/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/DatasmithFacadeCSharp",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/DatasmithRevit2018",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "DebugGame";
+		};
+		DB0108E52C079BAA3BB9F938 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Private",
+					"../Build/Mac/DatasmithRevit2018/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/TraceLog",
+					"../Build/Mac/DatasmithRevit2018/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/DatasmithFacadeCSharp",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/DatasmithRevit2018",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Development";
+		};
+		CBDB9835FFE3E11F66F33852 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Private",
+					"../Build/Mac/DatasmithRevit2018/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/TraceLog",
+					"../Build/Mac/DatasmithRevit2018/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/DatasmithFacadeCSharp",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/DatasmithRevit2018",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Shipping";
+		};
+		C7B09A43B62B6D2D34AC0B11 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithRevitExporter/Private",
+					"../Build/Mac/DatasmithRevit2018/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/TraceLog",
+					"../Build/Mac/DatasmithRevit2018/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/DatasmithFacadeCSharp",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithFacadeCSharp/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/DatasmithRevit2018/Inc/DatasmithRevit2018",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Test";
+		};
+		B78943293A30AFEADB9317D6 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithRevit2018-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		ADAECAB444FFE507EBCAAC5F /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithRevit2018-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		94777A69F93644B418BB9A15 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithRevit2018";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		03F52422C6F2654B1D9EA7EC /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithRevit2018-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		8CB4362D14A7F0891C79A109 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithRevit2018-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+		4A6D7F0AF63272F5E3B09D78 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithRevit2018";
+				UE_BUILD_TARGET_CONFIG = "Debug";
+			};
+			name = "Debug";
+		};
+		4A6A4235DDCAF1385EF8960E /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithRevit2018";
+				UE_BUILD_TARGET_CONFIG = "DebugGame";
+			};
+			name = "DebugGame";
+		};
+		ACD904A58519F206D3495ADB /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithRevit2018";
+				UE_BUILD_TARGET_CONFIG = "Development";
+			};
+			name = "Development";
+		};
+		2AED562CE839DF916279D9AA /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithRevit2018";
+				UE_BUILD_TARGET_CONFIG = "Shipping";
+			};
+			name = "Shipping";
+		};
+		EB74E3E329D8187199EF6438 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithRevit2018";
+				UE_BUILD_TARGET_CONFIG = "Test";
+			};
+			name = "Test";
+		};
+		7DDBE644A7A5B64CE4120F86 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithRevit2018-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		1A2F530C024644926C4397F9 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithRevit2018-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		C20C0B565DEBD261351B778B /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithRevit2018";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		80BC07F0683A74CED3B85367 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithRevit2018-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		9E9BDA360CAC76D4B1F663B3 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithRevit2018-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3C2EDD2E0BA01649B822C07A /* Build configuration list for PBXProject "DatasmithRevit2018" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EA4BC1B9102CB9C0E7B6F5C9 /* "Debug" */,
+				74E71843A2D7AD5734EB6EA2 /* "DebugGame" */,
+				DB0108E52C079BAA3BB9F938 /* "Development" */,
+				CBDB9835FFE3E11F66F33852 /* "Shipping" */,
+				C7B09A43B62B6D2D34AC0B11 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		6AADD9F59463FFC1343B5822 /* Build configuration list for PBXLegacyTarget "DatasmithRevit2018_Build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4A6D7F0AF63272F5E3B09D78 /* "Debug" */,
+				4A6A4235DDCAF1385EF8960E /* "DebugGame" */,
+				ACD904A58519F206D3495ADB /* "Development" */,
+				2AED562CE839DF916279D9AA /* "Shipping" */,
+				EB74E3E329D8187199EF6438 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		58DC415D8171E18C789866D0 /* Build configuration list for PBXNativeTarget "DatasmithRevit2018" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B78943293A30AFEADB9317D6 /* "Debug" */,
+				ADAECAB444FFE507EBCAAC5F /* "DebugGame" */,
+				94777A69F93644B418BB9A15 /* "Development" */,
+				03F52422C6F2654B1D9EA7EC /* "Shipping" */,
+				8CB4362D14A7F0891C79A109 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		341A41634E28703CBBC66FEC /* Build configuration list for PBXNativeTarget "DatasmithRevit2018_Index" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7DDBE644A7A5B64CE4120F86 /* "Debug" */,
+				1A2F530C024644926C4397F9 /* "DebugGame" */,
+				C20C0B565DEBD261351B778B /* "Development" */,
+				80BC07F0683A74CED3B85367 /* "Shipping" */,
+				9E9BDA360CAC76D4B1F663B3 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B28482A781BAB103A42CB172 /* Project object */;
+}

@@ -1,0 +1,680 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F2AF715586E475FFC9BC072D /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7EEC6FFE91D6E89912281C32 /* Main.cpp */; };
+		75346155E3BFE20ADCE2C605 /* Parent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7B53A3108FD91EA40645F646 /* Parent.cpp */; };
+		D73B41EFF78D35CA923EE051 /* Parent.h in Sources */ = {isa = PBXBuildFile; fileRef = 821F1C0ADAFC519C256A833E /* Parent.h */; };
+		32D8093809782C303E1B7DA7 /* TestDirectoryWatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7DF2134FADFC723C73518D70 /* TestDirectoryWatcher.cpp */; };
+		BD14CA09F459216DB703BC1E /* TestDirectoryWatcher.h in Sources */ = {isa = PBXBuildFile; fileRef = 83FCC01A11B01367A2748CE7 /* TestDirectoryWatcher.h */; };
+		E901EF29F847CAE04B997BF5 /* TestPALLog.h in Sources */ = {isa = PBXBuildFile; fileRef = AD233CE4F910EF7936F4CCB0 /* TestPALLog.h */; };
+		EA0329B9B4ECA92AF505D9E8 /* TestPAL.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 600D737533473AD3C5DF2647 /* TestPAL.Build.cs */; };
+		E4FE0141F55B475005B868D3 /* TestPAL.Target.cs in Sources */ = {isa = PBXBuildFile; fileRef = 627F0A880B55E57A9FD2CFFD /* TestPAL.Target.cs */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		7EEC6FFE91D6E89912281C32 /* Main.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "Main.cpp"; path = "../../Source/Programs/TestPAL/Private/Main.cpp"; sourceTree = SOURCE_ROOT; };
+		7B53A3108FD91EA40645F646 /* Parent.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "Parent.cpp"; path = "../../Source/Programs/TestPAL/Private/Parent.cpp"; sourceTree = SOURCE_ROOT; };
+		821F1C0ADAFC519C256A833E /* Parent.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "Parent.h"; path = "../../Source/Programs/TestPAL/Private/Parent.h"; sourceTree = SOURCE_ROOT; };
+		7DF2134FADFC723C73518D70 /* TestDirectoryWatcher.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "TestDirectoryWatcher.cpp"; path = "../../Source/Programs/TestPAL/Private/TestDirectoryWatcher.cpp"; sourceTree = SOURCE_ROOT; };
+		83FCC01A11B01367A2748CE7 /* TestDirectoryWatcher.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "TestDirectoryWatcher.h"; path = "../../Source/Programs/TestPAL/Private/TestDirectoryWatcher.h"; sourceTree = SOURCE_ROOT; };
+		AD233CE4F910EF7936F4CCB0 /* TestPALLog.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "TestPALLog.h"; path = "../../Source/Programs/TestPAL/Private/TestPALLog.h"; sourceTree = SOURCE_ROOT; };
+		600D737533473AD3C5DF2647 /* TestPAL.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "TestPAL.Build.cs"; path = "../../Source/Programs/TestPAL/TestPAL.Build.cs"; sourceTree = SOURCE_ROOT; };
+		627F0A880B55E57A9FD2CFFD /* TestPAL.Target.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "TestPAL.Target.cs"; path = "../../Source/Programs/TestPAL/TestPAL.Target.cs"; sourceTree = SOURCE_ROOT; };
+		C3FBEEA294A6D5AAB948A7A4 /* TestPAL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = TestPAL; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D44F5B3F82FDD5FD14650B8E = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F2AF715586E475FFC9BC072D /* Main.cpp in Sources */,
+				75346155E3BFE20ADCE2C605 /* Parent.cpp in Sources */,
+				32D8093809782C303E1B7DA7 /* TestDirectoryWatcher.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+	797835CA696710244170FF06 /* Embed App Extensions */ = {
+		isa = PBXCopyFilesBuildPhase;
+		buildActionMask = 2147483647;
+		dstPath = "";
+		dstSubfolderSpec = 13;
+		files = (
+		);
+		name = "Embed App Extensions";
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXCopyFilesBuildPhase section */
+/* Begin PBXContainerItemProxy section */
+		2AC42CFC40EF8DCEB2143054 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4CDFB59AC1A6D18A5A809261 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F436C3E83E5E3FB73F76CEC4;
+			remoteInfo = "TestPAL_Build";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		1603BD9F3F447E4ACCE8253E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F436C3E83E5E3FB73F76CEC4 /* TestPAL_Build */;
+			targetProxy = 2AC42CFC40EF8DCEB2143054 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXGroup section */
+		8E322C59558F162B5184D833 = {
+			isa = PBXGroup;
+			children = (
+				AA44FDC40203FB9899666D2C /* Private */,
+				600D737533473AD3C5DF2647 /* TestPAL.Build.cs */,
+				627F0A880B55E57A9FD2CFFD /* TestPAL.Target.cs */,
+				C5EB1F76B77DB0AB122DABBA /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AA44FDC40203FB9899666D2C = {
+			isa = PBXGroup;
+			children = (
+				7EEC6FFE91D6E89912281C32 /* Main.cpp */,
+				7B53A3108FD91EA40645F646 /* Parent.cpp */,
+				821F1C0ADAFC519C256A833E /* Parent.h */,
+				7DF2134FADFC723C73518D70 /* TestDirectoryWatcher.cpp */,
+				83FCC01A11B01367A2748CE7 /* TestDirectoryWatcher.h */,
+				AD233CE4F910EF7936F4CCB0 /* TestPALLog.h */,
+			);
+			name = "Private";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/TestPAL/Private";
+			sourceTree = "<absolute>";
+		};
+		C5EB1F76B77DB0AB122DABBA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C3FBEEA294A6D5AAB948A7A4 /* TestPAL */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		F436C3E83E5E3FB73F76CEC4 /* TestPAL_Build */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION) $(UE_BUILD_TARGET_NAME) $(PLATFORM_NAME) $(UE_BUILD_TARGET_CONFIG)";
+			buildConfigurationList = 176359F6F51E8601D269DC43 /* Build configuration list for PBXLegacyTarget "TestPAL_Build" */;
+			buildPhases = (
+			);
+			buildToolPath = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Build/BatchFiles/Mac/XcodeBuild.sh";
+			buildWorkingDirectory = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425";
+			dependencies = (
+			);
+			name = "TestPAL_Build";
+			passBuildSettingsInEnvironment = 1;
+			productName = "TestPAL_Build";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		2DA682BDA7B2D5032CBCA90B /* TestPAL */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A065B5F988445F9AE683EC39 /* Build configuration list for PBXNativeTarget "TestPAL" */;
+			buildPhases = (
+				797835CA696710244170FF06 /* Embed App Extensions */, 
+				CD31D6DE9E1E3D6087728405 /* Shell Script */, 
+			);
+			dependencies = (
+				1603BD9F3F447E4ACCE8253E /* PBXTargetDependency */,
+			);
+			name = "TestPAL";
+			passBuildSettingsInEnvironment = 1;
+			productName = "TestPAL";
+			productReference = "C3FBEEA294A6D5AAB948A7A4";
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXNativeTarget section */
+		55DCB525137A85E11C88070A /* TestPAL_Index */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2BA58F54D479144C2D2A8B31 /* Build configuration list for PBXNativeTarget "TestPAL_Index" */;
+			buildPhases = (
+				D44F5B3F82FDD5FD14650B8E /* Sources */,
+			);
+			dependencies = (
+			);
+			name = "TestPAL_Index";
+			passBuildSettingsInEnvironment = 1;
+			productName = "TestPAL_Index";
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4CDFB59AC1A6D18A5A809261 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2000;
+				ORGANIZATIONNAME = "Epic Games, Inc.";
+				TargetAttributes = {
+					2DA682BDA7B2D5032CBCA90B = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = A81AA4C5F1EDA88E5B4ECA4F /* Build configuration list for PBXProject "TestPAL" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en
+			);
+			mainGroup = 8E322C59558F162B5184D833;
+			productRefGroup = C5EB1F76B77DB0AB122DABBA;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			2DA682BDA7B2D5032CBCA90B /* TestPAL */,
+			F436C3E83E5E3FB73F76CEC4 /* TestPAL_Build */,
+			55DCB525137A85E11C88070A /* TestPAL_Index */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		34D6A953AFDA1E60DF90FC3E /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/TestPAL/Private",
+					"../Build/Mac/TestPAL/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/TestPAL/Inc/TraceLog",
+					"../Build/Mac/TestPAL/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/TestPAL/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/TestPAL/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/TestPAL/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/TestPAL/Inc/DirectoryWatcher",
+					"../../Source/Developer",
+					"../../Source/Developer/DirectoryWatcher/Public",
+					"../Build/Mac/TestPAL/Inc/TestPAL",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				ENABLE_TESTABILITY = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Debug";
+		};
+		DB924300F920B5DF64582DB8 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/TestPAL/Private",
+					"../Build/Mac/TestPAL/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/TestPAL/Inc/TraceLog",
+					"../Build/Mac/TestPAL/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/TestPAL/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/TestPAL/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/TestPAL/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/TestPAL/Inc/DirectoryWatcher",
+					"../../Source/Developer",
+					"../../Source/Developer/DirectoryWatcher/Public",
+					"../Build/Mac/TestPAL/Inc/TestPAL",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "DebugGame";
+		};
+		66F2B2404D7E672BA6E3EEE6 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/TestPAL/Private",
+					"../Build/Mac/TestPAL/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/TestPAL/Inc/TraceLog",
+					"../Build/Mac/TestPAL/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/TestPAL/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/TestPAL/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/TestPAL/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/TestPAL/Inc/DirectoryWatcher",
+					"../../Source/Developer",
+					"../../Source/Developer/DirectoryWatcher/Public",
+					"../Build/Mac/TestPAL/Inc/TestPAL",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Development";
+		};
+		05FE28EF63181BC3252E59D5 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/TestPAL/Private",
+					"../Build/Mac/TestPAL/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/TestPAL/Inc/TraceLog",
+					"../Build/Mac/TestPAL/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/TestPAL/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/TestPAL/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/TestPAL/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/TestPAL/Inc/DirectoryWatcher",
+					"../../Source/Developer",
+					"../../Source/Developer/DirectoryWatcher/Public",
+					"../Build/Mac/TestPAL/Inc/TestPAL",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Shipping";
+		};
+		45CE717D679EBB9053C591EC /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/TestPAL/Private",
+					"../Build/Mac/TestPAL/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/TestPAL/Inc/TraceLog",
+					"../Build/Mac/TestPAL/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/TestPAL/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/TestPAL/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/TestPAL/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/TestPAL/Inc/DirectoryWatcher",
+					"../../Source/Developer",
+					"../../Source/Developer/DirectoryWatcher/Public",
+					"../Build/Mac/TestPAL/Inc/TestPAL",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Test";
+		};
+		47E642AA1D86786350557250 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "TestPAL-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		7B28383489F54A1850B0EB60 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "TestPAL-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		0E04B12E3D9F58D30DA3CC83 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "TestPAL";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		E0CEA9201299C025B975AB63 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "TestPAL-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		85FC0FDCC29A22B73B26C231 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "TestPAL-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+		26F65FF627AB0707F32F9692 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "TestPAL";
+				UE_BUILD_TARGET_CONFIG = "Debug";
+			};
+			name = "Debug";
+		};
+		111212B12E351A8E60A71A95 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "TestPAL";
+				UE_BUILD_TARGET_CONFIG = "DebugGame";
+			};
+			name = "DebugGame";
+		};
+		E6779E998285D05526E84A3B /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "TestPAL";
+				UE_BUILD_TARGET_CONFIG = "Development";
+			};
+			name = "Development";
+		};
+		5E77931EB3486CBEB2289383 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "TestPAL";
+				UE_BUILD_TARGET_CONFIG = "Shipping";
+			};
+			name = "Shipping";
+		};
+		A7B259325F57E1F27621D9E5 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "TestPAL";
+				UE_BUILD_TARGET_CONFIG = "Test";
+			};
+			name = "Test";
+		};
+		BEBC7466519E263C359896B7 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "TestPAL-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		67060ED379B62D668FBCEB29 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "TestPAL-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		83DA41E140EEEF841727C475 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "TestPAL";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		5DE1F10DCC871554816B0071 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "TestPAL-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		D7EE57146D0330984F0588CF /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "TestPAL-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A81AA4C5F1EDA88E5B4ECA4F /* Build configuration list for PBXProject "TestPAL" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				34D6A953AFDA1E60DF90FC3E /* "Debug" */,
+				DB924300F920B5DF64582DB8 /* "DebugGame" */,
+				66F2B2404D7E672BA6E3EEE6 /* "Development" */,
+				05FE28EF63181BC3252E59D5 /* "Shipping" */,
+				45CE717D679EBB9053C591EC /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		176359F6F51E8601D269DC43 /* Build configuration list for PBXLegacyTarget "TestPAL_Build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				26F65FF627AB0707F32F9692 /* "Debug" */,
+				111212B12E351A8E60A71A95 /* "DebugGame" */,
+				E6779E998285D05526E84A3B /* "Development" */,
+				5E77931EB3486CBEB2289383 /* "Shipping" */,
+				A7B259325F57E1F27621D9E5 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		A065B5F988445F9AE683EC39 /* Build configuration list for PBXNativeTarget "TestPAL" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				47E642AA1D86786350557250 /* "Debug" */,
+				7B28383489F54A1850B0EB60 /* "DebugGame" */,
+				0E04B12E3D9F58D30DA3CC83 /* "Development" */,
+				E0CEA9201299C025B975AB63 /* "Shipping" */,
+				85FC0FDCC29A22B73B26C231 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		2BA58F54D479144C2D2A8B31 /* Build configuration list for PBXNativeTarget "TestPAL_Index" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BEBC7466519E263C359896B7 /* "Debug" */,
+				67060ED379B62D668FBCEB29 /* "DebugGame" */,
+				83DA41E140EEEF841727C475 /* "Development" */,
+				5DE1F10DCC871554816B0071 /* "Shipping" */,
+				D7EE57146D0330984F0588CF /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 4CDFB59AC1A6D18A5A809261 /* Project object */;
+}

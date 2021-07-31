@@ -1,0 +1,810 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A821663397AC1A5D53CD954D /* DefaultEngine.ini in Sources */ = {isa = PBXBuildFile; fileRef = F6C28DBE497D43BD55905633 /* DefaultEngine.ini */; };
+		54924857A16B605800EB8A14 /* UnrealMultiUserServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EE6ADF833308BCD2924EB5AC /* UnrealMultiUserServer.cpp */; };
+		B9D6E0A94762785521BB4BF6 /* UnrealMultiUserServer.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = CEB56D5015A45B1BF8CF5485 /* UnrealMultiUserServer.Build.cs */; };
+		98B4EF2ED976503CEFF2A6D9 /* UnrealMultiUserServer.Target.cs in Sources */ = {isa = PBXBuildFile; fileRef = 3D89FA0375C80B1C1825B972 /* UnrealMultiUserServer.Target.cs */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		F6C28DBE497D43BD55905633 /* DefaultEngine.ini */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DefaultEngine.ini"; path = "../../Programs/UnrealMultiUserServer/Config/DefaultEngine.ini"; sourceTree = SOURCE_ROOT; };
+		EE6ADF833308BCD2924EB5AC /* UnrealMultiUserServer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "UnrealMultiUserServer.cpp"; path = "../../Source/Programs/UnrealMultiUserServer/Private/UnrealMultiUserServer.cpp"; sourceTree = SOURCE_ROOT; };
+		CEB56D5015A45B1BF8CF5485 /* UnrealMultiUserServer.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "UnrealMultiUserServer.Build.cs"; path = "../../Source/Programs/UnrealMultiUserServer/UnrealMultiUserServer.Build.cs"; sourceTree = SOURCE_ROOT; };
+		3D89FA0375C80B1C1825B972 /* UnrealMultiUserServer.Target.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "UnrealMultiUserServer.Target.cs"; path = "../../Source/Programs/UnrealMultiUserServer/UnrealMultiUserServer.Target.cs"; sourceTree = SOURCE_ROOT; };
+		D1BD358179A504FEAD5D4675 /* UnrealMultiUserServer */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = UnrealMultiUserServer; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXSourcesBuildPhase section */
+		253021ED58A6496D0AD7A64A = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				54924857A16B605800EB8A14 /* UnrealMultiUserServer.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+	06B3CBA9021C72E0BA004054 /* Embed App Extensions */ = {
+		isa = PBXCopyFilesBuildPhase;
+		buildActionMask = 2147483647;
+		dstPath = "";
+		dstSubfolderSpec = 13;
+		files = (
+		);
+		name = "Embed App Extensions";
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXCopyFilesBuildPhase section */
+/* Begin PBXContainerItemProxy section */
+		019B6FC5D3370EBACD824394 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 96327DA923F20506D6C5998A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D3EE8C33B96C1B2401E7BA18;
+			remoteInfo = "UnrealMultiUserServer_Build";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		D5B362E883CEAF33A12F9DCB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D3EE8C33B96C1B2401E7BA18 /* UnrealMultiUserServer_Build */;
+			targetProxy = 019B6FC5D3370EBACD824394 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXGroup section */
+		02D8EC513A2DC37D18D165F8 = {
+			isa = PBXGroup;
+			children = (
+				E1BF08B497A05D5C76987B5F /* Programs */,
+				35B9C927E4269A34BB825DFF /* Source */,
+				22748162F5EB0EE54276AE47 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E1BF08B497A05D5C76987B5F = {
+			isa = PBXGroup;
+			children = (
+				078323FCB02DCD776CF0F254 /* UnrealMultiUserServer */,
+			);
+			name = "Programs";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Programs";
+			sourceTree = "<absolute>";
+		};
+		078323FCB02DCD776CF0F254 = {
+			isa = PBXGroup;
+			children = (
+				B9FE3BD2E563E95B5AB8960C /* Config */,
+			);
+			name = "UnrealMultiUserServer";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Programs/UnrealMultiUserServer";
+			sourceTree = "<absolute>";
+		};
+		B9FE3BD2E563E95B5AB8960C = {
+			isa = PBXGroup;
+			children = (
+				F6C28DBE497D43BD55905633 /* DefaultEngine.ini */,
+			);
+			name = "Config";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Programs/UnrealMultiUserServer/Config";
+			sourceTree = "<absolute>";
+		};
+		35B9C927E4269A34BB825DFF = {
+			isa = PBXGroup;
+			children = (
+				B41C0A95C7340DF0CDB3FB98 /* Programs */,
+			);
+			name = "Source";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source";
+			sourceTree = "<absolute>";
+		};
+		B41C0A95C7340DF0CDB3FB98 = {
+			isa = PBXGroup;
+			children = (
+				648B7612AE1F044FED17C7F7 /* UnrealMultiUserServer */,
+			);
+			name = "Programs";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs";
+			sourceTree = "<absolute>";
+		};
+		648B7612AE1F044FED17C7F7 = {
+			isa = PBXGroup;
+			children = (
+				64A6924656BD9937A03B1EC9 /* Private */,
+				CEB56D5015A45B1BF8CF5485 /* UnrealMultiUserServer.Build.cs */,
+				3D89FA0375C80B1C1825B972 /* UnrealMultiUserServer.Target.cs */,
+			);
+			name = "UnrealMultiUserServer";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealMultiUserServer";
+			sourceTree = "<absolute>";
+		};
+		64A6924656BD9937A03B1EC9 = {
+			isa = PBXGroup;
+			children = (
+				EE6ADF833308BCD2924EB5AC /* UnrealMultiUserServer.cpp */,
+			);
+			name = "Private";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealMultiUserServer/Private";
+			sourceTree = "<absolute>";
+		};
+		22748162F5EB0EE54276AE47 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D1BD358179A504FEAD5D4675 /* UnrealMultiUserServer */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		D3EE8C33B96C1B2401E7BA18 /* UnrealMultiUserServer_Build */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION) $(UE_BUILD_TARGET_NAME) $(PLATFORM_NAME) $(UE_BUILD_TARGET_CONFIG)";
+			buildConfigurationList = 6A900ED28103395370CD17C6 /* Build configuration list for PBXLegacyTarget "UnrealMultiUserServer_Build" */;
+			buildPhases = (
+			);
+			buildToolPath = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Build/BatchFiles/Mac/XcodeBuild.sh";
+			buildWorkingDirectory = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425";
+			dependencies = (
+			);
+			name = "UnrealMultiUserServer_Build";
+			passBuildSettingsInEnvironment = 1;
+			productName = "UnrealMultiUserServer_Build";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		8F6B651B2836D70F0269A0BC /* UnrealMultiUserServer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 549FB2BBB3DA56E20990BE07 /* Build configuration list for PBXNativeTarget "UnrealMultiUserServer" */;
+			buildPhases = (
+				06B3CBA9021C72E0BA004054 /* Embed App Extensions */, 
+				94617AB31A42638C2AA42C0A /* Shell Script */, 
+			);
+			dependencies = (
+				D5B362E883CEAF33A12F9DCB /* PBXTargetDependency */,
+			);
+			name = "UnrealMultiUserServer";
+			passBuildSettingsInEnvironment = 1;
+			productName = "UnrealMultiUserServer";
+			productReference = "D1BD358179A504FEAD5D4675";
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXNativeTarget section */
+		992EBAFC2B9F1EA454FAF1E5 /* UnrealMultiUserServer_Index */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AADB0161671E92EA031C16E8 /* Build configuration list for PBXNativeTarget "UnrealMultiUserServer_Index" */;
+			buildPhases = (
+				253021ED58A6496D0AD7A64A /* Sources */,
+			);
+			dependencies = (
+			);
+			name = "UnrealMultiUserServer_Index";
+			passBuildSettingsInEnvironment = 1;
+			productName = "UnrealMultiUserServer_Index";
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		96327DA923F20506D6C5998A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2000;
+				ORGANIZATIONNAME = "Epic Games, Inc.";
+				TargetAttributes = {
+					8F6B651B2836D70F0269A0BC = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = B21FF962C815C3709F2827A5 /* Build configuration list for PBXProject "UnrealMultiUserServer" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en
+			);
+			mainGroup = 02D8EC513A2DC37D18D165F8;
+			productRefGroup = 22748162F5EB0EE54276AE47;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			8F6B651B2836D70F0269A0BC /* UnrealMultiUserServer */,
+			D3EE8C33B96C1B2401E7BA18 /* UnrealMultiUserServer_Build */,
+			992EBAFC2B9F1EA454FAF1E5 /* UnrealMultiUserServer_Index */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		0BD5247288F7ED4ACE375B42 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/UnrealMultiUserServer/Private",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/TraceLog",
+					"../Build/Mac/UnrealMultiUserServer/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../../Plugins/Developer/Concert/ConcertMain/Intermediate/Build/Mac/UnrealMultiUserServer/Inc/Concert",
+					"../../Plugins/Developer/Concert/ConcertMain/Source",
+					"../../Plugins/Developer/Concert/ConcertMain/Source/Concert/Public",
+					"../../Plugins/Developer/Concert/ConcertMain/Intermediate/Build/Mac/UnrealMultiUserServer/Inc/ConcertTransport",
+					"../../Plugins/Developer/Concert/ConcertMain/Source/ConcertTransport/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Serialization",
+					"../../Source/Runtime/Serialization/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Cbor",
+					"../../Source/Runtime/Cbor/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Launch",
+					"../../Source/Runtime/Launch/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/ProfilerService",
+					"../../Source/Developer",
+					"../../Source/Developer/ProfilerService/Public",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Intermediate/Build/Mac/UnrealMultiUserServer/Inc/ConcertSyncCore",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Source",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Source/ConcertSyncCore/Public",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Intermediate/Build/Mac/UnrealMultiUserServer/Inc/ConcertSyncServer",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Source",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Source/ConcertSyncServer/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/UnrealMultiUserServer",
+					"../../Source/Programs",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				ENABLE_TESTABILITY = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Debug";
+		};
+		5F3E885C16071B3E7C2D46F2 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/UnrealMultiUserServer/Private",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/TraceLog",
+					"../Build/Mac/UnrealMultiUserServer/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../../Plugins/Developer/Concert/ConcertMain/Intermediate/Build/Mac/UnrealMultiUserServer/Inc/Concert",
+					"../../Plugins/Developer/Concert/ConcertMain/Source",
+					"../../Plugins/Developer/Concert/ConcertMain/Source/Concert/Public",
+					"../../Plugins/Developer/Concert/ConcertMain/Intermediate/Build/Mac/UnrealMultiUserServer/Inc/ConcertTransport",
+					"../../Plugins/Developer/Concert/ConcertMain/Source/ConcertTransport/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Serialization",
+					"../../Source/Runtime/Serialization/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Cbor",
+					"../../Source/Runtime/Cbor/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Launch",
+					"../../Source/Runtime/Launch/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/ProfilerService",
+					"../../Source/Developer",
+					"../../Source/Developer/ProfilerService/Public",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Intermediate/Build/Mac/UnrealMultiUserServer/Inc/ConcertSyncCore",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Source",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Source/ConcertSyncCore/Public",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Intermediate/Build/Mac/UnrealMultiUserServer/Inc/ConcertSyncServer",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Source",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Source/ConcertSyncServer/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/UnrealMultiUserServer",
+					"../../Source/Programs",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "DebugGame";
+		};
+		1ED1450B7D34EEAA1084E74B /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/UnrealMultiUserServer/Private",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/TraceLog",
+					"../Build/Mac/UnrealMultiUserServer/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../../Plugins/Developer/Concert/ConcertMain/Intermediate/Build/Mac/UnrealMultiUserServer/Inc/Concert",
+					"../../Plugins/Developer/Concert/ConcertMain/Source",
+					"../../Plugins/Developer/Concert/ConcertMain/Source/Concert/Public",
+					"../../Plugins/Developer/Concert/ConcertMain/Intermediate/Build/Mac/UnrealMultiUserServer/Inc/ConcertTransport",
+					"../../Plugins/Developer/Concert/ConcertMain/Source/ConcertTransport/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Serialization",
+					"../../Source/Runtime/Serialization/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Cbor",
+					"../../Source/Runtime/Cbor/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Launch",
+					"../../Source/Runtime/Launch/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/ProfilerService",
+					"../../Source/Developer",
+					"../../Source/Developer/ProfilerService/Public",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Intermediate/Build/Mac/UnrealMultiUserServer/Inc/ConcertSyncCore",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Source",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Source/ConcertSyncCore/Public",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Intermediate/Build/Mac/UnrealMultiUserServer/Inc/ConcertSyncServer",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Source",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Source/ConcertSyncServer/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/UnrealMultiUserServer",
+					"../../Source/Programs",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Development";
+		};
+		67318E667418317DB0F25C41 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/UnrealMultiUserServer/Private",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/TraceLog",
+					"../Build/Mac/UnrealMultiUserServer/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../../Plugins/Developer/Concert/ConcertMain/Intermediate/Build/Mac/UnrealMultiUserServer/Inc/Concert",
+					"../../Plugins/Developer/Concert/ConcertMain/Source",
+					"../../Plugins/Developer/Concert/ConcertMain/Source/Concert/Public",
+					"../../Plugins/Developer/Concert/ConcertMain/Intermediate/Build/Mac/UnrealMultiUserServer/Inc/ConcertTransport",
+					"../../Plugins/Developer/Concert/ConcertMain/Source/ConcertTransport/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Serialization",
+					"../../Source/Runtime/Serialization/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Cbor",
+					"../../Source/Runtime/Cbor/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Launch",
+					"../../Source/Runtime/Launch/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/ProfilerService",
+					"../../Source/Developer",
+					"../../Source/Developer/ProfilerService/Public",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Intermediate/Build/Mac/UnrealMultiUserServer/Inc/ConcertSyncCore",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Source",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Source/ConcertSyncCore/Public",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Intermediate/Build/Mac/UnrealMultiUserServer/Inc/ConcertSyncServer",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Source",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Source/ConcertSyncServer/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/UnrealMultiUserServer",
+					"../../Source/Programs",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Shipping";
+		};
+		1977D4045FB83BE66837894F /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/UnrealMultiUserServer/Private",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/TraceLog",
+					"../Build/Mac/UnrealMultiUserServer/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../../Plugins/Developer/Concert/ConcertMain/Intermediate/Build/Mac/UnrealMultiUserServer/Inc/Concert",
+					"../../Plugins/Developer/Concert/ConcertMain/Source",
+					"../../Plugins/Developer/Concert/ConcertMain/Source/Concert/Public",
+					"../../Plugins/Developer/Concert/ConcertMain/Intermediate/Build/Mac/UnrealMultiUserServer/Inc/ConcertTransport",
+					"../../Plugins/Developer/Concert/ConcertMain/Source/ConcertTransport/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Serialization",
+					"../../Source/Runtime/Serialization/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Cbor",
+					"../../Source/Runtime/Cbor/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/Launch",
+					"../../Source/Runtime/Launch/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/ProfilerService",
+					"../../Source/Developer",
+					"../../Source/Developer/ProfilerService/Public",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Intermediate/Build/Mac/UnrealMultiUserServer/Inc/ConcertSyncCore",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Source",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncCore/Source/ConcertSyncCore/Public",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Intermediate/Build/Mac/UnrealMultiUserServer/Inc/ConcertSyncServer",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Source",
+					"../../Plugins/Developer/Concert/ConcertSync/ConcertSyncServer/Source/ConcertSyncServer/Public",
+					"../Build/Mac/UnrealMultiUserServer/Inc/UnrealMultiUserServer",
+					"../../Source/Programs",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Test";
+		};
+		1F64E22504CD8D24EFCD59F7 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealMultiUserServer-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		A325D7B317FABB5FC7B52D03 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealMultiUserServer-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		F522F77F3C53F106BCA12153 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealMultiUserServer";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		7986A5AD39D79FD14781C856 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealMultiUserServer-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		C134009D7AAB8F4186D1D755 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealMultiUserServer-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+		2B9553C8731A206187C09D2C /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealMultiUserServer";
+				UE_BUILD_TARGET_CONFIG = "Debug";
+			};
+			name = "Debug";
+		};
+		75CA12F947FCF1F3019D6935 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealMultiUserServer";
+				UE_BUILD_TARGET_CONFIG = "DebugGame";
+			};
+			name = "DebugGame";
+		};
+		AF3BBA6804634A0FAC24DA75 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealMultiUserServer";
+				UE_BUILD_TARGET_CONFIG = "Development";
+			};
+			name = "Development";
+		};
+		DC2456FD7C1277B0B23700D3 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealMultiUserServer";
+				UE_BUILD_TARGET_CONFIG = "Shipping";
+			};
+			name = "Shipping";
+		};
+		3C0CDEEABC03CDA7D02DE304 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealMultiUserServer";
+				UE_BUILD_TARGET_CONFIG = "Test";
+			};
+			name = "Test";
+		};
+		F70058C212F5855C053893B5 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealMultiUserServer-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		92C34A7FA45EB0CAB9651EED /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealMultiUserServer-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		B6E576CDAFBE250EDCFE8982 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealMultiUserServer";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		D5E39B93F35DC5C489355328 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealMultiUserServer-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		3E7251F9FC1A6B9D5A4BD1BE /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealMultiUserServer-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B21FF962C815C3709F2827A5 /* Build configuration list for PBXProject "UnrealMultiUserServer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0BD5247288F7ED4ACE375B42 /* "Debug" */,
+				5F3E885C16071B3E7C2D46F2 /* "DebugGame" */,
+				1ED1450B7D34EEAA1084E74B /* "Development" */,
+				67318E667418317DB0F25C41 /* "Shipping" */,
+				1977D4045FB83BE66837894F /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		6A900ED28103395370CD17C6 /* Build configuration list for PBXLegacyTarget "UnrealMultiUserServer_Build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2B9553C8731A206187C09D2C /* "Debug" */,
+				75CA12F947FCF1F3019D6935 /* "DebugGame" */,
+				AF3BBA6804634A0FAC24DA75 /* "Development" */,
+				DC2456FD7C1277B0B23700D3 /* "Shipping" */,
+				3C0CDEEABC03CDA7D02DE304 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		549FB2BBB3DA56E20990BE07 /* Build configuration list for PBXNativeTarget "UnrealMultiUserServer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F64E22504CD8D24EFCD59F7 /* "Debug" */,
+				A325D7B317FABB5FC7B52D03 /* "DebugGame" */,
+				F522F77F3C53F106BCA12153 /* "Development" */,
+				7986A5AD39D79FD14781C856 /* "Shipping" */,
+				C134009D7AAB8F4186D1D755 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		AADB0161671E92EA031C16E8 /* Build configuration list for PBXNativeTarget "UnrealMultiUserServer_Index" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F70058C212F5855C053893B5 /* "Debug" */,
+				92C34A7FA45EB0CAB9651EED /* "DebugGame" */,
+				B6E576CDAFBE250EDCFE8982 /* "Development" */,
+				D5E39B93F35DC5C489355328 /* "Shipping" */,
+				3E7251F9FC1A6B9D5A4BD1BE /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 96327DA923F20506D6C5998A /* Project object */;
+}

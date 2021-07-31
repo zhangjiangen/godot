@@ -1,0 +1,599 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		BBB991D45A36D5F149E9750D /* UnrealCEFSubProcessLinux.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BAA0D1D1FEDF653143B82A58 /* UnrealCEFSubProcessLinux.cpp */; };
+		5558F5D7924B5847CD0D4F7F /* UnrealCEFSubProcessMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5AF64A1FA9B6C975E90A7C02 /* UnrealCEFSubProcessMac.cpp */; };
+		732F6D918513B0F4353FED9F /* UnrealCEFSubProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C07A225CB326DCA03497902 /* UnrealCEFSubProcess.cpp */; };
+		9A7E405A21E32E71EC3C4F0E /* UnrealCEFSubProcess.h in Sources */ = {isa = PBXBuildFile; fileRef = B73CC374322BBD2B0AD55431 /* UnrealCEFSubProcess.h */; };
+		39AD1D4F5DA1EA2AB56BF606 /* UnrealCEFSubProcessApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D256D352107BB3DFB8946E8F /* UnrealCEFSubProcessApp.cpp */; };
+		6FF997D78C4EF7C52A0E2073 /* UnrealCEFSubProcessApp.h in Sources */ = {isa = PBXBuildFile; fileRef = C5DF134A5224584B45BDA2DB /* UnrealCEFSubProcessApp.h */; };
+		586A1A8E227479A53F8DDF64 /* UnrealCEFSubProcessCallbackRegistry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09129D677431DBC335608C31 /* UnrealCEFSubProcessCallbackRegistry.cpp */; };
+		68698D933B234AB257BC7F21 /* UnrealCEFSubProcessCallbackRegistry.h in Sources */ = {isa = PBXBuildFile; fileRef = 3368A2B6957B3438FFAF403F /* UnrealCEFSubProcessCallbackRegistry.h */; };
+		86F1D613E1DEA6F7DEE926B8 /* UnrealCEFSubProcessRemoteMethodHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E6E66A1B422D0D4D937C340C /* UnrealCEFSubProcessRemoteMethodHandler.cpp */; };
+		8E252DBA2B5431B9294E0C4A /* UnrealCEFSubProcessRemoteMethodHandler.h in Sources */ = {isa = PBXBuildFile; fileRef = 4C37D0781687434941EACFAF /* UnrealCEFSubProcessRemoteMethodHandler.h */; };
+		1118F5D2A1F2AB0ABCC984BC /* UnrealCEFSubProcessRemoteScripting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B0EBCC89B86D8F98D91FCE0B /* UnrealCEFSubProcessRemoteScripting.cpp */; };
+		5C94370B39EBCBA4567EA813 /* UnrealCEFSubProcessRemoteScripting.h in Sources */ = {isa = PBXBuildFile; fileRef = 5F5F1736A2018D83B314C72A /* UnrealCEFSubProcessRemoteScripting.h */; };
+		30BC84D3AE95E7028F387E01 /* UnrealCEFSubProcessWindows.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40FD5FFE912D40AC50517707 /* UnrealCEFSubProcessWindows.cpp */; };
+		9546888CEFB46F4BDCF3A7D5 /* Info.plist in Sources */ = {isa = PBXBuildFile; fileRef = C6849937264CF0227848DEAB /* Info.plist */; };
+		57CBE4BCCACFB1DF457D3E68 /* Debug-UnrealCEFSubProcess-Win32.manifest in Sources */ = {isa = PBXBuildFile; fileRef = 0C5A13DBC832254D568A370C /* Debug-UnrealCEFSubProcess-Win32.manifest */; };
+		9408860361548F4C68DD3424 /* Debug-UnrealCEFSubProcess-Win64.manifest in Sources */ = {isa = PBXBuildFile; fileRef = CFB3810C42C88F4946302ACB /* Debug-UnrealCEFSubProcess-Win64.manifest */; };
+		4A9F5B5530FAA54909439409 /* UnrealCEFSubProcess.rc in Sources */ = {isa = PBXBuildFile; fileRef = 86C6D2A512C3E28EE330F5A4 /* UnrealCEFSubProcess.rc */; };
+		39145945229155CD93D827C1 /* UnrealCEFSubProcess-Win32.manifest in Sources */ = {isa = PBXBuildFile; fileRef = 49AD7DF0EDF1FF2F26EF0B15 /* UnrealCEFSubProcess-Win32.manifest */; };
+		B1190A8EFAEDC563DEBACA4C /* UnrealCEFSubProcess-Win64.manifest in Sources */ = {isa = PBXBuildFile; fileRef = FB492AD6876790F78BC0C394 /* UnrealCEFSubProcess-Win64.manifest */; };
+		3C582AC33E25CD4887E320F2 /* UnrealCEFSubProcess.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 6AF7757039DCD3E981CB6CEE /* UnrealCEFSubProcess.Build.cs */; };
+		EC3004CAD150F76C7792ABAC /* UnrealCEFSubProcess.Target.cs in Sources */ = {isa = PBXBuildFile; fileRef = 9F3F0FADBF7DC4158228B527 /* UnrealCEFSubProcess.Target.cs */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		BAA0D1D1FEDF653143B82A58 /* UnrealCEFSubProcessLinux.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "UnrealCEFSubProcessLinux.cpp"; path = "../../Source/Programs/UnrealCEFSubProcess/Private/Linux/UnrealCEFSubProcessLinux.cpp"; sourceTree = SOURCE_ROOT; };
+		5AF64A1FA9B6C975E90A7C02 /* UnrealCEFSubProcessMac.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "UnrealCEFSubProcessMac.cpp"; path = "../../Source/Programs/UnrealCEFSubProcess/Private/Mac/UnrealCEFSubProcessMac.cpp"; sourceTree = SOURCE_ROOT; };
+		1C07A225CB326DCA03497902 /* UnrealCEFSubProcess.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "UnrealCEFSubProcess.cpp"; path = "../../Source/Programs/UnrealCEFSubProcess/Private/UnrealCEFSubProcess.cpp"; sourceTree = SOURCE_ROOT; };
+		B73CC374322BBD2B0AD55431 /* UnrealCEFSubProcess.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "UnrealCEFSubProcess.h"; path = "../../Source/Programs/UnrealCEFSubProcess/Private/UnrealCEFSubProcess.h"; sourceTree = SOURCE_ROOT; };
+		D256D352107BB3DFB8946E8F /* UnrealCEFSubProcessApp.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "UnrealCEFSubProcessApp.cpp"; path = "../../Source/Programs/UnrealCEFSubProcess/Private/UnrealCEFSubProcessApp.cpp"; sourceTree = SOURCE_ROOT; };
+		C5DF134A5224584B45BDA2DB /* UnrealCEFSubProcessApp.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "UnrealCEFSubProcessApp.h"; path = "../../Source/Programs/UnrealCEFSubProcess/Private/UnrealCEFSubProcessApp.h"; sourceTree = SOURCE_ROOT; };
+		09129D677431DBC335608C31 /* UnrealCEFSubProcessCallbackRegistry.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "UnrealCEFSubProcessCallbackRegistry.cpp"; path = "../../Source/Programs/UnrealCEFSubProcess/Private/UnrealCEFSubProcessCallbackRegistry.cpp"; sourceTree = SOURCE_ROOT; };
+		3368A2B6957B3438FFAF403F /* UnrealCEFSubProcessCallbackRegistry.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "UnrealCEFSubProcessCallbackRegistry.h"; path = "../../Source/Programs/UnrealCEFSubProcess/Private/UnrealCEFSubProcessCallbackRegistry.h"; sourceTree = SOURCE_ROOT; };
+		E6E66A1B422D0D4D937C340C /* UnrealCEFSubProcessRemoteMethodHandler.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "UnrealCEFSubProcessRemoteMethodHandler.cpp"; path = "../../Source/Programs/UnrealCEFSubProcess/Private/UnrealCEFSubProcessRemoteMethodHandler.cpp"; sourceTree = SOURCE_ROOT; };
+		4C37D0781687434941EACFAF /* UnrealCEFSubProcessRemoteMethodHandler.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "UnrealCEFSubProcessRemoteMethodHandler.h"; path = "../../Source/Programs/UnrealCEFSubProcess/Private/UnrealCEFSubProcessRemoteMethodHandler.h"; sourceTree = SOURCE_ROOT; };
+		B0EBCC89B86D8F98D91FCE0B /* UnrealCEFSubProcessRemoteScripting.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "UnrealCEFSubProcessRemoteScripting.cpp"; path = "../../Source/Programs/UnrealCEFSubProcess/Private/UnrealCEFSubProcessRemoteScripting.cpp"; sourceTree = SOURCE_ROOT; };
+		5F5F1736A2018D83B314C72A /* UnrealCEFSubProcessRemoteScripting.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "UnrealCEFSubProcessRemoteScripting.h"; path = "../../Source/Programs/UnrealCEFSubProcess/Private/UnrealCEFSubProcessRemoteScripting.h"; sourceTree = SOURCE_ROOT; };
+		40FD5FFE912D40AC50517707 /* UnrealCEFSubProcessWindows.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "UnrealCEFSubProcessWindows.cpp"; path = "../../Source/Programs/UnrealCEFSubProcess/Private/Windows/UnrealCEFSubProcessWindows.cpp"; sourceTree = SOURCE_ROOT; };
+		C6849937264CF0227848DEAB /* Info.plist */ = {isa = PBXFileReference; explicitFileType = text.plist.xml; name = "Info.plist"; path = "../../Source/Programs/UnrealCEFSubProcess/Resources/Mac/Info.plist"; sourceTree = SOURCE_ROOT; };
+		0C5A13DBC832254D568A370C /* Debug-UnrealCEFSubProcess-Win32.manifest */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Debug-UnrealCEFSubProcess-Win32.manifest"; path = "../../Source/Programs/UnrealCEFSubProcess/Resources/Windows/Debug-UnrealCEFSubProcess-Win32.manifest"; sourceTree = SOURCE_ROOT; };
+		CFB3810C42C88F4946302ACB /* Debug-UnrealCEFSubProcess-Win64.manifest */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Debug-UnrealCEFSubProcess-Win64.manifest"; path = "../../Source/Programs/UnrealCEFSubProcess/Resources/Windows/Debug-UnrealCEFSubProcess-Win64.manifest"; sourceTree = SOURCE_ROOT; };
+		86C6D2A512C3E28EE330F5A4 /* UnrealCEFSubProcess.rc */ = {isa = PBXFileReference; explicitFileType = file.text; name = "UnrealCEFSubProcess.rc"; path = "../../Source/Programs/UnrealCEFSubProcess/Resources/Windows/UnrealCEFSubProcess.rc"; sourceTree = SOURCE_ROOT; };
+		49AD7DF0EDF1FF2F26EF0B15 /* UnrealCEFSubProcess-Win32.manifest */ = {isa = PBXFileReference; explicitFileType = file.text; name = "UnrealCEFSubProcess-Win32.manifest"; path = "../../Source/Programs/UnrealCEFSubProcess/Resources/Windows/UnrealCEFSubProcess-Win32.manifest"; sourceTree = SOURCE_ROOT; };
+		FB492AD6876790F78BC0C394 /* UnrealCEFSubProcess-Win64.manifest */ = {isa = PBXFileReference; explicitFileType = file.text; name = "UnrealCEFSubProcess-Win64.manifest"; path = "../../Source/Programs/UnrealCEFSubProcess/Resources/Windows/UnrealCEFSubProcess-Win64.manifest"; sourceTree = SOURCE_ROOT; };
+		6AF7757039DCD3E981CB6CEE /* UnrealCEFSubProcess.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "UnrealCEFSubProcess.Build.cs"; path = "../../Source/Programs/UnrealCEFSubProcess/UnrealCEFSubProcess.Build.cs"; sourceTree = SOURCE_ROOT; };
+		9F3F0FADBF7DC4158228B527 /* UnrealCEFSubProcess.Target.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "UnrealCEFSubProcess.Target.cs"; path = "../../Source/Programs/UnrealCEFSubProcess/UnrealCEFSubProcess.Target.cs"; sourceTree = SOURCE_ROOT; };
+		7ACD48FDA2C6B4552948F2E6 /* UnrealCEFSubProcess */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = UnrealCEFSubProcess; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXSourcesBuildPhase section */
+		906FF9BED2F860F847C494BD = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5558F5D7924B5847CD0D4F7F /* UnrealCEFSubProcessMac.cpp in Sources */,
+				732F6D918513B0F4353FED9F /* UnrealCEFSubProcess.cpp in Sources */,
+				39AD1D4F5DA1EA2AB56BF606 /* UnrealCEFSubProcessApp.cpp in Sources */,
+				586A1A8E227479A53F8DDF64 /* UnrealCEFSubProcessCallbackRegistry.cpp in Sources */,
+				86F1D613E1DEA6F7DEE926B8 /* UnrealCEFSubProcessRemoteMethodHandler.cpp in Sources */,
+				1118F5D2A1F2AB0ABCC984BC /* UnrealCEFSubProcessRemoteScripting.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+	2E088A0B9B92A345A6EBF00E /* Embed App Extensions */ = {
+		isa = PBXCopyFilesBuildPhase;
+		buildActionMask = 2147483647;
+		dstPath = "";
+		dstSubfolderSpec = 13;
+		files = (
+		);
+		name = "Embed App Extensions";
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXCopyFilesBuildPhase section */
+/* Begin PBXContainerItemProxy section */
+		31B4B3CF3D322D1E6FA38E2A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5D6FB7EC2026464E606F34E4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 283A148239A9CF2A14F5FB9B;
+			remoteInfo = "UnrealCEFSubProcess_Build";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		6F2F05547296522B8A0BC293 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 283A148239A9CF2A14F5FB9B /* UnrealCEFSubProcess_Build */;
+			targetProxy = 31B4B3CF3D322D1E6FA38E2A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXGroup section */
+		5862F73DC454D3A140DA65E7 = {
+			isa = PBXGroup;
+			children = (
+				E97923EC5E59340390358E76 /* Private */,
+				77B94215A2B50FA9456ECEF0 /* Resources */,
+				6AF7757039DCD3E981CB6CEE /* UnrealCEFSubProcess.Build.cs */,
+				9F3F0FADBF7DC4158228B527 /* UnrealCEFSubProcess.Target.cs */,
+				B67DC89B8658A2AD76FFA4C8 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E97923EC5E59340390358E76 = {
+			isa = PBXGroup;
+			children = (
+				2EC5CAC8FEDF8115644034B4 /* Linux */,
+				1D6D156BD653732DEE9F5CDD /* Mac */,
+				AC2523D9CAB922F7D4960452 /* Windows */,
+				1C07A225CB326DCA03497902 /* UnrealCEFSubProcess.cpp */,
+				B73CC374322BBD2B0AD55431 /* UnrealCEFSubProcess.h */,
+				D256D352107BB3DFB8946E8F /* UnrealCEFSubProcessApp.cpp */,
+				C5DF134A5224584B45BDA2DB /* UnrealCEFSubProcessApp.h */,
+				09129D677431DBC335608C31 /* UnrealCEFSubProcessCallbackRegistry.cpp */,
+				3368A2B6957B3438FFAF403F /* UnrealCEFSubProcessCallbackRegistry.h */,
+				E6E66A1B422D0D4D937C340C /* UnrealCEFSubProcessRemoteMethodHandler.cpp */,
+				4C37D0781687434941EACFAF /* UnrealCEFSubProcessRemoteMethodHandler.h */,
+				B0EBCC89B86D8F98D91FCE0B /* UnrealCEFSubProcessRemoteScripting.cpp */,
+				5F5F1736A2018D83B314C72A /* UnrealCEFSubProcessRemoteScripting.h */,
+			);
+			name = "Private";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealCEFSubProcess/Private";
+			sourceTree = "<absolute>";
+		};
+		2EC5CAC8FEDF8115644034B4 = {
+			isa = PBXGroup;
+			children = (
+				BAA0D1D1FEDF653143B82A58 /* UnrealCEFSubProcessLinux.cpp */,
+			);
+			name = "Linux";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealCEFSubProcess/Private/Linux";
+			sourceTree = "<absolute>";
+		};
+		1D6D156BD653732DEE9F5CDD = {
+			isa = PBXGroup;
+			children = (
+				5AF64A1FA9B6C975E90A7C02 /* UnrealCEFSubProcessMac.cpp */,
+			);
+			name = "Mac";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealCEFSubProcess/Private/Mac";
+			sourceTree = "<absolute>";
+		};
+		AC2523D9CAB922F7D4960452 = {
+			isa = PBXGroup;
+			children = (
+				40FD5FFE912D40AC50517707 /* UnrealCEFSubProcessWindows.cpp */,
+			);
+			name = "Windows";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealCEFSubProcess/Private/Windows";
+			sourceTree = "<absolute>";
+		};
+		77B94215A2B50FA9456ECEF0 = {
+			isa = PBXGroup;
+			children = (
+				44C92D3CC261888F68EC1BD9 /* Mac */,
+				BBA84AAA1D3CE08668C2F31C /* Windows */,
+			);
+			name = "Resources";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealCEFSubProcess/Resources";
+			sourceTree = "<absolute>";
+		};
+		44C92D3CC261888F68EC1BD9 = {
+			isa = PBXGroup;
+			children = (
+				C6849937264CF0227848DEAB /* Info.plist */,
+			);
+			name = "Mac";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealCEFSubProcess/Resources/Mac";
+			sourceTree = "<absolute>";
+		};
+		BBA84AAA1D3CE08668C2F31C = {
+			isa = PBXGroup;
+			children = (
+				0C5A13DBC832254D568A370C /* Debug-UnrealCEFSubProcess-Win32.manifest */,
+				CFB3810C42C88F4946302ACB /* Debug-UnrealCEFSubProcess-Win64.manifest */,
+				86C6D2A512C3E28EE330F5A4 /* UnrealCEFSubProcess.rc */,
+				49AD7DF0EDF1FF2F26EF0B15 /* UnrealCEFSubProcess-Win32.manifest */,
+				FB492AD6876790F78BC0C394 /* UnrealCEFSubProcess-Win64.manifest */,
+			);
+			name = "Windows";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/UnrealCEFSubProcess/Resources/Windows";
+			sourceTree = "<absolute>";
+		};
+		B67DC89B8658A2AD76FFA4C8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7ACD48FDA2C6B4552948F2E6 /* UnrealCEFSubProcess */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		283A148239A9CF2A14F5FB9B /* UnrealCEFSubProcess_Build */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION) $(UE_BUILD_TARGET_NAME) $(PLATFORM_NAME) $(UE_BUILD_TARGET_CONFIG)";
+			buildConfigurationList = E8F468459E3C28CBA0DADAA5 /* Build configuration list for PBXLegacyTarget "UnrealCEFSubProcess_Build" */;
+			buildPhases = (
+			);
+			buildToolPath = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Build/BatchFiles/Mac/XcodeBuild.sh";
+			buildWorkingDirectory = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425";
+			dependencies = (
+			);
+			name = "UnrealCEFSubProcess_Build";
+			passBuildSettingsInEnvironment = 1;
+			productName = "UnrealCEFSubProcess_Build";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		2184E061162E8F87198CD559 /* UnrealCEFSubProcess */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 36D7882D509BC3A677CB5B97 /* Build configuration list for PBXNativeTarget "UnrealCEFSubProcess" */;
+			buildPhases = (
+				2E088A0B9B92A345A6EBF00E /* Embed App Extensions */, 
+				493D96F5C37A7B58BE2EAC54 /* Shell Script */, 
+			);
+			dependencies = (
+				6F2F05547296522B8A0BC293 /* PBXTargetDependency */,
+			);
+			name = "UnrealCEFSubProcess";
+			passBuildSettingsInEnvironment = 1;
+			productName = "UnrealCEFSubProcess";
+			productReference = "7ACD48FDA2C6B4552948F2E6";
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXNativeTarget section */
+		4E5589C3576D69E9C2CCA602 /* UnrealCEFSubProcess_Index */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DABE4C5D4631685D1AC14AE /* Build configuration list for PBXNativeTarget "UnrealCEFSubProcess_Index" */;
+			buildPhases = (
+				906FF9BED2F860F847C494BD /* Sources */,
+			);
+			dependencies = (
+			);
+			name = "UnrealCEFSubProcess_Index";
+			passBuildSettingsInEnvironment = 1;
+			productName = "UnrealCEFSubProcess_Index";
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5D6FB7EC2026464E606F34E4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2000;
+				ORGANIZATIONNAME = "Epic Games, Inc.";
+				TargetAttributes = {
+					2184E061162E8F87198CD559 = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 200BD3A78B12D91C4D6528F2 /* Build configuration list for PBXProject "UnrealCEFSubProcess" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en
+			);
+			mainGroup = 5862F73DC454D3A140DA65E7;
+			productRefGroup = B67DC89B8658A2AD76FFA4C8;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			2184E061162E8F87198CD559 /* UnrealCEFSubProcess */,
+			283A148239A9CF2A14F5FB9B /* UnrealCEFSubProcess_Build */,
+			4E5589C3576D69E9C2CCA602 /* UnrealCEFSubProcess_Index */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		5A14CE487A6DA0F1E80B6D7D /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/CEF3/cef_binary_3.3071.1611.g4a19305_macosx64",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/UnrealCEFSubProcess/Private",
+					"../../Source/Runtime/Launch/Private",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/TraceLog",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/CEF3Utils",
+					"../../Source/Runtime/CEF3Utils/Public",
+					"../../Source/ThirdParty",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/UnrealCEFSubProcess",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				ENABLE_TESTABILITY = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Debug";
+		};
+		6897FC5F0C07D66FA039E70E /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/CEF3/cef_binary_3.3071.1611.g4a19305_macosx64",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/UnrealCEFSubProcess/Private",
+					"../../Source/Runtime/Launch/Private",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/TraceLog",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/CEF3Utils",
+					"../../Source/Runtime/CEF3Utils/Public",
+					"../../Source/ThirdParty",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/UnrealCEFSubProcess",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Development";
+		};
+		55783263F88D48DC77FACB23 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/CEF3/cef_binary_3.3071.1611.g4a19305_macosx64",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/UnrealCEFSubProcess/Private",
+					"../../Source/Runtime/Launch/Private",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/TraceLog",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/CEF3Utils",
+					"../../Source/Runtime/CEF3Utils/Public",
+					"../../Source/ThirdParty",
+					"../Build/Mac/UnrealCEFSubProcess/Inc/UnrealCEFSubProcess",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Shipping";
+		};
+		CE9612E45C5F22A57EEB7494 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealCEFSubProcess-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		38D3A9AD0B6C2099E58B1F01 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealCEFSubProcess-Mac-Development";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		AD56A969759EC9316DF86E6B /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealCEFSubProcess";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		616B34CD483BFF005C35B186 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealCEFSubProcess";
+				UE_BUILD_TARGET_CONFIG = "Debug";
+			};
+			name = "Debug";
+		};
+		93E8597FC536C348450765B0 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealCEFSubProcess";
+				UE_BUILD_TARGET_CONFIG = "Development";
+			};
+			name = "Development";
+		};
+		79CB3AA3A4958DD5E8E1294D /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "UnrealCEFSubProcess";
+				UE_BUILD_TARGET_CONFIG = "Shipping";
+			};
+			name = "Shipping";
+		};
+		C45ACB394BFF253ED019262D /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealCEFSubProcess-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		3FA0F3555E41E68A73BD0078 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealCEFSubProcess-Mac-Development";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		03604FB7BE883844D4D0A808 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "UnrealCEFSubProcess";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		200BD3A78B12D91C4D6528F2 /* Build configuration list for PBXProject "UnrealCEFSubProcess" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5A14CE487A6DA0F1E80B6D7D /* "Debug" */,
+				6897FC5F0C07D66FA039E70E /* "Development" */,
+				55783263F88D48DC77FACB23 /* "Shipping" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		E8F468459E3C28CBA0DADAA5 /* Build configuration list for PBXLegacyTarget "UnrealCEFSubProcess_Build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				616B34CD483BFF005C35B186 /* "Debug" */,
+				93E8597FC536C348450765B0 /* "Development" */,
+				79CB3AA3A4958DD5E8E1294D /* "Shipping" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		36D7882D509BC3A677CB5B97 /* Build configuration list for PBXNativeTarget "UnrealCEFSubProcess" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE9612E45C5F22A57EEB7494 /* "Debug" */,
+				38D3A9AD0B6C2099E58B1F01 /* "Development" */,
+				AD56A969759EC9316DF86E6B /* "Shipping" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		1DABE4C5D4631685D1AC14AE /* Build configuration list for PBXNativeTarget "UnrealCEFSubProcess_Index" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C45ACB394BFF253ED019262D /* "Debug" */,
+				3FA0F3555E41E68A73BD0078 /* "Development" */,
+				03604FB7BE883844D4D0A808 /* "Shipping" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 5D6FB7EC2026464E606F34E4 /* Project object */;
+}

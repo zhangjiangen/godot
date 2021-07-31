@@ -1,0 +1,739 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		244B22A00757E0BD2EEEEF7B /* DatasmithSDK.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = D9C246785D61359CC72FEAE3 /* DatasmithSDK.Build.cs */; };
+		1321A2329E44AA72CE41EC2C /* DatasmithSDK.Target.cs in Sources */ = {isa = PBXBuildFile; fileRef = C64BBB25FD428890A978320C /* DatasmithSDK.Target.cs */; };
+		3E8357ABE92482649A00CFEA /* 1.Welcome.md in Sources */ = {isa = PBXBuildFile; fileRef = 4AF1EA4ED28282F52D3C47A7 /* 1.Welcome.md */; };
+		DE40610049D7B5F5603F6183 /* 2.SetUpYourProject.md in Sources */ = {isa = PBXBuildFile; fileRef = 0034D40A6C8BE0D9F35C2E6B /* 2.SetUpYourProject.md */; };
+		76E7C945ADF4B5023CB0CCA9 /* 3.ExportToDatasmith.md in Sources */ = {isa = PBXBuildFile; fileRef = C2811BC34BDA8A0A90674E9D /* 3.ExportToDatasmith.md */; };
+		701D8E19D223DA0F982C9734 /* DatasmithSDK_config.txt in Sources */ = {isa = PBXBuildFile; fileRef = 6B14A6CDFC4A96CCF7B9B6DB /* DatasmithSDK_config.txt */; };
+		911E81311FFF3682319E313F /* examples.dox in Sources */ = {isa = PBXBuildFile; fileRef = E09BB0EF1B7AC9E0D8130075 /* examples.dox */; };
+		B87A521D947AF3B766B387B3 /* footer.txt in Sources */ = {isa = PBXBuildFile; fileRef = A1A9F099F61402CCE367ED61 /* footer.txt */; };
+		9AA7B17CF0D5027E1D0C78A4 /* header.txt in Sources */ = {isa = PBXBuildFile; fileRef = AC18EEB6AB79D82C14FC4D71 /* header.txt */; };
+		B2477B0A65B7403F410D9EC5 /* Datasmith SDK Documentation.html in Sources */ = {isa = PBXBuildFile; fileRef = 1428C3CCA4E5928A8406A673 /* Datasmith SDK Documentation.html */; };
+		9CAD1A0A333347245EEBB746 /* Datasmith SDK Documentation.zip in Sources */ = {isa = PBXBuildFile; fileRef = 444237A2FEB37FDC9FA8D452 /* Datasmith SDK Documentation.zip */; };
+		8A2FEAC4103491518CF183EC /* run_doxygen.bat in Sources */ = {isa = PBXBuildFile; fileRef = C976C790B1099695314BEDDD /* run_doxygen.bat */; };
+		264B20698EC04D9D5A3FF2C0 /* styles.css in Sources */ = {isa = PBXBuildFile; fileRef = EA3D6DE87A2617BA9501ED35 /* styles.css */; };
+		AE7889A15C6EB48212F68A61 /* Third Party Software Notices.pdf in Sources */ = {isa = PBXBuildFile; fileRef = 0D6F486B895F474F672B47EA /* Third Party Software Notices.pdf */; };
+		624B15B06F63B0ACA1086EB7 /* DatasmithSDK.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D360B0EC6796629717C8862 /* DatasmithSDK.cpp */; };
+		ADEF8BD186C9D3F4D9C8A7E8 /* DatasmithSDK.h in Sources */ = {isa = PBXBuildFile; fileRef = 1D96B5FA3A0BA53BD37F05C8 /* DatasmithSDK.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		D9C246785D61359CC72FEAE3 /* DatasmithSDK.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithSDK.Build.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSDK/DatasmithSDK.Build.cs"; sourceTree = SOURCE_ROOT; };
+		C64BBB25FD428890A978320C /* DatasmithSDK.Target.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithSDK.Target.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSDK/DatasmithSDK.Target.cs"; sourceTree = SOURCE_ROOT; };
+		4AF1EA4ED28282F52D3C47A7 /* 1.Welcome.md */ = {isa = PBXFileReference; explicitFileType = file.text; name = "1.Welcome.md"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSDK/Documentation/1.Welcome.md"; sourceTree = SOURCE_ROOT; };
+		0034D40A6C8BE0D9F35C2E6B /* 2.SetUpYourProject.md */ = {isa = PBXFileReference; explicitFileType = file.text; name = "2.SetUpYourProject.md"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSDK/Documentation/2.SetUpYourProject.md"; sourceTree = SOURCE_ROOT; };
+		C2811BC34BDA8A0A90674E9D /* 3.ExportToDatasmith.md */ = {isa = PBXFileReference; explicitFileType = file.text; name = "3.ExportToDatasmith.md"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSDK/Documentation/3.ExportToDatasmith.md"; sourceTree = SOURCE_ROOT; };
+		6B14A6CDFC4A96CCF7B9B6DB /* DatasmithSDK_config.txt */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithSDK_config.txt"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSDK/Documentation/build/DatasmithSDK_config.txt"; sourceTree = SOURCE_ROOT; };
+		E09BB0EF1B7AC9E0D8130075 /* examples.dox */ = {isa = PBXFileReference; explicitFileType = file.text; name = "examples.dox"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSDK/Documentation/build/examples.dox"; sourceTree = SOURCE_ROOT; };
+		A1A9F099F61402CCE367ED61 /* footer.txt */ = {isa = PBXFileReference; explicitFileType = file.text; name = "footer.txt"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSDK/Documentation/build/footer.txt"; sourceTree = SOURCE_ROOT; };
+		AC18EEB6AB79D82C14FC4D71 /* header.txt */ = {isa = PBXFileReference; explicitFileType = file.text; name = "header.txt"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSDK/Documentation/build/header.txt"; sourceTree = SOURCE_ROOT; };
+		1428C3CCA4E5928A8406A673 /* Datasmith SDK Documentation.html */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Datasmith SDK Documentation.html"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSDK/Documentation/build/output/Datasmith SDK Documentation.html"; sourceTree = SOURCE_ROOT; };
+		444237A2FEB37FDC9FA8D452 /* Datasmith SDK Documentation.zip */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Datasmith SDK Documentation.zip"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSDK/Documentation/build/output/Datasmith SDK Documentation.zip"; sourceTree = SOURCE_ROOT; };
+		C976C790B1099695314BEDDD /* run_doxygen.bat */ = {isa = PBXFileReference; explicitFileType = file.text; name = "run_doxygen.bat"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSDK/Documentation/build/run_doxygen.bat"; sourceTree = SOURCE_ROOT; };
+		EA3D6DE87A2617BA9501ED35 /* styles.css */ = {isa = PBXFileReference; explicitFileType = file.text; name = "styles.css"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSDK/Documentation/build/styles.css"; sourceTree = SOURCE_ROOT; };
+		0D6F486B895F474F672B47EA /* Third Party Software Notices.pdf */ = {isa = PBXFileReference; explicitFileType = file.text; name = "Third Party Software Notices.pdf"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSDK/Documentation/Third Party Software Notices.pdf"; sourceTree = SOURCE_ROOT; };
+		9D360B0EC6796629717C8862 /* DatasmithSDK.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithSDK.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSDK/Private/DatasmithSDK.cpp"; sourceTree = SOURCE_ROOT; };
+		1D96B5FA3A0BA53BD37F05C8 /* DatasmithSDK.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithSDK.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithSDK/Private/DatasmithSDK.h"; sourceTree = SOURCE_ROOT; };
+		1D5436D553605906C085E998 /* DatasmithSDK */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = DatasmithSDK; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EBA681146A644D42909CA7C1 = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				624B15B06F63B0ACA1086EB7 /* DatasmithSDK.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+	3876BA6DACC655A2042ED1D6 /* Embed App Extensions */ = {
+		isa = PBXCopyFilesBuildPhase;
+		buildActionMask = 2147483647;
+		dstPath = "";
+		dstSubfolderSpec = 13;
+		files = (
+		);
+		name = "Embed App Extensions";
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXCopyFilesBuildPhase section */
+/* Begin PBXContainerItemProxy section */
+		776DD89E0B5613BF14C44A71 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B3C83CAA3A88F0E06737D003 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 21D0FDE9AD42B31C55AF1928;
+			remoteInfo = "DatasmithSDK_Build";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		26F1B3861B4F80EB9235E682 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 21D0FDE9AD42B31C55AF1928 /* DatasmithSDK_Build */;
+			targetProxy = 776DD89E0B5613BF14C44A71 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXGroup section */
+		0379507A25F98B0AAD077D12 = {
+			isa = PBXGroup;
+			children = (
+				E01F0965249DAA23027A409A /* Documentation */,
+				8E8C3AF5DDEB679308E6F822 /* Private */,
+				D9C246785D61359CC72FEAE3 /* DatasmithSDK.Build.cs */,
+				C64BBB25FD428890A978320C /* DatasmithSDK.Target.cs */,
+				A317B7FB4F9CD321590E288E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E01F0965249DAA23027A409A = {
+			isa = PBXGroup;
+			children = (
+				7FA0B56EC8B0E7894904BEA2 /* build */,
+				4AF1EA4ED28282F52D3C47A7 /* 1.Welcome.md */,
+				0034D40A6C8BE0D9F35C2E6B /* 2.SetUpYourProject.md */,
+				C2811BC34BDA8A0A90674E9D /* 3.ExportToDatasmith.md */,
+				0D6F486B895F474F672B47EA /* Third Party Software Notices.pdf */,
+			);
+			name = "Documentation";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithSDK/Documentation";
+			sourceTree = "<absolute>";
+		};
+		7FA0B56EC8B0E7894904BEA2 = {
+			isa = PBXGroup;
+			children = (
+				E3DF8CB20193B1B199105B03 /* output */,
+				6B14A6CDFC4A96CCF7B9B6DB /* DatasmithSDK_config.txt */,
+				E09BB0EF1B7AC9E0D8130075 /* examples.dox */,
+				A1A9F099F61402CCE367ED61 /* footer.txt */,
+				AC18EEB6AB79D82C14FC4D71 /* header.txt */,
+				C976C790B1099695314BEDDD /* run_doxygen.bat */,
+				EA3D6DE87A2617BA9501ED35 /* styles.css */,
+			);
+			name = "build";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithSDK/Documentation/build";
+			sourceTree = "<absolute>";
+		};
+		E3DF8CB20193B1B199105B03 = {
+			isa = PBXGroup;
+			children = (
+				1428C3CCA4E5928A8406A673 /* Datasmith SDK Documentation.html */,
+				444237A2FEB37FDC9FA8D452 /* Datasmith SDK Documentation.zip */,
+			);
+			name = "output";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithSDK/Documentation/build/output";
+			sourceTree = "<absolute>";
+		};
+		8E8C3AF5DDEB679308E6F822 = {
+			isa = PBXGroup;
+			children = (
+				9D360B0EC6796629717C8862 /* DatasmithSDK.cpp */,
+				1D96B5FA3A0BA53BD37F05C8 /* DatasmithSDK.h */,
+			);
+			name = "Private";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithSDK/Private";
+			sourceTree = "<absolute>";
+		};
+		A317B7FB4F9CD321590E288E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1D5436D553605906C085E998 /* DatasmithSDK */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		21D0FDE9AD42B31C55AF1928 /* DatasmithSDK_Build */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION) $(UE_BUILD_TARGET_NAME) $(PLATFORM_NAME) $(UE_BUILD_TARGET_CONFIG)";
+			buildConfigurationList = D8C1AC90C9154B61A74168C6 /* Build configuration list for PBXLegacyTarget "DatasmithSDK_Build" */;
+			buildPhases = (
+			);
+			buildToolPath = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Build/BatchFiles/Mac/XcodeBuild.sh";
+			buildWorkingDirectory = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425";
+			dependencies = (
+			);
+			name = "DatasmithSDK_Build";
+			passBuildSettingsInEnvironment = 1;
+			productName = "DatasmithSDK_Build";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		E394E50F89D55618382E2E45 /* DatasmithSDK */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 523C319095B060B8E7DDD45F /* Build configuration list for PBXNativeTarget "DatasmithSDK" */;
+			buildPhases = (
+				3876BA6DACC655A2042ED1D6 /* Embed App Extensions */, 
+				6FA849A89D1646F550C18E7F /* Shell Script */, 
+			);
+			dependencies = (
+				26F1B3861B4F80EB9235E682 /* PBXTargetDependency */,
+			);
+			name = "DatasmithSDK";
+			passBuildSettingsInEnvironment = 1;
+			productName = "DatasmithSDK";
+			productReference = "1D5436D553605906C085E998";
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXNativeTarget section */
+		18AA9831DBE0C2F1843F7C3B /* DatasmithSDK_Index */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 582911D2112D1B6E3B0EFD91 /* Build configuration list for PBXNativeTarget "DatasmithSDK_Index" */;
+			buildPhases = (
+				EBA681146A644D42909CA7C1 /* Sources */,
+			);
+			dependencies = (
+			);
+			name = "DatasmithSDK_Index";
+			passBuildSettingsInEnvironment = 1;
+			productName = "DatasmithSDK_Index";
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B3C83CAA3A88F0E06737D003 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2000;
+				ORGANIZATIONNAME = "Epic Games, Inc.";
+				TargetAttributes = {
+					E394E50F89D55618382E2E45 = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = A9824175ED27A3984471389F /* Build configuration list for PBXProject "DatasmithSDK" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en
+			);
+			mainGroup = 0379507A25F98B0AAD077D12;
+			productRefGroup = A317B7FB4F9CD321590E288E;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			E394E50F89D55618382E2E45 /* DatasmithSDK */,
+			21D0FDE9AD42B31C55AF1928 /* DatasmithSDK_Build */,
+			18AA9831DBE0C2F1843F7C3B /* DatasmithSDK_Index */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		7877A049B93B81066FF6C3D8 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithSDK/Private",
+					"../Build/Mac/DatasmithSDK/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithSDK/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithSDK/Inc/TraceLog",
+					"../Build/Mac/DatasmithSDK/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithSDK/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithSDK/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithSDK/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithSDK/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithSDK/Inc/DatasmithSDK",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				ENABLE_TESTABILITY = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Debug";
+		};
+		A1B33CCA37D0AACDD3DE2E14 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithSDK/Private",
+					"../Build/Mac/DatasmithSDK/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithSDK/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithSDK/Inc/TraceLog",
+					"../Build/Mac/DatasmithSDK/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithSDK/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithSDK/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithSDK/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithSDK/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithSDK/Inc/DatasmithSDK",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "DebugGame";
+		};
+		1AA7F4987F1FC56146902D76 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithSDK/Private",
+					"../Build/Mac/DatasmithSDK/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithSDK/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithSDK/Inc/TraceLog",
+					"../Build/Mac/DatasmithSDK/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithSDK/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithSDK/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithSDK/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithSDK/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithSDK/Inc/DatasmithSDK",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Development";
+		};
+		9FB9455A9D0C760C5E168BA6 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithSDK/Private",
+					"../Build/Mac/DatasmithSDK/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithSDK/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithSDK/Inc/TraceLog",
+					"../Build/Mac/DatasmithSDK/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithSDK/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithSDK/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithSDK/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithSDK/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithSDK/Inc/DatasmithSDK",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Shipping";
+		};
+		F53D2315DF023DB345870127 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithSDK/Private",
+					"../Build/Mac/DatasmithSDK/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithSDK/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithSDK/Inc/TraceLog",
+					"../Build/Mac/DatasmithSDK/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithSDK/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithSDK/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithSDK/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithSDK/Inc/DatasmithExporter",
+					"../../Source/Developer/Datasmith",
+					"../../Source/Developer/Datasmith/DatasmithExporter/Public",
+					"../Build/Mac/DatasmithSDK/Inc/DatasmithSDK",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Test";
+		};
+		E1667593B8858ABDD4ABA4C1 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithSDK-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		9507B0BE854CF0A671406DAC /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithSDK-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		BFA188A8018335272E0D49DE /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithSDK";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		097C831FC164E954B2EB73BD /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithSDK-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		8CC05BFAB04724E2D15E3D4D /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithSDK-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+		1BA5A57A56B17076E83BF535 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithSDK";
+				UE_BUILD_TARGET_CONFIG = "Debug";
+			};
+			name = "Debug";
+		};
+		9DC01009452ADCAADE6ED9A2 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithSDK";
+				UE_BUILD_TARGET_CONFIG = "DebugGame";
+			};
+			name = "DebugGame";
+		};
+		0CD91649DE26CEC98D6BEF9D /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithSDK";
+				UE_BUILD_TARGET_CONFIG = "Development";
+			};
+			name = "Development";
+		};
+		59767FB6B16465448226AA24 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithSDK";
+				UE_BUILD_TARGET_CONFIG = "Shipping";
+			};
+			name = "Shipping";
+		};
+		38685FCFAC5405D4BF53C073 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithSDK";
+				UE_BUILD_TARGET_CONFIG = "Test";
+			};
+			name = "Test";
+		};
+		250CE8C9ACCB6679E570C637 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithSDK-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		75A63F1790276246DDD333A5 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithSDK-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		35442ABFA8785CE479C857EF /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithSDK";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		E1742B81F4E23E1EB884B62C /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithSDK-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		4050647FE9F6DF597303F433 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithSDK-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A9824175ED27A3984471389F /* Build configuration list for PBXProject "DatasmithSDK" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7877A049B93B81066FF6C3D8 /* "Debug" */,
+				A1B33CCA37D0AACDD3DE2E14 /* "DebugGame" */,
+				1AA7F4987F1FC56146902D76 /* "Development" */,
+				9FB9455A9D0C760C5E168BA6 /* "Shipping" */,
+				F53D2315DF023DB345870127 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		D8C1AC90C9154B61A74168C6 /* Build configuration list for PBXLegacyTarget "DatasmithSDK_Build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1BA5A57A56B17076E83BF535 /* "Debug" */,
+				9DC01009452ADCAADE6ED9A2 /* "DebugGame" */,
+				0CD91649DE26CEC98D6BEF9D /* "Development" */,
+				59767FB6B16465448226AA24 /* "Shipping" */,
+				38685FCFAC5405D4BF53C073 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		523C319095B060B8E7DDD45F /* Build configuration list for PBXNativeTarget "DatasmithSDK" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E1667593B8858ABDD4ABA4C1 /* "Debug" */,
+				9507B0BE854CF0A671406DAC /* "DebugGame" */,
+				BFA188A8018335272E0D49DE /* "Development" */,
+				097C831FC164E954B2EB73BD /* "Shipping" */,
+				8CC05BFAB04724E2D15E3D4D /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		582911D2112D1B6E3B0EFD91 /* Build configuration list for PBXNativeTarget "DatasmithSDK_Index" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				250CE8C9ACCB6679E570C637 /* "Debug" */,
+				75A63F1790276246DDD333A5 /* "DebugGame" */,
+				35442ABFA8785CE479C857EF /* "Development" */,
+				E1742B81F4E23E1EB884B62C /* "Shipping" */,
+				4050647FE9F6DF597303F433 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B3C83CAA3A88F0E06737D003 /* Project object */;
+}

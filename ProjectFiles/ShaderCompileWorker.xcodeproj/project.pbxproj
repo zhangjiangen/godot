@@ -1,0 +1,821 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		19DB9D2B5CABFE381095474C /* DefaultEngine.ini in Sources */ = {isa = PBXBuildFile; fileRef = 2A2923196EE3A848B5CD2B80 /* DefaultEngine.ini */; };
+		416706AC80D1ADE3C91AD34C /* MacEngine.ini in Sources */ = {isa = PBXBuildFile; fileRef = 48E511D8AD7E5EF72920F7E7 /* MacEngine.ini */; };
+		A94B0E964F2B865D4FB86972 /* ShaderCompileWorker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40CE667AF7FD660A9AC00B98 /* ShaderCompileWorker.cpp */; };
+		A8DBAAA3D09EC8BFA888C6DD /* XGEControlWorker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23B53E8AB03B1643971081FF /* XGEControlWorker.cpp */; };
+		D36ACA7028324C8DB6379865 /* ShaderCompileWorker.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = FB0082C2CED262CD1313C141 /* ShaderCompileWorker.Build.cs */; };
+		A21C47D6D9630FB5298C5BEE /* ShaderCompileWorker.Target.cs in Sources */ = {isa = PBXBuildFile; fileRef = 816E9C9DE8E848AB6152168E /* ShaderCompileWorker.Target.cs */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		2A2923196EE3A848B5CD2B80 /* DefaultEngine.ini */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DefaultEngine.ini"; path = "../../Programs/ShaderCompileWorker/Config/DefaultEngine.ini"; sourceTree = SOURCE_ROOT; };
+		48E511D8AD7E5EF72920F7E7 /* MacEngine.ini */ = {isa = PBXFileReference; explicitFileType = file.text; name = "MacEngine.ini"; path = "../../Programs/ShaderCompileWorker/Config/Mac/MacEngine.ini"; sourceTree = SOURCE_ROOT; };
+		40CE667AF7FD660A9AC00B98 /* ShaderCompileWorker.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "ShaderCompileWorker.cpp"; path = "../../Source/Programs/ShaderCompileWorker/Private/ShaderCompileWorker.cpp"; sourceTree = SOURCE_ROOT; };
+		23B53E8AB03B1643971081FF /* XGEControlWorker.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "XGEControlWorker.cpp"; path = "../../Source/Programs/ShaderCompileWorker/Private/XGEControlWorker.cpp"; sourceTree = SOURCE_ROOT; };
+		FB0082C2CED262CD1313C141 /* ShaderCompileWorker.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "ShaderCompileWorker.Build.cs"; path = "../../Source/Programs/ShaderCompileWorker/ShaderCompileWorker.Build.cs"; sourceTree = SOURCE_ROOT; };
+		816E9C9DE8E848AB6152168E /* ShaderCompileWorker.Target.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "ShaderCompileWorker.Target.cs"; path = "../../Source/Programs/ShaderCompileWorker/ShaderCompileWorker.Target.cs"; sourceTree = SOURCE_ROOT; };
+		771314603ED8CB4B3F757294 /* ShaderCompileWorker */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = ShaderCompileWorker; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1A4BF1D123B084E7B793A491 = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A94B0E964F2B865D4FB86972 /* ShaderCompileWorker.cpp in Sources */,
+				A8DBAAA3D09EC8BFA888C6DD /* XGEControlWorker.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+	42798CB8736A33E93580C3E2 /* Embed App Extensions */ = {
+		isa = PBXCopyFilesBuildPhase;
+		buildActionMask = 2147483647;
+		dstPath = "";
+		dstSubfolderSpec = 13;
+		files = (
+		);
+		name = "Embed App Extensions";
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXCopyFilesBuildPhase section */
+/* Begin PBXContainerItemProxy section */
+		BE6EC7C6AD6655F9B3D2B0E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 999ACC432A56BAC142DE2EB0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A1F18109D02CB16BD2445F6;
+			remoteInfo = "ShaderCompileWorker_Build";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		EE8A3B544DF54C106F632E02 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A1F18109D02CB16BD2445F6 /* ShaderCompileWorker_Build */;
+			targetProxy = BE6EC7C6AD6655F9B3D2B0E2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXGroup section */
+		9F99134034896BC47D47FEFD = {
+			isa = PBXGroup;
+			children = (
+				AEF5826B0496249E87041D88 /* Programs */,
+				7AF49541E36183F1B6352550 /* Source */,
+				167E1EA678EA4B6F15AB80D3 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AEF5826B0496249E87041D88 = {
+			isa = PBXGroup;
+			children = (
+				6CD6D79EEFB417DB17BC3F4C /* ShaderCompileWorker */,
+			);
+			name = "Programs";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Programs";
+			sourceTree = "<absolute>";
+		};
+		6CD6D79EEFB417DB17BC3F4C = {
+			isa = PBXGroup;
+			children = (
+				46B4F2BEEC9B0C87B4535B83 /* Config */,
+			);
+			name = "ShaderCompileWorker";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Programs/ShaderCompileWorker";
+			sourceTree = "<absolute>";
+		};
+		46B4F2BEEC9B0C87B4535B83 = {
+			isa = PBXGroup;
+			children = (
+				7EC07EECFE3738D3536B159E /* Mac */,
+				2A2923196EE3A848B5CD2B80 /* DefaultEngine.ini */,
+			);
+			name = "Config";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Programs/ShaderCompileWorker/Config";
+			sourceTree = "<absolute>";
+		};
+		7EC07EECFE3738D3536B159E = {
+			isa = PBXGroup;
+			children = (
+				48E511D8AD7E5EF72920F7E7 /* MacEngine.ini */,
+			);
+			name = "Mac";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Programs/ShaderCompileWorker/Config/Mac";
+			sourceTree = "<absolute>";
+		};
+		7AF49541E36183F1B6352550 = {
+			isa = PBXGroup;
+			children = (
+				A465B1EBF895D3187A531F2E /* Programs */,
+			);
+			name = "Source";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source";
+			sourceTree = "<absolute>";
+		};
+		A465B1EBF895D3187A531F2E = {
+			isa = PBXGroup;
+			children = (
+				362ADDE0846CF9DA9F5343F7 /* ShaderCompileWorker */,
+			);
+			name = "Programs";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs";
+			sourceTree = "<absolute>";
+		};
+		362ADDE0846CF9DA9F5343F7 = {
+			isa = PBXGroup;
+			children = (
+				06CAA453CF6ACD489B2E4898 /* Private */,
+				FB0082C2CED262CD1313C141 /* ShaderCompileWorker.Build.cs */,
+				816E9C9DE8E848AB6152168E /* ShaderCompileWorker.Target.cs */,
+			);
+			name = "ShaderCompileWorker";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/ShaderCompileWorker";
+			sourceTree = "<absolute>";
+		};
+		06CAA453CF6ACD489B2E4898 = {
+			isa = PBXGroup;
+			children = (
+				40CE667AF7FD660A9AC00B98 /* ShaderCompileWorker.cpp */,
+				23B53E8AB03B1643971081FF /* XGEControlWorker.cpp */,
+			);
+			name = "Private";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/ShaderCompileWorker/Private";
+			sourceTree = "<absolute>";
+		};
+		167E1EA678EA4B6F15AB80D3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				771314603ED8CB4B3F757294 /* ShaderCompileWorker */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		1A1F18109D02CB16BD2445F6 /* ShaderCompileWorker_Build */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION) $(UE_BUILD_TARGET_NAME) $(PLATFORM_NAME) $(UE_BUILD_TARGET_CONFIG)";
+			buildConfigurationList = F1B23F307EFB4A1BDA59DC39 /* Build configuration list for PBXLegacyTarget "ShaderCompileWorker_Build" */;
+			buildPhases = (
+			);
+			buildToolPath = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Build/BatchFiles/Mac/XcodeBuild.sh";
+			buildWorkingDirectory = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425";
+			dependencies = (
+			);
+			name = "ShaderCompileWorker_Build";
+			passBuildSettingsInEnvironment = 1;
+			productName = "ShaderCompileWorker_Build";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		1E3573601E56736506EA133A /* ShaderCompileWorker */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7AEB260465B879ED97D3F5FE /* Build configuration list for PBXNativeTarget "ShaderCompileWorker" */;
+			buildPhases = (
+				42798CB8736A33E93580C3E2 /* Embed App Extensions */, 
+				DD53451C657324F4184026E9 /* Shell Script */, 
+			);
+			dependencies = (
+				EE8A3B544DF54C106F632E02 /* PBXTargetDependency */,
+			);
+			name = "ShaderCompileWorker";
+			passBuildSettingsInEnvironment = 1;
+			productName = "ShaderCompileWorker";
+			productReference = "771314603ED8CB4B3F757294";
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXNativeTarget section */
+		E1ECD29798E3C249FC32AB8E /* ShaderCompileWorker_Index */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4E445CB107992552CD1D6F8B /* Build configuration list for PBXNativeTarget "ShaderCompileWorker_Index" */;
+			buildPhases = (
+				1A4BF1D123B084E7B793A491 /* Sources */,
+			);
+			dependencies = (
+			);
+			name = "ShaderCompileWorker_Index";
+			passBuildSettingsInEnvironment = 1;
+			productName = "ShaderCompileWorker_Index";
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		999ACC432A56BAC142DE2EB0 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2000;
+				ORGANIZATIONNAME = "Epic Games, Inc.";
+				TargetAttributes = {
+					1E3573601E56736506EA133A = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 30337ED961FCF9BE07B1E239 /* Build configuration list for PBXProject "ShaderCompileWorker" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en
+			);
+			mainGroup = 9F99134034896BC47D47FEFD;
+			productRefGroup = 167E1EA678EA4B6F15AB80D3;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			1E3573601E56736506EA133A /* ShaderCompileWorker */,
+			1A1F18109D02CB16BD2445F6 /* ShaderCompileWorker_Build */,
+			E1ECD29798E3C249FC32AB8E /* ShaderCompileWorker_Index */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		9899A0CCC3164583DA8D63FE /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/hlslcc/hlslcc/src/hlslcc_lib",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/ShaderCompileWorker/Private",
+					"../Build/Mac/ShaderCompileWorker/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/TraceLog",
+					"../Build/Mac/ShaderCompileWorker/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/RenderCore",
+					"../../Source/Runtime/RenderCore/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/SandboxFile",
+					"../../Source/Runtime/SandboxFile/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/TargetPlatform",
+					"../../Source/Developer",
+					"../../Source/Developer/TargetPlatform/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/AudioPlatformConfiguration",
+					"../../Source/Runtime/AudioPlatformConfiguration/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/DesktopPlatform",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/LauncherPlatform",
+					"../../Source/Runtime/Portal",
+					"../../Source/Runtime/Portal/LauncherPlatform/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/ShaderCompilerCommon",
+					"../../Source/Developer/ShaderCompilerCommon/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/Launch",
+					"../../Source/Runtime/Launch/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/ProfilerService",
+					"../../Source/Developer/ProfilerService/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/ShaderCompileWorker",
+					"../../Source/Programs",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				ENABLE_TESTABILITY = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Debug";
+		};
+		77787B81A18D628AA6D0615B /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/hlslcc/hlslcc/src/hlslcc_lib",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/ShaderCompileWorker/Private",
+					"../Build/Mac/ShaderCompileWorker/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/TraceLog",
+					"../Build/Mac/ShaderCompileWorker/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/RenderCore",
+					"../../Source/Runtime/RenderCore/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/SandboxFile",
+					"../../Source/Runtime/SandboxFile/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/TargetPlatform",
+					"../../Source/Developer",
+					"../../Source/Developer/TargetPlatform/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/AudioPlatformConfiguration",
+					"../../Source/Runtime/AudioPlatformConfiguration/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/DesktopPlatform",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/LauncherPlatform",
+					"../../Source/Runtime/Portal",
+					"../../Source/Runtime/Portal/LauncherPlatform/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/ShaderCompilerCommon",
+					"../../Source/Developer/ShaderCompilerCommon/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/Launch",
+					"../../Source/Runtime/Launch/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/ProfilerService",
+					"../../Source/Developer/ProfilerService/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/ShaderCompileWorker",
+					"../../Source/Programs",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "DebugGame";
+		};
+		2CDE3C8F9B046154976A0F22 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/hlslcc/hlslcc/src/hlslcc_lib",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/ShaderCompileWorker/Private",
+					"../Build/Mac/ShaderCompileWorker/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/TraceLog",
+					"../Build/Mac/ShaderCompileWorker/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/RenderCore",
+					"../../Source/Runtime/RenderCore/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/SandboxFile",
+					"../../Source/Runtime/SandboxFile/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/TargetPlatform",
+					"../../Source/Developer",
+					"../../Source/Developer/TargetPlatform/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/AudioPlatformConfiguration",
+					"../../Source/Runtime/AudioPlatformConfiguration/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/DesktopPlatform",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/LauncherPlatform",
+					"../../Source/Runtime/Portal",
+					"../../Source/Runtime/Portal/LauncherPlatform/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/ShaderCompilerCommon",
+					"../../Source/Developer/ShaderCompilerCommon/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/Launch",
+					"../../Source/Runtime/Launch/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/ProfilerService",
+					"../../Source/Developer/ProfilerService/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/ShaderCompileWorker",
+					"../../Source/Programs",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Development";
+		};
+		102F08C617A5060EE8208FB6 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/hlslcc/hlslcc/src/hlslcc_lib",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/ShaderCompileWorker/Private",
+					"../Build/Mac/ShaderCompileWorker/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/TraceLog",
+					"../Build/Mac/ShaderCompileWorker/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/RenderCore",
+					"../../Source/Runtime/RenderCore/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/SandboxFile",
+					"../../Source/Runtime/SandboxFile/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/TargetPlatform",
+					"../../Source/Developer",
+					"../../Source/Developer/TargetPlatform/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/AudioPlatformConfiguration",
+					"../../Source/Runtime/AudioPlatformConfiguration/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/DesktopPlatform",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/LauncherPlatform",
+					"../../Source/Runtime/Portal",
+					"../../Source/Runtime/Portal/LauncherPlatform/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/ShaderCompilerCommon",
+					"../../Source/Developer/ShaderCompilerCommon/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/Launch",
+					"../../Source/Runtime/Launch/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/ProfilerService",
+					"../../Source/Developer/ProfilerService/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/ShaderCompileWorker",
+					"../../Source/Programs",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Shipping";
+		};
+		13AD6D7E108D23B392681006 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"../../Source/ThirdParty/hlslcc/hlslcc/src/hlslcc_lib",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/ShaderCompileWorker/Private",
+					"../Build/Mac/ShaderCompileWorker/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/TraceLog",
+					"../Build/Mac/ShaderCompileWorker/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/RenderCore",
+					"../../Source/Runtime/RenderCore/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/SandboxFile",
+					"../../Source/Runtime/SandboxFile/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/TargetPlatform",
+					"../../Source/Developer",
+					"../../Source/Developer/TargetPlatform/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/AudioPlatformConfiguration",
+					"../../Source/Runtime/AudioPlatformConfiguration/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/DesktopPlatform",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/LauncherPlatform",
+					"../../Source/Runtime/Portal",
+					"../../Source/Runtime/Portal/LauncherPlatform/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/ShaderCompilerCommon",
+					"../../Source/Developer/ShaderCompilerCommon/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/Launch",
+					"../../Source/Runtime/Launch/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/ProfilerService",
+					"../../Source/Developer/ProfilerService/Public",
+					"../Build/Mac/ShaderCompileWorker/Inc/ShaderCompileWorker",
+					"../../Source/Programs",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Test";
+		};
+		5D92FBAB78979E99870EF3CF /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "ShaderCompileWorker-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		9401142A1460ABBA7222E111 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "ShaderCompileWorker-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		2E1B8403F03EB3E5331EF51C /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "ShaderCompileWorker";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		8B8465B05D692D0A015D9DA0 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "ShaderCompileWorker-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		0E4C4DBCECCD6837B8A6D116 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "ShaderCompileWorker-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+		6B6782446EB0790253A320D9 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "ShaderCompileWorker";
+				UE_BUILD_TARGET_CONFIG = "Debug";
+			};
+			name = "Debug";
+		};
+		717F5E4605A2DF23A8AECDF5 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "ShaderCompileWorker";
+				UE_BUILD_TARGET_CONFIG = "DebugGame";
+			};
+			name = "DebugGame";
+		};
+		00E579DCEFE70DA6F4241A27 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "ShaderCompileWorker";
+				UE_BUILD_TARGET_CONFIG = "Development";
+			};
+			name = "Development";
+		};
+		B61097BAC02B34C14D53CCBF /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "ShaderCompileWorker";
+				UE_BUILD_TARGET_CONFIG = "Shipping";
+			};
+			name = "Shipping";
+		};
+		DADFECF51D57DFE5F8CEA712 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "ShaderCompileWorker";
+				UE_BUILD_TARGET_CONFIG = "Test";
+			};
+			name = "Test";
+		};
+		CA66261F3B400850F047BFD3 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "ShaderCompileWorker-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		34F760C6419533F904CA8B3A /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "ShaderCompileWorker-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		665087A34D785ECAE73E9725 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "ShaderCompileWorker";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		DE468F4E1D0B3F45C0D117C9 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "ShaderCompileWorker-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		BEB5B0C030182C76358840D1 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "ShaderCompileWorker-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		30337ED961FCF9BE07B1E239 /* Build configuration list for PBXProject "ShaderCompileWorker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9899A0CCC3164583DA8D63FE /* "Debug" */,
+				77787B81A18D628AA6D0615B /* "DebugGame" */,
+				2CDE3C8F9B046154976A0F22 /* "Development" */,
+				102F08C617A5060EE8208FB6 /* "Shipping" */,
+				13AD6D7E108D23B392681006 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		F1B23F307EFB4A1BDA59DC39 /* Build configuration list for PBXLegacyTarget "ShaderCompileWorker_Build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6B6782446EB0790253A320D9 /* "Debug" */,
+				717F5E4605A2DF23A8AECDF5 /* "DebugGame" */,
+				00E579DCEFE70DA6F4241A27 /* "Development" */,
+				B61097BAC02B34C14D53CCBF /* "Shipping" */,
+				DADFECF51D57DFE5F8CEA712 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		7AEB260465B879ED97D3F5FE /* Build configuration list for PBXNativeTarget "ShaderCompileWorker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5D92FBAB78979E99870EF3CF /* "Debug" */,
+				9401142A1460ABBA7222E111 /* "DebugGame" */,
+				2E1B8403F03EB3E5331EF51C /* "Development" */,
+				8B8465B05D692D0A015D9DA0 /* "Shipping" */,
+				0E4C4DBCECCD6837B8A6D116 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		4E445CB107992552CD1D6F8B /* Build configuration list for PBXNativeTarget "ShaderCompileWorker_Index" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CA66261F3B400850F047BFD3 /* "Debug" */,
+				34F760C6419533F904CA8B3A /* "DebugGame" */,
+				665087A34D785ECAE73E9725 /* "Development" */,
+				DE468F4E1D0B3F45C0D117C9 /* "Shipping" */,
+				BEB5B0C030182C76358840D1 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 999ACC432A56BAC142DE2EB0 /* Project object */;
+}

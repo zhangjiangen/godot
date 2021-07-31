@@ -47,12 +47,13 @@ def get_flags():
 
 
 def configure(env):
-    ## Build type
+    # Build type
 
     if env["target"].startswith("release"):
         env.Append(CPPDEFINES=["NDEBUG", ("NS_BLOCK_ASSERTIONS", 1)])
         if env["optimize"] == "speed":  # optimize for speed (default)
-            env.Append(CCFLAGS=["-O2", "-ftree-vectorize", "-fomit-frame-pointer"])
+            env.Append(CCFLAGS=["-O2", "-ftree-vectorize",
+                       "-fomit-frame-pointer"])
             env.Append(LINKFLAGS=["-O2"])
         elif env["optimize"] == "size":  # optimize for size
             env.Append(CCFLAGS=["-Os", "-ftree-vectorize"])
@@ -69,7 +70,7 @@ def configure(env):
         env.Append(CCFLAGS=["-flto"])
         env.Append(LINKFLAGS=["-flto"])
 
-    ## Architecture
+    # Architecture
     if env["arch"] == "x86":  # i386
         env["bits"] = "32"
     elif env["arch"] == "x86_64":
@@ -81,13 +82,14 @@ def configure(env):
         env["arch"] = "arm64"
         env["bits"] = "64"
 
-    ## Compiler configuration
+    # Compiler configuration
 
     # Save this in environment for use by other modules
     if "OSXCROSS_IOS" in os.environ:
         env["osxcross"] = True
 
-    env["ENV"]["PATH"] = env["IPHONEPATH"] + "/Developer/usr/bin/:" + env["ENV"]["PATH"]
+    env["ENV"]["PATH"] = env["IPHONEPATH"] + \
+        "/Developer/usr/bin/:" + env["ENV"]["PATH"]
 
     compiler_path = "$IPHONEPATH/usr/bin/${ios_triple}"
     s_compiler_path = "$IPHONEPATH/Developer/usr/bin/"
@@ -106,13 +108,13 @@ def configure(env):
     env["AR"] = compiler_path + "ar"
     env["RANLIB"] = compiler_path + "ranlib"
 
-    ## Compile flags
+    # Compile flags
 
     if env["ios_simulator"]:
         detect_darwin_sdk_path("iphonesimulator", env)
         env.Append(CCFLAGS=["-mios-simulator-version-min=13.0"])
         env.Append(LINKFLAGS=["-mios-simulator-version-min=13.0"])
-        env.extra_suffix = ".simulator" + env.extra_suffix
+        env.extra_suffix = "_simulator" + env.extra_suffix
     else:
         detect_darwin_sdk_path("iphone", env)
         env.Append(CCFLAGS=["-miphoneos-version-min=11.0"])
@@ -162,7 +164,7 @@ def configure(env):
     # Temp fix for ABS/MAX/MIN macros in iPhone SDK blocking compilation
     env.Append(CCFLAGS=["-Wno-ambiguous-macro"])
 
-    ## Link flags
+    # Link flags
 
     if env["arch"] == "x86" or env["arch"] == "x86_64":
         arch_flag = "i386" if env["arch"] == "x86" else env["arch"]
@@ -201,7 +203,8 @@ def configure(env):
     env["ENV"]["CODESIGN_ALLOCATE"] = "/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/codesign_allocate"
 
     env.Prepend(CPPPATH=["#platform/iphone"])
-    env.Append(CPPDEFINES=["IPHONE_ENABLED", "UNIX_ENABLED", "COREAUDIO_ENABLED"])
+    env.Append(CPPDEFINES=["IPHONE_ENABLED",
+               "UNIX_ENABLED", "COREAUDIO_ENABLED"])
 
     env.Append(CPPDEFINES=["VULKAN_ENABLED"])
     env.Append(LINKFLAGS=["-framework", "IOSurface"])

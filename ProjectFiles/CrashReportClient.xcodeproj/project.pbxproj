@@ -1,0 +1,768 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3AA8CAED27E6106D84ABB76F /* DefaultEngine.ini in Sources */ = {isa = PBXBuildFile; fileRef = 8C706C2110C04CCDEB56DFAF /* DefaultEngine.ini */; };
+		0B57D860A0A7B2715AA3C1E9 /* CrashReportClient.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = DC4DD03C27F9B06117286E76 /* CrashReportClient.Build.cs */; };
+		102446793638E1E773194BBB /* CrashReportClient.Target.cs in Sources */ = {isa = PBXBuildFile; fileRef = 940AC694D607EE88F16DFF10 /* CrashReportClient.Target.cs */; };
+		7A455CF78F24C10192013C5C /* CrashReportClientEditor.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 123E621F0E84E7174C9EE285 /* CrashReportClientEditor.Build.cs */; };
+		C6951775DD4A41E3E962E55B /* CrashReportClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4BBBE135E2BF57DB117429E9 /* CrashReportClient.cpp */; };
+		97905393415629DB62D630FA /* CrashReportClient.h in Sources */ = {isa = PBXBuildFile; fileRef = 0D4C2348BF5972AF5806D452 /* CrashReportClient.h */; };
+		A3B2358C470774526B2DDE4D /* CrashReportClientApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6AEA193380AF9748BE72796 /* CrashReportClientApp.cpp */; };
+		9C0E1BB701799090BC00F08E /* CrashReportClientDefines.h in Sources */ = {isa = PBXBuildFile; fileRef = 209D935A62DE8EDF6ED65111 /* CrashReportClientDefines.h */; };
+		B7DF764E0C5FC7BB8B9EF039 /* CrashReportClientStyle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBBD50F29D4D91F6BE13729B /* CrashReportClientStyle.cpp */; };
+		769E12AD584728C5BD09FF22 /* CrashReportClientStyle.h in Sources */ = {isa = PBXBuildFile; fileRef = 0241845C39340381AD5A6FA5 /* CrashReportClientStyle.h */; };
+		DA2B2D0B85C5DA81A2BA2A3B /* CrashReportClientMainLinux.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6E99562DC9F6E21E6A557A9 /* CrashReportClientMainLinux.cpp */; };
+		C9F58483764CED085B575F6A /* CrashReportClientMainMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1B4B390651C9DD21EA01F90 /* CrashReportClientMainMac.cpp */; };
+		8D9C4220445B53A46CDBD86D /* MainLoopTiming.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D1A6243762A7CE1BD2EEF5C /* MainLoopTiming.cpp */; };
+		C934BD890FF0EE1B2F6D1FBC /* MainLoopTiming.h in Sources */ = {isa = PBXBuildFile; fileRef = 05078061B55AB52768160F1E /* MainLoopTiming.h */; };
+		D1BF0B82DE8DE75EACE55710 /* RecoveryService.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9DC9947CECBD3EDFFAA53E6F /* RecoveryService.cpp */; };
+		A91A2C6379C7F3B3259EB84F /* RecoveryService.h in Sources */ = {isa = PBXBuildFile; fileRef = E56C3CA286C0101FAF70C4EB /* RecoveryService.h */; };
+		C5393AABD72F232B819BD8C4 /* SCrashReportClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6183E5E4F1A4EAFF11449680 /* SCrashReportClient.cpp */; };
+		809C593A951EBF3955409D3F /* SCrashReportClient.h in Sources */ = {isa = PBXBuildFile; fileRef = 8D48DBF57A8DCE4A93784002 /* SCrashReportClient.h */; };
+		F76B6DF4091F1B35D3844290 /* CrashReportClientMainWindows.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40560A56CC21DF7E8A2B7127 /* CrashReportClientMainWindows.cpp */; };
+		ECDDBBCA08848A28D5F38B0B /* CrashReportClientApp.h in Sources */ = {isa = PBXBuildFile; fileRef = DEF9FE3C3B29966C72224F0E /* CrashReportClientApp.h */; };
+		114606FDC0A006CCF946082B /* Info.plist in Sources */ = {isa = PBXBuildFile; fileRef = 64512C4EFA19BA4DCAFE77D3 /* Info.plist */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		8C706C2110C04CCDEB56DFAF /* DefaultEngine.ini */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DefaultEngine.ini"; path = "../../Programs/CrashReportClient/Config/DefaultEngine.ini"; sourceTree = SOURCE_ROOT; };
+		DC4DD03C27F9B06117286E76 /* CrashReportClient.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "CrashReportClient.Build.cs"; path = "../../Source/Programs/CrashReportClient/CrashReportClient.Build.cs"; sourceTree = SOURCE_ROOT; };
+		940AC694D607EE88F16DFF10 /* CrashReportClient.Target.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "CrashReportClient.Target.cs"; path = "../../Source/Programs/CrashReportClient/CrashReportClient.Target.cs"; sourceTree = SOURCE_ROOT; };
+		123E621F0E84E7174C9EE285 /* CrashReportClientEditor.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "CrashReportClientEditor.Build.cs"; path = "../../Source/Programs/CrashReportClient/CrashReportClientEditor.Build.cs"; sourceTree = SOURCE_ROOT; };
+		4BBBE135E2BF57DB117429E9 /* CrashReportClient.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "CrashReportClient.cpp"; path = "../../Source/Programs/CrashReportClient/Private/CrashReportClient.cpp"; sourceTree = SOURCE_ROOT; };
+		0D4C2348BF5972AF5806D452 /* CrashReportClient.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "CrashReportClient.h"; path = "../../Source/Programs/CrashReportClient/Private/CrashReportClient.h"; sourceTree = SOURCE_ROOT; };
+		F6AEA193380AF9748BE72796 /* CrashReportClientApp.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "CrashReportClientApp.cpp"; path = "../../Source/Programs/CrashReportClient/Private/CrashReportClientApp.cpp"; sourceTree = SOURCE_ROOT; };
+		209D935A62DE8EDF6ED65111 /* CrashReportClientDefines.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "CrashReportClientDefines.h"; path = "../../Source/Programs/CrashReportClient/Private/CrashReportClientDefines.h"; sourceTree = SOURCE_ROOT; };
+		EBBD50F29D4D91F6BE13729B /* CrashReportClientStyle.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "CrashReportClientStyle.cpp"; path = "../../Source/Programs/CrashReportClient/Private/CrashReportClientStyle.cpp"; sourceTree = SOURCE_ROOT; };
+		0241845C39340381AD5A6FA5 /* CrashReportClientStyle.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "CrashReportClientStyle.h"; path = "../../Source/Programs/CrashReportClient/Private/CrashReportClientStyle.h"; sourceTree = SOURCE_ROOT; };
+		D6E99562DC9F6E21E6A557A9 /* CrashReportClientMainLinux.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "CrashReportClientMainLinux.cpp"; path = "../../Source/Programs/CrashReportClient/Private/Linux/CrashReportClientMainLinux.cpp"; sourceTree = SOURCE_ROOT; };
+		F1B4B390651C9DD21EA01F90 /* CrashReportClientMainMac.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "CrashReportClientMainMac.cpp"; path = "../../Source/Programs/CrashReportClient/Private/Mac/CrashReportClientMainMac.cpp"; sourceTree = SOURCE_ROOT; };
+		4D1A6243762A7CE1BD2EEF5C /* MainLoopTiming.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "MainLoopTiming.cpp"; path = "../../Source/Programs/CrashReportClient/Private/MainLoopTiming.cpp"; sourceTree = SOURCE_ROOT; };
+		05078061B55AB52768160F1E /* MainLoopTiming.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "MainLoopTiming.h"; path = "../../Source/Programs/CrashReportClient/Private/MainLoopTiming.h"; sourceTree = SOURCE_ROOT; };
+		9DC9947CECBD3EDFFAA53E6F /* RecoveryService.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "RecoveryService.cpp"; path = "../../Source/Programs/CrashReportClient/Private/RecoveryService.cpp"; sourceTree = SOURCE_ROOT; };
+		E56C3CA286C0101FAF70C4EB /* RecoveryService.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "RecoveryService.h"; path = "../../Source/Programs/CrashReportClient/Private/RecoveryService.h"; sourceTree = SOURCE_ROOT; };
+		6183E5E4F1A4EAFF11449680 /* SCrashReportClient.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "SCrashReportClient.cpp"; path = "../../Source/Programs/CrashReportClient/Private/SCrashReportClient.cpp"; sourceTree = SOURCE_ROOT; };
+		8D48DBF57A8DCE4A93784002 /* SCrashReportClient.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "SCrashReportClient.h"; path = "../../Source/Programs/CrashReportClient/Private/SCrashReportClient.h"; sourceTree = SOURCE_ROOT; };
+		40560A56CC21DF7E8A2B7127 /* CrashReportClientMainWindows.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "CrashReportClientMainWindows.cpp"; path = "../../Source/Programs/CrashReportClient/Private/Windows/CrashReportClientMainWindows.cpp"; sourceTree = SOURCE_ROOT; };
+		DEF9FE3C3B29966C72224F0E /* CrashReportClientApp.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "CrashReportClientApp.h"; path = "../../Source/Programs/CrashReportClient/Public/CrashReportClientApp.h"; sourceTree = SOURCE_ROOT; };
+		64512C4EFA19BA4DCAFE77D3 /* Info.plist */ = {isa = PBXFileReference; explicitFileType = text.plist.xml; name = "Info.plist"; path = "../../Source/Programs/CrashReportClient/Resources/Mac/Info.plist"; sourceTree = SOURCE_ROOT; };
+		ED3B148BE72F04CEA8E59FD1 /* CrashReportClient */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = CrashReportClient; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D7980B8387F2A1E423BEEFCF = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C6951775DD4A41E3E962E55B /* CrashReportClient.cpp in Sources */,
+				A3B2358C470774526B2DDE4D /* CrashReportClientApp.cpp in Sources */,
+				B7DF764E0C5FC7BB8B9EF039 /* CrashReportClientStyle.cpp in Sources */,
+				C9F58483764CED085B575F6A /* CrashReportClientMainMac.cpp in Sources */,
+				8D9C4220445B53A46CDBD86D /* MainLoopTiming.cpp in Sources */,
+				D1BF0B82DE8DE75EACE55710 /* RecoveryService.cpp in Sources */,
+				C5393AABD72F232B819BD8C4 /* SCrashReportClient.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+	CC3637DDE9C88B2EF1C9C97F /* Embed App Extensions */ = {
+		isa = PBXCopyFilesBuildPhase;
+		buildActionMask = 2147483647;
+		dstPath = "";
+		dstSubfolderSpec = 13;
+		files = (
+		);
+		name = "Embed App Extensions";
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXCopyFilesBuildPhase section */
+/* Begin PBXContainerItemProxy section */
+		9F42F77FCF4462311EA6DF51 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 692937B30553518B13EA07AF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3C8F6D430075E17AF4A7B917;
+			remoteInfo = "CrashReportClient_Build";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		F15F0169BE50DB1C5BF2FF16 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3C8F6D430075E17AF4A7B917 /* CrashReportClient_Build */;
+			targetProxy = 9F42F77FCF4462311EA6DF51 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXGroup section */
+		C336861B5336013F2312C3C4 = {
+			isa = PBXGroup;
+			children = (
+				799EA1961FD44FB46099BF15 /* Programs */,
+				CA37A7BE87F1E68D09D18C56 /* Source */,
+				F9BAB44FD3B72CEC16806810 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		799EA1961FD44FB46099BF15 = {
+			isa = PBXGroup;
+			children = (
+				398ECC18BE722C8462FE3A95 /* CrashReportClient */,
+			);
+			name = "Programs";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Programs";
+			sourceTree = "<absolute>";
+		};
+		398ECC18BE722C8462FE3A95 = {
+			isa = PBXGroup;
+			children = (
+				99A16533D7217C1F19111B12 /* Config */,
+			);
+			name = "CrashReportClient";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Programs/CrashReportClient";
+			sourceTree = "<absolute>";
+		};
+		99A16533D7217C1F19111B12 = {
+			isa = PBXGroup;
+			children = (
+				8C706C2110C04CCDEB56DFAF /* DefaultEngine.ini */,
+			);
+			name = "Config";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Programs/CrashReportClient/Config";
+			sourceTree = "<absolute>";
+		};
+		CA37A7BE87F1E68D09D18C56 = {
+			isa = PBXGroup;
+			children = (
+				FE8E8B3A1F78667B630BFD7D /* Programs */,
+			);
+			name = "Source";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source";
+			sourceTree = "<absolute>";
+		};
+		FE8E8B3A1F78667B630BFD7D = {
+			isa = PBXGroup;
+			children = (
+				6F1BDD3F1C9FFB2873BA4E86 /* CrashReportClient */,
+			);
+			name = "Programs";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs";
+			sourceTree = "<absolute>";
+		};
+		6F1BDD3F1C9FFB2873BA4E86 = {
+			isa = PBXGroup;
+			children = (
+				CA6DFC7017AC8BC7150F3549 /* Private */,
+				9F597DD30C8F4DA01E905C70 /* Public */,
+				3C21F0B12CF20990D24F25B5 /* Resources */,
+				DC4DD03C27F9B06117286E76 /* CrashReportClient.Build.cs */,
+				940AC694D607EE88F16DFF10 /* CrashReportClient.Target.cs */,
+				123E621F0E84E7174C9EE285 /* CrashReportClientEditor.Build.cs */,
+			);
+			name = "CrashReportClient";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/CrashReportClient";
+			sourceTree = "<absolute>";
+		};
+		CA6DFC7017AC8BC7150F3549 = {
+			isa = PBXGroup;
+			children = (
+				954200A1AAA0AEBE392A4F6B /* Linux */,
+				14A7706AD663E2433F056FB1 /* Mac */,
+				7BF563B68036685FE593A9DA /* Windows */,
+				4BBBE135E2BF57DB117429E9 /* CrashReportClient.cpp */,
+				0D4C2348BF5972AF5806D452 /* CrashReportClient.h */,
+				F6AEA193380AF9748BE72796 /* CrashReportClientApp.cpp */,
+				209D935A62DE8EDF6ED65111 /* CrashReportClientDefines.h */,
+				EBBD50F29D4D91F6BE13729B /* CrashReportClientStyle.cpp */,
+				0241845C39340381AD5A6FA5 /* CrashReportClientStyle.h */,
+				4D1A6243762A7CE1BD2EEF5C /* MainLoopTiming.cpp */,
+				05078061B55AB52768160F1E /* MainLoopTiming.h */,
+				9DC9947CECBD3EDFFAA53E6F /* RecoveryService.cpp */,
+				E56C3CA286C0101FAF70C4EB /* RecoveryService.h */,
+				6183E5E4F1A4EAFF11449680 /* SCrashReportClient.cpp */,
+				8D48DBF57A8DCE4A93784002 /* SCrashReportClient.h */,
+			);
+			name = "Private";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/CrashReportClient/Private";
+			sourceTree = "<absolute>";
+		};
+		954200A1AAA0AEBE392A4F6B = {
+			isa = PBXGroup;
+			children = (
+				D6E99562DC9F6E21E6A557A9 /* CrashReportClientMainLinux.cpp */,
+			);
+			name = "Linux";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/CrashReportClient/Private/Linux";
+			sourceTree = "<absolute>";
+		};
+		14A7706AD663E2433F056FB1 = {
+			isa = PBXGroup;
+			children = (
+				F1B4B390651C9DD21EA01F90 /* CrashReportClientMainMac.cpp */,
+			);
+			name = "Mac";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/CrashReportClient/Private/Mac";
+			sourceTree = "<absolute>";
+		};
+		7BF563B68036685FE593A9DA = {
+			isa = PBXGroup;
+			children = (
+				40560A56CC21DF7E8A2B7127 /* CrashReportClientMainWindows.cpp */,
+			);
+			name = "Windows";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/CrashReportClient/Private/Windows";
+			sourceTree = "<absolute>";
+		};
+		9F597DD30C8F4DA01E905C70 = {
+			isa = PBXGroup;
+			children = (
+				DEF9FE3C3B29966C72224F0E /* CrashReportClientApp.h */,
+			);
+			name = "Public";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/CrashReportClient/Public";
+			sourceTree = "<absolute>";
+		};
+		3C21F0B12CF20990D24F25B5 = {
+			isa = PBXGroup;
+			children = (
+				3CF73E03C2F08680FD96CB7C /* Mac */,
+			);
+			name = "Resources";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/CrashReportClient/Resources";
+			sourceTree = "<absolute>";
+		};
+		3CF73E03C2F08680FD96CB7C = {
+			isa = PBXGroup;
+			children = (
+				64512C4EFA19BA4DCAFE77D3 /* Info.plist */,
+			);
+			name = "Mac";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/CrashReportClient/Resources/Mac";
+			sourceTree = "<absolute>";
+		};
+		F9BAB44FD3B72CEC16806810 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				ED3B148BE72F04CEA8E59FD1 /* CrashReportClient */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		3C8F6D430075E17AF4A7B917 /* CrashReportClient_Build */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION) $(UE_BUILD_TARGET_NAME) $(PLATFORM_NAME) $(UE_BUILD_TARGET_CONFIG)";
+			buildConfigurationList = 5FC4C5DB97F4DF4B80B07B83 /* Build configuration list for PBXLegacyTarget "CrashReportClient_Build" */;
+			buildPhases = (
+			);
+			buildToolPath = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Build/BatchFiles/Mac/XcodeBuild.sh";
+			buildWorkingDirectory = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425";
+			dependencies = (
+			);
+			name = "CrashReportClient_Build";
+			passBuildSettingsInEnvironment = 1;
+			productName = "CrashReportClient_Build";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		C7CEE391303DF82C94DC913D /* CrashReportClient */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6CF4BE585956439420F925FE /* Build configuration list for PBXNativeTarget "CrashReportClient" */;
+			buildPhases = (
+				CC3637DDE9C88B2EF1C9C97F /* Embed App Extensions */, 
+				4A2565CA59196242CE7644BB /* Shell Script */, 
+			);
+			dependencies = (
+				F15F0169BE50DB1C5BF2FF16 /* PBXTargetDependency */,
+			);
+			name = "CrashReportClient";
+			passBuildSettingsInEnvironment = 1;
+			productName = "CrashReportClient";
+			productReference = "ED3B148BE72F04CEA8E59FD1";
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXNativeTarget section */
+		3C50342CED316EBAA225433F /* CrashReportClient_Index */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D61E30A9C4645C4582FC2C22 /* Build configuration list for PBXNativeTarget "CrashReportClient_Index" */;
+			buildPhases = (
+				D7980B8387F2A1E423BEEFCF /* Sources */,
+			);
+			dependencies = (
+			);
+			name = "CrashReportClient_Index";
+			passBuildSettingsInEnvironment = 1;
+			productName = "CrashReportClient_Index";
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		692937B30553518B13EA07AF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2000;
+				ORGANIZATIONNAME = "Epic Games, Inc.";
+				TargetAttributes = {
+					C7CEE391303DF82C94DC913D = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 40B48DC339FF743981850579 /* Build configuration list for PBXProject "CrashReportClient" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en
+			);
+			mainGroup = C336861B5336013F2312C3C4;
+			productRefGroup = F9BAB44FD3B72CEC16806810;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			C7CEE391303DF82C94DC913D /* CrashReportClient */,
+			3C8F6D430075E17AF4A7B917 /* CrashReportClient_Build */,
+			3C50342CED316EBAA225433F /* CrashReportClient_Index */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		2A7EB73171DEA03BCAE5829D /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/CrashReportClient/Private",
+					"../Build/Mac/CrashReportClient/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/CrashReportClient/Inc/TraceLog",
+					"../Build/Mac/CrashReportClient/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/CrashReportClient/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/CrashReportClient/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/CrashReportClient/Inc/CrashReportCore",
+					"../../Source/Runtime/CrashReportCore/Public",
+					"../Build/Mac/CrashReportClient/Inc/XmlParser",
+					"../../Source/Runtime/XmlParser/Public",
+					"../Build/Mac/CrashReportClient/Inc/Analytics",
+					"../../Source/Runtime/Analytics",
+					"../../Source/Runtime/Analytics/Analytics/Public",
+					"../Build/Mac/CrashReportClient/Inc/AnalyticsET",
+					"../../Source/Runtime/Analytics/AnalyticsET/Public",
+					"../Build/Mac/CrashReportClient/Inc/HTTP",
+					"../../Source/Runtime/Online",
+					"../../Source/Runtime/Online/HTTP/Public",
+					"../Build/Mac/CrashReportClient/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/CrashReportClient/Inc/CrashDebugHelper",
+					"../../Source/Developer",
+					"../../Source/Developer/CrashDebugHelper/Public",
+					"../Build/Mac/CrashReportClient/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/CrashReportClient/Inc/PakFile",
+					"../../Source/Runtime/PakFile/Public",
+					"../Build/Mac/CrashReportClient/Inc/RSA",
+					"../../Source/Runtime/RSA/Public",
+					"../Build/Mac/CrashReportClient/Inc/DesktopPlatform",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/CrashReportClient/Inc/LauncherPlatform",
+					"../../Source/Runtime/Portal",
+					"../../Source/Runtime/Portal/LauncherPlatform/Public",
+					"../Build/Mac/CrashReportClient/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/CrashReportClient/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/CrashReportClient/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/CrashReportClient/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/CrashReportClient/Inc/StandaloneRenderer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../Build/Mac/CrashReportClient/Inc/MessageLog",
+					"../../Source/Developer/MessageLog/Public",
+					"../Build/Mac/CrashReportClient/Inc/SlateReflector",
+					"../../Source/Developer/SlateReflector/Public",
+					"../Build/Mac/CrashReportClient/Inc/CrashReportClient",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Programs/CrashReportClient/Public",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				ENABLE_TESTABILITY = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Debug";
+		};
+		16144D945835EC9E4555A39A /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/CrashReportClient/Private",
+					"../Build/Mac/CrashReportClient/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/CrashReportClient/Inc/TraceLog",
+					"../Build/Mac/CrashReportClient/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/CrashReportClient/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/CrashReportClient/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/CrashReportClient/Inc/CrashReportCore",
+					"../../Source/Runtime/CrashReportCore/Public",
+					"../Build/Mac/CrashReportClient/Inc/XmlParser",
+					"../../Source/Runtime/XmlParser/Public",
+					"../Build/Mac/CrashReportClient/Inc/Analytics",
+					"../../Source/Runtime/Analytics",
+					"../../Source/Runtime/Analytics/Analytics/Public",
+					"../Build/Mac/CrashReportClient/Inc/AnalyticsET",
+					"../../Source/Runtime/Analytics/AnalyticsET/Public",
+					"../Build/Mac/CrashReportClient/Inc/HTTP",
+					"../../Source/Runtime/Online",
+					"../../Source/Runtime/Online/HTTP/Public",
+					"../Build/Mac/CrashReportClient/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/CrashReportClient/Inc/CrashDebugHelper",
+					"../../Source/Developer",
+					"../../Source/Developer/CrashDebugHelper/Public",
+					"../Build/Mac/CrashReportClient/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/CrashReportClient/Inc/PakFile",
+					"../../Source/Runtime/PakFile/Public",
+					"../Build/Mac/CrashReportClient/Inc/RSA",
+					"../../Source/Runtime/RSA/Public",
+					"../Build/Mac/CrashReportClient/Inc/DesktopPlatform",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/CrashReportClient/Inc/LauncherPlatform",
+					"../../Source/Runtime/Portal",
+					"../../Source/Runtime/Portal/LauncherPlatform/Public",
+					"../Build/Mac/CrashReportClient/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/CrashReportClient/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/CrashReportClient/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/CrashReportClient/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/CrashReportClient/Inc/StandaloneRenderer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../Build/Mac/CrashReportClient/Inc/MessageLog",
+					"../../Source/Developer/MessageLog/Public",
+					"../Build/Mac/CrashReportClient/Inc/SlateReflector",
+					"../../Source/Developer/SlateReflector/Public",
+					"../Build/Mac/CrashReportClient/Inc/CrashReportClient",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Programs/CrashReportClient/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Development";
+		};
+		AD9780771B486E7ED8B3184C /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/CrashReportClient/Private",
+					"../Build/Mac/CrashReportClient/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/CrashReportClient/Inc/TraceLog",
+					"../Build/Mac/CrashReportClient/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/CrashReportClient/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/CrashReportClient/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/CrashReportClient/Inc/CrashReportCore",
+					"../../Source/Runtime/CrashReportCore/Public",
+					"../Build/Mac/CrashReportClient/Inc/XmlParser",
+					"../../Source/Runtime/XmlParser/Public",
+					"../Build/Mac/CrashReportClient/Inc/Analytics",
+					"../../Source/Runtime/Analytics",
+					"../../Source/Runtime/Analytics/Analytics/Public",
+					"../Build/Mac/CrashReportClient/Inc/AnalyticsET",
+					"../../Source/Runtime/Analytics/AnalyticsET/Public",
+					"../Build/Mac/CrashReportClient/Inc/HTTP",
+					"../../Source/Runtime/Online",
+					"../../Source/Runtime/Online/HTTP/Public",
+					"../Build/Mac/CrashReportClient/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/CrashReportClient/Inc/CrashDebugHelper",
+					"../../Source/Developer",
+					"../../Source/Developer/CrashDebugHelper/Public",
+					"../Build/Mac/CrashReportClient/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/CrashReportClient/Inc/PakFile",
+					"../../Source/Runtime/PakFile/Public",
+					"../Build/Mac/CrashReportClient/Inc/RSA",
+					"../../Source/Runtime/RSA/Public",
+					"../Build/Mac/CrashReportClient/Inc/DesktopPlatform",
+					"../../Source/Developer/DesktopPlatform/Public",
+					"../Build/Mac/CrashReportClient/Inc/LauncherPlatform",
+					"../../Source/Runtime/Portal",
+					"../../Source/Runtime/Portal/LauncherPlatform/Public",
+					"../Build/Mac/CrashReportClient/Inc/InputCore",
+					"../../Source/Runtime/InputCore/Classes",
+					"../../Source/Runtime/InputCore/Public",
+					"../Build/Mac/CrashReportClient/Inc/Slate",
+					"../../Source/Runtime/Slate/Public",
+					"../Build/Mac/CrashReportClient/Inc/SlateCore",
+					"../../Source/Runtime/SlateCore/Public",
+					"../Build/Mac/CrashReportClient/Inc/ImageWrapper",
+					"../../Source/Runtime/ImageWrapper/Public",
+					"../Build/Mac/CrashReportClient/Inc/StandaloneRenderer",
+					"../../Source/Developer/StandaloneRenderer/Public",
+					"../Build/Mac/CrashReportClient/Inc/MessageLog",
+					"../../Source/Developer/MessageLog/Public",
+					"../Build/Mac/CrashReportClient/Inc/SlateReflector",
+					"../../Source/Developer/SlateReflector/Public",
+					"../Build/Mac/CrashReportClient/Inc/CrashReportClient",
+					"../../Source/Programs",
+					"../../Source/Runtime/Launch/Public",
+					"../../Source/Programs/CrashReportClient/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Shipping";
+		};
+		7F4E024DF4391E0ECF8C3862 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "CrashReportClient-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		5495E01DE42CAB029C973C99 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "CrashReportClient-Mac-Development";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		50ABC67296DD0FD4A09ABE78 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "CrashReportClient";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		8DD68A0A5BAD0056F17CB26A /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "CrashReportClient";
+				UE_BUILD_TARGET_CONFIG = "Debug";
+			};
+			name = "Debug";
+		};
+		7C0BE541D7D3BEC58B7FF446 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "CrashReportClient";
+				UE_BUILD_TARGET_CONFIG = "Development";
+			};
+			name = "Development";
+		};
+		2EEF71877280E2594C519340 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "CrashReportClient";
+				UE_BUILD_TARGET_CONFIG = "Shipping";
+			};
+			name = "Shipping";
+		};
+		115ABD12298DB465A3C74B0A /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "CrashReportClient-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		5F6CFDBC901425BBB722BE93 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "CrashReportClient-Mac-Development";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		5247AA4210766EAB54B06BE5 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "CrashReportClient";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		40B48DC339FF743981850579 /* Build configuration list for PBXProject "CrashReportClient" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2A7EB73171DEA03BCAE5829D /* "Debug" */,
+				16144D945835EC9E4555A39A /* "Development" */,
+				AD9780771B486E7ED8B3184C /* "Shipping" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		5FC4C5DB97F4DF4B80B07B83 /* Build configuration list for PBXLegacyTarget "CrashReportClient_Build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8DD68A0A5BAD0056F17CB26A /* "Debug" */,
+				7C0BE541D7D3BEC58B7FF446 /* "Development" */,
+				2EEF71877280E2594C519340 /* "Shipping" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		6CF4BE585956439420F925FE /* Build configuration list for PBXNativeTarget "CrashReportClient" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7F4E024DF4391E0ECF8C3862 /* "Debug" */,
+				5495E01DE42CAB029C973C99 /* "Development" */,
+				50ABC67296DD0FD4A09ABE78 /* "Shipping" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		D61E30A9C4645C4582FC2C22 /* Build configuration list for PBXNativeTarget "CrashReportClient_Index" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				115ABD12298DB465A3C74B0A /* "Debug" */,
+				5F6CFDBC901425BBB722BE93 /* "Development" */,
+				5247AA4210766EAB54B06BE5 /* "Shipping" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 692937B30553518B13EA07AF /* Project object */;
+}

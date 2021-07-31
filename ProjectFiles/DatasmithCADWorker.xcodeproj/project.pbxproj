@@ -1,0 +1,779 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		22A343609405B5C98EACB8C1 /* DatasmithCADWorker.Build.cs in Sources */ = {isa = PBXBuildFile; fileRef = 7E8D6834EDBF1298F1D3D7EA /* DatasmithCADWorker.Build.cs */; };
+		91F6DDE87770C5A225363F8F /* DatasmithCADWorker.Target.cs in Sources */ = {isa = PBXBuildFile; fileRef = 9F1A6E3CBDFC1C4D72A426E5 /* DatasmithCADWorker.Target.cs */; };
+		FD47725867024312CF32DA1D /* DatasmithCADWorker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DA537F4903E9DB7986BD06C /* DatasmithCADWorker.cpp */; };
+		B186600BECDFE24FCB58634D /* DatasmithCADWorker.h in Sources */ = {isa = PBXBuildFile; fileRef = 925C618B68A5F24CB24AD747 /* DatasmithCADWorker.h */; };
+		881D07B2352052927705A7E1 /* DatasmithCADWorkerImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A13826EF4F8A510441EA6133 /* DatasmithCADWorkerImpl.cpp */; };
+		DD114EF27883B966AE1883CE /* DatasmithCADWorkerImpl.h in Sources */ = {isa = PBXBuildFile; fileRef = D73019AA06D1D58CB57FEA30 /* DatasmithCADWorkerImpl.h */; };
+		7F02FC28F9D2059EBCD4D423 /* BlankProgram.ico in Sources */ = {isa = PBXBuildFile; fileRef = D26019F34B413289B557171F /* BlankProgram.ico */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		7E8D6834EDBF1298F1D3D7EA /* DatasmithCADWorker.Build.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithCADWorker.Build.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithCADWorker/DatasmithCADWorker.Build.cs"; sourceTree = SOURCE_ROOT; };
+		9F1A6E3CBDFC1C4D72A426E5 /* DatasmithCADWorker.Target.cs */ = {isa = PBXFileReference; explicitFileType = file.text; name = "DatasmithCADWorker.Target.cs"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithCADWorker/DatasmithCADWorker.Target.cs"; sourceTree = SOURCE_ROOT; };
+		5DA537F4903E9DB7986BD06C /* DatasmithCADWorker.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithCADWorker.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithCADWorker/Private/DatasmithCADWorker.cpp"; sourceTree = SOURCE_ROOT; };
+		925C618B68A5F24CB24AD747 /* DatasmithCADWorker.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithCADWorker.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithCADWorker/Private/DatasmithCADWorker.h"; sourceTree = SOURCE_ROOT; };
+		A13826EF4F8A510441EA6133 /* DatasmithCADWorkerImpl.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = "DatasmithCADWorkerImpl.cpp"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithCADWorker/Private/DatasmithCADWorkerImpl.cpp"; sourceTree = SOURCE_ROOT; };
+		D73019AA06D1D58CB57FEA30 /* DatasmithCADWorkerImpl.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; name = "DatasmithCADWorkerImpl.h"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithCADWorker/Private/DatasmithCADWorkerImpl.h"; sourceTree = SOURCE_ROOT; };
+		D26019F34B413289B557171F /* BlankProgram.ico */ = {isa = PBXFileReference; explicitFileType = file.text; name = "BlankProgram.ico"; path = "../../Source/Programs/Enterprise/Datasmith/DatasmithCADWorker/Resources/Windows/BlankProgram.ico"; sourceTree = SOURCE_ROOT; };
+		5E59C4C910D27D2F3289F6EB /* DatasmithCADWorker */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = DatasmithCADWorker; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B82D132EBD1AD6BF0EEF6CCB = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FD47725867024312CF32DA1D /* DatasmithCADWorker.cpp in Sources */,
+				881D07B2352052927705A7E1 /* DatasmithCADWorkerImpl.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+	703C3871E558DE3772F80AAD /* Embed App Extensions */ = {
+		isa = PBXCopyFilesBuildPhase;
+		buildActionMask = 2147483647;
+		dstPath = "";
+		dstSubfolderSpec = 13;
+		files = (
+		);
+		name = "Embed App Extensions";
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXCopyFilesBuildPhase section */
+/* Begin PBXContainerItemProxy section */
+		999ED0EC4D0AE7E557BBB5CC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3EC332874D92DA940DD78C5A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9938052D549C7A4122D01C57;
+			remoteInfo = "DatasmithCADWorker_Build";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		1FC7D1898866C4E87503D587 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9938052D549C7A4122D01C57 /* DatasmithCADWorker_Build */;
+			targetProxy = 999ED0EC4D0AE7E557BBB5CC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXGroup section */
+		1A82229D5B9CF1347B8D64C2 = {
+			isa = PBXGroup;
+			children = (
+				BAAFDFC22A6D715EAEFF1AAA /* Private */,
+				092595BA7D594EB7E6AB3D20 /* Resources */,
+				7E8D6834EDBF1298F1D3D7EA /* DatasmithCADWorker.Build.cs */,
+				9F1A6E3CBDFC1C4D72A426E5 /* DatasmithCADWorker.Target.cs */,
+				72CDC1150ABE062D2D37F569 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		BAAFDFC22A6D715EAEFF1AAA = {
+			isa = PBXGroup;
+			children = (
+				5DA537F4903E9DB7986BD06C /* DatasmithCADWorker.cpp */,
+				925C618B68A5F24CB24AD747 /* DatasmithCADWorker.h */,
+				A13826EF4F8A510441EA6133 /* DatasmithCADWorkerImpl.cpp */,
+				D73019AA06D1D58CB57FEA30 /* DatasmithCADWorkerImpl.h */,
+			);
+			name = "Private";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithCADWorker/Private";
+			sourceTree = "<absolute>";
+		};
+		092595BA7D594EB7E6AB3D20 = {
+			isa = PBXGroup;
+			children = (
+				C361F3889164698634B3972D /* Windows */,
+			);
+			name = "Resources";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithCADWorker/Resources";
+			sourceTree = "<absolute>";
+		};
+		C361F3889164698634B3972D = {
+			isa = PBXGroup;
+			children = (
+				D26019F34B413289B557171F /* BlankProgram.ico */,
+			);
+			name = "Windows";
+			path = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Programs/Enterprise/Datasmith/DatasmithCADWorker/Resources/Windows";
+			sourceTree = "<absolute>";
+		};
+		72CDC1150ABE062D2D37F569 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5E59C4C910D27D2F3289F6EB /* DatasmithCADWorker */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		9938052D549C7A4122D01C57 /* DatasmithCADWorker_Build */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION) $(UE_BUILD_TARGET_NAME) $(PLATFORM_NAME) $(UE_BUILD_TARGET_CONFIG)";
+			buildConfigurationList = 4AC693B9FCAB3C6311052B2E /* Build configuration list for PBXLegacyTarget "DatasmithCADWorker_Build" */;
+			buildPhases = (
+			);
+			buildToolPath = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Build/BatchFiles/Mac/XcodeBuild.sh";
+			buildWorkingDirectory = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425";
+			dependencies = (
+			);
+			name = "DatasmithCADWorker_Build";
+			passBuildSettingsInEnvironment = 1;
+			productName = "DatasmithCADWorker_Build";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		14C31D16B26BC28E931985F0 /* DatasmithCADWorker */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 45F757B6F61BB2E0C3E49193 /* Build configuration list for PBXNativeTarget "DatasmithCADWorker" */;
+			buildPhases = (
+				703C3871E558DE3772F80AAD /* Embed App Extensions */, 
+				4B9A5AB4798816E38CB8E52E /* Shell Script */, 
+			);
+			dependencies = (
+				1FC7D1898866C4E87503D587 /* PBXTargetDependency */,
+			);
+			name = "DatasmithCADWorker";
+			passBuildSettingsInEnvironment = 1;
+			productName = "DatasmithCADWorker";
+			productReference = "5E59C4C910D27D2F3289F6EB";
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXNativeTarget section */
+		A1FAD8A386A5550FA8E55214 /* DatasmithCADWorker_Index */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 04B991BA4173AA8E3C6D7F4A /* Build configuration list for PBXNativeTarget "DatasmithCADWorker_Index" */;
+			buildPhases = (
+				B82D132EBD1AD6BF0EEF6CCB /* Sources */,
+			);
+			dependencies = (
+			);
+			name = "DatasmithCADWorker_Index";
+			passBuildSettingsInEnvironment = 1;
+			productName = "DatasmithCADWorker_Index";
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3EC332874D92DA940DD78C5A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2000;
+				ORGANIZATIONNAME = "Epic Games, Inc.";
+				TargetAttributes = {
+					14C31D16B26BC28E931985F0 = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = C4D7BB7C7B0DAF65737FB543 /* Build configuration list for PBXProject "DatasmithCADWorker" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en
+			);
+			mainGroup = 1A82229D5B9CF1347B8D64C2;
+			productRefGroup = 72CDC1150ABE062D2D37F569;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			14C31D16B26BC28E931985F0 /* DatasmithCADWorker */,
+			9938052D549C7A4122D01C57 /* DatasmithCADWorker_Build */,
+			A1FAD8A386A5550FA8E55214 /* DatasmithCADWorker_Index */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		88C37660B6A4B48261F6A5CE /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithCADWorker/Private",
+					"../Build/Mac/DatasmithCADWorker/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/TraceLog",
+					"../Build/Mac/DatasmithCADWorker/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/Sockets",
+					"../../Source/Runtime/Sockets/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/DatasmithDispatcher",
+					"../../Plugins/Enterprise/DatasmithCADImporter/Source",
+					"../../Plugins/Enterprise/DatasmithCADImporter/Source/DatasmithDispatcher/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/CADInterfaces",
+					"../../Plugins/Enterprise/DatasmithCADImporter/Source/CADInterfaces/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/CADTools",
+					"../../Plugins/Enterprise/DatasmithCADImporter/Source/CADTools/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/DatasmithCADWorker",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				ENABLE_TESTABILITY = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Debug";
+		};
+		40418BCEC1260C22DF53A094 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithCADWorker/Private",
+					"../Build/Mac/DatasmithCADWorker/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/TraceLog",
+					"../Build/Mac/DatasmithCADWorker/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/Sockets",
+					"../../Source/Runtime/Sockets/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/DatasmithDispatcher",
+					"../../Plugins/Enterprise/DatasmithCADImporter/Source",
+					"../../Plugins/Enterprise/DatasmithCADImporter/Source/DatasmithDispatcher/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/CADInterfaces",
+					"../../Plugins/Enterprise/DatasmithCADImporter/Source/CADInterfaces/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/CADTools",
+					"../../Plugins/Enterprise/DatasmithCADImporter/Source/CADTools/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/DatasmithCADWorker",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "DebugGame";
+		};
+		DF749C0714B2391A4EB19098 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithCADWorker/Private",
+					"../Build/Mac/DatasmithCADWorker/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/TraceLog",
+					"../Build/Mac/DatasmithCADWorker/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/Sockets",
+					"../../Source/Runtime/Sockets/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/DatasmithDispatcher",
+					"../../Plugins/Enterprise/DatasmithCADImporter/Source",
+					"../../Plugins/Enterprise/DatasmithCADImporter/Source/DatasmithDispatcher/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/CADInterfaces",
+					"../../Plugins/Enterprise/DatasmithCADImporter/Source/CADInterfaces/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/CADTools",
+					"../../Plugins/Enterprise/DatasmithCADImporter/Source/CADTools/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/DatasmithCADWorker",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Development";
+		};
+		BDF0677049712ECE9A530ECE /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithCADWorker/Private",
+					"../Build/Mac/DatasmithCADWorker/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/TraceLog",
+					"../Build/Mac/DatasmithCADWorker/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/Sockets",
+					"../../Source/Runtime/Sockets/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/DatasmithDispatcher",
+					"../../Plugins/Enterprise/DatasmithCADImporter/Source",
+					"../../Plugins/Enterprise/DatasmithCADImporter/Source/DatasmithDispatcher/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/CADInterfaces",
+					"../../Plugins/Enterprise/DatasmithCADImporter/Source/CADInterfaces/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/CADTools",
+					"../../Plugins/Enterprise/DatasmithCADImporter/Source/CADTools/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/DatasmithCADWorker",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Shipping";
+		};
+		F560979F7D3ED55A8F6623E8 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__INTELLISENSE__",
+					"MONOLITHIC_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = (
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"../../Source",
+					"../../Source/Runtime/Launch/Private",
+					"../../Source/Programs/Enterprise/Datasmith/DatasmithCADWorker/Private",
+					"../Build/Mac/DatasmithCADWorker/Inc/Core",
+					"../../Source/Runtime",
+					"../../Source/Runtime/TraceLog/Public",
+					"../../Source/Runtime/Core/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/TraceLog",
+					"../Build/Mac/DatasmithCADWorker/Inc/Projects",
+					"../../Source/Runtime/Projects/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/Json",
+					"../../Source/Runtime/Json/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/ApplicationCore",
+					"../../Source/Runtime/ApplicationCore/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/RHI",
+					"../../Source/Runtime/RHI/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/Sockets",
+					"../../Source/Runtime/Sockets/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/DatasmithDispatcher",
+					"../../Plugins/Enterprise/DatasmithCADImporter/Source",
+					"../../Plugins/Enterprise/DatasmithCADImporter/Source/DatasmithDispatcher/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/CADInterfaces",
+					"../../Plugins/Enterprise/DatasmithCADImporter/Source/CADInterfaces/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/CADTools",
+					"../../Plugins/Enterprise/DatasmithCADImporter/Source/CADTools/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/DatasmithCore",
+					"../../Source/Runtime/Datasmith",
+					"../../Source/Runtime/Datasmith/DatasmithCore/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/CoreUObject",
+					"../../Source/Runtime/CoreUObject/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/RawMesh",
+					"../../Source/Runtime/RawMesh/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/MeshDescription",
+					"../../Source/Runtime/MeshDescription/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/StaticMeshDescription",
+					"../../Source/Runtime/StaticMeshDescription/Public",
+					"../Build/Mac/DatasmithCADWorker/Inc/DatasmithCADWorker",
+					"../../Source/Programs/Enterprise/Datasmith",
+					"../../Source/Runtime/Launch/Public",
+				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				USE_HEADERMAP = NO;
+			};
+			name = "Test";
+		};
+		869448D458BEF7BF2266E322 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithCADWorker-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		5E2EA9D7B8EE777CAB25F3D9 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithCADWorker-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		AB710852266CA1FDE810D949 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithCADWorker";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		345336E8B43EDE47B6636000 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithCADWorker-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		9D71060DE8720D422B43EA29 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithCADWorker-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+		C0214686D9893EB7570AE822 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithCADWorker";
+				UE_BUILD_TARGET_CONFIG = "Debug";
+			};
+			name = "Debug";
+		};
+		3D297A9A1A8D2D34F3614598 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithCADWorker";
+				UE_BUILD_TARGET_CONFIG = "DebugGame";
+			};
+			name = "DebugGame";
+		};
+		F8467EE5E365FC52BA64BBA5 /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithCADWorker";
+				UE_BUILD_TARGET_CONFIG = "Development";
+			};
+			name = "Development";
+		};
+		4D61D4BCC78C6B9CC0F128F3 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithCADWorker";
+				UE_BUILD_TARGET_CONFIG = "Shipping";
+			};
+			name = "Shipping";
+		};
+		359610CA58C2E8FC55FFC766 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				GCC_PREPROCESSOR_DEFINITIONS = ();
+				HEADER_SEARCH_PATHS = ();
+				USER_HEADER_SEARCH_PATHS = ();
+				UE_BUILD_TARGET_NAME = "DatasmithCADWorker";
+				UE_BUILD_TARGET_CONFIG = "Test";
+			};
+			name = "Test";
+		};
+		E17E80CD44884C55F58B2EE4 /* "Debug" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithCADWorker-Mac-Debug";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Debug";
+		};
+		FE6FF530FEC6428DDDEB6F16 /* "DebugGame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithCADWorker-Mac-DebugGame";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "DebugGame";
+		};
+		F1261F40282B494CDE5C858C /* "Development" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithCADWorker";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Development";
+		};
+		FE8B084836EC0A9E17500BD5 /* "Shipping" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithCADWorker-Mac-Shipping";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Shipping";
+		};
+		F4CB1E821CCD64976720AAC4 /* "Test" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				VALID_ARCHS = "x86_64";
+				SUPPORTED_PLATFORMS = "macosx";
+				PRODUCT_NAME = "DatasmithCADWorker-Mac-Test";
+				CONFIGURATION_BUILD_DIR = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Binaries/Mac";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				INFOPLIST_OUTPUT_FORMAT = xml;
+				COMBINE_HIDPI_IMAGES = YES;
+				SDKROOT = macosx;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "/Users/zhangjiangen/Documents/UGit/UnrealEngine425/Engine/Source/Editor/UnrealEd/Public/UnrealEd.h";
+			};
+			name = "Test";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C4D7BB7C7B0DAF65737FB543 /* Build configuration list for PBXProject "DatasmithCADWorker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				88C37660B6A4B48261F6A5CE /* "Debug" */,
+				40418BCEC1260C22DF53A094 /* "DebugGame" */,
+				DF749C0714B2391A4EB19098 /* "Development" */,
+				BDF0677049712ECE9A530ECE /* "Shipping" */,
+				F560979F7D3ED55A8F6623E8 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		4AC693B9FCAB3C6311052B2E /* Build configuration list for PBXLegacyTarget "DatasmithCADWorker_Build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C0214686D9893EB7570AE822 /* "Debug" */,
+				3D297A9A1A8D2D34F3614598 /* "DebugGame" */,
+				F8467EE5E365FC52BA64BBA5 /* "Development" */,
+				4D61D4BCC78C6B9CC0F128F3 /* "Shipping" */,
+				359610CA58C2E8FC55FFC766 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		45F757B6F61BB2E0C3E49193 /* Build configuration list for PBXNativeTarget "DatasmithCADWorker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				869448D458BEF7BF2266E322 /* "Debug" */,
+				5E2EA9D7B8EE777CAB25F3D9 /* "DebugGame" */,
+				AB710852266CA1FDE810D949 /* "Development" */,
+				345336E8B43EDE47B6636000 /* "Shipping" */,
+				9D71060DE8720D422B43EA29 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		04B991BA4173AA8E3C6D7F4A /* Build configuration list for PBXNativeTarget "DatasmithCADWorker_Index" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E17E80CD44884C55F58B2EE4 /* "Debug" */,
+				FE6FF530FEC6428DDDEB6F16 /* "DebugGame" */,
+				F1261F40282B494CDE5C858C /* "Development" */,
+				FE8B084836EC0A9E17500BD5 /* "Shipping" */,
+				F4CB1E821CCD64976720AAC4 /* "Test" */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3EC332874D92DA940DD78C5A /* Project object */;
+}

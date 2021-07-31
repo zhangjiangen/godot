@@ -12,7 +12,8 @@ mkdir -p Godot.app/Contents/MacOS
 
 
 echo cp bin/godot.osx.tools.x86_64 Godot.app/Contents/MacOS/Godot
-cp bin/godot.osx.tools.x86_64 Godot.app/Contents/MacOS/Godot
+chmod +x bin/godot_osx_tools_x86_64
+cp bin/godot_osx_tools_x86_64 Godot.app/Contents/MacOS/Godot
 
 
 echo chmod +x Godot.app/Contents/MacOS/Godot

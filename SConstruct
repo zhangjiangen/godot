@@ -409,7 +409,7 @@ if selected_platform in platform_list:
     env.extra_suffix = ""
 
     if env["extra_suffix"] != "":
-        env.extra_suffix += "." + env["extra_suffix"]
+        env.extra_suffix += "_" + env["extra_suffix"]
 
     # Environment flags
     CCFLAGS = env.get("CCFLAGS", "")
@@ -590,40 +590,40 @@ if selected_platform in platform_list:
             env.Append(CCFLAGS=["-Werror=return-type"])
 
     if hasattr(detect, "get_program_suffix"):
-        suffix = "." + detect.get_program_suffix()
+        suffix = "_" + detect.get_program_suffix()
     else:
-        suffix = "." + selected_platform
+        suffix = "_" + selected_platform
 
     if env["target"] == "release":
         if env["tools"]:
             print(
                 "Error: The editor can only be built with `target=debug` or `target=release_debug`.")
             Exit(255)
-        suffix += ".opt"
+        suffix += "_opt"
         env.Append(CPPDEFINES=["NDEBUG"])
     elif env["target"] == "release_debug":
         if env["tools"]:
-            suffix += ".opt.tools"
+            suffix += "_opt_tools"
         else:
-            suffix += ".opt.debug"
+            suffix += "_opt_debug"
     else:
         if env["tools"]:
             print(
                 "Note: Building a debug binary (which will run slowly). Use `target=release_debug` to build an optimized release binary."
             )
-            suffix += ".tools"
+            suffix += "_tools"
         else:
             print(
                 "Note: Building a debug binary (which will run slowly). Use `target=release` to build an optimized release binary."
             )
-            suffix += ".debug"
+            suffix += "_debug"
 
     if env["arch"] != "":
-        suffix += "." + env["arch"]
+        suffix += "_" + env["arch"]
     elif env["bits"] == "32":
-        suffix += ".32"
+        suffix += "_32"
     elif env["bits"] == "64":
-        suffix += ".64"
+        suffix += "_64"
 
     suffix += env.extra_suffix
 
