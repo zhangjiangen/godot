@@ -942,14 +942,18 @@ bool Node3DEditorViewport::_transform_gizmo_select(const Vector2 &p_screenpos, b
 				Vector3 ivec2 = gt.basis.get_axis((i + 1) % 3).normalized();
 				Vector3 ivec3 = gt.basis.get_axis((i + 2) % 3).normalized();
 
-				Vector3 grabber_pos = gt.origin + (ivec2 + ivec3) * gs * (GIZMO_PLANE_SIZE + GIZMO_PLANE_DST);
+				// Allow some tolerance to make the plane easier to click,
+				// even if the click is actually slightly outside the plane.
+				const Vector3 grabber_pos = gt.origin + (ivec2 + ivec3) * gs * (GIZMO_PLANE_SIZE + GIZMO_PLANE_DST * 0.6667);
 
 				Vector3 r;
 				Plane plane(gt.origin, gt.basis.get_axis(i).normalized());
 
 				if (plane.intersects_ray(ray_pos, ray, &r)) {
 					float dist = r.distance_to(grabber_pos);
-					if (dist < (gs * GIZMO_PLANE_SIZE)) {
+					// Allow some tolerance to make the plane easier to click,
+					// even if the click is actually slightly outside the plane.
+					if (dist < (gs * GIZMO_PLANE_SIZE * 1.5)) {
 						float d = ray_pos.distance_to(r);
 						if (d < col_d) {
 							col_d = d;
@@ -1042,14 +1046,18 @@ bool Node3DEditorViewport::_transform_gizmo_select(const Vector2 &p_screenpos, b
 				Vector3 ivec2 = gt.basis.get_axis((i + 1) % 3).normalized();
 				Vector3 ivec3 = gt.basis.get_axis((i + 2) % 3).normalized();
 
-				Vector3 grabber_pos = gt.origin + (ivec2 + ivec3) * gs * (GIZMO_PLANE_SIZE + GIZMO_PLANE_DST);
+				// Allow some tolerance to make the plane easier to click,
+				// even if the click is actually slightly outside the plane.
+				Vector3 grabber_pos = gt.origin + (ivec2 + ivec3) * gs * (GIZMO_PLANE_SIZE + GIZMO_PLANE_DST * 0.6667);
 
 				Vector3 r;
 				Plane plane(gt.origin, gt.basis.get_axis(i).normalized());
 
 				if (plane.intersects_ray(ray_pos, ray, &r)) {
 					float dist = r.distance_to(grabber_pos);
-					if (dist < (gs * GIZMO_PLANE_SIZE)) {
+					// Allow some tolerance to make the plane easier to click,
+					// even if the click is actually slightly outside the plane.
+					if (dist < (gs * GIZMO_PLANE_SIZE * 1.5)) {
 						float d = ray_pos.distance_to(r);
 						if (d < col_d) {
 							col_d = d;
@@ -2863,7 +2871,7 @@ void Node3DEditorViewport::_draw() {
 	if (surface->has_focus()) {
 		Size2 size = surface->get_size();
 		Rect2 r = Rect2(Point2(), size);
-		get_theme_stylebox(SNAME("Focus"), SNAME("EditorStyles"))->draw(surface->get_canvas_item(), r);
+		get_theme_stylebox(SNAME("FocusViewport"), SNAME("EditorStyles"))->draw(surface->get_canvas_item(), r);
 	}
 
 	if (cursor.region_select) {
@@ -2909,9 +2917,7 @@ void Node3DEditorViewport::_draw() {
 				handle_color = get_theme_color(SNAME("accent_color"), SNAME("Editor"));
 				break;
 		}
-		handle_color.a = 1.0;
-		const float brightness = 1.3;
-		handle_color *= Color(brightness, brightness, brightness);
+		handle_color = handle_color.from_hsv(handle_color.get_h(), 0.25, 1.0, 1);
 
 		RenderingServer::get_singleton()->canvas_item_add_line(
 				ci,
@@ -4060,6 +4066,7 @@ void Node3DEditorViewport::drop_data_fw(const Point2 &p_point, const Variant &p_
 	}
 
 	bool is_shift = Input::get_singleton()->is_key_pressed(KEY_SHIFT);
+	bool is_ctrl = Input::get_singleton()->is_key_pressed(KEY_CTRL);
 
 	selected_files.clear();
 	Dictionary d = p_data;
@@ -4067,29 +4074,32 @@ void Node3DEditorViewport::drop_data_fw(const Point2 &p_point, const Variant &p_
 		selected_files = d["files"];
 	}
 
-	List<Node *> list = editor->get_editor_selection()->get_selected_node_list();
-	if (list.size() == 0) {
-		Node *root_node = editor->get_edited_scene();
+	List<Node *> selected_nodes = editor->get_editor_selection()->get_selected_node_list();
+	Node *root_node = editor->get_edited_scene();
+	if (selected_nodes.size() == 1) {
+		Node *selected_node = selected_nodes[0];
+		target_node = root_node;
+		if (is_ctrl) {
+			target_node = selected_node;
+		} else if (is_shift && selected_node != root_node) {
+			target_node = selected_node->get_parent();
+		}
+	} else if (selected_nodes.size() == 0) {
 		if (root_node) {
-			list.push_back(root_node);
+			target_node = root_node;
 		} else {
-			accept->set_text(TTR("No parent to instance a child at."));
+			accept->set_text(TTR("Cannot drag and drop into scene with no root node."));
 			accept->popup_centered();
 			_remove_preview();
 			return;
 		}
-	}
-	if (list.size() != 1) {
-		accept->set_text(TTR("This operation requires a single selected node."));
+	} else {
+		accept->set_text(TTR("Cannot drag and drop into multiple selected nodes."));
 		accept->popup_centered();
 		_remove_preview();
 		return;
 	}
 
-	target_node = list[0];
-	if (is_shift && target_node != editor->get_edited_scene()) {
-		target_node = target_node->get_parent();
-	}
 	drop_pos = p_point;
 
 	_perform_drop_data();
@@ -5638,8 +5648,7 @@ void fragment() {
 			gizmo_color[i] = mat;
 
 			Ref<StandardMaterial3D> mat_hl = mat->duplicate();
-			const float brightness = 1.3;
-			const Color albedo = Color(col.r * brightness, col.g * brightness, col.b * brightness);
+			const Color albedo = col.from_hsv(col.get_h(), 0.25, 1.0, 1);
 			mat_hl->set_albedo(albedo);
 			gizmo_color_hl[i] = mat_hl;
 
@@ -5746,7 +5755,7 @@ void fragment() {
 				surftool->begin(Mesh::PRIMITIVE_TRIANGLES);
 
 				int n = 128; // number of circle segments
-				int m = 6; // number of thickness segments
+				int m = 3; // number of thickness segments
 
 				real_t step = Math_TAU / n;
 				for (int j = 0; j < n; ++j) {
@@ -5954,13 +5963,25 @@ void fragment() {
 				surftool->commit(scale_plane_gizmo[i]);
 
 				Ref<StandardMaterial3D> plane_mat_hl = plane_mat->duplicate();
-				plane_mat_hl->set_albedo(Color(col.r * 1.3, col.g * 1.3, col.b * 1.3));
+				plane_mat_hl->set_albedo(col.from_hsv(col.get_h(), 0.25, 1.0, 1));
 				plane_gizmo_color_hl[i] = plane_mat_hl; // needed, so we can draw planes from both sides
 			}
 		}
 	}
 
 	_generate_selection_boxes();
+}
+
+void Node3DEditor::_update_context_menu_stylebox() {
+	// This must be called when the theme changes to follow the new accent color.
+	Ref<StyleBoxFlat> context_menu_stylebox = memnew(StyleBoxFlat);
+	const Color accent_color = EditorNode::get_singleton()->get_gui_base()->get_theme_color("accent_color", "Editor");
+	context_menu_stylebox->set_bg_color(accent_color * Color(1, 1, 1, 0.1));
+	// Add an underline to the StyleBox, but prevent its minimum vertical size from changing.
+	context_menu_stylebox->set_border_color(accent_color);
+	context_menu_stylebox->set_border_width(SIDE_BOTTOM, Math::round(2 * EDSCALE));
+	context_menu_stylebox->set_default_margin(SIDE_BOTTOM, 0);
+	context_menu_container->add_theme_style_override("panel", context_menu_stylebox);
 }
 
 void Node3DEditor::_update_gizmos_menu() {
@@ -6530,6 +6551,7 @@ void Node3DEditor::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			_update_theme();
 			_update_gizmos_menu_theme();
+			_update_context_menu_stylebox();
 			sun_title->add_theme_font_override("font", get_theme_font(SNAME("title_font"), SNAME("Window")));
 			environ_title->add_theme_font_override("font", get_theme_font(SNAME("title_font"), SNAME("Window")));
 		} break;
@@ -6578,11 +6600,11 @@ Vector<int> Node3DEditor::get_subgizmo_selection() {
 }
 
 void Node3DEditor::add_control_to_menu_panel(Control *p_control) {
-	hbc_menu->add_child(p_control);
+	hbc_context_menu->add_child(p_control);
 }
 
 void Node3DEditor::remove_control_from_menu_panel(Control *p_control) {
-	hbc_menu->remove_child(p_control);
+	hbc_context_menu->remove_child(p_control);
 }
 
 void Node3DEditor::set_can_preview(Camera3D *p_preview) {
@@ -7164,6 +7186,17 @@ Node3DEditor::Node3DEditor(EditorNode *p_editor) {
 	view_menu->set_switch_on_hover(true);
 	view_menu->set_shortcut_context(this);
 	hbc_menu->add_child(view_menu);
+
+	hbc_menu->add_child(memnew(VSeparator));
+
+	context_menu_container = memnew(PanelContainer);
+	hbc_context_menu = memnew(HBoxContainer);
+	context_menu_container->add_child(hbc_context_menu);
+	// Use a custom stylebox to make contextual menu items stand out from the rest.
+	// This helps with editor usability as contextual menu items change when selecting nodes,
+	// even though it may not be immediately obvious at first.
+	hbc_menu->add_child(context_menu_container);
+	_update_context_menu_stylebox();
 
 	p = view_menu->get_popup();
 
