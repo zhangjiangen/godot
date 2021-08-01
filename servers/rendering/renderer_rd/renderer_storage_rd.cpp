@@ -646,7 +646,7 @@ void RendererStorageRD::texture_2d_initialize(RID p_texture, const Ref<Image> &p
 	ERR_FAIL_COND(texture.rd_texture.is_null());
 	if (texture.rd_format_srgb != RD::DATA_FORMAT_MAX) {
 		rd_view.format_override = texture.rd_format_srgb;
-		texture.rd_texture_srgb = RD::get_singleton()->texture_create_shared(rd_view, texture.rd_texture);
+		texture.rd_texture_srgb = RD::get_singleton()->texture_create_shared(rd_view, texture.rd_texture, false);
 		if (texture.rd_texture_srgb.is_null()) {
 			RD::get_singleton()->free(texture.rd_texture);
 			ERR_FAIL_COND(texture.rd_texture_srgb.is_null());
@@ -756,7 +756,7 @@ void RendererStorageRD::texture_2d_layered_initialize(RID p_texture, const Vecto
 	ERR_FAIL_COND(texture.rd_texture.is_null());
 	if (texture.rd_format_srgb != RD::DATA_FORMAT_MAX) {
 		rd_view.format_override = texture.rd_format_srgb;
-		texture.rd_texture_srgb = RD::get_singleton()->texture_create_shared(rd_view, texture.rd_texture);
+		texture.rd_texture_srgb = RD::get_singleton()->texture_create_shared(rd_view, texture.rd_texture, false);
 		if (texture.rd_texture_srgb.is_null()) {
 			RD::get_singleton()->free(texture.rd_texture);
 			ERR_FAIL_COND(texture.rd_texture_srgb.is_null());
@@ -872,7 +872,7 @@ void RendererStorageRD::texture_3d_initialize(RID p_texture, Image::Format p_for
 	ERR_FAIL_COND(texture.rd_texture.is_null());
 	if (texture.rd_format_srgb != RD::DATA_FORMAT_MAX) {
 		rd_view.format_override = texture.rd_format_srgb;
-		texture.rd_texture_srgb = RD::get_singleton()->texture_create_shared(rd_view, texture.rd_texture);
+		texture.rd_texture_srgb = RD::get_singleton()->texture_create_shared(rd_view, texture.rd_texture, false);
 		if (texture.rd_texture_srgb.is_null()) {
 			RD::get_singleton()->free(texture.rd_texture);
 			ERR_FAIL_COND(texture.rd_texture_srgb.is_null());
@@ -895,10 +895,10 @@ void RendererStorageRD::texture_proxy_initialize(RID p_texture, RID p_base) {
 	Texture proxy_tex = *tex;
 
 	proxy_tex.rd_view.format_override = tex->rd_format;
-	proxy_tex.rd_texture = RD::get_singleton()->texture_create_shared(proxy_tex.rd_view, tex->rd_texture);
+	proxy_tex.rd_texture = RD::get_singleton()->texture_create_shared(proxy_tex.rd_view, tex->rd_texture, false);
 	if (proxy_tex.rd_texture_srgb.is_valid()) {
 		proxy_tex.rd_view.format_override = tex->rd_format_srgb;
-		proxy_tex.rd_texture_srgb = RD::get_singleton()->texture_create_shared(proxy_tex.rd_view, tex->rd_texture);
+		proxy_tex.rd_texture_srgb = RD::get_singleton()->texture_create_shared(proxy_tex.rd_view, tex->rd_texture, false);
 	}
 	proxy_tex.proxy_to = p_base;
 	proxy_tex.is_render_target = false;
@@ -1005,10 +1005,10 @@ void RendererStorageRD::texture_proxy_update(RID p_texture, RID p_proxy_to) {
 	proxy_to->proxies.push_back(p_texture);
 
 	tex->rd_view.format_override = tex->rd_format;
-	tex->rd_texture = RD::get_singleton()->texture_create_shared(tex->rd_view, proxy_to->rd_texture);
+	tex->rd_texture = RD::get_singleton()->texture_create_shared(tex->rd_view, proxy_to->rd_texture, false);
 	if (tex->rd_texture_srgb.is_valid()) {
 		tex->rd_view.format_override = tex->rd_format_srgb;
-		tex->rd_texture_srgb = RD::get_singleton()->texture_create_shared(tex->rd_view, proxy_to->rd_texture);
+		tex->rd_texture_srgb = RD::get_singleton()->texture_create_shared(tex->rd_view, proxy_to->rd_texture, false);
 	}
 }
 
@@ -6550,7 +6550,7 @@ void RendererStorageRD::voxel_gi_allocate_data(RID p_voxel_gi, const Transform3D
 			{
 				RD::TextureView tv;
 				tv.format_override = RD::DATA_FORMAT_R8_UINT;
-				shared_tex = RD::get_singleton()->texture_create_shared(tv, voxel_gi->sdf_texture);
+				shared_tex = RD::get_singleton()->texture_create_shared(tv, voxel_gi->sdf_texture,false);
 			}
 			//update SDF texture
 			Vector<RD::Uniform> uniforms;
@@ -7084,10 +7084,10 @@ void RendererStorageRD::_update_render_target(RenderTarget *rt) {
 		if (!rt->flags[RENDER_TARGET_TRANSPARENT]) {
 			view.swizzle_a = RD::TEXTURE_SWIZZLE_ONE;
 		}
-		tex->rd_texture = RD::get_singleton()->texture_create_shared(view, rt->color);
+		tex->rd_texture = RD::get_singleton()->texture_create_shared(view, rt->color, false);
 		if (rt->color_format_srgb != RD::DATA_FORMAT_MAX) {
 			view.format_override = rt->color_format_srgb;
-			tex->rd_texture_srgb = RD::get_singleton()->texture_create_shared(view, rt->color);
+			tex->rd_texture_srgb = RD::get_singleton()->texture_create_shared(view, rt->color, false);
 		}
 		tex->rd_view = view;
 		tex->width = rt->size.width;
@@ -7957,7 +7957,7 @@ void RendererStorageRD::_update_decal_atlas() {
 			//create the SRGB variant
 			RD::TextureView rd_view;
 			rd_view.format_override = RD::DATA_FORMAT_R8G8B8A8_SRGB;
-			decal_atlas.texture_srgb = RD::get_singleton()->texture_create_shared(rd_view, decal_atlas.texture);
+			decal_atlas.texture_srgb = RD::get_singleton()->texture_create_shared(rd_view, decal_atlas.texture, false);
 		}
 	}
 

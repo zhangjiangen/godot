@@ -2174,7 +2174,7 @@ RID RenderingDeviceVulkan::texture_create(const TextureFormat &p_format, const T
 	return id;
 }
 
-RID RenderingDeviceVulkan::texture_create_shared(const TextureView &p_view, RID p_with_texture) {
+RID RenderingDeviceVulkan::texture_create_shared(const TextureView &p_view, RID p_with_texture, bool p_is_only_sample) {
 	_THREAD_SAFE_METHOD_
 
 	Texture *src_texture = texture_owner.getornull(p_with_texture);
@@ -2254,21 +2254,23 @@ RID RenderingDeviceVulkan::texture_create_shared(const TextureView &p_view, RID 
 		if (texture.usage_flags & TEXTURE_USAGE_SAMPLING_BIT) {
 			usage_info.usage |= VK_IMAGE_USAGE_SAMPLED_BIT;
 		}
-
-		if (texture.usage_flags & TEXTURE_USAGE_STORAGE_BIT) {
-			if (texture_is_format_supported_for_usage(p_view.format_override, TEXTURE_USAGE_STORAGE_BIT)) {
-				usage_info.usage |= VK_IMAGE_USAGE_STORAGE_BIT;
+		// 是否只是当贴图使用
+		if (!p_is_only_sample) {
+			if (texture.usage_flags & TEXTURE_USAGE_STORAGE_BIT) {
+				if (texture_is_format_supported_for_usage(p_view.format_override, TEXTURE_USAGE_STORAGE_BIT)) {
+					usage_info.usage |= VK_IMAGE_USAGE_STORAGE_BIT;
+				}
 			}
-		}
 
-		if (texture.usage_flags & TEXTURE_USAGE_COLOR_ATTACHMENT_BIT) {
-			if (texture_is_format_supported_for_usage(p_view.format_override, TEXTURE_USAGE_COLOR_ATTACHMENT_BIT)) {
-				usage_info.usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+			if (texture.usage_flags & TEXTURE_USAGE_COLOR_ATTACHMENT_BIT) {
+				if (texture_is_format_supported_for_usage(p_view.format_override, TEXTURE_USAGE_COLOR_ATTACHMENT_BIT)) {
+					usage_info.usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+				}
 			}
-		}
 
-		if (texture.usage_flags & TEXTURE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT) {
-			usage_info.usage |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+			if (texture.usage_flags & TEXTURE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT) {
+				usage_info.usage |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+			}
 		}
 
 		if (texture.usage_flags & TEXTURE_USAGE_CAN_UPDATE_BIT) {

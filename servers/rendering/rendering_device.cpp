@@ -105,7 +105,7 @@ RID RenderingDevice::_texture_create(const Ref<RDTextureFormat> &p_format, const
 RID RenderingDevice::_texture_create_shared(const Ref<RDTextureView> &p_view, RID p_with_texture) {
 	ERR_FAIL_COND_V(p_view.is_null(), RID());
 
-	return texture_create_shared(p_view->base, p_with_texture);
+	return texture_create_shared(p_view->base, p_with_texture, false);
 }
 
 RID RenderingDevice::_texture_create_shared_from_slice(const Ref<RDTextureView> &p_view, RID p_with_texture, uint32_t p_layer, uint32_t p_mipmap, TextureSliceType p_slice_type) {

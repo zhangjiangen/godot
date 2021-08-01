@@ -211,6 +211,22 @@ void main() {
 	ivec3 write_pos = pos + max(ivec3(0), params.scroll);
 
 	read_pos.z += params.cascade * params.grid_size;
+#ifdef USING_UINT32_OCC
+	uint occlusion = imageLoad(src_occlusion, read_pos).r;
+	read_pos.x += params.grid_size;
+	uint occlusion2 = imageLoad(src_occlusion, read_pos).r;
+
+	const uint occlusion_shift[8] = uint[](24, 16, 8, 0);
+
+	for (uint i = 0; i < 4; i++) {
+		float o = float((occlusion >> occlusion_shift[i]) & 0xFF) / 255.0;
+		imageStore(dst_occlusion[i], write_pos, vec4(o));
+	}
+	for (uint i = 0; i < 4; i++) {
+		float o = float((occlusion >> occlusion_shift[i]) & 0xFF) / 255.0;
+		imageStore(dst_occlusion[i + 4], write_pos, vec4(o));
+	}
+#else
 	uint occlusion = imageLoad(src_occlusion, read_pos).r;
 	read_pos.x += params.grid_size;
 	occlusion |= imageLoad(src_occlusion, read_pos).r << 16;
@@ -221,6 +237,7 @@ void main() {
 		float o = float((occlusion >> occlusion_shift[i]) & 0xF) / 15.0;
 		imageStore(dst_occlusion[i], write_pos, vec4(o));
 	}
+#endif
 
 #endif
 
@@ -961,6 +978,26 @@ void main() {
 
 	// STORE OCCLUSION
 
+#ifdef USING_UINT32_OCC
+	uint occlusion = 0;
+	uint occlusion1 = 0;
+	const uint occlusion_shift[8] = uint[](24, 16, 8, 0);
+	for (int i = 0; i < 4; i++) {
+		float occ = imageLoad(src_occlusion[i], pos).r;
+		occlusion |= uint(clamp(occ * 255.0, 0.0, 255.0)) << occlusion_shift[i];
+	}
+	for (int i = 0; i < 4; i++) {
+		float occ = imageLoad(src_occlusion[4 + i], pos).r;
+		occlusion1 |= uint(clamp(occ * 255.0, 0.0, 255.0)) << occlusion_shift[i];
+	}
+	{
+		ivec3 occ_pos = pos;
+		occ_pos.z += params.cascade * params.grid_size;
+		imageStore(dst_occlusion, occ_pos, uvec4(occlusion));
+		occ_pos.x += params.grid_size;
+		imageStore(dst_occlusion, occ_pos, uvec4(occlusion1));
+	}
+#else
 	uint occlusion = 0;
 	const uint occlusion_shift[8] = uint[](12, 8, 4, 0, 28, 24, 20, 16);
 	for (int i = 0; i < 8; i++) {
@@ -974,6 +1011,7 @@ void main() {
 		occ_pos.x += params.grid_size;
 		imageStore(dst_occlusion, occ_pos, uvec4(occlusion >> 16));
 	}
+#endif
 
 	// STORE POSITIONS
 

@@ -63,6 +63,7 @@ void RendererSceneGIRD::SDFGI::create(RendererSceneEnvironmentRD *p_env, const V
 	tf_sdf.depth = cascade_size;
 	tf_sdf.texture_type = RD::TEXTURE_TYPE_3D;
 	tf_sdf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_STORAGE_BIT | RD::TEXTURE_USAGE_CAN_COPY_TO_BIT | RD::TEXTURE_USAGE_CAN_COPY_FROM_BIT;
+	bool is_supper_rgba444 = RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_R4G4B4A4_UNORM_PACK16, RD::TEXTURE_USAGE_SAMPLING_BIT);
 
 	{
 		RD::TextureFormat tf_render = tf_sdf;
@@ -94,9 +95,15 @@ void RendererSceneGIRD::SDFGI::create(RendererSceneEnvironmentRD *p_env, const V
 	}
 
 	RD::TextureFormat tf_occlusion = tf_sdf;
-	tf_occlusion.format = RD::DATA_FORMAT_R16_UINT;
-	tf_occlusion.shareable_formats.push_back(RD::DATA_FORMAT_R16_UINT);
-	tf_occlusion.shareable_formats.push_back(RD::DATA_FORMAT_R4G4B4A4_UNORM_PACK16);
+	if (is_supper_rgba444) {
+		tf_occlusion.format = RD::DATA_FORMAT_R16_UINT;
+		tf_occlusion.shareable_formats.push_back(RD::DATA_FORMAT_R16_UINT);
+		tf_occlusion.shareable_formats.push_back(RD::DATA_FORMAT_R4G4B4A4_UNORM_PACK16);
+	} else {
+		tf_occlusion.format = RD::DATA_FORMAT_R32_UINT;
+		tf_occlusion.shareable_formats.push_back(RD::DATA_FORMAT_R32_UINT);
+		tf_occlusion.shareable_formats.push_back(RD::DATA_FORMAT_A8B8G8R8_UNORM_PACK32);
+	}
 	tf_occlusion.depth *= cascades.size(); //use depth for occlusion slices
 	tf_occlusion.width *= 2; //use width for the other half
 
@@ -147,7 +154,7 @@ void RendererSceneGIRD::SDFGI::create(RendererSceneEnvironmentRD *p_env, const V
 		lightprobe_data = RD::get_singleton()->texture_create(tf_octprobes, RD::TextureView());
 		RD::TextureView tv;
 		tv.format_override = RD::DATA_FORMAT_E5B9G9R9_UFLOAT_PACK32;
-		lightprobe_texture = RD::get_singleton()->texture_create_shared(tv, lightprobe_data);
+		lightprobe_texture = RD::get_singleton()->texture_create_shared(tv, lightprobe_data, true);
 
 		//texture handling ambient data, to integrate with volumetric foc
 		RD::TextureFormat tf_ambient = tf_probes;
@@ -165,8 +172,12 @@ void RendererSceneGIRD::SDFGI::create(RendererSceneEnvironmentRD *p_env, const V
 	occlusion_data = RD::get_singleton()->texture_create(tf_occlusion, RD::TextureView());
 	{
 		RD::TextureView tv;
-		tv.format_override = RD::DATA_FORMAT_R4G4B4A4_UNORM_PACK16;
-		occlusion_texture = RD::get_singleton()->texture_create_shared(tv, occlusion_data);
+		if (is_supper_rgba444) {
+			tv.format_override = RD::DATA_FORMAT_R4G4B4A4_UNORM_PACK16;
+		} else {
+			tv.format_override = RD::DATA_FORMAT_A8B8G8R8_UNORM_PACK32;
+		}
+		occlusion_texture = RD::get_singleton()->texture_create_shared(tv, occlusion_data, true);
 	}
 
 	for (uint32_t i = 0; i < cascades.size(); i++) {
@@ -184,7 +195,7 @@ void RendererSceneGIRD::SDFGI::create(RendererSceneEnvironmentRD *p_env, const V
 		{
 			RD::TextureView tv;
 			tv.format_override = RD::DATA_FORMAT_E5B9G9R9_UFLOAT_PACK32;
-			cascade.light_tex = RD::get_singleton()->texture_create_shared(tv, cascade.light_data);
+			cascade.light_tex = RD::get_singleton()->texture_create_shared(tv, cascade.light_data, true);
 
 			RD::get_singleton()->texture_clear(cascade.light_tex, Color(0, 0, 0, 0), 0, 1, 0, 1);
 			RD::get_singleton()->texture_clear(cascade.light_aniso_0_tex, Color(0, 0, 0, 0), 0, 1, 0, 1);
