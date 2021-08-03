@@ -70,6 +70,7 @@
 #include "servers/rendering/rendering_device.h"
 
 #include "editor/audio_stream_preview.h"
+#include "editor/debugger/debug_adapter/debug_adapter_server.h"
 #include "editor/debugger/editor_debugger_node.h"
 #include "editor/dependency_editor.h"
 #include "editor/editor_about.h"
@@ -3797,6 +3798,8 @@ void EditorNode::unregister_editor_types() {
 	if (EditorPaths::get_singleton()) {
 		EditorPaths::free();
 	}
+
+	EditorResourcePicker::clear_caches();
 }
 
 void EditorNode::stop_child_process(OS::ProcessID p_pid) {
@@ -6739,6 +6742,7 @@ EditorNode::EditorNode() {
 	//plugin stuff
 
 	add_editor_plugin(memnew(DebuggerEditorPlugin(this, debug_menu)));
+	add_editor_plugin(memnew(DebugAdapterServer()));
 
 	disk_changed = memnew(ConfirmationDialog);
 	{
