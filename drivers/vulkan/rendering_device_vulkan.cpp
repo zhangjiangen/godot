@@ -6279,7 +6279,12 @@ RID RenderingDeviceVulkan::render_pipeline_create(RID p_shader, FramebufferForma
 	multisample_state_create_info.pNext = nullptr;
 	multisample_state_create_info.flags = 0;
 
+#if __APPLE__
+	// Matel 不支持renderpopline 和 framebuffer samplecount 不一致
+	multisample_state_create_info.rasterizationSamples = rasterization_sample_count[0];
+#else
 	multisample_state_create_info.rasterizationSamples = rasterization_sample_count[p_multisample_state.sample_count];
+#endif
 	multisample_state_create_info.sampleShadingEnable = p_multisample_state.enable_sample_shading;
 	multisample_state_create_info.minSampleShading = p_multisample_state.min_sample_shading;
 	Vector<VkSampleMask> sample_mask;

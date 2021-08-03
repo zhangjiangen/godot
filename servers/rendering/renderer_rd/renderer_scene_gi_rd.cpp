@@ -2877,14 +2877,25 @@ void RendererSceneGIRD::init(RendererStorageRD *p_storage, RendererSceneSkyRD *p
 
 	{
 		Vector<String> preprocess_modes;
+		bool is_supper_rgba444 = RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_R4G4B4A4_UNORM_PACK16, RD::TEXTURE_USAGE_SAMPLING_BIT);
+
 		preprocess_modes.push_back("\n#define MODE_SCROLL\n");
-		preprocess_modes.push_back("\n#define MODE_SCROLL_OCCLUSION\n");
+		if (is_supper_rgba444) {
+			preprocess_modes.push_back("\n#define MODE_SCROLL_OCCLUSION\n");
+		} else {
+			preprocess_modes.push_back("\n#define MODE_SCROLL_OCCLUSION\n#define USING_UINT32_OCC\n");
+		}
 		preprocess_modes.push_back("\n#define MODE_INITIALIZE_JUMP_FLOOD\n");
 		preprocess_modes.push_back("\n#define MODE_INITIALIZE_JUMP_FLOOD_HALF\n");
 		preprocess_modes.push_back("\n#define MODE_JUMPFLOOD\n");
 		preprocess_modes.push_back("\n#define MODE_JUMPFLOOD_OPTIMIZED\n");
 		preprocess_modes.push_back("\n#define MODE_UPSCALE_JUMP_FLOOD\n");
-		preprocess_modes.push_back("\n#define MODE_OCCLUSION\n");
+
+		if (is_supper_rgba444) {
+			preprocess_modes.push_back("\n#define MODE_OCCLUSION\n");
+		} else {
+			preprocess_modes.push_back("\n#define MODE_OCCLUSION\n#define USING_UINT32_OCC\n");
+		}
 		preprocess_modes.push_back("\n#define MODE_STORE\n");
 		String defines = "\n#define OCCLUSION_SIZE " + itos(SDFGI::CASCADE_SIZE / SDFGI::PROBE_DIVISOR) + "\n";
 		sdfgi_shader.preprocess.initialize(preprocess_modes, defines);
