@@ -208,14 +208,14 @@ enum PropertyUsageFlags {
 	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                      \
 	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, pro_hit, hint_string, PROPERTY_USAGE_DEFAULT), c_set_##name##_func_name, c_get_##name##_func_name);
 // 资源类型
-#define IMP_PROPERTY_D_RES(class_name, type, name, pro_hit, hint_string, res_class_name)                     \
+#define IMP_PROPERTY_D_RES(class_name, type, name, res_class_name)                                           \
 	const char *c_get_##name##_func_name = CODE_TO_STRING_2(_get_, name);                                    \
 	const char *c_set_##name##_func_name = CODE_TO_STRING_2(_set_, name);                                    \
 	const char *c_##name##_arg_name = CODE_TO_STRING_2(p_, name);                                            \
 	Variant::Type t_##name##_variant_type = Variant::get_type<type>();                                       \
 	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set_##name); \
 	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                      \
-	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, pro_hit, hint_string, PROPERTY_USAGE_DEFAULT, #res_class_name), c_set_##name##_func_name, c_get_##name##_func_name);
+	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, PROPERTY_HINT_RESOURCE_TYPE, "", PROPERTY_USAGE_DEFAULT, #res_class_name), c_set_##name##_func_name, c_get_##name##_func_name);
 // 动态修改可编辑状态，需要设置一个bool类型的属性名称，获取这个属性是否可以编辑
 #define IMP_PROPERTY_D_DYN_EDITOR(class_name, type, name, pro_hit, hint_string, editor_state_get_bool_pro)   \
 	const char *c_get_##name##_func_name = CODE_TO_STRING_2(_get_, name);                                    \
