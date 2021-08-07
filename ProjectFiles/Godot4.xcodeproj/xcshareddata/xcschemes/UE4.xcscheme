@@ -55,7 +55,7 @@
       </MacroExpansion>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = " /Users/zhangjiangen/Documents/godot-sdfgi-test/project.godot"
+            argument = " /Users/zhangjiangen/Documents/Godot4Test/project.godot"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

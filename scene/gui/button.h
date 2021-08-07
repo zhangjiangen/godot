@@ -49,6 +49,7 @@ private:
 	String text;
 	String xl_text;
 	Ref<TextParagraph> text_buf;
+	Color button_color;
 
 	Dictionary opentype_features;
 	String language;
@@ -105,6 +106,9 @@ public:
 
 	void set_icon_align(TextAlign p_align);
 	TextAlign get_icon_align() const;
+	void set_button_color(Color p_color) {
+		button_color = p_color;
+	}
 
 	Button(const String &p_text = String());
 	~Button();

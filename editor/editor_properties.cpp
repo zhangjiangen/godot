@@ -550,6 +550,7 @@ void EditorPropertyMember::_bind_methods() {
 EditorPropertyMember::EditorPropertyMember() {
 	selector = nullptr;
 	property = memnew(Button);
+	property->set_button_color(Color(1, 0.8f, 0.8f));
 	property->set_clip_text(true);
 	add_child(property);
 	add_focusable(property);

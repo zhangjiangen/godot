@@ -334,7 +334,7 @@ void Button::_notification(int p_what) {
 				text_buf->draw_outline(ci, text_ofs, outline_size, font_outline_color);
 			}
 
-			text_buf->draw(ci, text_ofs, color);
+			text_buf->draw(ci, text_ofs, color * button_color);
 		} break;
 	}
 }
@@ -574,6 +574,7 @@ void Button::_bind_methods() {
 Button::Button(const String &p_text) {
 	text_buf.instantiate();
 	text_buf->set_flags(TextServer::BREAK_MANDATORY);
+	button_color = Color(1, 1, 1);
 
 	set_mouse_filter(MOUSE_FILTER_STOP);
 	set_text(p_text);

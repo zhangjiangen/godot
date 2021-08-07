@@ -216,7 +216,7 @@ void main() {
 	read_pos.x += params.grid_size;
 	uint occlusion2 = imageLoad(src_occlusion, read_pos).r;
 
-	const uint occlusion_shift[8] = uint[](24, 16, 8, 0);
+	const uint occlusion_shift[4] = uint[](24, 16, 8, 0);
 
 	for (uint i = 0; i < 4; i++) {
 		float o = float((occlusion >> occlusion_shift[i]) & 0xFF) / 255.0;
