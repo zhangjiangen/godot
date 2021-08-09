@@ -225,7 +225,7 @@ static void _OS_printres(Object *p_obj) {
 		return;
 	}
 
-	String str = itos(res->get_instance_id()) + String(res->get_class()) + ":" + String(res->get_name()) + " - " + res->get_path();
+	String str = vformat("%s - %s - %s", res->to_string(), res->get_name(), res->get_path());
 	if (_OSPRF) {
 		_OSPRF->store_line(str);
 	} else {
@@ -260,14 +260,6 @@ void OS::print_resources_in_use(bool p_short) {
 
 void OS::dump_resources_to_file(const char *p_file) {
 	ResourceCache::dump(p_file);
-}
-
-void OS::set_no_window_mode(bool p_enable) {
-	_no_window = p_enable;
-}
-
-bool OS::is_no_window_mode_enabled() const {
-	return _no_window;
 }
 
 int OS::get_exit_code() const {

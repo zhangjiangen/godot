@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  shortcut.h                                                           */
+/*  api.cpp                                                              */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,27 +28,21 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef SHORTCUT_H
-#define SHORTCUT_H
+#include "api.h"
 
-#include "core/input/input_event.h"
-#include "core/io/resource.h"
+#if defined(IPHONE_ENABLED)
 
-class Shortcut : public Resource {
-	GDCLASS(Shortcut, Resource);
+void register_iphone_api() {
+	godot_ios_plugins_initialize();
+}
 
-	Ref<InputEvent> event;
+void unregister_iphone_api() {
+	godot_ios_plugins_deinitialize();
+}
 
-protected:
-	static void _bind_methods();
+#else
 
-public:
-	void set_event(const Ref<InputEvent> &p_shortcut);
-	Ref<InputEvent> get_event() const;
-	bool matches_event(const Ref<InputEvent> &p_event) const;
-	bool has_valid_event() const;
+void register_iphone_api() {}
+void unregister_iphone_api() {}
 
-	String get_as_text() const;
-};
-
-#endif // SHORTCUT_H
+#endif
