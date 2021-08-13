@@ -29,7 +29,12 @@
 /*************************************************************************/
 
 #include "dir_access.h"
+#if defined(WIN32) || defined(WIN64)
+#include <io.h>
+#include <direct.h>
+#else
 #include <unistd.h>
+#endif
 
 #include "core/config/project_settings.h"
 #include "core/io/file_access.h"

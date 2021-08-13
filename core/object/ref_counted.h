@@ -35,6 +35,7 @@
 #include "core/templates/safe_refcount.h"
 
 #include <stdint.h>
+#include <assert.h>
 
 class RefCounted : public Object {
 	GDCLASS(RefCounted, Object);

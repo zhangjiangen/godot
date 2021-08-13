@@ -2457,7 +2457,7 @@ static bool is_shortcut_pressed(const String &p_path) {
 		return false;
 	}
 	const Input &input = *Input::get_singleton();
-	int keycode = k->get_keycode();
+	Key keycode = k->get_keycode();
 	return input.is_key_pressed(keycode);
 }
 
@@ -2735,7 +2735,7 @@ void Node3DEditorViewport::_notification(int p_what) {
 		if (show_fps) {
 			cpu_time_history[cpu_time_history_index] = RS::get_singleton()->viewport_get_measured_render_time_cpu(viewport->get_viewport_rid());
 			cpu_time_history_index = (cpu_time_history_index + 1) % FRAME_TIME_HISTORY;
-			float cpu_time = 0.0;
+			double cpu_time = 0.0;
 			for (int i = 0; i < FRAME_TIME_HISTORY; i++) {
 				cpu_time += cpu_time_history[i];
 			}
@@ -2745,7 +2745,7 @@ void Node3DEditorViewport::_notification(int p_what) {
 
 			gpu_time_history[gpu_time_history_index] = RS::get_singleton()->viewport_get_measured_render_time_gpu(viewport->get_viewport_rid());
 			gpu_time_history_index = (gpu_time_history_index + 1) % FRAME_TIME_HISTORY;
-			float gpu_time = 0.0;
+			double gpu_time = 0.0;
 			for (int i = 0; i < FRAME_TIME_HISTORY; i++) {
 				gpu_time += gpu_time_history[i];
 			}
@@ -2769,7 +2769,7 @@ void Node3DEditorViewport::_notification(int p_what) {
 					frame_time_gradient->get_color_at_offset(
 							Math::range_lerp(gpu_time, 0, 30, 0, 1)));
 
-			const float fps = 1000.0 / gpu_time;
+			const double fps = 1000.0 / gpu_time;
 			fps_label->set_text(vformat(TTR("FPS: %d"), fps));
 			// Middle point is at 60 FPS.
 			fps_label->add_theme_color_override(
@@ -3187,7 +3187,7 @@ void Node3DEditorViewport::_menu_option(int p_option) {
 			int idx = view_menu->get_popup()->get_item_index(VIEW_AUDIO_LISTENER);
 			bool current = view_menu->get_popup()->is_item_checked(idx);
 			current = !current;
-			viewport->set_as_audio_listener(current);
+			viewport->set_as_audio_listener_3d(current);
 			view_menu->get_popup()->set_item_checked(idx, current);
 
 		} break;
@@ -3634,7 +3634,7 @@ void Node3DEditorViewport::set_state(const Dictionary &p_state) {
 		bool listener = p_state["listener"];
 
 		int idx = view_menu->get_popup()->get_item_index(VIEW_AUDIO_LISTENER);
-		viewport->set_as_audio_listener(listener);
+		viewport->set_as_audio_listener_3d(listener);
 		view_menu->get_popup()->set_item_checked(idx, listener);
 	}
 	if (p_state.has("doppler")) {
@@ -3718,7 +3718,7 @@ Dictionary Node3DEditorViewport::get_state() const {
 	} else if (view_menu->get_popup()->is_item_checked(view_menu->get_popup()->get_item_index(VIEW_DISPLAY_SHADELESS))) {
 		d["display_mode"] = VIEW_DISPLAY_SHADELESS;
 	}
-	d["listener"] = viewport->is_audio_listener();
+	d["listener"] = viewport->is_audio_listener_3d();
 	d["doppler"] = view_menu->get_popup()->is_item_checked(view_menu->get_popup()->get_item_index(VIEW_AUDIO_DOPPLER));
 	d["gizmos"] = view_menu->get_popup()->is_item_checked(view_menu->get_popup()->get_item_index(VIEW_GIZMOS));
 	d["information"] = view_menu->get_popup()->is_item_checked(view_menu->get_popup()->get_item_index(VIEW_INFORMATION));
@@ -4363,7 +4363,7 @@ Node3DEditorViewport::Node3DEditorViewport(Node3DEditor *p_spatial_editor, Edito
 
 	if (p_index == 0) {
 		view_menu->get_popup()->set_item_checked(view_menu->get_popup()->get_item_index(VIEW_AUDIO_LISTENER), true);
-		viewport->set_as_audio_listener(true);
+		viewport->set_as_audio_listener_3d(true);
 	}
 
 	name = "";
@@ -5508,6 +5508,12 @@ void Node3DEditor::_init_indicators() {
 		Vector<Color> origin_colors;
 		Vector<Vector3> origin_points;
 
+		const int count_of_elements = 3 * 6;
+		origin_colors.resize(count_of_elements);
+		origin_points.resize(count_of_elements);
+
+		int x = 0;
+
 		for (int i = 0; i < 3; i++) {
 			Vector3 axis;
 			axis[i] = 1;
@@ -5530,21 +5536,22 @@ void Node3DEditor::_init_indicators() {
 			grid_enable[i] = false;
 			grid_visible[i] = false;
 
-			origin_colors.push_back(origin_color);
-			origin_colors.push_back(origin_color);
-			origin_colors.push_back(origin_color);
-			origin_colors.push_back(origin_color);
-			origin_colors.push_back(origin_color);
-			origin_colors.push_back(origin_color);
+			origin_colors.set(x, origin_color);
+			origin_colors.set(x + 1, origin_color);
+			origin_colors.set(x + 2, origin_color);
+			origin_colors.set(x + 3, origin_color);
+			origin_colors.set(x + 4, origin_color);
+			origin_colors.set(x + 5, origin_color);
 			// To both allow having a large origin size and avoid jitter
 			// at small scales, we should segment the line into pieces.
 			// 3 pieces seems to do the trick, and let's use powers of 2.
-			origin_points.push_back(axis * 1048576);
-			origin_points.push_back(axis * 1024);
-			origin_points.push_back(axis * 1024);
-			origin_points.push_back(axis * -1024);
-			origin_points.push_back(axis * -1024);
-			origin_points.push_back(axis * -1048576);
+			origin_points.set(x, axis * 1048576);
+			origin_points.set(x + 1, axis * 1024);
+			origin_points.set(x + 2, axis * 1024);
+			origin_points.set(x + 3, axis * -1024);
+			origin_points.set(x + 4, axis * -1024);
+			origin_points.set(x + 5, axis * -1048576);
+			x += 6;
 		}
 
 		Ref<Shader> grid_shader = memnew(Shader);
@@ -6121,6 +6128,32 @@ void Node3DEditor::_init_grid() {
 		grid_mat[c]->set_shader_param("grid_size", grid_fade_size);
 		grid_mat[c]->set_shader_param("orthogonal", orthogonal);
 
+		// Cache these so we don't have to re-access memory.
+		Vector<Vector3> &ref_grid = grid_points[c];
+		Vector<Vector3> &ref_grid_normals = grid_normals[c];
+		Vector<Color> &ref_grid_colors = grid_colors[c];
+
+		// Count our elements same as code below it.
+		int expected_size = 0;
+		for (int i = -grid_size; i <= grid_size; i++) {
+			const real_t position_a = center_a + i * small_step_size;
+			const real_t position_b = center_b + i * small_step_size;
+
+			// Don't draw lines over the origin if it's enabled.
+			if (!(origin_enabled && Math::is_zero_approx(position_a))) {
+				expected_size += 2;
+			}
+
+			if (!(origin_enabled && Math::is_zero_approx(position_b))) {
+				expected_size += 2;
+			}
+		}
+
+		int idx = 0;
+		ref_grid.resize(expected_size);
+		ref_grid_normals.resize(expected_size);
+		ref_grid_colors.resize(expected_size);
+
 		// In each iteration of this loop, draw one line in each direction (so two lines per loop, in each if statement).
 		for (int i = -grid_size; i <= grid_size; i++) {
 			Color line_color;
@@ -6143,12 +6176,13 @@ void Node3DEditor::_init_grid() {
 				line_end[a] = position_a;
 				line_bgn[b] = bgn_b;
 				line_end[b] = end_b;
-				grid_points[c].push_back(line_bgn);
-				grid_points[c].push_back(line_end);
-				grid_colors[c].push_back(line_color);
-				grid_colors[c].push_back(line_color);
-				grid_normals[c].push_back(normal);
-				grid_normals[c].push_back(normal);
+				ref_grid.set(idx, line_bgn);
+				ref_grid.set(idx + 1, line_end);
+				ref_grid_colors.set(idx, line_color);
+				ref_grid_colors.set(idx + 1, line_color);
+				ref_grid_normals.set(idx, normal);
+				ref_grid_normals.set(idx + 1, normal);
+				idx += 2;
 			}
 
 			if (!(origin_enabled && Math::is_zero_approx(position_b))) {
@@ -6158,12 +6192,13 @@ void Node3DEditor::_init_grid() {
 				line_end[b] = position_b;
 				line_bgn[a] = bgn_a;
 				line_end[a] = end_a;
-				grid_points[c].push_back(line_bgn);
-				grid_points[c].push_back(line_end);
-				grid_colors[c].push_back(line_color);
-				grid_colors[c].push_back(line_color);
-				grid_normals[c].push_back(normal);
-				grid_normals[c].push_back(normal);
+				ref_grid.set(idx, line_bgn);
+				ref_grid.set(idx + 1, line_end);
+				ref_grid_colors.set(idx, line_color);
+				ref_grid_colors.set(idx + 1, line_color);
+				ref_grid_normals.set(idx, normal);
+				ref_grid_normals.set(idx + 1, normal);
+				idx += 2;
 			}
 		}
 
@@ -6201,8 +6236,22 @@ void Node3DEditor::_finish_grid() {
 }
 
 void Node3DEditor::update_grid() {
-	_finish_grid();
-	_init_grid();
+	const Camera3D::Projection current_projection = viewports[0]->camera->get_projection();
+
+	if (current_projection != grid_camera_last_update_perspective) {
+		grid_init_draw = false; // redraw
+		grid_camera_last_update_perspective = current_projection;
+	}
+
+	// Gets a orthogonal or perspective position correctly (for the grid comparison)
+	const Vector3 camera_position = get_editor_viewport(0)->camera->get_position();
+
+	if (!grid_init_draw || (camera_position - grid_camera_last_update_position).length() >= 10.0f) {
+		_finish_grid();
+		_init_grid();
+		grid_init_draw = true;
+		grid_camera_last_update_position = camera_position;
+	}
 }
 
 void Node3DEditor::_selection_changed() {
@@ -6820,7 +6869,7 @@ void Node3DEditor::clear() {
 
 	for (uint32_t i = 0; i < VIEWPORTS_COUNT; i++) {
 		viewports[i]->view_menu->get_popup()->set_item_checked(view_menu->get_popup()->get_item_index(Node3DEditorViewport::VIEW_AUDIO_LISTENER), i == 0);
-		viewports[i]->viewport->set_as_audio_listener(i == 0);
+		viewports[i]->viewport->set_as_audio_listener_3d(i == 0);
 	}
 
 	view_menu->get_popup()->set_item_checked(view_menu->get_popup()->get_item_index(MENU_VIEW_GRID), true);

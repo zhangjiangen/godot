@@ -1,5 +1,9 @@
 #include "pixel_format_gpu_utils.h"
 
+//#if defined(WIN32) || defined(WIN64)
+#include <assert.h>
+//#endif
+
 Color TextureBox::getColourAt(uint32_t _x, uint32_t _y, uint32_t _z,
 		PixelFormatGpu pixelFormat) const {
 	if (isCompressed()) {

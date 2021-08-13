@@ -308,7 +308,7 @@ void GradientEdit::_notification(int p_what) {
 		int total_w = get_size().width - get_size().height - SPACING;
 
 		//Draw checker pattern for ramp
-		draw_texture_rect(get_theme_icon("GuiMiniCheckerboard", "EditorIcons"), Rect2(0, 0, total_w, h), true);
+		draw_texture_rect(get_theme_icon(SNAME("GuiMiniCheckerboard"), SNAME("EditorIcons")), Rect2(0, 0, total_w, h), true);
 
 		//Draw color ramp
 		Gradient::Point prev;
@@ -375,7 +375,7 @@ void GradientEdit::_notification(int p_what) {
 		}
 
 		//Draw "button" for color selector
-		draw_texture_rect(get_theme_icon("GuiMiniCheckerboard", "EditorIcons"), Rect2(total_w + SPACING, 0, h, h), true);
+		draw_texture_rect(get_theme_icon(SNAME("GuiMiniCheckerboard"), SNAME("EditorIcons")), Rect2(total_w + SPACING, 0, h, h), true);
 		if (grabbed != -1) {
 			//Draw with selection color
 			draw_rect(Rect2(total_w + SPACING, 0, h, h), points[grabbed].color);
@@ -415,7 +415,7 @@ void GradientEdit::_color_changed(const Color &p_color) {
 	emit_signal(SNAME("ramp_changed"));
 }
 
-void GradientEdit::set_ramp(const Vector<float> &p_offsets, const Vector<Color> &p_colors) {
+void GradientEdit::set_ramp(const Vector<real_t> &p_offsets, const Vector<Color> &p_colors) {
 	ERR_FAIL_COND(p_offsets.size() != p_colors.size());
 	points.clear();
 	for (int i = 0; i < p_offsets.size(); i++) {
@@ -429,8 +429,8 @@ void GradientEdit::set_ramp(const Vector<float> &p_offsets, const Vector<Color> 
 	update();
 }
 
-Vector<float> GradientEdit::get_offsets() const {
-	Vector<float> ret;
+Vector<real_t> GradientEdit::get_offsets() const {
+	Vector<real_t> ret;
 	for (int i = 0; i < points.size(); i++) {
 		ret.push_back(points[i].offset);
 	}
