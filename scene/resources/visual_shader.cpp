@@ -249,6 +249,9 @@ void VisualShaderNode::_bind_methods() {
 	BIND_ENUM_CONSTANT(PORT_TYPE_SCALAR);
 	BIND_ENUM_CONSTANT(PORT_TYPE_SCALAR_INT);
 	BIND_ENUM_CONSTANT(PORT_TYPE_VECTOR);
+	BIND_ENUM_CONSTANT(PORT_TYPE_VECTOR4);
+	BIND_ENUM_CONSTANT(PORT_TYPE_IVECTOR);
+	BIND_ENUM_CONSTANT(PORT_TYPE_IVECTOR4);
 	BIND_ENUM_CONSTANT(PORT_TYPE_BOOLEAN);
 	BIND_ENUM_CONSTANT(PORT_TYPE_TRANSFORM);
 	BIND_ENUM_CONSTANT(PORT_TYPE_SAMPLER);
@@ -1514,6 +1517,15 @@ Error VisualShader::_write_node(Type type, StringBuilder &global_code, StringBui
 				case VisualShaderNode::PORT_TYPE_VECTOR:
 					outputs[i] = "vec3 " + var_name;
 					break;
+				case VisualShaderNode::PORT_TYPE_VECTOR4:
+					outputs[i] = "vec4 " + var_name;
+					break;
+				case VisualShaderNode::PORT_TYPE_IVECTOR:
+					outputs[i] = "ivec3 " + var_name;
+					break;
+				case VisualShaderNode::PORT_TYPE_IVECTOR4:
+					outputs[i] = "ivec4 " + var_name;
+					break;
 				case VisualShaderNode::PORT_TYPE_BOOLEAN:
 					outputs[i] = "bool " + var_name;
 					break;
@@ -1542,6 +1554,15 @@ Error VisualShader::_write_node(Type type, StringBuilder &global_code, StringBui
 					break;
 				case VisualShaderNode::PORT_TYPE_VECTOR:
 					code += "	vec3 " + outputs[i] + ";\n";
+					break;
+				case VisualShaderNode::PORT_TYPE_VECTOR4:
+					code += "	vec4 " + outputs[i] + ";\n";
+					break;
+				case VisualShaderNode::PORT_TYPE_IVECTOR:
+					code += "	ivec3 " + outputs[i] + ";\n";
+					break;
+				case VisualShaderNode::PORT_TYPE_IVECTOR4:
+					code += "	ivec4 " + outputs[i] + ";\n";
 					break;
 				case VisualShaderNode::PORT_TYPE_BOOLEAN:
 					code += "	bool " + outputs[i] + ";\n";
@@ -2756,6 +2777,12 @@ VisualShaderNodeUniformRef::PortType VisualShaderNodeUniformRef::get_port_type_b
 				return PORT_TYPE_SAMPLER;
 			case UniformType::UNIFORM_TYPE_VECTOR:
 				return PORT_TYPE_VECTOR;
+			case UniformType::UNIFORM_TYPE_VECTOR4:
+				return PORT_TYPE_VECTOR4;
+			case UniformType::UNIFORM_TYPE_IVECTOR:
+				return PORT_TYPE_IVECTOR;
+			case UniformType::UNIFORM_TYPE_IVECTOR4:
+				return PORT_TYPE_IVECTOR4;
 			case UniformType::UNIFORM_TYPE_TRANSFORM:
 				return PORT_TYPE_TRANSFORM;
 			case UniformType::UNIFORM_TYPE_COLOR:

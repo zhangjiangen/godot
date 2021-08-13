@@ -1311,6 +1311,15 @@ void VisualShaderEditor::_update_options_menu() {
 			case VisualShaderNode::PORT_TYPE_VECTOR:
 				item->set_icon(0, EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector3"), SNAME("EditorIcons")));
 				break;
+			case VisualShaderNode::PORT_TYPE_VECTOR4:
+				item->set_icon(0, EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector3"), SNAME("EditorIcons")));
+				break;
+			case VisualShaderNode::PORT_TYPE_IVECTOR:
+				item->set_icon(0, EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector3"), SNAME("EditorIcons")));
+				break;
+			case VisualShaderNode::PORT_TYPE_IVECTOR4:
+				item->set_icon(0, EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector4"), SNAME("EditorIcons")));
+				break;
 			case VisualShaderNode::PORT_TYPE_BOOLEAN:
 				item->set_icon(0, EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("bool"), SNAME("EditorIcons")));
 				break;
@@ -2400,6 +2409,15 @@ void VisualShaderEditor::_add_node(int p_idx, int p_op_idx, String p_resource_pa
 					break;
 				case VisualShaderNode::PORT_TYPE_VECTOR:
 					initial_expression_code = "output0 = vec3(1.0, 1.0, 1.0);";
+					break;
+				case VisualShaderNode::PORT_TYPE_VECTOR4:
+					initial_expression_code = "output0 = vec4(1.0, 1.0);";
+					break;
+				case VisualShaderNode::PORT_TYPE_IVECTOR:
+					initial_expression_code = "output0 = ivec3(1, 1, 1);";
+					break;
+				case VisualShaderNode::PORT_TYPE_IVECTOR4:
+					initial_expression_code = "output0 = ivec4(1, 1, 1, 1);";
 					break;
 				case VisualShaderNode::PORT_TYPE_BOOLEAN:
 					initial_expression_code = "output0 = true;";
@@ -3885,6 +3903,9 @@ VisualShaderEditor::VisualShaderEditor() {
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_VECTOR, VisualShaderNode::PORT_TYPE_SCALAR_INT);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_VECTOR, VisualShaderNode::PORT_TYPE_VECTOR);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_VECTOR, VisualShaderNode::PORT_TYPE_BOOLEAN);
+	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_VECTOR4, VisualShaderNode::PORT_TYPE_VECTOR4);
+	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_IVECTOR, VisualShaderNode::PORT_TYPE_IVECTOR);
+	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_IVECTOR4, VisualShaderNode::PORT_TYPE_IVECTOR4);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_BOOLEAN, VisualShaderNode::PORT_TYPE_SCALAR);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_BOOLEAN, VisualShaderNode::PORT_TYPE_SCALAR_INT);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_BOOLEAN, VisualShaderNode::PORT_TYPE_VECTOR);
@@ -4633,10 +4654,13 @@ public:
 
 	void setup(const Ref<VisualShaderNodeInput> &p_input) {
 		input = p_input;
-		Ref<Texture2D> type_icon[6] = {
+		Ref<Texture2D> type_icon[9] = {
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("float"), SNAME("EditorIcons")),
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("int"), SNAME("EditorIcons")),
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector3"), SNAME("EditorIcons")),
+            EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Plane"), SNAME("EditorIcons")),
+            EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector3i"), SNAME("EditorIcons")),
+            EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Rect2i"), SNAME("EditorIcons")),
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("bool"), SNAME("EditorIcons")),
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Transform3D"), SNAME("EditorIcons")),
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("ImageTexture"), SNAME("EditorIcons")),
@@ -4678,11 +4702,14 @@ public:
 	void setup(const Ref<VisualShaderNodeUniformRef> &p_uniform_ref) {
 		uniform_ref = p_uniform_ref;
 
-		Ref<Texture2D> type_icon[7] = {
+		Ref<Texture2D> type_icon[10] = {
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("float"), SNAME("EditorIcons")),
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("int"), SNAME("EditorIcons")),
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("bool"), SNAME("EditorIcons")),
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector3"), SNAME("EditorIcons")),
+            EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Plane"), SNAME("EditorIcons")),
+            EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector3i"), SNAME("EditorIcons")),
+            EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Rect2i"), SNAME("EditorIcons")),
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Transform3D"), SNAME("EditorIcons")),
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Color"), SNAME("EditorIcons")),
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("ImageTexture"), SNAME("EditorIcons")),
