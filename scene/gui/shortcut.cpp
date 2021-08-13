@@ -29,10 +29,10 @@
 /*************************************************************************/
 
 #include "shortcut.h"
-
 #include "core/os/keyboard.h"
 
 void Shortcut::set_event(const Ref<InputEvent> &p_event) {
+	ERR_FAIL_COND(Object::cast_to<InputEventShortcut>(*p_event));
 	event = p_event;
 	emit_changed();
 }
@@ -42,6 +42,12 @@ Ref<InputEvent> Shortcut::get_event() const {
 }
 
 bool Shortcut::matches_event(const Ref<InputEvent> &p_event) const {
+	Ref<InputEventShortcut> ies = p_event;
+	if (ies != nullptr) {
+		if (ies->get_shortcut().ptr() == this) {
+			return true;
+		}
+	}
 	return event.is_valid() && event->is_match(p_event, true);
 }
 
