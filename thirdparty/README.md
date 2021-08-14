@@ -602,7 +602,7 @@ Godot. Please check the file to know what's new.
 ## spirv-reflect
 
 - Upstream: https://github.com/KhronosGroup/SPIRV-Reflect
-- Version: git (c0ce03a43ca77fedb5abfd1976ae2fd0eeb0e611, 2021)
+- Version: git (272e050728de8d4a4ce9e7101c1244e6ff56e5b0, 2021)
 - License: Apache 2.0
 
 Files extracted from upstream source:
@@ -692,8 +692,8 @@ Files extracted from upstream source:
 SDK release: https://github.com/KhronosGroup/Vulkan-ValidationLayers/blob/master/layers/generated/vk_enum_string_helper.h
 
 `vk_mem_alloc.h` is taken from https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator
-Version: 2.3.0 (2019)
-`vk_mem_alloc.cpp` and `android/vk_mem_alloc.cpp` are Godot files and should be preserved on updates.
+Version: 3.0.0-development (2021-06-21), branch `feature-small-buffers`, commit `cfea2f72851f9ee4a399769f18865047b83711f1`
+`vk_mem_alloc.cpp` is a Godot file and should be preserved on updates.
 
 Patches in the `patches` directory should be re-applied after updates.
 

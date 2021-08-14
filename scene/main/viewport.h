@@ -31,26 +31,25 @@
 #ifndef VIEWPORT_H
 #define VIEWPORT_H
 
-#include "core/math/transform_2d.h"
-#include "core/templates/pair.h"
 #include "scene/main/node.h"
 #include "scene/resources/texture.h"
-#include "scene/resources/world_2d.h"
-#include "servers/display_server.h"
-#include "servers/rendering_server.h"
 
+#ifndef _3D_DISABLED
 class Camera3D;
-class Camera2D;
+class CollisionObject3D;
 class Listener3D;
-class Control;
+class World3D;
+#endif // _3D_DISABLED
+
+class Camera2D;
 class CanvasItem;
 class CanvasLayer;
-class Panel;
+class Control;
 class Label;
-class Timer;
-class Viewport;
-class CollisionObject3D;
 class SceneTreeTimer;
+class Viewport;
+class Window;
+class World2D;
 
 class ViewportTexture : public Texture2D {
 	GDCLASS(ViewportTexture, Texture2D);
@@ -576,6 +575,7 @@ public:
 
 	void pass_mouse_focus_to(Viewport *p_viewport, Control *p_control);
 
+#ifndef _3D_DISABLED
 	bool use_xr = false;
 	friend class Listener3D;
 	Listener3D *listener_3d = nullptr;
@@ -647,6 +647,7 @@ public:
 
 	void set_use_xr(bool p_use_xr);
 	bool is_using_xr();
+#endif // _3D_DISABLED
 
 	Viewport();
 	~Viewport();
