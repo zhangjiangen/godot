@@ -574,6 +574,7 @@ void EditorPropertyButton::set_button_name(const String &name) {
 EditorPropertyButton::EditorPropertyButton() {
 	button = memnew(Button);
 	button->set_clip_text(true);
+	button->set_button_color(Color(0.8, 0.6, 0.8));
 	add_child(button);
 	add_focusable(button);
 	button->connect("pressed", callable_mp(this, &EditorPropertyButton::_button_pressed));
