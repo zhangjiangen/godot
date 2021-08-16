@@ -5839,20 +5839,20 @@ String VisualShaderNodeCompare::generate_code(Shader::Mode p_mode, VisualShader:
 			break;
 		case CTYPE_VECTOR4:
 			code += "	{\n";
-			code += "		bvec4 _bv = " + String(funcs[func]).replace("$", p_input_vars[0] + ", " + p_input_vars[1]) + ";\n";
-			code += "		" + p_output_vars[0] + " = " + String(conds[condition]).replace("$", "_bv") + ";\n";
+			code += "		bvec4 _bv = " + String(functions[func]).replace("$", p_input_vars[0] + ", " + p_input_vars[1]) + ";\n";
+			code += "		" + p_output_vars[0] + " = " + String(conditions[condition]).replace("$", "_bv") + ";\n";
 			code += "	}\n";
 			break;
 		case CTYPE_IVECTOR:
 			code += "	{\n";
-			code += "		bvec3 _bv = " + String(funcs[func]).replace("$", p_input_vars[0] + ", " + p_input_vars[1]) + ";\n";
-			code += "		" + p_output_vars[0] + " = " + String(conds[condition]).replace("$", "_bv") + ";\n";
+			code += "		bvec3 _bv = " + String(functions[func]).replace("$", p_input_vars[0] + ", " + p_input_vars[1]) + ";\n";
+			code += "		" + p_output_vars[0] + " = " + String(conditions[condition]).replace("$", "_bv") + ";\n";
 			code += "	}\n";
 			break;
 		case CTYPE_IVECTOR4:
 			code += "	{\n";
-			code += "		bvec4 _bv = " + String(funcs[func]).replace("$", p_input_vars[0] + ", " + p_input_vars[1]) + ";\n";
-			code += "		" + p_output_vars[0] + " = " + String(conds[condition]).replace("$", "_bv") + ";\n";
+			code += "		bvec4 _bv = " + String(functions[func]).replace("$", p_input_vars[0] + ", " + p_input_vars[1]) + ";\n";
+			code += "		" + p_output_vars[0] + " = " + String(conditions[condition]).replace("$", "_bv") + ";\n";
 			code += "	}\n";
 			break;
 
