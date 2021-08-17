@@ -1,6 +1,6 @@
 
-echo scons platform=osx arch=x86_64 --jobs=$(sysctl -n hw.logicalcpu) use_static_mvk=yes driver=Vulkan
-scons platform=osx arch=x86_64 --jobs=$(sysctl -n hw.logicalcpu) use_static_mvk=yes driver=Vulkan
+echo scons platform=osx arch=x86_64 --jobs=$(sysctl -n hw.logicalcpu) vulkan=yes driver=Vulkan
+scons platform=osx arch=x86_64 --jobs=$(sysctl -n hw.logicalcpu) vulkan=yes driver=Vulkan
 
 
 echo cp -r misc/dist/osx_tools.app ./Godot.app

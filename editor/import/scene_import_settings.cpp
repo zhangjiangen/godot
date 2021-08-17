@@ -152,6 +152,7 @@ void SceneImportSettings::_fill_mesh(Tree *p_tree, const Ref<Mesh> &p_mesh, Tree
 
 	if (!mesh_map.has(import_id)) {
 		MeshDataPtr md;
+        md.instantiate();
 		md->has_import_id = has_import_id;
 		md->mesh = p_mesh;
 
@@ -438,6 +439,7 @@ void SceneImportSettings::open_settings(const String &p_path) {
 
 		Ref<ConfigFile> config;
 		config.instantiate();
+        defaults.instantiate();
 		Error err = config->load(p_path + ".import");
 		if (err == OK) {
 			List<String> keys;

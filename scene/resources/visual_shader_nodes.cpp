@@ -5394,6 +5394,12 @@ VisualShaderNodeSwitch::PortType VisualShaderNodeSwitch::get_input_port_type(int
 				return PORT_TYPE_SCALAR_INT;
 			case OP_TYPE_VECTOR:
 				return PORT_TYPE_VECTOR;
+			case OP_TYPE_VECTOR4:
+				return PORT_TYPE_VECTOR4;
+			case OP_TYPE_IVECTOR:
+				return PORT_TYPE_IVECTOR;
+			case OP_TYPE_IVECTOR4:
+				return PORT_TYPE_IVECTOR4;
 			case OP_TYPE_BOOLEAN:
 				return PORT_TYPE_BOOLEAN;
 			case OP_TYPE_TRANSFORM:
@@ -5428,6 +5434,12 @@ VisualShaderNodeSwitch::PortType VisualShaderNodeSwitch::get_output_port_type(in
 			return PORT_TYPE_SCALAR_INT;
 		case OP_TYPE_VECTOR:
 			return PORT_TYPE_VECTOR;
+		case OP_TYPE_VECTOR4:
+			return PORT_TYPE_VECTOR4;
+		case OP_TYPE_IVECTOR:
+			return PORT_TYPE_IVECTOR;
+		case OP_TYPE_IVECTOR4:
+			return PORT_TYPE_IVECTOR4;
 		case OP_TYPE_BOOLEAN:
 			return PORT_TYPE_BOOLEAN;
 		case OP_TYPE_TRANSFORM:
@@ -5460,6 +5472,18 @@ void VisualShaderNodeSwitch::set_op_type(OpType p_op_type) {
 			set_input_port_default_value(1, Vector3(1.0, 1.0, 1.0));
 			set_input_port_default_value(2, Vector3(0.0, 0.0, 0.0));
 			break;
+		case OP_TYPE_VECTOR4:
+			set_input_port_default_value(1, Plane(1.0, 1.0, 1.0, 1.0));
+			set_input_port_default_value(2, Plane(0.0, 0.0, 0.0, 0.0));
+			break;
+		case OP_TYPE_IVECTOR:
+			set_input_port_default_value(1, Vector3i(1.0, 1.0, 1.0));
+			set_input_port_default_value(2, Vector3i(0.0, 0.0, 0.0));
+			break;
+		case OP_TYPE_IVECTOR4:
+			set_input_port_default_value(1, Rect2i(1.0, 1.0, 1.0, 1.0));
+			set_input_port_default_value(2, Rect2i(0.0, 0.0, 0.0, 0.0));
+			break;
 		case OP_TYPE_BOOLEAN:
 			set_input_port_default_value(1, true);
 			set_input_port_default_value(2, false);
@@ -5489,11 +5513,15 @@ void VisualShaderNodeSwitch::_bind_methods() { // static
 	ClassDB::bind_method(D_METHOD("set_op_type", "type"), &VisualShaderNodeSwitch::set_op_type);
 	ClassDB::bind_method(D_METHOD("get_op_type"), &VisualShaderNodeSwitch::get_op_type);
 
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "op_type", PROPERTY_HINT_ENUM, "Float,Int,Vector,Boolean,Transform"), "set_op_type", "get_op_type");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "op_type", PROPERTY_HINT_ENUM, "Float,Int,Vector,Vector4,IVector,IVector4,Boolean,Transform"), "set_op_type", "get_op_type");
 
 	BIND_ENUM_CONSTANT(OP_TYPE_FLOAT);
 	BIND_ENUM_CONSTANT(OP_TYPE_INT);
 	BIND_ENUM_CONSTANT(OP_TYPE_VECTOR);
+	BIND_ENUM_CONSTANT(OP_TYPE_VECTOR);
+	BIND_ENUM_CONSTANT(OP_TYPE_VECTOR4);
+	BIND_ENUM_CONSTANT(OP_TYPE_IVECTOR);
+	BIND_ENUM_CONSTANT(OP_TYPE_IVECTOR4);
 	BIND_ENUM_CONSTANT(OP_TYPE_BOOLEAN);
 	BIND_ENUM_CONSTANT(OP_TYPE_TRANSFORM);
 	BIND_ENUM_CONSTANT(OP_TYPE_MAX);
@@ -5713,6 +5741,12 @@ VisualShaderNodeCompare::PortType VisualShaderNodeCompare::get_input_port_type(i
 			return PORT_TYPE_SCALAR_INT;
 		case CTYPE_VECTOR:
 			return PORT_TYPE_VECTOR;
+		case CTYPE_VECTOR4:
+			return PORT_TYPE_VECTOR4;
+		case CTYPE_IVECTOR:
+			return PORT_TYPE_IVECTOR;
+		case CTYPE_IVECTOR4:
+			return PORT_TYPE_IVECTOR4;
 		case CTYPE_BOOLEAN:
 			return PORT_TYPE_BOOLEAN;
 		case CTYPE_TRANSFORM:
@@ -5803,6 +5837,24 @@ String VisualShaderNodeCompare::generate_code(Shader::Mode p_mode, VisualShader:
 			code += "		" + p_output_vars[0] + " = " + String(conditions[condition]).replace("$", "_bv") + ";\n";
 			code += "	}\n";
 			break;
+		case CTYPE_VECTOR4:
+			code += "	{\n";
+			code += "		bvec4 _bv = " + String(functions[func]).replace("$", p_input_vars[0] + ", " + p_input_vars[1]) + ";\n";
+			code += "		" + p_output_vars[0] + " = " + String(conditions[condition]).replace("$", "_bv") + ";\n";
+			code += "	}\n";
+			break;
+		case CTYPE_IVECTOR:
+			code += "	{\n";
+			code += "		bvec3 _bv = " + String(functions[func]).replace("$", p_input_vars[0] + ", " + p_input_vars[1]) + ";\n";
+			code += "		" + p_output_vars[0] + " = " + String(conditions[condition]).replace("$", "_bv") + ";\n";
+			code += "	}\n";
+			break;
+		case CTYPE_IVECTOR4:
+			code += "	{\n";
+			code += "		bvec4 _bv = " + String(functions[func]).replace("$", p_input_vars[0] + ", " + p_input_vars[1]) + ";\n";
+			code += "		" + p_output_vars[0] + " = " + String(conditions[condition]).replace("$", "_bv") + ";\n";
+			code += "	}\n";
+			break;
 
 		case CTYPE_BOOLEAN:
 			if (func > FUNC_NOT_EQUAL) {
@@ -5843,6 +5895,21 @@ void VisualShaderNodeCompare::set_comparison_type(ComparisonType p_comparison_ty
 		case CTYPE_VECTOR:
 			set_input_port_default_value(0, Vector3(0.0, 0.0, 0.0));
 			set_input_port_default_value(1, Vector3(0.0, 0.0, 0.0));
+			simple_decl = false;
+			break;
+		case CTYPE_VECTOR4:
+			set_input_port_default_value(0, Plane(0.0, 0.0, 0.0, 0.0));
+			set_input_port_default_value(1, Plane(0.0, 0.0, 0.0, 0.0));
+			simple_decl = false;
+			break;
+		case CTYPE_IVECTOR:
+			set_input_port_default_value(0, Vector3i(0, 0, 0));
+			set_input_port_default_value(1, Vector3i(0, 0, 0));
+			simple_decl = false;
+			break;
+		case CTYPE_IVECTOR4:
+			set_input_port_default_value(0, Rect2i(0, 0, 0, 0));
+			set_input_port_default_value(1, Rect2i(0, 0, 0, 0));
 			simple_decl = false;
 			break;
 		case CTYPE_BOOLEAN:
@@ -5912,13 +5979,16 @@ void VisualShaderNodeCompare::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_condition", "condition"), &VisualShaderNodeCompare::set_condition);
 	ClassDB::bind_method(D_METHOD("get_condition"), &VisualShaderNodeCompare::get_condition);
 
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "type", PROPERTY_HINT_ENUM, "Float,Int,Vector,Boolean,Transform"), "set_comparison_type", "get_comparison_type");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "type", PROPERTY_HINT_ENUM, "Float,Int,Vector,Vector4,IVector,IVector4,Boolean,Transform"), "set_comparison_type", "get_comparison_type");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "function", PROPERTY_HINT_ENUM, "a == b,a != b,a > b,a >= b,a < b,a <= b"), "set_function", "get_function");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "condition", PROPERTY_HINT_ENUM, "All,Any"), "set_condition", "get_condition");
 
 	BIND_ENUM_CONSTANT(CTYPE_SCALAR);
 	BIND_ENUM_CONSTANT(CTYPE_SCALAR_INT);
 	BIND_ENUM_CONSTANT(CTYPE_VECTOR);
+	BIND_ENUM_CONSTANT(CTYPE_VECTOR4);
+	BIND_ENUM_CONSTANT(CTYPE_IVECTOR);
+	BIND_ENUM_CONSTANT(CTYPE_IVECTOR4);
 	BIND_ENUM_CONSTANT(CTYPE_BOOLEAN);
 	BIND_ENUM_CONSTANT(CTYPE_TRANSFORM);
 	BIND_ENUM_CONSTANT(CTYPE_MAX);
@@ -5977,6 +6047,12 @@ int VisualShaderNodeMultiplyAdd::get_output_port_count() const {
 VisualShaderNodeMultiplyAdd::PortType VisualShaderNodeMultiplyAdd::get_output_port_type(int p_port) const {
 	if (op_type == OP_TYPE_SCALAR) {
 		return PORT_TYPE_SCALAR;
+	} else if (op_type == PORT_TYPE_VECTOR4) {
+		return PORT_TYPE_VECTOR4;
+	} else if (op_type == PORT_TYPE_IVECTOR) {
+		return PORT_TYPE_IVECTOR;
+	} else if (op_type == PORT_TYPE_IVECTOR4) {
+		return PORT_TYPE_IVECTOR4;
 	} else {
 		return PORT_TYPE_VECTOR;
 	}
@@ -6006,6 +6082,21 @@ void VisualShaderNodeMultiplyAdd::set_op_type(OpType p_op_type) {
 			set_input_port_default_value(1, Vector3(0.0, 0.0, 0.0));
 			set_input_port_default_value(2, Vector3(0.0, 0.0, 0.0));
 			break;
+		case OP_TYPE_VECTOR4:
+			set_input_port_default_value(0, Plane(0.0, 0.0, 0.0, 0.0));
+			set_input_port_default_value(1, Plane(0.0, 0.0, 0.0, 0.0));
+			set_input_port_default_value(2, Plane(0.0, 0.0, 0.0, 0.0));
+			break;
+		case OP_TYPE_IVECTOR:
+			set_input_port_default_value(0, Vector3i(0.0, 0.0, 0.0));
+			set_input_port_default_value(1, Vector3i(0.0, 0.0, 0.0));
+			set_input_port_default_value(2, Vector3i(0.0, 0.0, 0.0));
+			break;
+		case OP_TYPE_IVECTOR4:
+			set_input_port_default_value(0, Rect2i(0, 0.0, 0.0, 0.0));
+			set_input_port_default_value(1, Rect2i(0, 0.0, 0.0, 0.0));
+			set_input_port_default_value(2, Rect2i(0, 0.0, 0.0, 0.0));
+			break;
 		default:
 			break;
 	}
@@ -6027,10 +6118,13 @@ void VisualShaderNodeMultiplyAdd::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_op_type", "type"), &VisualShaderNodeMultiplyAdd::set_op_type);
 	ClassDB::bind_method(D_METHOD("get_op_type"), &VisualShaderNodeMultiplyAdd::get_op_type);
 
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "op_type", PROPERTY_HINT_ENUM, "Scalar,Vector"), "set_op_type", "get_op_type");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "op_type", PROPERTY_HINT_ENUM, "Scalar,Vector,Vector4,IVector,IVector4"), "set_op_type", "get_op_type");
 
 	BIND_ENUM_CONSTANT(OP_TYPE_SCALAR);
 	BIND_ENUM_CONSTANT(OP_TYPE_VECTOR);
+	BIND_ENUM_CONSTANT(OP_TYPE_VECTOR4);
+	BIND_ENUM_CONSTANT(OP_TYPE_IVECTOR);
+	BIND_ENUM_CONSTANT(OP_TYPE_IVECTOR4);
 	BIND_ENUM_CONSTANT(OP_TYPE_MAX);
 }
 
