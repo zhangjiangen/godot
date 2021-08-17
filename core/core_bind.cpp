@@ -456,10 +456,6 @@ String _OS::get_user_data_dir() const {
 	return OS::get_singleton()->get_user_data_dir();
 }
 
-String _OS::get_external_data_dir() const {
-	return OS::get_singleton()->get_external_data_dir();
-}
-
 String _OS::get_config_dir() const {
 	// Exposed as `get_config_dir()` instead of `get_config_path()` for consistency with other exposed OS methods.
 	return OS::get_singleton()->get_config_path();
@@ -483,8 +479,8 @@ bool _OS::is_debug_build() const {
 #endif
 }
 
-String _OS::get_system_dir(SystemDir p_dir) const {
-	return OS::get_singleton()->get_system_dir(OS::SystemDir(p_dir));
+String _OS::get_system_dir(SystemDir p_dir, bool p_shared_storage) const {
+	return OS::get_singleton()->get_system_dir(OS::SystemDir(p_dir), p_shared_storage);
 }
 
 String _OS::get_keycode_string(uint32_t p_code) const {
@@ -567,8 +563,7 @@ void _OS::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_static_memory_peak_usage"), &_OS::get_static_memory_peak_usage);
 
 	ClassDB::bind_method(D_METHOD("get_user_data_dir"), &_OS::get_user_data_dir);
-	ClassDB::bind_method(D_METHOD("get_external_data_dir"), &_OS::get_external_data_dir);
-	ClassDB::bind_method(D_METHOD("get_system_dir", "dir"), &_OS::get_system_dir);
+	ClassDB::bind_method(D_METHOD("get_system_dir", "dir", "shared_storage"), &_OS::get_system_dir, DEFVAL(true));
 	ClassDB::bind_method(D_METHOD("get_config_dir"), &_OS::get_config_dir);
 	ClassDB::bind_method(D_METHOD("get_data_dir"), &_OS::get_data_dir);
 	ClassDB::bind_method(D_METHOD("get_cache_dir"), &_OS::get_cache_dir);
@@ -1560,15 +1555,17 @@ Error _Directory::copy(String p_from, String p_to) {
 
 Error _Directory::rename(String p_from, String p_to) {
 	ERR_FAIL_COND_V_MSG(!is_open(), ERR_UNCONFIGURED, "Directory must be opened before use.");
+	ERR_FAIL_COND_V_MSG(p_from.is_empty() || p_from == "." || p_from == "..", ERR_INVALID_PARAMETER, "Invalid path to rename.");
+
 	if (!p_from.is_rel_path()) {
 		DirAccess *d = DirAccess::create_for_path(p_from);
-		ERR_FAIL_COND_V_MSG(!d->file_exists(p_from), ERR_DOES_NOT_EXIST, "File does not exist.");
+		ERR_FAIL_COND_V_MSG(!d->file_exists(p_from) && !d->dir_exists(p_from), ERR_DOES_NOT_EXIST, "File or directory does not exist.");
 		Error err = d->rename(p_from, p_to);
 		memdelete(d);
 		return err;
 	}
 
-	ERR_FAIL_COND_V_MSG(!d->file_exists(p_from), ERR_DOES_NOT_EXIST, "File does not exist.");
+	ERR_FAIL_COND_V_MSG(!d->file_exists(p_from) && !d->dir_exists(p_from), ERR_DOES_NOT_EXIST, "File or directory does not exist.");
 	return d->rename(p_from, p_to);
 }
 
