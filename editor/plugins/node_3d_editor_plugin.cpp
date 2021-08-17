@@ -690,53 +690,55 @@ void Node3DEditorViewport::_select_region() {
 		Node3D *single_selected = spatial_editor->get_single_selected_node();
 		Node3DEditorSelectedItem *se = editor_selection->get_node_editor_data<Node3DEditorSelectedItem>(single_selected);
 
-		Ref<EditorNode3DGizmo> old_gizmo;
-		if (!clicked_wants_append) {
-			se->subgizmos.clear();
-			old_gizmo = se->gizmo;
-			se->gizmo.unref();
-		}
-
-		bool found_subgizmos = false;
-		Vector<Ref<Node3DGizmo>> gizmos = single_selected->get_gizmos();
-		for (int j = 0; j < gizmos.size(); j++) {
-			Ref<EditorNode3DGizmo> seg = gizmos[j];
-			if (!seg.is_valid()) {
-				continue;
+		if (se) {
+			Ref<EditorNode3DGizmo> old_gizmo;
+			if (!clicked_wants_append) {
+				se->subgizmos.clear();
+				old_gizmo = se->gizmo;
+				se->gizmo.unref();
 			}
 
-			if (se->gizmo.is_valid() && se->gizmo != seg) {
-				continue;
-			}
-
-			Vector<int> subgizmos = seg->subgizmos_intersect_frustum(camera, frustum);
-			if (!subgizmos.is_empty()) {
-				se->gizmo = seg;
-				for (int i = 0; i < subgizmos.size(); i++) {
-					int subgizmo_id = subgizmos[i];
-					if (!se->subgizmos.has(subgizmo_id)) {
-						se->subgizmos.insert(subgizmo_id, se->gizmo->get_subgizmo_transform(subgizmo_id));
-					}
+			bool found_subgizmos = false;
+			Vector<Ref<Node3DGizmo>> gizmos = single_selected->get_gizmos();
+			for (int j = 0; j < gizmos.size(); j++) {
+				Ref<EditorNode3DGizmo> seg = gizmos[j];
+				if (!seg.is_valid()) {
+					continue;
 				}
-				found_subgizmos = true;
-				break;
+
+				if (se->gizmo.is_valid() && se->gizmo != seg) {
+					continue;
+				}
+
+				Vector<int> subgizmos = seg->subgizmos_intersect_frustum(camera, frustum);
+				if (!subgizmos.is_empty()) {
+					se->gizmo = seg;
+					for (int i = 0; i < subgizmos.size(); i++) {
+						int subgizmo_id = subgizmos[i];
+						if (!se->subgizmos.has(subgizmo_id)) {
+							se->subgizmos.insert(subgizmo_id, se->gizmo->get_subgizmo_transform(subgizmo_id));
+						}
+					}
+					found_subgizmos = true;
+					break;
+				}
 			}
-		}
 
-		if (!clicked_wants_append || found_subgizmos) {
-			if (se->gizmo.is_valid()) {
-				se->gizmo->redraw();
+			if (!clicked_wants_append || found_subgizmos) {
+				if (se->gizmo.is_valid()) {
+					se->gizmo->redraw();
+				}
+
+				if (old_gizmo != se->gizmo && old_gizmo.is_valid()) {
+					old_gizmo->redraw();
+				}
+
+				spatial_editor->update_transform_gizmo();
 			}
 
-			if (old_gizmo != se->gizmo && old_gizmo.is_valid()) {
-				old_gizmo->redraw();
+			if (found_subgizmos) {
+				return;
 			}
-
-			spatial_editor->update_transform_gizmo();
-		}
-
-		if (found_subgizmos) {
-			return;
 		}
 	}
 
@@ -809,18 +811,66 @@ void Node3DEditorViewport::_select_region() {
 }
 
 void Node3DEditorViewport::_update_name() {
-	String view_mode = orthogonal ? TTR("Orthogonal") : TTR("Perspective");
+	String name;
+
+	switch (view_type) {
+		case VIEW_TYPE_USER: {
+			if (orthogonal) {
+				name = TTR("Orthogonal");
+			} else {
+				name = TTR("Perspective");
+			}
+		} break;
+		case VIEW_TYPE_TOP: {
+			if (orthogonal) {
+				name = TTR("Top Orthogonal");
+			} else {
+				name = TTR("Top Perspective");
+			}
+		} break;
+		case VIEW_TYPE_BOTTOM: {
+			if (orthogonal) {
+				name = TTR("Bottom Orthogonal");
+			} else {
+				name = TTR("Bottom Perspective");
+			}
+		} break;
+		case VIEW_TYPE_LEFT: {
+			if (orthogonal) {
+				name = TTR("Left Orthogonal");
+			} else {
+				name = TTR("Right Perspective");
+			}
+		} break;
+		case VIEW_TYPE_RIGHT: {
+			if (orthogonal) {
+				name = TTR("Right Orthogonal");
+			} else {
+				name = TTR("Right Perspective");
+			}
+		} break;
+		case VIEW_TYPE_FRONT: {
+			if (orthogonal) {
+				name = TTR("Front Orthogonal");
+			} else {
+				name = TTR("Front Perspective");
+			}
+		} break;
+		case VIEW_TYPE_REAR: {
+			if (orthogonal) {
+				name = TTR("Rear Orthogonal");
+			} else {
+				name = TTR("Rear Perspective");
+			}
+		} break;
+	}
 
 	if (auto_orthogonal) {
-		view_mode += " [auto]";
+		// TRANSLATORS: This will be appended to the view name when Auto Orthogonal is enabled.
+		name += TTR(" [auto]");
 	}
 
-	if (name != "") {
-		view_menu->set_text(name + " " + view_mode);
-	} else {
-		view_menu->set_text(view_mode);
-	}
-
+	view_menu->set_text(name);
 	view_menu->set_size(Vector2(0, 0)); // resets the button size
 }
 
@@ -1384,7 +1434,7 @@ void Node3DEditorViewport::_sinput(const Ref<InputEvent> &p_event) {
 						case TRANSFORM_VIEW: {
 							_edit.plane = TRANSFORM_X_AXIS;
 							set_message(TTR("X-Axis Transform."), 2);
-							name = "";
+							view_type = VIEW_TYPE_USER;
 							_update_name();
 						} break;
 						case TRANSFORM_X_AXIS: {
@@ -2325,7 +2375,7 @@ void Node3DEditorViewport::_nav_orbit(Ref<InputEventWithModifiers> p_event, cons
 	} else {
 		cursor.y_rot += p_relative.x * radians_per_pixel;
 	}
-	name = "";
+	view_type = VIEW_TYPE_USER;
 	_update_name();
 }
 
@@ -2363,7 +2413,7 @@ void Node3DEditorViewport::_nav_look(Ref<InputEventWithModifiers> p_event, const
 	Vector3 diff = prev_pos - pos;
 	cursor.pos += diff;
 
-	name = "";
+	view_type = VIEW_TYPE_USER;
 	_update_name();
 }
 
@@ -3008,7 +3058,7 @@ void Node3DEditorViewport::_menu_option(int p_option) {
 			cursor.y_rot = 0;
 			cursor.x_rot = Math_PI / 2.0;
 			set_message(TTR("Top View."), 2);
-			name = TTR("Top");
+			view_type = VIEW_TYPE_TOP;
 			_set_auto_orthogonal();
 			_update_name();
 
@@ -3017,7 +3067,7 @@ void Node3DEditorViewport::_menu_option(int p_option) {
 			cursor.y_rot = 0;
 			cursor.x_rot = -Math_PI / 2.0;
 			set_message(TTR("Bottom View."), 2);
-			name = TTR("Bottom");
+			view_type = VIEW_TYPE_BOTTOM;
 			_set_auto_orthogonal();
 			_update_name();
 
@@ -3026,7 +3076,7 @@ void Node3DEditorViewport::_menu_option(int p_option) {
 			cursor.x_rot = 0;
 			cursor.y_rot = Math_PI / 2.0;
 			set_message(TTR("Left View."), 2);
-			name = TTR("Left");
+			view_type = VIEW_TYPE_LEFT;
 			_set_auto_orthogonal();
 			_update_name();
 
@@ -3035,7 +3085,7 @@ void Node3DEditorViewport::_menu_option(int p_option) {
 			cursor.x_rot = 0;
 			cursor.y_rot = -Math_PI / 2.0;
 			set_message(TTR("Right View."), 2);
-			name = TTR("Right");
+			view_type = VIEW_TYPE_RIGHT;
 			_set_auto_orthogonal();
 			_update_name();
 
@@ -3044,7 +3094,7 @@ void Node3DEditorViewport::_menu_option(int p_option) {
 			cursor.x_rot = 0;
 			cursor.y_rot = Math_PI;
 			set_message(TTR("Front View."), 2);
-			name = TTR("Front");
+			view_type = VIEW_TYPE_FRONT;
 			_set_auto_orthogonal();
 			_update_name();
 
@@ -3053,7 +3103,7 @@ void Node3DEditorViewport::_menu_option(int p_option) {
 			cursor.x_rot = 0;
 			cursor.y_rot = 0;
 			set_message(TTR("Rear View."), 2);
-			name = TTR("Rear");
+			view_type = VIEW_TYPE_REAR;
 			_set_auto_orthogonal();
 			_update_name();
 
@@ -3597,8 +3647,8 @@ void Node3DEditorViewport::set_state(const Dictionary &p_state) {
 			_menu_option(VIEW_PERSPECTIVE);
 		}
 	}
-	if (p_state.has("view_name")) {
-		name = p_state["view_name"];
+	if (p_state.has("view_type")) {
+		view_type = ViewType(p_state["view_type"].operator int());
 		_update_name();
 	}
 	if (p_state.has("auto_orthogonal")) {
@@ -3706,7 +3756,7 @@ Dictionary Node3DEditorViewport::get_state() const {
 	d["distance"] = cursor.distance;
 	d["use_environment"] = camera->get_environment().is_valid();
 	d["use_orthogonal"] = camera->get_projection() == Camera3D::PROJECTION_ORTHOGONAL;
-	d["view_name"] = name;
+	d["view_type"] = view_type;
 	d["auto_orthogonal"] = auto_orthogonal;
 	d["auto_orthogonal_enabled"] = view_menu->get_popup()->is_item_checked(view_menu->get_popup()->get_item_index(VIEW_AUTO_ORTHOGONAL));
 	if (view_menu->get_popup()->is_item_checked(view_menu->get_popup()->get_item_index(VIEW_DISPLAY_NORMAL))) {
@@ -3751,7 +3801,7 @@ void Node3DEditorViewport::reset() {
 	message_time = 0;
 	message = "";
 	last_message = "";
-	name = "";
+	view_type = VIEW_TYPE_USER;
 
 	cursor = Cursor();
 	_update_name();
@@ -4030,7 +4080,7 @@ bool Node3DEditorViewport::can_drop_data_fw(const Point2 &p_point, const Variant
 							continue;
 						}
 						memdelete(instantiated_scene);
-					} else if (type == "Mesh" || type == "ArrayMesh" || type == "PrimitiveMesh") {
+					} else if (ClassDB::is_parent_class(type, "Mesh")) {
 						Ref<Mesh> mesh = ResourceLoader::load(files[i]);
 						if (!mesh.is_valid()) {
 							continue;
@@ -4366,7 +4416,7 @@ Node3DEditorViewport::Node3DEditorViewport(Node3DEditor *p_spatial_editor, Edito
 		viewport->set_as_audio_listener_3d(true);
 	}
 
-	name = "";
+	view_type = VIEW_TYPE_USER;
 	_update_name();
 
 	EditorSettings::get_singleton()->connect("settings_changed", callable_mp(this, &Node3DEditorViewport::update_transform_gizmo_view));
@@ -4776,13 +4826,13 @@ void _update_all_gizmos(Node *p_node) {
 }
 
 void Node3DEditor::update_all_gizmos(Node *p_node) {
+	if (!p_node && get_tree()) {
+		p_node = get_tree()->get_edited_scene_root();
+	}
+
 	if (!p_node) {
-		if (SceneTree::get_singleton()) {
-			p_node = SceneTree::get_singleton()->get_root();
-		} else {
-			// No scene tree, so nothing to update.
-			return;
-		}
+		// No edited scene, so nothing to update.
+		return;
 	}
 	_update_all_gizmos(p_node);
 }
@@ -6591,6 +6641,7 @@ void Node3DEditor::_notification(int p_what) {
 			_register_all_gizmos();
 			_update_gizmos_menu();
 			_init_indicators();
+			update_all_gizmos();
 		} break;
 		case NOTIFICATION_EXIT_TREE: {
 			_finish_indicators();
@@ -7724,7 +7775,6 @@ void Node3DEditor::add_gizmo_plugin(Ref<EditorNode3DGizmoPlugin> p_plugin) {
 	gizmo_plugins_by_name.sort_custom<_GizmoPluginNameComparator>();
 
 	_update_gizmos_menu();
-	Node3DEditor::get_singleton()->update_all_gizmos();
 }
 
 void Node3DEditor::remove_gizmo_plugin(Ref<EditorNode3DGizmoPlugin> p_plugin) {

@@ -431,10 +431,11 @@ bool InputEventKey::action_match(const Ref<InputEvent> &p_event, bool *p_pressed
 		match = get_keycode() == key->get_keycode() && (!key->is_pressed() || (code & event_code) == code);
 	}
 	if (match) {
+		bool pressed = key->is_pressed();
 		if (p_pressed != nullptr) {
-			*p_pressed = key->is_pressed();
+			*p_pressed = pressed;
 		}
-		float strength = (p_pressed != nullptr && *p_pressed) ? 1.0f : 0.0f;
+		float strength = pressed ? 1.0f : 0.0f;
 		if (p_strength != nullptr) {
 			*p_strength = strength;
 		}
@@ -587,10 +588,11 @@ bool InputEventMouseButton::action_match(const Ref<InputEvent> &p_event, bool *p
 
 	bool match = mb->button_index == button_index;
 	if (match) {
+		bool pressed = mb->is_pressed();
 		if (p_pressed != nullptr) {
-			*p_pressed = mb->is_pressed();
+			*p_pressed = pressed;
 		}
-		float strength = (p_pressed != nullptr && *p_pressed) ? 1.0f : 0.0f;
+		float strength = pressed ? 1.0f : 0.0f;
 		if (p_strength != nullptr) {
 			*p_strength = strength;
 		}
@@ -998,10 +1000,11 @@ bool InputEventJoypadButton::action_match(const Ref<InputEvent> &p_event, bool *
 
 	bool match = button_index == jb->button_index;
 	if (match) {
+		bool pressed = jb->is_pressed();
 		if (p_pressed != nullptr) {
-			*p_pressed = jb->is_pressed();
+			*p_pressed = pressed;
 		}
-		float strength = (p_pressed != nullptr && *p_pressed) ? 1.0f : 0.0f;
+		float strength = pressed ? 1.0f : 0.0f;
 		if (p_strength != nullptr) {
 			*p_strength = strength;
 		}
@@ -1210,6 +1213,22 @@ String InputEventScreenDrag::to_string() {
 	return vformat("InputEventScreenDrag: index=%d, position=(%s), relative=(%s), speed=(%s)", index, String(get_position()), String(get_relative()), String(get_speed()));
 }
 
+bool InputEventScreenDrag::accumulate(const Ref<InputEvent> &p_event) {
+	Ref<InputEventScreenDrag> drag = p_event;
+	if (drag.is_null())
+		return false;
+
+	if (get_index() != drag->get_index()) {
+		return false;
+	}
+
+	set_position(drag->get_position());
+	set_speed(drag->get_speed());
+	relative += drag->get_relative();
+
+	return true;
+}
+
 void InputEventScreenDrag::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_index", "index"), &InputEventScreenDrag::set_index);
 	ClassDB::bind_method(D_METHOD("get_index"), &InputEventScreenDrag::get_index);
@@ -1275,10 +1294,11 @@ bool InputEventAction::action_match(const Ref<InputEvent> &p_event, bool *p_pres
 
 	bool match = action == act->action;
 	if (match) {
+		bool pressed = act->pressed;
 		if (p_pressed != nullptr) {
-			*p_pressed = act->pressed;
+			*p_pressed = pressed;
 		}
-		float strength = (p_pressed != nullptr && *p_pressed) ? 1.0f : 0.0f;
+		float strength = pressed ? 1.0f : 0.0f;
 		if (p_strength != nullptr) {
 			*p_strength = strength;
 		}

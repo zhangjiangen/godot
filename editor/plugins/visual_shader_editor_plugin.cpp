@@ -110,7 +110,6 @@ void VisualShaderGraphPlugin::_bind_methods() {
 	ClassDB::bind_method("set_expression", &VisualShaderGraphPlugin::set_expression);
 	ClassDB::bind_method("update_curve", &VisualShaderGraphPlugin::update_curve);
 	ClassDB::bind_method("update_curve_xyz", &VisualShaderGraphPlugin::update_curve_xyz);
-	ClassDB::bind_method("update_constant", &VisualShaderGraphPlugin::update_constant);
 }
 
 void VisualShaderGraphPlugin::register_shader(VisualShader *p_shader) {
@@ -237,18 +236,6 @@ int VisualShaderGraphPlugin::get_constant_index(float p_constant) const {
 	return 0;
 }
 
-void VisualShaderGraphPlugin::update_constant(VisualShader::Type p_type, int p_node_id) {
-	if (p_type != visual_shader->get_shader_type() || !links.has(p_node_id) || !links[p_node_id].const_op) {
-		return;
-	}
-	VisualShaderNodeFloatConstant *float_const = Object::cast_to<VisualShaderNodeFloatConstant>(links[p_node_id].visual_node);
-	if (!float_const) {
-		return;
-	}
-	links[p_node_id].const_op->select(get_constant_index(float_const->get_constant()));
-	links[p_node_id].graph_node->set_size(Size2(-1, -1));
-}
-
 void VisualShaderGraphPlugin::set_expression(VisualShader::Type p_type, int p_node_id, const String &p_expression) {
 	if (p_type != visual_shader->get_shader_type() || !links.has(p_node_id) || !links[p_node_id].expression_edit) {
 		return;
@@ -265,10 +252,6 @@ void VisualShaderGraphPlugin::update_node_size(int p_node_id) {
 
 void VisualShaderGraphPlugin::register_default_input_button(int p_node_id, int p_port_id, Button *p_button) {
 	links[p_node_id].input_ports.insert(p_port_id, { p_button });
-}
-
-void VisualShaderGraphPlugin::register_constant_option_btn(int p_node_id, OptionButton *p_button) {
-	links[p_node_id].const_op = p_button;
 }
 
 void VisualShaderGraphPlugin::register_expression_edit(int p_node_id, CodeEdit *p_expression_edit) {
@@ -322,7 +305,7 @@ void VisualShaderGraphPlugin::make_dirty(bool p_enabled) {
 }
 
 void VisualShaderGraphPlugin::register_link(VisualShader::Type p_type, int p_id, VisualShaderNode *p_visual_node, GraphNode *p_graph_node) {
-	links.insert(p_id, { p_type, p_visual_node, p_graph_node, p_visual_node->get_output_port_for_preview() != -1, -1, Map<int, InputPort>(), Map<int, Port>(), nullptr, nullptr, nullptr, nullptr, { nullptr, nullptr, nullptr } });
+	links.insert(p_id, { p_type, p_visual_node, p_graph_node, p_visual_node->get_output_port_for_preview() != -1, -1, Map<int, InputPort>(), Map<int, Port>(), nullptr, nullptr, nullptr, { nullptr, nullptr, nullptr } });
 }
 
 void VisualShaderGraphPlugin::register_output_port(int p_node_id, int p_port, TextureButton *p_button) {
@@ -495,23 +478,6 @@ void VisualShaderGraphPlugin::add_node(VisualShader::Type p_type, int p_id) {
 		HBoxContainer *hbox = memnew(HBoxContainer);
 		custom_editor->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 		hbox->add_child(custom_editor);
-		custom_editor = hbox;
-	}
-
-	Ref<VisualShaderNodeFloatConstant> float_const = vsnode;
-	if (float_const.is_valid()) {
-		HBoxContainer *hbox = memnew(HBoxContainer);
-
-		hbox->add_child(custom_editor);
-		OptionButton *btn = memnew(OptionButton);
-		hbox->add_child(btn);
-		register_constant_option_btn(p_id, btn);
-		btn->add_item("");
-		for (int i = 0; i < MAX_FLOAT_CONST_DEFS; i++) {
-			btn->add_item(float_constant_defs[i].name);
-		}
-		btn->select(get_constant_index(float_const->get_constant()));
-		btn->connect("item_selected", callable_mp(VisualShaderEditor::get_singleton(), &VisualShaderEditor::_float_constant_selected), varray(p_id));
 		custom_editor = hbox;
 	}
 
@@ -893,15 +859,15 @@ void VisualShaderGraphPlugin::add_node(VisualShader::Type p_type, int p_id) {
 		node->add_child(expression_box);
 		register_expression_edit(p_id, expression_box);
 
-		Color background_color = EDITOR_GET("text_editor/highlighting/background_color");
-		Color text_color = EDITOR_GET("text_editor/highlighting/text_color");
-		Color keyword_color = EDITOR_GET("text_editor/highlighting/keyword_color");
-		Color control_flow_keyword_color = EDITOR_GET("text_editor/highlighting/control_flow_keyword_color");
-		Color comment_color = EDITOR_GET("text_editor/highlighting/comment_color");
-		Color symbol_color = EDITOR_GET("text_editor/highlighting/symbol_color");
-		Color function_color = EDITOR_GET("text_editor/highlighting/function_color");
-		Color number_color = EDITOR_GET("text_editor/highlighting/number_color");
-		Color members_color = EDITOR_GET("text_editor/highlighting/member_variable_color");
+		Color background_color = EDITOR_GET("text_editor/theme/highlighting/background_color");
+		Color text_color = EDITOR_GET("text_editor/theme/highlighting/text_color");
+		Color keyword_color = EDITOR_GET("text_editor/theme/highlighting/keyword_color");
+		Color control_flow_keyword_color = EDITOR_GET("text_editor/theme/highlighting/control_flow_keyword_color");
+		Color comment_color = EDITOR_GET("text_editor/theme/highlighting/comment_color");
+		Color symbol_color = EDITOR_GET("text_editor/theme/highlighting/symbol_color");
+		Color function_color = EDITOR_GET("text_editor/theme/highlighting/function_color");
+		Color number_color = EDITOR_GET("text_editor/theme/highlighting/number_color");
+		Color members_color = EDITOR_GET("text_editor/theme/highlighting/member_variable_color");
 
 		expression_box->set_syntax_highlighter(expression_syntax_highlighter);
 		expression_box->add_theme_color_override("background_color", background_color);
@@ -2182,6 +2148,16 @@ void VisualShaderEditor::_setup_node(VisualShaderNode *p_node, int p_op_idx) {
 		}
 	}
 
+	// TRANSFORM_OP
+	{
+		VisualShaderNodeTransformOp *matOp = Object::cast_to<VisualShaderNodeTransformOp>(p_node);
+
+		if (matOp) {
+			matOp->set_operator((VisualShaderNodeTransformOp::Operator)p_op_idx);
+			return;
+		}
+	}
+
 	// TRANSFORM_FUNC
 	{
 		VisualShaderNodeTransformFunc *matFunc = Object::cast_to<VisualShaderNodeTransformFunc>(p_node);
@@ -2944,6 +2920,7 @@ void VisualShaderEditor::_graph_gui_input(const Ref<InputEvent> &p_event) {
 		selected_constants.clear();
 		selected_uniforms.clear();
 		selected_comment = -1;
+		selected_float_constant = -1;
 
 		List<int> to_change;
 		for (int i = 0; i < graph->get_child_count(); i++) {
@@ -2963,6 +2940,10 @@ void VisualShaderEditor::_graph_gui_input(const Ref<InputEvent> &p_event) {
 					if (constant_node != nullptr) {
 						selected_constants.insert(id);
 					}
+					VisualShaderNodeFloatConstant *float_constant_node = Object::cast_to<VisualShaderNodeFloatConstant>(node.ptr());
+					if (float_constant_node != nullptr) {
+						selected_float_constant = id;
+					}
 					VisualShaderNodeUniform *uniform_node = Object::cast_to<VisualShaderNodeUniform>(node.ptr());
 					if (uniform_node != nullptr && uniform_node->is_convertible_to_constant()) {
 						selected_uniforms.insert(id);
@@ -2973,6 +2954,7 @@ void VisualShaderEditor::_graph_gui_input(const Ref<InputEvent> &p_event) {
 
 		if (to_change.size() > 1) {
 			selected_comment = -1;
+			selected_float_constant = -1;
 		}
 
 		if (to_change.is_empty() && copy_nodes_buffer.is_empty()) {
@@ -2984,6 +2966,10 @@ void VisualShaderEditor::_graph_gui_input(const Ref<InputEvent> &p_event) {
 			popup_menu->set_item_disabled(NodeMenuOptions::DUPLICATE, to_change.is_empty());
 
 			int temp = popup_menu->get_item_index(NodeMenuOptions::SEPARATOR2);
+			if (temp != -1) {
+				popup_menu->remove_item(temp);
+			}
+			temp = popup_menu->get_item_index(NodeMenuOptions::FLOAT_CONSTANTS);
 			if (temp != -1) {
 				popup_menu->remove_item(temp);
 			}
@@ -3008,14 +2994,23 @@ void VisualShaderEditor::_graph_gui_input(const Ref<InputEvent> &p_event) {
 				popup_menu->remove_item(temp);
 			}
 
-			if (selected_comment != -1) {
-				popup_menu->add_separator("", NodeMenuOptions::SEPARATOR2);
-				popup_menu->add_item(TTR("Set Comment Title"), NodeMenuOptions::SET_COMMENT_TITLE);
-				popup_menu->add_item(TTR("Set Comment Description"), NodeMenuOptions::SET_COMMENT_DESCRIPTION);
-			}
-
 			if (selected_constants.size() > 0 || selected_uniforms.size() > 0) {
-				popup_menu->add_separator("", NodeMenuOptions::SEPARATOR3);
+				popup_menu->add_separator("", NodeMenuOptions::SEPARATOR2);
+
+				if (selected_float_constant != -1) {
+					popup_menu->add_submenu_item(TTR("Float Constants"), "FloatConstants", int(NodeMenuOptions::FLOAT_CONSTANTS));
+
+					if (!constants_submenu) {
+						constants_submenu = memnew(PopupMenu);
+						constants_submenu->set_name("FloatConstants");
+
+						for (int i = 0; i < MAX_FLOAT_CONST_DEFS; i++) {
+							constants_submenu->add_item(float_constant_defs[i].name, i);
+						}
+						popup_menu->add_child(constants_submenu);
+						constants_submenu->connect("index_pressed", callable_mp(this, &VisualShaderEditor::_float_constant_selected));
+					}
+				}
 
 				if (selected_constants.size() > 0) {
 					popup_menu->add_item(TTR("Convert Constant(s) to Uniform(s)"), NodeMenuOptions::CONVERT_CONSTANTS_TO_UNIFORMS);
@@ -3024,6 +3019,12 @@ void VisualShaderEditor::_graph_gui_input(const Ref<InputEvent> &p_event) {
 				if (selected_uniforms.size() > 0) {
 					popup_menu->add_item(TTR("Convert Uniform(s) to Constant(s)"), NodeMenuOptions::CONVERT_UNIFORMS_TO_CONSTANTS);
 				}
+			}
+
+			if (selected_comment != -1) {
+				popup_menu->add_separator("", NodeMenuOptions::SEPARATOR3);
+				popup_menu->add_item(TTR("Set Comment Title"), NodeMenuOptions::SET_COMMENT_TITLE);
+				popup_menu->add_item(TTR("Set Comment Description"), NodeMenuOptions::SET_COMMENT_DESCRIPTION);
 			}
 
 			menu_point = graph->get_local_mouse_position();
@@ -3111,15 +3112,15 @@ void VisualShaderEditor::_notification(int p_what) {
 		preview_shader->set_icon(Control::get_theme_icon(SNAME("Shader"), SNAME("EditorIcons")));
 
 		{
-			Color background_color = EDITOR_GET("text_editor/highlighting/background_color");
-			Color text_color = EDITOR_GET("text_editor/highlighting/text_color");
+			Color background_color = EDITOR_GET("text_editor/theme/highlighting/background_color");
+			Color text_color = EDITOR_GET("text_editor/theme/highlighting/text_color");
 			Color keyword_color = EDITOR_GET("text_editor/highlighting/keyword_color");
-			Color control_flow_keyword_color = EDITOR_GET("text_editor/highlighting/control_flow_keyword_color");
-			Color comment_color = EDITOR_GET("text_editor/highlighting/comment_color");
-			Color symbol_color = EDITOR_GET("text_editor/highlighting/symbol_color");
-			Color function_color = EDITOR_GET("text_editor/highlighting/function_color");
-			Color number_color = EDITOR_GET("text_editor/highlighting/number_color");
-			Color members_color = EDITOR_GET("text_editor/highlighting/member_variable_color");
+			Color control_flow_keyword_color = EDITOR_GET("text_editor/theme/highlighting/control_flow_keyword_color");
+			Color comment_color = EDITOR_GET("text_editor/theme/highlighting/comment_color");
+			Color symbol_color = EDITOR_GET("text_editor/theme/highlighting/symbol_color");
+			Color function_color = EDITOR_GET("text_editor/theme/highlighting/function_color");
+			Color number_color = EDITOR_GET("text_editor/theme/highlighting/number_color");
+			Color members_color = EDITOR_GET("text_editor/theme/highlighting/member_variable_color");
 
 			preview_text->add_theme_color_override("background_color", background_color);
 
@@ -3495,27 +3496,20 @@ void VisualShaderEditor::_uniform_select_item(Ref<VisualShaderNodeUniformRef> p_
 	undo_redo->commit_action();
 }
 
-void VisualShaderEditor::_float_constant_selected(int p_index, int p_node) {
-	if (p_index == 0) {
-		graph_plugin->update_node_size(p_node);
-		return;
-	}
-
-	--p_index;
-
-	ERR_FAIL_INDEX(p_index, MAX_FLOAT_CONST_DEFS);
+void VisualShaderEditor::_float_constant_selected(int p_which) {
+	ERR_FAIL_INDEX(p_which, MAX_FLOAT_CONST_DEFS);
 
 	VisualShader::Type type = get_current_shader_type();
-	Ref<VisualShaderNodeFloatConstant> node = visual_shader->get_node(type, p_node);
-	if (!node.is_valid()) {
-		return;
+	Ref<VisualShaderNodeFloatConstant> node = visual_shader->get_node(type, selected_float_constant);
+	ERR_FAIL_COND(!node.is_valid());
+
+	if (Math::is_equal_approx(node->get_constant(), float_constant_defs[p_which].value)) {
+		return; // same
 	}
 
-	undo_redo->create_action(TTR("Set constant"));
-	undo_redo->add_do_method(node.ptr(), "set_constant", float_constant_defs[p_index].value);
+	undo_redo->create_action(vformat(TTR("Set Constant: %s"), float_constant_defs[p_which].name));
+	undo_redo->add_do_method(node.ptr(), "set_constant", float_constant_defs[p_which].value);
 	undo_redo->add_undo_method(node.ptr(), "set_constant", node->get_constant());
-	undo_redo->add_do_method(graph_plugin.ptr(), "update_constant", type, p_node);
-	undo_redo->add_undo_method(graph_plugin.ptr(), "update_constant", type, p_node);
 	undo_redo->commit_action();
 }
 
@@ -3792,7 +3786,7 @@ void VisualShaderEditor::_update_preview() {
 		preview_text->set_line_background_color(i, Color(0, 0, 0, 0));
 	}
 	if (err != OK) {
-		Color error_line_color = EDITOR_GET("text_editor/highlighting/mark_color");
+		Color error_line_color = EDITOR_GET("text_editor/theme/highlighting/mark_color");
 		preview_text->set_line_background_color(sl.get_error_line() - 1, error_line_color);
 		error_panel->show();
 
@@ -4460,6 +4454,7 @@ VisualShaderEditor::VisualShaderEditor() {
 	// TRANSFORM
 
 	add_options.push_back(AddOption("TransformFunc", "Transform", "Common", "VisualShaderNodeTransformFunc", TTR("Transform function."), -1, VisualShaderNode::PORT_TYPE_TRANSFORM));
+	add_options.push_back(AddOption("TransformOp", "Transform", "Common", "VisualShaderNodeTransformOp", TTR("Transform operator."), -1, VisualShaderNode::PORT_TYPE_TRANSFORM));
 
 	add_options.push_back(AddOption("OuterProduct", "Transform", "Composition", "VisualShaderNodeOuterProduct", TTR("Calculate the outer product of a pair of vectors.\n\nOuterProduct treats the first parameter 'c' as a column vector (matrix with one column) and the second parameter 'r' as a row vector (matrix with one row) and does a linear algebraic matrix multiply 'c * r', yielding a matrix whose number of rows is the number of components in 'c' and whose number of columns is the number of components in 'r'."), -1, VisualShaderNode::PORT_TYPE_TRANSFORM));
 	add_options.push_back(AddOption("TransformCompose", "Transform", "Composition", "VisualShaderNodeTransformCompose", TTR("Composes transform from four vectors."), -1, VisualShaderNode::PORT_TYPE_TRANSFORM));
@@ -4470,7 +4465,11 @@ VisualShaderEditor::VisualShaderEditor() {
 	add_options.push_back(AddOption("Inverse", "Transform", "Functions", "VisualShaderNodeTransformFunc", TTR("Calculates the inverse of a transform."), VisualShaderNodeTransformFunc::FUNC_INVERSE, VisualShaderNode::PORT_TYPE_TRANSFORM));
 	add_options.push_back(AddOption("Transpose", "Transform", "Functions", "VisualShaderNodeTransformFunc", TTR("Calculates the transpose of a transform."), VisualShaderNodeTransformFunc::FUNC_TRANSPOSE, VisualShaderNode::PORT_TYPE_TRANSFORM));
 
-	add_options.push_back(AddOption("TransformMult", "Transform", "Operators", "VisualShaderNodeTransformMult", TTR("Multiplies transform by transform."), -1, VisualShaderNode::PORT_TYPE_TRANSFORM));
+	add_options.push_back(AddOption("Add", "Transform", "Operators", "VisualShaderNodeTransformOp", TTR("Sums two transforms."), VisualShaderNodeTransformOp::OP_ADD, VisualShaderNode::PORT_TYPE_TRANSFORM));
+	add_options.push_back(AddOption("Divide", "Transform", "Operators", "VisualShaderNodeTransformOp", TTR("Divides two transforms."), VisualShaderNodeTransformOp::OP_A_DIV_B, VisualShaderNode::PORT_TYPE_TRANSFORM));
+	add_options.push_back(AddOption("Multiply", "Transform", "Operators", "VisualShaderNodeTransformOp", TTR("Multiplies two transforms."), VisualShaderNodeTransformOp::OP_AxB, VisualShaderNode::PORT_TYPE_TRANSFORM));
+	add_options.push_back(AddOption("MultiplyComp", "Transform", "Operators", "VisualShaderNodeTransformOp", TTR("Performs per-component multiplication of two transforms."), VisualShaderNodeTransformOp::OP_AxB_COMP, VisualShaderNode::PORT_TYPE_TRANSFORM));
+	add_options.push_back(AddOption("Subtract", "Transform", "Operators", "VisualShaderNodeTransformOp", TTR("Subtracts two transforms."), VisualShaderNodeTransformOp::OP_A_MINUS_B, VisualShaderNode::PORT_TYPE_TRANSFORM));
 	add_options.push_back(AddOption("TransformVectorMult", "Transform", "Operators", "VisualShaderNodeTransformVecMult", TTR("Multiplies vector by transform."), -1, VisualShaderNode::PORT_TYPE_VECTOR));
 
 	add_options.push_back(AddOption("TransformConstant", "Transform", "Variables", "VisualShaderNodeTransformConstant", TTR("Transform constant."), -1, VisualShaderNode::PORT_TYPE_TRANSFORM));
@@ -4753,9 +4752,6 @@ public:
 		if (p_property != "constant") {
 			undo_redo->add_do_method(VisualShaderEditor::get_singleton()->get_graph_plugin(), "update_node_deferred", shader_type, node_id);
 			undo_redo->add_undo_method(VisualShaderEditor::get_singleton()->get_graph_plugin(), "update_node_deferred", shader_type, node_id);
-		} else {
-			undo_redo->add_do_method(VisualShaderEditor::get_singleton()->get_graph_plugin(), "update_constant", shader_type, node_id);
-			undo_redo->add_undo_method(VisualShaderEditor::get_singleton()->get_graph_plugin(), "update_constant", shader_type, node_id);
 		}
 		undo_redo->commit_action();
 

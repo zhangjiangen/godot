@@ -31,10 +31,8 @@
 #include "window.h"
 
 #include "core/debugger/engine_debugger.h"
-#include "core/os/keyboard.h"
 #include "core/string/translation.h"
 #include "scene/gui/control.h"
-#include "scene/resources/font.h"
 #include "scene/scene_string_names.h"
 
 void Window::set_title(const String &p_title) {
@@ -302,7 +300,7 @@ void Window::_propagate_window_notification(Node *p_node, int p_notification) {
 		Node *child = p_node->get_child(i);
 		Window *window = Object::cast_to<Window>(child);
 		if (window) {
-			break;
+			continue;
 		}
 		_propagate_window_notification(child, p_notification);
 	}

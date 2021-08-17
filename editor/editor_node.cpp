@@ -613,8 +613,10 @@ void EditorNode::_notification(int p_what) {
 				_editor_select(EDITOR_3D);
 			}
 
-			// Save the project after opening to mark it as last modified.
-			ProjectSettings::get_singleton()->save();
+			// Save the project after opening to mark it as last modified, except in headless mode.
+			if (DisplayServer::get_singleton()->window_can_draw()) {
+				ProjectSettings::get_singleton()->save();
+			}
 
 			/* DO NOT LOAD SCENES HERE, WAIT FOR FILE SCANNING AND REIMPORT TO COMPLETE */
 		} break;
@@ -6238,9 +6240,9 @@ EditorNode::EditorNode() {
 	gui_base->add_child(warning);
 	warning->connect("custom_action", callable_mp(this, &EditorNode::_copy_warning));
 
-	ED_SHORTCUT("editor/next_tab", TTR("Next tab"), KEY_MASK_CMD + KEY_TAB);
-	ED_SHORTCUT("editor/prev_tab", TTR("Previous tab"), KEY_MASK_CMD + KEY_MASK_SHIFT + KEY_TAB);
-	ED_SHORTCUT("editor/filter_files", TTR("Filter Files..."), KEY_MASK_CMD + KEY_MASK_ALT + KEY_P);
+	ED_SHORTCUT("editor/next_tab", TTR("Next Scene Tab"), KEY_MASK_CMD + KEY_TAB);
+	ED_SHORTCUT("editor/prev_tab", TTR("Previous Scene Tab"), KEY_MASK_CMD + KEY_MASK_SHIFT + KEY_TAB);
+	ED_SHORTCUT("editor/filter_files", TTR("Focus FileSystem Filter"), KEY_MASK_CMD + KEY_MASK_ALT + KEY_P);
 
 	command_palette = EditorCommandPalette::get_singleton();
 	command_palette->set_title(TTR("Command Palette"));
@@ -6367,6 +6369,7 @@ EditorNode::EditorNode() {
 #else
 	p->add_shortcut(ED_SHORTCUT_AND_COMMAND("editor/editor_settings", TTR("Editor Settings...")), SETTINGS_PREFERENCES);
 #endif
+	p->add_shortcut(ED_SHORTCUT("editor/command_palette", TTR("Command Palette..."), KEY_MASK_CMD | KEY_MASK_SHIFT | KEY_P), HELP_COMMAND_PALETTE);
 	p->add_separator();
 
 	editor_layouts = memnew(PopupMenu);
@@ -6680,7 +6683,7 @@ EditorNode::EditorNode() {
 	bottom_panel_raise->set_flat(true);
 	bottom_panel_raise->set_icon(gui_base->get_theme_icon(SNAME("ExpandBottomDock"), SNAME("EditorIcons")));
 
-	bottom_panel_raise->set_shortcut(ED_SHORTCUT("editor/bottom_panel_expand", TTR("Expand Bottom Panel"), KEY_MASK_SHIFT | KEY_F12));
+	bottom_panel_raise->set_shortcut(ED_SHORTCUT_AND_COMMAND("editor/bottom_panel_expand", TTR("Expand Bottom Panel"), KEY_MASK_SHIFT | KEY_F12));
 
 	bottom_panel_hb->add_child(bottom_panel_raise);
 	bottom_panel_raise->hide();
@@ -7045,17 +7048,15 @@ EditorNode::EditorNode() {
 	ED_SHORTCUT_AND_COMMAND("editor/editor_3d", TTR("Open 3D Editor"), KEY_MASK_ALT | KEY_2);
 	ED_SHORTCUT_AND_COMMAND("editor/editor_script", TTR("Open Script Editor"), KEY_MASK_ALT | KEY_3);
 	ED_SHORTCUT_AND_COMMAND("editor/editor_assetlib", TTR("Open Asset Library"), KEY_MASK_ALT | KEY_4);
-	ED_SHORTCUT("editor/command_palette", TTR("Open Command Palette"), KEY_MASK_CMD | KEY_MASK_SHIFT | KEY_P);
 #else
 	// Use the Ctrl modifier so F2 can be used to rename nodes in the scene tree dock.
 	ED_SHORTCUT_AND_COMMAND("editor/editor_2d", TTR("Open 2D Editor"), KEY_MASK_CTRL | KEY_F1);
 	ED_SHORTCUT_AND_COMMAND("editor/editor_3d", TTR("Open 3D Editor"), KEY_MASK_CTRL | KEY_F2);
 	ED_SHORTCUT_AND_COMMAND("editor/editor_script", TTR("Open Script Editor"), KEY_MASK_CTRL | KEY_F3);
 	ED_SHORTCUT_AND_COMMAND("editor/editor_assetlib", TTR("Open Asset Library"), KEY_MASK_CTRL | KEY_F4);
-	ED_SHORTCUT("editor/command_palette", TTR("Open Command Palette"), KEY_MASK_CTRL | KEY_MASK_SHIFT | KEY_P);
 #endif
-	ED_SHORTCUT_AND_COMMAND("editor/editor_next", TTR("Open the next Editor"));
-	ED_SHORTCUT_AND_COMMAND("editor/editor_prev", TTR("Open the previous Editor"));
+	ED_SHORTCUT_AND_COMMAND("editor/editor_next", TTR("Next Editor Tab"));
+	ED_SHORTCUT_AND_COMMAND("editor/editor_prev", TTR("Previous Editor Tab"));
 
 	screenshot_timer = memnew(Timer);
 	screenshot_timer->set_one_shot(true);

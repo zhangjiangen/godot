@@ -1464,6 +1464,85 @@ void RendererSceneRenderRD::_allocate_blur_textures(RenderBuffers *rb) {
 		base_width = MAX(1, base_width >> 1);
 		base_height = MAX(1, base_height >> 1);
 	}
+
+	if (!_render_buffers_can_be_storage()) {
+		// create 4 weight textures, 2 full size, 2 half size
+
+		tf.format = RD::DATA_FORMAT_R16_SFLOAT; // We could probably use DATA_FORMAT_R8_SNORM if we don't pre-multiply by blur_size but that depends on whether we can remove DEPTH_GAP
+		tf.width = rb->width;
+		tf.height = rb->height;
+		tf.texture_type = rb->view_count > 1 ? RD::TEXTURE_TYPE_2D_ARRAY : RD::TEXTURE_TYPE_2D;
+		tf.array_layers = rb->view_count;
+		tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_COPY_TO_BIT | RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT;
+		tf.mipmaps = 1;
+		for (uint32_t i = 0; i < 4; i++) {
+			// associated blur texture
+			RID texture;
+			if (i == 0) {
+				texture = rb->texture;
+			} else if (i == 1) {
+				texture = rb->blur[0].mipmaps[0].texture;
+			} else if (i == 2) {
+				texture = rb->blur[1].mipmaps[0].texture;
+			} else if (i == 3) {
+				texture = rb->blur[0].mipmaps[1].texture;
+			}
+
+			// create weight texture
+			rb->weight_buffers[i].weight = RD::get_singleton()->texture_create(tf, RD::TextureView());
+
+			// create frame buffer
+			Vector<RID> fb;
+			fb.push_back(texture);
+			fb.push_back(rb->weight_buffers[i].weight);
+			rb->weight_buffers[i].fb = RD::get_singleton()->framebuffer_create(fb);
+
+			if (i == 1) {
+				// next 2 are half size
+				tf.width = MAX(1, tf.width >> 1);
+				tf.height = MAX(1, tf.height >> 1);
+			}
+		}
+
+		{
+			// and finally an FB for just our base weights
+			Vector<RID> fb;
+			fb.push_back(rb->weight_buffers[0].weight);
+			rb->base_weight_fb = RD::get_singleton()->framebuffer_create(fb);
+		}
+	}
+}
+
+void RendererSceneRenderRD::_allocate_depth_backbuffer_textures(RenderBuffers *rb) {
+	ERR_FAIL_COND(!rb->depth_back_texture.is_null());
+
+	{
+		RD::TextureFormat tf;
+		if (rb->view_count > 1) {
+			tf.texture_type = RD::TEXTURE_TYPE_2D_ARRAY;
+		}
+		// We're not using this as a depth stencil, just copying our data into this. May need to look into using a different format on mobile, maybe R16?
+		tf.format = RD::DATA_FORMAT_R32_SFLOAT;
+
+		tf.width = rb->width;
+		tf.height = rb->height;
+		tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT;
+		tf.array_layers = rb->view_count; // create a layer for every view
+
+		tf.usage_bits |= RD::TEXTURE_USAGE_CAN_COPY_TO_BIT | RD::TEXTURE_USAGE_STORAGE_BIT;
+		tf.usage_bits |= RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT; // set this as color attachment because we're copying data into it, it's not actually used as a depth buffer
+
+		rb->depth_back_texture = RD::get_singleton()->texture_create(tf, RD::TextureView());
+	}
+
+	if (!_render_buffers_can_be_storage()) {
+		// create framebuffer so we can write into this...
+
+		Vector<RID> fb;
+		fb.push_back(rb->depth_back_texture);
+
+		rb->depth_back_fb = RD::get_singleton()->framebuffer_create(fb, RD::INVALID_ID, rb->view_count);
+	}
 }
 
 void RendererSceneRenderRD::_allocate_luminance_textures(RenderBuffers *rb) {
@@ -1530,6 +1609,16 @@ void RendererSceneRenderRD::_free_render_buffer_data(RenderBuffers *rb) {
 	if (rb->depth_texture.is_valid()) {
 		RD::get_singleton()->free(rb->depth_texture);
 		rb->depth_texture = RID();
+	}
+
+	if (rb->depth_back_fb.is_valid()) {
+		RD::get_singleton()->free(rb->depth_back_fb);
+		rb->depth_back_fb = RID();
+	}
+
+	if (rb->depth_back_texture.is_valid()) {
+		RD::get_singleton()->free(rb->depth_back_texture);
+		rb->depth_back_texture = RID();
 	}
 
 	for (int i = 0; i < 2; i++) {
@@ -1832,6 +1921,58 @@ void RendererSceneRenderRD::_process_ssao(RID p_render_buffers, RID p_environmen
 	storage->get_effects()->generate_ssao(rb->depth_texture, p_normal_buffer, rb->ssao.depth, rb->ssao.depth_slices, rb->ssao.ao_deinterleaved, rb->ssao.ao_deinterleaved_slices, rb->ssao.ao_pong, rb->ssao.ao_pong_slices, rb->ssao.ao_final, rb->ssao.importance_map[0], rb->ssao.importance_map[1], p_projection, settings, uniform_sets_are_invalid, rb->ssao.downsample_uniform_set, rb->ssao.gather_uniform_set, rb->ssao.importance_map_uniform_set);
 }
 
+void RendererSceneRenderRD::_render_buffers_copy_screen_texture(const RenderDataRD *p_render_data) {
+	RenderBuffers *rb = render_buffers_owner.getornull(p_render_data->render_buffers);
+	ERR_FAIL_COND(!rb);
+
+	RD::get_singleton()->draw_command_begin_label("Copy screen texture");
+
+	if (rb->blur[0].texture.is_null()) {
+		_allocate_blur_textures(rb);
+	}
+
+	// @TODO IMPLEMENT MULTIVIEW, all effects need to support stereo buffers or effects are only applied to the left eye
+
+	bool can_use_storage = _render_buffers_can_be_storage();
+
+	if (can_use_storage) {
+		storage->get_effects()->copy_to_rect(rb->texture, rb->blur[0].mipmaps[0].texture, Rect2i(0, 0, rb->width, rb->height));
+		for (int i = 1; i < rb->blur[0].mipmaps.size(); i++) {
+			storage->get_effects()->make_mipmap(rb->blur[0].mipmaps[i - 1].texture, rb->blur[0].mipmaps[i].texture, Size2i(rb->blur[0].mipmaps[i].width, rb->blur[0].mipmaps[i].height));
+		}
+	} else {
+		storage->get_effects()->copy_to_fb_rect(rb->texture, rb->blur[0].mipmaps[0].fb, Rect2i(0, 0, rb->width, rb->height));
+		for (int i = 1; i < rb->blur[0].mipmaps.size(); i++) {
+			storage->get_effects()->make_mipmap_raster(rb->blur[0].mipmaps[i - 1].texture, rb->blur[0].mipmaps[i].fb, Size2i(rb->blur[0].mipmaps[i].width, rb->blur[0].mipmaps[i].height));
+		}
+	}
+
+	RD::get_singleton()->draw_command_end_label();
+}
+
+void RendererSceneRenderRD::_render_buffers_copy_depth_texture(const RenderDataRD *p_render_data) {
+	RenderBuffers *rb = render_buffers_owner.getornull(p_render_data->render_buffers);
+	ERR_FAIL_COND(!rb);
+
+	RD::get_singleton()->draw_command_begin_label("Copy depth texture");
+
+	if (rb->depth_back_texture.is_null()) {
+		_allocate_depth_backbuffer_textures(rb);
+	}
+
+	// @TODO IMPLEMENT MULTIVIEW, all effects need to support stereo buffers or effects are only applied to the left eye
+
+	bool can_use_storage = _render_buffers_can_be_storage();
+
+	if (can_use_storage) {
+		storage->get_effects()->copy_to_rect(rb->depth_texture, rb->depth_back_texture, Rect2i(0, 0, rb->width, rb->height));
+	} else {
+		storage->get_effects()->copy_to_fb_rect(rb->depth_texture, rb->depth_back_fb, Rect2i(0, 0, rb->width, rb->height));
+	}
+
+	RD::get_singleton()->draw_command_end_label();
+}
+
 void RendererSceneRenderRD::_render_buffers_post_process_and_tonemap(const RenderDataRD *p_render_data) {
 	RenderBuffers *rb = render_buffers_owner.getornull(p_render_data->render_buffers);
 	ERR_FAIL_COND(!rb);
@@ -1851,11 +1992,34 @@ void RendererSceneRenderRD::_render_buffers_post_process_and_tonemap(const Rende
 			_allocate_blur_textures(rb);
 		}
 
+		EffectsRD::BokehBuffers buffers;
+
+		// textures we use
+		buffers.base_texture_size = Size2i(rb->width, rb->height);
+		buffers.base_texture = rb->texture;
+		buffers.depth_texture = rb->depth_texture;
+		buffers.secondary_texture = rb->blur[0].mipmaps[0].texture;
+		buffers.half_texture[0] = rb->blur[1].mipmaps[0].texture;
+		buffers.half_texture[1] = rb->blur[0].mipmaps[1].texture;
+
+		float bokeh_size = camfx->dof_blur_amount * 64.0;
 		if (can_use_storage) {
-			float bokeh_size = camfx->dof_blur_amount * 64.0;
-			storage->get_effects()->bokeh_dof(rb->texture, rb->depth_texture, Size2i(rb->width, rb->height), rb->blur[0].mipmaps[0].texture, rb->blur[1].mipmaps[0].texture, rb->blur[0].mipmaps[1].texture, camfx->dof_blur_far_enabled, camfx->dof_blur_far_distance, camfx->dof_blur_far_transition, camfx->dof_blur_near_enabled, camfx->dof_blur_near_distance, camfx->dof_blur_near_transition, bokeh_size, dof_blur_bokeh_shape, dof_blur_quality, dof_blur_use_jitter, p_render_data->z_near, p_render_data->z_far, p_render_data->cam_ortogonal);
+			storage->get_effects()->bokeh_dof(buffers, camfx->dof_blur_far_enabled, camfx->dof_blur_far_distance, camfx->dof_blur_far_transition, camfx->dof_blur_near_enabled, camfx->dof_blur_near_distance, camfx->dof_blur_near_transition, bokeh_size, dof_blur_bokeh_shape, dof_blur_quality, dof_blur_use_jitter, p_render_data->z_near, p_render_data->z_far, p_render_data->cam_ortogonal);
 		} else {
-			storage->get_effects()->blur_dof_raster(rb->texture, rb->depth_texture, Size2i(rb->width, rb->height), rb->texture_fb, rb->blur[0].mipmaps[0].texture, rb->blur[0].mipmaps[0].fb, camfx->dof_blur_far_enabled, camfx->dof_blur_far_distance, camfx->dof_blur_far_transition, camfx->dof_blur_near_enabled, camfx->dof_blur_near_distance, camfx->dof_blur_near_transition, camfx->dof_blur_amount, dof_blur_quality, p_render_data->z_near, p_render_data->z_far, p_render_data->cam_ortogonal);
+			// set framebuffers
+			buffers.base_fb = rb->texture_fb;
+			buffers.secondary_fb = rb->weight_buffers[1].fb;
+			buffers.half_fb[0] = rb->weight_buffers[2].fb;
+			buffers.half_fb[1] = rb->weight_buffers[3].fb;
+			buffers.weight_texture[0] = rb->weight_buffers[0].weight;
+			buffers.weight_texture[1] = rb->weight_buffers[1].weight;
+			buffers.weight_texture[2] = rb->weight_buffers[2].weight;
+			buffers.weight_texture[3] = rb->weight_buffers[3].weight;
+
+			// set weight buffers
+			buffers.base_weight_fb = rb->base_weight_fb;
+
+			storage->get_effects()->bokeh_dof_raster(buffers, camfx->dof_blur_far_enabled, camfx->dof_blur_far_distance, camfx->dof_blur_far_transition, camfx->dof_blur_near_enabled, camfx->dof_blur_near_distance, camfx->dof_blur_near_transition, bokeh_size, dof_blur_bokeh_shape, dof_blur_quality, p_render_data->z_near, p_render_data->z_far, p_render_data->cam_ortogonal);
 		}
 		RD::get_singleton()->draw_command_end_label();
 	}
@@ -2155,6 +2319,15 @@ RID RendererSceneRenderRD::render_buffers_get_back_buffer_texture(RID p_render_b
 		return RID(); //not valid at the moment
 	}
 	return rb->blur[0].texture;
+}
+
+RID RendererSceneRenderRD::render_buffers_get_back_depth_texture(RID p_render_buffers) {
+	RenderBuffers *rb = render_buffers_owner.getornull(p_render_buffers);
+	ERR_FAIL_COND_V(!rb, RID());
+	if (!rb->depth_back_texture.is_valid()) {
+		return RID(); //not valid at the moment
+	}
+	return rb->depth_back_texture;
 }
 
 RID RendererSceneRenderRD::render_buffers_get_ao_texture(RID p_render_buffers) {
@@ -2777,7 +2950,7 @@ void RendererSceneRenderRD::_setup_lights(const PagedArray<RID> &p_lights, const
 						CameraMatrix shadow_mtx = rectm * bias * matrix * modelview;
 						light_data.shadow_split_offsets[j] = split;
 						float bias_scale = li->shadow_transform[j].bias_scale;
-						light_data.shadow_bias[j] = storage->light_get_param(base, RS::LIGHT_PARAM_SHADOW_BIAS) * bias_scale;
+						light_data.shadow_bias[j] = storage->light_get_param(base, RS::LIGHT_PARAM_SHADOW_BIAS) / 100.0 * bias_scale;
 						light_data.shadow_normal_bias[j] = storage->light_get_param(base, RS::LIGHT_PARAM_SHADOW_NORMAL_BIAS) * li->shadow_transform[j].shadow_texel_size;
 						light_data.shadow_transmittance_bias[j] = storage->light_get_transmittance_bias(base) * bias_scale;
 						light_data.shadow_z_range[j] = li->shadow_transform[j].farplane;
@@ -2948,14 +3121,10 @@ void RendererSceneRenderRD::_setup_lights(const PagedArray<RID> &p_lights, const
 			light_data.shadow_enabled = true;
 
 			if (type == RS::LIGHT_SPOT) {
-				light_data.shadow_bias = (storage->light_get_param(base, RS::LIGHT_PARAM_SHADOW_BIAS) * radius / 10.0);
-				float shadow_texel_size = Math::tan(Math::deg2rad(spot_angle)) * radius * 2.0;
-				shadow_texel_size *= light_instance_get_shadow_texel_size(li->self, p_shadow_atlas);
-
-				light_data.shadow_normal_bias = storage->light_get_param(base, RS::LIGHT_PARAM_SHADOW_NORMAL_BIAS) * shadow_texel_size;
+				light_data.shadow_bias = (storage->light_get_param(base, RS::LIGHT_PARAM_SHADOW_BIAS) / 100.0);
 
 			} else { //omni
-				light_data.shadow_bias = storage->light_get_param(base, RS::LIGHT_PARAM_SHADOW_BIAS) * radius / 10.0;
+				light_data.shadow_bias = storage->light_get_param(base, RS::LIGHT_PARAM_SHADOW_BIAS) / 100.0;
 				float shadow_texel_size = light_instance_get_shadow_texel_size(li->self, p_shadow_atlas);
 				light_data.shadow_normal_bias = storage->light_get_param(base, RS::LIGHT_PARAM_SHADOW_NORMAL_BIAS) * shadow_texel_size * 2.0; // applied in -1 .. 1 space
 			}

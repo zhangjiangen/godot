@@ -926,38 +926,55 @@ bool CodeTextEditor::_add_font_size(int p_delta) {
 }
 
 void CodeTextEditor::update_editor_settings() {
-	completion_font_color = EDITOR_GET("text_editor/highlighting/completion_font_color");
-	completion_string_color = EDITOR_GET("text_editor/highlighting/string_color");
-	completion_comment_color = EDITOR_GET("text_editor/highlighting/comment_color");
+	// Theme: Highlighting
+	completion_font_color = EDITOR_GET("text_editor/theme/highlighting/completion_font_color");
+	completion_string_color = EDITOR_GET("text_editor/theme/highlighting/string_color");
+	completion_comment_color = EDITOR_GET("text_editor/theme/highlighting/comment_color");
 
-	text_editor->set_highlight_all_occurrences(EditorSettings::get_singleton()->get("text_editor/highlighting/highlight_all_occurrences"));
-	text_editor->set_highlight_current_line(EditorSettings::get_singleton()->get("text_editor/highlighting/highlight_current_line"));
-	text_editor->set_indent_using_spaces(EditorSettings::get_singleton()->get("text_editor/indent/type"));
-	text_editor->set_indent_size(EditorSettings::get_singleton()->get("text_editor/indent/size"));
-	text_editor->set_auto_indent_enabled(EditorSettings::get_singleton()->get("text_editor/indent/auto_indent"));
-	text_editor->set_draw_tabs(EditorSettings::get_singleton()->get("text_editor/indent/draw_tabs"));
-	text_editor->set_draw_spaces(EditorSettings::get_singleton()->get("text_editor/indent/draw_spaces"));
-	text_editor->set_smooth_scroll_enabled(EditorSettings::get_singleton()->get("text_editor/navigation/smooth_scrolling"));
-	text_editor->set_v_scroll_speed(EditorSettings::get_singleton()->get("text_editor/navigation/v_scroll_speed"));
-	text_editor->set_draw_minimap(EditorSettings::get_singleton()->get("text_editor/navigation/show_minimap"));
-	text_editor->set_minimap_width((int)EditorSettings::get_singleton()->get("text_editor/navigation/minimap_width") * EDSCALE);
-	text_editor->set_draw_line_numbers(EditorSettings::get_singleton()->get("text_editor/appearance/show_line_numbers"));
-	text_editor->set_line_numbers_zero_padded(EditorSettings::get_singleton()->get("text_editor/appearance/line_numbers_zero_padded"));
-	text_editor->set_draw_bookmarks_gutter(EditorSettings::get_singleton()->get("text_editor/appearance/show_bookmark_gutter"));
-	text_editor->set_line_folding_enabled(EditorSettings::get_singleton()->get("text_editor/appearance/code_folding"));
-	text_editor->set_draw_fold_gutter(EditorSettings::get_singleton()->get("text_editor/appearance/code_folding"));
-	text_editor->set_line_wrapping_mode((TextEdit::LineWrappingMode)EditorSettings::get_singleton()->get("text_editor/appearance/word_wrap").operator int());
-	text_editor->set_scroll_past_end_of_file_enabled(EditorSettings::get_singleton()->get("text_editor/cursor/scroll_past_end_of_file"));
-	text_editor->set_caret_type((TextEdit::CaretType)EditorSettings::get_singleton()->get("text_editor/cursor/type").operator int());
-	text_editor->set_caret_blink_enabled(EditorSettings::get_singleton()->get("text_editor/cursor/caret_blink"));
-	text_editor->set_caret_blink_speed(EditorSettings::get_singleton()->get("text_editor/cursor/caret_blink_speed"));
+	// Appearance: Caret
+	text_editor->set_caret_type((TextEdit::CaretType)EditorSettings::get_singleton()->get("text_editor/appearance/caret/type").operator int());
+	text_editor->set_caret_blink_enabled(EditorSettings::get_singleton()->get("text_editor/appearance/caret/caret_blink"));
+	text_editor->set_caret_blink_speed(EditorSettings::get_singleton()->get("text_editor/appearance/caret/caret_blink_speed"));
+	text_editor->set_highlight_current_line(EditorSettings::get_singleton()->get("text_editor/appearance/caret/highlight_current_line"));
+	text_editor->set_highlight_all_occurrences(EditorSettings::get_singleton()->get("text_editor/appearance/caret/highlight_all_occurrences"));
+
+	// Appearance: Gutters
+	text_editor->set_draw_line_numbers(EditorSettings::get_singleton()->get("text_editor/appearance/gutters/show_line_numbers"));
+	text_editor->set_line_numbers_zero_padded(EditorSettings::get_singleton()->get("text_editor/appearance/gutters/line_numbers_zero_padded"));
+	text_editor->set_draw_bookmarks_gutter(EditorSettings::get_singleton()->get("text_editor/appearance/gutters/show_bookmark_gutter"));
+
+	// Appearance: Minimap
+	text_editor->set_draw_minimap(EditorSettings::get_singleton()->get("text_editor/appearance/minimap/show_minimap"));
+	text_editor->set_minimap_width((int)EditorSettings::get_singleton()->get("text_editor/appearance/minimap/minimap_width") * EDSCALE);
+
+	// Appearance: Lines
+	text_editor->set_line_folding_enabled(EditorSettings::get_singleton()->get("text_editor/appearance/lines/code_folding"));
+	text_editor->set_draw_fold_gutter(EditorSettings::get_singleton()->get("text_editor/appearance/lines/code_folding"));
+	text_editor->set_line_wrapping_mode((TextEdit::LineWrappingMode)EditorSettings::get_singleton()->get("text_editor/appearance/lines/word_wrap").operator int());
+
+	// Appearance: Whitespace
+	text_editor->set_draw_tabs(EditorSettings::get_singleton()->get("text_editor/appearance/whitespace/draw_tabs"));
+	text_editor->set_draw_spaces(EditorSettings::get_singleton()->get("text_editor/appearance/whitespace/draw_spaces"));
+
+	// Behavior: Navigation
+	text_editor->set_scroll_past_end_of_file_enabled(EditorSettings::get_singleton()->get("text_editor/behavior/navigation/scroll_past_end_of_file"));
+	text_editor->set_smooth_scroll_enabled(EditorSettings::get_singleton()->get("text_editor/behavior/navigation/smooth_scrolling"));
+	text_editor->set_v_scroll_speed(EditorSettings::get_singleton()->get("text_editor/behavior/navigation/v_scroll_speed"));
+
+	// Behavior: indent
+	text_editor->set_indent_using_spaces(EditorSettings::get_singleton()->get("text_editor/behavior/indent/type"));
+	text_editor->set_indent_size(EditorSettings::get_singleton()->get("text_editor/behavior/indent/size"));
+	text_editor->set_auto_indent_enabled(EditorSettings::get_singleton()->get("text_editor/behavior/indent/auto_indent"));
+
+	// Completion
 	text_editor->set_auto_brace_completion_enabled(EditorSettings::get_singleton()->get("text_editor/completion/auto_brace_complete"));
 
-	if (EditorSettings::get_singleton()->get("text_editor/appearance/show_line_length_guidelines")) {
+	// Appearance: Guidelines
+	if (EditorSettings::get_singleton()->get("text_editor/appearance/guidelines/show_line_length_guidelines")) {
 		TypedArray<int> guideline_cols;
-		guideline_cols.append(EditorSettings::get_singleton()->get("text_editor/appearance/line_length_guideline_hard_column"));
-		if (EditorSettings::get_singleton()->get("text_editor/appearance/line_length_guideline_soft_column") != guideline_cols[0]) {
-			guideline_cols.append(EditorSettings::get_singleton()->get("text_editor/appearance/line_length_guideline_soft_column"));
+		guideline_cols.append(EditorSettings::get_singleton()->get("text_editor/appearance/guidelines/line_length_guideline_hard_column"));
+		if (EditorSettings::get_singleton()->get("text_editor/appearance/guidelines/line_length_guideline_soft_column") != guideline_cols[0]) {
+			guideline_cols.append(EditorSettings::get_singleton()->get("text_editor/appearance/guidelines/line_length_guideline_soft_column"));
 		}
 		text_editor->set_line_length_guidelines(guideline_cols);
 	}
@@ -1028,7 +1045,7 @@ void CodeTextEditor::insert_final_newline() {
 }
 
 void CodeTextEditor::convert_indent_to_spaces() {
-	int indent_size = EditorSettings::get_singleton()->get("text_editor/indent/size");
+	int indent_size = EditorSettings::get_singleton()->get("text_editor/behavior/indent/size");
 	String indent = "";
 
 	for (int i = 0; i < indent_size; i++) {
@@ -1072,7 +1089,7 @@ void CodeTextEditor::convert_indent_to_spaces() {
 }
 
 void CodeTextEditor::convert_indent_to_tabs() {
-	int indent_size = EditorSettings::get_singleton()->get("text_editor/indent/size");
+	int indent_size = EditorSettings::get_singleton()->get("text_editor/behavior/indent/size");
 	indent_size -= 1;
 
 	int cursor_line = text_editor->get_caret_line();
@@ -1520,40 +1537,12 @@ void CodeTextEditor::goto_error() {
 }
 
 void CodeTextEditor::_update_text_editor_theme() {
-	text_editor->add_theme_color_override("background_color", EDITOR_GET("text_editor/highlighting/background_color"));
-	text_editor->add_theme_color_override("completion_background_color", EDITOR_GET("text_editor/highlighting/completion_background_color"));
-	text_editor->add_theme_color_override("completion_selected_color", EDITOR_GET("text_editor/highlighting/completion_selected_color"));
-	text_editor->add_theme_color_override("completion_existing_color", EDITOR_GET("text_editor/highlighting/completion_existing_color"));
-	text_editor->add_theme_color_override("completion_scroll_color", EDITOR_GET("text_editor/highlighting/completion_scroll_color"));
-	text_editor->add_theme_color_override("completion_font_color", EDITOR_GET("text_editor/highlighting/completion_font_color"));
-	text_editor->add_theme_color_override("font_color", EDITOR_GET("text_editor/highlighting/text_color"));
-	text_editor->add_theme_color_override("line_number_color", EDITOR_GET("text_editor/highlighting/line_number_color"));
-	text_editor->add_theme_color_override("caret_color", EDITOR_GET("text_editor/highlighting/caret_color"));
-	text_editor->add_theme_color_override("caret_background_color", EDITOR_GET("text_editor/highlighting/caret_background_color"));
-	text_editor->add_theme_color_override("font_selected_color", EDITOR_GET("text_editor/highlighting/text_selected_color"));
-	text_editor->add_theme_color_override("selection_color", EDITOR_GET("text_editor/highlighting/selection_color"));
-	text_editor->add_theme_color_override("brace_mismatch_color", EDITOR_GET("text_editor/highlighting/brace_mismatch_color"));
-	text_editor->add_theme_color_override("current_line_color", EDITOR_GET("text_editor/highlighting/current_line_color"));
-	text_editor->add_theme_color_override("line_length_guideline_color", EDITOR_GET("text_editor/highlighting/line_length_guideline_color"));
-	text_editor->add_theme_color_override("word_highlighted_color", EDITOR_GET("text_editor/highlighting/word_highlighted_color"));
-	text_editor->add_theme_color_override("bookmark_color", EDITOR_GET("text_editor/highlighting/bookmark_color"));
-	text_editor->add_theme_color_override("breakpoint_color", EDITOR_GET("text_editor/highlighting/breakpoint_color"));
-	text_editor->add_theme_color_override("executing_line_color", EDITOR_GET("text_editor/highlighting/executing_line_color"));
-	text_editor->add_theme_color_override("code_folding_color", EDITOR_GET("text_editor/highlighting/code_folding_color"));
-	text_editor->add_theme_color_override("search_result_color", EDITOR_GET("text_editor/highlighting/search_result_color"));
-	text_editor->add_theme_color_override("search_result_border_color", EDITOR_GET("text_editor/highlighting/search_result_border_color"));
-	text_editor->add_theme_constant_override("line_spacing", EDITOR_DEF("text_editor/theme/line_spacing", 6));
 	emit_signal(SNAME("load_theme_settings"));
-	_load_theme_settings();
-}
 
-void CodeTextEditor::_update_font() {
-	text_editor->add_theme_font_override("font", get_theme_font(SNAME("source"), SNAME("EditorFonts")));
-	text_editor->add_theme_font_size_override("font_size", get_theme_font_size(SNAME("source_size"), SNAME("EditorFonts")));
-
-	error->add_theme_font_override("font", get_theme_font(SNAME("status_source"), SNAME("EditorFonts")));
-	error->add_theme_font_size_override("font_size", get_theme_font_size(SNAME("status_source_size"), SNAME("EditorFonts")));
-	error->add_theme_color_override("font_color", get_theme_color(SNAME("error_color"), SNAME("Editor")));
+	error->begin_bulk_theme_override();
+	error->add_theme_font_override(SNAME("font"), get_theme_font(SNAME("status_source"), SNAME("EditorFonts")));
+	error->add_theme_font_size_override(SNAME("font_size"), get_theme_font_size(SNAME("status_source_size"), SNAME("EditorFonts")));
+	error->add_theme_color_override(SNAME("font_color"), get_theme_color(SNAME("error_color"), SNAME("Editor")));
 
 	Ref<Font> status_bar_font = get_theme_font(SNAME("status_source"), SNAME("EditorFonts"));
 	int status_bar_font_size = get_theme_font_size(SNAME("status_source_size"), SNAME("EditorFonts"));
@@ -1567,6 +1556,7 @@ void CodeTextEditor::_update_font() {
 			n->add_theme_font_size_override("font_size", status_bar_font_size);
 		}
 	}
+	error->end_bulk_theme_override();
 }
 
 void CodeTextEditor::_on_settings_change() {
@@ -1582,7 +1572,6 @@ void CodeTextEditor::_apply_settings_change() {
 	settings_changed = false;
 
 	_update_text_editor_theme();
-	_update_font();
 
 	font_size = EditorSettings::get_singleton()->get("interface/editor/code_font_size");
 
@@ -1668,7 +1657,6 @@ void CodeTextEditor::_notification(int p_what) {
 				update_toggle_scripts_button();
 			}
 			_update_text_editor_theme();
-			_update_font();
 		} break;
 		case NOTIFICATION_ENTER_TREE: {
 			error_button->set_icon(get_theme_icon(SNAME("StatusError"), SNAME("EditorIcons")));

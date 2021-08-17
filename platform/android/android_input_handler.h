@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  line_shape_2d.h                                                      */
+/*  android_input_handler.h                                              */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,37 +28,64 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef LINE_SHAPE_2D_H
-#define LINE_SHAPE_2D_H
+#ifndef ANDROID_INPUT_HANDLER_H
+#define ANDROID_INPUT_HANDLER_H
 
-#include "scene/resources/shape_2d.h"
+#include "core/input/input.h"
 
-class LineShape2D : public Shape2D {
-	GDCLASS(LineShape2D, Shape2D);
+// This class encapsulates all the handling of input events that come from the Android UI thread.
+// Remarks:
+// - It's not thread-safe by itself, so its functions must only be called on a single thread, which is the Android UI thread.
+// - Its functions must only call thread-safe methods.
+class AndroidInputHandler {
+public:
+	struct TouchPos {
+		int id = 0;
+		Point2 pos;
+	};
 
-	// LineShape2D is often used for one-way platforms, where the normal pointing up makes sense.
-	Vector2 normal = Vector2(0, -1);
-	real_t distance = 0.0;
+	enum {
+		JOY_EVENT_BUTTON = 0,
+		JOY_EVENT_AXIS = 1,
+		JOY_EVENT_HAT = 2
+	};
 
-	void _update_shape();
+	struct JoypadEvent {
+		int device = 0;
+		int type = 0;
+		int index = 0;
+		bool pressed = false;
+		float value = 0;
+		int hat = 0;
+	};
 
-protected:
-	static void _bind_methods();
+private:
+	bool alt_mem = false;
+	bool shift_mem = false;
+	bool control_mem = false;
+	bool meta_mem = false;
+
+	MouseButton buttons_state = MOUSE_BUTTON_NONE;
+
+	Vector<TouchPos> touch;
+	Point2 hover_prev_pos; // needed to calculate the relative position on hover events
+	Point2 scroll_prev_pos; // needed to calculate the relative position on scroll events
+
+	void _set_key_modifier_state(Ref<InputEventWithModifiers> ev);
+
+	static MouseButton _button_index_from_mask(MouseButton button_mask);
+	static MouseButton _android_button_mask_to_godot_button_mask(int android_button_mask);
+
+	void _wheel_button_click(MouseButton event_buttons_mask, const Ref<InputEventMouseButton> &ev, MouseButton wheel_button, float factor);
 
 public:
-	virtual bool _edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const override;
-
-	void set_normal(const Vector2 &p_normal);
-	void set_distance(real_t p_distance);
-
-	Vector2 get_normal() const;
-	real_t get_distance() const;
-
-	virtual void draw(const RID &p_to_rid, const Color &p_color) override;
-	virtual Rect2 get_rect() const override;
-	virtual real_t get_enclosing_radius() const override;
-
-	LineShape2D();
+	void process_touch(int p_event, int p_pointer, const Vector<TouchPos> &p_points);
+	void process_hover(int p_type, Point2 p_pos);
+	void process_mouse_event(int input_device, int event_action, int event_android_buttons_mask, Point2 event_pos, float event_vertical_factor = 0, float event_horizontal_factor = 0);
+	void process_double_tap(int event_android_button_mask, Point2 p_pos);
+	void process_scroll(Point2 p_pos);
+	void process_joy_event(JoypadEvent p_event);
+	void process_key_event(int p_keycode, int p_scancode, int p_unicode_char, bool p_pressed);
 };
 
-#endif // LINE_SHAPE_2D_H
+#endif

@@ -600,7 +600,7 @@ bool Space3DSW::test_body_motion(Body3DSW *p_body, const Transform3D &p_from, co
 	if (!shapes_found) {
 		if (r_result) {
 			*r_result = PhysicsServer3D::MotionResult();
-			r_result->motion = p_motion;
+			r_result->travel = p_motion;
 		}
 
 		return false;
@@ -879,9 +879,9 @@ bool Space3DSW::test_body_motion(Body3DSW *p_body, const Transform3D &p_from, co
 				Vector3 rel_vec = rcd.best_contact - (body->get_transform().origin + body->get_center_of_mass());
 				r_result->collider_velocity = body->get_linear_velocity() + (body->get_angular_velocity()).cross(rel_vec);
 
-				r_result->motion = safe * p_motion;
+				r_result->travel = safe * p_motion;
 				r_result->remainder = p_motion - safe * p_motion;
-				r_result->motion += (body_transform.get_origin() - p_from.get_origin());
+				r_result->travel += (body_transform.get_origin() - p_from.get_origin());
 			}
 
 			collided = true;
@@ -889,9 +889,9 @@ bool Space3DSW::test_body_motion(Body3DSW *p_body, const Transform3D &p_from, co
 	}
 
 	if (!collided && r_result) {
-		r_result->motion = p_motion;
+		r_result->travel = p_motion;
 		r_result->remainder = Vector3();
-		r_result->motion += (body_transform.get_origin() - p_from.get_origin());
+		r_result->travel += (body_transform.get_origin() - p_from.get_origin());
 	}
 
 	return collided;
@@ -921,7 +921,9 @@ void *Space3DSW::_broadphase_pair(CollisionObject3DSW *A, int p_subindex_A, Coll
 			Area2Pair3DSW *area2_pair = memnew(Area2Pair3DSW(area_b, p_subindex_B, area, p_subindex_A));
 			return area2_pair;
 		} else if (type_B == CollisionObject3DSW::TYPE_SOFT_BODY) {
-			// Area/Soft Body, not supported.
+			SoftBody3DSW *softbody = static_cast<SoftBody3DSW *>(B);
+			AreaSoftBodyPair3DSW *soft_area_pair = memnew(AreaSoftBodyPair3DSW(softbody, p_subindex_B, area, p_subindex_A));
+			return soft_area_pair;
 		} else {
 			Body3DSW *body = static_cast<Body3DSW *>(B);
 			AreaPair3DSW *area_pair = memnew(AreaPair3DSW(body, p_subindex_B, area, p_subindex_A));
