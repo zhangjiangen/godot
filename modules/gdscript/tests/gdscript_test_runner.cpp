@@ -357,6 +357,9 @@ void GDScriptTest::error_handler(void *p_this, const char *p_function, const cha
 		case ERR_HANDLER_SHADER:
 			builder.append("SHADER ERROR");
 			break;
+		case ERR_HANDLER_LOGINFO:
+			builder.append("LOG INFO");
+			break;
 		default:
 			builder.append("Unknown error type");
 			break;

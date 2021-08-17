@@ -42,6 +42,7 @@ enum ErrorHandlerType {
 	ERR_HANDLER_WARNING,
 	ERR_HANDLER_SCRIPT,
 	ERR_HANDLER_SHADER,
+	ERR_HANDLER_LOGINFO,
 };
 
 // Pointer to the error handler printing function. Reassign to any function to have errors printed.
@@ -556,6 +557,10 @@ void _err_print_index_error(const char *p_function, const char *p_file, int p_li
  */
 #define WARN_PRINT(m_msg) \
 	_err_print_error(FUNCTION_STR, __FILE__, __LINE__, m_msg, ERR_HANDLER_WARNING)
+
+// 增加日志类型输出
+#define LOG_INFO_PRINT(m_msg) \
+	_err_print_error(FUNCTION_STR, __FILE__, __LINE__, m_msg, ERR_HANDLER_LOGINFO)
 
 /**
  * Prints `m_msg` once during the application lifetime.

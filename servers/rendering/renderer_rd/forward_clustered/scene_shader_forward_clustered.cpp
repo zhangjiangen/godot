@@ -45,6 +45,7 @@ void SceneShaderForwardClustered::ShaderData::set_code(const String &p_code) {
 	uses_screen_texture = false;
 
 	if (code == String()) {
+		LOG_INFO_PRINT("code null !");
 		return; //just invalid, but no error
 	}
 
@@ -147,7 +148,7 @@ void SceneShaderForwardClustered::ShaderData::set_code(const String &p_code) {
 		print_line(gen_code.defines[i]);
 	}
 
-	Map<String, String>::Element * el = gen_code.code.front();
+	Map<String, String>::Element *el = gen_code.code.front();
 	while (el) {
 		print_line("\n**code " + el->key() + ":\n" + el->value());
 
