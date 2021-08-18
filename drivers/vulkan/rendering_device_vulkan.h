@@ -642,6 +642,7 @@ private:
 		Vector<VkPipelineShaderStageCreateInfo> pipeline_stages;
 		Vector<SpecializationConstant> specialization_constants;
 		VkPipelineLayout pipeline_layout = VK_NULL_HANDLE;
+		String name; //used for debug
 	};
 
 	String _shader_uniform_debug(RID p_shader, int p_set = -1);
@@ -1091,7 +1092,7 @@ public:
 	/****************/
 
 	virtual String shader_get_binary_cache_key() const;
-	virtual Vector<uint8_t> shader_compile_binary_from_spirv(const Vector<ShaderStageSPIRVData> &p_spirv);
+	virtual Vector<uint8_t> shader_compile_binary_from_spirv(const Vector<ShaderStageSPIRVData> &p_spirv, const String &p_shader_name = "");
 
 	virtual RID shader_create_from_bytecode(const Vector<uint8_t> &p_shader_binary);
 
