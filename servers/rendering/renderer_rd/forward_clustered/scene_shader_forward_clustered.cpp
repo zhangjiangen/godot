@@ -59,7 +59,7 @@ void SceneShaderForwardClustered::ShaderData::set_code(const String &p_code) {
 	uses_point_size = false;
 	uses_alpha = false;
 	uses_blend_alpha = false;
-	uses_depth_pre_pass = false;
+	uses_depth_pre_pass = true;
 	uses_discard = false;
 	uses_roughness = false;
 	uses_normal = false;
@@ -292,7 +292,9 @@ void SceneShaderForwardClustered::ShaderData::set_code(const String &p_code) {
 						if (depth_draw == DEPTH_DRAW_OPAQUE) {
 							depth_stencil.enable_depth_write = false; //alpha does not draw depth
 						}
-					} else if (uses_depth_pre_pass && (k == SHADER_VERSION_DEPTH_PASS || k == SHADER_VERSION_DEPTH_PASS_DP || k == SHADER_VERSION_DEPTH_PASS_WITH_NORMAL_AND_ROUGHNESS || k == SHADER_VERSION_DEPTH_PASS_WITH_MATERIAL)) {
+					} else if (uses_depth_pre_pass && (k == SHADER_VERSION_DEPTH_PASS
+						|| k == SHADER_VERSION_DEPTH_PASS_DP || k == SHADER_VERSION_DEPTH_PASS_WITH_NORMAL_AND_ROUGHNESS
+						|| k == SHADER_VERSION_DEPTH_PASS_WITH_MATERIAL)) {
 						if (k == SHADER_VERSION_DEPTH_PASS || k == SHADER_VERSION_DEPTH_PASS_DP) {
 							//none, blend state contains nothing
 						} else if (k == SHADER_VERSION_DEPTH_PASS_WITH_MATERIAL) {
@@ -300,7 +302,10 @@ void SceneShaderForwardClustered::ShaderData::set_code(const String &p_code) {
 						} else {
 							blend_state = blend_state_opaque; //writes to normal and roughness in opaque way
 						}
-					} else {
+					
+					} else if (k == SHADER_VERSION_DEPTH_PASS_WITH_NORMAL_AND_ROUGHNESS_AND_VOXEL_GI) {
+						blend_state = blend_state_depth_normal_roughness_giprobe;
+					}else {
 						pipelines[i][j][k].clear();
 						continue; // do not use this version (will error if using it is attempted)
 					}
