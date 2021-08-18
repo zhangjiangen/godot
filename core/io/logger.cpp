@@ -69,6 +69,9 @@ void Logger::log_error(const char *p_function, const char *p_file, int p_line, c
 		case ERR_SHADER:
 			err_type = "SHADER ERROR";
 			break;
+		case ERR_LOGINFO:
+			err_type = "LOG INFO";
+			break;
 		default:
 			ERR_PRINT("Unknown error type");
 			break;

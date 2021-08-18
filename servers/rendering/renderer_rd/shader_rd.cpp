@@ -207,6 +207,7 @@ void ShaderRD::_compile_variant(uint32_t p_variant, Version *p_version) {
 		return; //variant is disabled, return
 	}
 
+	LOG_INFO_PRINT(String("_compile_variant :") + p_version->GetString());
 	Vector<RD::ShaderStageSPIRVData> stages;
 
 	String error;
@@ -383,7 +384,7 @@ bool ShaderRD::_load_from_cache(Version *p_version) {
 	if (!f) {
 		return false;
 	}
-	LOG_INFO_PRINT(String("_load_from_cache path :") + path);
+	LOG_INFO_PRINT(String("_load_from_cache :") + p_version->GetString());
 
 	char header[5] = { 0, 0, 0, 0, 0 };
 	f->get_buffer((uint8_t *)header, 4);

@@ -48,7 +48,8 @@ public:
 		ERR_ERROR,
 		ERR_WARNING,
 		ERR_SCRIPT,
-		ERR_SHADER
+		ERR_SHADER,
+		ERR_LOGINFO
 	};
 
 	static void set_flush_stdout_on_print(bool value);

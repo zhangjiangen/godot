@@ -58,6 +58,13 @@ class ShaderRD {
 		CharString fragment_globals;
 		Map<StringName, CharString> code_sections;
 		Vector<CharString> custom_defines;
+		String GetString() {
+			String ret;
+			for (int i = 0; i < custom_defines.size(); ++i) {
+				ret += custom_defines[i] + "\n";
+			}
+			return ret;
+		}
 
 		Vector<uint8_t> *variant_data = nullptr;
 		RID *variants = nullptr; //same size as version defines
