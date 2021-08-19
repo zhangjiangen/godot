@@ -530,7 +530,9 @@ RES ResourceLoader::load(const String &p_path, const String &p_type_hint, Resour
 			}
 			thread_load_mutex->unlock();
 
-			return load_threaded_get(p_path, r_error);
+			RES res = load_threaded_get(p_path, r_error);
+
+			return res;
 		}
 
 		//Is it cached?
@@ -572,7 +574,12 @@ RES ResourceLoader::load(const String &p_path, const String &p_type_hint, Resour
 
 		_thread_load_function(&thread_load_tasks[local_path]);
 
-		return load_threaded_get(p_path, r_error);
+		RES res = load_threaded_get(p_path, r_error);
+
+		if (!res.is_null()) {
+			res->_on_post_load();
+		}
+		return res;
 
 	} else {
 		bool xl_remapped = false;
@@ -590,7 +597,8 @@ RES ResourceLoader::load(const String &p_path, const String &p_type_hint, Resour
 			print_verbose("Failed loading resource: " + path);
 			return RES();
 		}
-
+		// 处理完成加载
+		res->_on_post_load();
 		if (xl_remapped) {
 			res->set_as_translation_remapped(true);
 		}

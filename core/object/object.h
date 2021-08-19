@@ -240,6 +240,7 @@ struct PropertyInfo {
 	Variant::Type type = Variant::NIL;
 	String name;
 	StringName class_name; // For classes
+	StringName update_read_state; // For classes
 	PropertyHint hint = PROPERTY_HINT_NONE;
 	String hint_string;
 	uint32_t usage = PROPERTY_USAGE_DEFAULT;
