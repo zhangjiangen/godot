@@ -62,7 +62,13 @@ public:
 				return;
 			}
 		}
+
+#if defined(_MSC_VER)
+		FILE *file = nullptr;
+		fopen_s(&file, file_path.ascii().ptr(), "a");
+#else
 		FILE *file = fopen(file_path.ascii().ptr(), "a");
+#endif
 		if (file) {
 			const int static_buf_size = 512;
 			char static_buf[static_buf_size];

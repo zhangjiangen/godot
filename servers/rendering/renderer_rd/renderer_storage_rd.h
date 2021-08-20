@@ -1309,34 +1309,34 @@ private:
 	EffectsRD *effects = NULL;
 
 public:
-	virtual bool can_create_resources_async() const;
+	virtual bool can_create_resources_async() const override;
 
 	/* TEXTURE API */
 
-	virtual RID texture_allocate();
+	virtual RID texture_allocate() override;
 
-	virtual void texture_2d_initialize(RID p_texture, const Ref<Image> &p_image);
-	virtual void texture_2d_layered_initialize(RID p_texture, const Vector<Ref<Image>> &p_layers, RS::TextureLayeredType p_layered_type);
-	virtual void texture_3d_initialize(RID p_texture, Image::Format p_format, int p_width, int p_height, int p_depth, bool p_mipmaps, const Vector<Ref<Image>> &p_data); //all slices, then all the mipmaps, must be coherent
-	virtual void texture_proxy_initialize(RID p_texture, RID p_base);
+	virtual void texture_2d_initialize(RID p_texture, const Ref<Image> &p_image) override;
+	virtual void texture_2d_layered_initialize(RID p_texture, const Vector<Ref<Image>> &p_layers, RS::TextureLayeredType p_layered_type) override;
+	virtual void texture_3d_initialize(RID p_texture, Image::Format p_format, int p_width, int p_height, int p_depth, bool p_mipmaps, const Vector<Ref<Image>> &p_data) override; //all slices, then all the mipmaps, must be coherent
+	virtual void texture_proxy_initialize(RID p_texture, RID p_base) override;
 
-	virtual void _texture_2d_update(RID p_texture, const Ref<Image> &p_image, int p_layer, bool p_immediate);
+	virtual void _texture_2d_update(RID p_texture, const Ref<Image> &p_image, int p_layer, bool p_immediate) override;
 
-	virtual void texture_2d_update(RID p_texture, const Ref<Image> &p_image, int p_layer = 0);
-	virtual void texture_3d_update(RID p_texture, const Vector<Ref<Image>> &p_data);
-	virtual void texture_proxy_update(RID p_texture, RID p_proxy_to);
+	virtual void texture_2d_update(RID p_texture, const Ref<Image> &p_image, int p_layer = 0) override;
+	virtual void texture_3d_update(RID p_texture, const Vector<Ref<Image>> &p_data) override;
+	virtual void texture_proxy_update(RID p_texture, RID p_proxy_to) override;
 
 	//these two APIs can be used together or in combination with the others.
-	virtual void texture_2d_placeholder_initialize(RID p_texture);
-	virtual void texture_2d_layered_placeholder_initialize(RID p_texture, RenderingServer::TextureLayeredType p_layered_type);
-	virtual void texture_3d_placeholder_initialize(RID p_texture);
+	virtual void texture_2d_placeholder_initialize(RID p_texture) override;
+	virtual void texture_2d_layered_placeholder_initialize(RID p_texture, RenderingServer::TextureLayeredType p_layered_type) override;
+	virtual void texture_3d_placeholder_initialize(RID p_texture) override;
 
-	virtual Ref<Image> texture_2d_get(RID p_texture) const;
-	virtual Ref<Image> texture_2d_layer_get(RID p_texture, int p_layer) const;
-	virtual Vector<Ref<Image>> texture_3d_get(RID p_texture) const;
+	virtual Ref<Image> texture_2d_get(RID p_texture) const override;
+	virtual Ref<Image> texture_2d_layer_get(RID p_texture, int p_layer) const override;
+	virtual Vector<Ref<Image>> texture_3d_get(RID p_texture) const override;
 
-	virtual void texture_replace(RID p_texture, RID p_by_texture);
-	virtual void texture_set_size_override(RID p_texture, int p_width, int p_height);
+	virtual void texture_replace(RID p_texture, RID p_by_texture) override;
+	virtual void texture_set_size_override(RID p_texture, int p_width, int p_height) override;
 
 	virtual void texture_set_path(RID p_texture, const String &p_path);
 	virtual String texture_get_path(RID p_texture) const;
