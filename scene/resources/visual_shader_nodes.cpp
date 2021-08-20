@@ -355,6 +355,192 @@ void VisualShaderNodeVec3Constant::_bind_methods() {
 
 VisualShaderNodeVec3Constant::VisualShaderNodeVec3Constant() {
 }
+////////////// Vector4
+
+String VisualShaderNodeVec4Constant::get_caption() const {
+	return "Vector4Constant";
+}
+
+int VisualShaderNodeVec4Constant::get_input_port_count() const {
+	return 0;
+}
+
+VisualShaderNodeVec4Constant::PortType VisualShaderNodeVec4Constant::get_input_port_type(int p_port) const {
+	return PORT_TYPE_VECTOR4;
+}
+
+String VisualShaderNodeVec4Constant::get_input_port_name(int p_port) const {
+	return String();
+}
+
+int VisualShaderNodeVec4Constant::get_output_port_count() const {
+	return 1;
+}
+
+VisualShaderNodeVec4Constant::PortType VisualShaderNodeVec4Constant::get_output_port_type(int p_port) const {
+	return PORT_TYPE_VECTOR4;
+}
+
+String VisualShaderNodeVec4Constant::get_output_port_name(int p_port) const {
+	return ""; //no output port means the editor will be used as port
+}
+
+String VisualShaderNodeVec4Constant::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	return "	" + p_output_vars[0] + " = " + vformat("vec4(%.6f, %.6f, %.6f, %.6f)", constant.normal.x, constant.normal.y, constant.normal.z, constant.d) + ";\n";
+}
+
+void VisualShaderNodeVec4Constant::set_constant(const Plane &p_constant) {
+	if (constant.is_equal_approx(p_constant)) {
+		return;
+	}
+	constant = p_constant;
+	emit_changed();
+}
+
+Plane VisualShaderNodeVec4Constant::get_constant() const {
+	return constant;
+}
+
+Vector<StringName> VisualShaderNodeVec4Constant::get_editable_properties() const {
+	Vector<StringName> props;
+	props.push_back("constant");
+	return props;
+}
+
+void VisualShaderNodeVec4Constant::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_constant", "constant"), &VisualShaderNodeVec4Constant::set_constant);
+	ClassDB::bind_method(D_METHOD("get_constant"), &VisualShaderNodeVec4Constant::get_constant);
+
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "constant"), "set_constant", "get_constant");
+}
+
+VisualShaderNodeVec4Constant::VisualShaderNodeVec4Constant() {
+}
+
+
+
+////////////// VectorI
+
+String VisualShaderNodeVec3IConstant::get_caption() const {
+	return "VectorIConstant";
+}
+
+int VisualShaderNodeVec3IConstant::get_input_port_count() const {
+	return 0;
+}
+
+VisualShaderNodeVec3IConstant::PortType VisualShaderNodeVec3IConstant::get_input_port_type(int p_port) const {
+	return PORT_TYPE_VECTOR;
+}
+
+String VisualShaderNodeVec3IConstant::get_input_port_name(int p_port) const {
+	return String();
+}
+
+int VisualShaderNodeVec3IConstant::get_output_port_count() const {
+	return 1;
+}
+
+VisualShaderNodeVec3IConstant::PortType VisualShaderNodeVec3IConstant::get_output_port_type(int p_port) const {
+	return PORT_TYPE_IVECTOR;
+}
+
+String VisualShaderNodeVec3IConstant::get_output_port_name(int p_port) const {
+	return ""; //no output port means the editor will be used as port
+}
+
+String VisualShaderNodeVec3IConstant::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	return "	" + p_output_vars[0] + " = " + vformat("ivec3(%d, %d, %d)", constant.x, constant.y, constant.z) + ";\n";
+}
+
+void VisualShaderNodeVec3IConstant::set_constant(const Vector3i &p_constant) {
+	if (constant == p_constant) {
+		return;
+	}
+	constant = p_constant;
+	emit_changed();
+}
+
+Vector3i VisualShaderNodeVec3IConstant::get_constant() const {
+	return constant;
+}
+
+Vector<StringName> VisualShaderNodeVec3IConstant::get_editable_properties() const {
+	Vector<StringName> props;
+	props.push_back("constant");
+	return props;
+}
+
+void VisualShaderNodeVec3IConstant::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_constant", "constant"), &VisualShaderNodeVec3IConstant::set_constant);
+	ClassDB::bind_method(D_METHOD("get_constant"), &VisualShaderNodeVec3IConstant::get_constant);
+
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "constant"), "set_constant", "get_constant");
+}
+
+VisualShaderNodeVec3IConstant::VisualShaderNodeVec3IConstant() {
+}
+////////////// Vector4I
+
+String VisualShaderNodeVec4IConstant::get_caption() const {
+	return "Vector4IConstant";
+}
+
+int VisualShaderNodeVec4IConstant::get_input_port_count() const {
+	return 0;
+}
+
+VisualShaderNodeVec4IConstant::PortType VisualShaderNodeVec4IConstant::get_input_port_type(int p_port) const {
+	return PORT_TYPE_IVECTOR4;
+}
+
+String VisualShaderNodeVec4IConstant::get_input_port_name(int p_port) const {
+	return String();
+}
+
+int VisualShaderNodeVec4IConstant::get_output_port_count() const {
+	return 1;
+}
+
+VisualShaderNodeVec4IConstant::PortType VisualShaderNodeVec4IConstant::get_output_port_type(int p_port) const {
+	return PORT_TYPE_IVECTOR4;
+}
+
+String VisualShaderNodeVec4IConstant::get_output_port_name(int p_port) const {
+	return ""; //no output port means the editor will be used as port
+}
+
+String VisualShaderNodeVec4IConstant::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	return "	" + p_output_vars[0] + " = " + vformat("ivec4(%d, %d, %d, %d)", constant.position.x, constant.position.y, constant.size.x, constant.size.y) + ";\n";
+}
+
+void VisualShaderNodeVec4IConstant::set_constant(const Rect2i &p_constant) {
+	if (constant == p_constant) {
+		return;
+	}
+	constant = p_constant;
+	emit_changed();
+}
+
+Rect2i VisualShaderNodeVec4IConstant::get_constant() const {
+	return constant;
+}
+
+Vector<StringName> VisualShaderNodeVec4IConstant::get_editable_properties() const {
+	Vector<StringName> props;
+	props.push_back("constant");
+	return props;
+}
+
+void VisualShaderNodeVec4IConstant::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_constant", "constant"), &VisualShaderNodeVec4IConstant::set_constant);
+	ClassDB::bind_method(D_METHOD("get_constant"), &VisualShaderNodeVec4IConstant::get_constant);
+
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "constant"), "set_constant", "get_constant");
+}
+
+VisualShaderNodeVec4IConstant::VisualShaderNodeVec4IConstant() {
+}
 
 ////////////// Transform3D
 
@@ -4681,7 +4867,304 @@ Vector<StringName> VisualShaderNodeVec3Uniform::get_editable_properties() const 
 
 VisualShaderNodeVec3Uniform::VisualShaderNodeVec3Uniform() {
 }
+////////////// Vector4 Uniform
 
+String VisualShaderNodeVec4Uniform::get_caption() const {
+	return "Vector4Uniform";
+}
+
+int VisualShaderNodeVec4Uniform::get_input_port_count() const {
+	return 0;
+}
+
+VisualShaderNodeVec4Uniform::PortType VisualShaderNodeVec4Uniform::get_input_port_type(int p_port) const {
+	return PORT_TYPE_VECTOR4;
+}
+
+String VisualShaderNodeVec4Uniform::get_input_port_name(int p_port) const {
+	return String();
+}
+
+int VisualShaderNodeVec4Uniform::get_output_port_count() const {
+	return 1;
+}
+
+VisualShaderNodeVec4Uniform::PortType VisualShaderNodeVec4Uniform::get_output_port_type(int p_port) const {
+	return PORT_TYPE_VECTOR4;
+}
+
+String VisualShaderNodeVec4Uniform::get_output_port_name(int p_port) const {
+	return ""; //no output port means the editor will be used as port
+}
+
+void VisualShaderNodeVec4Uniform::set_default_value_enabled(bool p_enabled) {
+	default_value_enabled = p_enabled;
+	emit_changed();
+}
+
+bool VisualShaderNodeVec4Uniform::is_default_value_enabled() const {
+	return default_value_enabled;
+}
+
+void VisualShaderNodeVec4Uniform::set_default_value(const Plane &p_value) {
+	default_value = p_value;
+	emit_changed();
+}
+
+Plane VisualShaderNodeVec4Uniform::get_default_value() const {
+	return default_value;
+}
+
+String VisualShaderNodeVec4Uniform::generate_global(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const {
+	String code = _get_qual_str() + "uniform vec4 " + get_uniform_name();
+	if (default_value_enabled) {
+		code += vformat(" = vec4(%.6f, %.6f, %.6f, %.6f)", default_value.normal.x, default_value.normal.y, default_value.normal.z, default_value.d);
+	}
+	code += ";\n";
+	return code;
+}
+
+String VisualShaderNodeVec4Uniform::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	return "	" + p_output_vars[0] + " = " + get_uniform_name() + ";\n";
+}
+
+void VisualShaderNodeVec4Uniform::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_default_value_enabled", "enabled"), &VisualShaderNodeVec4Uniform::set_default_value_enabled);
+	ClassDB::bind_method(D_METHOD("is_default_value_enabled"), &VisualShaderNodeVec4Uniform::is_default_value_enabled);
+
+	ClassDB::bind_method(D_METHOD("set_default_value", "value"), &VisualShaderNodeVec4Uniform::set_default_value);
+	ClassDB::bind_method(D_METHOD("get_default_value"), &VisualShaderNodeVec4Uniform::get_default_value);
+
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "default_value_enabled"), "set_default_value_enabled", "is_default_value_enabled");
+	ADD_PROPERTY(PropertyInfo(Variant::PLANE, "default_value"), "set_default_value", "get_default_value");
+}
+
+bool VisualShaderNodeVec4Uniform::is_show_prop_names() const {
+	return true;
+}
+
+bool VisualShaderNodeVec4Uniform::is_use_prop_slots() const {
+	return true;
+}
+
+bool VisualShaderNodeVec4Uniform::is_qualifier_supported(Qualifier p_qual) const {
+	return true; // all qualifiers are supported
+}
+
+bool VisualShaderNodeVec4Uniform::is_convertible_to_constant() const {
+	return true; // conversion is allowed
+}
+
+Vector<StringName> VisualShaderNodeVec4Uniform::get_editable_properties() const {
+	Vector<StringName> props = VisualShaderNodeUniform::get_editable_properties();
+	props.push_back("default_value_enabled");
+	if (default_value_enabled) {
+		props.push_back("default_value");
+	}
+	return props;
+}
+
+VisualShaderNodeVec4Uniform::VisualShaderNodeVec4Uniform() {
+}
+
+////////////// VectorI Uniform
+
+String VisualShaderNodeVec3IUniform::get_caption() const {
+	return "VectorIUniform";
+}
+
+int VisualShaderNodeVec3IUniform::get_input_port_count() const {
+	return 0;
+}
+
+VisualShaderNodeVec3IUniform::PortType VisualShaderNodeVec3IUniform::get_input_port_type(int p_port) const {
+	return PORT_TYPE_IVECTOR;
+}
+
+String VisualShaderNodeVec3IUniform::get_input_port_name(int p_port) const {
+	return String();
+}
+
+int VisualShaderNodeVec3IUniform::get_output_port_count() const {
+	return 1;
+}
+
+VisualShaderNodeVec3IUniform::PortType VisualShaderNodeVec3IUniform::get_output_port_type(int p_port) const {
+	return PORT_TYPE_IVECTOR;
+}
+
+String VisualShaderNodeVec3IUniform::get_output_port_name(int p_port) const {
+	return ""; //no output port means the editor will be used as port
+}
+
+void VisualShaderNodeVec3IUniform::set_default_value_enabled(bool p_enabled) {
+	default_value_enabled = p_enabled;
+	emit_changed();
+}
+
+bool VisualShaderNodeVec3IUniform::is_default_value_enabled() const {
+	return default_value_enabled;
+}
+
+void VisualShaderNodeVec3IUniform::set_default_value(const Vector3i &p_value) {
+	default_value = p_value;
+	emit_changed();
+}
+
+Vector3i VisualShaderNodeVec3IUniform::get_default_value() const {
+	return default_value;
+}
+
+String VisualShaderNodeVec3IUniform::generate_global(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const {
+	String code = _get_qual_str() + "uniform ivec3 " + get_uniform_name();
+	if (default_value_enabled) {
+		code += vformat(" = ivec3(%.6f, %.6f, %.6f)", default_value.x, default_value.y, default_value.z);
+	}
+	code += ";\n";
+	return code;
+}
+
+String VisualShaderNodeVec3IUniform::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	return "	" + p_output_vars[0] + " = " + get_uniform_name() + ";\n";
+}
+
+void VisualShaderNodeVec3IUniform::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_default_value_enabled", "enabled"), &VisualShaderNodeVec3IUniform::set_default_value_enabled);
+	ClassDB::bind_method(D_METHOD("is_default_value_enabled"), &VisualShaderNodeVec3IUniform::is_default_value_enabled);
+
+	ClassDB::bind_method(D_METHOD("set_default_value", "value"), &VisualShaderNodeVec3IUniform::set_default_value);
+	ClassDB::bind_method(D_METHOD("get_default_value"), &VisualShaderNodeVec3IUniform::get_default_value);
+
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "default_value_enabled"), "set_default_value_enabled", "is_default_value_enabled");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3I, "default_value"), "set_default_value", "get_default_value");
+}
+
+bool VisualShaderNodeVec3IUniform::is_show_prop_names() const {
+	return true;
+}
+
+bool VisualShaderNodeVec3IUniform::is_use_prop_slots() const {
+	return true;
+}
+
+bool VisualShaderNodeVec3IUniform::is_qualifier_supported(Qualifier p_qual) const {
+	return true; // all qualifiers are supported
+}
+
+bool VisualShaderNodeVec3IUniform::is_convertible_to_constant() const {
+	return true; // conversion is allowed
+}
+
+Vector<StringName> VisualShaderNodeVec3IUniform::get_editable_properties() const {
+	Vector<StringName> props = VisualShaderNodeUniform::get_editable_properties();
+	props.push_back("default_value_enabled");
+	if (default_value_enabled) {
+		props.push_back("default_value");
+	}
+	return props;
+}
+
+VisualShaderNodeVec3IUniform::VisualShaderNodeVec3IUniform() {
+}
+////////////// Vector4I Uniform
+
+String VisualShaderNodeVec4IUniform::get_caption() const {
+	return "Vector4IUniform";
+}
+
+int VisualShaderNodeVec4IUniform::get_input_port_count() const {
+	return 0;
+}
+
+VisualShaderNodeVec4IUniform::PortType VisualShaderNodeVec4IUniform::get_input_port_type(int p_port) const {
+	return PORT_TYPE_IVECTOR4;
+}
+
+String VisualShaderNodeVec4IUniform::get_input_port_name(int p_port) const {
+	return String();
+}
+
+int VisualShaderNodeVec4IUniform::get_output_port_count() const {
+	return 1;
+}
+
+VisualShaderNodeVec4IUniform::PortType VisualShaderNodeVec4IUniform::get_output_port_type(int p_port) const {
+	return PORT_TYPE_IVECTOR4;
+}
+
+String VisualShaderNodeVec4IUniform::get_output_port_name(int p_port) const {
+	return ""; //no output port means the editor will be used as port
+}
+
+void VisualShaderNodeVec4IUniform::set_default_value_enabled(bool p_enabled) {
+	default_value_enabled = p_enabled;
+	emit_changed();
+}
+
+bool VisualShaderNodeVec4IUniform::is_default_value_enabled() const {
+	return default_value_enabled;
+}
+
+void VisualShaderNodeVec4IUniform::set_default_value(const Rect2i &p_value) {
+	default_value = p_value;
+	emit_changed();
+}
+
+Rect2i VisualShaderNodeVec4IUniform::get_default_value() const {
+	return default_value;
+}
+
+String VisualShaderNodeVec4IUniform::generate_global(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const {
+	String code = _get_qual_str() + "uniform ivec4 " + get_uniform_name();
+	if (default_value_enabled) {
+		code += vformat(" = ivec4(%d, %d, %d, %d)", default_value.position.x, default_value.position.y, default_value.size.x, default_value.size.y);
+	}
+	code += ";\n";
+	return code;
+}
+
+String VisualShaderNodeVec4IUniform::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	return "	" + p_output_vars[0] + " = " + get_uniform_name() + ";\n";
+}
+
+void VisualShaderNodeVec4IUniform::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_default_value_enabled", "enabled"), &VisualShaderNodeVec4IUniform::set_default_value_enabled);
+	ClassDB::bind_method(D_METHOD("is_default_value_enabled"), &VisualShaderNodeVec4IUniform::is_default_value_enabled);
+
+	ClassDB::bind_method(D_METHOD("set_default_value", "value"), &VisualShaderNodeVec4IUniform::set_default_value);
+	ClassDB::bind_method(D_METHOD("get_default_value"), &VisualShaderNodeVec4IUniform::get_default_value);
+
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "default_value_enabled"), "set_default_value_enabled", "is_default_value_enabled");
+	ADD_PROPERTY(PropertyInfo(Variant::RECT2I, "default_value"), "set_default_value", "get_default_value");
+}
+
+bool VisualShaderNodeVec4IUniform::is_show_prop_names() const {
+	return true;
+}
+
+bool VisualShaderNodeVec4IUniform::is_use_prop_slots() const {
+	return true;
+}
+
+bool VisualShaderNodeVec4IUniform::is_qualifier_supported(Qualifier p_qual) const {
+	return true; // all qualifiers are supported
+}
+
+bool VisualShaderNodeVec4IUniform::is_convertible_to_constant() const {
+	return true; // conversion is allowed
+}
+
+Vector<StringName> VisualShaderNodeVec4IUniform::get_editable_properties() const {
+	Vector<StringName> props = VisualShaderNodeUniform::get_editable_properties();
+	props.push_back("default_value_enabled");
+	if (default_value_enabled) {
+		props.push_back("default_value");
+	}
+	return props;
+}
+
+VisualShaderNodeVec4IUniform::VisualShaderNodeVec4IUniform() {
+}
 ////////////// Transform Uniform
 
 String VisualShaderNodeTransformUniform::get_caption() const {

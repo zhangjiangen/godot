@@ -102,8 +102,8 @@ private:
 		ERR_FAIL_COND(hash_table);
 
 		hash_table_power = MIN_HASH_TABLE_POWER;
-		hash_table = memnew_arr(Element *, (1 << hash_table_power));
-		hash_table_size = (uint64_t)1 << hash_table_power;
+		hash_table_size = (uint32_t)1 << hash_table_power;
+		hash_table = memnew_arr(Element *, (size_t)hash_table_size);
 
 		elements = 0;
 		for (int i = 0; i < (1 << MIN_HASH_TABLE_POWER); i++) {
@@ -222,8 +222,8 @@ private:
 		}
 
 		hash_table_power = p_t.hash_table_power;
-		hash_table = memnew_arr(Element *, (uint64_t)1 << hash_table_power);
-		hash_table_size = (uint64_t)1 << p_t.hash_table_power;
+		hash_table_size = (uint32_t)1 << p_t.hash_table_power;
+		hash_table = memnew_arr(Element *, (size_t)hash_table_size);
 		elements = p_t.elements;
 
 		for (int i = 0; i < (1 << hash_table_power); i++) {
