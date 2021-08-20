@@ -2909,6 +2909,61 @@ void VisualShaderEditor::_convert_constants_to_uniforms(bool p_vice_versa) {
 				}
 			}
 		}
+		// vec4
+		if (!caught) {
+			if (!p_vice_versa) {
+				Ref<VisualShaderNodeVec4Constant> vec4_const = Object::cast_to<VisualShaderNodeVec4Constant>(node.ptr());
+				if (vec4_const.is_valid()) {
+					_replace_node(type_id, node_id, "VisualShaderNodeVec4Constant", "VisualShaderNodeVec4Uniform");
+					var = vec4_const->get_constant();
+					caught = true;
+				}
+			} else {
+				Ref<VisualShaderNodeVec4Uniform> vec4_const = Object::cast_to<VisualShaderNodeVec4Uniform>(node.ptr());
+				if (vec4_const.is_valid()) {
+					_replace_node(type_id, node_id, "VisualShaderNodeVec4Uniform", "VisualShaderNodeVec4Constant");
+					var = vec4_const->get_default_value();
+					caught = true;
+				}
+			}
+		}
+
+		// ivec3
+		if (!caught) {
+			if (!p_vice_versa) {
+				Ref<VisualShaderNodeVec3Constant> vec3_const = Object::cast_to<VisualShaderNodeVec3IConstant>(node.ptr());
+				if (vec3_const.is_valid()) {
+					_replace_node(type_id, node_id, "VisualShaderNodeVec3IConstant", "VisualShaderNodeVec3IUniform");
+					var = vec3_const->get_constant();
+					caught = true;
+				}
+			} else {
+				Ref<VisualShaderNodeVec3IUniform> vec3_uniform = Object::cast_to<VisualShaderNodeVec3IUniform>(node.ptr());
+				if (vec3_uniform.is_valid()) {
+					_replace_node(type_id, node_id, "VisualShaderNodeVec3IUniform", "VisualShaderNodeVec3IConstant");
+					var = vec3_uniform->get_default_value();
+					caught = true;
+				}
+			}
+		}
+		// ivec4
+		if (!caught) {
+			if (!p_vice_versa) {
+				Ref<VisualShaderNodeVec4IConstant> vec4_const = Object::cast_to<VisualShaderNodeVec4IConstant>(node.ptr());
+				if (vec4_const.is_valid()) {
+					_replace_node(type_id, node_id, "VisualShaderNodeVec4IConstant", "VisualShaderNodeVec4IUniform");
+					var = vec4_const->get_constant();
+					caught = true;
+				}
+			} else {
+				Ref<VisualShaderNodeVec4IUniform> vec4_const = Object::cast_to<VisualShaderNodeVec4IUniform>(node.ptr());
+				if (vec4_const.is_valid()) {
+					_replace_node(type_id, node_id, "VisualShaderNodeVec4IUniform", "VisualShaderNodeVec4IConstant");
+					var = vec4_const->get_default_value();
+					caught = true;
+				}
+			}
+		}
 
 		// color
 		if (!caught) {
@@ -4663,6 +4718,15 @@ VisualShaderEditor::VisualShaderEditor() {
 
 	add_options.push_back(AddOption("VectorConstant", "Vector", "Variables", "VisualShaderNodeVec3Constant", TTR("Vector constant."), -1, VisualShaderNode::PORT_TYPE_VECTOR));
 	add_options.push_back(AddOption("VectorUniform", "Vector", "Variables", "VisualShaderNodeVec3Uniform", TTR("Vector uniform."), -1, VisualShaderNode::PORT_TYPE_VECTOR));
+	// vec4
+	add_options.push_back(AddOption("VectorConstant", "Vector4", "Variables", "VisualShaderNodeVec4Constant", TTR("Vector4 constant."), -1, VisualShaderNode::PORT_TYPE_VECTOR4));
+	add_options.push_back(AddOption("VectorUniform", "Vector4", "Variables", "VisualShaderNodeVec4Uniform", TTR("Vector4 uniform."), -1, VisualShaderNode::PORT_TYPE_VECTOR4));
+	// vec3i
+	add_options.push_back(AddOption("VectorConstant", "Vector", "Variables", "VisualShaderNodeVec3IConstant", TTR("VectorI constant."), -1, VisualShaderNode::PORT_TYPE_IVECTOR));
+	add_options.push_back(AddOption("VectorUniform", "Vector", "Variables", "VisualShaderNodeVec3IUniform", TTR("VectorI uniform."), -1, VisualShaderNode::PORT_TYPE_IVECTOR));
+	// vec4i
+	add_options.push_back(AddOption("VectorConstant", "Vector", "Variables", "VisualShaderNodeVec4IConstant", TTR("Vector4I constant."), -1, VisualShaderNode::PORT_TYPE_IVECTOR4));
+	add_options.push_back(AddOption("VectorUniform", "Vector", "Variables", "VisualShaderNodeVec4IUniform", TTR("Vector4I uniform."), -1, VisualShaderNode::PORT_TYPE_IVECTOR4));
 
 	// SPECIAL
 

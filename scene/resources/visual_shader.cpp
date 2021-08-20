@@ -3164,6 +3164,21 @@ String VisualShaderNodeUniform::get_warning(Shader::Mode p_mode, VisualShader::T
 					incompatible_type = true;
 				}
 			} break;
+			case RS::GLOBAL_VAR_TYPE_VEC4: {
+				if (!Object::cast_to<VisualShaderNodeVec4Uniform>(this)) {
+					incompatible_type = true;
+				}
+			} break;
+			case RS::GLOBAL_VAR_TYPE_IVEC3: {
+				if (!Object::cast_to<VisualShaderNodeVec3IUniform>(this)) {
+					incompatible_type = true;
+				}
+			} break;
+			case RS::GLOBAL_VAR_TYPE_IVEC4: {
+				if (!Object::cast_to<VisualShaderNodeVec4IUniform>(this)) {
+					incompatible_type = true;
+				}
+			} break;
 			case RS::GLOBAL_VAR_TYPE_TRANSFORM: {
 				if (!Object::cast_to<VisualShaderNodeTransformUniform>(this)) {
 					incompatible_type = true;
