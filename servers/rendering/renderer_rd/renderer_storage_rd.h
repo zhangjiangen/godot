@@ -623,7 +623,7 @@ private:
 				multimesh->UserDate->PreRender(&p_camera_transform, &p_camera_mat, 1);
 		}
 	}
-	virtual void _multmesh_post_render() {
+	virtual void _multmesh_post_render() override{
 		temp_mesh_list.clear();
 		multimesh_owner.get_owned_array(&temp_mesh_list);
 		for (int i = 0; i < temp_mesh_list.size(); ++i) {
@@ -945,7 +945,7 @@ private:
 		return base_singleton->_create_particles_material_func(static_cast<ParticlesShaderData *>(p_shader));
 	}
 
-	void update_particles();
+	void update_particles() override;
 
 	mutable RID_Owner<Particles, true> particles_owner;
 
@@ -1320,9 +1320,9 @@ public:
 	virtual void texture_3d_initialize(RID p_texture, Image::Format p_format, int p_width, int p_height, int p_depth, bool p_mipmaps, const Vector<Ref<Image>> &p_data) override; //all slices, then all the mipmaps, must be coherent
 	virtual void texture_proxy_initialize(RID p_texture, RID p_base) override;
 
-	virtual void _texture_2d_update(RID p_texture, const Ref<Image> &p_image, int p_layer, bool p_immediate) override;
+	virtual void _texture_2d_update(RID p_texture, const Ref<Image> &p_image, int p_layer, bool p_immediate) ;
 
-	virtual void texture_2d_update(RID p_texture, const Ref<Image> &p_image, int p_layer = 0) override;
+	virtual void texture_2d_update(RID p_texture, const Ref<Image> &p_image, int p_layer = 0) ;
 	virtual void texture_3d_update(RID p_texture, const Vector<Ref<Image>> &p_data) override;
 	virtual void texture_proxy_update(RID p_texture, RID p_proxy_to) override;
 
@@ -1338,22 +1338,22 @@ public:
 	virtual void texture_replace(RID p_texture, RID p_by_texture) override;
 	virtual void texture_set_size_override(RID p_texture, int p_width, int p_height) override;
 
-	virtual void texture_set_path(RID p_texture, const String &p_path);
-	virtual String texture_get_path(RID p_texture) const;
+	virtual void texture_set_path(RID p_texture, const String &p_path)override;
+	virtual String texture_get_path(RID p_texture) const override;
 
-	virtual void texture_set_detect_3d_callback(RID p_texture, RS::TextureDetectCallback p_callback, void *p_userdata);
-	virtual void texture_set_detect_normal_callback(RID p_texture, RS::TextureDetectCallback p_callback, void *p_userdata);
-	virtual void texture_set_detect_roughness_callback(RID p_texture, RS::TextureDetectRoughnessCallback p_callback, void *p_userdata);
+	virtual void texture_set_detect_3d_callback(RID p_texture, RS::TextureDetectCallback p_callback, void *p_userdata) override;
+	virtual void texture_set_detect_normal_callback(RID p_texture, RS::TextureDetectCallback p_callback, void *p_userdata) override;
+	virtual void texture_set_detect_roughness_callback(RID p_texture, RS::TextureDetectRoughnessCallback p_callback, void *p_userdata)override;
 
-	virtual void texture_debug_usage(List<RS::TextureInfo> *r_info);
+	virtual void texture_debug_usage(List<RS::TextureInfo> *r_info)override;
 
-	virtual void texture_set_proxy(RID p_proxy, RID p_base);
-	virtual void texture_set_force_redraw_if_visible(RID p_texture, bool p_enable);
+	virtual void texture_set_proxy(RID p_proxy, RID p_base)override;
+	virtual void texture_set_force_redraw_if_visible(RID p_texture, bool p_enable)override;
 
-	virtual Size2 texture_size_with_proxy(RID p_proxy);
+	virtual Size2 texture_size_with_proxy(RID p_proxy)override;
 
-	virtual void texture_add_to_decal_atlas(RID p_texture, bool p_panorama_to_dp = false);
-	virtual void texture_remove_from_decal_atlas(RID p_texture, bool p_panorama_to_dp = false);
+	virtual void texture_add_to_decal_atlas(RID p_texture, bool p_panorama_to_dp = false)override;
+	virtual void texture_remove_from_decal_atlas(RID p_texture, bool p_panorama_to_dp = false)override;
 
 	RID decal_atlas_get_texture() const;
 	RID decal_atlas_get_texture_srgb() const;
@@ -1401,14 +1401,14 @@ public:
 
 	/* CANVAS TEXTURE API */
 
-	RID canvas_texture_allocate();
-	void canvas_texture_initialize(RID p_canvas_texture);
+	RID canvas_texture_allocate()override;
+	void canvas_texture_initialize(RID p_canvas_texture)override;
 
-	virtual void canvas_texture_set_channel(RID p_canvas_texture, RS::CanvasTextureChannel p_channel, RID p_texture);
-	virtual void canvas_texture_set_shading_parameters(RID p_canvas_texture, const Color &p_specular_color, float p_shininess);
+	virtual void canvas_texture_set_channel(RID p_canvas_texture, RS::CanvasTextureChannel p_channel, RID p_texture)override;
+	virtual void canvas_texture_set_shading_parameters(RID p_canvas_texture, const Color &p_specular_color, float p_shininess)override;
 
-	virtual void canvas_texture_set_texture_filter(RID p_canvas_texture, RS::CanvasItemTextureFilter p_filter);
-	virtual void canvas_texture_set_texture_repeat(RID p_canvas_texture, RS::CanvasItemTextureRepeat p_repeat);
+	virtual void canvas_texture_set_texture_filter(RID p_canvas_texture, RS::CanvasItemTextureFilter p_filter)override;
+	virtual void canvas_texture_set_texture_repeat(RID p_canvas_texture, RS::CanvasItemTextureRepeat p_repeat)override;
 
 	bool canvas_texture_get_uniform_set(RID p_texture, RS::CanvasItemTextureFilter p_base_filter, RS::CanvasItemTextureRepeat p_base_repeat, RID p_base_shader, int p_base_set, RID &r_uniform_set, Size2i &r_size, Color &r_specular_shininess, bool &r_use_normal, bool &r_use_specular);
 
