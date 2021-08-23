@@ -623,7 +623,7 @@ private:
 				multimesh->UserDate->PreRender(&p_camera_transform, &p_camera_mat, 1);
 		}
 	}
-	virtual void _multmesh_post_render() override{
+	virtual void _multmesh_post_render() override {
 		temp_mesh_list.clear();
 		multimesh_owner.get_owned_array(&temp_mesh_list);
 		for (int i = 0; i < temp_mesh_list.size(); ++i) {
@@ -1320,9 +1320,9 @@ public:
 	virtual void texture_3d_initialize(RID p_texture, Image::Format p_format, int p_width, int p_height, int p_depth, bool p_mipmaps, const Vector<Ref<Image>> &p_data) override; //all slices, then all the mipmaps, must be coherent
 	virtual void texture_proxy_initialize(RID p_texture, RID p_base) override;
 
-	virtual void _texture_2d_update(RID p_texture, const Ref<Image> &p_image, int p_layer, bool p_immediate) ;
+	virtual void _texture_2d_update(RID p_texture, const Ref<Image> &p_image, int p_layer, bool p_immediate);
 
-	virtual void texture_2d_update(RID p_texture, const Ref<Image> &p_image, int p_layer = 0) ;
+	virtual void texture_2d_update(RID p_texture, const Ref<Image> &p_image, int p_layer = 0) override;
 	virtual void texture_3d_update(RID p_texture, const Vector<Ref<Image>> &p_data) override;
 	virtual void texture_proxy_update(RID p_texture, RID p_proxy_to) override;
 
@@ -1338,22 +1338,22 @@ public:
 	virtual void texture_replace(RID p_texture, RID p_by_texture) override;
 	virtual void texture_set_size_override(RID p_texture, int p_width, int p_height) override;
 
-	virtual void texture_set_path(RID p_texture, const String &p_path)override;
+	virtual void texture_set_path(RID p_texture, const String &p_path) override;
 	virtual String texture_get_path(RID p_texture) const override;
 
 	virtual void texture_set_detect_3d_callback(RID p_texture, RS::TextureDetectCallback p_callback, void *p_userdata) override;
 	virtual void texture_set_detect_normal_callback(RID p_texture, RS::TextureDetectCallback p_callback, void *p_userdata) override;
-	virtual void texture_set_detect_roughness_callback(RID p_texture, RS::TextureDetectRoughnessCallback p_callback, void *p_userdata)override;
+	virtual void texture_set_detect_roughness_callback(RID p_texture, RS::TextureDetectRoughnessCallback p_callback, void *p_userdata) override;
 
-	virtual void texture_debug_usage(List<RS::TextureInfo> *r_info)override;
+	virtual void texture_debug_usage(List<RS::TextureInfo> *r_info) override;
 
-	virtual void texture_set_proxy(RID p_proxy, RID p_base)override;
-	virtual void texture_set_force_redraw_if_visible(RID p_texture, bool p_enable)override;
+	virtual void texture_set_proxy(RID p_proxy, RID p_base);
+	virtual void texture_set_force_redraw_if_visible(RID p_texture, bool p_enable) override;
 
-	virtual Size2 texture_size_with_proxy(RID p_proxy)override;
+	virtual Size2 texture_size_with_proxy(RID p_proxy) override;
 
-	virtual void texture_add_to_decal_atlas(RID p_texture, bool p_panorama_to_dp = false)override;
-	virtual void texture_remove_from_decal_atlas(RID p_texture, bool p_panorama_to_dp = false)override;
+	virtual void texture_add_to_decal_atlas(RID p_texture, bool p_panorama_to_dp = false) override;
+	virtual void texture_remove_from_decal_atlas(RID p_texture, bool p_panorama_to_dp = false) override;
 
 	RID decal_atlas_get_texture() const;
 	RID decal_atlas_get_texture_srgb() const;
@@ -1401,52 +1401,52 @@ public:
 
 	/* CANVAS TEXTURE API */
 
-	RID canvas_texture_allocate()override;
-	void canvas_texture_initialize(RID p_canvas_texture)override;
+	RID canvas_texture_allocate() override;
+	void canvas_texture_initialize(RID p_canvas_texture) override;
 
-	virtual void canvas_texture_set_channel(RID p_canvas_texture, RS::CanvasTextureChannel p_channel, RID p_texture)override;
-	virtual void canvas_texture_set_shading_parameters(RID p_canvas_texture, const Color &p_specular_color, float p_shininess)override;
+	virtual void canvas_texture_set_channel(RID p_canvas_texture, RS::CanvasTextureChannel p_channel, RID p_texture) override;
+	virtual void canvas_texture_set_shading_parameters(RID p_canvas_texture, const Color &p_specular_color, float p_shininess) override;
 
-	virtual void canvas_texture_set_texture_filter(RID p_canvas_texture, RS::CanvasItemTextureFilter p_filter)override;
-	virtual void canvas_texture_set_texture_repeat(RID p_canvas_texture, RS::CanvasItemTextureRepeat p_repeat)override;
+	virtual void canvas_texture_set_texture_filter(RID p_canvas_texture, RS::CanvasItemTextureFilter p_filter) override;
+	virtual void canvas_texture_set_texture_repeat(RID p_canvas_texture, RS::CanvasItemTextureRepeat p_repeat) override;
 
 	bool canvas_texture_get_uniform_set(RID p_texture, RS::CanvasItemTextureFilter p_base_filter, RS::CanvasItemTextureRepeat p_base_repeat, RID p_base_shader, int p_base_set, RID &r_uniform_set, Size2i &r_size, Color &r_specular_shininess, bool &r_use_normal, bool &r_use_specular);
 
 	/* SHADER API */
 
-	RID shader_allocate();
-	void shader_initialize(RID p_shader);
+	RID shader_allocate() override;
+	void shader_initialize(RID p_shader) override;
 
-	void shader_set_code(RID p_shader, const String &p_code);
-	String shader_get_code(RID p_shader) const;
-	void shader_get_param_list(RID p_shader, List<PropertyInfo> *p_param_list) const;
+	void shader_set_code(RID p_shader, const String &p_code) override;
+	String shader_get_code(RID p_shader) const override;
+	void shader_get_param_list(RID p_shader, List<PropertyInfo> *p_param_list) const override;
 
-	void shader_set_default_texture_param(RID p_shader, const StringName &p_name, RID p_texture);
-	RID shader_get_default_texture_param(RID p_shader, const StringName &p_name) const;
-	Variant shader_get_param_default(RID p_shader, const StringName &p_param) const;
+	void shader_set_default_texture_param(RID p_shader, const StringName &p_name, RID p_texture) override;
+	RID shader_get_default_texture_param(RID p_shader, const StringName &p_name) const override;
+	Variant shader_get_param_default(RID p_shader, const StringName &p_param) const override;
 	void shader_set_data_request_function(ShaderType p_shader_type, ShaderDataRequestFunction p_function);
 
-	virtual RS::ShaderNativeSourceCode shader_get_native_source_code(RID p_shader) const;
+	virtual RS::ShaderNativeSourceCode shader_get_native_source_code(RID p_shader) const override;
 
 	/* COMMON MATERIAL API */
 
-	RID material_allocate();
-	void material_initialize(RID p_material);
+	RID material_allocate() override;
+	void material_initialize(RID p_material) override;
 
-	void material_set_shader(RID p_material, RID p_shader);
+	void material_set_shader(RID p_material, RID p_shader) override;
 
-	void material_set_param(RID p_material, const StringName &p_param, const Variant &p_value);
-	Variant material_get_param(RID p_material, const StringName &p_param) const;
+	void material_set_param(RID p_material, const StringName &p_param, const Variant &p_value) override;
+	Variant material_get_param(RID p_material, const StringName &p_param) const override;
 
-	void material_set_next_pass(RID p_material, RID p_next_material);
-	void material_set_render_priority(RID p_material, int priority);
+	void material_set_next_pass(RID p_material, RID p_next_material) override;
+	void material_set_render_priority(RID p_material, int priority) override;
 
-	bool material_is_animated(RID p_material);
-	bool material_casts_shadows(RID p_material);
+	bool material_is_animated(RID p_material) override;
+	bool material_casts_shadows(RID p_material) override;
 
-	void material_get_instance_shader_parameters(RID p_material, List<InstanceShaderParam> *r_parameters);
+	void material_get_instance_shader_parameters(RID p_material, List<InstanceShaderParam> *r_parameters) override;
 
-	void material_update_dependency(RID p_material, DependencyTracker *p_instance);
+	void material_update_dependency(RID p_material, DependencyTracker *p_instance) override;
 	void material_force_update_textures(RID p_material, ShaderType p_shader_type);
 
 	void material_set_data_request_function(ShaderType p_shader_type, MaterialDataRequestFunction p_function);
@@ -1467,47 +1467,47 @@ public:
 
 	/* MESH API */
 
-	RID mesh_allocate();
-	void mesh_initialize(RID p_mesh);
+	RID mesh_allocate() override;
+	void mesh_initialize(RID p_mesh) override;
 
-	virtual void mesh_set_blend_shape_count(RID p_mesh, int p_blend_shape_count);
+	virtual void mesh_set_blend_shape_count(RID p_mesh, int p_blend_shape_count) override;
 
 	/// Return stride
-	virtual void mesh_add_surface(RID p_mesh, const RS::SurfaceData &p_surface);
+	virtual void mesh_add_surface(RID p_mesh, const RS::SurfaceData &p_surface) override;
 
-	virtual int mesh_get_blend_shape_count(RID p_mesh) const;
+	virtual int mesh_get_blend_shape_count(RID p_mesh) const override;
 
-	virtual void mesh_set_blend_shape_mode(RID p_mesh, RS::BlendShapeMode p_mode);
-	virtual RS::BlendShapeMode mesh_get_blend_shape_mode(RID p_mesh) const;
+	virtual void mesh_set_blend_shape_mode(RID p_mesh, RS::BlendShapeMode p_mode) override;
+	virtual RS::BlendShapeMode mesh_get_blend_shape_mode(RID p_mesh) const override;
 
-	virtual void mesh_surface_update_vertex_region(RID p_mesh, int p_surface, int p_offset, const Vector<uint8_t> &p_data);
-	virtual void mesh_surface_update_attribute_region(RID p_mesh, int p_surface, int p_offset, const Vector<uint8_t> &p_data);
-	virtual void mesh_surface_update_skin_region(RID p_mesh, int p_surface, int p_offset, const Vector<uint8_t> &p_data);
+	virtual void mesh_surface_update_vertex_region(RID p_mesh, int p_surface, int p_offset, const Vector<uint8_t> &p_data) override;
+	virtual void mesh_surface_update_attribute_region(RID p_mesh, int p_surface, int p_offset, const Vector<uint8_t> &p_data) override;
+	virtual void mesh_surface_update_skin_region(RID p_mesh, int p_surface, int p_offset, const Vector<uint8_t> &p_data) override;
 
-	virtual void mesh_surface_set_material(RID p_mesh, int p_surface, RID p_material);
-	virtual RID mesh_surface_get_material(RID p_mesh, int p_surface) const;
+	virtual void mesh_surface_set_material(RID p_mesh, int p_surface, RID p_material) override;
+	virtual RID mesh_surface_get_material(RID p_mesh, int p_surface) const override;
 
-	virtual RS::SurfaceData mesh_get_surface(RID p_mesh, int p_surface) const;
+	virtual RS::SurfaceData mesh_get_surface(RID p_mesh, int p_surface) const override;
 
-	virtual int mesh_get_surface_count(RID p_mesh) const;
+	virtual int mesh_get_surface_count(RID p_mesh) const override;
 
-	virtual void mesh_set_custom_aabb(RID p_mesh, const AABB &p_aabb);
-	virtual AABB mesh_get_custom_aabb(RID p_mesh) const;
+	virtual void mesh_set_custom_aabb(RID p_mesh, const AABB &p_aabb) override;
+	virtual AABB mesh_get_custom_aabb(RID p_mesh) const override;
 
-	virtual AABB mesh_get_aabb(RID p_mesh, RID p_skeleton = RID());
-	virtual void mesh_set_shadow_mesh(RID p_mesh, RID p_shadow_mesh);
+	virtual AABB mesh_get_aabb(RID p_mesh, RID p_skeleton = RID()) override;
+	virtual void mesh_set_shadow_mesh(RID p_mesh, RID p_shadow_mesh) override;
 
-	virtual void mesh_clear(RID p_mesh);
+	virtual void mesh_clear(RID p_mesh) override;
 
-	virtual bool mesh_needs_instance(RID p_mesh, bool p_has_skeleton);
+	virtual bool mesh_needs_instance(RID p_mesh, bool p_has_skeleton) override;
 
 	/* MESH INSTANCE */
 
-	virtual RID mesh_instance_create(RID p_base);
-	virtual void mesh_instance_set_skeleton(RID p_mesh_instance, RID p_skeleton);
-	virtual void mesh_instance_set_blend_shape_weight(RID p_mesh_instance, int p_shape, float p_weight);
-	virtual void mesh_instance_check_for_update(RID p_mesh_instance);
-	virtual void update_mesh_instances();
+	virtual RID mesh_instance_create(RID p_base) override;
+	virtual void mesh_instance_set_skeleton(RID p_mesh_instance, RID p_skeleton) override;
+	virtual void mesh_instance_set_blend_shape_weight(RID p_mesh_instance, int p_shape, float p_weight) override;
+	virtual void mesh_instance_check_for_update(RID p_mesh_instance) override;
+	virtual void update_mesh_instances() override;
 
 	_FORCE_INLINE_ const RID *mesh_get_surface_count_and_materials(RID p_mesh, uint32_t &r_surface_count) {
 		Mesh *mesh = mesh_owner.getornull(p_mesh);
@@ -1702,33 +1702,33 @@ public:
 
 	/* MULTIMESH API */
 
-	RID multimesh_allocate();
-	void multimesh_initialize(RID p_multimesh);
+	RID multimesh_allocate() override;
+	void multimesh_initialize(RID p_multimesh) override;
 
-	void multimesh_allocate_data(RID p_multimesh, int p_instances, RS::MultimeshTransformFormat p_transform_format, bool p_use_colors = false, bool p_use_custom_data = false);
-	int multimesh_get_instance_count(RID p_multimesh) const;
+	void multimesh_allocate_data(RID p_multimesh, int p_instances, RS::MultimeshTransformFormat p_transform_format, bool p_use_colors = false, bool p_use_custom_data = false) override;
+	int multimesh_get_instance_count(RID p_multimesh) const override;
 	void multimesh_set_user_date(RID p_multimesh, Ref<MultMeshUserDataBase> p_user_date) const;
 
-	void multimesh_set_mesh(RID p_multimesh, RID p_mesh);
-	void multimesh_instance_set_transform(RID p_multimesh, int p_index, const Transform3D &p_transform);
-	void multimesh_instance_set_transform_2d(RID p_multimesh, int p_index, const Transform2D &p_transform);
-	void multimesh_instance_set_color(RID p_multimesh, int p_index, const Color &p_color);
-	void multimesh_instance_set_custom_data(RID p_multimesh, int p_index, const Color &p_color);
+	void multimesh_set_mesh(RID p_multimesh, RID p_mesh) override;
+	void multimesh_instance_set_transform(RID p_multimesh, int p_index, const Transform3D &p_transform) override;
+	void multimesh_instance_set_transform_2d(RID p_multimesh, int p_index, const Transform2D &p_transform) override;
+	void multimesh_instance_set_color(RID p_multimesh, int p_index, const Color &p_color) override;
+	void multimesh_instance_set_custom_data(RID p_multimesh, int p_index, const Color &p_color) override;
 
-	RID multimesh_get_mesh(RID p_multimesh) const;
+	RID multimesh_get_mesh(RID p_multimesh) const override;
 
-	Transform3D multimesh_instance_get_transform(RID p_multimesh, int p_index) const;
-	Transform2D multimesh_instance_get_transform_2d(RID p_multimesh, int p_index) const;
-	Color multimesh_instance_get_color(RID p_multimesh, int p_index) const;
-	Color multimesh_instance_get_custom_data(RID p_multimesh, int p_index) const;
+	Transform3D multimesh_instance_get_transform(RID p_multimesh, int p_index) const override;
+	Transform2D multimesh_instance_get_transform_2d(RID p_multimesh, int p_index) const override;
+	Color multimesh_instance_get_color(RID p_multimesh, int p_index) const override;
+	Color multimesh_instance_get_custom_data(RID p_multimesh, int p_index) const override;
 
-	void multimesh_set_buffer(RID p_multimesh, const Vector<float> &p_buffer);
-	Vector<float> multimesh_get_buffer(RID p_multimesh) const;
+	void multimesh_set_buffer(RID p_multimesh, const Vector<float> &p_buffer) override;
+	Vector<float> multimesh_get_buffer(RID p_multimesh) const override;
 
-	void multimesh_set_visible_instances(RID p_multimesh, int p_visible);
-	int multimesh_get_visible_instances(RID p_multimesh) const;
+	void multimesh_set_visible_instances(RID p_multimesh, int p_visible) override;
+	int multimesh_get_visible_instances(RID p_multimesh) const override;
 
-	AABB multimesh_get_aabb(RID p_multimesh) const;
+	AABB multimesh_get_aabb(RID p_multimesh) const override;
 
 	_FORCE_INLINE_ RS::MultimeshTransformFormat multimesh_get_transform_format(RID p_multimesh) const {
 		MultiMesh *multimesh = multimesh_owner.getornull(p_multimesh);
@@ -1785,17 +1785,17 @@ public:
 
 	/* SKELETON API */
 
-	RID skeleton_allocate();
-	void skeleton_initialize(RID p_skeleton);
+	RID skeleton_allocate() override;
+	void skeleton_initialize(RID p_skeleton) override;
 
-	void skeleton_allocate_data(RID p_skeleton, int p_bones, bool p_2d_skeleton = false);
-	void skeleton_set_base_transform_2d(RID p_skeleton, const Transform2D &p_base_transform);
+	void skeleton_allocate_data(RID p_skeleton, int p_bones, bool p_2d_skeleton = false) override;
+	void skeleton_set_base_transform_2d(RID p_skeleton, const Transform2D &p_base_transform) override;
 	void skeleton_set_world_transform(RID p_skeleton, bool p_enable, const Transform3D &p_world_transform);
-	int skeleton_get_bone_count(RID p_skeleton) const;
-	void skeleton_bone_set_transform(RID p_skeleton, int p_bone, const Transform3D &p_transform);
-	Transform3D skeleton_bone_get_transform(RID p_skeleton, int p_bone) const;
-	void skeleton_bone_set_transform_2d(RID p_skeleton, int p_bone, const Transform2D &p_transform);
-	Transform2D skeleton_bone_get_transform_2d(RID p_skeleton, int p_bone) const;
+	int skeleton_get_bone_count(RID p_skeleton) const override;
+	void skeleton_bone_set_transform(RID p_skeleton, int p_bone, const Transform3D &p_transform) override;
+	Transform3D skeleton_bone_get_transform(RID p_skeleton, int p_bone) const override;
+	void skeleton_bone_set_transform_2d(RID p_skeleton, int p_bone, const Transform2D &p_transform) override;
+	Transform2D skeleton_bone_get_transform_2d(RID p_skeleton, int p_bone) const override;
 
 	_FORCE_INLINE_ bool skeleton_is_valid(RID p_skeleton) {
 		return skeleton_owner.getornull(p_skeleton) != nullptr;
@@ -1824,46 +1824,46 @@ public:
 
 	void _light_initialize(RID p_rid, RS::LightType p_type);
 
-	RID directional_light_allocate();
-	void directional_light_initialize(RID p_light);
+	RID directional_light_allocate() override;
+	void directional_light_initialize(RID p_light) override;
 
-	RID omni_light_allocate();
-	void omni_light_initialize(RID p_light);
+	RID omni_light_allocate() override;
+	void omni_light_initialize(RID p_light) override;
 
-	RID spot_light_allocate();
-	void spot_light_initialize(RID p_light);
+	RID spot_light_allocate() override;
+	void spot_light_initialize(RID p_light) override;
 
-	void light_set_color(RID p_light, const Color &p_color);
-	void light_set_param(RID p_light, RS::LightParam p_param, float p_value);
-	void light_set_shadow(RID p_light, bool p_enabled);
-	void light_set_shadow_color(RID p_light, const Color &p_color);
-	void light_set_projector(RID p_light, RID p_texture);
-	void light_set_negative(RID p_light, bool p_enable);
-	void light_set_cull_mask(RID p_light, uint32_t p_mask);
-	void light_set_reverse_cull_face_mode(RID p_light, bool p_enabled);
-	void light_set_bake_mode(RID p_light, RS::LightBakeMode p_bake_mode);
-	void light_set_max_sdfgi_cascade(RID p_light, uint32_t p_cascade);
+	void light_set_color(RID p_light, const Color &p_color) override;
+	void light_set_param(RID p_light, RS::LightParam p_param, float p_value) override;
+	void light_set_shadow(RID p_light, bool p_enabled) override;
+	void light_set_shadow_color(RID p_light, const Color &p_color) override;
+	void light_set_projector(RID p_light, RID p_texture) override;
+	void light_set_negative(RID p_light, bool p_enable) override;
+	void light_set_cull_mask(RID p_light, uint32_t p_mask) override;
+	void light_set_reverse_cull_face_mode(RID p_light, bool p_enabled) override;
+	void light_set_bake_mode(RID p_light, RS::LightBakeMode p_bake_mode) override;
+	void light_set_max_sdfgi_cascade(RID p_light, uint32_t p_cascade) override;
 
-	void light_omni_set_shadow_mode(RID p_light, RS::LightOmniShadowMode p_mode);
+	void light_omni_set_shadow_mode(RID p_light, RS::LightOmniShadowMode p_mode) override;
 
-	void light_directional_set_shadow_mode(RID p_light, RS::LightDirectionalShadowMode p_mode);
-	void light_directional_set_blend_splits(RID p_light, bool p_enable);
-	bool light_directional_get_blend_splits(RID p_light) const;
-	void light_directional_set_sky_only(RID p_light, bool p_sky_only);
-	bool light_directional_is_sky_only(RID p_light) const;
+	void light_directional_set_shadow_mode(RID p_light, RS::LightDirectionalShadowMode p_mode) override;
+	void light_directional_set_blend_splits(RID p_light, bool p_enable) override;
+	bool light_directional_get_blend_splits(RID p_light) const override;
+	void light_directional_set_sky_only(RID p_light, bool p_sky_only) override;
+	bool light_directional_is_sky_only(RID p_light) const override;
 
-	RS::LightDirectionalShadowMode light_directional_get_shadow_mode(RID p_light);
-	RS::LightOmniShadowMode light_omni_get_shadow_mode(RID p_light);
+	RS::LightDirectionalShadowMode light_directional_get_shadow_mode(RID p_light) override;
+	RS::LightOmniShadowMode light_omni_get_shadow_mode(RID p_light) override;
 
-	_FORCE_INLINE_ RS::LightType light_get_type(RID p_light) const {
+	RS::LightType light_get_type(RID p_light) const override {
 		const Light *light = light_owner.getornull(p_light);
 		ERR_FAIL_COND_V(!light, RS::LIGHT_DIRECTIONAL);
 
 		return light->type;
 	}
-	AABB light_get_aabb(RID p_light) const;
+	AABB light_get_aabb(RID p_light) const override;
 
-	_FORCE_INLINE_ float light_get_param(RID p_light, RS::LightParam p_param) {
+	float light_get_param(RID p_light, RS::LightParam p_param) override {
 		const Light *light = light_owner.getornull(p_light);
 		ERR_FAIL_COND_V(!light, 0);
 
@@ -1877,7 +1877,7 @@ public:
 		return light->projector;
 	}
 
-	_FORCE_INLINE_ Color light_get_color(RID p_light) {
+	Color light_get_color(RID p_light) override {
 		const Light *light = light_owner.getornull(p_light);
 		ERR_FAIL_COND_V(!light, Color());
 
@@ -1898,14 +1898,14 @@ public:
 		return light->cull_mask;
 	}
 
-	_FORCE_INLINE_ bool light_has_shadow(RID p_light) const {
+	bool light_has_shadow(RID p_light) const override {
 		const Light *light = light_owner.getornull(p_light);
 		ERR_FAIL_COND_V(!light, RS::LIGHT_DIRECTIONAL);
 
 		return light->shadow;
 	}
 
-	_FORCE_INLINE_ bool light_has_projector(RID p_light) const {
+	bool light_has_projector(RID p_light) const override {
 		const Light *light = light_owner.getornull(p_light);
 		ERR_FAIL_COND_V(!light, RS::LIGHT_DIRECTIONAL);
 
@@ -1933,40 +1933,40 @@ public:
 		return light->param[RS::LIGHT_PARAM_SHADOW_VOLUMETRIC_FOG_FADE];
 	}
 
-	RS::LightBakeMode light_get_bake_mode(RID p_light);
-	uint32_t light_get_max_sdfgi_cascade(RID p_light);
-	uint64_t light_get_version(RID p_light) const;
+	RS::LightBakeMode light_get_bake_mode(RID p_light) override;
+	uint32_t light_get_max_sdfgi_cascade(RID p_light) override;
+	uint64_t light_get_version(RID p_light) const override;
 
 	/* PROBE API */
 
-	RID reflection_probe_allocate();
-	void reflection_probe_initialize(RID p_reflection_probe);
+	RID reflection_probe_allocate() override;
+	void reflection_probe_initialize(RID p_reflection_probe) override;
 
-	void reflection_probe_set_update_mode(RID p_probe, RS::ReflectionProbeUpdateMode p_mode);
-	void reflection_probe_set_intensity(RID p_probe, float p_intensity);
-	void reflection_probe_set_ambient_mode(RID p_probe, RS::ReflectionProbeAmbientMode p_mode);
-	void reflection_probe_set_ambient_color(RID p_probe, const Color &p_color);
-	void reflection_probe_set_ambient_energy(RID p_probe, float p_energy);
-	void reflection_probe_set_max_distance(RID p_probe, float p_distance);
-	void reflection_probe_set_extents(RID p_probe, const Vector3 &p_extents);
-	void reflection_probe_set_origin_offset(RID p_probe, const Vector3 &p_offset);
-	void reflection_probe_set_as_interior(RID p_probe, bool p_enable);
-	void reflection_probe_set_enable_box_projection(RID p_probe, bool p_enable);
-	void reflection_probe_set_enable_shadows(RID p_probe, bool p_enable);
-	void reflection_probe_set_cull_mask(RID p_probe, uint32_t p_layers);
-	void reflection_probe_set_resolution(RID p_probe, int p_resolution);
-	void reflection_probe_set_lod_threshold(RID p_probe, float p_ratio);
+	void reflection_probe_set_update_mode(RID p_probe, RS::ReflectionProbeUpdateMode p_mode) override;
+	void reflection_probe_set_intensity(RID p_probe, float p_intensity) override;
+	void reflection_probe_set_ambient_mode(RID p_probe, RS::ReflectionProbeAmbientMode p_mode) override;
+	void reflection_probe_set_ambient_color(RID p_probe, const Color &p_color) override;
+	void reflection_probe_set_ambient_energy(RID p_probe, float p_energy) override;
+	void reflection_probe_set_max_distance(RID p_probe, float p_distance) override;
+	void reflection_probe_set_extents(RID p_probe, const Vector3 &p_extents) override;
+	void reflection_probe_set_origin_offset(RID p_probe, const Vector3 &p_offset) override;
+	void reflection_probe_set_as_interior(RID p_probe, bool p_enable) override;
+	void reflection_probe_set_enable_box_projection(RID p_probe, bool p_enable) override;
+	void reflection_probe_set_enable_shadows(RID p_probe, bool p_enable) override;
+	void reflection_probe_set_cull_mask(RID p_probe, uint32_t p_layers) override;
+	void reflection_probe_set_resolution(RID p_probe, int p_resolution) override;
+	void reflection_probe_set_lod_threshold(RID p_probe, float p_ratio) override;
 
-	AABB reflection_probe_get_aabb(RID p_probe) const;
-	RS::ReflectionProbeUpdateMode reflection_probe_get_update_mode(RID p_probe) const;
-	uint32_t reflection_probe_get_cull_mask(RID p_probe) const;
-	Vector3 reflection_probe_get_extents(RID p_probe) const;
-	Vector3 reflection_probe_get_origin_offset(RID p_probe) const;
-	float reflection_probe_get_origin_max_distance(RID p_probe) const;
-	float reflection_probe_get_lod_threshold(RID p_probe) const;
+	AABB reflection_probe_get_aabb(RID p_probe) const override;
+	RS::ReflectionProbeUpdateMode reflection_probe_get_update_mode(RID p_probe) const override;
+	uint32_t reflection_probe_get_cull_mask(RID p_probe) const override;
+	Vector3 reflection_probe_get_extents(RID p_probe) const override;
+	Vector3 reflection_probe_get_origin_offset(RID p_probe) const override;
+	float reflection_probe_get_origin_max_distance(RID p_probe) const override;
+	float reflection_probe_get_lod_threshold(RID p_probe) const override;
 
 	int reflection_probe_get_resolution(RID p_probe) const;
-	bool reflection_probe_renders_shadows(RID p_probe) const;
+	bool reflection_probe_renders_shadows(RID p_probe) const override;
 
 	float reflection_probe_get_intensity(RID p_probe) const;
 	bool reflection_probe_is_interior(RID p_probe) const;
@@ -1975,23 +1975,23 @@ public:
 	Color reflection_probe_get_ambient_color(RID p_probe) const;
 	float reflection_probe_get_ambient_color_energy(RID p_probe) const;
 
-	void base_update_dependency(RID p_base, DependencyTracker *p_instance);
-	void skeleton_update_dependency(RID p_skeleton, DependencyTracker *p_instance);
+	void base_update_dependency(RID p_base, DependencyTracker *p_instance) override;
+	void skeleton_update_dependency(RID p_skeleton, DependencyTracker *p_instance) override;
 
 	/* DECAL API */
 
-	RID decal_allocate();
-	void decal_initialize(RID p_decal);
+	RID decal_allocate() override;
+	void decal_initialize(RID p_decal) override;
 
-	virtual void decal_set_extents(RID p_decal, const Vector3 &p_extents);
-	virtual void decal_set_texture(RID p_decal, RS::DecalTexture p_type, RID p_texture);
-	virtual void decal_set_emission_energy(RID p_decal, float p_energy);
-	virtual void decal_set_albedo_mix(RID p_decal, float p_mix);
-	virtual void decal_set_modulate(RID p_decal, const Color &p_modulate);
-	virtual void decal_set_cull_mask(RID p_decal, uint32_t p_layers);
-	virtual void decal_set_distance_fade(RID p_decal, bool p_enabled, float p_begin, float p_length);
-	virtual void decal_set_fade(RID p_decal, float p_above, float p_below);
-	virtual void decal_set_normal_fade(RID p_decal, float p_fade);
+	virtual void decal_set_extents(RID p_decal, const Vector3 &p_extents) override;
+	virtual void decal_set_texture(RID p_decal, RS::DecalTexture p_type, RID p_texture) override;
+	virtual void decal_set_emission_energy(RID p_decal, float p_energy) override;
+	virtual void decal_set_albedo_mix(RID p_decal, float p_mix) override;
+	virtual void decal_set_modulate(RID p_decal, const Color &p_modulate) override;
+	virtual void decal_set_cull_mask(RID p_decal, uint32_t p_layers) override;
+	virtual void decal_set_distance_fade(RID p_decal, bool p_enabled, float p_begin, float p_length) override;
+	virtual void decal_set_fade(RID p_decal, float p_above, float p_below) override;
+	virtual void decal_set_normal_fade(RID p_decal, float p_fade) override;
 
 	_FORCE_INLINE_ Vector3 decal_get_extents(RID p_decal) {
 		const Decal *decal = decal_owner.getornull(p_decal);
@@ -2053,49 +2053,49 @@ public:
 		return decal->distance_fade_length;
 	}
 
-	virtual AABB decal_get_aabb(RID p_decal) const;
+	virtual AABB decal_get_aabb(RID p_decal) const override;
 
 	/* VOXEL GI API */
 
-	RID voxel_gi_allocate();
-	void voxel_gi_initialize(RID p_voxel_gi);
+	RID voxel_gi_allocate() override;
+	void voxel_gi_initialize(RID p_voxel_gi) override;
 
-	void voxel_gi_allocate_data(RID p_voxel_gi, const Transform3D &p_to_cell_xform, const AABB &p_aabb, const Vector3i &p_octree_size, const Vector<uint8_t> &p_octree_cells, const Vector<uint8_t> &p_data_cells, const Vector<uint8_t> &p_distance_field, const Vector<int> &p_level_counts);
+	void voxel_gi_allocate_data(RID p_voxel_gi, const Transform3D &p_to_cell_xform, const AABB &p_aabb, const Vector3i &p_octree_size, const Vector<uint8_t> &p_octree_cells, const Vector<uint8_t> &p_data_cells, const Vector<uint8_t> &p_distance_field, const Vector<int> &p_level_counts) override;
 
-	AABB voxel_gi_get_bounds(RID p_voxel_gi) const;
-	Vector3i voxel_gi_get_octree_size(RID p_voxel_gi) const;
-	Vector<uint8_t> voxel_gi_get_octree_cells(RID p_voxel_gi) const;
-	Vector<uint8_t> voxel_gi_get_data_cells(RID p_voxel_gi) const;
-	Vector<uint8_t> voxel_gi_get_distance_field(RID p_voxel_gi) const;
+	AABB voxel_gi_get_bounds(RID p_voxel_gi) const override;
+	Vector3i voxel_gi_get_octree_size(RID p_voxel_gi) const override;
+	Vector<uint8_t> voxel_gi_get_octree_cells(RID p_voxel_gi) const override;
+	Vector<uint8_t> voxel_gi_get_data_cells(RID p_voxel_gi) const override;
+	Vector<uint8_t> voxel_gi_get_distance_field(RID p_voxel_gi) const override;
 
-	Vector<int> voxel_gi_get_level_counts(RID p_voxel_gi) const;
-	Transform3D voxel_gi_get_to_cell_xform(RID p_voxel_gi) const;
+	Vector<int> voxel_gi_get_level_counts(RID p_voxel_gi) const override;
+	Transform3D voxel_gi_get_to_cell_xform(RID p_voxel_gi) const override;
 
-	void voxel_gi_set_dynamic_range(RID p_voxel_gi, float p_range);
-	float voxel_gi_get_dynamic_range(RID p_voxel_gi) const;
+	void voxel_gi_set_dynamic_range(RID p_voxel_gi, float p_range) override;
+	float voxel_gi_get_dynamic_range(RID p_voxel_gi) const override;
 
-	void voxel_gi_set_propagation(RID p_voxel_gi, float p_range);
-	float voxel_gi_get_propagation(RID p_voxel_gi) const;
+	void voxel_gi_set_propagation(RID p_voxel_gi, float p_range) override;
+	float voxel_gi_get_propagation(RID p_voxel_gi) const override;
 
-	void voxel_gi_set_energy(RID p_voxel_gi, float p_energy);
-	float voxel_gi_get_energy(RID p_voxel_gi) const;
+	void voxel_gi_set_energy(RID p_voxel_gi, float p_energy) override;
+	float voxel_gi_get_energy(RID p_voxel_gi) const override;
 
-	void voxel_gi_set_bias(RID p_voxel_gi, float p_bias);
-	float voxel_gi_get_bias(RID p_voxel_gi) const;
+	void voxel_gi_set_bias(RID p_voxel_gi, float p_bias) override;
+	float voxel_gi_get_bias(RID p_voxel_gi) const override;
 
-	void voxel_gi_set_normal_bias(RID p_voxel_gi, float p_range);
-	float voxel_gi_get_normal_bias(RID p_voxel_gi) const;
+	void voxel_gi_set_normal_bias(RID p_voxel_gi, float p_range) override;
+	float voxel_gi_get_normal_bias(RID p_voxel_gi) const override;
 
-	void voxel_gi_set_interior(RID p_voxel_gi, bool p_enable);
-	bool voxel_gi_is_interior(RID p_voxel_gi) const;
+	void voxel_gi_set_interior(RID p_voxel_gi, bool p_enable) override;
+	bool voxel_gi_is_interior(RID p_voxel_gi) const override;
 
-	void voxel_gi_set_use_two_bounces(RID p_voxel_gi, bool p_enable);
-	bool voxel_gi_is_using_two_bounces(RID p_voxel_gi) const;
+	void voxel_gi_set_use_two_bounces(RID p_voxel_gi, bool p_enable) override;
+	bool voxel_gi_is_using_two_bounces(RID p_voxel_gi) const override;
 
-	void voxel_gi_set_anisotropy_strength(RID p_voxel_gi, float p_strength);
-	float voxel_gi_get_anisotropy_strength(RID p_voxel_gi) const;
+	void voxel_gi_set_anisotropy_strength(RID p_voxel_gi, float p_strength) override;
+	float voxel_gi_get_anisotropy_strength(RID p_voxel_gi) const override;
 
-	uint32_t voxel_gi_get_version(RID p_probe);
+	uint32_t voxel_gi_get_version(RID p_probe) override;
 	uint32_t voxel_gi_get_data_version(RID p_probe);
 
 	RID voxel_gi_get_octree_buffer(RID p_voxel_gi) const;
@@ -2105,22 +2105,22 @@ public:
 
 	/* LIGHTMAP CAPTURE */
 
-	RID lightmap_allocate();
-	void lightmap_initialize(RID p_lightmap);
+	RID lightmap_allocate() override;
+	void lightmap_initialize(RID p_lightmap) override;
 
-	virtual void lightmap_set_textures(RID p_lightmap, RID p_light, bool p_uses_spherical_haromics);
-	virtual void lightmap_set_probe_bounds(RID p_lightmap, const AABB &p_bounds);
-	virtual void lightmap_set_probe_interior(RID p_lightmap, bool p_interior);
-	virtual void lightmap_set_probe_capture_data(RID p_lightmap, const PackedVector3Array &p_points, const PackedColorArray &p_point_sh, const PackedInt32Array &p_tetrahedra, const PackedInt32Array &p_bsp_tree);
-	virtual PackedVector3Array lightmap_get_probe_capture_points(RID p_lightmap) const;
-	virtual PackedColorArray lightmap_get_probe_capture_sh(RID p_lightmap) const;
-	virtual PackedInt32Array lightmap_get_probe_capture_tetrahedra(RID p_lightmap) const;
-	virtual PackedInt32Array lightmap_get_probe_capture_bsp_tree(RID p_lightmap) const;
-	virtual AABB lightmap_get_aabb(RID p_lightmap) const;
-	virtual bool lightmap_is_interior(RID p_lightmap) const;
-	virtual void lightmap_tap_sh_light(RID p_lightmap, const Vector3 &p_point, Color *r_sh);
-	virtual void lightmap_set_probe_capture_update_speed(float p_speed);
-	_FORCE_INLINE_ float lightmap_get_probe_capture_update_speed() const {
+	virtual void lightmap_set_textures(RID p_lightmap, RID p_light, bool p_uses_spherical_haromics) override;
+	virtual void lightmap_set_probe_bounds(RID p_lightmap, const AABB &p_bounds) override;
+	virtual void lightmap_set_probe_interior(RID p_lightmap, bool p_interior) override;
+	virtual void lightmap_set_probe_capture_data(RID p_lightmap, const PackedVector3Array &p_points, const PackedColorArray &p_point_sh, const PackedInt32Array &p_tetrahedra, const PackedInt32Array &p_bsp_tree) override;
+	virtual PackedVector3Array lightmap_get_probe_capture_points(RID p_lightmap) const override;
+	virtual PackedColorArray lightmap_get_probe_capture_sh(RID p_lightmap) const override;
+	virtual PackedInt32Array lightmap_get_probe_capture_tetrahedra(RID p_lightmap) const override;
+	virtual PackedInt32Array lightmap_get_probe_capture_bsp_tree(RID p_lightmap) const override;
+	virtual AABB lightmap_get_aabb(RID p_lightmap) const override;
+	virtual bool lightmap_is_interior(RID p_lightmap) const override;
+	virtual void lightmap_tap_sh_light(RID p_lightmap, const Vector3 &p_point, Color *r_sh) override;
+	virtual void lightmap_set_probe_capture_update_speed(float p_speed) override;
+	float lightmap_get_probe_capture_update_speed() const override {
 		return lightmap_probe_capture_update_speed;
 	}
 	_FORCE_INLINE_ RID lightmap_get_texture(RID p_lightmap) const {
@@ -2155,53 +2155,53 @@ public:
 
 	/* PARTICLES */
 
-	RID particles_allocate();
-	void particles_initialize(RID p_particles_collision);
+	RID particles_allocate() override;
+	void particles_initialize(RID p_particles_collision) override;
 
-	void particles_set_mode(RID p_particles, RS::ParticlesMode p_mode);
-	void particles_set_emitting(RID p_particles, bool p_emitting);
-	void particles_set_amount(RID p_particles, int p_amount);
-	void particles_set_lifetime(RID p_particles, double p_lifetime);
-	void particles_set_one_shot(RID p_particles, bool p_one_shot);
-	void particles_set_pre_process_time(RID p_particles, double p_time);
-	void particles_set_explosiveness_ratio(RID p_particles, real_t p_ratio);
-	void particles_set_randomness_ratio(RID p_particles, real_t p_ratio);
-	void particles_set_custom_aabb(RID p_particles, const AABB &p_aabb);
-	void particles_set_speed_scale(RID p_particles, double p_scale);
-	void particles_set_use_local_coordinates(RID p_particles, bool p_enable);
-	void particles_set_process_material(RID p_particles, RID p_material);
-	void particles_set_fixed_fps(RID p_particles, int p_fps);
-	void particles_set_interpolate(RID p_particles, bool p_enable);
-	void particles_set_fractional_delta(RID p_particles, bool p_enable);
-	void particles_set_collision_base_size(RID p_particles, real_t p_size);
-	void particles_set_transform_align(RID p_particles, RS::ParticlesTransformAlign p_transform_align);
+	void particles_set_mode(RID p_particles, RS::ParticlesMode p_mode) override;
+	void particles_set_emitting(RID p_particles, bool p_emitting) override;
+	void particles_set_amount(RID p_particles, int p_amount) override;
+	void particles_set_lifetime(RID p_particles, double p_lifetime) override;
+	void particles_set_one_shot(RID p_particles, bool p_one_shot) override;
+	void particles_set_pre_process_time(RID p_particles, double p_time) override;
+	void particles_set_explosiveness_ratio(RID p_particles, real_t p_ratio) override;
+	void particles_set_randomness_ratio(RID p_particles, real_t p_ratio) override;
+	void particles_set_custom_aabb(RID p_particles, const AABB &p_aabb) override;
+	void particles_set_speed_scale(RID p_particles, double p_scale) override;
+	void particles_set_use_local_coordinates(RID p_particles, bool p_enable) override;
+	void particles_set_process_material(RID p_particles, RID p_material) override;
+	void particles_set_fixed_fps(RID p_particles, int p_fps) override;
+	void particles_set_interpolate(RID p_particles, bool p_enable) override;
+	void particles_set_fractional_delta(RID p_particles, bool p_enable) override;
+	void particles_set_collision_base_size(RID p_particles, real_t p_size) override;
+	void particles_set_transform_align(RID p_particles, RS::ParticlesTransformAlign p_transform_align) override;
 
-	void particles_set_trails(RID p_particles, bool p_enable, double p_length);
-	void particles_set_trail_bind_poses(RID p_particles, const Vector<Transform3D> &p_bind_poses);
+	void particles_set_trails(RID p_particles, bool p_enable, double p_length) override;
+	void particles_set_trail_bind_poses(RID p_particles, const Vector<Transform3D> &p_bind_poses) override;
 
-	void particles_restart(RID p_particles);
-	void particles_emit(RID p_particles, const Transform3D &p_transform, const Vector3 &p_velocity, const Color &p_color, const Color &p_custom, uint32_t p_emit_flags);
+	void particles_restart(RID p_particles) override;
+	void particles_emit(RID p_particles, const Transform3D &p_transform, const Vector3 &p_velocity, const Color &p_color, const Color &p_custom, uint32_t p_emit_flags) override;
 
-	void particles_set_subemitter(RID p_particles, RID p_subemitter_particles);
+	void particles_set_subemitter(RID p_particles, RID p_subemitter_particles) override;
 
-	void particles_set_draw_order(RID p_particles, RS::ParticlesDrawOrder p_order);
+	void particles_set_draw_order(RID p_particles, RS::ParticlesDrawOrder p_order) override;
 
-	void particles_set_draw_passes(RID p_particles, int p_count);
-	void particles_set_draw_pass_mesh(RID p_particles, int p_pass, RID p_mesh);
+	void particles_set_draw_passes(RID p_particles, int p_count) override;
+	void particles_set_draw_pass_mesh(RID p_particles, int p_pass, RID p_mesh) override;
 
-	void particles_request_process(RID p_particles);
-	AABB particles_get_current_aabb(RID p_particles);
-	AABB particles_get_aabb(RID p_particles) const;
+	void particles_request_process(RID p_particles) override;
+	AABB particles_get_current_aabb(RID p_particles) override;
+	AABB particles_get_aabb(RID p_particles) const override;
 
-	void particles_set_emission_transform(RID p_particles, const Transform3D &p_transform);
+	void particles_set_emission_transform(RID p_particles, const Transform3D &p_transform) override;
 
-	bool particles_get_emitting(RID p_particles);
-	int particles_get_draw_passes(RID p_particles) const;
-	RID particles_get_draw_pass_mesh(RID p_particles, int p_pass) const;
+	bool particles_get_emitting(RID p_particles) override;
+	int particles_get_draw_passes(RID p_particles) const override;
+	RID particles_get_draw_pass_mesh(RID p_particles, int p_pass) const override;
 
-	void particles_set_view_axis(RID p_particles, const Vector3 &p_axis, const Vector3 &p_up_axis);
+	void particles_set_view_axis(RID p_particles, const Vector3 &p_axis, const Vector3 &p_up_axis) override;
 
-	virtual bool particles_is_inactive(RID p_particles) const;
+	virtual bool particles_is_inactive(RID p_particles) const override;
 
 	_FORCE_INLINE_ RS::ParticlesMode particles_get_mode(RID p_particles) {
 		Particles *particles = particles_owner.getornull(p_particles);
@@ -2258,92 +2258,92 @@ public:
 		return particles->particles_transforms_buffer_uniform_set;
 	}
 
-	virtual void particles_add_collision(RID p_particles, RID p_particles_collision_instance);
-	virtual void particles_remove_collision(RID p_particles, RID p_particles_collision_instance);
-	virtual void particles_set_canvas_sdf_collision(RID p_particles, bool p_enable, const Transform2D &p_xform, const Rect2 &p_to_screen, RID p_texture);
+	virtual void particles_add_collision(RID p_particles, RID p_particles_collision_instance) override;
+	virtual void particles_remove_collision(RID p_particles, RID p_particles_collision_instance) override;
+	virtual void particles_set_canvas_sdf_collision(RID p_particles, bool p_enable, const Transform2D &p_xform, const Rect2 &p_to_screen, RID p_texture) override;
 
 	/* PARTICLES COLLISION */
 
-	RID particles_collision_allocate();
-	void particles_collision_initialize(RID p_particles_collision);
+	RID particles_collision_allocate() override;
+	void particles_collision_initialize(RID p_particles_collision) override;
 
-	virtual void particles_collision_set_collision_type(RID p_particles_collision, RS::ParticlesCollisionType p_type);
-	virtual void particles_collision_set_cull_mask(RID p_particles_collision, uint32_t p_cull_mask);
-	virtual void particles_collision_set_sphere_radius(RID p_particles_collision, real_t p_radius); //for spheres
-	virtual void particles_collision_set_box_extents(RID p_particles_collision, const Vector3 &p_extents); //for non-spheres
-	virtual void particles_collision_set_attractor_strength(RID p_particles_collision, real_t p_strength);
-	virtual void particles_collision_set_attractor_directionality(RID p_particles_collision, real_t p_directionality);
-	virtual void particles_collision_set_attractor_attenuation(RID p_particles_collision, real_t p_curve);
-	virtual void particles_collision_set_field_texture(RID p_particles_collision, RID p_texture); //for SDF and vector field, heightfield is dynamic
-	virtual void particles_collision_height_field_update(RID p_particles_collision); //for SDF and vector field
-	virtual void particles_collision_set_height_field_resolution(RID p_particles_collision, RS::ParticlesCollisionHeightfieldResolution p_resolution); //for SDF and vector field
-	virtual AABB particles_collision_get_aabb(RID p_particles_collision) const;
+	virtual void particles_collision_set_collision_type(RID p_particles_collision, RS::ParticlesCollisionType p_type) override;
+	virtual void particles_collision_set_cull_mask(RID p_particles_collision, uint32_t p_cull_mask) override;
+	virtual void particles_collision_set_sphere_radius(RID p_particles_collision, real_t p_radius) override; //for spheres
+	virtual void particles_collision_set_box_extents(RID p_particles_collision, const Vector3 &p_extents) override; //for non-spheres
+	virtual void particles_collision_set_attractor_strength(RID p_particles_collision, real_t p_strength) override;
+	virtual void particles_collision_set_attractor_directionality(RID p_particles_collision, real_t p_directionality) override;
+	virtual void particles_collision_set_attractor_attenuation(RID p_particles_collision, real_t p_curve) override;
+	virtual void particles_collision_set_field_texture(RID p_particles_collision, RID p_texture) override; //for SDF and vector field, heightfield is dynamic
+	virtual void particles_collision_height_field_update(RID p_particles_collision) override; //for SDF and vector field
+	virtual void particles_collision_set_height_field_resolution(RID p_particles_collision, RS::ParticlesCollisionHeightfieldResolution p_resolution) override; //for SDF and vector field
+	virtual AABB particles_collision_get_aabb(RID p_particles_collision) const override;
 	virtual Vector3 particles_collision_get_extents(RID p_particles_collision) const;
-	virtual bool particles_collision_is_heightfield(RID p_particles_collision) const;
-	RID particles_collision_get_heightfield_framebuffer(RID p_particles_collision) const;
+	virtual bool particles_collision_is_heightfield(RID p_particles_collision) const override;
+	RID particles_collision_get_heightfield_framebuffer(RID p_particles_collision) const override;
 
-	virtual RID visibility_notifier_allocate();
-	virtual void visibility_notifier_initialize(RID p_notifier);
-	virtual void visibility_notifier_set_aabb(RID p_notifier, const AABB &p_aabb);
-	virtual void visibility_notifier_set_callbacks(RID p_notifier, const Callable &p_enter_callbable, const Callable &p_exit_callable);
+	virtual RID visibility_notifier_allocate() override;
+	virtual void visibility_notifier_initialize(RID p_notifier) override;
+	virtual void visibility_notifier_set_aabb(RID p_notifier, const AABB &p_aabb) override;
+	virtual void visibility_notifier_set_callbacks(RID p_notifier, const Callable &p_enter_callbable, const Callable &p_exit_callable) override;
 
-	virtual AABB visibility_notifier_get_aabb(RID p_notifier) const;
-	virtual void visibility_notifier_call(RID p_notifier, bool p_enter, bool p_deferred);
+	virtual AABB visibility_notifier_get_aabb(RID p_notifier) const override;
+	virtual void visibility_notifier_call(RID p_notifier, bool p_enter, bool p_deferred) override;
 
 	//used from 2D and 3D
-	virtual RID particles_collision_instance_create(RID p_collision);
-	virtual void particles_collision_instance_set_transform(RID p_collision_instance, const Transform3D &p_transform);
-	virtual void particles_collision_instance_set_active(RID p_collision_instance, bool p_active);
+	virtual RID particles_collision_instance_create(RID p_collision) override;
+	virtual void particles_collision_instance_set_transform(RID p_collision_instance, const Transform3D &p_transform) override;
+	virtual void particles_collision_instance_set_active(RID p_collision_instance, bool p_active) override;
 
 	/* GLOBAL VARIABLES API */
 
-	virtual void global_variable_add(const StringName &p_name, RS::GlobalVariableType p_type, const Variant &p_value);
-	virtual void global_variable_remove(const StringName &p_name);
-	virtual Vector<StringName> global_variable_get_list() const;
+	virtual void global_variable_add(const StringName &p_name, RS::GlobalVariableType p_type, const Variant &p_value) override;
+	virtual void global_variable_remove(const StringName &p_name) override;
+	virtual Vector<StringName> global_variable_get_list() const override;
 
-	virtual void global_variable_set(const StringName &p_name, const Variant &p_value);
-	virtual void global_variable_set_override(const StringName &p_name, const Variant &p_value);
-	virtual Variant global_variable_get(const StringName &p_name) const;
-	virtual RS::GlobalVariableType global_variable_get_type(const StringName &p_name) const;
+	virtual void global_variable_set(const StringName &p_name, const Variant &p_value) override;
+	virtual void global_variable_set_override(const StringName &p_name, const Variant &p_value) override;
+	virtual Variant global_variable_get(const StringName &p_name) const override;
+	virtual RS::GlobalVariableType global_variable_get_type(const StringName &p_name) const override;
 	RS::GlobalVariableType global_variable_get_type_internal(const StringName &p_name) const;
 
-	virtual void global_variables_load_settings(bool p_load_textures = true);
-	virtual void global_variables_clear();
+	virtual void global_variables_load_settings(bool p_load_textures = true) override;
+	virtual void global_variables_clear() override;
 
-	virtual int32_t global_variables_instance_allocate(RID p_instance);
-	virtual void global_variables_instance_free(RID p_instance);
-	virtual void global_variables_instance_update(RID p_instance, int p_index, const Variant &p_value);
+	virtual int32_t global_variables_instance_allocate(RID p_instance) override;
+	virtual void global_variables_instance_free(RID p_instance) override;
+	virtual void global_variables_instance_update(RID p_instance, int p_index, const Variant &p_value) override;
 
 	RID global_variables_get_storage_buffer() const;
 
 	/* RENDER TARGET API */
 
-	RID render_target_create();
-	void render_target_set_position(RID p_render_target, int p_x, int p_y);
-	void render_target_set_size(RID p_render_target, int p_width, int p_height, uint32_t p_view_count);
-	RID render_target_get_texture(RID p_render_target);
-	void render_target_set_external_texture(RID p_render_target, unsigned int p_texture_id);
-	void render_target_set_flag(RID p_render_target, RenderTargetFlags p_flag, bool p_value);
-	bool render_target_was_used(RID p_render_target);
-	void render_target_set_as_unused(RID p_render_target);
+	RID render_target_create() override;
+	void render_target_set_position(RID p_render_target, int p_x, int p_y) override;
+	void render_target_set_size(RID p_render_target, int p_width, int p_height, uint32_t p_view_count) override;
+	RID render_target_get_texture(RID p_render_target) override;
+	void render_target_set_external_texture(RID p_render_target, unsigned int p_texture_id) override;
+	void render_target_set_flag(RID p_render_target, RenderTargetFlags p_flag, bool p_value) override;
+	bool render_target_was_used(RID p_render_target) override;
+	void render_target_set_as_unused(RID p_render_target) override;
 	void render_target_copy_to_back_buffer(RID p_render_target, const Rect2i &p_region, bool p_gen_mipmaps);
 	void render_target_clear_back_buffer(RID p_render_target, const Rect2i &p_region, const Color &p_color);
 	void render_target_gen_back_buffer_mipmaps(RID p_render_target, const Rect2i &p_region);
 
 	RID render_target_get_back_buffer_uniform_set(RID p_render_target, RID p_base_shader);
 
-	virtual void render_target_request_clear(RID p_render_target, const Color &p_clear_color);
-	virtual bool render_target_is_clear_requested(RID p_render_target);
-	virtual Color render_target_get_clear_request_color(RID p_render_target);
-	virtual void render_target_disable_clear_request(RID p_render_target);
-	virtual void render_target_do_clear_request(RID p_render_target);
+	virtual void render_target_request_clear(RID p_render_target, const Color &p_clear_color) override;
+	virtual bool render_target_is_clear_requested(RID p_render_target) override;
+	virtual Color render_target_get_clear_request_color(RID p_render_target) override;
+	virtual void render_target_disable_clear_request(RID p_render_target) override;
+	virtual void render_target_do_clear_request(RID p_render_target) override;
 
-	virtual void render_target_set_sdf_size_and_scale(RID p_render_target, RS::ViewportSDFOversize p_size, RS::ViewportSDFScale p_scale);
+	virtual void render_target_set_sdf_size_and_scale(RID p_render_target, RS::ViewportSDFOversize p_size, RS::ViewportSDFScale p_scale) override;
 	RID render_target_get_sdf_texture(RID p_render_target);
 	RID render_target_get_sdf_framebuffer(RID p_render_target);
 	void render_target_sdf_process(RID p_render_target);
-	virtual Rect2i render_target_get_sdf_rect(RID p_render_target) const;
-	void render_target_mark_sdf_enabled(RID p_render_target, bool p_enabled);
+	virtual Rect2i render_target_get_sdf_rect(RID p_render_target) const override;
+	void render_target_mark_sdf_enabled(RID p_render_target, bool p_enabled) override;
 	bool render_target_is_sdf_enabled(RID p_render_target) const;
 
 	Size2 render_target_get_size(RID p_render_target);
@@ -2358,34 +2358,34 @@ public:
 	void render_target_set_framebuffer_uniform_set(RID p_render_target, RID p_uniform_set);
 	void render_target_set_backbuffer_uniform_set(RID p_render_target, RID p_uniform_set);
 
-	RS::InstanceType get_base_type(RID p_rid) const;
+	RS::InstanceType get_base_type(RID p_rid) const override;
 
-	bool free(RID p_rid);
+	bool free(RID p_rid) override;
 
-	bool has_os_feature(const String &p_feature) const;
+	bool has_os_feature(const String &p_feature) const override;
 
-	void update_dirty_resources();
+	void update_dirty_resources() override;
 
-	void set_debug_generate_wireframes(bool p_generate) {}
+	void set_debug_generate_wireframes(bool p_generate) override {}
 
 	//keep cached since it can be called form any thread
 	uint64_t texture_mem_cache = 0;
 	uint64_t buffer_mem_cache = 0;
 	uint64_t total_mem_cache = 0;
 
-	virtual void update_memory_info();
-	virtual uint64_t get_rendering_info(RS::RenderingInfo p_info);
+	virtual void update_memory_info() override;
+	virtual uint64_t get_rendering_info(RS::RenderingInfo p_info) override;
 
-	String get_video_adapter_name() const;
-	String get_video_adapter_vendor() const;
+	String get_video_adapter_name() const override;
+	String get_video_adapter_vendor() const override;
 
-	virtual void capture_timestamps_begin();
-	virtual void capture_timestamp(const String &p_name);
-	virtual uint32_t get_captured_timestamps_count() const;
-	virtual uint64_t get_captured_timestamps_frame() const;
-	virtual uint64_t get_captured_timestamp_gpu_time(uint32_t p_index) const;
-	virtual uint64_t get_captured_timestamp_cpu_time(uint32_t p_index) const;
-	virtual String get_captured_timestamp_name(uint32_t p_index) const;
+	virtual void capture_timestamps_begin() override;
+	virtual void capture_timestamp(const String &p_name) override;
+	virtual uint32_t get_captured_timestamps_count() const override;
+	virtual uint64_t get_captured_timestamps_frame() const override;
+	virtual uint64_t get_captured_timestamp_gpu_time(uint32_t p_index) const override;
+	virtual uint64_t get_captured_timestamp_cpu_time(uint32_t p_index) const override;
+	virtual String get_captured_timestamp_name(uint32_t p_index) const override;
 
 	RID get_default_rd_storage_buffer() { return default_rd_storage_buffer; }
 
