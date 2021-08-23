@@ -1380,7 +1380,28 @@ String String::chr(char32_t p_char) {
 	char32_t c[2] = { p_char, 0 };
 	return String(c);
 }
+String String::form_format(const char *p_format, ...) {
+	String ret;
+	va_list argp;
+	va_start(argp, p_format);
 
+	const int static_buf_size = 512;
+	char static_buf[static_buf_size];
+	char *buf = static_buf;
+	int len = vsnprintf(buf, static_buf_size, p_format, argp);
+	if (len >= static_buf_size) {
+		buf = (char *)Memory::alloc_static(len + 1);
+		vsnprintf(buf, len + 1, p_format, argp);
+	}
+	ret = buf;
+
+	if (len >= static_buf_size) {
+		Memory::free_static(buf);
+	}
+
+	va_end(argp);
+	return ret;
+}
 String String::num(double p_num, int p_decimals) {
 	if (Math::is_nan(p_num)) {
 		return "nan";
