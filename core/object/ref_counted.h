@@ -760,8 +760,6 @@ private:
 	Vector<SharedPtr<T>> *TempArrayData;
 };
 
-#ifdef DEBUG_METHODS_ENABLED
-
 template <class T>
 struct GetTypeInfo<Ref<T>> {
 	static const Variant::Type VARIANT_TYPE = Variant::OBJECT;
@@ -781,7 +779,5 @@ struct GetTypeInfo<const Ref<T> &> {
 		return PropertyInfo(Variant::OBJECT, String(), PROPERTY_HINT_RESOURCE_TYPE, T::get_class_static());
 	}
 };
-
-#endif // DEBUG_METHODS_ENABLED
 
 #endif // REF_COUNTED_H
