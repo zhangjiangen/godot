@@ -2932,7 +2932,7 @@ void VisualShaderEditor::_convert_constants_to_uniforms(bool p_vice_versa) {
 		// ivec3
 		if (!caught) {
 			if (!p_vice_versa) {
-				Ref<VisualShaderNodeVec3Constant> vec3_const = Object::cast_to<VisualShaderNodeVec3IConstant>(node.ptr());
+				Ref<VisualShaderNodeVec3IConstant> vec3_const = Object::cast_to<VisualShaderNodeVec3IConstant>(node.ptr());
 				if (vec3_const.is_valid()) {
 					_replace_node(type_id, node_id, "VisualShaderNodeVec3IConstant", "VisualShaderNodeVec3IUniform");
 					var = vec3_const->get_constant();
@@ -4833,9 +4833,9 @@ public:
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("float"), SNAME("EditorIcons")),
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("int"), SNAME("EditorIcons")),
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector3"), SNAME("EditorIcons")),
-            EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Plane"), SNAME("EditorIcons")),
-            EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector3i"), SNAME("EditorIcons")),
-            EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Rect2i"), SNAME("EditorIcons")),
+			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Plane"), SNAME("EditorIcons")),
+			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector3i"), SNAME("EditorIcons")),
+			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Rect2i"), SNAME("EditorIcons")),
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("bool"), SNAME("EditorIcons")),
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Transform3D"), SNAME("EditorIcons")),
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("ImageTexture"), SNAME("EditorIcons")),
@@ -4882,9 +4882,9 @@ public:
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("int"), SNAME("EditorIcons")),
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("bool"), SNAME("EditorIcons")),
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector3"), SNAME("EditorIcons")),
-            EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Plane"), SNAME("EditorIcons")),
-            EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector3i"), SNAME("EditorIcons")),
-            EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Rect2i"), SNAME("EditorIcons")),
+			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Plane"), SNAME("EditorIcons")),
+			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector3i"), SNAME("EditorIcons")),
+			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Rect2i"), SNAME("EditorIcons")),
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Transform3D"), SNAME("EditorIcons")),
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Color"), SNAME("EditorIcons")),
 			EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("ImageTexture"), SNAME("EditorIcons")),

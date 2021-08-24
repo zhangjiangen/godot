@@ -295,6 +295,7 @@ public:
 	Vector<String> bigrams() const;
 	float similarity(const String &p_string) const;
 	String format(const Variant &values, String placeholder = "{_}") const;
+
 	String replace_first(const String &p_key, const String &p_with) const;
 	String replace(const String &p_key, const String &p_with) const;
 	String replace(const char *p_key, const char *p_with) const;
@@ -310,6 +311,8 @@ public:
 	String sprintf(const Array &values, bool *error) const;
 	String quote(String quotechar = "\"") const;
 	String unquote() const;
+	// 通过格式化字符串初始化
+	static String form_format(const char *p_format, ...);
 	static String num(double p_num, int p_decimals = -1);
 	static String num_scientific(double p_num);
 	static String num_real(double p_num, bool p_trailing = true);
