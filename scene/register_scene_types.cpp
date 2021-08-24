@@ -590,8 +590,10 @@ void register_scene_types() {
 	GDREGISTER_CLASS(VisualShaderNodeVectorRefract);
 	GDREGISTER_CLASS(VisualShaderNodeMix);
 	GDREGISTER_CLASS(VisualShaderNodeVectorCompose);
+	GDREGISTER_CLASS(VisualShaderNodeVector4Compose);
 	GDREGISTER_CLASS(VisualShaderNodeTransformCompose);
 	GDREGISTER_CLASS(VisualShaderNodeVectorDecompose);
+	GDREGISTER_CLASS(VisualShaderNodeVector4Decompose);
 	GDREGISTER_CLASS(VisualShaderNodeTransformDecompose);
 	GDREGISTER_CLASS(VisualShaderNodeTexture);
 	GDREGISTER_CLASS(VisualShaderNodeCurveTexture);

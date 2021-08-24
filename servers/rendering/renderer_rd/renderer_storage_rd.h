@@ -1347,7 +1347,7 @@ public:
 
 	virtual void texture_debug_usage(List<RS::TextureInfo> *r_info)override;
 
-	virtual void texture_set_proxy(RID p_proxy, RID p_base)override;
+	virtual void texture_set_proxy(RID p_proxy, RID p_base);
 	virtual void texture_set_force_redraw_if_visible(RID p_texture, bool p_enable)override;
 
 	virtual Size2 texture_size_with_proxy(RID p_proxy)override;
