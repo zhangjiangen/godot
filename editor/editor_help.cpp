@@ -170,7 +170,7 @@ void EditorHelp::_add_type(const String &p_type, const String &p_enum) {
 	if (t.is_empty()) {
 		t = "void";
 	}
-	bool can_ref = (t != "void") || !p_enum.is_empty();
+	bool can_ref = (t != "void" && t.find("*") == -1) || !p_enum.is_empty();
 
 	if (!p_enum.is_empty()) {
 		if (p_enum.get_slice_count(".") > 1) {
@@ -632,8 +632,8 @@ void EditorHelp::_update_doc() {
 				continue;
 			}
 		}
-		// Ignore undocumented private.
-		if (cd.methods[i].name.begins_with("_") && cd.methods[i].description.is_empty()) {
+		// Ignore undocumented non virtual private.
+		if (cd.methods[i].name.begins_with("_") && cd.methods[i].description.is_empty() && cd.methods[i].qualifiers.find("virtual") == -1) {
 			continue;
 		}
 		methods.push_back(cd.methods[i]);
@@ -1825,8 +1825,6 @@ void FindBar::_notification(int p_what) {
 }
 
 void FindBar::_bind_methods() {
-	ClassDB::bind_method("_unhandled_input", &FindBar::_unhandled_input);
-
 	ADD_SIGNAL(MethodInfo("search"));
 }
 
@@ -1902,7 +1900,7 @@ void FindBar::_hide_bar() {
 	hide();
 }
 
-void FindBar::_unhandled_input(const Ref<InputEvent> &p_event) {
+void FindBar::unhandled_input(const Ref<InputEvent> &p_event) {
 	ERR_FAIL_COND(p_event.is_null());
 
 	Ref<InputEventKey> k = p_event;

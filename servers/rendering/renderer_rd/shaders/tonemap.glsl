@@ -37,15 +37,15 @@ layout(location = 0) in vec2 uv_interp;
 
 #ifdef SUBPASS
 layout(input_attachment_index = 0, set = 0, binding = 0) uniform subpassInput input_color;
-#else
-#if MULTIVIEW
+#elif defined(MULTIVIEW)
 layout(set = 0, binding = 0) uniform sampler2DArray source_color;
 #else
 layout(set = 0, binding = 0) uniform sampler2D source_color;
 #endif
-#endif
+
 layout(set = 1, binding = 0) uniform sampler2D source_auto_exposure;
 layout(set = 2, binding = 0) uniform sampler2D source_glow;
+
 #ifdef USE_1D_LUT
 layout(set = 3, binding = 0) uniform sampler2D source_color_correction;
 #else
@@ -349,7 +349,7 @@ vec3 do_fxaa(vec3 color, float exposure, vec2 uv_interp) {
 }
 #endif // !SUBPASS
 
-// From http://alex.vlachos.com/graphics/Alex_Vlachos_Advanced_VR_Rendering_GDC2015.pdf
+// From https://alex.vlachos.com/graphics/Alex_Vlachos_Advanced_VR_Rendering_GDC2015.pdf
 // and https://www.shadertoy.com/view/MslGR8 (5th one starting from the bottom)
 // NOTE: `frag_coord` is in pixels (i.e. not normalized UV).
 vec3 screen_space_dither(vec2 frag_coord) {
@@ -365,7 +365,7 @@ void main() {
 #ifdef SUBPASS
 	// SUBPASS and MULTIVIEW can be combined but in that case we're already reading from the correct layer
 	vec3 color = subpassLoad(input_color).rgb;
-#elif MULTIVIEW
+#elif defined(MULTIVIEW)
 	vec3 color = textureLod(source_color, vec3(uv_interp, ViewIndex), 0.0f).rgb;
 #else
 	vec3 color = textureLod(source_color, uv_interp, 0.0f).rgb;
