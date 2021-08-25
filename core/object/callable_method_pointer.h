@@ -77,6 +77,13 @@ class CallableCustomMethodPointer : public CallableCustomMethodPointerBase {
 		uint64_t object_id;
 #endif
 		void (T::*method)(P...);
+		void clear() {
+			instance = ObjectID();
+#ifdef DEBUG_ENABLED
+			object_id = 0;
+#endif
+			method = nullptr;
+		}
 	} data;
 
 public:
@@ -101,7 +108,8 @@ public:
 	}
 
 	CallableCustomMethodPointer(T *p_instance, void (T::*p_method)(P...)) {
-		memset(&data, 0, sizeof(Data)); // Clear beforehand, may have padding bytes.
+		//memset(&data, 0, sizeof(Data)); // Clear beforehand, may have padding bytes.
+		data.clear();
 		data.instance = p_instance->get_instance_id();
 #ifdef DEBUG_ENABLED
 		data.object_id = p_instance->get_instance_id();

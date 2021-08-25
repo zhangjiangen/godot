@@ -1032,9 +1032,9 @@ void ColorPicker::_screen_pick_pressed() {
 		screen->call_deferred(SNAME("connect"), "hidden", Callable(btn_pick, "set_pressed"), varray(false));
 	}
 	screen->raise();
-#ifndef _MSC_VER
-#warning show modal no longer works, needs to be converted to a popup
-#endif
+	// #ifndef _MSC_VER
+	// #warning show modal no longer works, needs to be converted to a popup
+	// #endif
 	//screen->show_modal();
 }
 
