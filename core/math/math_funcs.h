@@ -139,6 +139,12 @@ public:
 		}
 		return p_y;
 	}
+	static inline float min(float p_x, float p_y) {
+		if (p_x < p_y) {
+			return p_x;
+		}
+		return p_y;
+	}
 	static inline float snorm8ToFloat(int8_t v) {
 		// -128 & -127 both map to -1 according to D3D10 rules.
 		return max(v / 127.0f, -1.0f);
