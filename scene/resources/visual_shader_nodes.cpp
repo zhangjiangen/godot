@@ -6731,18 +6731,18 @@ int VisualShaderNodeMultiplyAdd::get_output_port_count() const {
 	return 1;
 }
 
-VisualShaderNodeMultiplyAdd::PortType VisualShaderNodeMultiplyAdd::get_output_port_type(int p_port) const {
-	if (op_type == OP_TYPE_SCALAR) {
-		return PORT_TYPE_SCALAR;
-	} else if (op_type == PORT_TYPE_VECTOR4) {
-		return PORT_TYPE_VECTOR4;
-	} else if (op_type == PORT_TYPE_IVECTOR) {
-		return PORT_TYPE_IVECTOR;
-	} else if (op_type == PORT_TYPE_IVECTOR4) {
-		return PORT_TYPE_IVECTOR4;
-	} else {
-		return PORT_TYPE_VECTOR;
+VisualShaderNode::PortType VisualShaderNodeMultiplyAdd::get_output_port_type(int p_port) const {
+	switch (p_port) {
+		case OP_TYPE_SCALAR: 
+			return PORT_TYPE_SCALAR;
+		case OP_TYPE_VECTOR4:
+			return PORT_TYPE_VECTOR4;
+		case OP_TYPE_IVECTOR :
+			return PORT_TYPE_IVECTOR;
+		case OP_TYPE_IVECTOR4:
+			return PORT_TYPE_IVECTOR4;
 	}
+	return PORT_TYPE_VECTOR;
 }
 
 String VisualShaderNodeMultiplyAdd::get_output_port_name(int p_port) const {
