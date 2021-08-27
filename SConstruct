@@ -121,10 +121,14 @@ opts.Add(BoolVariable("tools", "Build the tools (a.k.a. the Godot editor)", True
 opts.Add(EnumVariable("target", "Compilation target",
          "debug", ("debug", "release_debug", "release")))
 opts.Add("arch", "Platform-dependent architecture (arm/arm64/x86/x64/mips/...)", "")
-opts.Add(EnumVariable("bits", "Target platform bits", "default", ("default", "32", "64")))
-opts.Add(EnumVariable("float", "Floating-point precision", "default", ("default", "32", "64")))
-opts.Add(EnumVariable("optimize", "Optimization type", "speed", ("speed", "size", "none")))
-opts.Add(BoolVariable("production", "Set defaults to build Godot for use in production", False))
+opts.Add(EnumVariable("bits", "Target platform bits",
+         "default", ("default", "32", "64")))
+opts.Add(EnumVariable("float", "Floating-point precision",
+         "default", ("default", "32", "64")))
+opts.Add(EnumVariable("optimize", "Optimization type",
+         "speed", ("speed", "size", "none")))
+opts.Add(BoolVariable("production",
+         "Set defaults to build Godot for use in production", False))
 opts.Add(BoolVariable("use_lto", "Use link-time optimization", False))
 
 # Components
@@ -132,9 +136,12 @@ opts.Add(BoolVariable("deprecated", "Enable deprecated features", True))
 opts.Add(BoolVariable("minizip", "Enable ZIP archive support using minizip", True))
 opts.Add(BoolVariable("xaudio2", "Enable the XAudio2 audio driver", False))
 opts.Add(BoolVariable("vulkan", "Enable the vulkan video driver", True))
-opts.Add("custom_modules", "A list of comma-separated directory paths containing custom modules to build.", "")
-opts.Add(BoolVariable("custom_modules_recursive", "Detect custom modules recursively for each specified path.", True))
-opts.Add(BoolVariable("use_volk", "Use the volk library to load the Vulkan loader dynamically", True))
+opts.Add("custom_modules",
+         "A list of comma-separated directory paths containing custom modules to build.", "")
+opts.Add(BoolVariable("custom_modules_recursive",
+         "Detect custom modules recursively for each specified path.", True))
+opts.Add(BoolVariable("use_volk",
+         "Use the volk library to load the Vulkan loader dynamically", True))
 
 # Advanced options
 opts.Add(BoolVariable(
@@ -173,6 +180,8 @@ opts.Add(BoolVariable("builtin_embree", "Use the built-in Embree library", True)
 opts.Add(BoolVariable("builtin_enet", "Use the built-in ENet library", True))
 opts.Add(BoolVariable("builtin_freetype",
          "Use the built-in FreeType library", True))
+opts.Add(BoolVariable("builtin_msdfgen",
+         "Use the built-in MSDFgen library", True))
 opts.Add(BoolVariable("builtin_glslang",
          "Use the built-in glslang library", True))
 opts.Add(BoolVariable("builtin_graphite",
