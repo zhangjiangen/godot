@@ -1041,6 +1041,8 @@ RenderingDevice::DataFormat RenderingDevice::image_astc_to_datatype(const Image:
 			return DATA_FORMAT_ASTC_12x10_SRGB_BLOCK; // 4-component ASTC, 12x10 blocks, sRGB
 		case Image::FORMAT_SRGB8_ALPHA8_ASTC_12x12:
 			return DATA_FORMAT_ASTC_12x12_SRGB_BLOCK; // 4-component ASTC, 12x12 blocks, sRGB
+		default:
+			return DATA_FORMAT_MAX;
 	}
 	return DATA_FORMAT_MAX;
 }
