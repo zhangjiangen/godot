@@ -490,7 +490,6 @@ int Image::get_format_block_size_height(Format p_format) {
 int Image::get_mipmap_count(int p_width, int p_height, Format p_format) {
 	int minw, minh;
 	get_format_min_pixel_size(p_format, minw, minh);
-	int pm = MIN(minw, minh);
 	int mipmaps = 1;
 	while (true) {
 		if (p_width <= minw && p_height <= minh) {
@@ -2540,15 +2539,15 @@ int Image::get_any_image_data_size(int p_width, int p_height, Format p_format, b
 	// astc 需要特殊处理
 	int bx = get_format_block_size_width(p_format);
 	int by = get_format_block_size_height(p_format);
-	uint32_t blocks_x =
+	int blocks_x =
 			(p_width + bx - 1) / bx;
-	uint32_t blocks_y =
+	int blocks_y =
 			(p_height + by - 1) / by;
 	if (!p_mipmaps) {
 		return blocks_x * blocks_y * 16;
 	}
-	uint32_t size = blocks_x * blocks_y * 16;
-	uint32_t ml = Math::max(p_width, p_height);
+	int size = blocks_x * blocks_y * 16;
+	int ml = Math::max(p_width, p_height);
 	while (ml < bx * 2) {
 		p_width = Math::max(p_width >> 1, bx);
 		p_height = Math::max(p_height >> 1, by);

@@ -144,6 +144,13 @@ class CallableCustomMethodPointerRet : public CallableCustomMethodPointerBase {
 #endif
 		R(T::*method)
 		(P...);
+		void clear() {
+			instance = ObjectID();
+#ifdef DEBUG_ENABLED
+			object_id = 0;
+#endif
+			method = nullptr;
+		}
 	} data;
 
 public:
@@ -168,7 +175,8 @@ public:
 	}
 
 	CallableCustomMethodPointerRet(T *p_instance, R (T::*p_method)(P...)) {
-		memset(&data, 0, sizeof(Data)); // Clear beforehand, may have padding bytes.
+		//memset(&data, 0, sizeof(Data)); // Clear beforehand, may have padding bytes.
+		data.clear();
 		data.instance = p_instance->get_instance_id();
 #ifdef DEBUG_ENABLED
 		data.object_id = p_instance->get_instance_id();
@@ -203,6 +211,13 @@ class CallableCustomMethodPointerRetC : public CallableCustomMethodPointerBase {
 #endif
 		R(T::*method)
 		(P...) const;
+		void clear() {
+			instance = ObjectID();
+#ifdef DEBUG_ENABLED
+			object_id = 0;
+#endif
+			method = nullptr;
+		}
 	} data;
 
 public:
@@ -227,7 +242,8 @@ public:
 	}
 
 	CallableCustomMethodPointerRetC(T *p_instance, R (T::*p_method)(P...) const) {
-		memset(&data, 0, sizeof(Data)); // Clear beforehand, may have padding bytes.
+		//memset(&data, 0, sizeof(Data)); // Clear beforehand, may have padding bytes.
+		data.clear();
 		data.instance = p_instance->get_instance_id();
 #ifdef DEBUG_ENABLED
 		data.object_id = p_instance->get_instance_id();

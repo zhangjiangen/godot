@@ -30,8 +30,8 @@
 
 #include "dir_access.h"
 #if defined(WIN32) || defined(WIN64)
-#include <io.h>
 #include <direct.h>
+#include <io.h>
 #else
 #include <unistd.h>
 #endif
@@ -53,7 +53,11 @@ String DirAccess::_get_root_path() const {
 }
 String DirAccess::get_curr_work_dir() {
 	char real_current_dir_name[4096];
+#if defined(_MSC_VER)
+	_getcwd(real_current_dir_name, 4096);
+#else
 	getcwd(real_current_dir_name, 4096);
+#endif
 	String prev_dir;
 	if (prev_dir.parse_utf8(real_current_dir_name)) {
 		prev_dir = real_current_dir_name; //no utf8, maybe latin?

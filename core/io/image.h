@@ -356,8 +356,8 @@ public:
 	static int get_format_block_size(Format p_format);
 	static void get_format_min_pixel_size(Format p_format, int &r_w, int &r_h);
 	// 对于压缩格式用下面的办法获取块的高度和宽度
-	static int get_format_block_size_width(Format p_format);
-	static int get_format_block_size_height(Format p_format);
+	static uint32_t get_format_block_size_width(Format p_format);
+	static uint32_t get_format_block_size_height(Format p_format);
 	static int get_any_image_data_size(int p_width, int p_height, Format p_format, bool p_mipmaps = false);
 	static int get_mipmap_count(int p_width, int p_height, Format p_format);
 

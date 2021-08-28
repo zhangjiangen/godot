@@ -568,7 +568,7 @@ Ref<Image> RendererStorageRD::_validate_texture_format(const Ref<Image> &p_image
 				//not supported, reconvert
 				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
 				image->decompress();
-				image->convert(p_image->get_format() < Image::FORMAT_SRGB8_ALPHA8_ASTC_4x4 ? Image::FORMAT_RGB565 : Image::FORMAT_RGB565);
+				image->convert(p_image->get_format() < Image::FORMAT_SRGB8_ALPHA8_ASTC_4x4 ? Image::FORMAT_RGB565 : Image::FORMAT_RGBA4444);
 			}
 			r_format.swizzle_r = RD::TEXTURE_SWIZZLE_R;
 			r_format.swizzle_g = RD::TEXTURE_SWIZZLE_G;
