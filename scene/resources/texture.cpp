@@ -1181,12 +1181,59 @@ void AtlasTexture::draw(RID p_canvas_item, const Point2 &p_pos, const Color &p_m
 
 	RS::get_singleton()->canvas_item_add_texture_rect_region(p_canvas_item, Rect2(p_pos + margin.position, rc.size), atlas->get_rid(), rc, p_modulate, p_transpose, filter_clip);
 }
+// p_rect 是p_canvas_item要绘制的区域
+bool AtlasTexture::draw_9grid(RID p_canvas_item, const Rect2 &p_rect, const Color &p_modulate, bool p_transpose) const {
+	if (!atlas.is_valid()) {
+		return false;
+	}
+	// 渲染区域
+	Size2 render_rect = p_rect.size - margin.position;
+	// 渲染缩放
+	Size2 render_scale = render_rect / region.size;
 
+	Rect2 drawRect;
+	Rect2 texRect;
+	int32_t row, col;
+	int32_t part;
+	static float gridX[4] = { 0 };
+	static float gridY[4] = { 0 };
+
+	gridX[1] = grid9.position.x;
+	gridX[2] = gridX[1] + grid9.size.x * render_scale.x;
+	gridX[3] = render_rect.x;
+	gridY[1] = grid9.position.y;
+	gridY[2] = gridY[1] + grid9.size.y;
+	gridY[3] = render_rect.y;
+
+	static float gridTexX[4];
+	static float gridTexY[4];
+	gridTexX[1] = grid9.position.x;
+	gridTexX[2] = gridTexX[1] + grid9.size.x;
+	gridTexX[3] = region.size.x;
+	gridTexY[1] = grid9.position.y;
+	gridTexY[2] = gridTexY[1] + grid9.size.y;
+	gridTexY[3] = region.size.y;
+
+	const int32_t gridTileIndice[] = { -1, 0, -1, 2, 4, 3, -1, 1, -1 };
+	for (int32_t pii = 0; pii < 9; pii++) {
+		col = pii % 3;
+		row = pii / 3;
+		// 计算举行信息
+		drawRect = Rect2(Point2(gridX[col], gridY[row]), Size2(gridX[col + 1], gridY[row + 1]));
+		texRect = Rect2(Point2(gridTexX[col], gridTexY[row]), Size2(gridTexX[col + 1], gridTexY[row + 1]));
+
+		RS::get_singleton()->canvas_item_add_texture_rect_region(p_canvas_item, Rect2(drawRect.position + margin.position, drawRect.size), atlas->get_rid(), texRect, p_modulate, p_transpose, filter_clip);
+	}
+	return true;
+}
 void AtlasTexture::draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool p_tile, const Color &p_modulate, bool p_transpose) const {
 	if (!atlas.is_valid()) {
 		return;
 	}
-
+	if (draw_type == DT_9Grid) {
+		draw_9grid(p_canvas_item, p_rect, p_modulate, p_transpose);
+		return;
+	}
 	Rect2 rc = region;
 
 	if (rc.size.width == 0) {
@@ -1201,6 +1248,8 @@ void AtlasTexture::draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool p_tile
 	Rect2 dr(p_rect.position + margin.position * scale, rc.size * scale);
 
 	RS::get_singleton()->canvas_item_add_texture_rect_region(p_canvas_item, dr, atlas->get_rid(), rc, p_modulate, p_transpose, filter_clip);
+}
+void AtlasTexture::draw_tile(RID p_canvas_item, const Rect2 &p_rect, const Color &p_modulate, bool p_transpose) const {
 }
 
 void AtlasTexture::draw_rect_region(RID p_canvas_item, const Rect2 &p_rect, const Rect2 &p_src_rect, const Color &p_modulate, bool p_transpose, bool p_clip_uv) const {

@@ -218,11 +218,28 @@ class AtlasTexture : public Texture2D {
 	GDCLASS(AtlasTexture, Texture2D);
 	RES_BASE_EXTENSION("atlastex");
 
+public:
+	enum DrawType {
+		// 默认使用原始尺寸不锁放，不拉伸
+		DT_Default,
+		// 拉伸
+		DT_Stretch,
+		// 平铺
+		DT_Tiled,
+		// 9宫格
+		DT_9Grid,
+
+	};
+
 protected:
 	Ref<Texture2D> atlas;
 	Rect2 region;
 	Rect2 margin;
+	Rect2 grid9;
+	DrawType draw_type = DT_Default;
 	bool filter_clip = false;
+	// 是否翻转xy
+	bool isFlipUVXY = false;
 
 	static void _bind_methods();
 
@@ -251,7 +268,10 @@ public:
 	virtual bool get_rect_region(const Rect2 &p_rect, const Rect2 &p_src_rect, Rect2 &r_rect, Rect2 &r_src_rect) const override;
 
 	bool is_pixel_opaque(int p_x, int p_y) const override;
+	// 绘制9宫格类型的界面，p_rect 是p_canvas_item要绘制的区域
+	bool draw_9grid(RID p_canvas_item, const Rect2 &p_rect, const Color &p_modulate = Color(1, 1, 1), bool p_transpose = false) const;
 
+	void draw_tile(RID p_canvas_item, const Rect2 &p_rect, const Color &p_modulate = Color(1, 1, 1), bool p_transpose = false) const;
 	AtlasTexture();
 };
 
