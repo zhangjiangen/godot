@@ -1194,7 +1194,6 @@ bool AtlasTexture::draw_9grid(RID p_canvas_item, const Rect2 &p_rect, const Colo
 	Rect2 drawRect;
 	Rect2 texRect;
 	int32_t row, col;
-	int32_t part;
 	static float gridX[4] = { 0 };
 	static float gridY[4] = { 0 };
 
@@ -1214,7 +1213,6 @@ bool AtlasTexture::draw_9grid(RID p_canvas_item, const Rect2 &p_rect, const Colo
 	gridTexY[2] = gridTexY[1] + grid9.size.y;
 	gridTexY[3] = region.size.y;
 
-	const int32_t gridTileIndice[] = { -1, 0, -1, 2, 4, 3, -1, 1, -1 };
 	for (int32_t pii = 0; pii < 9; pii++) {
 		col = pii % 3;
 		row = pii / 3;
