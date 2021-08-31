@@ -53,14 +53,15 @@ String DirAccess::_get_root_path() const {
 }
 String DirAccess::get_curr_work_dir() {
 	char real_current_dir_name[4096];
+	
 #if defined(_MSC_VER)
-	_getcwd(real_current_dir_name, 4096);
+	char *curr_path = _getcwd(real_current_dir_name, 4096);
 #else
-	getcwd(real_current_dir_name, 4096);
+	char *curr_path = getcwd(real_current_dir_name, 4096);
 #endif
 	String prev_dir;
-	if (prev_dir.parse_utf8(real_current_dir_name)) {
-		prev_dir = real_current_dir_name; //no utf8, maybe latin?
+	if (prev_dir.parse_utf8(curr_path)) {
+		prev_dir = curr_path; //no utf8, maybe latin?
 	}
 	return prev_dir;
 }

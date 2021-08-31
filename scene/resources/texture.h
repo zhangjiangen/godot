@@ -228,6 +228,14 @@ public:
 		DT_Tiled,
 		// 9宫格
 		DT_9Grid,
+		// 矫正水平位置,垂直拉伸自适应
+		DT_HLeft,
+		DT_HCenter,
+		DT_HRight,
+		// 矫正垂直位置,水平拉伸自适应
+		DT_VTop,
+		DT_VCenter,
+		DT_VBelow,
 
 	};
 
@@ -238,8 +246,8 @@ protected:
 	Rect2 grid9;
 	DrawType draw_type = DT_Default;
 	bool filter_clip = false;
-	// 是否翻转xy
-	bool isFlipUVXY = false;
+	// 是否xy颠倒
+	bool transpose = false;
 
 	static void _bind_methods();
 
@@ -270,8 +278,9 @@ public:
 	bool is_pixel_opaque(int p_x, int p_y) const override;
 	// 绘制9宫格类型的界面，p_rect 是p_canvas_item要绘制的区域
 	bool draw_9grid(RID p_canvas_item, const Rect2 &p_rect, const Color &p_modulate = Color(1, 1, 1), bool p_transpose = false) const;
-
+	// 绘制tile类型
 	void draw_tile(RID p_canvas_item, const Rect2 &p_rect, const Color &p_modulate = Color(1, 1, 1), bool p_transpose = false) const;
+	void draw_stretch(RID p_canvas_item, const Rect2 &p_rect, const Color &p_modulate = Color(1, 1, 1), bool p_transpose = false) const;
 	AtlasTexture();
 };
 

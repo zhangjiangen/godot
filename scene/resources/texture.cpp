@@ -1186,10 +1186,13 @@ bool AtlasTexture::draw_9grid(RID p_canvas_item, const Rect2 &p_rect, const Colo
 	if (!atlas.is_valid()) {
 		return false;
 	}
-	// 渲染区域
-	Size2 render_rect = p_rect.size - margin.position;
+	// 渲染区域,先临时保存一下真实图集大小
+	Size2 render_rect = region.size + margin.position;
 	// 渲染缩放
-	Size2 render_scale = render_rect / region.size;
+	float render_scale = p_rect.size.y / region.size.y;
+	// 计算根据高度落差算出来的偏移量,不能使用等比缩放,不然看起来非常奇怪
+	Point2 render_move = margin.position * render_scale;
+	render_rect = p_rect.size - render_move;
 
 	Rect2 drawRect;
 	Rect2 texRect;
@@ -1198,19 +1201,19 @@ bool AtlasTexture::draw_9grid(RID p_canvas_item, const Rect2 &p_rect, const Colo
 	static float gridY[4] = { 0 };
 
 	gridX[1] = grid9.position.x;
-	gridX[2] = gridX[1] + grid9.size.x * render_scale.x;
+	gridX[2] = render_rect.x - (region.size.x - grid9.size.x);
 	gridX[3] = render_rect.x;
 	gridY[1] = grid9.position.y;
-	gridY[2] = gridY[1] + grid9.size.y;
+	gridY[2] = render_rect.y - (region.size.y - grid9.size.y);
 	gridY[3] = render_rect.y;
 
 	static float gridTexX[4];
 	static float gridTexY[4];
 	gridTexX[1] = grid9.position.x;
-	gridTexX[2] = gridTexX[1] + grid9.size.x;
+	gridTexX[2] = region.size.x - (region.size.x - grid9.size.x);
 	gridTexX[3] = region.size.x;
 	gridTexY[1] = grid9.position.y;
-	gridTexY[2] = gridTexY[1] + grid9.size.y;
+	gridTexY[2] = region.size.y - (region.size.y - grid9.size.y);
 	gridTexY[3] = region.size.y;
 
 	for (int32_t pii = 0; pii < 9; pii++) {
@@ -1219,8 +1222,10 @@ bool AtlasTexture::draw_9grid(RID p_canvas_item, const Rect2 &p_rect, const Colo
 		// 计算举行信息
 		drawRect = Rect2(Point2(gridX[col], gridY[row]), Size2(gridX[col + 1], gridY[row + 1]));
 		texRect = Rect2(Point2(gridTexX[col], gridTexY[row]), Size2(gridTexX[col + 1], gridTexY[row + 1]));
+		if (drawRect.size.x > 0.1f && drawRect.size.y > 0.1f) {
+			RS::get_singleton()->canvas_item_add_texture_rect_region(p_canvas_item, Rect2(drawRect.position + render_move, drawRect.size), atlas->get_rid(), texRect, p_modulate, p_transpose || transpose, filter_clip);
+		}
 
-		RS::get_singleton()->canvas_item_add_texture_rect_region(p_canvas_item, Rect2(drawRect.position + margin.position, drawRect.size), atlas->get_rid(), texRect, p_modulate, p_transpose, filter_clip);
 	}
 	return true;
 }
@@ -1228,9 +1233,30 @@ void AtlasTexture::draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool p_tile
 	if (!atlas.is_valid()) {
 		return;
 	}
+	if (region.size.x < 0.1f && region.size.y < 0.1f) {
+		return;
+	}
 	if (draw_type == DT_9Grid) {
 		draw_9grid(p_canvas_item, p_rect, p_modulate, p_transpose);
 		return;
+	} else if (draw_type == DT_Tiled) {
+		draw_tile(p_canvas_item, p_rect, p_modulate, p_transpose);
+	} else if (draw_type == DT_Stretch) {
+		// 拉伸的方式绘制
+		// 渲染区域,先临时保存一下真实图集大小
+		Size2 render_rect = region.size + margin.position;
+		// 渲染缩放
+		float render_scale = p_rect.size.y / region.size.y;
+		// 计算根据高度落差算出来的偏移量,不能使用等比缩放,不然看起来非常奇怪
+		Point2 render_move = margin.position * render_scale;
+		render_rect = p_rect.size - render_move;
+		if (render_rect.x > 0.1f && render_rect.y > 0.1f) {
+			RS::get_singleton()->canvas_item_add_texture_rect_region(p_canvas_item, Rect2(p_rect.position + render_move, render_rect), atlas->get_rid(), region, p_modulate, p_transpose || transpose, filter_clip);
+		}
+
+	} else if (draw_type >= DT_HLeft) {
+		// 等比拉伸
+		draw_stretch(p_canvas_item, p_rect, p_modulate, p_transpose);
 	}
 	Rect2 rc = region;
 
@@ -1244,12 +1270,96 @@ void AtlasTexture::draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool p_tile
 
 	Vector2 scale = p_rect.size / (region.size + margin.size);
 	Rect2 dr(p_rect.position + margin.position * scale, rc.size * scale);
-
-	RS::get_singleton()->canvas_item_add_texture_rect_region(p_canvas_item, dr, atlas->get_rid(), rc, p_modulate, p_transpose, filter_clip);
+	if (dr.size.x < 0.1f && dr.size.y < 0.1f) {
+		RS::get_singleton()->canvas_item_add_texture_rect_region(p_canvas_item, dr, atlas->get_rid(), rc, p_modulate, p_transpose || transpose, filter_clip);
+	}
 }
 void AtlasTexture::draw_tile(RID p_canvas_item, const Rect2 &p_rect, const Color &p_modulate, bool p_transpose) const {
+	// 渲染区域
+	Size2 render_rect = p_rect.size - margin.position;
+	// 渲染缩放
+	Size2 render_scale = render_rect / region.size;
+	int hc = Math::ceil(render_rect.x / region.size.x);
+	int vc = Math::ceil(render_rect.y / region.size.y);
+	if (render_rect.x < 0.1f && render_rect.y < 0.1f) {
+		int i = 0;
+		int j = 0;
+		for (; i < hc - 1; i++) {
+			for (; j < vc - 1; j++) {
+				RS::get_singleton()->canvas_item_add_texture_rect_region(p_canvas_item, Rect2(p_rect.position + margin.position + Point2(region.size.x * i, region.size.y * j), region.size), atlas->get_rid(), region, p_modulate, p_transpose, filter_clip);
+			}
+			j = 0;
+		}
+		float x, y;
+		for (; i < hc; i++) {
+			j = vc - 1;
+			x = region.size.x - (p_rect.position.x + margin.position.x + region.size.x * i - render_rect.x);
+			for (; j < vc; j++) {
+				y = region.size.y - (p_rect.position.y + margin.position.y + region.size.y * i - render_rect.y);
+				RS::get_singleton()->canvas_item_add_texture_rect_region(p_canvas_item, Rect2(p_rect.position + margin.position + Point2(region.size.x * i, region.size.y * j), Point2(x, y)), atlas->get_rid(), Rect2(region.position, Point2(x, y)), p_modulate, p_transpose || transpose, filter_clip);
+			}
+		}
+	}
 }
 
+void AtlasTexture::draw_stretch(RID p_canvas_item, const Rect2 &p_rect, const Color &p_modulate = Color(1, 1, 1), bool p_transpose = false) const {
+	float scale = 1.0f;
+	// 渲染区域,先临时保存一下真实图集大小
+	Size2 render_rect = region.size + margin.position;
+	Point2 render_move;
+	if (render_rect.x < 0.1f && render_rect.y < 0.1f) {
+		return;
+	}
+	if (region.size.x < 0.1f && region.size.y < 0.1f) {
+		return;
+	}
+
+	Rect2 texRect = region;
+	if (draw_type < DT_VTop) {
+		// 垂直自适应,水平按照规则裁剪
+		// 渲染缩放
+		scale = p_rect.size.y / region.size.y;
+		// 计算根据高度落差算出来的偏移量,不能使用等比缩放,不然看起来非常奇怪
+		render_move = margin.position * scale;
+		// 最佳大小
+		Size2 best_size = region.size * scale;
+		render_rect = p_rect.size - render_move;
+		float remove_w = (best_size.x - render_rect.x) / best_size.x;
+		// 计算uv偏移量
+		float remove_uv = region.size.x - region.size.x * remove_w;
+		if (draw_type == DT_HLeft) {
+			texRect.size.x -= remove_uv;
+		} else if (draw_type == DT_HCenter) {
+			texRect.position.x += remove_uv * 0.5;
+			texRect.size.x -= remove_uv;
+		} else {
+			texRect.position.x += remove_uv ;
+			texRect.size.x -= remove_uv;
+		}
+		
+	} else {
+		scale = p_rect.size.x / region.size.x;
+		// 计算根据高度落差算出来的偏移量,不能使用等比缩放,不然看起来非常奇怪
+		render_move = margin.position * scale;
+		render_rect = p_rect.size - render_move;
+		// 最佳大小
+		Size2 best_size = region.size * scale;
+		float remove_w = (best_size.y - render_rect.y) / best_size.y;
+		// 计算uv偏移量
+		float remove_uv = region.size.y - region.size.y * remove_w;
+		if (draw_type == DT_VTop) {
+			texRect.size.x -= remove_uv;
+		} else if (draw_type == DT_VCenter) {
+			texRect.position.y += remove_uv * 0.5;
+			texRect.size.y -= remove_uv;
+		} else {
+			texRect.position.y += remove_uv;
+			texRect.size.y -= remove_uv;
+		}
+		
+	}
+	RS::get_singleton()->canvas_item_add_texture_rect_region(p_canvas_item, Rect2(p_rect.position + render_move, render_rect), atlas->get_rid(), texRect, p_modulate, p_transpose, filter_clip);
+}
 void AtlasTexture::draw_rect_region(RID p_canvas_item, const Rect2 &p_rect, const Rect2 &p_src_rect, const Color &p_modulate, bool p_transpose, bool p_clip_uv) const {
 	//this might not necessarily work well if using a rect, needs to be fixed properly
 	if (!atlas.is_valid()) {
