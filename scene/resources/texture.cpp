@@ -1278,7 +1278,7 @@ void AtlasTexture::draw_tile(RID p_canvas_item, const Rect2 &p_rect, const Color
 	// 渲染区域
 	Size2 render_rect = p_rect.size - margin.position;
 	// 渲染缩放
-	Size2 render_scale = render_rect / region.size;
+	//Size2 render_scale = render_rect / region.size;
 	int hc = Math::ceil(render_rect.x / region.size.x);
 	int vc = Math::ceil(render_rect.y / region.size.y);
 	if (render_rect.x < 0.1f && render_rect.y < 0.1f) {
@@ -1302,7 +1302,7 @@ void AtlasTexture::draw_tile(RID p_canvas_item, const Rect2 &p_rect, const Color
 	}
 }
 
-void AtlasTexture::draw_stretch(RID p_canvas_item, const Rect2 &p_rect, const Color &p_modulate = Color(1, 1, 1), bool p_transpose = false) const {
+void AtlasTexture::draw_stretch(RID p_canvas_item, const Rect2 &p_rect, const Color &p_modulate , bool p_transpose ) const {
 	float scale = 1.0f;
 	// 渲染区域,先临时保存一下真实图集大小
 	Size2 render_rect = region.size + margin.position;
