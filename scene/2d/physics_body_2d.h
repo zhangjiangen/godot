@@ -73,7 +73,8 @@ class StaticBody2D : public PhysicsBody2D {
 
 	Transform2D last_valid_transform;
 
-	void _direct_state_changed(Object *p_state);
+	static void _body_state_changed_callback(void *p_instance, PhysicsDirectBodyState2D *p_state);
+	void _body_state_changed(PhysicsDirectBodyState2D *p_state);
 
 protected:
 	void _notification(int p_what);
@@ -124,7 +125,6 @@ public:
 
 private:
 	bool can_sleep = true;
-	PhysicsDirectBodyState2D *state = nullptr;
 	Mode mode = MODE_DYNAMIC;
 
 	real_t mass = 1.0;
@@ -183,7 +183,9 @@ private:
 	void _body_exit_tree(ObjectID p_id);
 
 	void _body_inout(int p_status, const RID &p_body, ObjectID p_instance, int p_body_shape, int p_local_shape);
-	void _direct_state_changed(Object *p_state);
+
+	static void _body_state_changed_callback(void *p_instance, PhysicsDirectBodyState2D *p_state);
+	void _body_state_changed(PhysicsDirectBodyState2D *p_state);
 
 protected:
 	void _notification(int p_what);
@@ -310,7 +312,8 @@ private:
 	float floor_snap_length = 0;
 	real_t free_mode_min_slide_angle = Math::deg2rad((real_t)15.0);
 	Vector2 up_direction = Vector2(0.0, -1.0);
-	uint32_t moving_platform_ignore_layers = 0;
+	uint32_t moving_platform_floor_layers = UINT32_MAX;
+	uint32_t moving_platform_wall_layers = 0;
 	Vector2 linear_velocity;
 
 	Vector2 floor_normal;
@@ -350,14 +353,17 @@ private:
 	real_t get_free_mode_min_slide_angle() const;
 	void set_free_mode_min_slide_angle(real_t p_radians);
 
-	uint32_t get_moving_platform_ignore_layers() const;
-	void set_moving_platform_ignore_layers(const uint32_t p_exclude_layer);
+	uint32_t get_moving_platform_floor_layers() const;
+	void set_moving_platform_floor_layers(const uint32_t p_exclude_layer);
+
+	uint32_t get_moving_platform_wall_layers() const;
+	void set_moving_platform_wall_layers(const uint32_t p_exclude_layer);
 
 	void set_motion_mode(MotionMode p_mode);
 	MotionMode get_motion_mode() const;
 
-	void _move_and_slide_free(real_t p_delta);
-	void _move_and_slide_grounded(real_t p_delta, bool p_was_on_floor, const Vector2 &p_prev_platform_velocity);
+	void _move_and_slide_free(double p_delta);
+	void _move_and_slide_grounded(double p_delta, bool p_was_on_floor, const Vector2 &p_prev_platform_velocity);
 
 	Ref<KinematicCollision2D> _get_slide_collision(int p_bounce);
 	Ref<KinematicCollision2D> _get_last_slide_collision();

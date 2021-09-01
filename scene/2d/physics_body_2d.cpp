@@ -259,15 +259,17 @@ bool StaticBody2D::is_sync_to_physics_enabled() const {
 	return sync_to_physics;
 }
 
-void StaticBody2D::_direct_state_changed(Object *p_state) {
+void StaticBody2D::_body_state_changed_callback(void *p_instance, PhysicsDirectBodyState2D *p_state) {
+	StaticBody2D *body = (StaticBody2D *)p_instance;
+	body->_body_state_changed(p_state);
+}
+
+void StaticBody2D::_body_state_changed(PhysicsDirectBodyState2D *p_state) {
 	if (!sync_to_physics) {
 		return;
 	}
 
-	PhysicsDirectBodyState2D *state = Object::cast_to<PhysicsDirectBodyState2D>(p_state);
-	ERR_FAIL_NULL_MSG(state, "Method '_direct_state_changed' must receive a valid PhysicsDirectBodyState2D object as argument");
-
-	last_valid_transform = state->get_transform();
+	last_valid_transform = p_state->get_transform();
 	set_notify_local_transform(false);
 	set_global_transform(last_valid_transform);
 	set_notify_local_transform(true);
@@ -293,7 +295,7 @@ void StaticBody2D::_notification(int p_what) {
 			// Used by sync to physics, send the new transform to the physics...
 			Transform2D new_transform = get_global_transform();
 
-			real_t delta_time = get_physics_process_delta_time();
+			double delta_time = get_physics_process_delta_time();
 			new_transform.translate(constant_linear_velocity * delta_time);
 			new_transform.set_rotation(new_transform.get_rotation() + constant_angular_velocity * delta_time);
 
@@ -316,7 +318,7 @@ void StaticBody2D::_notification(int p_what) {
 
 			Transform2D new_transform = get_global_transform();
 
-			real_t delta_time = get_physics_process_delta_time();
+			double delta_time = get_physics_process_delta_time();
 			new_transform.translate(constant_linear_velocity * delta_time);
 			new_transform.set_rotation(new_transform.get_rotation() + constant_angular_velocity * delta_time);
 
@@ -379,11 +381,11 @@ void StaticBody2D::_update_kinematic_motion() {
 #endif
 
 	if (kinematic_motion && sync_to_physics) {
-		PhysicsServer2D::get_singleton()->body_set_force_integration_callback(get_rid(), callable_mp(this, &StaticBody2D::_direct_state_changed));
+		PhysicsServer2D::get_singleton()->body_set_state_sync_callback(get_rid(), this, _body_state_changed_callback);
 		set_only_update_transform_changes(true);
 		set_notify_local_transform(true);
 	} else {
-		PhysicsServer2D::get_singleton()->body_set_force_integration_callback(get_rid(), Callable());
+		PhysicsServer2D::get_singleton()->body_set_state_sync_callback(get_rid(), nullptr, nullptr);
 		set_only_update_transform_changes(false);
 		set_notify_local_transform(false);
 	}
@@ -511,26 +513,26 @@ struct _RigidBody2DInOut {
 	int local_shape = 0;
 };
 
-void RigidBody2D::_direct_state_changed(Object *p_state) {
-#ifdef DEBUG_ENABLED
-	state = Object::cast_to<PhysicsDirectBodyState2D>(p_state);
-	ERR_FAIL_NULL_MSG(state, "Method '_direct_state_changed' must receive a valid PhysicsDirectBodyState2D object as argument");
-#else
-	state = (PhysicsDirectBodyState2D *)p_state; //trust it
-#endif
+void RigidBody2D::_body_state_changed_callback(void *p_instance, PhysicsDirectBodyState2D *p_state) {
+	RigidBody2D *body = (RigidBody2D *)p_instance;
+	body->_body_state_changed(p_state);
+}
 
+void RigidBody2D::_body_state_changed(PhysicsDirectBodyState2D *p_state) {
 	set_block_transform_notify(true); // don't want notify (would feedback loop)
 	if (mode != MODE_KINEMATIC) {
-		set_global_transform(state->get_transform());
+		set_global_transform(p_state->get_transform());
 	}
-	linear_velocity = state->get_linear_velocity();
-	angular_velocity = state->get_angular_velocity();
-	if (sleeping != state->is_sleeping()) {
-		sleeping = state->is_sleeping();
+
+	linear_velocity = p_state->get_linear_velocity();
+	angular_velocity = p_state->get_angular_velocity();
+
+	if (sleeping != p_state->is_sleeping()) {
+		sleeping = p_state->is_sleeping();
 		emit_signal(SceneStringNames::get_singleton()->sleeping_state_changed);
 	}
 
-	GDVIRTUAL_CALL(_integrate_forces, state);
+	GDVIRTUAL_CALL(_integrate_forces, p_state);
 
 	set_block_transform_notify(false); // want it back
 
@@ -546,20 +548,18 @@ void RigidBody2D::_direct_state_changed(Object *p_state) {
 			}
 		}
 
-		_RigidBody2DInOut *toadd = (_RigidBody2DInOut *)alloca(state->get_contact_count() * sizeof(_RigidBody2DInOut));
+		_RigidBody2DInOut *toadd = (_RigidBody2DInOut *)alloca(p_state->get_contact_count() * sizeof(_RigidBody2DInOut));
 		int toadd_count = 0; //state->get_contact_count();
 		RigidBody2D_RemoveAction *toremove = (RigidBody2D_RemoveAction *)alloca(rc * sizeof(RigidBody2D_RemoveAction));
 		int toremove_count = 0;
 
 		//put the ones to add
 
-		for (int i = 0; i < state->get_contact_count(); i++) {
-			RID rid = state->get_contact_collider(i);
-			ObjectID obj = state->get_contact_collider_id(i);
-			int local_shape = state->get_contact_local_shape(i);
-			int shape = state->get_contact_collider_shape(i);
-
-			//bool found=false;
+		for (int i = 0; i < p_state->get_contact_count(); i++) {
+			RID rid = p_state->get_contact_collider(i);
+			ObjectID obj = p_state->get_contact_collider_id(i);
+			int local_shape = p_state->get_contact_local_shape(i);
+			int shape = p_state->get_contact_collider_shape(i);
 
 			Map<ObjectID, BodyState>::Element *E = contact_monitor->body_map.find(obj);
 			if (!E) {
@@ -612,8 +612,6 @@ void RigidBody2D::_direct_state_changed(Object *p_state) {
 
 		contact_monitor->locked = false;
 	}
-
-	state = nullptr;
 }
 
 void RigidBody2D::set_mode(Mode p_mode) {
@@ -709,25 +707,15 @@ real_t RigidBody2D::get_angular_damp() const {
 }
 
 void RigidBody2D::set_axis_velocity(const Vector2 &p_axis) {
-	Vector2 v = state ? state->get_linear_velocity() : linear_velocity;
 	Vector2 axis = p_axis.normalized();
-	v -= axis * axis.dot(v);
-	v += p_axis;
-	if (state) {
-		set_linear_velocity(v);
-	} else {
-		PhysicsServer2D::get_singleton()->body_set_axis_velocity(get_rid(), p_axis);
-		linear_velocity = v;
-	}
+	linear_velocity -= axis * axis.dot(linear_velocity);
+	linear_velocity += p_axis;
+	PhysicsServer2D::get_singleton()->body_set_state(get_rid(), PhysicsServer2D::BODY_STATE_LINEAR_VELOCITY, linear_velocity);
 }
 
 void RigidBody2D::set_linear_velocity(const Vector2 &p_velocity) {
 	linear_velocity = p_velocity;
-	if (state) {
-		state->set_linear_velocity(linear_velocity);
-	} else {
-		PhysicsServer2D::get_singleton()->body_set_state(get_rid(), PhysicsServer2D::BODY_STATE_LINEAR_VELOCITY, linear_velocity);
-	}
+	PhysicsServer2D::get_singleton()->body_set_state(get_rid(), PhysicsServer2D::BODY_STATE_LINEAR_VELOCITY, linear_velocity);
 }
 
 Vector2 RigidBody2D::get_linear_velocity() const {
@@ -736,11 +724,7 @@ Vector2 RigidBody2D::get_linear_velocity() const {
 
 void RigidBody2D::set_angular_velocity(real_t p_velocity) {
 	angular_velocity = p_velocity;
-	if (state) {
-		state->set_angular_velocity(angular_velocity);
-	} else {
-		PhysicsServer2D::get_singleton()->body_set_state(get_rid(), PhysicsServer2D::BODY_STATE_ANGULAR_VELOCITY, angular_velocity);
-	}
+	PhysicsServer2D::get_singleton()->body_set_state(get_rid(), PhysicsServer2D::BODY_STATE_ANGULAR_VELOCITY, angular_velocity);
 }
 
 real_t RigidBody2D::get_angular_velocity() const {
@@ -1019,7 +1003,7 @@ void RigidBody2D::_bind_methods() {
 
 RigidBody2D::RigidBody2D() :
 		PhysicsBody2D(PhysicsServer2D::BODY_MODE_DYNAMIC) {
-	PhysicsServer2D::get_singleton()->body_set_force_integration_callback(get_rid(), callable_mp(this, &RigidBody2D::_direct_state_changed));
+	PhysicsServer2D::get_singleton()->body_set_state_sync_callback(get_rid(), this, _body_state_changed_callback);
 }
 
 RigidBody2D::~RigidBody2D() {
@@ -1045,14 +1029,19 @@ void RigidBody2D::_reload_physics_characteristics() {
 
 bool CharacterBody2D::move_and_slide() {
 	// Hack in order to work with calling from _process as well as from _physics_process; calling from thread is risky.
-	float delta = Engine::get_singleton()->is_in_physics_frame() ? get_physics_process_delta_time() : get_process_delta_time();
+	double delta = Engine::get_singleton()->is_in_physics_frame() ? get_physics_process_delta_time() : get_process_delta_time();
 
 	Vector2 current_platform_velocity = platform_velocity;
 
 	if ((on_floor || on_wall) && platform_rid.is_valid()) {
-		bool excluded = (moving_platform_ignore_layers & platform_layer) != 0;
+		bool excluded = false;
+		if (on_floor) {
+			excluded = (moving_platform_floor_layers & platform_layer) == 0;
+		} else if (on_wall) {
+			excluded = (moving_platform_wall_layers & platform_layer) == 0;
+		}
 		if (!excluded) {
-			// This approach makes sure there is less delay between the actual body velocity and the one we saved.
+			//this approach makes sure there is less delay between the actual body velocity and the one we saved
 			PhysicsDirectBodyState2D *bs = PhysicsServer2D::get_singleton()->body_get_direct_state(platform_rid);
 			if (bs) {
 				Transform2D gt = get_global_transform();
@@ -1095,7 +1084,7 @@ bool CharacterBody2D::move_and_slide() {
 	return motion_results.size() > 0;
 }
 
-void CharacterBody2D::_move_and_slide_grounded(real_t p_delta, bool p_was_on_floor, const Vector2 &p_prev_platform_velocity) {
+void CharacterBody2D::_move_and_slide_grounded(double p_delta, bool p_was_on_floor, const Vector2 &p_prev_platform_velocity) {
 	Vector2 motion = linear_velocity * p_delta;
 	Vector2 motion_slide_up = motion.slide(up_direction);
 
@@ -1239,7 +1228,7 @@ void CharacterBody2D::_move_and_slide_grounded(real_t p_delta, bool p_was_on_flo
 	}
 }
 
-void CharacterBody2D::_move_and_slide_free(real_t p_delta) {
+void CharacterBody2D::_move_and_slide_free(double p_delta) {
 	Vector2 motion = linear_velocity * p_delta;
 
 	platform_rid = RID();
@@ -1469,12 +1458,20 @@ void CharacterBody2D::set_slide_on_ceiling_enabled(bool p_enabled) {
 	slide_on_ceiling = p_enabled;
 }
 
-uint32_t CharacterBody2D::get_moving_platform_ignore_layers() const {
-	return moving_platform_ignore_layers;
+uint32_t CharacterBody2D::get_moving_platform_floor_layers() const {
+	return moving_platform_floor_layers;
 }
 
-void CharacterBody2D::set_moving_platform_ignore_layers(uint32_t p_exclude_layers) {
-	moving_platform_ignore_layers = p_exclude_layers;
+void CharacterBody2D::set_moving_platform_floor_layers(uint32_t p_exclude_layers) {
+	moving_platform_floor_layers = p_exclude_layers;
+}
+
+uint32_t CharacterBody2D::get_moving_platform_wall_layers() const {
+	return moving_platform_wall_layers;
+}
+
+void CharacterBody2D::set_moving_platform_wall_layers(uint32_t p_exclude_layers) {
+	moving_platform_wall_layers = p_exclude_layers;
 }
 
 void CharacterBody2D::set_motion_mode(MotionMode p_mode) {
@@ -1559,8 +1556,10 @@ void CharacterBody2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_slide_on_ceiling_enabled", "enabled"), &CharacterBody2D::set_slide_on_ceiling_enabled);
 	ClassDB::bind_method(D_METHOD("is_slide_on_ceiling_enabled"), &CharacterBody2D::is_slide_on_ceiling_enabled);
 
-	ClassDB::bind_method(D_METHOD("set_moving_platform_ignore_layers", "exclude_layer"), &CharacterBody2D::set_moving_platform_ignore_layers);
-	ClassDB::bind_method(D_METHOD("get_moving_platform_ignore_layers"), &CharacterBody2D::get_moving_platform_ignore_layers);
+	ClassDB::bind_method(D_METHOD("set_moving_platform_floor_layers", "exclude_layer"), &CharacterBody2D::set_moving_platform_floor_layers);
+	ClassDB::bind_method(D_METHOD("get_moving_platform_floor_layers"), &CharacterBody2D::get_moving_platform_floor_layers);
+	ClassDB::bind_method(D_METHOD("set_moving_platform_wall_layers", "exclude_layer"), &CharacterBody2D::set_moving_platform_wall_layers);
+	ClassDB::bind_method(D_METHOD("get_moving_platform_wall_layers"), &CharacterBody2D::get_moving_platform_wall_layers);
 
 	ClassDB::bind_method(D_METHOD("get_max_slides"), &CharacterBody2D::get_max_slides);
 	ClassDB::bind_method(D_METHOD("set_max_slides", "max_slides"), &CharacterBody2D::set_max_slides);
@@ -1602,7 +1601,8 @@ void CharacterBody2D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "floor_max_angle", PROPERTY_HINT_RANGE, "0,180,0.1,radians"), "set_floor_max_angle", "get_floor_max_angle");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "floor_snap_length", PROPERTY_HINT_RANGE, "0,1000,0.1"), "set_floor_snap_length", "get_floor_snap_length");
 	ADD_GROUP("Moving platform", "moving_platform");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "moving_platform_ignore_layers", PROPERTY_HINT_LAYERS_2D_PHYSICS), "set_moving_platform_ignore_layers", "get_moving_platform_ignore_layers");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "moving_platform_floor_layers", PROPERTY_HINT_LAYERS_2D_PHYSICS), "set_moving_platform_floor_layers", "get_moving_platform_floor_layers");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "moving_platform_wall_layers", PROPERTY_HINT_LAYERS_2D_PHYSICS), "set_moving_platform_wall_layers", "get_moving_platform_wall_layers");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "collision/safe_margin", PROPERTY_HINT_RANGE, "0.001,256,0.001"), "set_safe_margin", "get_safe_margin");
 
 	BIND_ENUM_CONSTANT(MOTION_MODE_GROUNDED);
