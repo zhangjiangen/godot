@@ -79,6 +79,35 @@ const char *Image::format_names[Image::FORMAT_MAX] = {
 	"ETC2_RGB8A1",
 	"ETC2_RA_AS_RG",
 	"FORMAT_DXT5_RA_AS_RG",
+
+	"FORMAT_RGBA_ASTC_4x4",
+	"FORMAT_RGBA_ASTC_5x4",
+	"FORMAT_RGBA_ASTC_5x5",
+	"FORMAT_RGBA_ASTC_6x5",
+	"FORMAT_RGBA_ASTC_6x6",
+	"FORMAT_RGBA_ASTC_8x5",
+	"FORMAT_RGBA_ASTC_8x6",
+	"FORMAT_RGBA_ASTC_8x8",
+	"FORMAT_RGBA_ASTC_10x5",
+	"FORMAT_RGBA_ASTC_10x6",
+	"FORMAT_RGBA_ASTC_10x8",
+	"FORMAT_RGBA_ASTC_10x10",
+	"FORMAT_RGBA_ASTC_12x10",
+	"FORMAT_RGBA_ASTC_12x12",
+	"FORMAT_SRGB8_ALPHA8_ASTC_4x4",
+	"FORMAT_SRGB8_ALPHA8_ASTC_5x4",
+	"FORMAT_SRGB8_ALPHA8_ASTC_5x5",
+	"FORMAT_SRGB8_ALPHA8_ASTC_6x5",
+	"FORMAT_SRGB8_ALPHA8_ASTC_6x6",
+	"FORMAT_SRGB8_ALPHA8_ASTC_8x5",
+	"FORMAT_SRGB8_ALPHA8_ASTC_8x6",
+	"FORMAT_SRGB8_ALPHA8_ASTC_8x8",
+	"FORMAT_SRGB8_ALPHA8_ASTC_10x5",
+	"FORMAT_SRGB8_ALPHA8_ASTC_10x6",
+	"FORMAT_SRGB8_ALPHA8_ASTC_10x8",
+	"FORMAT_SRGB8_ALPHA8_ASTC_10x10",
+	"FORMAT_SRGB8_ALPHA8_ASTC_12x10",
+	"FORMAT_SRGB8_ALPHA8_ASTC_12x12",
 };
 
 SavePNGFunc Image::save_png_func = nullptr;
@@ -2611,7 +2640,10 @@ Error Image::decompress() {
 		_image_decompress_etc1(this);
 	} else if (format >= FORMAT_ETC2_R11 && format <= FORMAT_ETC2_RA_AS_RG && _image_decompress_etc2) {
 		_image_decompress_etc2(this);
-	} else {
+	} else if (format >= Image::FORMAT_RGBA_ASTC_4x4 && format <= Image::FORMAT_SRGB8_ALPHA8_ASTC_12x12 && _image_decompress_astc) {
+		_image_decompress_astc(this);
+	}
+		else {
 		return ERR_UNAVAILABLE;
 	}
 	return OK;
