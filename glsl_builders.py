@@ -55,24 +55,37 @@ def include_file_in_rd_header(filename, header_data, depth):
 
             import os.path
 
-            included_file = os.path.relpath(os.path.dirname(filename) + "/" + includeline)
+            included_file = os.path.relpath(
+                os.path.dirname(filename) + "/" + includeline)
             if not included_file in header_data.vertex_included_files and header_data.reading == "vertex":
                 header_data.vertex_included_files += [included_file]
                 if include_file_in_rd_header(included_file, header_data, depth + 1) is None:
-                    print("Error in file '" + filename + "': #include " + includeline + "could not be found!")
+                    print("Error in file '" + filename + "': #include " +
+                          includeline + "could not be found!")
             elif not included_file in header_data.fragment_included_files and header_data.reading == "fragment":
                 header_data.fragment_included_files += [included_file]
                 if include_file_in_rd_header(included_file, header_data, depth + 1) is None:
-                    print("Error in file '" + filename + "': #include " + includeline + "could not be found!")
+                    print("Error in file '" + filename + "': #include " +
+                          includeline + "could not be found!")
             elif not included_file in header_data.compute_included_files and header_data.reading == "compute":
                 header_data.compute_included_files += [included_file]
                 if include_file_in_rd_header(included_file, header_data, depth + 1) is None:
-                    print("Error in file '" + filename + "': #include " + includeline + "could not be found!")
+                    print("Error in file '" + filename + "': #include " +
+                          includeline + "could not be found!")
 
             line = fs.readline()
 
         line = line.replace("\r", "")
         line = line.replace("\n", "")
+        str_find_index = line.find("//")
+        # 去除注释，因为如果不去注视，那么中文字符无法编译
+        if(str_find_index >= 0):
+            print("去除注释:" + line)
+            if(str_find_index > 0):
+                line = line[str_find_index]
+            else:
+                line = ""
+            print("最终代码:" + line)
 
         if header_data.reading == "vertex":
             header_data.vertex_lines += [line]
@@ -90,6 +103,7 @@ def include_file_in_rd_header(filename, header_data, depth):
 
 
 def build_rd_header(filename):
+    print("build_rd_header:" + filename)
     header_data = RDHeaderStruct()
     include_file_in_rd_header(filename, header_data, 0)
 
@@ -99,13 +113,14 @@ def build_rd_header(filename):
     fd.write("/* WARNING, THIS FILE WAS GENERATED, DO NOT EDIT */\n")
 
     out_file_base = out_file
-    out_file_base = out_file_base[out_file_base.rfind("/") + 1 :]
-    out_file_base = out_file_base[out_file_base.rfind("\\") + 1 :]
+    out_file_base = out_file_base[out_file_base.rfind("/") + 1:]
+    out_file_base = out_file_base[out_file_base.rfind("\\") + 1:]
     out_file_ifdef = out_file_base.replace(".", "_").upper()
     fd.write("#ifndef " + out_file_ifdef + "_RD\n")
     fd.write("#define " + out_file_ifdef + "_RD\n")
 
-    out_file_class = out_file_base.replace(".glsl.gen.h", "").title().replace("_", "").replace(".", "") + "ShaderRD"
+    out_file_class = out_file_base.replace(".glsl.gen.h", "").title().replace(
+        "_", "").replace(".", "") + "ShaderRD"
     fd.write("\n")
     fd.write('#include "servers/rendering/renderer_rd/shader_rd.h"\n\n')
     fd.write("class " + out_file_class + " : public ShaderRD {\n\n")
@@ -122,7 +137,8 @@ def build_rd_header(filename):
             fd.write(str(ord("\n")) + ",")
         fd.write("\t\t0};\n\n")
 
-        fd.write('\t\tsetup(nullptr, nullptr, _compute_code, "' + out_file_class + '");\n')
+        fd.write('\t\tsetup(nullptr, nullptr, _compute_code, "' +
+                 out_file_class + '");\n')
         fd.write("\t}\n")
 
     else:
@@ -141,7 +157,8 @@ def build_rd_header(filename):
             fd.write(str(ord("\n")) + ",")
         fd.write("\t\t0};\n\n")
 
-        fd.write('\t\tsetup(_vertex_code, _fragment_code, nullptr, "' + out_file_class + '");\n')
+        fd.write(
+            '\t\tsetup(_vertex_code, _fragment_code, nullptr, "' + out_file_class + '");\n')
         fd.write("\t}\n")
 
     fd.write("};\n\n")
@@ -171,7 +188,8 @@ def include_file_in_raw_header(filename, header_data, depth):
 
             import os.path
 
-            included_file = os.path.relpath(os.path.dirname(filename) + "/" + includeline)
+            included_file = os.path.relpath(
+                os.path.dirname(filename) + "/" + includeline)
             include_file_in_raw_header(included_file, header_data, depth + 1)
 
             line = fs.readline()
@@ -183,6 +201,7 @@ def include_file_in_raw_header(filename, header_data, depth):
 
 
 def build_raw_header(filename):
+    print("build_raw_header:" + filename)
     header_data = RAWHeaderStruct()
     include_file_in_raw_header(filename, header_data, 0)
 
@@ -192,8 +211,8 @@ def build_raw_header(filename):
     fd.write("/* WARNING, THIS FILE WAS GENERATED, DO NOT EDIT */\n")
 
     out_file_base = out_file.replace(".glsl.gen.h", "_shader_glsl")
-    out_file_base = out_file_base[out_file_base.rfind("/") + 1 :]
-    out_file_base = out_file_base[out_file_base.rfind("\\") + 1 :]
+    out_file_base = out_file_base[out_file_base.rfind("/") + 1:]
+    out_file_base = out_file_base[out_file_base.rfind("\\") + 1:]
     out_file_ifdef = out_file_base.replace(".", "_").upper()
     fd.write("#ifndef " + out_file_ifdef + "_RAW_H\n")
     fd.write("#define " + out_file_ifdef + "_RAW_H\n")

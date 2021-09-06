@@ -44,7 +44,7 @@
 #include "servers/rendering/renderer_rd/shaders/voxel_gi_sdf.glsl.gen.h"
 #include "servers/rendering/renderer_scene_render.h"
 #include "servers/rendering/rendering_device.h"
-
+class EffectsRD;
 class RendererStorageRD : public RendererStorage {
 public:
 	static _FORCE_INLINE_ void store_transform(const Transform3D &p_mtx, float *p_array) {
@@ -1306,7 +1306,7 @@ private:
 	void _update_global_variables();
 	/* EFFECTS */
 
-	EffectsRD *effects = NULL;
+	class EffectsRD *effects = NULL;
 
 public:
 	virtual bool can_create_resources_async() const override;

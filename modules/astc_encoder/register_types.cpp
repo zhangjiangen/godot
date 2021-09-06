@@ -30,14 +30,263 @@
 
 #include "register_types.h"
 
+#include "Source/astcenccli_internal.h"
+#include "core/io/image.h"
 #include "core/os/os.h"
 #include "servers/rendering_server.h"
 #include "texture_astc.h"
-#include "core/io/image.h"
 
+struct compression_workload_gd {
+	astcenc_context *context;
+	astcenc_image *image;
+	astcenc_swizzle swizzle;
+	uint8_t *data_out;
+	size_t data_len;
+	astcenc_error error;
+};
+static void compression_workload_runner(int thread_count, int thread_id,
+		void *payload) {
+	compression_workload_gd *work = static_cast<compression_workload_gd *>(payload);
+	astcenc_error error =
+			astcenc_compress_image(work->context, work->image, &work->swizzle,
+					work->data_out, work->data_len, thread_id);
 
-static void image_compress_astc_func(Image * p_image, float l, Image::CompressMode p_mode, Image::UsedChannels p_channel)
-{	// Compute the number of ASTC blocks in each dimension
+	if (error != ASTCENC_SUCCESS) {
+		work->error = error;
+	}
+}
+// srgb 模式现在好像没法选
+static void _compress_astc(Image *r_img, float p_lossy_quality, Image::Format target_format, Image::UsedChannels p_channels) {
+	Image::Format img_format = r_img->get_format();
+
+	if (img_format >= Image::FORMAT_DXT1) {
+		return; // Do not compress, already compressed.
+	}
+	if (img_format > Image::FORMAT_RGBA8) {
+		// TODO: we should be able to handle FORMAT_RGBA4444 and FORMAT_RGBA5551 eventually
+		return;
+	}
+	bool mipmaps = r_img->has_mipmaps();
+	bool is_r = true;
+	bool is_g = true;
+	bool is_b = true;
+	bool is_a = true;
+	if (p_channels == Image::USED_CHANNELS_R || p_channels == Image::USED_CHANNELS_L) {
+		is_g = false;
+		is_b = false;
+		is_a = false;
+	} else if (p_channels == Image::USED_CHANNELS_RG) {
+		is_b = false;
+		is_a = false;
+	} else if (p_channels == Image::USED_CHANNELS_RGB) {
+		is_a = false;
+	} else if (p_channels == Image::USED_CHANNELS_RGB) {
+		is_a = false;
+	} else if (p_channels == Image::USED_CHANNELS_LA) {
+		is_g = false;
+		is_b = false;
+	}
+
+	astcenc_profile profile;
+	astcenc_config config{};
+
+	astcenc_error result;
+	float preset = 0.0f;
+#if defined(__arm__)
+	preset = ASTCENC_PRE_FASTEST;
+#elif defined(__GNUC__) && (defined(__i386) || defined(__amd64))
+	/** @brief The exhaustive, highest quality, search preset. */
+	preset = ASTCENC_PRE_EXHAUSTIVE;
+#else
+	preset = ASTCENC_PRE_FASTEST;
+#endif
+	profile = ASTCENC_PRF_LDR;
+	if (img_format > Image::FORMAT_SRGB8_ALPHA8_ASTC_4x4) {
+		profile = ASTCENC_PRF_LDR_SRGB;
+	}
+	switch (target_format) {
+		case Image::FORMAT_RGBA_ASTC_4x4:
+			result = astcenc_config_init(profile, 4, 4,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_RGBA_ASTC_5x4:
+			result = astcenc_config_init(profile, 5, 4,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_RGBA_ASTC_5x5:
+			result = astcenc_config_init(profile, 5, 5,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_RGBA_ASTC_6x5:
+			result = astcenc_config_init(profile, 6, 5,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_RGBA_ASTC_6x6:
+			result = astcenc_config_init(profile, 6, 6,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_RGBA_ASTC_8x5:
+			result = astcenc_config_init(profile, 8, 5,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_RGBA_ASTC_8x6:
+			result = astcenc_config_init(profile, 8, 6,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_RGBA_ASTC_8x8:
+			result = astcenc_config_init(profile, 8, 8,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_RGBA_ASTC_10x5:
+			result = astcenc_config_init(profile, 10, 5,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_RGBA_ASTC_10x6:
+			result = astcenc_config_init(profile, 10, 6,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_RGBA_ASTC_10x8:
+			result = astcenc_config_init(profile, 10, 8,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_RGBA_ASTC_10x10:
+			result = astcenc_config_init(profile, 10, 10,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_RGBA_ASTC_12x10:
+			result = astcenc_config_init(profile, 12, 10,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_RGBA_ASTC_12x12:
+			result = astcenc_config_init(profile, 12, 12,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_4x4:
+			result = astcenc_config_init(profile, 4, 4,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_5x4:
+			result = astcenc_config_init(profile, 5, 4,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_5x5:
+			result = astcenc_config_init(profile, 5, 5,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_6x5:
+			result = astcenc_config_init(profile, 6, 5,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_6x6:
+			result = astcenc_config_init(profile, 6, 6,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_8x5:
+			result = astcenc_config_init(profile, 8, 5,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_8x6:
+			result = astcenc_config_init(profile, 8, 6,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_8x8:
+			result = astcenc_config_init(profile, 8, 8,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_10x5:
+			result = astcenc_config_init(profile, 10, 5,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_10x6:
+			result = astcenc_config_init(profile, 10, 6,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_10x8:
+			result = astcenc_config_init(profile, 10, 8,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_10x10:
+			result = astcenc_config_init(profile, 10, 10,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_12x10:
+			result = astcenc_config_init(profile, 12, 10,
+					1, preset, 0, &config);
+			break;
+		case Image::FORMAT_SRGB8_ALPHA8_ASTC_12x12:
+			result = astcenc_config_init(profile, 12, 12,
+					1, preset, 0, &config);
+			break;
+		default:
+			return;
+	}
+	if (result != ASTCENC_SUCCESS) {
+		return;
+	}
+	int threadcount = get_cpu_count();
+	astcenc_context *codec_context;
+	result = astcenc_context_alloc(&config, threadcount, &codec_context);
+	if (result != ASTCENC_SUCCESS) {
+		return;
+	}
+	// astc 目前只支持RGBA8格式
+	if (img_format != Image::FORMAT_RGBA8) {
+		r_img->convert(Image::FORMAT_RGBA8);
+	}
+	size_t buffer_size = Image::get_any_image_data_size(r_img->get_width(), r_img->get_height(), target_format, true);
+
+	PackedByteArray data_buf;
+	data_buf.resize(buffer_size);
+	uint8_t *data_ptr = &data_buf.write[0];
+	int os, mw, mh;
+	astcenc_swizzle swz_encode;
+	swz_encode.a = is_a ? ASTCENC_SWZ_Z : ASTCENC_SWZ_1;
+	swz_encode.r = is_r ? ASTCENC_SWZ_R : ASTCENC_SWZ_0;
+	swz_encode.g = is_r ? ASTCENC_SWZ_G : ASTCENC_SWZ_0;
+	swz_encode.b = is_r ? ASTCENC_SWZ_B : ASTCENC_SWZ_0;
+	const uint8_t *src_read = r_img->get_data().ptr();
+	//	uint32_t block_x = (width + block_width - 1) / block_width;
+	int mip_count = Image::get_mipmap_count(r_img->get_width(), r_img->get_height(), target_format);
+	if (mipmaps) {
+		for (int i = 0; i < mip_count; ++i) {
+			r_img->_get_mipmap_offset_and_size(i, os, mw, mh);
+			astcenc_image *uncompressed_image = astc_img_from_unorm8x4_array(src_read + os, mw, mh, false);
+
+			//
+			compression_workload_gd work;
+			work.context = codec_context;
+			work.image = uncompressed_image;
+			work.swizzle = swz_encode;
+			work.data_out = data_ptr;
+			work.data_len = buffer_size;
+			work.error = ASTCENC_SUCCESS;
+			launch_threads(threadcount, &compression_workload_runner, &work); // 输出的缓冲区的大小
+			data_ptr += Image::get_any_image_data_size(mw, mh, target_format);
+
+			free_image(uncompressed_image);
+		}
+	} else {
+		astcenc_image *uncompressed_image = astc_img_from_unorm8x4_array(src_read, r_img->get_width(), r_img->get_height(), false);
+		// 输出的缓冲区的大小
+
+		//
+		compression_workload_gd work;
+		work.context = codec_context;
+		work.image = uncompressed_image;
+		work.swizzle = swz_encode;
+		work.data_out = data_ptr;
+		work.data_len = buffer_size;
+		work.error = ASTCENC_SUCCESS;
+		launch_threads(threadcount, &compression_workload_runner, &work);
+
+		free_image(uncompressed_image);
+	}
+	astcenc_context_free(codec_context);
+	// 下面保存astc
+	r_img->create(r_img->get_width(), r_img->get_height(), mipmaps, target_format, data_buf);
+}
+
+static void image_compress_astc_func(Image *p_image, float l, Image::CompressMode p_mode, Image::UsedChannels p_channel) { // Compute the number of ASTC blocks in each dimension
 	//unsigned int block_count_x = (image_x + block_x - 1) / block_x;
 	//unsigned int block_count_y = (image_y + block_y - 1) / block_y;
 
@@ -89,11 +338,8 @@ static void image_compress_astc_func(Image * p_image, float l, Image::CompressMo
 	//	printf("ERROR: Codec compress failed: %s\n", astcenc_get_error_string(status));
 	//	return ;
 	//}
-	
 }
-static void image_decompress_astc(Image *)
-{
-	
+static void image_decompress_astc(Image *) {
 }
 
 void register_astc_encoder_types() {
