@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+
+Import("env")
+Import("env_modules")
+
+env_astc = env_modules.Clone()
+
+# Thirdparty source files
+
+thirdparty_obj = []
+
+# Not unbundled so far since not widespread as shared library
+thirdparty_dir = "#thirdparty/astc-encoder/"
+# Sync list with upstream CMakeLists.txt
+env_astc.Prepend(CPPPATH=[thirdparty_dir])
+
+
+env_thirdparty = env_astc.Clone()
+env_thirdparty.disable_warnings()
+env_thirdparty.add_source_files(thirdparty_dir, "Source/*.cpp")
+env_thirdparty.add_source_files(thirdparty_dir, "Source/Fuzzers/*.cpp")
+
+# Godot source files
+
+module_obj = []
+
+env_astc.add_source_files(module_obj, "*.cpp")
+env.modules_sources += module_obj
+
+# Needed to force rebuilding the module files when the thirdparty library is updated.
+env.Depends(module_obj, thirdparty_obj)

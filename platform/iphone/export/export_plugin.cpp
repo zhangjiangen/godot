@@ -33,6 +33,7 @@
 void EditorExportPlatformIOS::get_preset_features(const Ref<EditorExportPreset> &p_preset, List<String> *r_features) {
 	String driver = ProjectSettings::get_singleton()->get("rendering/driver/driver_name");
 	r_features->push_back("pvrtc");
+	r_features->push_back("astc");
 	if (driver == "Vulkan") {
 		// FIXME: Review if this is correct.
 		r_features->push_back("etc2");

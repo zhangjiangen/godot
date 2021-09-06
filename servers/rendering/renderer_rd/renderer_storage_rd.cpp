@@ -570,9 +570,6 @@ Ref<Image> RendererStorageRD::_validate_texture_format(const Ref<Image> &p_image
 				image->decompress();
 				image->convert(p_image->get_format() < Image::FORMAT_SRGB8_ALPHA8_ASTC_4x4 ? Image::FORMAT_RGB565 : Image::FORMAT_RGBA4444);
 			}
-			r_format.swizzle_r = RD::TEXTURE_SWIZZLE_R;
-			r_format.swizzle_g = RD::TEXTURE_SWIZZLE_G;
-			r_format.swizzle_b = RD::TEXTURE_SWIZZLE_B;
 			// 是否使用a通道
 			if (image->astc_a) {
 				r_format.swizzle_a = RD::TEXTURE_SWIZZLE_ONE;
