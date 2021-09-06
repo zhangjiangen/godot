@@ -59,6 +59,7 @@ class EditorPropertyText : public EditorProperty {
 	void _text_submitted(const String &p_string);
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	static void _bind_methods();
 
 public:
@@ -81,6 +82,7 @@ class EditorPropertyMultilineText : public EditorProperty {
 	void _open_big_text();
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	void _notification(int p_what);
 	static void _bind_methods();
 
@@ -115,6 +117,7 @@ class EditorPropertyTextEnum : public EditorProperty {
 	void _custom_value_cancelled();
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	static void _bind_methods();
 	void _notification(int p_what);
 
@@ -139,6 +142,7 @@ class EditorPropertyPath : public EditorProperty {
 	void _path_focus_exited();
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	static void _bind_methods();
 	void _notification(int p_what);
 
@@ -161,6 +165,7 @@ private:
 	void _dialog_created();
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	static void _bind_methods();
 
 public:
@@ -182,7 +187,6 @@ public:
 		MEMBER_PROPERTY_OF_BASE_TYPE, ///< a property of a base type
 		MEMBER_PROPERTY_OF_INSTANCE, ///< a property of an instance
 		MEMBER_PROPERTY_OF_SCRIPT, ///< a property of a script & base
-
 	};
 
 private:
@@ -195,6 +199,7 @@ private:
 	void _property_select();
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	static void _bind_methods();
 
 public:
@@ -224,6 +229,7 @@ class EditorPropertyCheck : public EditorProperty {
 	void _checkbox_pressed();
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	static void _bind_methods();
 
 public:
@@ -238,6 +244,7 @@ class EditorPropertyEnum : public EditorProperty {
 	void _option_selected(int p_which);
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	static void _bind_methods();
 
 public:
@@ -256,6 +263,7 @@ class EditorPropertyFlags : public EditorProperty {
 	void _flag_toggled();
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	static void _bind_methods();
 
 public:
@@ -290,6 +298,7 @@ private:
 	void _menu_pressed(int p_menu);
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	static void _bind_methods();
 
 public:
@@ -305,6 +314,7 @@ class EditorPropertyInteger : public EditorProperty {
 	void _value_changed(int64_t p_val);
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	static void _bind_methods();
 
 public:
@@ -320,6 +330,7 @@ class EditorPropertyObjectID : public EditorProperty {
 	void _edit_pressed();
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	static void _bind_methods();
 
 public:
@@ -336,6 +347,7 @@ class EditorPropertyFloat : public EditorProperty {
 	void _value_changed(double p_val);
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	static void _bind_methods();
 
 public:
@@ -377,6 +389,7 @@ class EditorPropertyEasing : public EditorProperty {
 	void _notification(int p_what);
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	static void _bind_methods();
 
 public:
@@ -392,6 +405,7 @@ class EditorPropertyVector2 : public EditorProperty {
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	void _notification(int p_what);
 	static void _bind_methods();
 
@@ -408,6 +422,7 @@ class EditorPropertyRect2 : public EditorProperty {
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	void _notification(int p_what);
 	static void _bind_methods();
 
@@ -425,6 +440,7 @@ class EditorPropertyVector3 : public EditorProperty {
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	void _notification(int p_what);
 	static void _bind_methods();
 
@@ -443,6 +459,7 @@ class EditorPropertyVector2i : public EditorProperty {
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	void _notification(int p_what);
 	static void _bind_methods();
 
@@ -459,6 +476,7 @@ class EditorPropertyRect2i : public EditorProperty {
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	void _notification(int p_what);
 	static void _bind_methods();
 
@@ -475,6 +493,7 @@ class EditorPropertyVector3i : public EditorProperty {
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	void _notification(int p_what);
 	static void _bind_methods();
 
@@ -491,6 +510,7 @@ class EditorPropertyPlane : public EditorProperty {
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	void _notification(int p_what);
 	static void _bind_methods();
 
@@ -507,6 +527,7 @@ class EditorPropertyQuaternion : public EditorProperty {
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	void _notification(int p_what);
 	static void _bind_methods();
 
@@ -523,6 +544,7 @@ class EditorPropertyAABB : public EditorProperty {
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	void _notification(int p_what);
 	static void _bind_methods();
 
@@ -539,6 +561,7 @@ class EditorPropertyTransform2D : public EditorProperty {
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	void _notification(int p_what);
 	static void _bind_methods();
 
@@ -555,6 +578,7 @@ class EditorPropertyBasis : public EditorProperty {
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	void _notification(int p_what);
 	static void _bind_methods();
 
@@ -571,6 +595,7 @@ class EditorPropertyTransform3D : public EditorProperty {
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	void _notification(int p_what);
 	static void _bind_methods();
 
@@ -592,6 +617,7 @@ class EditorPropertyColor : public EditorProperty {
 	Color last_color;
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	static void _bind_methods();
 
 public:
@@ -614,6 +640,7 @@ class EditorPropertyNodePath : public EditorProperty {
 	void _node_clear();
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	static void _bind_methods();
 	void _notification(int p_what);
 
@@ -658,6 +685,7 @@ class EditorPropertyResource : public EditorProperty {
 	void _update_property_bg();
 
 protected:
+	virtual void _set_read_only(bool p_read_only) override;
 	static void _bind_methods();
 	void _notification(int p_what);
 
