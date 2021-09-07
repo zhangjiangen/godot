@@ -165,21 +165,13 @@ void PhysicsBody2D::remove_collision_exception_with(Node *p_node) {
 void StaticBody2D::set_constant_linear_velocity(const Vector2 &p_vel) {
 	constant_linear_velocity = p_vel;
 
-	if (kinematic_motion) {
-		_update_kinematic_motion();
-	} else {
-		PhysicsServer2D::get_singleton()->body_set_state(get_rid(), PhysicsServer2D::BODY_STATE_LINEAR_VELOCITY, constant_linear_velocity);
-	}
+	PhysicsServer2D::get_singleton()->body_set_state(get_rid(), PhysicsServer2D::BODY_STATE_LINEAR_VELOCITY, constant_linear_velocity);
 }
 
 void StaticBody2D::set_constant_angular_velocity(real_t p_vel) {
 	constant_angular_velocity = p_vel;
 
-	if (kinematic_motion) {
-		_update_kinematic_motion();
-	} else {
-		PhysicsServer2D::get_singleton()->body_set_state(get_rid(), PhysicsServer2D::BODY_STATE_ANGULAR_VELOCITY, constant_angular_velocity);
-	}
+	PhysicsServer2D::get_singleton()->body_set_state(get_rid(), PhysicsServer2D::BODY_STATE_ANGULAR_VELOCITY, constant_angular_velocity);
 }
 
 Vector2 StaticBody2D::get_constant_linear_velocity() const {
@@ -209,158 +201,22 @@ Ref<PhysicsMaterial> StaticBody2D::get_physics_material_override() const {
 	return physics_material_override;
 }
 
-void StaticBody2D::set_kinematic_motion_enabled(bool p_enabled) {
-	if (p_enabled == kinematic_motion) {
-		return;
-	}
-
-	kinematic_motion = p_enabled;
-
-	if (kinematic_motion) {
-		set_body_mode(PhysicsServer2D::BODY_MODE_KINEMATIC);
-	} else {
-		set_body_mode(PhysicsServer2D::BODY_MODE_STATIC);
-	}
-
-#ifdef TOOLS_ENABLED
-	if (Engine::get_singleton()->is_editor_hint()) {
-		update_configuration_warnings();
-		return;
-	}
-#endif
-
-	_update_kinematic_motion();
-}
-
-bool StaticBody2D::is_kinematic_motion_enabled() const {
-	return kinematic_motion;
-}
-
-void StaticBody2D::set_sync_to_physics(bool p_enable) {
-	if (sync_to_physics == p_enable) {
-		return;
-	}
-
-	sync_to_physics = p_enable;
-
-#ifdef TOOLS_ENABLED
-	if (Engine::get_singleton()->is_editor_hint()) {
-		update_configuration_warnings();
-		return;
-	}
-#endif
-
-	if (kinematic_motion) {
-		_update_kinematic_motion();
-	}
-}
-
-bool StaticBody2D::is_sync_to_physics_enabled() const {
-	return sync_to_physics;
-}
-
-void StaticBody2D::_body_state_changed_callback(void *p_instance, PhysicsDirectBodyState2D *p_state) {
-	StaticBody2D *body = (StaticBody2D *)p_instance;
-	body->_body_state_changed(p_state);
-}
-
-void StaticBody2D::_body_state_changed(PhysicsDirectBodyState2D *p_state) {
-	if (!sync_to_physics) {
-		return;
-	}
-
-	last_valid_transform = p_state->get_transform();
-	set_notify_local_transform(false);
-	set_global_transform(last_valid_transform);
-	set_notify_local_transform(true);
-}
-
-TypedArray<String> StaticBody2D::get_configuration_warnings() const {
-	TypedArray<String> warnings = PhysicsBody2D::get_configuration_warnings();
-
-	if (sync_to_physics && !kinematic_motion) {
-		warnings.push_back(TTR("Sync to physics works only when kinematic motion is enabled."));
-	}
-
-	return warnings;
-}
-
-void StaticBody2D::_notification(int p_what) {
-	switch (p_what) {
-		case NOTIFICATION_ENTER_TREE: {
-			last_valid_transform = get_global_transform();
-		} break;
-
-		case NOTIFICATION_LOCAL_TRANSFORM_CHANGED: {
-			// Used by sync to physics, send the new transform to the physics...
-			Transform2D new_transform = get_global_transform();
-
-			double delta_time = get_physics_process_delta_time();
-			new_transform.translate(constant_linear_velocity * delta_time);
-			new_transform.set_rotation(new_transform.get_rotation() + constant_angular_velocity * delta_time);
-
-			PhysicsServer2D::get_singleton()->body_set_state(get_rid(), PhysicsServer2D::BODY_STATE_TRANSFORM, new_transform);
-
-			// ... but then revert changes.
-			set_notify_local_transform(false);
-			set_global_transform(last_valid_transform);
-			set_notify_local_transform(true);
-		} break;
-
-		case NOTIFICATION_INTERNAL_PHYSICS_PROCESS: {
-#ifdef TOOLS_ENABLED
-			if (Engine::get_singleton()->is_editor_hint()) {
-				return;
-			}
-#endif
-
-			ERR_FAIL_COND(!kinematic_motion);
-
-			Transform2D new_transform = get_global_transform();
-
-			double delta_time = get_physics_process_delta_time();
-			new_transform.translate(constant_linear_velocity * delta_time);
-			new_transform.set_rotation(new_transform.get_rotation() + constant_angular_velocity * delta_time);
-
-			if (sync_to_physics) {
-				// Propagate transform change to node.
-				set_global_transform(new_transform);
-			} else {
-				PhysicsServer2D::get_singleton()->body_set_state(get_rid(), PhysicsServer2D::BODY_STATE_TRANSFORM, new_transform);
-
-				// Propagate transform change to node.
-				set_block_transform_notify(true);
-				set_global_transform(new_transform);
-				set_block_transform_notify(false);
-			}
-		} break;
-	}
-}
-
 void StaticBody2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_constant_linear_velocity", "vel"), &StaticBody2D::set_constant_linear_velocity);
 	ClassDB::bind_method(D_METHOD("set_constant_angular_velocity", "vel"), &StaticBody2D::set_constant_angular_velocity);
 	ClassDB::bind_method(D_METHOD("get_constant_linear_velocity"), &StaticBody2D::get_constant_linear_velocity);
 	ClassDB::bind_method(D_METHOD("get_constant_angular_velocity"), &StaticBody2D::get_constant_angular_velocity);
 
-	ClassDB::bind_method(D_METHOD("set_kinematic_motion_enabled", "enabled"), &StaticBody2D::set_kinematic_motion_enabled);
-	ClassDB::bind_method(D_METHOD("is_kinematic_motion_enabled"), &StaticBody2D::is_kinematic_motion_enabled);
-
 	ClassDB::bind_method(D_METHOD("set_physics_material_override", "physics_material_override"), &StaticBody2D::set_physics_material_override);
 	ClassDB::bind_method(D_METHOD("get_physics_material_override"), &StaticBody2D::get_physics_material_override);
-
-	ClassDB::bind_method(D_METHOD("set_sync_to_physics", "enable"), &StaticBody2D::set_sync_to_physics);
-	ClassDB::bind_method(D_METHOD("is_sync_to_physics_enabled"), &StaticBody2D::is_sync_to_physics_enabled);
 
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "physics_material_override", PROPERTY_HINT_RESOURCE_TYPE, "PhysicsMaterial"), "set_physics_material_override", "get_physics_material_override");
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "constant_linear_velocity"), "set_constant_linear_velocity", "get_constant_linear_velocity");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "constant_angular_velocity"), "set_constant_angular_velocity", "get_constant_angular_velocity");
-	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "kinematic_motion"), "set_kinematic_motion_enabled", "is_kinematic_motion_enabled");
-	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "sync_to_physics"), "set_sync_to_physics", "is_sync_to_physics_enabled");
 }
 
-StaticBody2D::StaticBody2D() :
-		PhysicsBody2D(PhysicsServer2D::BODY_MODE_STATIC) {
+StaticBody2D::StaticBody2D(PhysicsServer2D::BodyMode p_mode) :
+		PhysicsBody2D(p_mode) {
 }
 
 void StaticBody2D::_reload_physics_characteristics() {
@@ -373,14 +229,28 @@ void StaticBody2D::_reload_physics_characteristics() {
 	}
 }
 
-void StaticBody2D::_update_kinematic_motion() {
+void AnimatableBody2D::set_sync_to_physics(bool p_enable) {
+	if (sync_to_physics == p_enable) {
+		return;
+	}
+
+	sync_to_physics = p_enable;
+
+	_update_kinematic_motion();
+}
+
+bool AnimatableBody2D::is_sync_to_physics_enabled() const {
+	return sync_to_physics;
+}
+
+void AnimatableBody2D::_update_kinematic_motion() {
 #ifdef TOOLS_ENABLED
 	if (Engine::get_singleton()->is_editor_hint()) {
 		return;
 	}
 #endif
 
-	if (kinematic_motion && sync_to_physics) {
+	if (sync_to_physics) {
 		PhysicsServer2D::get_singleton()->body_set_state_sync_callback(get_rid(), this, _body_state_changed_callback);
 		set_only_update_transform_changes(true);
 		set_notify_local_transform(true);
@@ -389,15 +259,54 @@ void StaticBody2D::_update_kinematic_motion() {
 		set_only_update_transform_changes(false);
 		set_notify_local_transform(false);
 	}
+}
 
-	bool needs_physics_process = false;
-	if (kinematic_motion) {
-		if (!Math::is_zero_approx(constant_angular_velocity) || !constant_linear_velocity.is_equal_approx(Vector2())) {
-			needs_physics_process = true;
-		}
+void AnimatableBody2D::_body_state_changed_callback(void *p_instance, PhysicsDirectBodyState2D *p_state) {
+	AnimatableBody2D *body = (AnimatableBody2D *)p_instance;
+	body->_body_state_changed(p_state);
+}
+
+void AnimatableBody2D::_body_state_changed(PhysicsDirectBodyState2D *p_state) {
+	if (!sync_to_physics) {
+		return;
 	}
 
-	set_physics_process_internal(needs_physics_process);
+	last_valid_transform = p_state->get_transform();
+	set_notify_local_transform(false);
+	set_global_transform(last_valid_transform);
+	set_notify_local_transform(true);
+}
+
+void AnimatableBody2D::_notification(int p_what) {
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE: {
+			last_valid_transform = get_global_transform();
+		} break;
+
+		case NOTIFICATION_LOCAL_TRANSFORM_CHANGED: {
+			// Used by sync to physics, send the new transform to the physics...
+			Transform2D new_transform = get_global_transform();
+
+			PhysicsServer2D::get_singleton()->body_set_state(get_rid(), PhysicsServer2D::BODY_STATE_TRANSFORM, new_transform);
+
+			// ... but then revert changes.
+			set_notify_local_transform(false);
+			set_global_transform(last_valid_transform);
+			set_notify_local_transform(true);
+		} break;
+	}
+}
+
+void AnimatableBody2D::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_sync_to_physics", "enable"), &AnimatableBody2D::set_sync_to_physics);
+	ClassDB::bind_method(D_METHOD("is_sync_to_physics_enabled"), &AnimatableBody2D::is_sync_to_physics_enabled);
+
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "sync_to_physics"), "set_sync_to_physics", "is_sync_to_physics_enabled");
+}
+
+AnimatableBody2D::AnimatableBody2D() :
+		StaticBody2D(PhysicsServer2D::BODY_MODE_KINEMATIC) {
+	_update_kinematic_motion();
 }
 
 void RigidBody2D::_body_enter_tree(ObjectID p_id) {
@@ -651,11 +560,53 @@ real_t RigidBody2D::get_mass() const {
 
 void RigidBody2D::set_inertia(real_t p_inertia) {
 	ERR_FAIL_COND(p_inertia < 0);
-	PhysicsServer2D::get_singleton()->body_set_param(get_rid(), PhysicsServer2D::BODY_PARAM_INERTIA, p_inertia);
+	inertia = p_inertia;
+	PhysicsServer2D::get_singleton()->body_set_param(get_rid(), PhysicsServer2D::BODY_PARAM_INERTIA, inertia);
 }
 
 real_t RigidBody2D::get_inertia() const {
-	return PhysicsServer2D::get_singleton()->body_get_param(get_rid(), PhysicsServer2D::BODY_PARAM_INERTIA);
+	return inertia;
+}
+
+void RigidBody2D::set_center_of_mass_mode(CenterOfMassMode p_mode) {
+	if (center_of_mass_mode == p_mode) {
+		return;
+	}
+
+	center_of_mass_mode = p_mode;
+
+	switch (center_of_mass_mode) {
+		case CENTER_OF_MASS_MODE_AUTO: {
+			center_of_mass = Vector2();
+			PhysicsServer2D::get_singleton()->body_reset_mass_properties(get_rid());
+			if (inertia != 0.0) {
+				PhysicsServer2D::get_singleton()->body_set_param(get_rid(), PhysicsServer2D::BODY_PARAM_INERTIA, inertia);
+			}
+		} break;
+
+		case CENTER_OF_MASS_MODE_CUSTOM: {
+			PhysicsServer2D::get_singleton()->body_set_param(get_rid(), PhysicsServer2D::BODY_PARAM_CENTER_OF_MASS, center_of_mass);
+		} break;
+	}
+}
+
+RigidBody2D::CenterOfMassMode RigidBody2D::get_center_of_mass_mode() const {
+	return center_of_mass_mode;
+}
+
+void RigidBody2D::set_center_of_mass(const Vector2 &p_center_of_mass) {
+	if (center_of_mass == p_center_of_mass) {
+		return;
+	}
+
+	ERR_FAIL_COND(center_of_mass_mode != CENTER_OF_MASS_MODE_CUSTOM);
+	center_of_mass = p_center_of_mass;
+
+	PhysicsServer2D::get_singleton()->body_set_param(get_rid(), PhysicsServer2D::BODY_PARAM_CENTER_OF_MASS, center_of_mass);
+}
+
+const Vector2 &RigidBody2D::get_center_of_mass() const {
+	return center_of_mass;
 }
 
 void RigidBody2D::set_physics_material_override(const Ref<PhysicsMaterial> &p_physics_material_override) {
@@ -909,6 +860,12 @@ void RigidBody2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_inertia"), &RigidBody2D::get_inertia);
 	ClassDB::bind_method(D_METHOD("set_inertia", "inertia"), &RigidBody2D::set_inertia);
 
+	ClassDB::bind_method(D_METHOD("set_center_of_mass_mode", "mode"), &RigidBody2D::set_center_of_mass_mode);
+	ClassDB::bind_method(D_METHOD("get_center_of_mass_mode"), &RigidBody2D::get_center_of_mass_mode);
+
+	ClassDB::bind_method(D_METHOD("set_center_of_mass", "center_of_mass"), &RigidBody2D::set_center_of_mass);
+	ClassDB::bind_method(D_METHOD("get_center_of_mass"), &RigidBody2D::get_center_of_mass);
+
 	ClassDB::bind_method(D_METHOD("set_physics_material_override", "physics_material_override"), &RigidBody2D::set_physics_material_override);
 	ClassDB::bind_method(D_METHOD("get_physics_material_override"), &RigidBody2D::get_physics_material_override);
 
@@ -965,8 +922,11 @@ void RigidBody2D::_bind_methods() {
 	GDVIRTUAL_BIND(_integrate_forces, "state");
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "mode", PROPERTY_HINT_ENUM, "Dynamic,Static,DynamicLocked,Kinematic"), "set_mode", "get_mode");
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "mass", PROPERTY_HINT_RANGE, "0.01,65535,0.01,exp"), "set_mass", "get_mass");
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "inertia", PROPERTY_HINT_RANGE, "0.01,65535,0.01,exp", PROPERTY_USAGE_NONE), "set_inertia", "get_inertia");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "mass", PROPERTY_HINT_RANGE, "0.01,1000,0.01,or_greater,exp"), "set_mass", "get_mass");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "inertia", PROPERTY_HINT_RANGE, "0,1000,0.01,or_greater,exp"), "set_inertia", "get_inertia");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "center_of_mass_mode", PROPERTY_HINT_ENUM, "Auto,Custom", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), "set_center_of_mass_mode", "get_center_of_mass_mode");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "center_of_mass", PROPERTY_HINT_RANGE, "-10,10,0.01,or_lesser,or_greater"), "set_center_of_mass", "get_center_of_mass");
+	ADD_LINKED_PROPERTY("center_of_mass_mode", "center_of_mass");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "physics_material_override", PROPERTY_HINT_RESOURCE_TYPE, "PhysicsMaterial"), "set_physics_material_override", "get_physics_material_override");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "gravity_scale", PROPERTY_HINT_RANGE, "-128,128,0.01"), "set_gravity_scale", "get_gravity_scale");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "custom_integrator"), "set_use_custom_integrator", "is_using_custom_integrator");
@@ -996,9 +956,20 @@ void RigidBody2D::_bind_methods() {
 	BIND_ENUM_CONSTANT(MODE_DYNAMIC_LOCKED);
 	BIND_ENUM_CONSTANT(MODE_KINEMATIC);
 
+	BIND_ENUM_CONSTANT(CENTER_OF_MASS_MODE_AUTO);
+	BIND_ENUM_CONSTANT(CENTER_OF_MASS_MODE_CUSTOM);
+
 	BIND_ENUM_CONSTANT(CCD_MODE_DISABLED);
 	BIND_ENUM_CONSTANT(CCD_MODE_CAST_RAY);
 	BIND_ENUM_CONSTANT(CCD_MODE_CAST_SHAPE);
+}
+
+void RigidBody2D::_validate_property(PropertyInfo &property) const {
+	if (center_of_mass_mode != CENTER_OF_MASS_MODE_CUSTOM) {
+		if (property.name == "center_of_mass") {
+			property.usage = PROPERTY_USAGE_NOEDITOR | PROPERTY_USAGE_INTERNAL;
+		}
+	}
 }
 
 RigidBody2D::RigidBody2D() :

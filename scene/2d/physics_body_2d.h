@@ -63,21 +63,13 @@ public:
 class StaticBody2D : public PhysicsBody2D {
 	GDCLASS(StaticBody2D, PhysicsBody2D);
 
+private:
 	Vector2 constant_linear_velocity;
 	real_t constant_angular_velocity = 0.0;
 
 	Ref<PhysicsMaterial> physics_material_override;
 
-	bool kinematic_motion = false;
-	bool sync_to_physics = false;
-
-	Transform2D last_valid_transform;
-
-	static void _body_state_changed_callback(void *p_instance, PhysicsDirectBodyState2D *p_state);
-	void _body_state_changed(PhysicsDirectBodyState2D *p_state);
-
 protected:
-	void _notification(int p_what);
 	static void _bind_methods();
 
 public:
@@ -90,17 +82,32 @@ public:
 	Vector2 get_constant_linear_velocity() const;
 	real_t get_constant_angular_velocity() const;
 
-	virtual TypedArray<String> get_configuration_warnings() const override;
-
-	StaticBody2D();
+	StaticBody2D(PhysicsServer2D::BodyMode p_mode = PhysicsServer2D::BODY_MODE_STATIC);
 
 private:
 	void _reload_physics_characteristics();
+};
 
+class AnimatableBody2D : public StaticBody2D {
+	GDCLASS(AnimatableBody2D, StaticBody2D);
+
+private:
+	bool sync_to_physics = false;
+
+	Transform2D last_valid_transform;
+
+	static void _body_state_changed_callback(void *p_instance, PhysicsDirectBodyState2D *p_state);
+	void _body_state_changed(PhysicsDirectBodyState2D *p_state);
+
+protected:
+	void _notification(int p_what);
+	static void _bind_methods();
+
+public:
+	AnimatableBody2D();
+
+private:
 	void _update_kinematic_motion();
-
-	void set_kinematic_motion_enabled(bool p_enabled);
-	bool is_kinematic_motion_enabled() const;
 
 	void set_sync_to_physics(bool p_enable);
 	bool is_sync_to_physics_enabled() const;
@@ -117,6 +124,11 @@ public:
 		MODE_KINEMATIC,
 	};
 
+	enum CenterOfMassMode {
+		CENTER_OF_MASS_MODE_AUTO,
+		CENTER_OF_MASS_MODE_CUSTOM,
+	};
+
 	enum CCDMode {
 		CCD_MODE_DISABLED,
 		CCD_MODE_CAST_RAY,
@@ -128,6 +140,10 @@ private:
 	Mode mode = MODE_DYNAMIC;
 
 	real_t mass = 1.0;
+	real_t inertia = 0.0;
+	CenterOfMassMode center_of_mass_mode = CENTER_OF_MASS_MODE_AUTO;
+	Vector2 center_of_mass;
+
 	Ref<PhysicsMaterial> physics_material_override;
 	real_t gravity_scale = 1.0;
 	real_t linear_damp = -1.0;
@@ -191,6 +207,8 @@ protected:
 	void _notification(int p_what);
 	static void _bind_methods();
 
+	virtual void _validate_property(PropertyInfo &property) const override;
+
 	GDVIRTUAL1(_integrate_forces, PhysicsDirectBodyState2D *)
 
 public:
@@ -202,6 +220,12 @@ public:
 
 	void set_inertia(real_t p_inertia);
 	real_t get_inertia() const;
+
+	void set_center_of_mass_mode(CenterOfMassMode p_mode);
+	CenterOfMassMode get_center_of_mass_mode() const;
+
+	void set_center_of_mass(const Vector2 &p_center_of_mass);
+	const Vector2 &get_center_of_mass() const;
 
 	void set_physics_material_override(const Ref<PhysicsMaterial> &p_physics_material_override);
 	Ref<PhysicsMaterial> get_physics_material_override() const;
@@ -267,6 +291,7 @@ private:
 };
 
 VARIANT_ENUM_CAST(RigidBody2D::Mode);
+VARIANT_ENUM_CAST(RigidBody2D::CenterOfMassMode);
 VARIANT_ENUM_CAST(RigidBody2D::CCDMode);
 
 class CharacterBody2D : public PhysicsBody2D {

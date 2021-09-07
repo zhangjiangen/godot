@@ -223,72 +223,98 @@ Ref<PhysicsMaterial> StaticBody3D::get_physics_material_override() const {
 	return physics_material_override;
 }
 
-void StaticBody3D::set_kinematic_motion_enabled(bool p_enabled) {
-	if (p_enabled == kinematic_motion) {
-		return;
-	}
-
-	kinematic_motion = p_enabled;
-
-	if (kinematic_motion) {
-		set_body_mode(PhysicsServer3D::BODY_MODE_KINEMATIC);
-	} else {
-		set_body_mode(PhysicsServer3D::BODY_MODE_STATIC);
-	}
-
-#ifdef TOOLS_ENABLED
-	if (Engine::get_singleton()->is_editor_hint()) {
-		update_configuration_warnings();
-		return;
-	}
-#endif
-
-	_update_kinematic_motion();
-}
-
-bool StaticBody3D::is_kinematic_motion_enabled() const {
-	return kinematic_motion;
-}
-
 void StaticBody3D::set_constant_linear_velocity(const Vector3 &p_vel) {
 	constant_linear_velocity = p_vel;
 
-	if (kinematic_motion) {
-		_update_kinematic_motion();
+	PhysicsServer3D::get_singleton()->body_set_state(get_rid(), PhysicsServer3D::BODY_STATE_LINEAR_VELOCITY, constant_linear_velocity);
+}
+
+void StaticBody3D::set_constant_angular_velocity(const Vector3 &p_vel) {
+	constant_angular_velocity = p_vel;
+
+	PhysicsServer3D::get_singleton()->body_set_state(get_rid(), PhysicsServer3D::BODY_STATE_ANGULAR_VELOCITY, constant_angular_velocity);
+}
+
+Vector3 StaticBody3D::get_constant_linear_velocity() const {
+	return constant_linear_velocity;
+}
+
+Vector3 StaticBody3D::get_constant_angular_velocity() const {
+	return constant_angular_velocity;
+}
+
+void StaticBody3D::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_constant_linear_velocity", "vel"), &StaticBody3D::set_constant_linear_velocity);
+	ClassDB::bind_method(D_METHOD("set_constant_angular_velocity", "vel"), &StaticBody3D::set_constant_angular_velocity);
+	ClassDB::bind_method(D_METHOD("get_constant_linear_velocity"), &StaticBody3D::get_constant_linear_velocity);
+	ClassDB::bind_method(D_METHOD("get_constant_angular_velocity"), &StaticBody3D::get_constant_angular_velocity);
+
+	ClassDB::bind_method(D_METHOD("set_physics_material_override", "physics_material_override"), &StaticBody3D::set_physics_material_override);
+	ClassDB::bind_method(D_METHOD("get_physics_material_override"), &StaticBody3D::get_physics_material_override);
+
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "physics_material_override", PROPERTY_HINT_RESOURCE_TYPE, "PhysicsMaterial"), "set_physics_material_override", "get_physics_material_override");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "constant_linear_velocity"), "set_constant_linear_velocity", "get_constant_linear_velocity");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "constant_angular_velocity"), "set_constant_angular_velocity", "get_constant_angular_velocity");
+}
+
+StaticBody3D::StaticBody3D(PhysicsServer3D::BodyMode p_mode) :
+		PhysicsBody3D(p_mode) {
+}
+
+void StaticBody3D::_reload_physics_characteristics() {
+	if (physics_material_override.is_null()) {
+		PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_BOUNCE, 0);
+		PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_FRICTION, 1);
 	} else {
-		PhysicsServer3D::get_singleton()->body_set_state(get_rid(), PhysicsServer3D::BODY_STATE_LINEAR_VELOCITY, constant_linear_velocity);
+		PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_BOUNCE, physics_material_override->computed_bounce());
+		PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_FRICTION, physics_material_override->computed_friction());
 	}
 }
 
-void StaticBody3D::set_sync_to_physics(bool p_enable) {
+Vector3 AnimatableBody3D::get_linear_velocity() const {
+	return linear_velocity;
+}
+
+Vector3 AnimatableBody3D::get_angular_velocity() const {
+	return angular_velocity;
+}
+
+void AnimatableBody3D::set_sync_to_physics(bool p_enable) {
 	if (sync_to_physics == p_enable) {
 		return;
 	}
 
 	sync_to_physics = p_enable;
 
+	_update_kinematic_motion();
+}
+
+bool AnimatableBody3D::is_sync_to_physics_enabled() const {
+	return sync_to_physics;
+}
+
+void AnimatableBody3D::_update_kinematic_motion() {
 #ifdef TOOLS_ENABLED
 	if (Engine::get_singleton()->is_editor_hint()) {
-		update_configuration_warnings();
 		return;
 	}
 #endif
 
-	if (kinematic_motion) {
-		_update_kinematic_motion();
+	if (sync_to_physics) {
+		set_only_update_transform_changes(true);
+		set_notify_local_transform(true);
+	} else {
+		set_only_update_transform_changes(false);
+		set_notify_local_transform(false);
 	}
 }
 
-bool StaticBody3D::is_sync_to_physics_enabled() const {
-	return sync_to_physics;
-}
-
-void StaticBody3D::_body_state_changed_callback(void *p_instance, PhysicsDirectBodyState3D *p_state) {
-	StaticBody3D *body = (StaticBody3D *)p_instance;
+void AnimatableBody3D::_body_state_changed_callback(void *p_instance, PhysicsDirectBodyState3D *p_state) {
+	AnimatableBody3D *body = (AnimatableBody3D *)p_instance;
 	body->_body_state_changed(p_state);
 }
 
-void StaticBody3D::_body_state_changed(PhysicsDirectBodyState3D *p_state) {
+void AnimatableBody3D::_body_state_changed(PhysicsDirectBodyState3D *p_state) {
 	linear_velocity = p_state->get_linear_velocity();
 	angular_velocity = p_state->get_angular_velocity();
 
@@ -303,43 +329,7 @@ void StaticBody3D::_body_state_changed(PhysicsDirectBodyState3D *p_state) {
 	_on_transform_changed();
 }
 
-TypedArray<String> StaticBody3D::get_configuration_warnings() const {
-	TypedArray<String> warnings = PhysicsBody3D::get_configuration_warnings();
-
-	if (sync_to_physics && !kinematic_motion) {
-		warnings.push_back(TTR("Sync to physics works only when kinematic motion is enabled."));
-	}
-
-	return warnings;
-}
-
-void StaticBody3D::set_constant_angular_velocity(const Vector3 &p_vel) {
-	constant_angular_velocity = p_vel;
-
-	if (kinematic_motion) {
-		_update_kinematic_motion();
-	} else {
-		PhysicsServer3D::get_singleton()->body_set_state(get_rid(), PhysicsServer3D::BODY_STATE_ANGULAR_VELOCITY, constant_angular_velocity);
-	}
-}
-
-Vector3 StaticBody3D::get_constant_linear_velocity() const {
-	return constant_linear_velocity;
-}
-
-Vector3 StaticBody3D::get_constant_angular_velocity() const {
-	return constant_angular_velocity;
-}
-
-Vector3 StaticBody3D::get_linear_velocity() const {
-	return linear_velocity;
-}
-
-Vector3 StaticBody3D::get_angular_velocity() const {
-	return angular_velocity;
-}
-
-void StaticBody3D::_notification(int p_what) {
+void AnimatableBody3D::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			last_valid_transform = get_global_transform();
@@ -349,17 +339,6 @@ void StaticBody3D::_notification(int p_what) {
 			// Used by sync to physics, send the new transform to the physics...
 			Transform3D new_transform = get_global_transform();
 
-			double delta_time = get_physics_process_delta_time();
-			new_transform.origin += constant_linear_velocity * delta_time;
-
-			real_t ang_vel = constant_angular_velocity.length();
-			if (!Math::is_zero_approx(ang_vel)) {
-				Vector3 ang_vel_axis = constant_angular_velocity / ang_vel;
-				Basis rot(ang_vel_axis, ang_vel * delta_time);
-				new_transform.basis = rot * new_transform.basis;
-				new_transform.orthonormalize();
-			}
-
 			PhysicsServer3D::get_singleton()->body_set_state(get_rid(), PhysicsServer3D::BODY_STATE_TRANSFORM, new_transform);
 
 			// ... but then revert changes.
@@ -368,108 +347,21 @@ void StaticBody3D::_notification(int p_what) {
 			set_notify_local_transform(true);
 			_on_transform_changed();
 		} break;
-
-		case NOTIFICATION_INTERNAL_PHYSICS_PROCESS: {
-#ifdef TOOLS_ENABLED
-			if (Engine::get_singleton()->is_editor_hint()) {
-				return;
-			}
-#endif
-
-			ERR_FAIL_COND(!kinematic_motion);
-
-			Transform3D new_transform = get_global_transform();
-
-			double delta_time = get_physics_process_delta_time();
-			new_transform.origin += constant_linear_velocity * delta_time;
-
-			real_t ang_vel = constant_angular_velocity.length();
-			if (!Math::is_zero_approx(ang_vel)) {
-				Vector3 ang_vel_axis = constant_angular_velocity / ang_vel;
-				Basis rot(ang_vel_axis, ang_vel * delta_time);
-				new_transform.basis = rot * new_transform.basis;
-				new_transform.orthonormalize();
-			}
-
-			if (sync_to_physics) {
-				// Propagate transform change to node.
-				set_global_transform(new_transform);
-			} else {
-				PhysicsServer3D::get_singleton()->body_set_state(get_rid(), PhysicsServer3D::BODY_STATE_TRANSFORM, new_transform);
-
-				// Propagate transform change to node.
-				set_ignore_transform_notification(true);
-				set_global_transform(new_transform);
-				set_ignore_transform_notification(false);
-				_on_transform_changed();
-			}
-		} break;
 	}
 }
 
-void StaticBody3D::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("set_constant_linear_velocity", "vel"), &StaticBody3D::set_constant_linear_velocity);
-	ClassDB::bind_method(D_METHOD("set_constant_angular_velocity", "vel"), &StaticBody3D::set_constant_angular_velocity);
-	ClassDB::bind_method(D_METHOD("get_constant_linear_velocity"), &StaticBody3D::get_constant_linear_velocity);
-	ClassDB::bind_method(D_METHOD("get_constant_angular_velocity"), &StaticBody3D::get_constant_angular_velocity);
+void AnimatableBody3D::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_sync_to_physics", "enable"), &AnimatableBody3D::set_sync_to_physics);
+	ClassDB::bind_method(D_METHOD("is_sync_to_physics_enabled"), &AnimatableBody3D::is_sync_to_physics_enabled);
 
-	ClassDB::bind_method(D_METHOD("set_kinematic_motion_enabled", "enabled"), &StaticBody3D::set_kinematic_motion_enabled);
-	ClassDB::bind_method(D_METHOD("is_kinematic_motion_enabled"), &StaticBody3D::is_kinematic_motion_enabled);
-
-	ClassDB::bind_method(D_METHOD("set_physics_material_override", "physics_material_override"), &StaticBody3D::set_physics_material_override);
-	ClassDB::bind_method(D_METHOD("get_physics_material_override"), &StaticBody3D::get_physics_material_override);
-
-	ClassDB::bind_method(D_METHOD("set_sync_to_physics", "enable"), &StaticBody3D::set_sync_to_physics);
-	ClassDB::bind_method(D_METHOD("is_sync_to_physics_enabled"), &StaticBody3D::is_sync_to_physics_enabled);
-
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "physics_material_override", PROPERTY_HINT_RESOURCE_TYPE, "PhysicsMaterial"), "set_physics_material_override", "get_physics_material_override");
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "constant_linear_velocity"), "set_constant_linear_velocity", "get_constant_linear_velocity");
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "constant_angular_velocity"), "set_constant_angular_velocity", "get_constant_angular_velocity");
-	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "kinematic_motion"), "set_kinematic_motion_enabled", "is_kinematic_motion_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "sync_to_physics"), "set_sync_to_physics", "is_sync_to_physics_enabled");
 }
 
-StaticBody3D::StaticBody3D() :
-		PhysicsBody3D(PhysicsServer3D::BODY_MODE_STATIC) {
-}
+AnimatableBody3D::AnimatableBody3D() :
+		StaticBody3D(PhysicsServer3D::BODY_MODE_KINEMATIC) {
+	PhysicsServer3D::get_singleton()->body_set_state_sync_callback(get_rid(), this, _body_state_changed_callback);
 
-void StaticBody3D::_reload_physics_characteristics() {
-	if (physics_material_override.is_null()) {
-		PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_BOUNCE, 0);
-		PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_FRICTION, 1);
-	} else {
-		PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_BOUNCE, physics_material_override->computed_bounce());
-		PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_FRICTION, physics_material_override->computed_friction());
-	}
-}
-
-void StaticBody3D::_update_kinematic_motion() {
-#ifdef TOOLS_ENABLED
-	if (Engine::get_singleton()->is_editor_hint()) {
-		return;
-	}
-#endif
-
-	if (kinematic_motion && sync_to_physics) {
-		set_only_update_transform_changes(true);
-		set_notify_local_transform(true);
-	} else {
-		set_only_update_transform_changes(false);
-		set_notify_local_transform(false);
-	}
-
-	bool needs_physics_process = false;
-	if (kinematic_motion) {
-		PhysicsServer3D::get_singleton()->body_set_state_sync_callback(get_rid(), this, &StaticBody3D::_body_state_changed_callback);
-
-		if (!constant_angular_velocity.is_equal_approx(Vector3()) || !constant_linear_velocity.is_equal_approx(Vector3())) {
-			needs_physics_process = true;
-		}
-	} else {
-		PhysicsServer3D::get_singleton()->body_set_state_sync_callback(get_rid(), nullptr, nullptr);
-	}
-
-	set_physics_process_internal(needs_physics_process);
+	_update_kinematic_motion();
 }
 
 void RigidBody3D::_body_enter_tree(ObjectID p_id) {
@@ -739,6 +631,60 @@ real_t RigidBody3D::get_mass() const {
 	return mass;
 }
 
+void RigidBody3D::set_inertia(const Vector3 &p_inertia) {
+	ERR_FAIL_COND(p_inertia.x < 0);
+	ERR_FAIL_COND(p_inertia.y < 0);
+	ERR_FAIL_COND(p_inertia.z < 0);
+
+	inertia = p_inertia;
+	PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_INERTIA, inertia);
+}
+
+const Vector3 &RigidBody3D::get_inertia() const {
+	return inertia;
+}
+
+void RigidBody3D::set_center_of_mass_mode(CenterOfMassMode p_mode) {
+	if (center_of_mass_mode == p_mode) {
+		return;
+	}
+
+	center_of_mass_mode = p_mode;
+
+	switch (center_of_mass_mode) {
+		case CENTER_OF_MASS_MODE_AUTO: {
+			center_of_mass = Vector3();
+			PhysicsServer3D::get_singleton()->body_reset_mass_properties(get_rid());
+			if (inertia != Vector3()) {
+				PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_INERTIA, inertia);
+			}
+		} break;
+
+		case CENTER_OF_MASS_MODE_CUSTOM: {
+			PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_CENTER_OF_MASS, center_of_mass);
+		} break;
+	}
+}
+
+RigidBody3D::CenterOfMassMode RigidBody3D::get_center_of_mass_mode() const {
+	return center_of_mass_mode;
+}
+
+void RigidBody3D::set_center_of_mass(const Vector3 &p_center_of_mass) {
+	if (center_of_mass == p_center_of_mass) {
+		return;
+	}
+
+	ERR_FAIL_COND(center_of_mass_mode != CENTER_OF_MASS_MODE_CUSTOM);
+	center_of_mass = p_center_of_mass;
+
+	PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_CENTER_OF_MASS, center_of_mass);
+}
+
+const Vector3 &RigidBody3D::get_center_of_mass() const {
+	return center_of_mass;
+}
+
 void RigidBody3D::set_physics_material_override(const Ref<PhysicsMaterial> &p_physics_material_override) {
 	if (physics_material_override.is_valid()) {
 		if (physics_material_override->is_connected(CoreStringNames::get_singleton()->changed, callable_mp(this, &RigidBody3D::_reload_physics_characteristics))) {
@@ -959,6 +905,15 @@ void RigidBody3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_mass", "mass"), &RigidBody3D::set_mass);
 	ClassDB::bind_method(D_METHOD("get_mass"), &RigidBody3D::get_mass);
 
+	ClassDB::bind_method(D_METHOD("set_inertia", "inertia"), &RigidBody3D::set_inertia);
+	ClassDB::bind_method(D_METHOD("get_inertia"), &RigidBody3D::get_inertia);
+
+	ClassDB::bind_method(D_METHOD("set_center_of_mass_mode", "mode"), &RigidBody3D::set_center_of_mass_mode);
+	ClassDB::bind_method(D_METHOD("get_center_of_mass_mode"), &RigidBody3D::get_center_of_mass_mode);
+
+	ClassDB::bind_method(D_METHOD("set_center_of_mass", "center_of_mass"), &RigidBody3D::set_center_of_mass);
+	ClassDB::bind_method(D_METHOD("get_center_of_mass"), &RigidBody3D::get_center_of_mass);
+
 	ClassDB::bind_method(D_METHOD("set_physics_material_override", "physics_material_override"), &RigidBody3D::set_physics_material_override);
 	ClassDB::bind_method(D_METHOD("get_physics_material_override"), &RigidBody3D::get_physics_material_override);
 
@@ -1012,7 +967,11 @@ void RigidBody3D::_bind_methods() {
 	GDVIRTUAL_BIND(_integrate_forces, "state");
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "mode", PROPERTY_HINT_ENUM, "Dynamic,Static,DynamicLocked,Kinematic"), "set_mode", "get_mode");
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "mass", PROPERTY_HINT_RANGE, "0.01,65535,0.01,exp"), "set_mass", "get_mass");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "mass", PROPERTY_HINT_RANGE, "0.01,1000,0.01,or_greater,exp"), "set_mass", "get_mass");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "inertia", PROPERTY_HINT_RANGE, "0,1000,0.01,or_greater,exp"), "set_inertia", "get_inertia");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "center_of_mass_mode", PROPERTY_HINT_ENUM, "Auto,Custom", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), "set_center_of_mass_mode", "get_center_of_mass_mode");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "center_of_mass", PROPERTY_HINT_RANGE, "-10,10,0.01,or_lesser,or_greater"), "set_center_of_mass", "get_center_of_mass");
+	ADD_LINKED_PROPERTY("center_of_mass_mode", "center_of_mass");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "physics_material_override", PROPERTY_HINT_RESOURCE_TYPE, "PhysicsMaterial"), "set_physics_material_override", "get_physics_material_override");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "gravity_scale", PROPERTY_HINT_RANGE, "-128,128,0.01"), "set_gravity_scale", "get_gravity_scale");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "custom_integrator"), "set_use_custom_integrator", "is_using_custom_integrator");
@@ -1038,11 +997,22 @@ void RigidBody3D::_bind_methods() {
 	BIND_ENUM_CONSTANT(MODE_STATIC);
 	BIND_ENUM_CONSTANT(MODE_DYNAMIC_LOCKED);
 	BIND_ENUM_CONSTANT(MODE_KINEMATIC);
+
+	BIND_ENUM_CONSTANT(CENTER_OF_MASS_MODE_AUTO);
+	BIND_ENUM_CONSTANT(CENTER_OF_MASS_MODE_CUSTOM);
+}
+
+void RigidBody3D::_validate_property(PropertyInfo &property) const {
+	if (center_of_mass_mode != CENTER_OF_MASS_MODE_CUSTOM) {
+		if (property.name == "center_of_mass") {
+			property.usage = PROPERTY_USAGE_NOEDITOR | PROPERTY_USAGE_INTERNAL;
+		}
+	}
 }
 
 RigidBody3D::RigidBody3D() :
 		PhysicsBody3D(PhysicsServer3D::BODY_MODE_DYNAMIC) {
-	PhysicsServer3D::get_singleton()->body_set_state_sync_callback(get_rid(), this, &RigidBody3D::_body_state_changed_callback);
+	PhysicsServer3D::get_singleton()->body_set_state_sync_callback(get_rid(), this, _body_state_changed_callback);
 }
 
 RigidBody3D::~RigidBody3D() {
@@ -2315,7 +2285,7 @@ void PhysicalBone3D::_bind_methods() {
 
 	ADD_PROPERTY(PropertyInfo(Variant::TRANSFORM3D, "body_offset"), "set_body_offset", "get_body_offset");
 
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "mass", PROPERTY_HINT_RANGE, "0.01,65535,0.01,exp"), "set_mass", "get_mass");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "mass", PROPERTY_HINT_RANGE, "0.01,1000,0.01,or_greater,exp"), "set_mass", "get_mass");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "friction", PROPERTY_HINT_RANGE, "0,1,0.01"), "set_friction", "get_friction");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "bounce", PROPERTY_HINT_RANGE, "0,1,0.01"), "set_bounce", "get_bounce");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "gravity_scale", PROPERTY_HINT_RANGE, "-10,10,0.01"), "set_gravity_scale", "get_gravity_scale");
@@ -2713,7 +2683,7 @@ void PhysicalBone3D::_start_physics_simulation() {
 	set_body_mode(PhysicsServer3D::BODY_MODE_DYNAMIC);
 	PhysicsServer3D::get_singleton()->body_set_collision_layer(get_rid(), get_collision_layer());
 	PhysicsServer3D::get_singleton()->body_set_collision_mask(get_rid(), get_collision_mask());
-	PhysicsServer3D::get_singleton()->body_set_state_sync_callback(get_rid(), this, &PhysicalBone3D::_body_state_changed_callback);
+	PhysicsServer3D::get_singleton()->body_set_state_sync_callback(get_rid(), this, _body_state_changed_callback);
 	set_as_top_level(true);
 	_internal_simulate_physics = true;
 }
