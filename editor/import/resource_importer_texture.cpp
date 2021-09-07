@@ -639,7 +639,7 @@ Error ResourceImporterTexture::import(const String &p_source_file, const String 
 			r_platform_variants->push_back("pvrtc");
 			formats_imported.push_back("pvrtc");
 		}
-		if (ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_astc")) {
+		if (can_astc) {
 			int level = p_options["compress/astc_level"];
 			level += Image::COMPRESS_ALPHA8_ASTC_4x4;
 			_save_astc_stex(image, p_save_path + ".astc.stex", compress_mode, lossy, (Image::CompressMode)level, mipmaps, stream, detect_3d, detect_roughness, detect_normal, force_normal, srgb_friendly_pack, true, mipmap_limit, normal_image, roughness_channel);
