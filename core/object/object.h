@@ -408,6 +408,7 @@ private:                                                                        
 	void operator=(const m_class &p_rval) {}                                                                                                     \
 	mutable StringName _class_name;                                                                                                              \
 	friend class ::ClassDB;                                                                                                                      \
+	typedef m_inherits Super;                                                                                                                    \
                                                                                                                                                  \
 public:                                                                                                                                          \
 	virtual String get_class() const override {                                                                                                  \
