@@ -273,11 +273,11 @@ void ResourceImporterLayeredTexture::_save_tex(Vector<Ref<Image>> p_images, cons
 	f->store_32(0);
 
 	for (int i = 0; i < p_images.size(); i++) {
-		ResourceImporterTexture::save_to_stex_format(f, p_images[i], ResourceImporterTexture::CompressMode(p_compress_mode), used_channels, p_vram_compression, p_lossy);
+		ResourceImporterTexture::save_to_stex_format(f, p_images[i], ResourceImporterTexture::CompressMode(p_compress_mode), used_channels, p_vram_compression, p_lossy, p_csource);
 	}
 
 	for (int i = 0; i < mipmap_images.size(); i++) {
-		ResourceImporterTexture::save_to_stex_format(f, mipmap_images[i], ResourceImporterTexture::CompressMode(p_compress_mode), used_channels, p_vram_compression, p_lossy);
+		ResourceImporterTexture::save_to_stex_format(f, mipmap_images[i], ResourceImporterTexture::CompressMode(p_compress_mode), used_channels, p_vram_compression, p_lossy, p_csource);
 	}
 
 	f->close();
@@ -401,11 +401,11 @@ void ResourceImporterLayeredTexture::_save_astc_tex(Vector<Ref<Image>> p_images,
 	f->store_32(0);
 
 	for (int i = 0; i < p_images.size(); i++) {
-		ResourceImporterTexture::save_to_stex_format(f, p_images[i], ResourceImporterTexture::CompressMode(p_compress_mode), used_channels, p_vram_compression, p_lossy);
+		ResourceImporterTexture::save_to_stex_format(f, p_images[i], ResourceImporterTexture::CompressMode(p_compress_mode), used_channels, p_vram_compression, p_lossy, p_csource);
 	}
 
 	for (int i = 0; i < mipmap_images.size(); i++) {
-		ResourceImporterTexture::save_to_stex_format(f, mipmap_images[i], ResourceImporterTexture::CompressMode(p_compress_mode), used_channels, p_vram_compression, p_lossy);
+		ResourceImporterTexture::save_to_stex_format(f, mipmap_images[i], ResourceImporterTexture::CompressMode(p_compress_mode), used_channels, p_vram_compression, p_lossy, p_csource);
 	}
 
 	f->close();
@@ -586,7 +586,7 @@ Error ResourceImporterLayeredTexture::import(const String &p_source_file, const 
 		}
 		if (can_astc) {
 			int level = p_options["compress/astc_level"];
-			level += Image::COMPRESS_ALPHA8_ASTC_4x4;
+			level += Image::COMPRESS_ASTC_4x4;
 			_save_astc_tex(slices, p_save_path + ".astc." + extension, (Image::CompressMode)level, lossy, Image::COMPRESS_ASTC_4x4, csource, used_channels, mipmaps, true);
 			r_platform_variants->push_back("astc");
 			formats_imported.push_back("astc");

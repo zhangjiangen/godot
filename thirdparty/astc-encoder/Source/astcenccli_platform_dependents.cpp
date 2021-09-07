@@ -85,7 +85,11 @@ int get_cpu_count()
 double get_time()
 {
 	FILETIME tv;
+#if defined(NTDDI_WIN8) && NTDDI_VERSION > NTDDI_WIN8
 	GetSystemTimePreciseAsFileTime(&tv);
+#else
+	GetSystemTimeAsFileTime(&tv);
+#endif
 	unsigned long long ticks = tv.dwHighDateTime;
 	ticks = (ticks << 32) | tv.dwLowDateTime;
 	return ((double)ticks) / 1.0e7;

@@ -387,20 +387,6 @@ public:
 		COMPRESS_ASTC_10x10,
 		COMPRESS_ASTC_12x10,
 		COMPRESS_ASTC_12x12,
-		COMPRESS_ALPHA8_ASTC_4x4,
-		COMPRESS_ALPHA8_ASTC_5x4,
-		COMPRESS_ALPHA8_ASTC_5x5,
-		COMPRESS_ALPHA8_ASTC_6x5,
-		COMPRESS_ALPHA8_ASTC_6x6,
-		COMPRESS_ALPHA8_ASTC_8x5,
-		COMPRESS_ALPHA8_ASTC_8x6,
-		COMPRESS_ALPHA8_ASTC_8x8,
-		COMPRESS_ALPHA8_ASTC_10x5,
-		COMPRESS_ALPHA8_ASTC_10x6,
-		COMPRESS_ALPHA8_ASTC_10x8,
-		COMPRESS_ALPHA8_ASTC_10x10,
-		COMPRESS_ALPHA8_ASTC_12x10,
-		COMPRESS_ALPHA8_ASTC_12x12,
 		COMPRESS_MAX,
 	};
 	enum CompressSource {
@@ -409,11 +395,11 @@ public:
 		COMPRESS_SOURCE_NORMAL,
 		COMPRESS_SOURCE_MAX,
 	};
-	static void (*_image_compress_astc_func)(Image *, float, CompressMode, Image::UsedChannels);
+	static void (*_image_compress_astc_func)(Image *, float, CompressMode, Image::UsedChannels,Image::CompressSource);
 	bool astc_a = true;
 
-	Error compress(CompressMode p_mode, CompressSource p_source = COMPRESS_SOURCE_GENERIC, float p_lossy_quality = 0.7);
-	Error compress_from_channels(CompressMode p_mode, UsedChannels p_channels, float p_lossy_quality = 0.7);
+	Error compress(CompressMode p_mode, CompressSource p_source = COMPRESS_SOURCE_GENERIC, float p_lossy_quality = 0.7,Image::CompressSource csource  = COMPRESS_SOURCE_GENERIC);
+	Error compress_from_channels(CompressMode p_mode, UsedChannels p_channels, float p_lossy_quality = 0.7,Image::CompressSource csource = COMPRESS_SOURCE_GENERIC);
 	Error decompress();
 	bool is_compressed() const;
 

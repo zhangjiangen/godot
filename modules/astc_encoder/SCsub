@@ -7,7 +7,6 @@ env_astc = env_modules.Clone()
 
 # Thirdparty source files
 
-thirdparty_obj = []
 
 # Not unbundled so far since not widespread as shared library
 thirdparty_dir = "#thirdparty/astc-encoder/"
@@ -15,10 +14,43 @@ thirdparty_dir = "#thirdparty/astc-encoder/"
 env_astc.Prepend(CPPPATH=[thirdparty_dir])
 
 
+thirdparty_obj = []
+thirdparty_sources = ["Source/astcenc_averages_and_directions.cpp"
+        ,"Source/astcenc_block_sizes.cpp"
+        ,"Source/astcenc_color_quantize.cpp"
+        ,"Source/astcenc_color_unquantize.cpp"
+        ,"Source/astcenc_compress_symbolic.cpp"
+        ,"Source/astcenc_compute_variance.cpp"
+        ,"Source/astcenc_decompress_symbolic.cpp"
+        ,"Source/astcenc_diagnostic_trace.cpp"
+        ,"Source/astcenc_entry.cpp"
+        ,"Source/astcenc_find_best_partitioning.cpp"
+        ,"Source/astcenc_ideal_endpoints_and_weights.cpp"
+        ,"Source/astcenc_image.cpp"
+        ,"Source/astcenc_integer_sequence.cpp"
+        ,"Source/astcenc_mathlib.cpp"
+        ,"Source/astcenc_mathlib_softfloat.cpp"
+        ,"Source/astcenc_partition_tables.cpp"
+        ,"Source/astcenc_percentile_tables.cpp"
+        ,"Source/astcenc_pick_best_endpoint_format.cpp"
+        ,"Source/astcenc_platform_isa_detection.cpp"
+        ,"Source/astcenc_quantization.cpp"
+        ,"Source/astcenc_symbolic_physical.cpp"
+        ,"Source/astcenc_weight_align.cpp"
+        ,"Source/astcenc_weight_quant_xfer_tables.cpp"
+        ,"Source/astcenccli_error_metrics.cpp"
+        ,"Source/astcenccli_image.cpp"
+        ,"Source/astcenccli_image_external.cpp"
+        ,"Source/astcenccli_image_load_store.cpp"
+        ,"Source/astcenccli_platform_dependents.cpp"
+        ,"Source/astcenccli_toplevel.cpp"
+        #,"Source/astcenccli_toplevel_help.cpp"
+        ]
+thirdparty_sources = [thirdparty_dir + file for file in thirdparty_sources]
 env_thirdparty = env_astc.Clone()
 env_thirdparty.disable_warnings()
-env_thirdparty.add_source_files(thirdparty_dir, "Source/*.cpp")
-env_thirdparty.add_source_files(thirdparty_dir, "Source/Fuzzers/*.cpp")
+env_thirdparty.add_source_files(thirdparty_obj, thirdparty_sources)
+env.modules_sources += thirdparty_obj
 
 # Godot source files
 

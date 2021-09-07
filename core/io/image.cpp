@@ -2649,13 +2649,13 @@ Error Image::decompress() {
 	return OK;
 }
 
-Error Image::compress(CompressMode p_mode, CompressSource p_source, float p_lossy_quality) {
+Error Image::compress(CompressMode p_mode, CompressSource p_source, float p_lossy_quality,Image::CompressSource csource ) {
 	ERR_FAIL_INDEX_V_MSG(p_mode, COMPRESS_MAX, ERR_INVALID_PARAMETER, "Invalid compress mode.");
 	ERR_FAIL_INDEX_V_MSG(p_source, COMPRESS_SOURCE_MAX, ERR_INVALID_PARAMETER, "Invalid compress source.");
 	return compress_from_channels(p_mode, detect_used_channels(p_source), p_lossy_quality);
 }
 
-Error Image::compress_from_channels(CompressMode p_mode, UsedChannels p_channels, float p_lossy_quality) {
+Error Image::compress_from_channels(CompressMode p_mode, UsedChannels p_channels, float p_lossy_quality,Image::CompressSource csource ) {
 	switch (p_mode) {
 		case COMPRESS_S3TC: {
 			ERR_FAIL_COND_V(!_image_compress_bc_func, ERR_UNAVAILABLE);
@@ -2690,23 +2690,9 @@ Error Image::compress_from_channels(CompressMode p_mode, UsedChannels p_channels
 		case COMPRESS_ASTC_10x8:
 		case COMPRESS_ASTC_10x10:
 		case COMPRESS_ASTC_12x10:
-		case COMPRESS_ASTC_12x12:
-		case COMPRESS_ALPHA8_ASTC_4x4:
-		case COMPRESS_ALPHA8_ASTC_5x4:
-		case COMPRESS_ALPHA8_ASTC_5x5:
-		case COMPRESS_ALPHA8_ASTC_6x5:
-		case COMPRESS_ALPHA8_ASTC_6x6:
-		case COMPRESS_ALPHA8_ASTC_8x5:
-		case COMPRESS_ALPHA8_ASTC_8x6:
-		case COMPRESS_ALPHA8_ASTC_8x8:
-		case COMPRESS_ALPHA8_ASTC_10x5:
-		case COMPRESS_ALPHA8_ASTC_10x6:
-		case COMPRESS_ALPHA8_ASTC_10x8:
-		case COMPRESS_ALPHA8_ASTC_10x10:
-		case COMPRESS_ALPHA8_ASTC_12x10:
-		case COMPRESS_ALPHA8_ASTC_12x12: {
+		case COMPRESS_ASTC_12x12: {
 			ERR_FAIL_COND_V(!_image_compress_astc_func, ERR_UNAVAILABLE);
-			_image_compress_astc_func(this, p_lossy_quality, p_mode, p_channels);
+			_image_compress_astc_func(this, p_lossy_quality, p_mode, p_channels, csource);
 			break;
 		}
 		case COMPRESS_MAX: {
@@ -3059,7 +3045,7 @@ void (*Image::_image_compress_bptc_func)(Image *, float, Image::UsedChannels) = 
 void (*Image::_image_compress_pvrtc1_4bpp_func)(Image *) = nullptr;
 void (*Image::_image_compress_etc1_func)(Image *, float) = nullptr;
 void (*Image::_image_compress_etc2_func)(Image *, float, Image::UsedChannels) = nullptr;
-void (*Image::_image_compress_astc_func)(Image *, float, Image::CompressMode, Image::UsedChannels) = nullptr;
+void (*Image::_image_compress_astc_func)(Image *, float, Image::CompressMode, Image::UsedChannels,Image::CompressSource) = nullptr;
 void (*Image::_image_decompress_pvrtc)(Image *) = nullptr;
 void (*Image::_image_decompress_bc)(Image *) = nullptr;
 void (*Image::_image_decompress_bptc)(Image *) = nullptr;

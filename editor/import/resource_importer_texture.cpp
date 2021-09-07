@@ -216,7 +216,7 @@ void ResourceImporterTexture::get_import_options(List<ImportOption> *r_options, 
 	r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "svg/scale", PROPERTY_HINT_RANGE, "0.001,100,0.001"), 1.0));
 }
 
-void ResourceImporterTexture::save_to_stex_format(FileAccess *f, const Ref<Image> &p_image, CompressMode p_compress_mode, Image::UsedChannels p_channels, Image::CompressMode p_compress_format, float p_lossy_quality) {
+void ResourceImporterTexture::save_to_stex_format(FileAccess *f, const Ref<Image> &p_image, CompressMode p_compress_mode, Image::UsedChannels p_channels, Image::CompressMode p_compress_format, float p_lossy_quality,Image::CompressSource csource) {
 	switch (p_compress_mode) {
 		case COMPRESS_LOSSLESS: {
 			bool lossless_force_png = ProjectSettings::get_singleton()->get("rendering/textures/lossless_compression/force_png");
@@ -261,7 +261,7 @@ void ResourceImporterTexture::save_to_stex_format(FileAccess *f, const Ref<Image
 		case COMPRESS_VRAM_COMPRESSED: {
 			Ref<Image> image = p_image->duplicate();
 
-			image->compress_from_channels(p_compress_format, p_channels, p_lossy_quality);
+			image->compress_from_channels(p_compress_format, p_channels, p_lossy_quality,csource);
 
 			f->store_32(StreamTexture2D::DATA_FORMAT_IMAGE);
 			f->store_16(image->get_width());
@@ -384,7 +384,7 @@ void ResourceImporterTexture::_save_stex(const Ref<Image> &p_image, const String
 
 	Image::UsedChannels used_channels = image->detect_used_channels(csource);
 
-	save_to_stex_format(f, image, p_compress_mode, used_channels, p_vram_compression, p_lossy_quality);
+	save_to_stex_format(f, image, p_compress_mode, used_channels, p_vram_compression, p_lossy_quality,csource);
 
 	memdelete(f);
 }
@@ -467,7 +467,7 @@ void ResourceImporterTexture::_save_astc_stex(const Ref<Image> &p_image, const S
 
 	Image::UsedChannels used_channels = image->detect_used_channels(csource);
 
-	save_to_stex_format(f, image, p_compress_mode, used_channels, p_vram_compression, p_lossy_quality);
+	save_to_stex_format(f, image, p_compress_mode, used_channels, p_vram_compression, p_lossy_quality,csource);
 
 	memdelete(f);
 }
@@ -641,7 +641,7 @@ Error ResourceImporterTexture::import(const String &p_source_file, const String 
 		}
 		if (can_astc) {
 			int level = p_options["compress/astc_level"];
-			level += Image::COMPRESS_ALPHA8_ASTC_4x4;
+			level += Image::COMPRESS_ASTC_4x4;
 			_save_astc_stex(image, p_save_path + ".astc.stex", compress_mode, lossy, (Image::CompressMode)level, mipmaps, stream, detect_3d, detect_roughness, detect_normal, force_normal, srgb_friendly_pack, true, mipmap_limit, normal_image, roughness_channel);
 			r_platform_variants->push_back("astc");
 			formats_imported.push_back("astc");
