@@ -322,6 +322,11 @@ Ref<Image> StreamTexture2D::load_image_from_file(FileAccess *f, int p_size_limit
 	uint32_t h = f->get_16();
 	uint32_t mipmaps = f->get_32();
 	Image::Format format = Image::Format(f->get_32());
+	uint8_t swizzle = 0xFF;
+	if (format >= Image::FORMAT_RGBA_ASTC_4x4 && format <= Image::FORMAT_SRGB8_ALPHA8_ASTC_12x12)
+	{
+		swizzle = f->get_8();
+	}
 
 	if (data_format == DATA_FORMAT_PNG || data_format == DATA_FORMAT_WEBP || data_format == DATA_FORMAT_BASIS_UNIVERSAL) {
 		//look for a PNG or WEBP file inside
@@ -441,6 +446,12 @@ Ref<Image> StreamTexture2D::load_image_from_file(FileAccess *f, int p_size_limit
 			image.instantiate();
 
 			image->create(tw, th, mipmaps - i ? true : false, format, data);
+			// 保存astc的通道信息
+			image->astc_r = swizzle & 1;
+			image->astc_g =	swizzle & (1 << 1);
+			image->astc_b = swizzle & (1 << 2);
+			image->astc_a = swizzle & (1 << 3);
+				
 
 			return image;
 		}

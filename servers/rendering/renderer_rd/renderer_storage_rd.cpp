@@ -572,9 +572,9 @@ Ref<Image> RendererStorageRD::_validate_texture_format(const Ref<Image> &p_image
 			}
 			// 是否使用a通道
 			if (image->astc_a) {
-				r_format.swizzle_a = RD::TEXTURE_SWIZZLE_ONE;
-			} else {
 				r_format.swizzle_a = RD::TEXTURE_SWIZZLE_A;
+			} else {
+				r_format.swizzle_a = RD::TEXTURE_SWIZZLE_ONE;
 			}
 			r_format.swizzle_a = p_image->get_format() < Image::FORMAT_SRGB8_ALPHA8_ASTC_4x4 ? RD::TEXTURE_SWIZZLE_ONE : RD::TEXTURE_SWIZZLE_A;
 		} break;

@@ -78,14 +78,11 @@ def include_file_in_rd_header(filename, header_data, depth):
         line = line.replace("\r", "")
         line = line.replace("\n", "")
         str_find_index = line.find("//")
-        # 去除注释，因为如果不去注视，那么中文字符无法编译
         if(str_find_index >= 0):
-            print("去除注释:" + str(str_find_index) + line)
             if(str_find_index > 0):
                 line = line[0:str_find_index]
             else:
                 line = ""
-            print("最终代码:" + line)
 
         if header_data.reading == "vertex":
             header_data.vertex_lines += [line]
