@@ -135,7 +135,8 @@ enum PropertyUsageFlags {
 	PROPERTY_USAGE_DEFERRED_SET_RESOURCE = 1 << 26, // when loading, the resource for this property can be set at the end of loading
 	PROPERTY_USAGE_EDITOR_INSTANTIATE_OBJECT = 1 << 27, // For Object properties, instantiate them when creating in editor.
 	PROPERTY_USAGE_EDITOR_BASIC_SETTING = 1 << 28, //for project or editor settings, show when basic settings are selected
-	PROPERTY_USAGE_READ_ONLY = 1 << 29,
+	PROPERTY_USAGE_READ_ONLY = 1 << 29, // Mark a property as read-only in the inspector.
+	PROPERTY_USAGE_ARRAY = 1 << 30, // Used in the inspector to group properties as elements of an array.
 
 	PROPERTY_USAGE_DEFAULT = PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_NETWORK,
 	PROPERTY_USAGE_DEFAULT_INTL = PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_NETWORK | PROPERTY_USAGE_INTERNATIONALIZED,
@@ -238,6 +239,11 @@ enum PropertyUsageFlags {
 	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set_##name); \
 	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                      \
 	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, pro_hit, hint_string, PROPERTY_USAGE_DEFAULT, StringName(), editor_state_get), c_set_##name##_func_name, c_get_##name##_func_name);
+
+#define ADD_ARRAY_COUNT(m_label, m_count_property, m_count_property_setter, m_count_property_getter, m_prefix) ClassDB::add_property_array_count(get_class_static(), m_label, m_count_property, _scs_create(m_count_property_setter), _scs_create(m_count_property_getter), m_prefix)
+#define ADD_ARRAY_COUNT_WITH_USAGE_FLAGS(m_label, m_count_property, m_count_property_setter, m_count_property_getter, m_prefix, m_property_usage_flags) ClassDB::add_property_array_count(get_class_static(), m_label, m_count_property, _scs_create(m_count_property_setter), _scs_create(m_count_property_getter), m_prefix, m_property_usage_flags)
+#define ADD_ARRAY(m_array_path, m_prefix) ClassDB::add_property_array(get_class_static(), m_array_path, m_prefix)
+
 
 struct PropertyInfo {
 	Variant::Type type = Variant::NIL;
