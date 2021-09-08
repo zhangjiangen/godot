@@ -457,7 +457,6 @@ static void image_decompress_astc(Image *r_img) {
 	uint8_t *data_ptr = &data_buf.write[0];
 
 
-	int mip_count = Image::get_mipmap_count(r_img->get_width(), r_img->get_height(), Image::FORMAT_RGBA8);
 	const uint8_t *src_read = r_img->get_data().ptr();
 
 	astcenc_image *uncompressed_image = astc_img_from_unorm8x4_array(data_ptr, r_img->get_width(), r_img->get_height(), false);
