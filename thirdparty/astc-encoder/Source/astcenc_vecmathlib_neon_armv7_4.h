@@ -171,6 +171,93 @@ ASTCENC_SIMD_INLINE int8x16_t vqtbl1q_s8(int8x16_t t, uint8x16_t idx)
 		vtbl2_s8(tab, vget_high_s8(id)));
 }
 
+ASTCENC_SIMD_INLINE uint32_t halfbits_to_floatbits(uint16_t h) {
+	uint16_t h_exp, h_sig;
+	uint32_t f_sgn, f_exp, f_sig;
+
+	h_exp = (h & 0x7c00u);
+	f_sgn = ((uint32_t)h & 0x8000u) << 16;
+	switch (h_exp) {
+		case 0x0000u: /* 0 or subnormal */
+			h_sig = (h & 0x03ffu);
+			/* Signed zero */
+			if (h_sig == 0) {
+				return f_sgn;
+			}
+			/* Subnormal */
+			h_sig <<= 1;
+			while ((h_sig & 0x0400u) == 0) {
+				h_sig <<= 1;
+				h_exp++;
+			}
+			f_exp = ((uint32_t)(127 - 15 - h_exp)) << 23;
+			f_sig = ((uint32_t)(h_sig & 0x03ffu)) << 13;
+			return f_sgn + f_exp + f_sig;
+		case 0x7c00u: /* inf or NaN */
+			/* All-ones exponent and a copy of the significand */
+			return f_sgn + 0x7f800000u + (((uint32_t)(h & 0x03ffu)) << 13);
+		default: /* normalized */
+			/* Just need to adjust the exponent and shift */
+			return f_sgn + (((uint32_t)(h & 0x7fffu) + 0x1c000u) << 13);
+	}
+}
+
+ASTCENC_SIMD_INLINE float halfptr_to_float(const uint16_t *h) {
+	union {
+		uint32_t u32;
+		float f32;
+	} u;
+
+	u.u32 = halfbits_to_floatbits(*h);
+	return u.f32;
+}
+
+ASTCENC_SIMD_INLINE uint16_t make_half_float(uint32_t f) {
+	union {
+		float fv;
+		uint32_t ui;
+	} ci;
+	ci.ui = f;
+
+	uint32_t x = ci.ui;
+	uint32_t sign = (unsigned short)(x >> 31);
+	uint32_t mantissa;
+	uint32_t exp;
+	uint16_t hf;
+
+	// get mantissa
+	mantissa = x & ((1 << 23) - 1);
+	// get exponent bits
+	exp = x & (0xFF << 23);
+	if (exp >= 0x47800000) {
+		// check if the original single precision float number is a NaN
+		if (mantissa && (exp == (0xFF << 23))) {
+			// we have a single precision NaN
+			mantissa = (1 << 23) - 1;
+		} else {
+			// 16-bit half-float representation stores number as Inf
+			mantissa = 0;
+		}
+		hf = (((uint16_t)sign) << 15) | (uint16_t)((0x1F << 10)) |
+				(uint16_t)(mantissa >> 13);
+	}
+	// check if exponent is <= -15
+	else if (exp <= 0x38000000) {
+		/*// store a denorm half-float value or zero
+	exp = (0x38000000 - exp) >> 23;
+	mantissa >>= (14 + exp);
+
+	hf = (((uint16_t)sign) << 15) | (uint16_t)(mantissa);
+	*/
+		hf = 0; //denormals do not work for 3D, convert to zero
+	} else {
+		hf = (((uint16_t)sign) << 15) |
+				(uint16_t)((exp - 0x38000000) >> 13) |
+				(uint16_t)(mantissa >> 13);
+	}
+
+	return hf;
+}
 /**
  * @brief Horizontal integer addition.
  */
@@ -182,5 +269,26 @@ ASTCENC_SIMD_INLINE uint32_t vaddvq_u32(uint32x4_t a)
 	uint32_t a3 = vgetq_lane_u32(a, 3);
 	return a0 + a1 + a2 + a3;
 }
+#if !(__ARM_FP & 2)
+ASTCENC_SIMD_INLINE float32x4_t vcvt_f32_f16(uint16x4_t t)
+{
+	
+	int16_t a0 = vgetq_lane_s16(a, 0);
+	int16_t a1 = vgetq_lane_s16(a, 1);
+	int16_t a2 = vgetq_lane_s16(a, 2);
+	int16_t a3 = vgetq_lane_s16(a, 3);
+	float32x4_t c { halfptr_to_float((const uint16_t *)&a0), halfptr_to_float((const uint16_t *)&a1),halfptr_to_float( (const uint16_t *)&a2), halfptr_to_float((const uint16_t *)&a3) };
+	return c;
+}
+ASTCENC_SIMD_INLINE float16x4_t vcvt_f16_f32(uint32x4_t t)
+{
+	uint32_t a0 = vgetq_lane_u32(a, 0);
+	uint32_t a1 = vgetq_lane_u32(a, 1);
+	uint32_t a2 = vgetq_lane_u32(a, 2);
+	uint32_t a3 = vgetq_lane_u32(a, 3);
+	float16x4_t c { make_half_float(a0), make_half_float(a1), make_half_float(a2), make_half_float(a3) };
+	return c;
+}
+#endif
 
 #endif
