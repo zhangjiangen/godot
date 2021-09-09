@@ -277,14 +277,14 @@ ASTCENC_SIMD_INLINE uint32_t vaddvq_u32(uint32x4_t a)
 ASTCENC_SIMD_INLINE float32x4_t vcvt_f32_f16(uint16x4_t a)
 {
 	
-	int16_t a0 = vgetq_lane_s16(a, 0);
-	int16_t a1 = vgetq_lane_s16(a, 1);
-	int16_t a2 = vgetq_lane_s16(a, 2);
-	int16_t a3 = vgetq_lane_s16(a, 3);
+	uint16_t a0 = vgetq_lane_u16(a, 0);
+	uint16_t a1 = vgetq_lane_u16(a, 1);
+	uint16_t a2 = vgetq_lane_u16(a, 2);
+	uint16_t a3 = vgetq_lane_u16(a, 3);
 	float32x4_t c { halfptr_to_float((const uint16_t *)&a0), halfptr_to_float((const uint16_t *)&a1),halfptr_to_float( (const uint16_t *)&a2), halfptr_to_float((const uint16_t *)&a3) };
 	return c;
 }
-ASTCENC_SIMD_INLINE float16x4_t vcvt_f16_f32(uint32x4_t t)
+ASTCENC_SIMD_INLINE float16x4_t vcvt_f16_f32(uint32x4_t a)
 {
 	uint32_t a0 = vgetq_lane_u32(a, 0);
 	uint32_t a1 = vgetq_lane_u32(a, 1);
