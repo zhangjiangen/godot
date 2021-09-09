@@ -80,8 +80,6 @@ static void image_compress_astc_func(Image *r_img, float p_lossy_quality, Image:
 		is_a = false;
 	} else if (p_channels == Image::USED_CHANNELS_RGB) {
 		is_a = false;
-	} else if (p_channels == Image::USED_CHANNELS_RGB) {
-		is_a = false;
 	} else if (p_channels == Image::USED_CHANNELS_LA) {
 		is_g = false;
 		is_b = false;
