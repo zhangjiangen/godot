@@ -26,12 +26,11 @@
 #define ASTC_VECMATHLIB_NEON_ARMV7_4_H_INCLUDED
 
 #ifndef ASTCENC_SIMD_INLINE
-	#error "Include astcenc_vecmathlib.h, do not include directly"
+#error "Include astcenc_vecmathlib.h, do not include directly"
 #endif
 
 #include <algorithm>
 #include <cfenv>
-
 
 // arm-linux-gnueabi-gcc contains the following functions by using
 // #pragma GCC target ("fpu=neon-fp-armv8"), while clang does not.
@@ -43,8 +42,7 @@
  * If one vector element is numeric and the other is a quiet NaN,
  * the result placed in the vector is the numerical value.
  */
-ASTCENC_SIMD_INLINE float32x4_t vmaxnmq_f32(float32x4_t a, float32x4_t b)
-{
+ASTCENC_SIMD_INLINE float32x4_t vmaxnmq_f32(float32x4_t a, float32x4_t b) {
 	uint32x4_t amask = vceqq_f32(a, a);
 	uint32x4_t bmask = vceqq_f32(b, b);
 	a = vbslq_f32(amask, a, b);
@@ -58,8 +56,7 @@ ASTCENC_SIMD_INLINE float32x4_t vmaxnmq_f32(float32x4_t a, float32x4_t b)
  * If one vector element is numeric and the other is a quiet NaN,
  * the result placed in the vector is the numerical value.
  */
-ASTCENC_SIMD_INLINE float32x4_t vminnmq_f32(float32x4_t a, float32x4_t b)
-{
+ASTCENC_SIMD_INLINE float32x4_t vminnmq_f32(float32x4_t a, float32x4_t b) {
 	uint32x4_t amask = vceqq_f32(a, a);
 	uint32x4_t bmask = vceqq_f32(b, b);
 	a = vbslq_f32(amask, a, b);
@@ -70,14 +67,13 @@ ASTCENC_SIMD_INLINE float32x4_t vminnmq_f32(float32x4_t a, float32x4_t b)
 /**
  * @brief Return a float rounded to the nearest integer value.
  */
-ASTCENC_SIMD_INLINE float32x4_t vrndnq_f32(float32x4_t a)
-{
+ASTCENC_SIMD_INLINE float32x4_t vrndnq_f32(float32x4_t a) {
 	assert(std::fegetround() == FE_TONEAREST);
 	float a0 = std::nearbyintf(vgetq_lane_f32(a, 0));
 	float a1 = std::nearbyintf(vgetq_lane_f32(a, 1));
 	float a2 = std::nearbyintf(vgetq_lane_f32(a, 2));
 	float a3 = std::nearbyintf(vgetq_lane_f32(a, 3));
-	float32x4_t c { a0, a1, a2, a3 };
+	float32x4_t c{ a0, a1, a2, a3 };
 	return c;
 }
 
@@ -86,8 +82,7 @@ ASTCENC_SIMD_INLINE float32x4_t vrndnq_f32(float32x4_t a)
 /**
  * @brief Return the horizontal maximum of a vector.
  */
-ASTCENC_SIMD_INLINE float vmaxvq_f32(float32x4_t a)
-{
+ASTCENC_SIMD_INLINE float vmaxvq_f32(float32x4_t a) {
 	float a0 = vgetq_lane_f32(a, 0);
 	float a1 = vgetq_lane_f32(a, 1);
 	float a2 = vgetq_lane_f32(a, 2);
@@ -98,8 +93,7 @@ ASTCENC_SIMD_INLINE float vmaxvq_f32(float32x4_t a)
 /**
  * @brief Return the horizontal maximum of a vector.
  */
-ASTCENC_SIMD_INLINE float vminvq_f32(float32x4_t a)
-{
+ASTCENC_SIMD_INLINE float vminvq_f32(float32x4_t a) {
 	float a0 = vgetq_lane_f32(a, 0);
 	float a1 = vgetq_lane_f32(a, 1);
 	float a2 = vgetq_lane_f32(a, 2);
@@ -110,8 +104,7 @@ ASTCENC_SIMD_INLINE float vminvq_f32(float32x4_t a)
 /**
  * @brief Return the horizontal maximum of a vector.
  */
-ASTCENC_SIMD_INLINE int32_t vmaxvq_s32(int32x4_t a)
-{
+ASTCENC_SIMD_INLINE int32_t vmaxvq_s32(int32x4_t a) {
 	int32_t a0 = vgetq_lane_s32(a, 0);
 	int32_t a1 = vgetq_lane_s32(a, 1);
 	int32_t a2 = vgetq_lane_s32(a, 2);
@@ -122,8 +115,7 @@ ASTCENC_SIMD_INLINE int32_t vmaxvq_s32(int32x4_t a)
 /**
  * @brief Return the horizontal maximum of a vector.
  */
-ASTCENC_SIMD_INLINE int32_t vminvq_s32(int32x4_t a)
-{
+ASTCENC_SIMD_INLINE int32_t vminvq_s32(int32x4_t a) {
 	int32_t a0 = vgetq_lane_s32(a, 0);
 	int32_t a1 = vgetq_lane_s32(a, 1);
 	int32_t a2 = vgetq_lane_s32(a, 2);
@@ -134,41 +126,38 @@ ASTCENC_SIMD_INLINE int32_t vminvq_s32(int32x4_t a)
 /**
  * @brief Return the sqrt of the lanes in the vector.
  */
-ASTCENC_SIMD_INLINE float32x4_t vsqrtq_f32(float32x4_t a)
-{
+ASTCENC_SIMD_INLINE float32x4_t vsqrtq_f32(float32x4_t a) {
 	float a0 = std::sqrt(vgetq_lane_f32(a, 0));
 	float a1 = std::sqrt(vgetq_lane_f32(a, 1));
 	float a2 = std::sqrt(vgetq_lane_f32(a, 2));
 	float a3 = std::sqrt(vgetq_lane_f32(a, 3));
-	float32x4_t c { a0, a1, a2, a3 };
+	float32x4_t c{ a0, a1, a2, a3 };
 	return c;
 }
 
 /**
  * @brief Vector by vector division.
  */
-ASTCENC_SIMD_INLINE float32x4_t vdivq_f32(float32x4_t a, float32x4_t b)
-{
+ASTCENC_SIMD_INLINE float32x4_t vdivq_f32(float32x4_t a, float32x4_t b) {
 	float a0 = vgetq_lane_f32(a, 0), b0 = vgetq_lane_f32(b, 0);
 	float a1 = vgetq_lane_f32(a, 1), b1 = vgetq_lane_f32(b, 1);
 	float a2 = vgetq_lane_f32(a, 2), b2 = vgetq_lane_f32(b, 2);
 	float a3 = vgetq_lane_f32(a, 3), b3 = vgetq_lane_f32(b, 3);
-	float32x4_t c { a0 / b0, a1 / b1, a2 / b2, a3 / b3 };
+	float32x4_t c{ a0 / b0, a1 / b1, a2 / b2, a3 / b3 };
 	return c;
 }
 
 /**
  * @brief Table vector lookup.
  */
-ASTCENC_SIMD_INLINE int8x16_t vqtbl1q_s8(int8x16_t t, uint8x16_t idx)
-{
+ASTCENC_SIMD_INLINE int8x16_t vqtbl1q_s8(int8x16_t t, uint8x16_t idx) {
 	int8x8x2_t tab;
 	tab.val[0] = vget_low_s8(t);
 	tab.val[1] = vget_high_s8(t);
 	int8x16_t id = vreinterpretq_s8_u8(idx);
 	return vcombine_s8(
-		vtbl2_s8(tab, vget_low_s8(id)),
-		vtbl2_s8(tab, vget_high_s8(id)));
+			vtbl2_s8(tab, vget_low_s8(id)),
+			vtbl2_s8(tab, vget_high_s8(id)));
 }
 
 ASTCENC_SIMD_INLINE uint32_t halfbits_to_floatbits(uint16_t h) {
@@ -243,7 +232,7 @@ ASTCENC_SIMD_INLINE float16_t make_half_float(uint32_t f) {
 			mantissa = 0;
 		}
 		hf = (((uint16_t)sign) << 15) | (uint16_t)((0x1F << 10)) |
-				(uint16_t)(mantissa >> 13);
+			 (uint16_t)(mantissa >> 13);
 	}
 	// check if exponent is <= -15
 	else if (exp <= 0x38000000) {
@@ -256,17 +245,16 @@ ASTCENC_SIMD_INLINE float16_t make_half_float(uint32_t f) {
 		hf = 0; //denormals do not work for 3D, convert to zero
 	} else {
 		hf = (((uint16_t)sign) << 15) |
-				(uint16_t)((exp - 0x38000000) >> 13) |
-				(uint16_t)(mantissa >> 13);
+			 (uint16_t)((exp - 0x38000000) >> 13) |
+			 (uint16_t)(mantissa >> 13);
 	}
-	ci2.ui = hf; 
+	ci2.ui = hf;
 	return ci2.fv;
 }
 /**
  * @brief Horizontal integer addition.
  */
-ASTCENC_SIMD_INLINE uint32_t vaddvq_u32(uint32x4_t a)
-{
+ASTCENC_SIMD_INLINE uint32_t vaddvq_u32(uint32x4_t a) {
 	uint32_t a0 = vgetq_lane_u32(a, 0);
 	uint32_t a1 = vgetq_lane_u32(a, 1);
 	uint32_t a2 = vgetq_lane_u32(a, 2);
@@ -274,23 +262,20 @@ ASTCENC_SIMD_INLINE uint32_t vaddvq_u32(uint32x4_t a)
 	return a0 + a1 + a2 + a3;
 }
 #if !(__ARM_FP & 2)
-ASTCENC_SIMD_INLINE float32x4_t vcvt_f32_f16(uint16x4_t a)
-{
-	
-	uint16_t a0 = vgetq_lane_u16(a, 0);
-	uint16_t a1 = vgetq_lane_u16(a, 1);
-	uint16_t a2 = vgetq_lane_u16(a, 2);
-	uint16_t a3 = vgetq_lane_u16(a, 3);
-	float32x4_t c { halfptr_to_float((const uint16_t *)&a0), halfptr_to_float((const uint16_t *)&a1),halfptr_to_float( (const uint16_t *)&a2), halfptr_to_float((const uint16_t *)&a3) };
+ASTCENC_SIMD_INLINE float32x4_t vcvt_f32_f16(uint16x4_t a) {
+	uint16_t a0 = vget_lane_u16(a, 0);
+	uint16_t a1 = vget_lane_u16(a, 1);
+	uint16_t a2 = vget_lane_u16(a, 2);
+	uint16_t a3 = vget_lane_u16(a, 3);
+	float32x4_t c{ halfptr_to_float((const uint16_t *)&a0), halfptr_to_float((const uint16_t *)&a1), halfptr_to_float((const uint16_t *)&a2), halfptr_to_float((const uint16_t *)&a3) };
 	return c;
 }
-ASTCENC_SIMD_INLINE float16x4_t vcvt_f16_f32(uint32x4_t a)
-{
+ASTCENC_SIMD_INLINE float16x4_t vcvt_f16_f32(uint32x4_t a) {
 	uint32_t a0 = vgetq_lane_u32(a, 0);
 	uint32_t a1 = vgetq_lane_u32(a, 1);
 	uint32_t a2 = vgetq_lane_u32(a, 2);
 	uint32_t a3 = vgetq_lane_u32(a, 3);
-	float16x4_t c { make_half_float(a0), make_half_float(a1), make_half_float(a2), make_half_float(a3) };
+	float16x4_t c{ make_half_float(a0), make_half_float(a1), make_half_float(a2), make_half_float(a3) };
 	return c;
 }
 #endif
