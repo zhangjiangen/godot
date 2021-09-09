@@ -212,11 +212,15 @@ ASTCENC_SIMD_INLINE float halfptr_to_float(const uint16_t *h) {
 	return u.f32;
 }
 
-ASTCENC_SIMD_INLINE uint16_t make_half_float(uint32_t f) {
+ASTCENC_SIMD_INLINE float16_t make_half_float(uint32_t f) {
 	union {
 		float fv;
 		uint32_t ui;
 	} ci;
+	union {
+		float16_t fv;
+		uint16_t ui;
+	} ci2;
 	ci.ui = f;
 
 	uint32_t x = ci.ui;
@@ -255,8 +259,8 @@ ASTCENC_SIMD_INLINE uint16_t make_half_float(uint32_t f) {
 				(uint16_t)((exp - 0x38000000) >> 13) |
 				(uint16_t)(mantissa >> 13);
 	}
-
-	return hf;
+	ci2.ui = hf; 
+	return ci2.fv;
 }
 /**
  * @brief Horizontal integer addition.
@@ -270,7 +274,7 @@ ASTCENC_SIMD_INLINE uint32_t vaddvq_u32(uint32x4_t a)
 	return a0 + a1 + a2 + a3;
 }
 #if !(__ARM_FP & 2)
-ASTCENC_SIMD_INLINE float32x4_t vcvt_f32_f16(uint16x4_t t)
+ASTCENC_SIMD_INLINE float32x4_t vcvt_f32_f16(uint16x4_t a)
 {
 	
 	int16_t a0 = vgetq_lane_s16(a, 0);
