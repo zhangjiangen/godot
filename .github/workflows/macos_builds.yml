@@ -61,7 +61,7 @@ jobs:
       # Execute unit tests for the editor
       - name: Unit Tests
         run: |
-          ./bin/godot.osx.opt.tools.64 --test
+          ./bin/godot_osx_opt_tools_64 --test
 
       - uses: actions/upload-artifact@v2
         with:
