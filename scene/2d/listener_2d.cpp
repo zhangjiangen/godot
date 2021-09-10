@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  multiplayer.h                                                        */
+/*  listener_2d.cpp                                                      */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,53 +28,85 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef MULTIPLAYER_H
-#define MULTIPLAYER_H
+#include "listener_2d.h"
 
-#include "core/variant/binder_common.h"
-
-#include "core/string/string_name.h"
-
-namespace Multiplayer {
-
-enum TransferMode {
-	TRANSFER_MODE_UNRELIABLE,
-	TRANSFER_MODE_ORDERED,
-	TRANSFER_MODE_RELIABLE
-};
-
-enum RPCMode {
-	RPC_MODE_DISABLED, // No rpc for this method, calls to this will be blocked (default)
-	RPC_MODE_ANY, // Any peer can call this RPC
-	RPC_MODE_AUTHORITY, // / Only the node's multiplayer authority (server by default) can call this RPC
-};
-
-struct RPCConfig {
-	StringName name;
-	RPCMode rpc_mode = RPC_MODE_DISABLED;
-	bool sync = false;
-	TransferMode transfer_mode = TRANSFER_MODE_RELIABLE;
-	int channel = 0;
-
-	bool operator==(RPCConfig const &p_other) const {
-		return name == p_other.name;
+bool Listener2D::_set(const StringName &p_name, const Variant &p_value) {
+	if (p_name == "current") {
+		if (p_value.operator bool()) {
+			make_current();
+		} else {
+			clear_current();
+		}
+	} else {
+		return false;
 	}
-};
+	return true;
+}
 
-struct SortRPCConfig {
-	StringName::AlphCompare compare;
-	bool operator()(const RPCConfig &p_a, const RPCConfig &p_b) const {
-		return compare(p_a.name, p_b.name);
+bool Listener2D::_get(const StringName &p_name, Variant &r_ret) const {
+	if (p_name == "current") {
+		if (is_inside_tree() && get_tree()->is_node_being_edited(this)) {
+			r_ret = current;
+		} else {
+			r_ret = is_current();
+		}
+	} else {
+		return false;
 	}
-};
+	return true;
+}
 
-}; // namespace Multiplayer
+void Listener2D::_get_property_list(List<PropertyInfo> *p_list) const {
+	p_list->push_back(PropertyInfo(Variant::BOOL, "current"));
+}
 
-// This is needed for proper docs generation (i.e. not "Multiplayer."-prefixed).
-typedef Multiplayer::RPCMode RPCMode;
-typedef Multiplayer::TransferMode TransferMode;
+void Listener2D::_notification(int p_what) {
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE: {
+			if (!get_tree()->is_node_being_edited(this) && current) {
+				make_current();
+			}
+		} break;
+		case NOTIFICATION_EXIT_TREE: {
+			if (!get_tree()->is_node_being_edited(this)) {
+				if (is_current()) {
+					clear_current();
+					current = true; // Keep it true.
+				} else {
+					current = false;
+				}
+			}
+		} break;
+	}
+}
 
-VARIANT_ENUM_CAST(RPCMode);
-VARIANT_ENUM_CAST(TransferMode);
+void Listener2D::make_current() {
+	current = true;
+	if (!is_inside_tree()) {
+		return;
+	}
+	get_viewport()->_listener_2d_set(this);
+}
 
-#endif // MULTIPLAYER_H
+void Listener2D::clear_current() {
+	current = false;
+	if (!is_inside_tree()) {
+		return;
+	}
+	get_viewport()->_listener_2d_remove(this);
+}
+
+bool Listener2D::is_current() const {
+	if (is_inside_tree() && !get_tree()->is_node_being_edited(this)) {
+		return get_viewport()->get_listener_2d() == this;
+	} else {
+		return current;
+	}
+	return false;
+}
+
+void Listener2D::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("make_current"), &Listener2D::make_current);
+	ClassDB::bind_method(D_METHOD("clear_current"), &Listener2D::clear_current);
+	ClassDB::bind_method(D_METHOD("is_current"), &Listener2D::is_current);
+}

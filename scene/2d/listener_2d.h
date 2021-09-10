@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  multiplayer.h                                                        */
+/*  listener_2d.h                                                        */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,53 +28,34 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef MULTIPLAYER_H
-#define MULTIPLAYER_H
+#ifndef LISTENER_2D_H
+#define LISTENER_2D_H
 
-#include "core/variant/binder_common.h"
+#include "scene/2d/node_2d.h"
+#include "scene/main/window.h"
 
-#include "core/string/string_name.h"
+class Listener2D : public Node2D {
+	GDCLASS(Listener2D, Node2D);
 
-namespace Multiplayer {
+private:
+	bool current = false;
 
-enum TransferMode {
-	TRANSFER_MODE_UNRELIABLE,
-	TRANSFER_MODE_ORDERED,
-	TRANSFER_MODE_RELIABLE
+	friend class Viewport;
+
+protected:
+	void _update_listener();
+
+	bool _set(const StringName &p_name, const Variant &p_value);
+	bool _get(const StringName &p_name, Variant &r_ret) const;
+	void _get_property_list(List<PropertyInfo> *p_list) const;
+	void _notification(int p_what);
+
+	static void _bind_methods();
+
+public:
+	void make_current();
+	void clear_current();
+	bool is_current() const;
 };
 
-enum RPCMode {
-	RPC_MODE_DISABLED, // No rpc for this method, calls to this will be blocked (default)
-	RPC_MODE_ANY, // Any peer can call this RPC
-	RPC_MODE_AUTHORITY, // / Only the node's multiplayer authority (server by default) can call this RPC
-};
-
-struct RPCConfig {
-	StringName name;
-	RPCMode rpc_mode = RPC_MODE_DISABLED;
-	bool sync = false;
-	TransferMode transfer_mode = TRANSFER_MODE_RELIABLE;
-	int channel = 0;
-
-	bool operator==(RPCConfig const &p_other) const {
-		return name == p_other.name;
-	}
-};
-
-struct SortRPCConfig {
-	StringName::AlphCompare compare;
-	bool operator()(const RPCConfig &p_a, const RPCConfig &p_b) const {
-		return compare(p_a.name, p_b.name);
-	}
-};
-
-}; // namespace Multiplayer
-
-// This is needed for proper docs generation (i.e. not "Multiplayer."-prefixed).
-typedef Multiplayer::RPCMode RPCMode;
-typedef Multiplayer::TransferMode TransferMode;
-
-VARIANT_ENUM_CAST(RPCMode);
-VARIANT_ENUM_CAST(TransferMode);
-
-#endif // MULTIPLAYER_H
+#endif
