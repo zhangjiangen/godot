@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  option_button.h                                                      */
+/*  listener_2d.cpp                                                      */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,73 +28,85 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef OPTION_BUTTON_H
-#define OPTION_BUTTON_H
+#include "listener_2d.h"
 
-#include "scene/gui/button.h"
-#include "scene/gui/popup_menu.h"
+bool Listener2D::_set(const StringName &p_name, const Variant &p_value) {
+	if (p_name == "current") {
+		if (p_value.operator bool()) {
+			make_current();
+		} else {
+			clear_current();
+		}
+	} else {
+		return false;
+	}
+	return true;
+}
 
-class OptionButton : public Button {
-	GDCLASS(OptionButton, Button);
+bool Listener2D::_get(const StringName &p_name, Variant &r_ret) const {
+	if (p_name == "current") {
+		if (is_inside_tree() && get_tree()->is_node_being_edited(this)) {
+			r_ret = current;
+		} else {
+			r_ret = is_current();
+		}
+	} else {
+		return false;
+	}
+	return true;
+}
 
-	PopupMenu *popup;
-	int current = -1;
+void Listener2D::_get_property_list(List<PropertyInfo> *p_list) const {
+	p_list->push_back(PropertyInfo(Variant::BOOL, "current"));
+}
 
-	void _focused(int p_which);
-	void _selected(int p_which);
-	void _select(int p_which, bool p_emit = false);
-	void _select_int(int p_which);
+void Listener2D::_notification(int p_what) {
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE: {
+			if (!get_tree()->is_node_being_edited(this) && current) {
+				make_current();
+			}
+		} break;
+		case NOTIFICATION_EXIT_TREE: {
+			if (!get_tree()->is_node_being_edited(this)) {
+				if (is_current()) {
+					clear_current();
+					current = true; // Keep it true.
+				} else {
+					current = false;
+				}
+			}
+		} break;
+	}
+}
 
-	Array _get_items() const;
-	void _set_items(const Array &p_items);
+void Listener2D::make_current() {
+	current = true;
+	if (!is_inside_tree()) {
+		return;
+	}
+	get_viewport()->_listener_2d_set(this);
+}
 
-	virtual void pressed() override;
+void Listener2D::clear_current() {
+	current = false;
+	if (!is_inside_tree()) {
+		return;
+	}
+	get_viewport()->_listener_2d_remove(this);
+}
 
-protected:
-	Size2 get_minimum_size() const override;
-	void _notification(int p_what);
-	static void _bind_methods();
+bool Listener2D::is_current() const {
+	if (is_inside_tree() && !get_tree()->is_node_being_edited(this)) {
+		return get_viewport()->get_listener_2d() == this;
+	} else {
+		return current;
+	}
+	return false;
+}
 
-public:
-	// ATTENTION: This is used by the POT generator's scene parser. If the number of properties returned by `_get_items()` ever changes,
-	// this value should be updated to reflect the new size.
-	static const int ITEM_PROPERTY_SIZE = 5;
-
-	void add_icon_item(const Ref<Texture2D> &p_icon, const String &p_label, int p_id = -1);
-	void add_item(const String &p_label, int p_id = -1);
-
-	void set_item_text(int p_idx, const String &p_text);
-	void set_item_icon(int p_idx, const Ref<Texture2D> &p_icon);
-	void set_item_id(int p_idx, int p_id);
-	void set_item_metadata(int p_idx, const Variant &p_metadata);
-	void set_item_disabled(int p_idx, bool p_disabled);
-
-	String get_item_text(int p_idx) const;
-	Ref<Texture2D> get_item_icon(int p_idx) const;
-	int get_item_id(int p_idx) const;
-	int get_item_index(int p_id) const;
-	Variant get_item_metadata(int p_idx) const;
-	bool is_item_disabled(int p_idx) const;
-
-	int get_item_count() const;
-
-	void add_separator();
-
-	void clear();
-
-	void select(int p_idx);
-	int get_selected() const;
-	int get_selected_id() const;
-	Variant get_selected_metadata() const;
-
-	void remove_item(int p_idx);
-
-	PopupMenu *get_popup() const;
-
-	virtual void get_translatable_strings(List<String> *p_strings) const override;
-
-	OptionButton();
-	~OptionButton();
-};
-
-#endif
+void Listener2D::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("make_current"), &Listener2D::make_current);
+	ClassDB::bind_method(D_METHOD("clear_current"), &Listener2D::clear_current);
+	ClassDB::bind_method(D_METHOD("is_current"), &Listener2D::is_current);
+}
