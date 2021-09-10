@@ -47,11 +47,17 @@ static _FORCE_INLINE_ T _bezier_interp(real_t t, T start, T control_1, T control
 const char *Curve::SIGNAL_RANGE_CHANGED = "range_changed";
 
 Curve::Curve() {
+	// _points.insert(0, Point(Vector2(0, 0), 0, 0, TANGENT_LINEAR, TANGENT_LINEAR));
+	// _points.insert(1, Point(Vector2(0.5f, 1), 0, 0, TANGENT_LINEAR, TANGENT_LINEAR));
+	// _points.insert(2, Point(Vector2(1.0f, 0), 0, 0, TANGENT_LINEAR, TANGENT_LINEAR));
+}
+
+void Curve::build_defualt() {
+	clear_points();
 	_points.insert(0, Point(Vector2(0, 0), 0, 0, TANGENT_LINEAR, TANGENT_LINEAR));
 	_points.insert(1, Point(Vector2(0.5f, 1), 0, 0, TANGENT_LINEAR, TANGENT_LINEAR));
 	_points.insert(2, Point(Vector2(1.0f, 0), 0, 0, TANGENT_LINEAR, TANGENT_LINEAR));
 }
-
 int Curve::add_point(Vector2 p_pos, real_t left_tangent, real_t right_tangent, TangentMode left_mode, TangentMode right_mode) {
 	// Add a point and preserve order
 

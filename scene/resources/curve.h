@@ -73,6 +73,7 @@ public:
 	};
 
 	Curve();
+	void build_defualt();
 
 	int get_point_count() const { return _points.size(); }
 
