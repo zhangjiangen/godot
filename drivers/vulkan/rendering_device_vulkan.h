@@ -816,7 +816,7 @@ private:
 	// When using split command lists, this is
 	// implemented internally using secondary command
 	// buffers. As they can be created in threads,
-	// each needs it's own command pool.
+	// each needs its own command pool.
 
 	struct SplitDrawListAllocator {
 		VkCommandPool command_pool = VK_NULL_HANDLE;
