@@ -417,8 +417,6 @@ void VisualShaderNodeVec4Constant::_bind_methods() {
 VisualShaderNodeVec4Constant::VisualShaderNodeVec4Constant() {
 }
 
-
-
 ////////////// VectorI
 
 String VisualShaderNodeVec3IConstant::get_caption() const {
@@ -3419,11 +3417,11 @@ VisualShaderNodeClamp::PortType VisualShaderNodeClamp::get_output_port_type(int 
 	switch (op_type) {
 		case OP_TYPE_INT:
 			return PORT_TYPE_SCALAR_INT;
-		case OP_TYPE_VECTOR:
+		case OP_TYPE_VECTOR3:
 			return PORT_TYPE_VECTOR;
 		case OP_TYPE_VECTOR4:
 			return PORT_TYPE_VECTOR4;
-		case OP_TYPE_IVECTOR:
+		case OP_TYPE_IVECTOR3:
 			return PORT_TYPE_IVECTOR;
 		case OP_TYPE_IVECTOR4:
 			return PORT_TYPE_IVECTOR4;
@@ -3457,25 +3455,25 @@ void VisualShaderNodeClamp::set_op_type(OpType p_op_type) {
 			set_input_port_default_value(1, 0);
 			set_input_port_default_value(2, 0);
 			break;
-		case OP_TYPE_VECTOR:
+		case OP_TYPE_VECTOR3:
 			set_input_port_default_value(0, Vector3(0.0, 0.0, 0.0));
 			set_input_port_default_value(1, Vector3(0.0, 0.0, 0.0));
 			set_input_port_default_value(2, Vector3(0.0, 0.0, 0.0));
 			break;
 		case OP_TYPE_VECTOR4:
-			set_input_port_default_value(0, Plane(0.0, 0.0, 0.0,0));
-			set_input_port_default_value(1, Plane(0.0, 0.0, 0.0,0));
-			set_input_port_default_value(2, Plane(0.0, 0.0, 0.0,0));
+			set_input_port_default_value(0, Plane(0.0, 0.0, 0.0, 0));
+			set_input_port_default_value(1, Plane(0.0, 0.0, 0.0, 0));
+			set_input_port_default_value(2, Plane(0.0, 0.0, 0.0, 0));
 			break;
-		case OP_TYPE_IVECTOR:
+		case OP_TYPE_IVECTOR3:
 			set_input_port_default_value(0, Vector3i(0.0, 0.0, 0.0));
 			set_input_port_default_value(1, Vector3i(0.0, 0.0, 0.0));
 			set_input_port_default_value(2, Vector3i(0.0, 0.0, 0.0));
 			break;
 		case OP_TYPE_IVECTOR4:
-			set_input_port_default_value(0, Rect2i(0.0, 0.0, 0.0,0));
-			set_input_port_default_value(1, Rect2i(0.0, 0.0, 0.0,0));
-			set_input_port_default_value(2, Rect2i(0.0, 0.0, 0.0,0));
+			set_input_port_default_value(0, Rect2i(0.0, 0.0, 0.0, 0));
+			set_input_port_default_value(1, Rect2i(0.0, 0.0, 0.0, 0));
+			set_input_port_default_value(2, Rect2i(0.0, 0.0, 0.0, 0));
 			break;
 		default:
 			break;
@@ -3502,9 +3500,9 @@ void VisualShaderNodeClamp::_bind_methods() {
 
 	BIND_ENUM_CONSTANT(OP_TYPE_FLOAT);
 	BIND_ENUM_CONSTANT(OP_TYPE_INT);
-	BIND_ENUM_CONSTANT(OP_TYPE_VECTOR);
+	BIND_ENUM_CONSTANT(OP_TYPE_VECTOR3);
 	BIND_ENUM_CONSTANT(OP_TYPE_VECTOR4);
-	BIND_ENUM_CONSTANT(OP_TYPE_IVECTOR);
+	BIND_ENUM_CONSTANT(OP_TYPE_IVECTOR3);
 	BIND_ENUM_CONSTANT(OP_TYPE_IVECTOR4);
 	BIND_ENUM_CONSTANT(OP_TYPE_MAX);
 }
@@ -4154,21 +4152,21 @@ int VisualShaderNodeVector4Compose::get_output_port_count() const {
 VisualShaderNodeVector4Compose::PortType VisualShaderNodeVector4Compose::get_output_port_type(int p_port) const {
 	if (p_port == 0) {
 		return PORT_TYPE_VECTOR4;
-	} 
+	}
 	return PORT_TYPE_VECTOR;
 }
 
 String VisualShaderNodeVector4Compose::get_output_port_name(int p_port) const {
 	if (p_port == 0) {
 		return "vec4";
-	} 
+	}
 	return "vec3";
 }
 
 String VisualShaderNodeVector4Compose::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
 	String code;
 	code = "	" + p_output_vars[0] + " = vec4(" + p_input_vars[0] + ", " + p_input_vars[1] + ", " + p_input_vars[2] + p_input_vars[3] + ");\n";
-	code = "	" + p_output_vars[1] + " = vec3(" + p_input_vars[0] + ", " + p_input_vars[1] + ", " + p_input_vars[2]  + ");\n";
+	code = "	" + p_output_vars[1] + " = vec3(" + p_input_vars[0] + ", " + p_input_vars[1] + ", " + p_input_vars[2] + ");\n";
 	return code;
 }
 
@@ -6733,11 +6731,11 @@ int VisualShaderNodeMultiplyAdd::get_output_port_count() const {
 
 VisualShaderNode::PortType VisualShaderNodeMultiplyAdd::get_output_port_type(int p_port) const {
 	switch (p_port) {
-		case OP_TYPE_SCALAR: 
+		case OP_TYPE_SCALAR:
 			return PORT_TYPE_SCALAR;
 		case OP_TYPE_VECTOR4:
 			return PORT_TYPE_VECTOR4;
-		case OP_TYPE_IVECTOR :
+		case OP_TYPE_IVECTOR:
 			return PORT_TYPE_IVECTOR;
 		case OP_TYPE_IVECTOR4:
 			return PORT_TYPE_IVECTOR4;
