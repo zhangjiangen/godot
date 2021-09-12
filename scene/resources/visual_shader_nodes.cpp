@@ -3384,11 +3384,11 @@ VisualShaderNodeClamp::PortType VisualShaderNodeClamp::get_input_port_type(int p
 	switch (op_type) {
 		case OP_TYPE_INT:
 			return PORT_TYPE_SCALAR_INT;
-		case OP_TYPE_VECTOR:
+		case OP_TYPE_VECTOR3:
 			return PORT_TYPE_VECTOR;
 		case OP_TYPE_VECTOR4:
 			return PORT_TYPE_VECTOR4;
-		case OP_TYPE_IVECTOR:
+		case OP_TYPE_IVECTOR3:
 			return PORT_TYPE_IVECTOR;
 		case OP_TYPE_IVECTOR4:
 			return PORT_TYPE_IVECTOR4;
