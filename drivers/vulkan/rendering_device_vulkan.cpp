@@ -1502,6 +1502,12 @@ const VkImageType RenderingDeviceVulkan::vulkan_image_type[RenderingDevice::TEXT
 	VK_IMAGE_TYPE_2D
 };
 
+bool RenderingDeviceVulkan::get_geometry_shader_is_supported() {
+	return context->get_multiview_capabilities().geometry_shader_is_supported;
+}
+bool RenderingDeviceVulkan::get_tessellation_shader_is_supported() {
+	return context->get_multiview_capabilities().tessellation_shader_is_supported;
+}
 /***************************/
 /**** BUFFER MANAGEMENT ****/
 /***************************/

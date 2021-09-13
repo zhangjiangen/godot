@@ -56,6 +56,8 @@ class ShaderRD {
 		CharString vertex_globals;
 		CharString compute_globals;
 		CharString fragment_globals;
+		CharString tesc_globals;
+		CharString tese_globals;
 		Map<StringName, CharString> code_sections;
 		Vector<CharString> custom_defines;
 		String GetString() {
@@ -90,6 +92,8 @@ class ShaderRD {
 				TYPE_MATERIAL_UNIFORMS,
 				TYPE_VERTEX_GLOBALS,
 				TYPE_FRAGMENT_GLOBALS,
+				TYPE_TESSELATION_CONTROL_GLOBALS,
+				TYPE_TESSELLATION_EVALUATION_GLOBALS,
 				TYPE_COMPUTE_GLOBALS,
 				TYPE_CODE,
 				TYPE_TEXT
@@ -116,10 +120,14 @@ class ShaderRD {
 	static bool shader_cache_save_compressed_zstd;
 	static bool shader_cache_save_debug;
 	bool shader_cache_dir_valid = false;
+	
+	bool use_tess = false;
 
 	enum StageType {
 		STAGE_TYPE_VERTEX,
 		STAGE_TYPE_FRAGMENT,
+		STAGE_TYPE_TESSELATION_CONTROL,
+		STAGE_TYPE_TESSELLATION_EVALUATION,
 		STAGE_TYPE_COMPUTE,
 		STAGE_TYPE_MAX,
 	};
@@ -136,7 +144,7 @@ class ShaderRD {
 
 protected:
 	ShaderRD();
-	void setup(const char *p_vertex_code, const char *p_fragment_code, const char *p_compute_code, const char *p_name);
+	void setup(const char *p_vertex_code, const char *p_fragment_code, const char *p_compute_code, const char *p_name,const char * p_tesc_code = nullptr,const char* p_tese_code = nullptr);
 
 public:
 	RID version_create();

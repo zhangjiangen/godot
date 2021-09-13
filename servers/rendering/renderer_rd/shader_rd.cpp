@@ -59,6 +59,12 @@ void ShaderRD::_add_stage(const char *p_code, StageType p_stage_type) {
 				case STAGE_TYPE_FRAGMENT:
 					chunk.type = StageTemplate::Chunk::TYPE_FRAGMENT_GLOBALS;
 					break;
+				case STAGE_TYPE_TESSELATION_CONTROL:
+					chunk.type = StageTemplate::Chunk::TYPE_TESSELATION_CONTROL_GLOBALS;
+					break;
+				case STAGE_TYPE_TESSELLATION_EVALUATION:
+					chunk.type = StageTemplate::Chunk::TYPE_TESSELLATION_EVALUATION_GLOBALS;
+					break;
 				case STAGE_TYPE_COMPUTE:
 					chunk.type = StageTemplate::Chunk::TYPE_COMPUTE_GLOBALS;
 					break;
@@ -99,7 +105,7 @@ void ShaderRD::_add_stage(const char *p_code, StageType p_stage_type) {
 	}
 }
 
-void ShaderRD::setup(const char *p_vertex_code, const char *p_fragment_code, const char *p_compute_code, const char *p_name) {
+void ShaderRD::setup(const char *p_vertex_code, const char *p_fragment_code, const char *p_compute_code, const char *p_name,const char * p_tesc_code,const char* p_tese_code) {
 	name = p_name;
 
 	if (p_compute_code) {
@@ -126,6 +132,10 @@ void ShaderRD::setup(const char *p_vertex_code, const char *p_fragment_code, con
 	tohash.append(p_fragment_code ? p_fragment_code : "");
 	tohash.append("[Compute]");
 	tohash.append(p_compute_code ? p_compute_code : "");
+	tohash.append("[TessControl]");
+	tohash.append(p_tesc_code ? p_tesc_code : "");
+	tohash.append("[TessEval]");
+	tohash.append(p_tese_code ? p_tese_code : "");
 
 	base_sha256 = tohash.as_string().sha256_text();
 }
@@ -249,6 +259,44 @@ void ShaderRD::_compile_variant(uint32_t p_variant, Version *p_version) {
 			stages.push_back(stage);
 		}
 	}
+	// 细分代码编译
+	if(!is_compute && use_tess && RD::get_singleton()->get_tessellation_shader_is_supported())
+	{
+		if (build_ok) {
+			//TESSELATION CONTROL stage
+			current_stage = RD::SHADER_STAGE_TESSELATION_CONTROL;
+
+			StringBuilder builder;
+			_build_variant_code(builder, p_variant, p_version, stage_templates[STAGE_TYPE_TESSELATION_CONTROL]);
+
+			current_source = builder.as_string();
+			RD::ShaderStageSPIRVData stage;
+			stage.spir_v = RD::get_singleton()->shader_compile_spirv_from_source(RD::SHADER_STAGE_TESSELATION_CONTROL, current_source, RD::SHADER_LANGUAGE_GLSL, &error);
+			if (stage.spir_v.size() == 0) {
+				build_ok = false;
+			} else {
+				stage.shader_stage = RD::SHADER_STAGE_TESSELATION_CONTROL;
+				stages.push_back(stage);
+			}
+		}
+		if ( build_ok) {
+			//TESSELATION CONTROL stage
+			current_stage = RD::SHADER_STAGE_TESSELATION_CONTROL;
+
+			StringBuilder builder;
+			_build_variant_code(builder, p_variant, p_version, stage_templates[STAGE_TYPE_TESSELLATION_EVALUATION]);
+
+			current_source = builder.as_string();
+			RD::ShaderStageSPIRVData stage;
+			stage.spir_v = RD::get_singleton()->shader_compile_spirv_from_source(RD::SHADER_STAGE_TESSELATION_EVALUATION, current_source, RD::SHADER_LANGUAGE_GLSL, &error);
+			if (stage.spir_v.size() == 0) {
+				build_ok = false;
+			} else {
+				stage.shader_stage = RD::SHADER_STAGE_TESSELATION_EVALUATION;
+				stages.push_back(stage);
+			}
+		}
+	}
 
 	if (is_compute) {
 		//compute stage
@@ -326,6 +374,34 @@ RS::ShaderNativeSourceCode ShaderRD::version_get_native_source_code(RID p_versio
 			source_code.versions.write[i].stages.push_back(stage);
 		}
 
+		if(!is_compute && use_tess && RD::get_singleton()->get_tessellation_shader_is_supported())
+		{
+			//tesc stage
+
+			StringBuilder builder;
+			_build_variant_code(builder, i, version, stage_templates[STAGE_TYPE_TESSELATION_CONTROL]);
+
+			RS::ShaderNativeSourceCode::Version::Stage stage;
+			stage.name = "tesc";
+			stage.code = builder.as_string();
+
+			source_code.versions.write[i].stages.push_back(stage);
+
+		}
+		if(!is_compute && use_tess && RD::get_singleton()->get_tessellation_shader_is_supported())
+		{
+			//tese stage
+
+			StringBuilder builder;
+			_build_variant_code(builder, i, version, stage_templates[STAGE_TYPE_TESSELLATION_EVALUATION]);
+
+			RS::ShaderNativeSourceCode::Version::Stage stage;
+			stage.name = "tese";
+			stage.code = builder.as_string();
+
+			source_code.versions.write[i].stages.push_back(stage);
+
+		}
 		if (is_compute) {
 			//compute stage
 
@@ -354,6 +430,10 @@ String ShaderRD::_version_get_sha1(Version *p_version) const {
 	hash_build.append(p_version->fragment_globals.get_data());
 	hash_build.append("[compute_globals]");
 	hash_build.append(p_version->compute_globals.get_data());
+	hash_build.append("[tesc_globals]");
+	hash_build.append(p_version->tesc_globals.get_data());
+	hash_build.append("[tese_globals]");
+	hash_build.append(p_version->tese_globals.get_data());
 
 	Vector<StringName> code_sections;
 	for (Map<StringName, CharString>::Element *E = p_version->code_sections.front(); E; E = E->next()) {

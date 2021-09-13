@@ -507,6 +507,15 @@ public:
 	virtual RID texture_create(const TextureFormat &p_format, const TextureView &p_view, const Vector<Vector<uint8_t>> &p_data = Vector<Vector<uint8_t>>()) = 0;
 	virtual RID texture_create_shared(const TextureView &p_view, RID p_with_texture, bool p_is_only_sample) = 0;
 
+	virtual bool get_geometry_shader_is_supported()
+	{
+		return false;
+	}
+	virtual bool get_tessellation_shader_is_supported()
+	{
+		return false;
+	}
+
 	enum TextureSliceType {
 		TEXTURE_SLICE_2D,
 		TEXTURE_SLICE_CUBEMAP,
@@ -1076,9 +1085,14 @@ public:
 	};
 
 	typedef int64_t DrawListID;
+	// 开始绘制到屏幕的渲染Pass
 
 	virtual DrawListID draw_list_begin_for_screen(DisplayServer::WindowID p_screen = 0, const Color &p_clear_color = Color()) = 0;
+	// 开始绘制到贴图的渲染Pass
+
 	virtual DrawListID draw_list_begin(RID p_framebuffer, InitialAction p_initial_color_action, FinalAction p_final_color_action, InitialAction p_initial_depth_action, FinalAction p_final_depth_action, const Vector<Color> &p_clear_color_values = Vector<Color>(), float p_clear_depth = 1.0, uint32_t p_clear_stencil = 0, const Rect2 &p_region = Rect2(), const Vector<RID> &p_storage_textures = Vector<RID>()) = 0;
+	// 多线程渲染,每一个线程处理一个屏幕区域的渲染Pass
+
 	virtual Error draw_list_begin_split(RID p_framebuffer, uint32_t p_splits, DrawListID *r_split_ids, InitialAction p_initial_color_action, FinalAction p_final_color_action, InitialAction p_initial_depth_action, FinalAction p_final_depth_action, const Vector<Color> &p_clear_color_values = Vector<Color>(), float p_clear_depth = 1.0, uint32_t p_clear_stencil = 0, const Rect2 &p_region = Rect2(), const Vector<RID> &p_storage_textures = Vector<RID>()) = 0;
 
 	virtual void draw_list_bind_render_pipeline(DrawListID p_list, RID p_render_pipeline) = 0;
@@ -1104,7 +1118,7 @@ public:
 	/***********************/
 
 	typedef int64_t ComputeListID;
-
+	// 开始一个计算Pass
 	virtual ComputeListID compute_list_begin(bool p_allow_draw_overlap = false) = 0;
 	virtual void compute_list_bind_compute_pipeline(ComputeListID p_list, RID p_compute_pipeline) = 0;
 	virtual void compute_list_bind_uniform_set(ComputeListID p_list, RID p_uniform_set, uint32_t p_index) = 0;
@@ -1115,7 +1129,7 @@ public:
 	virtual void compute_list_add_barrier(ComputeListID p_list) = 0;
 
 	virtual void compute_list_end(uint32_t p_post_barrier = BARRIER_MASK_ALL) = 0;
-
+	// 等待pass处理结束
 	virtual void barrier(uint32_t p_from = BARRIER_MASK_ALL, uint32_t p_to = BARRIER_MASK_ALL) = 0;
 	virtual void full_barrier() = 0;
 
