@@ -105,7 +105,7 @@ void ShaderRD::_add_stage(const char *p_code, StageType p_stage_type) {
 	}
 }
 
-void ShaderRD::setup(const char *p_vertex_code, const char *p_fragment_code, const char *p_compute_code, const char *p_name,const char * p_tesc_code,const char* p_tese_code) {
+void ShaderRD::setup(const char *p_vertex_code, const char *p_fragment_code, const char *p_compute_code, const char *p_name, const char *p_tesc_code, const char *p_tese_code) {
 	name = p_name;
 
 	if (p_compute_code) {
@@ -197,6 +197,12 @@ void ShaderRD::_build_variant_code(StringBuilder &builder, uint32_t p_variant, c
 			case StageTemplate::Chunk::TYPE_FRAGMENT_GLOBALS: {
 				builder.append(p_version->fragment_globals.get_data()); // fragment globals
 			} break;
+			case StageTemplate::Chunk::TYPE_TESSELATION_CONTROL_GLOBALS: {
+				builder.append(p_version->tesc_globals.get_data()); // vertex globals
+			} break;
+			case StageTemplate::Chunk::TYPE_TESSELLATION_EVALUATION_GLOBALS: {
+				builder.append(p_version->tese_globals.get_data()); // vertex globals
+			} break;
 			case StageTemplate::Chunk::TYPE_COMPUTE_GLOBALS: {
 				builder.append(p_version->compute_globals.get_data()); // compute globals
 			} break;
@@ -260,8 +266,7 @@ void ShaderRD::_compile_variant(uint32_t p_variant, Version *p_version) {
 		}
 	}
 	// 细分代码编译
-	if(!is_compute && use_tess && RD::get_singleton()->get_tessellation_shader_is_supported())
-	{
+	if (!is_compute && use_tess && RD::get_singleton()->get_tessellation_shader_is_supported()) {
 		if (build_ok) {
 			//TESSELATION CONTROL stage
 			current_stage = RD::SHADER_STAGE_TESSELATION_CONTROL;
@@ -279,7 +284,7 @@ void ShaderRD::_compile_variant(uint32_t p_variant, Version *p_version) {
 				stages.push_back(stage);
 			}
 		}
-		if ( build_ok) {
+		if (build_ok) {
 			//TESSELATION CONTROL stage
 			current_stage = RD::SHADER_STAGE_TESSELATION_CONTROL;
 
@@ -374,8 +379,7 @@ RS::ShaderNativeSourceCode ShaderRD::version_get_native_source_code(RID p_versio
 			source_code.versions.write[i].stages.push_back(stage);
 		}
 
-		if(!is_compute && use_tess && RD::get_singleton()->get_tessellation_shader_is_supported())
-		{
+		if (!is_compute && use_tess && RD::get_singleton()->get_tessellation_shader_is_supported()) {
 			//tesc stage
 
 			StringBuilder builder;
@@ -386,10 +390,8 @@ RS::ShaderNativeSourceCode ShaderRD::version_get_native_source_code(RID p_versio
 			stage.code = builder.as_string();
 
 			source_code.versions.write[i].stages.push_back(stage);
-
 		}
-		if(!is_compute && use_tess && RD::get_singleton()->get_tessellation_shader_is_supported())
-		{
+		if (!is_compute && use_tess && RD::get_singleton()->get_tessellation_shader_is_supported()) {
 			//tese stage
 
 			StringBuilder builder;
@@ -400,7 +402,6 @@ RS::ShaderNativeSourceCode ShaderRD::version_get_native_source_code(RID p_versio
 			stage.code = builder.as_string();
 
 			source_code.versions.write[i].stages.push_back(stage);
-
 		}
 		if (is_compute) {
 			//compute stage

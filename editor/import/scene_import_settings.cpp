@@ -157,7 +157,7 @@ void SceneImportSettings::_fill_mesh(Tree *p_tree, const Ref<Mesh> &p_mesh, Tree
 
 	if (!mesh_map.has(import_id)) {
 		MeshDataPtr md;
-        md.instantiate();
+		md.instantiate();
 		md->has_import_id = has_import_id;
 		md->mesh = p_mesh;
 
@@ -362,13 +362,13 @@ void SceneImportSettings::_update_scene() {
 }
 
 void SceneImportSettings::_update_view_gizmos() {
-	for (const KeyValue<String, NodeData> &e : node_map) {
+	for (const KeyValue<String, NodeDataPtr> &e : node_map) {
 		bool generate_collider = false;
-		if (e.value.settings.has(SNAME("generate/physics"))) {
-			generate_collider = e.value.settings[SNAME("generate/physics")];
+		if (e.value->settings->has(SNAME("generate/physics"))) {
+			generate_collider = (*e.value->settings)[SNAME("generate/physics")];
 		}
 
-		MeshInstance3D *mesh_node = Object::cast_to<MeshInstance3D>(e.value.node);
+		MeshInstance3D *mesh_node = Object::cast_to<MeshInstance3D>(e.value->node);
 		if (mesh_node == nullptr || mesh_node->get_mesh().is_null()) {
 			// Nothing to do
 			continue;
@@ -382,8 +382,8 @@ void SceneImportSettings::_update_view_gizmos() {
 			// This collider_view doesn't have a mesh so we need to generate a new one.
 
 			// Generate the mesh collider.
-			Vector<Ref<Shape3D>> shapes = ResourceImporterScene::get_collision_shapes(mesh_node->get_mesh(), e.value.settings);
-			const Transform3D transform = ResourceImporterScene::get_collision_shapes_transform(e.value.settings);
+			Vector<Ref<Shape3D>> shapes = ResourceImporterScene::get_collision_shapes(mesh_node->get_mesh(), *e.value->settings);
+			const Transform3D transform = ResourceImporterScene::get_collision_shapes_transform(*e.value->settings);
 
 			Ref<ArrayMesh> collider_view_mesh;
 			collider_view_mesh.instantiate();
@@ -476,7 +476,7 @@ void SceneImportSettings::open_settings(const String &p_path) {
 		memdelete(scene);
 		scene = nullptr;
 	}
-	scene_import_settings_data->settings = nullptr;
+	scene_import_settings_data->settings.setNull();
 	scene = ResourceImporterScene::get_singleton()->pre_import(p_path);
 	if (scene == nullptr) {
 		EditorNode::get_singleton()->show_warning(TTR("Error opening scene"));
@@ -504,7 +504,7 @@ void SceneImportSettings::open_settings(const String &p_path) {
 
 		Ref<ConfigFile> config;
 		config.instantiate();
-        defaults.instantiate();
+		defaults.instantiate();
 		Error err = config->load(p_path + ".import");
 		if (err == OK) {
 			List<String> keys;
