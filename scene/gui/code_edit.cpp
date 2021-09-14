@@ -654,7 +654,7 @@ void CodeEdit::_backspace_internal() {
 	// For space indentation we need to do a simple unindent if there are no chars to the left, acting in the
 	// same way as tabs.
 	if (indent_using_spaces && cc != 0) {
-		if (get_first_non_whitespace_column(cl) > cc) {
+		if (get_first_non_whitespace_column(cl) >= cc) {
 			prev_column = cc - _calculate_spaces_till_next_left_indent(cc);
 			prev_line = cl;
 		}
@@ -987,10 +987,10 @@ void CodeEdit::_new_line(bool p_split_current_line, bool p_above) {
 				/* No need to move the brace below if we are not taking the text with us. */
 				if (p_split_current_line) {
 					brace_indent = true;
-					ins += "\n" + ins.substr(1, ins.length() - 2);
+					ins += "\n" + ins.substr(indent_text.size(), ins.length() - 2);
 				} else {
 					brace_indent = false;
-					ins = "\n" + ins.substr(1, ins.length() - 2);
+					ins = "\n" + ins.substr(indent_text.size(), ins.length() - 2);
 				}
 			}
 		}
@@ -1407,9 +1407,14 @@ void CodeEdit::fold_line(int p_line) {
 	int in_string = (in_comment == -1) ? is_in_string(p_line) : -1;
 	if (in_string != -1 || in_comment != -1) {
 		end_line = get_delimiter_end_position(p_line, get_line(p_line).size() - 1).y;
-		/* End line is the same therefore we have a block. */
+		/* End line is the same therefore we have a block of single line delimiters. */
 		if (end_line == p_line) {
 			for (int i = p_line + 1; i <= line_count; i++) {
+				if (i == line_count) {
+					end_line = line_count;
+					break;
+				}
+
 				if ((in_string != -1 && is_in_string(i) == -1) || (in_comment != -1 && is_in_comment(i) == -1)) {
 					end_line = i - 1;
 					break;
@@ -1617,7 +1622,8 @@ Point2 CodeEdit::get_delimiter_start_position(int p_line, int p_column) const {
 	}
 
 	/* Region was found on this line and is not a multiline continuation. */
-	if (start_position.x != -1 && start_position.x != get_line(p_line).length() + 1) {
+	int line_length = get_line(p_line).length();
+	if (start_position.x != -1 && line_length > 0 && start_position.x != line_length + 1) {
 		start_position.y = p_line;
 		return start_position;
 	}
@@ -1636,7 +1642,8 @@ Point2 CodeEdit::get_delimiter_start_position(int p_line, int p_column) const {
 		start_position.x = delimiter_cache[i].back()->key();
 
 		/* Make sure it's not a multiline continuation. */
-		if (start_position.x != get_line(i).length() + 1) {
+		line_length = get_line(i).length();
+		if (line_length > 0 && start_position.x != line_length + 1) {
 			break;
 		}
 	}
@@ -2562,7 +2569,10 @@ int CodeEdit::_is_in_delimiter(int p_line, int p_column, DelimiterType p_type) c
 }
 
 void CodeEdit::_add_delimiter(const String &p_start_key, const String &p_end_key, bool p_line_only, DelimiterType p_type) {
-	if (p_start_key.length() > 0) {
+	// If we are the editor allow "null" as a valid start key, otherwise users cannot add delimiters via the inspector.
+	if (!(Engine::get_singleton()->is_editor_hint() && p_start_key == "null")) {
+		ERR_FAIL_COND_MSG(p_start_key.is_empty(), "delimiter start key cannot be empty");
+
 		for (int i = 0; i < p_start_key.length(); i++) {
 			ERR_FAIL_COND_MSG(!is_symbol(p_start_key[i]), "delimiter must start with a symbol");
 		}
@@ -2627,7 +2637,11 @@ void CodeEdit::_set_delimiters(const TypedArray<String> &p_delimiters, Delimiter
 	_clear_delimiters(p_type);
 
 	for (int i = 0; i < p_delimiters.size(); i++) {
-		String key = p_delimiters[i].is_null() ? "" : p_delimiters[i];
+		String key = p_delimiters[i];
+
+		if (key.is_empty()) {
+			continue;
+		}
 
 		const String start_key = key.get_slice(" ", 0);
 		const String end_key = key.get_slice_count(" ") > 1 ? key.get_slice(" ", 1) : String();
