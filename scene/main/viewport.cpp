@@ -823,7 +823,9 @@ Rect2 Viewport::get_visible_rect() const {
 }
 
 void Viewport::_update_listener_2d() {
-	AudioServer::get_singleton()->notify_listener_changed();
+	if (AudioServer::get_singleton()) {
+		AudioServer::get_singleton()->notify_listener_changed();
+	}
 }
 
 void Viewport::set_as_audio_listener_2d(bool p_enable) {
@@ -3063,7 +3065,9 @@ bool Viewport::is_audio_listener_3d() const {
 }
 
 void Viewport::_update_listener_3d() {
-	AudioServer::get_singleton()->notify_listener_changed();
+	if (AudioServer::get_singleton()) {
+		AudioServer::get_singleton()->notify_listener_changed();
+	}
 }
 
 void Viewport::_listener_transform_3d_changed_notify() {
@@ -3594,7 +3598,7 @@ void Viewport::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "snap_2d_transforms_to_pixel"), "set_snap_2d_transforms_to_pixel", "is_snap_2d_transforms_to_pixel_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "snap_2d_vertices_to_pixel"), "set_snap_2d_vertices_to_pixel", "is_snap_2d_vertices_to_pixel_enabled");
 	ADD_GROUP("Rendering", "");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "msaa", PROPERTY_HINT_ENUM, String::utf8("Disabled (Fastest),2× (Fast),4× (Average),8× (Slow),16× (Slower)")), "set_msaa", "get_msaa");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "msaa", PROPERTY_HINT_ENUM, String::utf8("Disabled (Fastest),2× (Average),4× (Slow),8× (Slowest)")), "set_msaa", "get_msaa");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "screen_space_aa", PROPERTY_HINT_ENUM, "Disabled (Fastest),FXAA (Fast)"), "set_screen_space_aa", "get_screen_space_aa");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "use_debanding"), "set_use_debanding", "is_using_debanding");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "use_occlusion_culling"), "set_use_occlusion_culling", "is_using_occlusion_culling");
@@ -3646,7 +3650,6 @@ void Viewport::_bind_methods() {
 	BIND_ENUM_CONSTANT(MSAA_2X);
 	BIND_ENUM_CONSTANT(MSAA_4X);
 	BIND_ENUM_CONSTANT(MSAA_8X);
-	BIND_ENUM_CONSTANT(MSAA_16X);
 	BIND_ENUM_CONSTANT(MSAA_MAX);
 
 	BIND_ENUM_CONSTANT(SCREEN_SPACE_AA_DISABLED);

@@ -171,7 +171,7 @@ Error GDScriptAnalyzer::check_native_member_name_conflict(const StringName &p_me
 	}
 
 	if (class_exists(p_member_name)) {
-		push_error(vformat(R"(The class "%s" shadows a native class.)", p_member_name), p_member_node);
+		push_error(vformat(R"(The member "%s" shadows a native class.)", p_member_name), p_member_node);
 		return ERR_PARSE_ERROR;
 	}
 
@@ -216,6 +216,17 @@ Error GDScriptAnalyzer::resolve_inheritance(GDScriptParser::ClassNode *p_class, 
 		}
 	} else {
 		p_class->fqcn = p_class->outer->fqcn + "::" + String(p_class->identifier->name);
+	}
+
+	if (p_class->identifier) {
+		StringName class_name = p_class->identifier->name;
+		if (class_exists(class_name)) {
+			push_error(vformat(R"(Class "%s" hides a native class.)", class_name), p_class->identifier);
+		} else if (ScriptServer::is_global_class(class_name) && (ScriptServer::get_global_class_path(class_name) != parser->script_path || p_class != parser->head)) {
+			push_error(vformat(R"(Class "%s" hides a global script class.)", class_name), p_class->identifier);
+		} else if (ProjectSettings::get_singleton()->has_autoload(class_name) && ProjectSettings::get_singleton()->get_autoload(class_name).is_singleton) {
+			push_error(vformat(R"(Class "%s" hides an autoload singleton.)", class_name), p_class->identifier);
+		}
 	}
 
 	GDScriptParser::DataType result;
@@ -681,8 +692,9 @@ void GDScriptAnalyzer::resolve_class_interface(GDScriptParser::ClassNode *p_clas
 					specified_type.is_meta_type = false;
 				}
 
-				GDScriptParser::DataType datatype = member.constant->get_datatype();
+				GDScriptParser::DataType datatype;
 				if (member.constant->initializer) {
+					datatype = member.constant->initializer->get_datatype();
 					if (member.constant->initializer->type == GDScriptParser::Node::ARRAY) {
 						GDScriptParser::ArrayNode *array = static_cast<GDScriptParser::ArrayNode *>(member.constant->initializer);
 						const_fold_array(array);
@@ -2516,14 +2528,29 @@ void GDScriptAnalyzer::reduce_identifier_from_base(GDScriptParser::IdentifierNod
 		while (outer != nullptr) {
 			if (outer->has_member(name)) {
 				const GDScriptParser::ClassNode::Member &member = outer->get_member(name);
-				if (member.type == GDScriptParser::ClassNode::Member::CONSTANT) {
-					// TODO: Make sure loops won't cause problem. And make special error message for those.
-					// For out-of-order resolution:
-					reduce_expression(member.constant->initializer);
-					p_identifier->set_datatype(member.get_datatype());
-					p_identifier->is_constant = true;
-					p_identifier->reduced_value = member.constant->initializer->reduced_value;
-					return;
+				switch (member.type) {
+					case GDScriptParser::ClassNode::Member::CONSTANT: {
+						// TODO: Make sure loops won't cause problem. And make special error message for those.
+						// For out-of-order resolution:
+						reduce_expression(member.constant->initializer);
+						p_identifier->set_datatype(member.get_datatype());
+						p_identifier->is_constant = true;
+						p_identifier->reduced_value = member.constant->initializer->reduced_value;
+						return;
+					} break;
+					case GDScriptParser::ClassNode::Member::ENUM_VALUE: {
+						p_identifier->set_datatype(member.get_datatype());
+						p_identifier->is_constant = true;
+						p_identifier->reduced_value = member.enum_value.value;
+						return;
+					} break;
+					case GDScriptParser::ClassNode::Member::ENUM: {
+						p_identifier->set_datatype(member.get_datatype());
+						p_identifier->is_constant = false;
+						return;
+					} break;
+					default:
+						break;
 				}
 			}
 			outer = outer->outer;
