@@ -32,7 +32,6 @@
 #define EDITOR_NODE_H
 
 #include "core/templates/safe_refcount.h"
-#include "editor/editor_command_palette.h"
 #include "editor/editor_data.h"
 #include "editor/editor_export.h"
 #include "editor/editor_folding.h"
@@ -681,6 +680,8 @@ private:
 
 	bool immediate_dialog_confirmed = false;
 	void _immediate_dialog_confirmed();
+
+	void _select_default_main_screen_plugin();
 
 protected:
 	void _notification(int p_what);

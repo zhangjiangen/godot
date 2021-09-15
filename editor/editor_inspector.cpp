@@ -815,6 +815,19 @@ void EditorProperty::unhandled_key_input(const Ref<InputEvent> &p_event) {
 	}
 }
 
+const Color *EditorProperty::_get_property_colors() {
+	const Color base = get_theme_color(SNAME("accent_color"), SNAME("Editor"));
+	const float saturation = base.get_s() * 0.75;
+	const float value = base.get_v();
+
+	static Color c[4];
+	c[0].set_hsv(0.0 / 3.0 + 0.05, saturation, value);
+	c[1].set_hsv(1.0 / 3.0 + 0.05, saturation, value);
+	c[2].set_hsv(2.0 / 3.0 + 0.05, saturation, value);
+	c[3].set_hsv(1.5 / 3.0 + 0.05, saturation, value);
+	return c;
+}
+
 void EditorProperty::set_label_reference(Control *p_control) {
 	label_reference = p_control;
 }
@@ -1266,9 +1279,13 @@ void EditorInspectorSection::_notification(int p_what) {
 			}
 			header_height += get_theme_constant(SNAME("vseparation"), SNAME("Tree"));
 
+			Rect2 header_rect = Rect2(Vector2(), Vector2(get_size().width, header_height));
 			Color c = bg_color;
 			c.a *= 0.4;
-			draw_rect(Rect2(Vector2(), Vector2(get_size().width, header_height)), c);
+			if (foldable && header_rect.has_point(get_local_mouse_position())) {
+				c = c.lightened(Input::get_singleton()->is_mouse_button_pressed(MOUSE_BUTTON_LEFT) ? -0.05 : 0.2);
+			}
+			draw_rect(header_rect, c);
 
 			const int arrow_margin = 2;
 			const int arrow_width = arrow.is_valid() ? arrow->get_width() : 0;
@@ -1315,12 +1332,14 @@ void EditorInspectorSection::_notification(int p_what) {
 			if (dropping) {
 				dropping_unfold_timer->start();
 			}
+			update();
 		} break;
 
 		case NOTIFICATION_MOUSE_EXIT: {
 			if (dropping) {
 				dropping_unfold_timer->stop();
 			}
+			update();
 		} break;
 	}
 }
@@ -1395,6 +1414,8 @@ void EditorInspectorSection::gui_input(const Ref<InputEvent> &p_event) {
 		} else {
 			fold();
 		}
+	} else if (mb.is_valid() && !mb->is_pressed()) {
+		update();
 	}
 }
 
