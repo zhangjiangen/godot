@@ -136,6 +136,7 @@ void ShaderRD::setup(const char *p_vertex_code, const char *p_fragment_code, con
 	tohash.append(p_tesc_code ? p_tesc_code : "");
 	tohash.append("[TessEval]");
 	tohash.append(p_tese_code ? p_tese_code : "");
+	use_tess = (p_tesc_code && p_tese_code);
 
 	base_sha256 = tohash.as_string().sha256_text();
 }
