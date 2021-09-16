@@ -4005,6 +4005,7 @@ void RendererSceneRenderRD::_pre_opaque_render(RenderDataRD *p_render_data, bool
 	}
 
 	//full barrier here, we need raster, transfer and compute and it depends from the previous work
+	// 这里是全屏障，我们需要光栅、传输和计算，这取决于之前的工作
 	RD::get_singleton()->barrier(RD::BARRIER_MASK_ALL, RD::BARRIER_MASK_ALL);
 
 	if (current_cluster_builder) {
