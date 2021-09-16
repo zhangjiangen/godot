@@ -178,6 +178,7 @@ public:
 	Vector<String> get_cmdline_args();
 
 	String get_locale() const;
+	String get_locale_language() const;
 
 	String get_model_name() const;
 
@@ -591,6 +592,11 @@ public:
 	bool has_integer_constant(const StringName &p_class, const StringName &p_name) const;
 	int get_integer_constant(const StringName &p_class, const StringName &p_name) const;
 	StringName get_category(const StringName &p_node) const;
+
+	bool has_enum(const StringName &p_class, const StringName &p_name, bool p_no_inheritance = false) const;
+	PackedStringArray get_enum_list(const StringName &p_class, bool p_no_inheritance = false) const;
+	PackedStringArray get_enum_constants(const StringName &p_class, const StringName &p_enum, bool p_no_inheritance = false) const;
+	StringName get_integer_constant_enum(const StringName &p_class, const StringName &p_name, bool p_no_inheritance = false) const;
 
 	bool is_class_enabled(StringName p_class) const;
 

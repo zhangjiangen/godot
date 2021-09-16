@@ -69,7 +69,7 @@
 #include "scene/resources/separation_ray_shape_3d.h"
 #include "scene/resources/sphere_shape_3d.h"
 #include "scene/resources/surface_tool.h"
-#include "scene/resources/world_margin_shape_3d.h"
+#include "scene/resources/world_boundary_shape_3d.h"
 
 #define HANDLE_HALF_SIZE 9.5
 
@@ -1481,8 +1481,6 @@ void Light3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 	}
 }
 
-//////
-
 //// player gizmo
 AudioStreamPlayer3DGizmoPlugin::AudioStreamPlayer3DGizmoPlugin() {
 	Color gizmo_color = EDITOR_DEF("editors/3d_gizmos/gizmo_colors/stream_player_3d", Color(0.4, 0.8, 1));
@@ -1616,6 +1614,29 @@ void AudioStreamPlayer3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 		p_gizmo->add_handles(handles, get_material("handles"));
 	}
 
+	p_gizmo->add_unscaled_billboard(icon, 0.05);
+}
+
+//////
+
+Listener3DGizmoPlugin::Listener3DGizmoPlugin() {
+	create_icon_material("listener_3d_icon", Node3DEditor::get_singleton()->get_theme_icon("GizmoListener3D", "EditorIcons"));
+}
+
+bool Listener3DGizmoPlugin::has_gizmo(Node3D *p_spatial) {
+	return Object::cast_to<Listener3D>(p_spatial) != nullptr;
+}
+
+String Listener3DGizmoPlugin::get_gizmo_name() const {
+	return "Listener3D";
+}
+
+int Listener3DGizmoPlugin::get_priority() const {
+	return -1;
+}
+
+void Listener3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
+	const Ref<Material> icon = get_material("listener_3d_icon", p_gizmo);
 	p_gizmo->add_unscaled_billboard(icon, 0.05);
 }
 
@@ -4537,9 +4558,9 @@ void CollisionShape3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 		p_gizmo->add_handles(handles, handles_material);
 	}
 
-	if (Object::cast_to<WorldMarginShape3D>(*s)) {
-		Ref<WorldMarginShape3D> ps = s;
-		Plane p = ps->get_plane();
+	if (Object::cast_to<WorldBoundaryShape3D>(*s)) {
+		Ref<WorldBoundaryShape3D> wbs = s;
+		const Plane &p = wbs->get_plane();
 		Vector<Vector3> points;
 
 		Vector3 n1 = p.get_any_perpendicular_normal();
