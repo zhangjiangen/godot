@@ -34,6 +34,7 @@
 #include "core/math/geometry_2d.h"
 #include "core/math/geometry_3d.h"
 #include "editor/plugins/node_3d_editor_plugin.h"
+#include "scene/3d/audio_listener_3d.h"
 #include "scene/3d/audio_stream_player_3d.h"
 #include "scene/3d/camera_3d.h"
 #include "scene/3d/collision_polygon_3d.h"
@@ -45,7 +46,6 @@
 #include "scene/3d/light_3d.h"
 #include "scene/3d/lightmap_gi.h"
 #include "scene/3d/lightmap_probe.h"
-#include "scene/3d/listener_3d.h"
 #include "scene/3d/mesh_instance_3d.h"
 #include "scene/3d/navigation_region_3d.h"
 #include "scene/3d/occluder_instance_3d.h"
@@ -53,7 +53,7 @@
 #include "scene/3d/position_3d.h"
 #include "scene/3d/ray_cast_3d.h"
 #include "scene/3d/reflection_probe.h"
-#include "scene/3d/soft_body_3d.h"
+#include "scene/3d/soft_dynamic_body_3d.h"
 #include "scene/3d/spring_arm_3d.h"
 #include "scene/3d/sprite_3d.h"
 #include "scene/3d/vehicle_body_3d.h"
@@ -1003,7 +1003,9 @@ String EditorNode3DGizmoPlugin::get_gizmo_name() const {
 	if (get_script_instance() && get_script_instance()->has_method("_get_gizmo_name")) {
 		return get_script_instance()->call("_get_gizmo_name");
 	}
-	return TTR("Nameless gizmo");
+
+	WARN_PRINT_ONCE("A 3D editor gizmo has no name defined (it will appear as \"Unnamed Gizmo\" in the \"View > Gizmos\" menu). To resolve this, override the `_get_gizmo_name()` function to return a String in the script that extends EditorNode3DGizmoPlugin.");
+	return TTR("Unnamed Gizmo");
 }
 
 int EditorNode3DGizmoPlugin::get_priority() const {
@@ -1619,24 +1621,24 @@ void AudioStreamPlayer3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 
 //////
 
-Listener3DGizmoPlugin::Listener3DGizmoPlugin() {
-	create_icon_material("listener_3d_icon", Node3DEditor::get_singleton()->get_theme_icon("GizmoListener3D", "EditorIcons"));
+AudioListener3DGizmoPlugin::AudioListener3DGizmoPlugin() {
+	create_icon_material("audio_listener_3d_icon", Node3DEditor::get_singleton()->get_theme_icon("GizmoAudioListener3D", "EditorIcons"));
 }
 
-bool Listener3DGizmoPlugin::has_gizmo(Node3D *p_spatial) {
-	return Object::cast_to<Listener3D>(p_spatial) != nullptr;
+bool AudioListener3DGizmoPlugin::has_gizmo(Node3D *p_spatial) {
+	return Object::cast_to<AudioListener3D>(p_spatial) != nullptr;
 }
 
-String Listener3DGizmoPlugin::get_gizmo_name() const {
-	return "Listener3D";
+String AudioListener3DGizmoPlugin::get_gizmo_name() const {
+	return "AudioListener3D";
 }
 
-int Listener3DGizmoPlugin::get_priority() const {
+int AudioListener3DGizmoPlugin::get_priority() const {
 	return -1;
 }
 
-void Listener3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
-	const Ref<Material> icon = get_material("listener_3d_icon", p_gizmo);
+void AudioListener3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
+	const Ref<Material> icon = get_material("audio_listener_3d_icon", p_gizmo);
 	p_gizmo->add_unscaled_billboard(icon, 0.05);
 }
 
@@ -1887,7 +1889,7 @@ MeshInstance3DGizmoPlugin::MeshInstance3DGizmoPlugin() {
 }
 
 bool MeshInstance3DGizmoPlugin::has_gizmo(Node3D *p_spatial) {
-	return Object::cast_to<MeshInstance3D>(p_spatial) != nullptr && Object::cast_to<SoftBody3D>(p_spatial) == nullptr;
+	return Object::cast_to<MeshInstance3D>(p_spatial) != nullptr && Object::cast_to<SoftDynamicBody3D>(p_spatial) == nullptr;
 }
 
 String MeshInstance3DGizmoPlugin::get_gizmo_name() const {
@@ -2510,30 +2512,30 @@ void VehicleWheel3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 
 ///////////
 
-SoftBody3DGizmoPlugin::SoftBody3DGizmoPlugin() {
+SoftDynamicBody3DGizmoPlugin::SoftDynamicBody3DGizmoPlugin() {
 	Color gizmo_color = EDITOR_DEF("editors/3d_gizmos/gizmo_colors/shape", Color(0.5, 0.7, 1));
 	create_material("shape_material", gizmo_color);
 	create_handle_material("handles");
 }
 
-bool SoftBody3DGizmoPlugin::has_gizmo(Node3D *p_spatial) {
-	return Object::cast_to<SoftBody3D>(p_spatial) != nullptr;
+bool SoftDynamicBody3DGizmoPlugin::has_gizmo(Node3D *p_spatial) {
+	return Object::cast_to<SoftDynamicBody3D>(p_spatial) != nullptr;
 }
 
-String SoftBody3DGizmoPlugin::get_gizmo_name() const {
-	return "SoftBody3D";
+String SoftDynamicBody3DGizmoPlugin::get_gizmo_name() const {
+	return "SoftDynamicBody3D";
 }
 
-int SoftBody3DGizmoPlugin::get_priority() const {
+int SoftDynamicBody3DGizmoPlugin::get_priority() const {
 	return -1;
 }
 
-bool SoftBody3DGizmoPlugin::is_selectable_when_hidden() const {
+bool SoftDynamicBody3DGizmoPlugin::is_selectable_when_hidden() const {
 	return true;
 }
 
-void SoftBody3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
-	SoftBody3D *soft_body = Object::cast_to<SoftBody3D>(p_gizmo->get_spatial_node());
+void SoftDynamicBody3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
+	SoftDynamicBody3D *soft_body = Object::cast_to<SoftDynamicBody3D>(p_gizmo->get_spatial_node());
 
 	p_gizmo->clear();
 
@@ -2569,22 +2571,22 @@ void SoftBody3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 	p_gizmo->add_collision_triangles(tm);
 }
 
-String SoftBody3DGizmoPlugin::get_handle_name(const EditorNode3DGizmo *p_gizmo, int p_id) const {
-	return "SoftBody3D pin point";
+String SoftDynamicBody3DGizmoPlugin::get_handle_name(const EditorNode3DGizmo *p_gizmo, int p_id) const {
+	return "SoftDynamicBody3D pin point";
 }
 
-Variant SoftBody3DGizmoPlugin::get_handle_value(const EditorNode3DGizmo *p_gizmo, int p_id) const {
-	SoftBody3D *soft_body = Object::cast_to<SoftBody3D>(p_gizmo->get_spatial_node());
+Variant SoftDynamicBody3DGizmoPlugin::get_handle_value(const EditorNode3DGizmo *p_gizmo, int p_id) const {
+	SoftDynamicBody3D *soft_body = Object::cast_to<SoftDynamicBody3D>(p_gizmo->get_spatial_node());
 	return Variant(soft_body->is_point_pinned(p_id));
 }
 
-void SoftBody3DGizmoPlugin::commit_handle(const EditorNode3DGizmo *p_gizmo, int p_id, const Variant &p_restore, bool p_cancel) {
-	SoftBody3D *soft_body = Object::cast_to<SoftBody3D>(p_gizmo->get_spatial_node());
+void SoftDynamicBody3DGizmoPlugin::commit_handle(const EditorNode3DGizmo *p_gizmo, int p_id, const Variant &p_restore, bool p_cancel) {
+	SoftDynamicBody3D *soft_body = Object::cast_to<SoftDynamicBody3D>(p_gizmo->get_spatial_node());
 	soft_body->pin_point_toggle(p_id);
 }
 
-bool SoftBody3DGizmoPlugin::is_handle_highlighted(const EditorNode3DGizmo *p_gizmo, int p_id) const {
-	SoftBody3D *soft_body = Object::cast_to<SoftBody3D>(p_gizmo->get_spatial_node());
+bool SoftDynamicBody3DGizmoPlugin::is_handle_highlighted(const EditorNode3DGizmo *p_gizmo, int p_id) const {
+	SoftDynamicBody3D *soft_body = Object::cast_to<SoftDynamicBody3D>(p_gizmo->get_spatial_node());
 	return soft_body->is_point_pinned(p_id);
 }
 
