@@ -6863,10 +6863,10 @@ void Node3DEditor::_register_all_gizmos() {
 	add_gizmo_plugin(Ref<Camera3DGizmoPlugin>(memnew(Camera3DGizmoPlugin)));
 	add_gizmo_plugin(Ref<Light3DGizmoPlugin>(memnew(Light3DGizmoPlugin)));
 	add_gizmo_plugin(Ref<AudioStreamPlayer3DGizmoPlugin>(memnew(AudioStreamPlayer3DGizmoPlugin)));
-	add_gizmo_plugin(Ref<Listener3DGizmoPlugin>(memnew(Listener3DGizmoPlugin)));
+	add_gizmo_plugin(Ref<AudioListener3DGizmoPlugin>(memnew(AudioListener3DGizmoPlugin)));
 	add_gizmo_plugin(Ref<MeshInstance3DGizmoPlugin>(memnew(MeshInstance3DGizmoPlugin)));
 	add_gizmo_plugin(Ref<OccluderInstance3DGizmoPlugin>(memnew(OccluderInstance3DGizmoPlugin)));
-	add_gizmo_plugin(Ref<SoftBody3DGizmoPlugin>(memnew(SoftBody3DGizmoPlugin)));
+	add_gizmo_plugin(Ref<SoftDynamicBody3DGizmoPlugin>(memnew(SoftDynamicBody3DGizmoPlugin)));
 	add_gizmo_plugin(Ref<Sprite3DGizmoPlugin>(memnew(Sprite3DGizmoPlugin)));
 	add_gizmo_plugin(Ref<Skeleton3DGizmoPlugin>(memnew(Skeleton3DGizmoPlugin)));
 	add_gizmo_plugin(Ref<Position3DGizmoPlugin>(memnew(Position3DGizmoPlugin)));
