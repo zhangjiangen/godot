@@ -445,6 +445,11 @@
 		</method>
 		<method name="operator !=" qualifiers="operator">
 			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="operator !=" qualifiers="operator">
+			<return type="bool" />
 			<argument index="0" name="right" type="String" />
 			<description>
 			</description>
@@ -481,6 +486,11 @@
 		</method>
 		<method name="operator ==" qualifiers="operator">
 			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="operator ==" qualifiers="operator">
+			<return type="bool" />
 			<argument index="0" name="right" type="String" />
 			<description>
 			</description>
@@ -500,6 +510,12 @@
 		<method name="operator &gt;=" qualifiers="operator">
 			<return type="bool" />
 			<argument index="0" name="right" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="operator []" qualifiers="operator">
+			<return type="String" />
+			<argument index="0" name="index" type="int" />
 			<description>
 			</description>
 		</method>
