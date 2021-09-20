@@ -1094,9 +1094,11 @@ GDScriptCodeGenerator::Address GDScriptCompiler::_parse_expression(CodeGen &code
 					args.push_back(op_result);
 					gen->write_call(GDScriptCodeGenerator::Address(), GDScriptCodeGenerator::Address(GDScriptCodeGenerator::Address::SELF), setter_function, args);
 				} else {
-					// Just assign.
+					// Just assign.z
 					if (assignment->use_conversion_assign) {
-						gen->write_assign_with_conversion(target, op_result);
+						if (!gen->write_assign_with_conversion(target, op_result)) {
+							ERR_PRINT(codegen.script->get_path() + " " + String::num_int64(assignment->start_line) + ":(" + String::num_int64(assignment->start_column) + ") : Compiler bug: unresolved assign.");
+						}
 					} else {
 						gen->write_assign(target, op_result);
 					}
@@ -1808,7 +1810,9 @@ Error GDScriptCompiler::_parse_block(CodeGen &codegen, const GDScriptParser::Sui
 						return error;
 					}
 					if (lv->use_conversion_assign) {
-						gen->write_assign_with_conversion(local, src_address);
+						if (!gen->write_assign_with_conversion(local, src_address)) {
+							ERR_PRINT(codegen.script->get_path() + " " + String::num_int64(lv->initializer->start_line) + ":(" + String::num_int64(lv->initializer->start_column) + ") : Compiler bug: unresolved assign.");
+						}
 					} else {
 						gen->write_assign(local, src_address);
 					}
@@ -1950,7 +1954,9 @@ GDScriptFunction *GDScriptCompiler::_parse_function(Error &r_error, GDScript *p_
 				}
 
 				if (field->use_conversion_assign) {
-					codegen.generator->write_assign_with_conversion(dst_address, src_address);
+					if (!codegen.generator->write_assign_with_conversion(dst_address, src_address)) {
+						ERR_PRINT(codegen.script->get_path() + " " + String::num_int64(field->initializer->start_line) + ":(" + String::num_int64(field->initializer->start_column) + ") : Compiler bug: unresolved assign.");
+					}
 				} else {
 					codegen.generator->write_assign(dst_address, src_address);
 				}

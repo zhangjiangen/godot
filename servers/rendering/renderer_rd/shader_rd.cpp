@@ -466,7 +466,7 @@ bool ShaderRD::_load_from_cache(Version *p_version) {
 	if (!f) {
 		return false;
 	}
-	LOG_INFO_PRINT(String("_load_from_cache :") + p_version->GetString());
+	//LOG_INFO_PRINT(String("_load_from_cache :") + p_version->GetString());
 
 	char header[5] = { 0, 0, 0, 0, 0 };
 	f->get_buffer((uint8_t *)header, 4);
@@ -485,7 +485,7 @@ bool ShaderRD::_load_from_cache(Version *p_version) {
 		uint32_t variant_size = f->get_32();
 		ERR_FAIL_COND_V(variant_size == 0 && variants_enabled[i], false);
 		if (!variants_enabled[i]) {
-			LOG_INFO_PRINT(String("shader cache disable variants :") + String(variant_defines[i].ptr()));
+			//LOG_INFO_PRINT(String("shader cache disable variants :") + String(variant_defines[i].ptr()));
 			continue;
 		}
 		Vector<uint8_t> variant_bytes;
