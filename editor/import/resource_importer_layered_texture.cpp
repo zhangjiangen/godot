@@ -587,7 +587,7 @@ Error ResourceImporterLayeredTexture::import(const String &p_source_file, const 
 		if (can_astc) {
 			int level = p_options["compress/astc_level"];
 			level += Image::COMPRESS_ASTC_4x4;
-			_save_astc_tex(slices, p_save_path + ".astc." + extension, (Image::CompressMode)level, lossy, Image::COMPRESS_ASTC_4x4, csource, used_channels, mipmaps, true);
+			_save_astc_tex(slices, p_save_path + ".astc." + extension, compress_mode, lossy, (Image::CompressMode)level, csource, used_channels, mipmaps, true);
 			r_platform_variants->push_back("astc");
 			formats_imported.push_back("astc");
 			ok_on_pc = true;
@@ -619,20 +619,7 @@ const char *ResourceImporterLayeredTexture::compression_formats[] = {
 	"etc",
 	"etc2",
 	"pvrtc",
-	"astc_4x4",
-	"astc_5x4",
-	"astc_5x5",
-	"astc_6x5",
-	"astc_6x6",
-	"astc_8x5",
-	"astc_8x6",
-	"astc_8x8",
-	"astc_10x5",
-	"astc_10x6",
-	"astc_10x8",
-	"astc_10x10",
-	"astc_12x10",
-	"astc_12x12",
+	"astc",
 	nullptr
 };
 
