@@ -592,18 +592,16 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	_initial_set("editors/3d/navigation/warped_mouse_panning", true);
 
 	// 3D: Navigation feel
-	EDITOR_SETTING(Variant::FLOAT, PROPERTY_HINT_RANGE, "editors/3d/navigation_feel/orbit_sensitivity", 0.4, "0.0,2,0.01")
-	EDITOR_SETTING(Variant::FLOAT, PROPERTY_HINT_RANGE, "editors/3d/navigation_feel/orbit_inertia", 0.05, "0.0,1,0.01")
-	EDITOR_SETTING(Variant::FLOAT, PROPERTY_HINT_RANGE, "editors/3d/navigation_feel/translation_inertia", 0.15, "0.0,1,0.01")
-	EDITOR_SETTING(Variant::FLOAT, PROPERTY_HINT_RANGE, "editors/3d/navigation_feel/zoom_inertia", 0.075, "0.0,1,0.01")
-	EDITOR_SETTING(Variant::FLOAT, PROPERTY_HINT_RANGE, "editors/3d/navigation_feel/manipulation_orbit_inertia", 0.075, "0.0,1,0.01")
-	EDITOR_SETTING(Variant::FLOAT, PROPERTY_HINT_RANGE, "editors/3d/navigation_feel/manipulation_translation_inertia", 0.075, "0.0,1,0.01")
+	EDITOR_SETTING(Variant::FLOAT, PROPERTY_HINT_RANGE, "editors/3d/navigation_feel/orbit_sensitivity", 0.25, "0.01,2,0.001")
+	EDITOR_SETTING(Variant::FLOAT, PROPERTY_HINT_RANGE, "editors/3d/navigation_feel/orbit_inertia", 0.0, "0,1,0.001")
+	EDITOR_SETTING(Variant::FLOAT, PROPERTY_HINT_RANGE, "editors/3d/navigation_feel/translation_inertia", 0.05, "0,1,0.001")
+	EDITOR_SETTING(Variant::FLOAT, PROPERTY_HINT_RANGE, "editors/3d/navigation_feel/zoom_inertia", 0.05, "0,1,0.001")
 
 	// 3D: Freelook
 	EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "editors/3d/freelook/freelook_navigation_scheme", 0, "Default,Partially Axis-Locked (id Tech),Fully Axis-Locked (Minecraft)")
-	EDITOR_SETTING(Variant::FLOAT, PROPERTY_HINT_RANGE, "editors/3d/freelook/freelook_sensitivity", 0.4, "0.0,2,0.01")
-	EDITOR_SETTING(Variant::FLOAT, PROPERTY_HINT_RANGE, "editors/3d/freelook/freelook_inertia", 0.1, "0.0,1,0.01")
-	EDITOR_SETTING(Variant::FLOAT, PROPERTY_HINT_RANGE, "editors/3d/freelook/freelook_base_speed", 5.0, "0.0,10,0.01")
+	EDITOR_SETTING(Variant::FLOAT, PROPERTY_HINT_RANGE, "editors/3d/freelook/freelook_sensitivity", 0.25, "0.01,2,0.001")
+	EDITOR_SETTING(Variant::FLOAT, PROPERTY_HINT_RANGE, "editors/3d/freelook/freelook_inertia", 0.0, "0,1,0.001")
+	EDITOR_SETTING(Variant::FLOAT, PROPERTY_HINT_RANGE, "editors/3d/freelook/freelook_base_speed", 5.0, "0,10,0.01")
 	EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "editors/3d/freelook/freelook_activation_modifier", 0, "None,Shift,Alt,Meta,Ctrl")
 	_initial_set("editors/3d/freelook/freelook_speed_zoom_link", false);
 
@@ -712,7 +710,7 @@ void EditorSettings::_load_godot2_text_editor_theme() {
 	_initial_set("text_editor/theme/highlighting/background_color", Color(0.13, 0.12, 0.15));
 	_initial_set("text_editor/theme/highlighting/completion_background_color", Color(0.17, 0.16, 0.2));
 	_initial_set("text_editor/theme/highlighting/completion_selected_color", Color(0.26, 0.26, 0.27));
-	_initial_set("text_editor/theme/highlighting/completion_existing_color", Color(0.13, 0.87, 0.87, 0.87));
+	_initial_set("text_editor/theme/highlighting/completion_existing_color", Color(0.87, 0.87, 0.87, 0.13));
 	_initial_set("text_editor/theme/highlighting/completion_scroll_color", Color(1, 1, 1));
 	_initial_set("text_editor/theme/highlighting/completion_font_color", Color(0.67, 0.67, 0.67));
 	_initial_set("text_editor/theme/highlighting/text_color", Color(0.67, 0.67, 0.67));
@@ -1411,7 +1409,7 @@ Ref<Shortcut> EditorSettings::get_shortcut(const String &p_name) const {
 
 	// If there was no override, check the default builtins to see if it has an InputEvent for the provided name.
 	if (sc.is_null()) {
-		const OrderedHashMap<String, List<Ref<InputEvent>>>::ConstElement builtin_default = InputMap::get_singleton()->get_builtins().find(p_name);
+		const OrderedHashMap<String, List<Ref<InputEvent>>>::ConstElement builtin_default = InputMap::get_singleton()->get_builtins_with_feature_overrides_applied().find(p_name);
 		if (builtin_default) {
 			sc.instantiate();
 			sc->set_event(builtin_default.get().front()->get());
@@ -1446,6 +1444,23 @@ Ref<Shortcut> ED_GET_SHORTCUT(const String &p_path) {
 	return sc;
 }
 
+void ED_SHORTCUT_OVERRIDE(const String &p_path, const String &p_feature, Key p_keycode) {
+	Ref<Shortcut> sc = EditorSettings::get_singleton()->get_shortcut(p_path);
+	ERR_FAIL_COND_MSG(!sc.is_valid(), "Used ED_SHORTCUT_OVERRIDE with invalid shortcut: " + p_path + ".");
+
+	// Only add the override if the OS supports the provided feature.
+	if (OS::get_singleton()->has_feature(p_feature)) {
+		Ref<InputEventKey> ie;
+		if (p_keycode) {
+			ie = InputEventKey::create_reference(p_keycode);
+		}
+
+		// Directly override the existing shortcut.
+		sc->set_event(ie);
+		sc->set_meta("original", ie);
+	}
+}
+
 Ref<Shortcut> ED_SHORTCUT(const String &p_path, const String &p_name, Key p_keycode) {
 #ifdef OSX_ENABLED
 	// Use Cmd+Backspace as a general replacement for Delete shortcuts on macOS
@@ -1456,14 +1471,7 @@ Ref<Shortcut> ED_SHORTCUT(const String &p_path, const String &p_name, Key p_keyc
 
 	Ref<InputEventKey> ie;
 	if (p_keycode) {
-		ie.instantiate();
-
-		ie->set_unicode(p_keycode & KEY_CODE_MASK);
-		ie->set_keycode(p_keycode & KEY_CODE_MASK);
-		ie->set_shift_pressed(bool(p_keycode & KEY_MASK_SHIFT));
-		ie->set_alt_pressed(bool(p_keycode & KEY_MASK_ALT));
-		ie->set_ctrl_pressed(bool(p_keycode & KEY_MASK_CTRL));
-		ie->set_meta_pressed(bool(p_keycode & KEY_MASK_META));
+		ie = InputEventKey::create_reference(p_keycode);
 	}
 
 	if (!EditorSettings::get_singleton()) {
@@ -1504,15 +1512,23 @@ void EditorSettings::set_builtin_action_override(const String &p_name, const Arr
 	// Check if the provided event array is same as built-in. If it is, it does not need to be added to the overrides.
 	// Note that event order must also be the same.
 	bool same_as_builtin = true;
-	OrderedHashMap<String, List<Ref<InputEvent>>>::ConstElement builtin_default = InputMap::get_singleton()->get_builtins().find(p_name);
+	OrderedHashMap<String, List<Ref<InputEvent>>>::ConstElement builtin_default = InputMap::get_singleton()->get_builtins_with_feature_overrides_applied().find(p_name);
 	if (builtin_default) {
 		List<Ref<InputEvent>> builtin_events = builtin_default.get();
 
-		if (p_events.size() == builtin_events.size()) {
+		// In the editor we only care about key events.
+		List<Ref<InputEventKey>> builtin_key_events;
+		for (Ref<InputEventKey> iek : builtin_events) {
+			if (iek.is_valid()) {
+				builtin_key_events.push_back(iek);
+			}
+		}
+
+		if (p_events.size() == builtin_key_events.size()) {
 			int event_idx = 0;
 
 			// Check equality of each event.
-			for (const Ref<InputEvent> &E : builtin_events) {
+			for (const Ref<InputEventKey> &E : builtin_key_events) {
 				if (!E->is_match(p_events[event_idx])) {
 					same_as_builtin = false;
 					break;
