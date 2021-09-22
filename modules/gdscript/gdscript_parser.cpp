@@ -583,7 +583,7 @@ void GDScriptParser::parse_program() {
 		}
 	}
 
-	parse_class_body();
+	parse_class_body(true);
 
 #ifdef TOOLS_ENABLED
 	for (Map<int, GDScriptTokenizer::CommentData>::Element *E = tokenizer.get_comments().front(); E; E = E->next()) {
@@ -619,9 +619,10 @@ GDScriptParser::ClassNode *GDScriptParser::parse_class() {
 	}
 
 	consume(GDScriptTokenizer::Token::COLON, R"(Expected ":" after class declaration.)");
-	consume(GDScriptTokenizer::Token::NEWLINE, R"(Expected newline after class declaration.)");
 
-	if (!consume(GDScriptTokenizer::Token::INDENT, R"(Expected indented block after class declaration.)")) {
+	bool multiline = match(GDScriptTokenizer::Token::NEWLINE);
+
+	if (multiline && !consume(GDScriptTokenizer::Token::INDENT, R"(Expected indented block after class declaration.)")) {
 		current_class = previous_class;
 		return n_class;
 	}
@@ -634,9 +635,11 @@ GDScriptParser::ClassNode *GDScriptParser::parse_class() {
 		end_statement("superclass");
 	}
 
-	parse_class_body();
+	parse_class_body(multiline);
 
-	consume(GDScriptTokenizer::Token::DEDENT, R"(Missing unindent at the end of the class body.)");
+	if (multiline) {
+		consume(GDScriptTokenizer::Token::DEDENT, R"(Missing unindent at the end of the class body.)");
+	}
 
 	current_class = previous_class;
 	return n_class;
@@ -751,7 +754,7 @@ void GDScriptParser::parse_class_member(T *(GDScriptParser::*p_parse_function)()
 	}
 }
 
-void GDScriptParser::parse_class_body() {
+void GDScriptParser::parse_class_body(bool p_is_multiline) {
 	bool class_end = false;
 	while (!class_end && !is_at_end()) {
 		switch (current.type) {
@@ -796,6 +799,9 @@ void GDScriptParser::parse_class_body() {
 		}
 		if (panic_mode) {
 			synchronize();
+		}
+		if (!p_is_multiline) {
+			class_end = true;
 		}
 	}
 }
@@ -1057,7 +1063,9 @@ GDScriptParser::SignalNode *GDScriptParser::parse_signal() {
 	SignalNode *signal = alloc_node<SignalNode>();
 	signal->identifier = parse_identifier();
 
-	if (match(GDScriptTokenizer::Token::PARENTHESIS_OPEN)) {
+	if (check(GDScriptTokenizer::Token::PARENTHESIS_OPEN)) {
+		push_multiline(true);
+		advance();
 		do {
 			if (check(GDScriptTokenizer::Token::PARENTHESIS_CLOSE)) {
 				// Allow for trailing comma.
@@ -1080,6 +1088,7 @@ GDScriptParser::SignalNode *GDScriptParser::parse_signal() {
 			}
 		} while (match(GDScriptTokenizer::Token::COMMA) && !is_at_end());
 
+		pop_multiline();
 		consume(GDScriptTokenizer::Token::PARENTHESIS_CLOSE, R"*(Expected closing ")" after signal parameters.)*");
 	}
 
@@ -1362,6 +1371,9 @@ GDScriptParser::SuiteNode *GDScriptParser::parse_suite(const String &p_context, 
 	int error_count = 0;
 
 	do {
+		if (!multiline && previous.type == GDScriptTokenizer::Token::SEMICOLON && check(GDScriptTokenizer::Token::NEWLINE)) {
+			break;
+		}
 		Node *statement = parse_statement();
 		if (statement == nullptr) {
 			if (error_count++ > 100) {
@@ -1402,7 +1414,7 @@ GDScriptParser::SuiteNode *GDScriptParser::parse_suite(const String &p_context, 
 				break;
 		}
 
-	} while (multiline && !check(GDScriptTokenizer::Token::DEDENT) && !lambda_ended && !is_at_end());
+	} while ((multiline || previous.type == GDScriptTokenizer::Token::SEMICOLON) && !check(GDScriptTokenizer::Token::DEDENT) && !lambda_ended && !is_at_end());
 
 	if (multiline) {
 		if (!lambda_ended) {
@@ -2814,6 +2826,11 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_lambda(ExpressionNode *p_p
 	return lambda;
 }
 
+GDScriptParser::ExpressionNode *GDScriptParser::parse_yield(ExpressionNode *p_previous_operand, bool p_can_assign) {
+	push_error(R"("yield" was removed in Godot 4.0. Use "await" instead.)");
+	return nullptr;
+}
+
 GDScriptParser::ExpressionNode *GDScriptParser::parse_invalid_token(ExpressionNode *p_previous_operand, bool p_can_assign) {
 	// Just for better error messages.
 	GDScriptTokenizer::Token::Type invalid = previous.type;
@@ -3170,7 +3187,7 @@ GDScriptParser::ParseRule *GDScriptParser::get_rule(GDScriptTokenizer::Token::Ty
 		{ nullptr,                                          nullptr,                                        PREC_NONE }, // TRAIT,
 		{ nullptr,                                          nullptr,                                        PREC_NONE }, // VAR,
 		{ nullptr,                                          nullptr,                                        PREC_NONE }, // VOID,
-		{ nullptr,                                          nullptr,                                        PREC_NONE }, // YIELD,
+		{ &GDScriptParser::parse_yield,                     nullptr,                                        PREC_NONE }, // YIELD,
 		// Punctuation
 		{ &GDScriptParser::parse_array,                  	&GDScriptParser::parse_subscript,            	PREC_SUBSCRIPT }, // BRACKET_OPEN,
 		{ nullptr,                                          nullptr,                                        PREC_NONE }, // BRACKET_CLOSE,
