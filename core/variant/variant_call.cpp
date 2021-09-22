@@ -1515,6 +1515,7 @@ static void _register_variant_builtin_methods() {
 
 	/* Rect2 */
 
+	bind_method(Rect2, get_center, sarray(), varray());
 	bind_method(Rect2, get_area, sarray(), varray());
 	bind_method(Rect2, has_no_area, sarray(), varray());
 	bind_method(Rect2, has_point, sarray("point"), varray());
@@ -1531,6 +1532,7 @@ static void _register_variant_builtin_methods() {
 
 	/* Rect2i */
 
+	bind_method(Rect2i, get_center, sarray(), varray());
 	bind_method(Rect2i, get_area, sarray(), varray());
 	bind_method(Rect2i, has_no_area, sarray(), varray());
 	bind_method(Rect2i, has_point, sarray("point"), varray());
@@ -1741,6 +1743,7 @@ static void _register_variant_builtin_methods() {
 	/* AABB */
 
 	bind_method(AABB, abs, sarray(), varray());
+	bind_method(AABB, get_center, sarray(), varray());
 	bind_method(AABB, get_area, sarray(), varray());
 	bind_method(AABB, has_no_area, sarray(), varray());
 	bind_method(AABB, has_no_surface, sarray(), varray());
