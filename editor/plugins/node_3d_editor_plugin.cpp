@@ -128,7 +128,7 @@ void ViewportRotationControl::_draw_axis(const Axis2D &p_axis) {
 
 	const Color axis_color = axis_colors[direction];
 	const double alpha = focused ? 1.0 : ((p_axis.z_axis + 1.0) / 2.0) * 0.5 + 0.5;
-	const Color c = focused ? Color(0.9, 0.9, 0.9) : Color(axis_color.r, axis_color.g, axis_color.b, alpha);
+	const Color c = focused ? Color(0.9, 0.9, 0.9) : Color(axis_color, alpha);
 
 	if (positive) {
 		// Draw axis lines for the positive axes.
@@ -854,8 +854,8 @@ void Node3DEditorViewport::_update_name() {
 }
 
 void Node3DEditorViewport::_compute_edit(const Point2 &p_point) {
-	_edit.click_ray = _get_ray(Vector2(p_point.x, p_point.y));
-	_edit.click_ray_pos = _get_ray_pos(Vector2(p_point.x, p_point.y));
+	_edit.click_ray = _get_ray(p_point);
+	_edit.click_ray_pos = _get_ray_pos(p_point);
 	_edit.plane = TRANSFORM_VIEW;
 	spatial_editor->update_transform_gizmo();
 	_edit.center = spatial_editor->get_gizmo_transform().origin;
@@ -934,8 +934,8 @@ bool Node3DEditorViewport::_transform_gizmo_select(const Vector2 &p_screenpos, b
 		return false;
 	}
 
-	Vector3 ray_pos = _get_ray_pos(Vector2(p_screenpos.x, p_screenpos.y));
-	Vector3 ray = _get_ray(Vector2(p_screenpos.x, p_screenpos.y));
+	Vector3 ray_pos = _get_ray_pos(p_screenpos);
+	Vector3 ray = _get_ray(p_screenpos);
 
 	Transform3D gt = spatial_editor->get_gizmo_transform();
 
@@ -998,7 +998,7 @@ bool Node3DEditorViewport::_transform_gizmo_select(const Vector2 &p_screenpos, b
 			} else {
 				//handle plane translate
 				_edit.mode = TRANSFORM_TRANSLATE;
-				_compute_edit(Point2(p_screenpos.x, p_screenpos.y));
+				_compute_edit(p_screenpos);
 				_edit.plane = TransformPlane(TRANSFORM_X_AXIS + col_axis + (is_plane_translate ? 3 : 0));
 			}
 			return true;
@@ -1036,7 +1036,7 @@ bool Node3DEditorViewport::_transform_gizmo_select(const Vector2 &p_screenpos, b
 			} else {
 				//handle rotate
 				_edit.mode = TRANSFORM_ROTATE;
-				_compute_edit(Point2(p_screenpos.x, p_screenpos.y));
+				_compute_edit(p_screenpos);
 				_edit.plane = TransformPlane(TRANSFORM_X_AXIS + col_axis);
 			}
 			return true;
@@ -1102,7 +1102,7 @@ bool Node3DEditorViewport::_transform_gizmo_select(const Vector2 &p_screenpos, b
 			} else {
 				//handle scale
 				_edit.mode = TRANSFORM_SCALE;
-				_compute_edit(Point2(p_screenpos.x, p_screenpos.y));
+				_compute_edit(p_screenpos);
 				_edit.plane = TransformPlane(TRANSFORM_X_AXIS + col_axis + (is_plane_scale ? 3 : 0));
 			}
 			return true;
@@ -6014,7 +6014,7 @@ void fragment() {
 void Node3DEditor::_update_context_menu_stylebox() {
 	// This must be called when the theme changes to follow the new accent color.
 	Ref<StyleBoxFlat> context_menu_stylebox = memnew(StyleBoxFlat);
-	const Color accent_color = EditorNode::get_singleton()->get_gui_base()->get_theme_color("accent_color", "Editor");
+	const Color accent_color = EditorNode::get_singleton()->get_gui_base()->get_theme_color(SNAME("accent_color"), SNAME("Editor"));
 	context_menu_stylebox->set_bg_color(accent_color * Color(1, 1, 1, 0.1));
 	// Add an underline to the StyleBox, but prevent its minimum vertical size from changing.
 	context_menu_stylebox->set_border_color(accent_color);

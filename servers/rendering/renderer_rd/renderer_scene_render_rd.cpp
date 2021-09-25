@@ -3365,7 +3365,7 @@ void RendererSceneRenderRD::_setup_decals(const PagedArray<RID> &p_decals, const
 		Vector3 decal_extents = storage->decal_get_extents(decal);
 
 		Transform3D scale_xform;
-		scale_xform.basis.scale(Vector3(decal_extents.x, decal_extents.y, decal_extents.z));
+		scale_xform.basis.scale(decal_extents);
 		Transform3D to_decal_xform = (p_camera_inverse_xform * di->transform * scale_xform * uv_xform).affine_inverse();
 		RendererStorageRD::store_transform(to_decal_xform, dd.xform);
 
@@ -4259,10 +4259,7 @@ void RendererSceneRenderRD::_render_shadow_pass(RID p_light, RID p_shadow_atlas,
 		light_projection = light_instance->shadow_transform[p_pass].camera;
 		light_transform = light_instance->shadow_transform[p_pass].transform;
 
-		atlas_rect.position.x = light_instance->directional_rect.position.x;
-		atlas_rect.position.y = light_instance->directional_rect.position.y;
-		atlas_rect.size.width = light_instance->directional_rect.size.x;
-		atlas_rect.size.height = light_instance->directional_rect.size.y;
+		atlas_rect = light_instance->directional_rect;
 
 		if (storage->light_directional_get_shadow_mode(light_instance->light) == RS::LIGHT_DIRECTIONAL_SHADOW_PARALLEL_4_SPLITS) {
 			atlas_rect.size.width /= 2;
@@ -4273,8 +4270,7 @@ void RendererSceneRenderRD::_render_shadow_pass(RID p_light, RID p_shadow_atlas,
 			} else if (p_pass == 2) {
 				atlas_rect.position.y += atlas_rect.size.height;
 			} else if (p_pass == 3) {
-				atlas_rect.position.x += atlas_rect.size.width;
-				atlas_rect.position.y += atlas_rect.size.height;
+				atlas_rect.position += atlas_rect.size;
 			}
 		} else if (storage->light_directional_get_shadow_mode(light_instance->light) == RS::LIGHT_DIRECTIONAL_SHADOW_PARALLEL_2_SPLITS) {
 			atlas_rect.size.height /= 2;
@@ -4383,10 +4379,8 @@ void RendererSceneRenderRD::_render_shadow_pass(RID p_light, RID p_shadow_atlas,
 			_render_shadow_end();
 			//reblit
 			Rect2 atlas_rect_norm = atlas_rect;
-			atlas_rect_norm.position.x /= float(atlas_size);
-			atlas_rect_norm.position.y /= float(atlas_size);
-			atlas_rect_norm.size.x /= float(atlas_size);
-			atlas_rect_norm.size.y /= float(atlas_size);
+			atlas_rect_norm.position /= float(atlas_size);
+			atlas_rect_norm.size /= float(atlas_size);
 			storage->get_effects()->copy_cubemap_to_dp(render_texture, atlas_fb, atlas_rect_norm, atlas_rect.size, light_projection.get_z_near(), light_projection.get_z_far(), false);
 			atlas_rect_norm.position += Vector2(dual_paraboloid_offset) * atlas_rect_norm.size;
 			storage->get_effects()->copy_cubemap_to_dp(render_texture, atlas_fb, atlas_rect_norm, atlas_rect.size, light_projection.get_z_near(), light_projection.get_z_far(), true);

@@ -333,7 +333,7 @@ void RichTextLabel::_resize_line(ItemFrame *p_frame, int p_line, const Ref<Font>
 						} else {
 							frame->lines.write[i].offset.y = 0;
 						}
-						frame->lines.write[i].offset += Vector2(offset.x, offset.y);
+						frame->lines.write[i].offset += offset;
 
 						float h = frame->lines[i].text_buf->get_size().y;
 						if (frame->min_size_over.y > 0) {
@@ -578,7 +578,7 @@ void RichTextLabel::_shape_line(ItemFrame *p_frame, int p_line, const Ref<Font> 
 						} else {
 							frame->lines.write[i].offset.y = 0;
 						}
-						frame->lines.write[i].offset += Vector2(offset.x, offset.y);
+						frame->lines.write[i].offset += offset;
 
 						float h = frame->lines[i].text_buf->get_size().y;
 						if (frame->min_size_over.y > 0) {
@@ -2378,8 +2378,7 @@ void RichTextLabel::add_image(const Ref<Texture2D> &p_image, const int p_width, 
 			item->size.width = p_image->get_width() * p_height / p_image->get_height();
 		} else {
 			// keep original width and height
-			item->size.height = p_image->get_height();
-			item->size.width = p_image->get_width();
+			item->size = p_image->get_size();
 		}
 	}
 

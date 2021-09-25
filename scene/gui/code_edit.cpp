@@ -227,17 +227,17 @@ void CodeEdit::_notification(int p_what) {
 						end = font->get_string_size(line.substr(0, line.rfind(String::chr(0xFFFF))), font_size).x;
 					}
 
-					Point2 round_ofs = hint_ofs + sb->get_offset() + Vector2(0, font->get_ascent() + font_height * i + yofs);
+					Point2 round_ofs = hint_ofs + sb->get_offset() + Vector2(0, font->get_ascent(font_size) + font_height * i + yofs);
 					round_ofs = round_ofs.round();
 					draw_string(font, round_ofs, line.replace(String::chr(0xFFFF), ""), HALIGN_LEFT, -1, font_size, font_color);
 					if (end > 0) {
 						// Draw an underline for the currently edited function parameter.
-						const Vector2 b = hint_ofs + sb->get_offset() + Vector2(begin, font_height + font_height * i + line_spacing);
+						const Vector2 b = hint_ofs + sb->get_offset() + Vector2(begin, font_height + font_height * i + yofs);
 						draw_line(b, b + Vector2(end - begin, 0), font_color, 2);
 
 						// Draw a translucent text highlight as well.
 						const Rect2 highlight_rect = Rect2(
-								hint_ofs + sb->get_offset() + Vector2(begin, 0),
+								b - Vector2(0, font_height),
 								Vector2(end - begin, font_height));
 						draw_rect(highlight_rect, font_color * Color(1, 1, 1, 0.2));
 					}
@@ -296,7 +296,7 @@ void CodeEdit::gui_input(const Ref<InputEvent> &p_gui_input) {
 				mpos.x = get_size().x - mpos.x;
 			}
 
-			Point2i pos = get_line_column_at_pos(Point2i(mpos.x, mpos.y));
+			Point2i pos = get_line_column_at_pos(mpos);
 			int line = pos.y;
 			int col = pos.x;
 
@@ -321,7 +321,7 @@ void CodeEdit::gui_input(const Ref<InputEvent> &p_gui_input) {
 						mpos.x = get_size().x - mpos.x;
 					}
 
-					Point2i pos = get_line_column_at_pos(Point2i(mpos.x, mpos.y));
+					Point2i pos = get_line_column_at_pos(mpos);
 					int line = pos.y;
 					int col = pos.x;
 

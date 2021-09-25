@@ -1712,7 +1712,7 @@ int Tree::draw_item(const Point2i &p_pos, const Point2 &p_draw_ofs, const Size2 
 			}
 
 			if ((select_mode == SELECT_ROW && selected_item == p_item) || p_item->cells[i].selected || !p_item->has_meta("__focus_rect")) {
-				Rect2i r(cell_rect.position, cell_rect.size);
+				Rect2i r = cell_rect;
 
 				p_item->set_meta("__focus_rect", Rect2(r.position, r.size));
 
@@ -1968,7 +1968,8 @@ int Tree::draw_item(const Point2i &p_pos, const Point2 &p_draw_ofs, const Size2 
 				arrow = cache.arrow;
 			}
 
-			Point2 apos = p_pos + p_draw_ofs + Point2i(0, (label_h - arrow->get_height()) / 2) - cache.offset;
+			Point2 apos = p_pos + Point2i(0, (label_h - arrow->get_height()) / 2) - cache.offset + p_draw_ofs;
+			apos.x += cache.item_margin - arrow->get_width();
 
 			if (rtl) {
 				apos.x = get_size().width - apos.x - arrow->get_width();

@@ -697,7 +697,7 @@ void GraphEdit::_top_layer_input(const Ref<InputEvent> &p_ev) {
 			} else if (!just_disconnected) {
 				String from = connecting_from;
 				int from_slot = connecting_index;
-				Vector2 ofs = Vector2(mb->get_position().x, mb->get_position().y);
+				Vector2 ofs = mb->get_position();
 
 				if (!connecting_out) {
 					emit_signal(SNAME("connection_from_empty"), from, from_slot, ofs);
@@ -2103,7 +2103,7 @@ void GraphEdit::arrange_nodes() {
 		largest_node_size = 0.0f;
 	}
 
-	emit_signal("begin_node_move");
+	emit_signal(SNAME("begin_node_move"));
 	for (const Set<StringName>::Element *E = selected_nodes.front(); E; E = E->next()) {
 		GraphNode *gn = Object::cast_to<GraphNode>(node_names[E->get()]);
 		gn->set_drag(true);
@@ -2116,7 +2116,7 @@ void GraphEdit::arrange_nodes() {
 		gn->set_position_offset(pos);
 		gn->set_drag(false);
 	}
-	emit_signal("end_node_move");
+	emit_signal(SNAME("end_node_move"));
 	arranging_graph = false;
 }
 

@@ -2927,7 +2927,7 @@ void CanvasItemEditor::_draw_ruler_tool() {
 		viewport->draw_string(font, text_pos, TS->format_number(vformat("%.1f px", length_vector.length())), HALIGN_LEFT, -1, font_size, font_color, outline_size, outline_color);
 
 		if (draw_secondary_lines) {
-			const real_t horizontal_angle_rad = atan2(length_vector.y, length_vector.x);
+			const real_t horizontal_angle_rad = length_vector.angle();
 			const real_t vertical_angle_rad = Math_PI / 2.0 - horizontal_angle_rad;
 			const int horizontal_angle = round(180 * horizontal_angle_rad / Math_PI);
 			const int vertical_angle = round(180 * vertical_angle_rad / Math_PI);
@@ -3968,7 +3968,7 @@ void CanvasItemEditor::edit(CanvasItem *p_canvas_item) {
 void CanvasItemEditor::_update_context_menu_stylebox() {
 	// This must be called when the theme changes to follow the new accent color.
 	Ref<StyleBoxFlat> context_menu_stylebox = memnew(StyleBoxFlat);
-	const Color accent_color = EditorNode::get_singleton()->get_gui_base()->get_theme_color("accent_color", "Editor");
+	const Color accent_color = EditorNode::get_singleton()->get_gui_base()->get_theme_color(SNAME("accent_color"), SNAME("Editor"));
 	context_menu_stylebox->set_bg_color(accent_color * Color(1, 1, 1, 0.1));
 	// Add an underline to the StyleBox, but prevent its minimum vertical size from changing.
 	context_menu_stylebox->set_border_color(accent_color);
