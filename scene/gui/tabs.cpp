@@ -167,7 +167,7 @@ void Tabs::gui_input(const Ref<InputEvent> &p_event) {
 
 		if (mb->is_pressed() && (mb->get_button_index() == MOUSE_BUTTON_LEFT || (select_with_rmb && mb->get_button_index() == MOUSE_BUTTON_RIGHT))) {
 			// clicks
-			Point2 pos(mb->get_position().x, mb->get_position().y);
+			Point2 pos = mb->get_position();
 
 			if (buttons_visible) {
 				Ref<Texture2D> incr = get_theme_icon(SNAME("increment"));
@@ -241,6 +241,7 @@ void Tabs::_shape(int p_tab) {
 
 	tabs.write[p_tab].xl_text = atr(tabs[p_tab].text);
 	tabs.write[p_tab].text_buf->clear();
+	tabs.write[p_tab].text_buf->set_width(-1);
 	if (tabs[p_tab].text_direction == Control::TEXT_DIRECTION_INHERITED) {
 		tabs.write[p_tab].text_buf->set_direction(is_layout_rtl() ? TextServer::DIRECTION_RTL : TextServer::DIRECTION_LTR);
 	} else {
@@ -529,7 +530,6 @@ bool Tabs::get_offset_buttons_visible() const {
 void Tabs::set_tab_title(int p_tab, const String &p_title) {
 	ERR_FAIL_INDEX(p_tab, tabs.size());
 	tabs.write[p_tab].text = p_title;
-	tabs.write[p_tab].xl_text = atr(p_title);
 	_shape(p_tab);
 	update();
 	minimum_size_changed();
