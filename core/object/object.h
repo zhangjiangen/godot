@@ -192,6 +192,15 @@ enum PropertyUsageFlags {
 	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set_##name); \
 	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                      \
 	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), c_set_##name##_func_name, c_get_##name##_func_name);
+#define IMP_PROPERTY_USAGE(class_name, type, name, usage)                                                    \
+	const char *c_get_##name##_func_name = CODE_TO_STRING_2(_get_, name);                                    \
+	const char *c_set_##name##_func_name = CODE_TO_STRING_2(_set_, name);                                    \
+	const char *c_##name##_arg_name = CODE_TO_STRING_2(p_, name);                                            \
+	Variant::Type t_##name##_variant_type = Variant::get_type<type>();                                       \
+	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set_##name); \
+	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                      \
+	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, PROPERTY_HINT_NONE, "", usage), c_set_##name##_func_name, c_get_##name##_func_name);
+
 // 动态属性，不可编辑，不存档，用来保存临时状态
 #define IMP_PROPERTY_Temp(class_name, type, name)                                                            \
 	const char *c_get_##name##_func_name = CODE_TO_STRING_2(_get_, name);                                    \
@@ -243,7 +252,6 @@ enum PropertyUsageFlags {
 #define ADD_ARRAY_COUNT(m_label, m_count_property, m_count_property_setter, m_count_property_getter, m_prefix) ClassDB::add_property_array_count(get_class_static(), m_label, m_count_property, _scs_create(m_count_property_setter), _scs_create(m_count_property_getter), m_prefix)
 #define ADD_ARRAY_COUNT_WITH_USAGE_FLAGS(m_label, m_count_property, m_count_property_setter, m_count_property_getter, m_prefix, m_property_usage_flags) ClassDB::add_property_array_count(get_class_static(), m_label, m_count_property, _scs_create(m_count_property_setter), _scs_create(m_count_property_getter), m_prefix, m_property_usage_flags)
 #define ADD_ARRAY(m_array_path, m_prefix) ClassDB::add_property_array(get_class_static(), m_array_path, m_prefix)
-
 
 struct PropertyInfo {
 	Variant::Type type = Variant::NIL;

@@ -299,8 +299,7 @@ Ref<Image> StreamTexture2D::load_image_from_file(FileAccess *f, int p_size_limit
 	uint32_t mipmaps = f->get_32();
 	Image::Format format = Image::Format(f->get_32());
 	uint8_t swizzle = 0xFF;
-	if (format >= Image::FORMAT_RGBA_ASTC_4x4 && format <= Image::FORMAT_SRGB8_ALPHA8_ASTC_12x12)
-	{
+	if (format >= Image::FORMAT_RGBA_ASTC_4x4 && format <= Image::FORMAT_SRGB8_ALPHA8_ASTC_12x12) {
 		swizzle = f->get_8();
 	}
 
@@ -424,10 +423,9 @@ Ref<Image> StreamTexture2D::load_image_from_file(FileAccess *f, int p_size_limit
 			image->create(tw, th, mipmaps - i ? true : false, format, data);
 			// 保存astc的通道信息
 			image->astc_r = swizzle & 1;
-			image->astc_g =	swizzle & (1 << 1);
+			image->astc_g = swizzle & (1 << 1);
 			image->astc_b = swizzle & (1 << 2);
 			image->astc_a = swizzle & (1 << 3);
-				
 
 			return image;
 		}
@@ -557,6 +555,7 @@ Error StreamTexture2D::load(const String &p_path) {
 	if (lw || lh) {
 		RS::get_singleton()->texture_set_size_override(texture, lw, lh);
 	}
+	IsDestory = true;
 
 	w = lw;
 	h = lh;
@@ -615,6 +614,7 @@ int StreamTexture2D::get_height() const {
 RID StreamTexture2D::get_rid() const {
 	if (!texture.is_valid()) {
 		texture = RS::get_singleton()->texture_2d_placeholder_create();
+		IsDestory = true;
 	}
 	return texture;
 }
@@ -711,10 +711,20 @@ void StreamTexture2D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "load_path", PROPERTY_HINT_FILE, "*.stex"), "load", "get_load_path");
 }
 
+void StreamTexture2D::set_rid(RID id, Image::Format format, int p_width, int p_height, bool is_need_destory) {
+	if (texture.is_valid() && IsDestory) {
+		RS::get_singleton()->free(texture);
+	}
+	texture = id;
+	format = format;
+	w = p_width;
+	h = p_height;
+	IsDestory = is_need_destory;
+}
 StreamTexture2D::StreamTexture2D() {}
 
 StreamTexture2D::~StreamTexture2D() {
-	if (texture.is_valid()) {
+	if (texture.is_valid() && IsDestory) {
 		RS::get_singleton()->free(texture);
 	}
 }

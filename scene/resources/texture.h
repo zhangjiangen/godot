@@ -160,6 +160,7 @@ private:
 	int w = 0;
 	int h = 0;
 	mutable Ref<BitMap> alpha_cache;
+	mutable bool IsDestory = true;
 
 	virtual void reload_from_file() override;
 
@@ -199,6 +200,7 @@ public:
 	bool is_pixel_opaque(int p_x, int p_y) const override;
 
 	virtual Ref<Image> get_image() const override;
+	void set_rid(RID id, Image::Format format, int p_width, int p_height, bool is_need_destory = true);
 
 	StreamTexture2D();
 	~StreamTexture2D();
