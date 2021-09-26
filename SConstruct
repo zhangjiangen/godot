@@ -1,22 +1,21 @@
-#!/usr/bin/env python
+#!/usr/bin/python 
+# -*- coding: utf-8 -*-
 
-import time
-import atexit
-import glsl_builders
-import methods
-from collections import OrderedDict
-import __init__
-import sys
-import pickle
-import os
-import glob
 EnsureSConsVersion(3, 0, 0)
 EnsurePythonVersion(3, 5)
 
 # System
-
+import atexit
+import glob
+import os
+import pickle
+import sys
+import time
+from collections import OrderedDict
 
 # Local
+import methods
+import glsl_builders
 
 # Scan possible build platforms
 
@@ -565,8 +564,7 @@ if selected_platform in platform_list:
         elif methods.using_clang(env) or methods.using_emcc(env):
             # We often implement `operator<` for structs of pointers as a requirement
             # for putting them in `Set` or `Map`. We don't mind about unreliable ordering.
-            # common_warnings += ["-Wno-ordered-compare-function-pointers"]
-            aaa = 0
+            common_warnings += ["-Wno-ordered-compare-function-pointers"]
 
         if env["warnings"] == "extra":
             env.Append(CCFLAGS=["-Wall", "-Wextra", "-Wwrite-strings",
