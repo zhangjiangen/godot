@@ -153,11 +153,17 @@ public:
 	void version_set_compute_code(RID p_version, const Map<String, String> &p_code, const String &p_uniforms, const String &p_compute_globals, const Vector<String> &p_custom_defines);
 
 	_FORCE_INLINE_ RID version_get_shader(RID p_version, int p_variant) {
-		ERR_FAIL_INDEX_V(p_variant, variant_defines.size(), RID());
+        if(p_variant >= variant_defines.size())
+        {
+            ERR_FAIL_INDEX_V(p_variant, variant_defines.size(), RID());
+        }
 		ERR_FAIL_COND_V(!variants_enabled[p_variant], RID());
 
 		Version *version = version_owner.getornull(p_version);
-		ERR_FAIL_COND_V(!version, RID());
+        if(!version)
+        {
+            ERR_FAIL_COND_V(!version, RID());
+        }
 
 		if (version->dirty) {
 			_compile_version(version);

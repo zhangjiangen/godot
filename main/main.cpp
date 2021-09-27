@@ -1851,6 +1851,8 @@ Error Main::setup2(Thread::ID p_main_tid_override) {
 	print_verbose("CORE API HASH: " + uitos(ClassDB::get_api_hash(ClassDB::API_CORE)));
 	print_verbose("EDITOR API HASH: " + uitos(ClassDB::get_api_hash(ClassDB::API_EDITOR)));
 	MAIN_PRINT("Main: Done");
+    // 初始化引擎
+    Engine::get_singleton()->on_init();
 
 	return OK;
 }
@@ -2665,7 +2667,6 @@ void Main::cleanup(bool p_force) {
 	if (!p_force) {
 		ERR_FAIL_COND(!_start_success);
 	}
-
 	EngineDebugger::deinitialize();
 
 	ResourceLoader::remove_custom_loaders();
@@ -2687,7 +2688,10 @@ void Main::cleanup(bool p_force) {
 
 	// Sync pending commands that may have been queued from a different thread during ScriptServer finalization
 	RenderingServer::get_singleton()->sync();
-
+    
+    // 清除引擎
+    Engine::get_singleton()->on_clear();
+    
 	//clear global shader variables before scene and other graphics stuff are deinitialized.
 	rendering_server->global_variables_clear();
 

@@ -259,6 +259,12 @@ Engine *Engine::get_singleton() {
 Engine::Engine() {
 	singleton = this;
 }
+Engine::~Engine() {
+	for (auto ptr : cpp_singletons) {
+		memdelete(ptr);
+	}
+	cpp_singletons.clear();
+}
 
 Engine::Singleton::Singleton(const StringName &p_name, Object *p_ptr, const StringName &p_class_name) :
 		name(p_name),
@@ -270,4 +276,31 @@ Engine::Singleton::Singleton(const StringName &p_name, Object *p_ptr, const Stri
 		WARN_PRINT("You must use Ref<> to ensure the lifetime of a RefCounted object intended to be used as a singleton.");
 	}
 #endif
+}
+void Engine::on_init() {
+	if (is_init) {
+		return;
+	}
+	for (auto ptr : cpp_singletons) {
+		ptr->on_engine_init();
+	}
+	is_init = true;
+}
+void Engine::on_clear() {
+	if (!is_init) {
+		return;
+	}
+	for (auto ptr : cpp_singletons) {
+		ptr->on_engine_clear();
+	}
+	is_init = false;
+}
+void Engine::add_cpp_singleton(CppSingleton *p_single) {
+	if (!p_single) {
+		return;
+	}
+	cpp_singletons.push_back(p_single);
+	if (is_init) {
+		p_single->on_engine_init();
+	}
 }

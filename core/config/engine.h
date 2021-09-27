@@ -45,6 +45,12 @@ public:
 		bool user_created = false;
 		Singleton(const StringName &p_name = StringName(), Object *p_ptr = nullptr, const StringName &p_class_name = StringName());
 	};
+	class CppSingleton {
+	public:
+		virtual ~CppSingleton() {}
+		virtual void on_engine_init() {}
+		virtual void on_engine_clear() {}
+	};
 
 private:
 	friend class Main;
@@ -68,6 +74,7 @@ private:
 	bool _in_physics = false;
 
 	List<Singleton> singletons;
+	List<CppSingleton *> cpp_singletons;
 	Map<StringName, Object *> singleton_ptrs;
 
 	bool editor_hint = false;
@@ -75,6 +82,7 @@ private:
 	static Engine *singleton;
 
 	String shader_cache_path;
+	bool is_init = false;
 
 public:
 	static Engine *get_singleton();
@@ -137,7 +145,12 @@ public:
 	bool is_validation_layers_enabled() const;
 
 	Engine();
-	virtual ~Engine() {}
+	virtual ~Engine();
+
+public:
+	void on_init();
+	void on_clear();
+	void add_cpp_singleton(CppSingleton * p_single);
 };
 
 #endif // ENGINE_H
