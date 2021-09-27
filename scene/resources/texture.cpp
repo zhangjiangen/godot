@@ -711,12 +711,12 @@ void StreamTexture2D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "load_path", PROPERTY_HINT_FILE, "*.stex"), "load", "get_load_path");
 }
 
-void StreamTexture2D::set_rid(RID id, Image::Format format, int p_width, int p_height, bool is_need_destory) {
+void StreamTexture2D::set_rid(RID id, Image::Format p_format, int p_width, int p_height, bool is_need_destory) {
 	if (texture.is_valid() && IsDestory) {
 		RS::get_singleton()->free(texture);
 	}
 	texture = id;
-	format = format;
+	format = p_format;
 	w = p_width;
 	h = p_height;
 	IsDestory = is_need_destory;

@@ -1,3 +1,5 @@
+#!/usr/bin/python 
+# -*- coding: utf-8 -*-
 short_name = "godot"
 name = "Godot Engine"
 major = 4
