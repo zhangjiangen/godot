@@ -48,8 +48,8 @@ public:
 	class CppSingleton {
 	public:
 		virtual ~CppSingleton() {}
-		virtual void on_engine_init() {}
-		virtual void on_engine_clear() {}
+		virtual void on_engine_init() = 0;
+		virtual void on_engine_clear() = 0;
 	};
 
 private:
@@ -150,7 +150,7 @@ public:
 public:
 	void on_init();
 	void on_clear();
-	void add_cpp_singleton(CppSingleton * p_single);
+	void add_cpp_singleton(CppSingleton *p_single);
 };
 
 #endif // ENGINE_H
