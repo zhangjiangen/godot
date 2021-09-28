@@ -191,6 +191,7 @@ public:
 	RS::ShaderNativeSourceCode version_get_native_source_code(RID p_version);
 
 	void initialize(const Vector<String> &p_variant_defines, const String &p_general_defines = "");
+	void clear();
 	virtual ~ShaderRD();
 };
 

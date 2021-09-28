@@ -779,7 +779,7 @@ bool ShaderRD::shader_cache_save_compressed = true;
 bool ShaderRD::shader_cache_save_compressed_zstd = true;
 bool ShaderRD::shader_cache_save_debug = true;
 
-ShaderRD::~ShaderRD() {
+void ShaderRD::clear() {
 	List<RID> remaining;
 	version_owner.get_owned_list(&remaining);
 	if (remaining.size()) {
@@ -789,4 +789,7 @@ ShaderRD::~ShaderRD() {
 			remaining.pop_front();
 		}
 	}
+}
+ShaderRD::~ShaderRD() {
+	clear();
 }
