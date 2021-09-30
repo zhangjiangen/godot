@@ -401,7 +401,7 @@ public:
 	bool astc_g = true;
 	bool astc_b = true;
 
-	Error compress(CompressMode p_mode, CompressSource p_source = COMPRESS_SOURCE_GENERIC, float p_lossy_quality = 0.7,Image::CompressSource csource  = COMPRESS_SOURCE_GENERIC);
+	Error compress(CompressMode p_mode, CompressSource p_source = COMPRESS_SOURCE_GENERIC, float p_lossy_quality = 0.7);
 	Error compress_from_channels(CompressMode p_mode, UsedChannels p_channels, float p_lossy_quality = 0.7,Image::CompressSource csource = COMPRESS_SOURCE_GENERIC);
 	Error decompress();
 	bool is_compressed() const;
