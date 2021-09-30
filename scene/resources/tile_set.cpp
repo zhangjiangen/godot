@@ -1019,20 +1019,25 @@ Vector<Vector2> TileSet::get_tile_shape_polygon() {
 
 void TileSet::draw_tile_shape(CanvasItem *p_canvas_item, Transform2D p_transform, Color p_color, bool p_filled, Ref<Texture2D> p_texture) {
 	if (tile_meshes_dirty) {
-		Vector<Vector2> uvs = get_tile_shape_polygon();
+		Vector<Vector2> shape = get_tile_shape_polygon();
+		Vector<Vector2> uvs;
+		uvs.resize(shape.size());
+		for (int i = 0; i < shape.size(); i++) {
+			uvs.write[i] = shape[i] + Vector2(0.5, 0.5);
+		}
 
 		Vector<Color> colors;
-		colors.resize(uvs.size());
+		colors.resize(shape.size());
 		colors.fill(Color(1.0, 1.0, 1.0, 1.0));
 
 		// Filled mesh.
 		tile_filled_mesh->clear_surfaces();
 		Array a;
 		a.resize(Mesh::ARRAY_MAX);
-		a[Mesh::ARRAY_VERTEX] = uvs;
+		a[Mesh::ARRAY_VERTEX] = shape;
 		a[Mesh::ARRAY_TEX_UV] = uvs;
 		a[Mesh::ARRAY_COLOR] = colors;
-		a[Mesh::ARRAY_INDEX] = Geometry2D::triangulate_polygon(uvs);
+		a[Mesh::ARRAY_INDEX] = Geometry2D::triangulate_polygon(shape);
 		tile_filled_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, a, Array(), Dictionary(), Mesh::ARRAY_FLAG_USE_2D_VERTICES);
 
 		// Lines mesh.
@@ -1040,9 +1045,9 @@ void TileSet::draw_tile_shape(CanvasItem *p_canvas_item, Transform2D p_transform
 		a.clear();
 		a.resize(Mesh::ARRAY_MAX);
 		// Add the first point again when drawing lines.
-		uvs.push_back(uvs[0]);
+		shape.push_back(shape[0]);
 		colors.push_back(colors[0]);
-		a[Mesh::ARRAY_VERTEX] = uvs;
+		a[Mesh::ARRAY_VERTEX] = shape;
 		a[Mesh::ARRAY_COLOR] = colors;
 		tile_lines_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_LINE_STRIP, a, Array(), Dictionary(), Mesh::ARRAY_FLAG_USE_2D_VERTICES);
 
@@ -3119,7 +3124,7 @@ Vector2i TileSetAtlasSource::get_atlas_grid_size() const {
 }
 
 bool TileSetAtlasSource::_set(const StringName &p_name, const Variant &p_value) {
-	Vector<String> components = String(p_name).split("/", true, 3);
+	Vector<String> components = String(p_name).split("/", true, 2);
 
 	// Compute the vector2i if we have coordinates.
 	Vector<String> coords_split = components[0].split(":");
@@ -3520,6 +3525,13 @@ Vector2i TileSetAtlasSource::get_tile_id(int p_index) const {
 }
 
 bool TileSetAtlasSource::has_room_for_tile(Vector2i p_atlas_coords, Vector2i p_size, int p_animation_columns, Vector2i p_animation_separation, int p_frames_count, Vector2i p_ignored_tile) const {
+	if (p_atlas_coords.x < 0 || p_atlas_coords.y < 0) {
+		return false;
+	}
+	if (p_size.x <= 0 || p_size.y <= 0) {
+		return false;
+	}
+	Size2i atlas_grid_size = get_atlas_grid_size();
 	for (int frame = 0; frame < p_frames_count; frame++) {
 		Vector2i frame_coords = p_atlas_coords + (p_size + p_animation_separation) * ((p_animation_columns > 0) ? Vector2i(frame % p_animation_columns, frame / p_animation_columns) : Vector2i(frame, 0));
 		for (int x = 0; x < p_size.x; x++) {
@@ -3527,6 +3539,11 @@ bool TileSetAtlasSource::has_room_for_tile(Vector2i p_atlas_coords, Vector2i p_s
 				Vector2i coords = frame_coords + Vector2i(x, y);
 				if (_coords_mapping_cache.has(coords) && _coords_mapping_cache[coords] != p_ignored_tile) {
 					return false;
+				}
+				if (coords.x >= atlas_grid_size.x || coords.y >= atlas_grid_size.y) {
+					if (!(_coords_mapping_cache.has(coords) && _coords_mapping_cache[coords] == p_ignored_tile)) {
+						return false; // Only accept tiles outside the atlas if they are part of the ignored tile.
+					}
 				}
 			}
 		}
@@ -3558,8 +3575,7 @@ Vector2i TileSetAtlasSource::get_tile_effective_texture_offset(Vector2i p_atlas_
 	margin = Vector2i(MAX(0, margin.x), MAX(0, margin.y));
 	Vector2i effective_texture_offset = Object::cast_to<TileData>(get_tile_data(p_atlas_coords, p_alternative_tile))->get_texture_offset();
 	if (ABS(effective_texture_offset.x) > margin.x || ABS(effective_texture_offset.y) > margin.y) {
-		effective_texture_offset.x = CLAMP(effective_texture_offset.x, -margin.x, margin.x);
-		effective_texture_offset.y = CLAMP(effective_texture_offset.y, -margin.y, margin.y);
+		effective_texture_offset = effective_texture_offset.clamp(-margin, margin);
 	}
 
 	return effective_texture_offset;
@@ -4300,9 +4316,26 @@ Ref<OccluderPolygon2D> TileData::get_occluder(int p_layer_id) const {
 }
 
 // Physics
-int TileData::get_collision_polygons_count(int p_layer_id) const {
-	ERR_FAIL_INDEX_V(p_layer_id, physics.size(), 0);
-	return physics[p_layer_id].polygons.size();
+void TileData::set_constant_linear_velocity(int p_layer_id, const Vector2 &p_velocity) {
+	ERR_FAIL_INDEX(p_layer_id, physics.size());
+	physics.write[p_layer_id].linear_velocity = p_velocity;
+	emit_signal(SNAME("changed"));
+}
+
+Vector2 TileData::get_constant_linear_velocity(int p_layer_id) const {
+	ERR_FAIL_INDEX_V(p_layer_id, physics.size(), Vector2());
+	return physics[p_layer_id].linear_velocity;
+}
+
+void TileData::set_constant_angular_velocity(int p_layer_id, real_t p_velocity) {
+	ERR_FAIL_INDEX(p_layer_id, physics.size());
+	physics.write[p_layer_id].angular_velocity = p_velocity;
+	emit_signal(SNAME("changed"));
+}
+
+real_t TileData::get_constant_angular_velocity(int p_layer_id) const {
+	ERR_FAIL_INDEX_V(p_layer_id, physics.size(), 0.0);
+	return physics[p_layer_id].angular_velocity;
 }
 
 void TileData::set_collision_polygons_count(int p_layer_id, int p_polygons_count) {
@@ -4311,6 +4344,11 @@ void TileData::set_collision_polygons_count(int p_layer_id, int p_polygons_count
 	physics.write[p_layer_id].polygons.resize(p_polygons_count);
 	notify_property_list_changed();
 	emit_signal(SNAME("changed"));
+}
+
+int TileData::get_collision_polygons_count(int p_layer_id) const {
+	ERR_FAIL_INDEX_V(p_layer_id, physics.size(), 0);
+	return physics[p_layer_id].polygons.size();
 }
 
 void TileData::add_collision_polygon(int p_layer_id) {
@@ -4514,11 +4552,7 @@ bool TileData::_set(const StringName &p_name, const Variant &p_value) {
 		// Physics layers.
 		int layer_index = components[0].trim_prefix("physics_layer_").to_int();
 		ERR_FAIL_COND_V(layer_index < 0, false);
-		if (components.size() == 2 && components[1] == "polygons_count") {
-			if (p_value.get_type() != Variant::INT) {
-				return false;
-			}
-
+		if (components.size() == 2) {
 			if (layer_index >= physics.size()) {
 				if (tile_set) {
 					return false;
@@ -4526,8 +4560,19 @@ bool TileData::_set(const StringName &p_name, const Variant &p_value) {
 					physics.resize(layer_index + 1);
 				}
 			}
-			set_collision_polygons_count(layer_index, p_value);
-			return true;
+			if (components[1] == "linear_velocity") {
+				set_constant_linear_velocity(layer_index, p_value);
+				return true;
+			} else if (components[1] == "angular_velocity") {
+				set_constant_angular_velocity(layer_index, p_value);
+				return true;
+			} else if (components[1] == "polygons_count") {
+				if (p_value.get_type() != Variant::INT) {
+					return false;
+				}
+				set_collision_polygons_count(layer_index, p_value);
+				return true;
+			}
 		} else if (components.size() == 3 && components[1].begins_with("polygon_") && components[1].trim_prefix("polygon_").is_valid_int()) {
 			int polygon_index = components[1].trim_prefix("polygon_").to_int();
 			ERR_FAIL_COND_V(polygon_index < 0, false);
@@ -4629,9 +4674,18 @@ bool TileData::_get(const StringName &p_name, Variant &r_ret) const {
 			if (layer_index >= physics.size()) {
 				return false;
 			}
-			if (components.size() == 2 && components[1] == "polygons_count") {
-				r_ret = get_collision_polygons_count(layer_index);
-				return true;
+
+			if (components.size() == 2) {
+				if (components[1] == "linear_velocity") {
+					r_ret = get_constant_linear_velocity(layer_index);
+					return true;
+				} else if (components[1] == "angular_velocity") {
+					r_ret = get_constant_angular_velocity(layer_index);
+					return true;
+				} else if (components[1] == "polygons_count") {
+					r_ret = get_collision_polygons_count(layer_index);
+					return true;
+				}
 			} else if (components.size() == 3 && components[1].begins_with("polygon_") && components[1].trim_prefix("polygon_").is_valid_int()) {
 				int polygon_index = components[1].trim_prefix("polygon_").to_int();
 				ERR_FAIL_COND_V(polygon_index < 0, false);
@@ -4702,6 +4756,8 @@ void TileData::_get_property_list(List<PropertyInfo> *p_list) const {
 		// Physics layers.
 		p_list->push_back(PropertyInfo(Variant::NIL, "Physics", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP));
 		for (int i = 0; i < physics.size(); i++) {
+			p_list->push_back(PropertyInfo(Variant::VECTOR2, vformat("physics_layer_%d/linear_velocity", i), PROPERTY_HINT_NONE));
+			p_list->push_back(PropertyInfo(Variant::FLOAT, vformat("physics_layer_%d/angular_velocity", i), PROPERTY_HINT_NONE));
 			p_list->push_back(PropertyInfo(Variant::INT, vformat("physics_layer_%d/polygons_count", i), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR));
 
 			for (int j = 0; j < physics[i].polygons.size(); j++) {
@@ -4791,8 +4847,12 @@ void TileData::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_occluder", "layer_id"), &TileData::get_occluder);
 
 	// Physics.
-	ClassDB::bind_method(D_METHOD("get_collision_polygons_count", "layer_id"), &TileData::get_collision_polygons_count);
+	ClassDB::bind_method(D_METHOD("set_constant_linear_velocity", "layer_id", "velocity"), &TileData::set_constant_linear_velocity);
+	ClassDB::bind_method(D_METHOD("get_constant_linear_velocity", "layer_id"), &TileData::get_constant_linear_velocity);
+	ClassDB::bind_method(D_METHOD("set_constant_angular_velocity", "layer_id", "velocity"), &TileData::set_constant_angular_velocity);
+	ClassDB::bind_method(D_METHOD("get_constant_angular_velocity", "layer_id"), &TileData::get_constant_angular_velocity);
 	ClassDB::bind_method(D_METHOD("set_collision_polygons_count", "layer_id", "polygons_count"), &TileData::set_collision_polygons_count);
+	ClassDB::bind_method(D_METHOD("get_collision_polygons_count", "layer_id"), &TileData::get_collision_polygons_count);
 	ClassDB::bind_method(D_METHOD("add_collision_polygon", "layer_id"), &TileData::add_collision_polygon);
 	ClassDB::bind_method(D_METHOD("remove_collision_polygon", "layer_id", "polygon_index"), &TileData::remove_collision_polygon);
 	ClassDB::bind_method(D_METHOD("set_collision_polygon_points", "layer_id", "polygon_index", "polygon"), &TileData::set_collision_polygon_points);

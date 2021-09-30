@@ -2821,7 +2821,7 @@ void Image::blit_rect(const Ref<Image> &p_src, const Rect2 &p_src_rect, const Po
 		clipped_src_rect.position.y = ABS(p_dest.y);
 	}
 
-	if (clipped_src_rect.size.x <= 0 || clipped_src_rect.size.y <= 0) {
+	if (clipped_src_rect.has_no_area()) {
 		return;
 	}
 
@@ -2876,7 +2876,7 @@ void Image::blit_rect_mask(const Ref<Image> &p_src, const Ref<Image> &p_mask, co
 		clipped_src_rect.position.y = ABS(p_dest.y);
 	}
 
-	if (clipped_src_rect.size.x <= 0 || clipped_src_rect.size.y <= 0) {
+	if (clipped_src_rect.has_no_area()) {
 		return;
 	}
 
@@ -2930,7 +2930,7 @@ void Image::blend_rect(const Ref<Image> &p_src, const Rect2 &p_src_rect, const P
 		clipped_src_rect.position.y = ABS(p_dest.y);
 	}
 
-	if (clipped_src_rect.size.x <= 0 || clipped_src_rect.size.y <= 0) {
+	if (clipped_src_rect.has_no_area()) {
 		return;
 	}
 
@@ -2979,7 +2979,7 @@ void Image::blend_rect_mask(const Ref<Image> &p_src, const Ref<Image> &p_mask, c
 		clipped_src_rect.position.y = ABS(p_dest.y);
 	}
 
-	if (clipped_src_rect.size.x <= 0 || clipped_src_rect.size.y <= 0) {
+	if (clipped_src_rect.has_no_area()) {
 		return;
 	}
 
