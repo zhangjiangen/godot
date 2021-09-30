@@ -23,7 +23,7 @@ jobs:
             target: release_debug
             tools: true
             tests: true
-            bin: "./bin/godot_osx_opt_tools.64"
+            bin: "./bin/godot_osx_opt_tools_64"
 
           - name: Template (target=release, tools=no)
             cache-name: macos-template
@@ -61,7 +61,7 @@ jobs:
 
       - name: Prepare artifact
         run: |
-          strip bin/godot.*
+          strip bin/godot_*
 
       - name: Upload artifact
         uses: ./.github/actions/upload-artifact
