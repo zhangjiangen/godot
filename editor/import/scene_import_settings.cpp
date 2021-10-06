@@ -776,11 +776,11 @@ void SceneImportSettings::_re_import() {
 
 	Dictionary subresources;
 
-	for (Map<String, NodeDataPtr>::Element *E = node_map.front(); E; E = E->next()) {
-		if (E->get()->settings->size()) {
+	for (auto &E : node_map) {
+		if (E.value->settings->size()) {
 			Dictionary d;
-			for (VariantNameMap::Element *F = E->get()->settings->front(); F; F = F->next()) {
-				d[String(F->key())] = F->get();
+			for (auto &F : *(E.value->settings)) {
+				d[String(F.key)] = F.value;
 			}
 			nodes[E.key] = d;
 		}
@@ -789,11 +789,11 @@ void SceneImportSettings::_re_import() {
 		subresources["nodes"] = nodes;
 	}
 
-	for (Map<String, MaterialDataPtr>::Element *E = material_map.front(); E; E = E->next()) {
-		if (E->get()->settings->size()) {
+	for (auto &E : material_map) {
+		if (E.value->settings->size()) {
 			Dictionary d;
-			for (Map<StringName, Variant>::Element *F = E->get()->settings->front(); F; F = F->next()) {
-				d[String(F->key())] = F->get();
+			for (auto &F : *(E.value->settings)) {
+				d[String(F.key)] = F.value;
 			}
 			materials[E.key] = d;
 		}
@@ -802,11 +802,11 @@ void SceneImportSettings::_re_import() {
 		subresources["materials"] = materials;
 	}
 
-	for (Map<String, MeshDataPtr>::Element *E = mesh_map.front(); E; E = E->next()) {
-		if (E->get()->settings->size()) {
+	for (auto &E : mesh_map) {
+		if (E.value->settings->size()) {
 			Dictionary d;
-			for (VariantNameMap::Element *F = E->get()->settings->front(); F; F = F->next()) {
-				d[String(F->key())] = F->get();
+			for (auto &F : *(E.value->settings)) {
+				d[String(F.key)] = F.value;
 			}
 			meshes[E.key] = d;
 		}
@@ -815,11 +815,11 @@ void SceneImportSettings::_re_import() {
 		subresources["meshes"] = meshes;
 	}
 
-	for (Map<String, AnimationDataPtr>::Element *E = animation_map.front(); E; E = E->next()) {
-		if (E->get()->settings->size()) {
+	for (auto &E : animation_map) {
+		if (E.value->settings->size()) {
 			Dictionary d;
-			for (Map<StringName, Variant>::Element *F = E->get()->settings->front(); F; F = F->next()) {
-				d[String(F->key())] = F->get();
+			for (auto &F : *(E.value->settings)) {
+				d[String(F.key)] = F.value;
 			}
 			animations[E.key] = d;
 		}
@@ -894,8 +894,8 @@ void SceneImportSettings::_save_dir_callback(const String &p_path) {
 
 	switch (current_action) {
 		case ACTION_EXTRACT_MATERIALS: {
-			for (Map<String, MaterialDataPtr>::Element *E = material_map.front(); E; E = E->next()) {
-				MaterialDataPtr &md = material_map[E->key()];
+			for (auto &E : material_map) {
+				MaterialDataPtr &md = material_map[E.key];
 
 				TreeItem *item = external_path_tree->create_item(root);
 
@@ -947,8 +947,8 @@ void SceneImportSettings::_save_dir_callback(const String &p_path) {
 			external_paths->get_ok_button()->set_text(TTR("Extract"));
 		} break;
 		case ACTION_CHOOSE_MESH_SAVE_PATHS: {
-			for (Map<String, MeshDataPtr>::Element *E = mesh_map.front(); E; E = E->next()) {
-				MeshDataPtr &md = mesh_map[E->key()];
+			for (auto &E : mesh_map) {
+				MeshDataPtr &md = mesh_map[E.key];
 
 				TreeItem *item = external_path_tree->create_item(root);
 
@@ -1000,8 +1000,8 @@ void SceneImportSettings::_save_dir_callback(const String &p_path) {
 			external_paths->get_ok_button()->set_text(TTR("Set Paths"));
 		} break;
 		case ACTION_CHOOSE_ANIMATION_SAVE_PATHS: {
-			for (Map<String, AnimationDataPtr>::Element *E = animation_map.front(); E; E = E->next()) {
-				AnimationDataPtr &ad = animation_map[E->key()];
+			for (auto &E : animation_map) {
+				AnimationDataPtr &ad = animation_map[E.key];
 
 				TreeItem *item = external_path_tree->create_item(root);
 

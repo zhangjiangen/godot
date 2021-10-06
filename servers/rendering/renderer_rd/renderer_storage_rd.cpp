@@ -3908,7 +3908,7 @@ void RendererStorageRD::multimesh_initialize(RID p_rid) {
 }
 
 void RendererStorageRD::multimesh_set_user_date(RID p_multimesh, Ref<MultMeshUserDataBase> p_user_date) const {
-	MultiMesh *multimesh = multimesh_owner.getornull(p_multimesh);
+	MultiMesh *multimesh = multimesh_owner.get_or_null(p_multimesh);
 	ERR_FAIL_COND(!multimesh);
 	multimesh->UserDate = p_user_date;
 }

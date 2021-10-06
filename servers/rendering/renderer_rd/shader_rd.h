@@ -158,7 +158,7 @@ public:
 		}
 		ERR_FAIL_COND_V(!variants_enabled[p_variant], RID());
 
-		Version *version = version_owner.getornull(p_version);
+		Version *version = version_owner.get_or_null(p_version);
 		if (!version) {
 			ERR_FAIL_COND_V(!version, RID());
 		}

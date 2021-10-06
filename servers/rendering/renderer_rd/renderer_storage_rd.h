@@ -618,7 +618,7 @@ private:
 		temp_mesh_list.clear();
 		multimesh_owner.get_owned_array(&temp_mesh_list);
 		for (int i = 0; i < temp_mesh_list.size(); ++i) {
-			MultiMesh *multimesh = multimesh_owner.getornull(temp_mesh_list[i]);
+			MultiMesh *multimesh = multimesh_owner.get_or_null(temp_mesh_list[i]);
 			if (multimesh->UserDate.is_valid())
 				multimesh->UserDate->PreRender(&p_camera_transform, &p_camera_mat, 1);
 		}
@@ -627,7 +627,7 @@ private:
 		temp_mesh_list.clear();
 		multimesh_owner.get_owned_array(&temp_mesh_list);
 		for (int i = 0; i < temp_mesh_list.size(); ++i) {
-			MultiMesh *multimesh = multimesh_owner.getornull(temp_mesh_list[i]);
+			MultiMesh *multimesh = multimesh_owner.get_or_null(temp_mesh_list[i]);
 			if (multimesh->UserDate.is_valid())
 				multimesh->UserDate->EndRender();
 		}
@@ -1854,7 +1854,7 @@ public:
 	RS::LightDirectionalShadowMode light_directional_get_shadow_mode(RID p_light) override;
 	RS::LightOmniShadowMode light_omni_get_shadow_mode(RID p_light) override;
 
-	_FORCE_INLINE_ RS::LightType light_get_type(RID p_light) const {
+	_FORCE_INLINE_ RS::LightType light_get_type(RID p_light) const override {
 		const Light *light = light_owner.get_or_null(p_light);
 		ERR_FAIL_COND_V(!light, RS::LIGHT_DIRECTIONAL);
 
@@ -1862,7 +1862,7 @@ public:
 	}
 	AABB light_get_aabb(RID p_light) const override;
 
-	_FORCE_INLINE_ float light_get_param(RID p_light, RS::LightParam p_param) {
+	_FORCE_INLINE_ float light_get_param(RID p_light, RS::LightParam p_param) override {
 		const Light *light = light_owner.get_or_null(p_light);
 		ERR_FAIL_COND_V(!light, 0);
 
@@ -1876,7 +1876,7 @@ public:
 		return light->projector;
 	}
 
-	_FORCE_INLINE_ Color light_get_color(RID p_light) {
+	_FORCE_INLINE_ Color light_get_color(RID p_light) override {
 		const Light *light = light_owner.get_or_null(p_light);
 		ERR_FAIL_COND_V(!light, Color());
 
@@ -1897,14 +1897,14 @@ public:
 		return light->cull_mask;
 	}
 
-	_FORCE_INLINE_ bool light_has_shadow(RID p_light) const {
+	_FORCE_INLINE_ bool light_has_shadow(RID p_light) const override {
 		const Light *light = light_owner.get_or_null(p_light);
 		ERR_FAIL_COND_V(!light, RS::LIGHT_DIRECTIONAL);
 
 		return light->shadow;
 	}
 
-	_FORCE_INLINE_ bool light_has_projector(RID p_light) const {
+	_FORCE_INLINE_ bool light_has_projector(RID p_light) const override {
 		const Light *light = light_owner.get_or_null(p_light);
 		ERR_FAIL_COND_V(!light, RS::LIGHT_DIRECTIONAL);
 
