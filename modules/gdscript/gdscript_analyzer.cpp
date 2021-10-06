@@ -1035,7 +1035,10 @@ void GDScriptAnalyzer::resolve_function_signature(GDScriptParser::FunctionNode *
 		return_type.is_meta_type = false;
 		p_function->set_datatype(return_type);
 		if (p_function->return_type) {
-			push_error("Constructor cannot have an explicit return type.", p_function->return_type);
+			GDScriptParser::DataType declared_return = resolve_datatype(p_function->return_type);
+			if (declared_return.kind != GDScriptParser::DataType::BUILTIN || declared_return.builtin_type != Variant::NIL) {
+				push_error("Constructor cannot have an explicit return type.", p_function->return_type);
+			}
 		}
 	} else {
 		GDScriptParser::DataType return_type = resolve_datatype(p_function->return_type);
@@ -1198,7 +1201,7 @@ void GDScriptAnalyzer::resolve_for(GDScriptParser::ForNode *p_for) {
 		variable_type.kind = GDScriptParser::DataType::BUILTIN;
 		variable_type.builtin_type = Variant::INT; // Can this ever be a float or something else?
 		p_for->variable->set_datatype(variable_type);
-	} else {
+	} else if (p_for->list) {
 		resolve_node(p_for->list);
 		if (p_for->list->datatype.has_container_element_type()) {
 			variable_type = p_for->list->datatype.get_container_element_type();
@@ -1213,7 +1216,9 @@ void GDScriptAnalyzer::resolve_for(GDScriptParser::ForNode *p_for) {
 			variable_type.kind = GDScriptParser::DataType::VARIANT;
 		}
 	}
-	p_for->variable->set_datatype(variable_type);
+	if (p_for->variable) {
+		p_for->variable->set_datatype(variable_type);
+	}
 
 	resolve_suite(p_for->loop);
 	p_for->set_datatype(p_for->loop->get_datatype());
@@ -2270,10 +2275,10 @@ void GDScriptAnalyzer::reduce_call(GDScriptParser::CallNode *p_call, bool is_awa
 
 	if (get_function_signature(p_call, base_type, p_call->function_name, return_type, par_types, default_arg_count, is_static, is_vararg)) {
 		// If the function require typed arrays we must make literals be typed.
-		for (Map<int, GDScriptParser::ArrayNode *>::Element *E = arrays.front(); E; E = E->next()) {
-			int index = E->key();
+		for (const KeyValue<int, GDScriptParser::ArrayNode *> &E : arrays) {
+			int index = E.key;
 			if (index < par_types.size() && par_types[index].has_container_element_type()) {
-				update_array_literal_element_type(par_types[index], E->get());
+				update_array_literal_element_type(par_types[index], E.value);
 			}
 		}
 		validate_call_arg(par_types, default_arg_count, is_vararg, p_call);
@@ -2508,7 +2513,10 @@ void GDScriptAnalyzer::reduce_identifier_from_base(GDScriptParser::IdentifierNod
 				result.enum_type = name;
 				p_identifier->set_datatype(result);
 			} else {
-				push_error(vformat(R"(Cannot find value "%s" in "%s".)", name, base.to_string()), p_identifier);
+				// Consider as a Dictionary
+				GDScriptParser::DataType dummy;
+				dummy.kind = GDScriptParser::DataType::VARIANT;
+				p_identifier->set_datatype(dummy);
 			}
 		} else {
 			push_error(R"(Cannot get property from enum value.)", p_identifier);
@@ -3297,7 +3305,13 @@ GDScriptParser::DataType GDScriptAnalyzer::type_from_variant(const Variant &p_va
 						current = current->_owner;
 					}
 
-					Ref<GDScriptParserRef> ref = get_parser_for(current->path);
+					Ref<GDScriptParserRef> ref = get_parser_for(current->get_path());
+					if (ref.is_null()) {
+						push_error("Could not find script in path.", p_source);
+						GDScriptParser::DataType error_type;
+						error_type.kind = GDScriptParser::DataType::VARIANT;
+						return error_type;
+					}
 					ref->raise_status(GDScriptParserRef::INTERFACE_SOLVED);
 
 					GDScriptParser::ClassNode *found = ref->get_parser()->head;
@@ -3680,6 +3694,11 @@ bool GDScriptAnalyzer::is_type_compatible(const GDScriptParser::DataType &p_targ
 	if (p_target.kind == GDScriptParser::DataType::ENUM) {
 		if (p_source.kind == GDScriptParser::DataType::BUILTIN && p_source.builtin_type == Variant::INT) {
 			return true;
+		}
+		if (p_source.kind == GDScriptParser::DataType::ENUM) {
+			if (p_source.native_type == p_target.native_type) {
+				return true;
+			}
 		}
 		if (p_source.kind == GDScriptParser::DataType::ENUM_VALUE) {
 			if (p_source.native_type == p_target.native_type && p_target.enum_values.has(p_source.enum_type)) {

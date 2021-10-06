@@ -202,7 +202,18 @@
 			<argument index="0" name="x" type="float" />
 			<argument index="1" name="curve" type="float" />
 			<description>
-				Easing function, based on exponent. The curve values are: 0 is constant, 1 is linear, 0 to 1 is ease-in, 1+ is ease out. Negative values are in-out/out in.
+				Returns an "eased" value of [code]x[/code] based on an easing function defined with [code]curve[/code]. This easing function is based on an exponent. The [code]curve[/code] can be any floating-point number, with specific values leading to the following behaviors:
+				[codeblock]
+				- Lower than -1.0 (exclusive): Ease in-out
+				- 1.0: Linear
+				- Between -1.0 and 0.0 (exclusive): Ease out-in
+				- 0.0: Constant
+				- Between 0.0 to 1.0 (exclusive): Ease in
+				- 1.0: Linear
+				- Greater than 1.0 (exclusive): Ease out
+				[/codeblock]
+				[url=https://raw.githubusercontent.com/godotengine/godot-docs/master/img/ease_cheatsheet.png]ease() curve values cheatsheet[/url]
+				See also [method smoothstep]. If you need to perform more advanced transitions, use [Tween] or [AnimationPlayer].
 			</description>
 		</method>
 		<method name="error_string">
@@ -802,6 +813,8 @@
 				smoothstep(0, 2, 1.0) # Returns 0.5
 				smoothstep(0, 2, 2.0) # Returns 1.0
 				[/codeblock]
+				Compared to [method ease] with a curve value of [code]-1.6521[/code], [method smoothstep] returns the smoothest possible curve with no sudden changes in the derivative. If you need to perform more advanced transitions, use [Tween] or [AnimationPlayer].
+				[url=https://raw.githubusercontent.com/godotengine/godot-docs/master/img/smoothstep_ease_comparison.png]Comparison between smoothstep() and ease(x, -1.6521) return values[/url]
 			</description>
 		</method>
 		<method name="snapped">
@@ -825,7 +838,7 @@
 				[codeblock]
 				sqrt(9) # Returns 3
 				[/codeblock]
-				[b]Note:[/b]Negative values of [code]x[/code] return NaN. If you need negative inputs, use [code]System.Numerics.Complex[/code] in C#.
+				[b]Note:[/b] Negative values of [code]x[/code] return NaN. If you need negative inputs, use [code]System.Numerics.Complex[/code] in C#.
 			</description>
 		</method>
 		<method name="step_decimals">
@@ -2327,7 +2340,7 @@
 			hint_string = "%s/%s:Resource" % [TYPE_OBJECT, TYPE_OBJECT] # Array of resources.
 			hint_string = "%s:%s/%s:Resource" % [TYPE_ARRAY, TYPE_OBJECT, TYPE_OBJECT] # Two-dimensional array of resources.
 			[/codeblock]
-			[b]Note:[/b] the final colon is required to specify for properly detecting built-in types.
+			[b]Note:[/b] The final colon is required to specify for properly detecting built-in types.
 		</constant>
 		<constant name="PROPERTY_HINT_NODE_PATH_TO_EDITED_NODE" value="26" enum="PropertyHint">
 		</constant>
@@ -2475,16 +2488,16 @@
 		<constant name="RPC_MODE_DISABLED" value="0" enum="RPCMode">
 			Used with [method Node.rpc_config] to disable a method or property for all RPC calls, making it unavailable. Default for all methods.
 		</constant>
-		<constant name="RPC_MODE_ANY" value="1" enum="RPCMode">
+		<constant name="RPC_MODE_ANY_PEER" value="1" enum="RPCMode">
 			Used with [method Node.rpc_config] to set a method to be callable remotely by any peer. Analogous to the [code]@rpc(any)[/code] annotation. Calls are accepted from all remote peers, no matter if they are node's authority or not.
 		</constant>
 		<constant name="RPC_MODE_AUTH" value="2" enum="RPCMode">
 			Used with [method Node.rpc_config] to set a method to be callable remotely only by the current multiplayer authority (which is the server by default). Analogous to the [code]@rpc(auth)[/code] annotation. See [method Node.set_multiplayer_authority].
 		</constant>
 		<constant name="TRANSFER_MODE_UNRELIABLE" value="0" enum="TransferMode">
-			Packets are not acknowledged, no resend attempts are made for lost packets. Packets may arrive in any order. Potentially faster than [constant TRANSFER_MODE_ORDERED]. Use for non-critical data, and always consider whether the order matters.
+			Packets are not acknowledged, no resend attempts are made for lost packets. Packets may arrive in any order. Potentially faster than [constant TRANSFER_MODE_UNRELIABLE_ORDERED]. Use for non-critical data, and always consider whether the order matters.
 		</constant>
-		<constant name="TRANSFER_MODE_ORDERED" value="1" enum="TransferMode">
+		<constant name="TRANSFER_MODE_UNRELIABLE_ORDERED" value="1" enum="TransferMode">
 			Packets are not acknowledged, no resend attempts are made for lost packets. Packets are received in the order they were sent in. Potentially faster than [constant TRANSFER_MODE_RELIABLE]. Use for non-critical data or data that would be outdated if received late due to resend attempt(s) anyway, for example movement and positional data.
 		</constant>
 		<constant name="TRANSFER_MODE_RELIABLE" value="2" enum="TransferMode">

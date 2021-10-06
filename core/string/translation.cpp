@@ -35,7 +35,6 @@
 #include "core/os/os.h"
 
 #ifdef TOOLS_ENABLED
-#include "editor/editor_settings.h"
 #include "main/main.h"
 #endif
 
@@ -810,9 +809,12 @@ static const char *locale_names[] = {
 // - https://msdn.microsoft.com/en-us/library/windows/desktop/ms693062(v=vs.85).aspx
 
 static const char *locale_renames[][2] = {
-	{ "in", "id" }, //  Indonesian
-	{ "iw", "he" }, //  Hebrew
-	{ "no", "nb" }, //  Norwegian Bokmål
+	{ "in", "id" }, // Indonesian
+	{ "iw", "he" }, // Hebrew
+	{ "no", "nb" }, // Norwegian Bokmål
+	{ "C", "en" }, // "C" is the simple/default/untranslated Computer locale.
+	// ASCII-only, English, no currency symbols. Godot treats this as "en".
+	// See https://unix.stackexchange.com/a/87763/164141 "The C locale is"...
 	{ nullptr, nullptr }
 };
 
@@ -820,8 +822,8 @@ static const char *locale_renames[][2] = {
 
 Dictionary Translation::_get_messages() const {
 	Dictionary d;
-	for (const Map<StringName, StringName>::Element *E = translation_map.front(); E; E = E->next()) {
-		d[E->key()] = E->value();
+	for (const KeyValue<StringName, StringName> &E : translation_map) {
+		d[E.key] = E.value;
 	}
 	return d;
 }
@@ -830,8 +832,8 @@ Vector<String> Translation::_get_message_list() const {
 	Vector<String> msgs;
 	msgs.resize(translation_map.size());
 	int idx = 0;
-	for (const Map<StringName, StringName>::Element *E = translation_map.front(); E; E = E->next()) {
-		msgs.set(idx, E->key());
+	for (const KeyValue<StringName, StringName> &E : translation_map) {
+		msgs.set(idx, E.key);
 		idx += 1;
 	}
 
@@ -911,8 +913,8 @@ void Translation::erase_message(const StringName &p_src_text, const StringName &
 }
 
 void Translation::get_message_list(List<StringName> *r_messages) const {
-	for (const Map<StringName, StringName>::Element *E = translation_map.front(); E; E = E->next()) {
-		r_messages->push_back(E->key());
+	for (const KeyValue<StringName, StringName> &E : translation_map) {
+		r_messages->push_back(E.key);
 	}
 }
 

@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  scene_importer_mesh_node_3d.h                                        */
+/*  static_raycaster.h                                                   */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,37 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef EDITOR_SCENE_IMPORTER_MESH_NODE_3D_H
-#define EDITOR_SCENE_IMPORTER_MESH_NODE_3D_H
+#ifdef TOOLS_ENABLED
 
-#include "editor/import/scene_importer_mesh.h"
-#include "scene/3d/node_3d.h"
-#include "scene/resources/skin.h"
+#include "core/math/static_raycaster.h"
 
-class EditorSceneImporterMesh;
+#include <embree3/rtcore.h>
 
-class EditorSceneImporterMeshNode3D : public Node3D {
-	GDCLASS(EditorSceneImporterMeshNode3D, Node3D)
+class StaticRaycasterEmbree : public StaticRaycaster {
+	GDCLASS(StaticRaycasterEmbree, StaticRaycaster);
 
-	Ref<EditorSceneImporterMesh> mesh;
-	Ref<Skin> skin;
-	NodePath skeleton_path;
-	Vector<Ref<Material>> surface_materials;
+private:
+	static RTCDevice embree_device;
+	RTCScene embree_scene;
 
-protected:
-	static void _bind_methods();
+	Set<int> filter_meshes;
 
 public:
-	void set_mesh(const Ref<EditorSceneImporterMesh> &p_mesh);
-	Ref<EditorSceneImporterMesh> get_mesh() const;
+	virtual bool intersect(Ray &p_ray) override;
+	virtual void intersect(Vector<Ray> &r_rays) override;
 
-	void set_skin(const Ref<Skin> &p_skin);
-	Ref<Skin> get_skin() const;
+	virtual void add_mesh(const PackedVector3Array &p_vertices, const PackedInt32Array &p_indices, unsigned int p_id) override;
+	virtual void commit() override;
 
-	void set_surface_material(int p_idx, const Ref<Material> &p_material);
-	Ref<Material> get_surface_material(int p_idx) const;
+	virtual void set_mesh_filter(const Set<int> &p_mesh_ids) override;
+	virtual void clear_mesh_filter() override;
 
-	void set_skeleton_path(const NodePath &p_path);
-	NodePath get_skeleton_path() const;
+	static StaticRaycaster *create_embree_raycaster();
+	static void make_default_raycaster();
+	static void free();
+
+	StaticRaycasterEmbree();
+	~StaticRaycasterEmbree();
 };
+
 #endif
