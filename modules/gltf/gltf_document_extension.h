@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  register_types.h                                                     */
+/*  gltf_document_extension.h                                            */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,10 +28,36 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef TEXT_REGISTER_TYPES_H
-#define TEXT_REGISTER_TYPES_H
+#ifndef GLTF_DOCUMENT_EXTENSION_H
+#define GLTF_DOCUMENT_EXTENSION_H
 
-void register_text_server_gdn_types();
-void unregister_text_server_gdn_types();
+#include "core/io/resource.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/typed_array.h"
+#include "core/variant/variant.h"
+class GLTFDocument;
+class GLTFDocumentExtension : public Resource {
+	GDCLASS(GLTFDocumentExtension, Resource);
 
-#endif // TEXT_REGISTER_TYPES_H
+	Dictionary import_settings;
+	Dictionary export_settings;
+
+protected:
+	static void _bind_methods();
+
+public:
+	virtual Array get_import_setting_keys() const;
+	virtual Variant get_import_setting(const StringName &p_key) const;
+	virtual void set_import_setting(const StringName &p_key, Variant p_var);
+	virtual Error import_preflight(Ref<GLTFDocument> p_document) { return OK; }
+	virtual Error import_post(Ref<GLTFDocument> p_document, Node *p_node) { return OK; }
+
+public:
+	virtual Array get_export_setting_keys() const;
+	virtual Variant get_export_setting(const StringName &p_key) const;
+	virtual void set_export_setting(const StringName &p_key, Variant p_var);
+	virtual Error export_preflight(Ref<GLTFDocument> p_document, Node *p_node) { return OK; }
+	virtual Error export_post(Ref<GLTFDocument> p_document) { return OK; }
+};
+
+#endif // GLTF_DOCUMENT_EXTENSION_H

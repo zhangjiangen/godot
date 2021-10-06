@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  scene_importer_mesh.h                                                */
+/*  importer_mesh.h                                                      */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,10 +28,11 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef EDITOR_SCENE_IMPORTER_MESH_H
-#define EDITOR_SCENE_IMPORTER_MESH_H
+#ifndef SCENE_IMPORTER_MESH_H
+#define SCENE_IMPORTER_MESH_H
 
 #include "core/io/resource.h"
+#include "core/templates/local_vector.h"
 #include "scene/resources/concave_polygon_shape_3d.h"
 #include "scene/resources/convex_polygon_shape_3d.h"
 #include "scene/resources/mesh.h"
@@ -43,8 +44,8 @@
 // so the data is not registered (hence, quality loss), importing happens faster and
 // its easier to modify before saving
 
-class EditorSceneImporterMesh : public Resource {
-	GDCLASS(EditorSceneImporterMesh, Resource)
+class ImporterMesh : public Resource {
+	GDCLASS(ImporterMesh, Resource)
 
 	struct Surface {
 		Mesh::PrimitiveType primitive;
@@ -55,12 +56,20 @@ class EditorSceneImporterMesh : public Resource {
 		Vector<BlendShape> blend_shape_data;
 		struct LOD {
 			Vector<int> indices;
-			float distance;
+			float distance = 0.0f;
 		};
 		Vector<LOD> lods;
 		Ref<Material> material;
 		String name;
 		uint32_t flags = 0;
+
+		struct LODComparator {
+			_FORCE_INLINE_ bool operator()(const LOD &l, const LOD &r) const {
+				return l.distance < r.distance;
+			}
+		};
+
+		void split_normals(const LocalVector<int> &p_indices, const LocalVector<Vector3> &p_normals);
 	};
 	Vector<Surface> surfaces;
 	Vector<String> blend_shapes;
@@ -68,10 +77,9 @@ class EditorSceneImporterMesh : public Resource {
 
 	Ref<ArrayMesh> mesh;
 
-	Ref<EditorSceneImporterMesh> shadow_mesh;
+	Ref<ImporterMesh> shadow_mesh;
 
 	Size2i lightmap_size_hint;
-	Basis compute_rotation_matrix_from_ortho_6d(Vector3 p_x_raw, Vector3 y_raw);
 
 protected:
 	void _set_data(const Dictionary &p_data);
@@ -103,10 +111,10 @@ public:
 
 	void set_surface_material(int p_surface, const Ref<Material> &p_material);
 
-	void generate_lods();
+	void generate_lods(float p_normal_merge_angle, float p_normal_split_angle);
 
 	void create_shadow_mesh();
-	Ref<EditorSceneImporterMesh> get_shadow_mesh() const;
+	Ref<ImporterMesh> get_shadow_mesh() const;
 
 	Vector<Face3> get_faces() const;
 	Vector<Ref<Shape3D>> convex_decompose(const Mesh::ConvexDecompositionSettings &p_settings) const;
@@ -121,4 +129,4 @@ public:
 	Ref<ArrayMesh> get_mesh(const Ref<ArrayMesh> &p_base = Ref<ArrayMesh>());
 	void clear();
 };
-#endif // EDITOR_SCENE_IMPORTER_MESH_H
+#endif // SCENE_IMPORTER_MESH_H

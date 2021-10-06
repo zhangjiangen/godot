@@ -31,7 +31,8 @@
 #include "scene_import_settings.h"
 #include "editor/editor_node.h"
 #include "editor/editor_scale.h"
-#include "editor/import/scene_importer_mesh_node_3d.h"
+#include "scene/3d/importer_mesh_instance_3d.h"
+#include "scene/resources/importer_mesh.h"
 #include "scene/resources/surface_tool.h"
 
 class SceneImportSettingsData : public Object {
@@ -243,7 +244,7 @@ void SceneImportSettings::_fill_scene(Node *p_node, TreeItem *p_parent_item) {
 		p_node->set_meta("import_id", import_id);
 	}
 
-	EditorSceneImporterMeshNode3D *src_mesh_node = Object::cast_to<EditorSceneImporterMeshNode3D>(p_node);
+	ImporterMeshInstance3D *src_mesh_node = Object::cast_to<ImporterMeshInstance3D>(p_node);
 
 	if (src_mesh_node) {
 		MeshInstance3D *mesh_node = memnew(MeshInstance3D);
@@ -252,7 +253,7 @@ void SceneImportSettings::_fill_scene(Node *p_node, TreeItem *p_parent_item) {
 		mesh_node->set_skin(src_mesh_node->get_skin());
 		mesh_node->set_skeleton_path(src_mesh_node->get_skeleton_path());
 		if (src_mesh_node->get_mesh().is_valid()) {
-			Ref<EditorSceneImporterMesh> editor_mesh = src_mesh_node->get_mesh();
+			Ref<ImporterMesh> editor_mesh = src_mesh_node->get_mesh();
 			mesh_node->set_mesh(editor_mesh->get_mesh());
 		}
 
@@ -781,7 +782,7 @@ void SceneImportSettings::_re_import() {
 			for (VariantNameMap::Element *F = E->get()->settings->front(); F; F = F->next()) {
 				d[String(F->key())] = F->get();
 			}
-			nodes[E->key()] = d;
+			nodes[E.key] = d;
 		}
 	}
 	if (nodes.size()) {
@@ -794,7 +795,7 @@ void SceneImportSettings::_re_import() {
 			for (Map<StringName, Variant>::Element *F = E->get()->settings->front(); F; F = F->next()) {
 				d[String(F->key())] = F->get();
 			}
-			materials[E->key()] = d;
+			materials[E.key] = d;
 		}
 	}
 	if (materials.size()) {
@@ -807,7 +808,7 @@ void SceneImportSettings::_re_import() {
 			for (VariantNameMap::Element *F = E->get()->settings->front(); F; F = F->next()) {
 				d[String(F->key())] = F->get();
 			}
-			meshes[E->key()] = d;
+			meshes[E.key] = d;
 		}
 	}
 	if (meshes.size()) {
@@ -820,7 +821,7 @@ void SceneImportSettings::_re_import() {
 			for (Map<StringName, Variant>::Element *F = E->get()->settings->front(); F; F = F->next()) {
 				d[String(F->key())] = F->get();
 			}
-			animations[E->key()] = d;
+			animations[E.key] = d;
 		}
 	}
 	if (animations.size()) {
@@ -909,7 +910,7 @@ void SceneImportSettings::_save_dir_callback(const String &p_path) {
 						item->set_text(2, "Already External");
 						item->set_tooltip(2, TTR("This material already references an external file, no action will be taken.\nDisable the external property for it to be extracted again."));
 					} else {
-						item->set_metadata(0, E->key());
+						item->set_metadata(0, E.key);
 						item->set_editable(0, true);
 						item->set_checked(0, true);
 						String path = p_path.plus_file(name);
@@ -962,7 +963,7 @@ void SceneImportSettings::_save_dir_callback(const String &p_path) {
 						item->set_text(2, "Already Saving");
 						item->set_tooltip(2, TTR("This mesh already saves to an external resource, no action will be taken."));
 					} else {
-						item->set_metadata(0, E->key());
+						item->set_metadata(0, E.key);
 						item->set_editable(0, true);
 						item->set_checked(0, true);
 						String path = p_path.plus_file(name);
@@ -1014,7 +1015,7 @@ void SceneImportSettings::_save_dir_callback(const String &p_path) {
 					item->set_text(2, "Already Saving");
 					item->set_tooltip(2, TTR("This animation already saves to an external resource, no action will be taken."));
 				} else {
-					item->set_metadata(0, E->key());
+					item->set_metadata(0, E.key);
 					item->set_editable(0, true);
 					item->set_checked(0, true);
 					String path = p_path.plus_file(name);

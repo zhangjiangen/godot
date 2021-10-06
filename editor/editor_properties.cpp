@@ -3605,7 +3605,7 @@ EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_
 		case Variant::PACKED_COLOR_ARRAY: {
 			EditorPropertyArray *editor = memnew(EditorPropertyArray);
 			editor->setup(Variant::PACKED_COLOR_ARRAY);
-
+			return editor;
 		} break;
 		default: {
 		}
