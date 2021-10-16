@@ -1,21 +1,21 @@
-#!/usr/bin/python 
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import glsl_builders
+import methods
+from collections import OrderedDict
+import time
+import sys
+import pickle
+import os
+import glob
+import atexit
 EnsureSConsVersion(3, 0, 0)
-EnsurePythonVersion(3, 5)
+EnsurePythonVersion(3, 6)
 
 # System
-import atexit
-import glob
-import os
-import pickle
-import sys
-import time
-from collections import OrderedDict
 
 # Local
-import methods
-import glsl_builders
 
 # Scan possible build platforms
 
@@ -195,7 +195,6 @@ opts.Add(BoolVariable("builtin_libtheora",
          "Use the built-in libtheora library", True))
 opts.Add(BoolVariable("builtin_libvorbis",
          "Use the built-in libvorbis library", True))
-opts.Add(BoolVariable("builtin_libvpx", "Use the built-in libvpx library", True))
 opts.Add(BoolVariable("builtin_libwebp",
          "Use the built-in libwebp library", True))
 opts.Add(BoolVariable("builtin_wslay", "Use the built-in wslay library", True))
@@ -203,7 +202,6 @@ opts.Add(BoolVariable("builtin_mbedtls",
          "Use the built-in mbedTLS library", True))
 opts.Add(BoolVariable("builtin_miniupnpc",
          "Use the built-in miniupnpc library", True))
-opts.Add(BoolVariable("builtin_opus", "Use the built-in Opus library", True))
 opts.Add(BoolVariable("builtin_pcre2", "Use the built-in PCRE2 library", True))
 opts.Add(BoolVariable("builtin_pcre2_with_jit",
          "Use JIT compiler for the built-in PCRE2 library", True))
@@ -345,21 +343,19 @@ env_base.Prepend(CPPPATH=["#"])
 env_base.platform_exporters = platform_exporters
 env_base.platform_apis = platform_apis
 
-if env_base["use_precise_math_checks"]:
-    env_base.Append(CPPDEFINES=["PRECISE_MATH_CHECKS"])
+# Build type defines - more platform-specific ones can be in detect.py.
+if env_base["target"] == "release_debug" or env_base["target"] == "debug":
+    # DEBUG_ENABLED enables debugging *features* and debug-only code, which is intended
+    # to give *users* extra debugging information for their game development.
+    env_base.Append(CPPDEFINES=["DEBUG_ENABLED"])
 
 if env_base["target"] == "debug":
-    env_base.Append(CPPDEFINES=["DEBUG_MEMORY_ALLOC", "DISABLE_FORCED_INLINE"])
+    # DEV_ENABLED enables *engine developer* code which should only be compiled for those
+    # working on the engine itself.
+    env_base.Append(CPPDEFINES=["DEV_ENABLED"])
 
-    # The two options below speed up incremental builds, but reduce the certainty that all files
-    # will properly be rebuilt. As such, we only enable them for debug (dev) builds, not release.
-
-    # To decide whether to rebuild a file, use the MD5 sum only if the timestamp has changed.
-    # https://scons.org/doc/production/HTML/scons-user/ch06.html#idm139837621851792
-    env_base.Decider("MD5-timestamp")
-    # Use cached implicit dependencies by default. Can be overridden by specifying `--implicit-deps-changed` in the command line.
-    # https://scons.org/doc/production/HTML/scons-user/ch06s04.html
-    env_base.SetOption("implicit_cache", 1)
+if env_base["use_precise_math_checks"]:
+    env_base.Append(CPPDEFINES=["PRECISE_MATH_CHECKS"])
 
 if env_base["no_editor_splash"]:
     env_base.Append(CPPDEFINES=["NO_EDITOR_SPLASH"])

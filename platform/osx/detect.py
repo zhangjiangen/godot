@@ -64,13 +64,11 @@ def configure(env):
             env.Prepend(CCFLAGS=["-O2"])
         elif env["optimize"] == "size":  # optimize for size
             env.Prepend(CCFLAGS=["-Os"])
-        env.Prepend(CPPDEFINES=["DEBUG_ENABLED"])
         if env["debug_symbols"]:
             env.Prepend(CCFLAGS=["-g2"])
 
     elif env["target"] == "debug":
         env.Prepend(CCFLAGS=["-g3"])
-        env.Prepend(CPPDEFINES=["DEBUG_ENABLED"])
         env.Prepend(LINKFLAGS=["-Xlinker", "-no_deduplicate"])
 
     # Architecture
@@ -106,8 +104,6 @@ def configure(env):
                 mpclangver + "/bin/llvm-ranlib"
             env["AS"] = mpprefix + "/libexec/llvm-" + \
                 mpclangver + "/bin/llvm-as"
-            # hack to fix libvpx MM256_BROADCASTSI128_SI256 define
-            env.Append(CPPDEFINES=["__MACPORTS__"])
         else:
             env["CC"] = "clang"
             env["CXX"] = "clang++"
@@ -137,10 +133,15 @@ def configure(env):
         env["AR"] = basecmd + "ar"
         env["RANLIB"] = basecmd + "ranlib"
         env["AS"] = basecmd + "as"
-        # hack to fix libvpx MM256_BROADCASTSI128_SI256 define
-        env.Append(CPPDEFINES=["__MACPORTS__"])
 
-    if env["use_ubsan"] or env["use_asan"] or env["use_tsan"]:
+
+<< << << < HEAD
+       # hack to fix libvpx MM256_BROADCASTSI128_SI256 define
+   env.Append(CPPDEFINES=["__MACPORTS__"])
+== == == =
+>>>>>> > master
+
+   if env["use_ubsan"] or env["use_asan"] or env["use_tsan"]:
         env.extra_suffix += "s"
 
         if env["use_ubsan"]:

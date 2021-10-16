@@ -1305,7 +1305,7 @@ private:
 	void _update_global_variables();
 	/* EFFECTS */
 
-	class EffectsRD *effects = NULL;
+	EffectsRD *effects = nullptr;
 
 public:
 	virtual bool can_create_resources_async() const override;

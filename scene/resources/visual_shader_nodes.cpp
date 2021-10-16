@@ -1129,6 +1129,7 @@ bool VisualShaderNodeCurveTexture::is_use_prop_slots() const {
 }
 
 VisualShaderNodeCurveTexture::VisualShaderNodeCurveTexture() {
+	set_input_port_default_value(0, 0.0);
 	simple_decl = true;
 	allow_v_resize = false;
 }
@@ -1213,6 +1214,7 @@ bool VisualShaderNodeCurveXYZTexture::is_use_prop_slots() const {
 }
 
 VisualShaderNodeCurveXYZTexture::VisualShaderNodeCurveXYZTexture() {
+	set_input_port_default_value(0, 0.0);
 	simple_decl = true;
 	allow_v_resize = false;
 }
