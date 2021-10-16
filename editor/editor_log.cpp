@@ -49,9 +49,12 @@ void EditorLog::_error_handler(void *p_self, const char *p_func, const char *p_f
 	} else {
 		err_str = String(p_file) + ":" + itos(p_line) + " - " + String(p_error);
 	}
-
 	if (p_type == ERR_HANDLER_WARNING) {
 		self->add_message(err_str, MSG_TYPE_WARNING);
+	} else if (p_type == ERR_HANDLER_LOGINFO) {
+		self->add_message(err_str, MSG_TYPE_STD);
+	} else if (p_type == ERR_HANDLER_SHADER) {
+		self->add_message(err_str, MSG_TYPE_EDITOR);
 	} else {
 		self->add_message(err_str, MSG_TYPE_ERROR);
 	}

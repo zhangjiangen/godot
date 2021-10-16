@@ -5637,7 +5637,12 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 
 	Shader *shader = shader_owner.get_or_null(p_shader);
 	ERR_FAIL_COND_V(!shader, RID());
-
+	if (p_shader_set >= (uint32_t)shader->sets.size()) {
+		ERR_FAIL_COND_V_MSG(p_shader_set >= (uint32_t)shader->sets.size(), RID(), "shader set error : ( sets-" + itos(shader->sets.size()) + ":curr-" + itos(p_shader_set) + ") not used by shader.");
+	}
+	if (shader->sets[p_shader_set].uniform_info.size() == 0) {
+		ERR_FAIL_COND_V_MSG(shader->sets[p_shader_set].uniform_info.size() == 0, RID(), "shader set uniform unset  : " + itos(p_shader_set) + ".");
+	}
 	ERR_FAIL_COND_V_MSG(p_shader_set >= (uint32_t)shader->sets.size() || shader->sets[p_shader_set].uniform_info.size() == 0, RID(),
 			"Desired set (" + itos(p_shader_set) + ") not used by shader.");
 	//see that all sets in shader are satisfied
@@ -8030,7 +8035,9 @@ void RenderingDeviceVulkan::compute_list_bind_uniform_set(ComputeListID p_list, 
 #endif
 
 	UniformSet *uniform_set = uniform_set_owner.get_or_null(p_uniform_set);
-	ERR_FAIL_COND(!uniform_set);
+	if (uniform_set == nullptr) {
+		ERR_FAIL_COND(!uniform_set);
+	}
 
 	if (p_index > cl->state.set_count) {
 		cl->state.set_count = p_index;
