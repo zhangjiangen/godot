@@ -38,7 +38,7 @@
 #include "editor/editor_node.h"
 #include "scene/2d/tile_map.h"
 #include "scene/gui/box_container.h"
-#include "scene/gui/tabs.h"
+#include "scene/gui/tab_bar.h"
 
 class TileMapEditorPlugin : public Object {
 public:
@@ -351,7 +351,7 @@ private:
 
 	// Bottom panel.
 	Label *missing_tileset_label;
-	Tabs *tabs_bar;
+	TabBar *tabs_bar;
 	LocalVector<TileMapEditorPlugin::TabData> tabs_data;
 	LocalVector<TileMapEditorPlugin *> tabs_plugins;
 	void _update_bottom_panel();
@@ -380,7 +380,6 @@ public:
 	void forward_canvas_draw_over_viewport(Control *p_overlay);
 
 	void edit(TileMap *p_tile_map);
-	Control *get_toolbar() { return tile_map_toolbar; };
 
 	TileMapEditor();
 	~TileMapEditor();

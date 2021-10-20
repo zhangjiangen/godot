@@ -48,9 +48,9 @@ private:
 	bool tile_set_changed_needs_update = false;
 	HSplitContainer *split_container;
 
-	// Tabs.
+	// TabBar.
 	HBoxContainer *tile_set_toolbar;
-	Tabs *tabs_bar;
+	TabBar *tabs_bar;
 
 	// Tiles.
 	Label *no_source_selected_label;
@@ -97,7 +97,6 @@ public:
 	_FORCE_INLINE_ static TileSetEditor *get_singleton() { return singleton; }
 
 	void edit(Ref<TileSet> p_tile_set);
-	Control *get_toolbar() { return tile_set_toolbar; };
 
 	void drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from);
 	bool can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const;
