@@ -4630,8 +4630,7 @@ struct RenderingDeviceVulkanShaderBinaryData {
 	uint32_t stage_count;
 	uint32_t shader_name_len;
 };
-
-Vector<uint8_t> RenderingDeviceVulkan::shader_compile_binary_from_spirv(const Vector<ShaderStageSPIRVData> &p_spirv, const String &p_shader_name) {
+Vector<uint8_t> RenderingDeviceVulkan::shader_compile_binary_from_spirv(const Vector<ShaderStageSPIRVData> &p_spirv, ShaderInfo &p_shader_info, const String &p_shader_name) {
 	RenderingDeviceVulkanShaderBinaryData binary_data;
 	binary_data.vertex_input_mask = 0;
 	binary_data.fragment_outputs = 0;
@@ -4691,6 +4690,8 @@ Vector<uint8_t> RenderingDeviceVulkan::shader_compile_binary_from_spirv(const Ve
 					const SpvReflectDescriptorBinding &binding = *bindings[j];
 
 					RenderingDeviceVulkanShaderBinaryDataBinding info;
+					ShaderInfo::UniformInfo uniform_log_info;
+					uniform_log_info.name = binding.name;
 
 					bool need_array_dimensions = false;
 					bool need_block_size = false;
@@ -4745,7 +4746,7 @@ Vector<uint8_t> RenderingDeviceVulkan::shader_compile_binary_from_spirv(const Ve
 							continue;
 						} break;
 					}
-
+					uniform_log_info.type = info.type;
 					if (need_array_dimensions) {
 						if (binding.array.dims_count == 0) {
 							info.length = 1;
@@ -4766,6 +4767,8 @@ Vector<uint8_t> RenderingDeviceVulkan::shader_compile_binary_from_spirv(const Ve
 					}
 
 					info.binding = binding.binding;
+					uniform_log_info.binding = info.binding;
+					uniform_log_info.length = info.length;
 					uint32_t set = binding.set;
 
 					ERR_FAIL_COND_V_MSG(set >= MAX_UNIFORM_SETS, Vector<uint8_t>(),
@@ -4797,14 +4800,16 @@ Vector<uint8_t> RenderingDeviceVulkan::shader_compile_binary_from_spirv(const Ve
 							continue; //merged
 						}
 					}
-
+					uniform_log_info.set = set;
 					info.stages = 1 << stage;
+					uniform_log_info.stages = info.stages;
 
 					if (set >= (uint32_t)uniform_info.size()) {
 						uniform_info.resize(set + 1);
 					}
 
 					uniform_info.write[set].push_back(info);
+					p_shader_info.uniform_info[stage].push_back(uniform_log_info);
 				}
 			}
 
@@ -4827,22 +4832,30 @@ Vector<uint8_t> RenderingDeviceVulkan::shader_compile_binary_from_spirv(const Ve
 					for (uint32_t j = 0; j < sc_count; j++) {
 						int32_t existing = -1;
 						RenderingDeviceVulkanShaderBinarySpecializationConstant sconst;
+						ShaderInfo::ConstantInfo const_info;
 						sconst.constant_id = spec_constants[j]->constant_id;
 						switch (spec_constants[j]->constant_type) {
 							case SPV_REFLECT_SPECIALIZATION_CONSTANT_BOOL: {
 								sconst.type = PIPELINE_SPECIALIZATION_CONSTANT_TYPE_BOOL;
 								sconst.bool_value = spec_constants[j]->default_value.int_bool_value != 0;
+								const_info.type = sconst.type;
+								const_info.bool_value = sconst.bool_value;
 							} break;
 							case SPV_REFLECT_SPECIALIZATION_CONSTANT_INT: {
 								sconst.type = PIPELINE_SPECIALIZATION_CONSTANT_TYPE_INT;
 								sconst.int_value = spec_constants[j]->default_value.int_bool_value;
+								const_info.type = sconst.type;
+								const_info.int_value = sconst.int_value;
 							} break;
 							case SPV_REFLECT_SPECIALIZATION_CONSTANT_FLOAT: {
 								sconst.type = PIPELINE_SPECIALIZATION_CONSTANT_TYPE_FLOAT;
 								sconst.float_value = spec_constants[j]->default_value.float_value;
+								const_info.type = sconst.type;
+								const_info.float_value = sconst.float_value;
 							} break;
 						}
 						sconst.stage_flags = 1 << p_spirv[i].shader_stage;
+						const_info.stage_flags = sconst.stage_flags;
 
 						for (int k = 0; k < specialization_constants.size(); k++) {
 							if (specialization_constants[k].constant_id == sconst.constant_id) {
@@ -4852,7 +4865,7 @@ Vector<uint8_t> RenderingDeviceVulkan::shader_compile_binary_from_spirv(const Ve
 								break;
 							}
 						}
-
+						p_shader_info.const_info[stage].push_back(const_info);
 						if (existing > 0) {
 							specialization_constants.write[existing].stage_flags |= sconst.stage_flags;
 						} else {
@@ -4934,6 +4947,7 @@ Vector<uint8_t> RenderingDeviceVulkan::shader_compile_binary_from_spirv(const Ve
 
 				binary_data.push_constant_size = pconstants[0]->size;
 				binary_data.push_constants_vk_stage |= shader_stage_masks[stage];
+				p_shader_info.PushConstSize[stage] = binary_data.push_constant_size;
 
 				//print_line("Stage: " + String(shader_stage_names[stage]) + " push constant of size=" + itos(push_constant.push_constant_size));
 			}
@@ -5636,7 +5650,9 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 	ERR_FAIL_COND_V(p_uniforms.size() == 0, RID());
 
 	Shader *shader = shader_owner.get_or_null(p_shader);
-	ERR_FAIL_COND_V(!shader, RID());
+	if (shader == nullptr) {
+		ERR_FAIL_COND_V(!shader, RID());
+	}
 	if (p_shader_set >= (uint32_t)shader->sets.size()) {
 		ERR_FAIL_COND_V_MSG(p_shader_set >= (uint32_t)shader->sets.size(), RID(), "shader set error : ( sets-" + itos(shader->sets.size()) + ":curr-" + itos(p_shader_set) + ") not used by shader.");
 	}

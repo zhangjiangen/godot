@@ -333,8 +333,8 @@ void ShaderRD::_compile_variant(uint32_t p_variant, Version *p_version) {
 #endif
 		return;
 	}
-
-	Vector<uint8_t> shader_data = RD::get_singleton()->shader_compile_binary_from_spirv(stages, name + ":" + itos(p_variant));
+	RD::ShaderInfo p_shader_info;
+	Vector<uint8_t> shader_data = RD::get_singleton()->shader_compile_binary_from_spirv(stages, p_shader_info, name + ":" + itos(p_variant));
 
 	ERR_FAIL_COND(shader_data.size() == 0);
 
@@ -343,6 +343,7 @@ void ShaderRD::_compile_variant(uint32_t p_variant, Version *p_version) {
 		MutexLock lock(variant_set_mutex);
 		p_version->variants[p_variant] = shader;
 		p_version->variant_data[p_variant] = shader_data;
+		p_version->shader_info[p_variant] = p_shader_info;
 	}
 }
 
@@ -517,7 +518,13 @@ bool ShaderRD::_load_from_cache(Version *p_version) {
 		}
 	}
 
-	memdelete_arr(p_version->variant_data); //clear stages
+	if (p_version->shader_info) {
+		memdelete(p_version->shader_info);
+	}
+	if (p_version->variant_data) {
+		memdelete_arr(p_version->variant_data);
+	}
+	//memdelete_arr(p_version->variant_data); //clear stages
 	p_version->variant_data = nullptr;
 	p_version->valid = true;
 	return true;
@@ -551,6 +558,7 @@ void ShaderRD::_compile_version(Version *p_version) {
 	p_version->variants = memnew_arr(RID, variant_defines.size());
 	typedef Vector<uint8_t> ShaderStageData;
 	p_version->variant_data = memnew_arr(ShaderStageData, variant_defines.size());
+	p_version->shader_info = memnew_arr(RD::ShaderInfo, variant_defines.size());
 
 	if (shader_cache_dir_valid) {
 		if (_load_from_cache(p_version)) {
@@ -594,6 +602,9 @@ void ShaderRD::_compile_version(Version *p_version) {
 		if (p_version->variant_data) {
 			memdelete_arr(p_version->variant_data);
 		}
+		if (p_version->shader_info) {
+			memdelete(p_version->shader_info);
+		}
 		p_version->variants = nullptr;
 		p_version->variant_data = nullptr;
 		return;
@@ -602,7 +613,13 @@ void ShaderRD::_compile_version(Version *p_version) {
 		_save_to_cache(p_version);
 	}
 
-	memdelete_arr(p_version->variant_data); //clear stages
+	if (p_version->shader_info) {
+		memdelete(p_version->shader_info);
+	}
+	if (p_version->variant_data) {
+		memdelete_arr(p_version->variant_data);
+	}
+	//memdelete_arr(p_version->variant_data); //clear stages
 	p_version->variant_data = nullptr;
 
 	p_version->valid = true;

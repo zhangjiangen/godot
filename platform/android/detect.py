@@ -139,25 +139,16 @@ def configure(env):
             return rv
 
         env["SPAWN"] = mySpawn
+    print("Building for Android, platform " +
+          env["ndk_platform"] + " (" + env["android_arch"] + ")")
 
     # Architecture
 
     if env["android_arch"] not in ["armv7", "arm64v8", "x86", "x86_64"]:
         env["android_arch"] = "armv7"
 
-
-<< << << < HEAD
-  neon_text = ""
-   if env["android_arch"] == "armv7" and env["android_neon"]:
-        neon_text = " (with NEON)"
-    print("Building for Android, platform " +
-          env["ndk_platform"] + " (" + env["android_arch"] + ")" + neon_text)
-== == ===
-  print("Building for Android, platform " + env["ndk_platform"] + " (" + env["android_arch"] + ")")
->>>>>> > master
-
-  can_vectorize = True
-   if env["android_arch"] == "x86":
+    can_vectorize = True
+    if env["android_arch"] == "x86":
         env["ARCH"] = "arch-x86"
         env.extra_suffix = "_x86" + env.extra_suffix
         target_subpath = "x86-4.9"

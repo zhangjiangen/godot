@@ -212,8 +212,8 @@ private:
 	Error _staging_buffer_allocate(uint32_t p_amount, uint32_t p_required_align, uint32_t &r_alloc_offset, uint32_t &r_alloc_size, bool p_can_segment = true, bool p_on_draw_command_buffer = false);
 	Error _insert_staging_block();
 
-	virtual bool get_geometry_shader_is_supported() ;
-	virtual bool get_tessellation_shader_is_supported() ;
+	virtual bool get_geometry_shader_is_supported();
+	virtual bool get_tessellation_shader_is_supported();
 	struct Buffer {
 		uint32_t size = 0;
 		uint32_t usage = 0;
@@ -1095,7 +1095,7 @@ public:
 	/****************/
 
 	virtual String shader_get_binary_cache_key() const;
-	virtual Vector<uint8_t> shader_compile_binary_from_spirv(const Vector<ShaderStageSPIRVData> &p_spirv, const String &p_shader_name = "");
+	virtual Vector<uint8_t> shader_compile_binary_from_spirv(const Vector<ShaderStageSPIRVData> &p_spirv, ShaderInfo &p_shader_info, const String &p_shader_name = "");
 
 	virtual RID shader_create_from_bytecode(const Vector<uint8_t> &p_shader_binary);
 

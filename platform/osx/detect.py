@@ -134,14 +134,7 @@ def configure(env):
         env["RANLIB"] = basecmd + "ranlib"
         env["AS"] = basecmd + "as"
 
-
-<< << << < HEAD
-       # hack to fix libvpx MM256_BROADCASTSI128_SI256 define
-   env.Append(CPPDEFINES=["__MACPORTS__"])
-== == == =
->>>>>> > master
-
-   if env["use_ubsan"] or env["use_asan"] or env["use_tsan"]:
+    if env["use_ubsan"] or env["use_asan"] or env["use_tsan"]:
         env.extra_suffix += "s"
 
         if env["use_ubsan"]:
@@ -205,10 +198,10 @@ def configure(env):
                "QuartzCore", "-framework", "IOSurface"])
     # if env["use_static_mvk"]:
 
-    #env.Append(LINKFLAGS=["-framework", "MoltenVK"])
+    # env.Append(LINKFLAGS=["-framework", "MoltenVK"])
     #   env.Append(
     #        LINKFLAGS="/Users/zhangjiangen/Downloads/vulkansdk-macos-1.2.135.0/lib/macos-arm64_x86_64/libMoltenVK.a")
-    #env.Append(LINKFLAGS=["-L$VULKAN_SDK_PATH/MoltenVK/MoltenVK.xcframework/macos-arm64_x86_64/", "-lMoltenVK"])
+    # env.Append(LINKFLAGS=["-L$VULKAN_SDK_PATH/MoltenVK/MoltenVK.xcframework/macos-arm64_x86_64/", "-lMoltenVK"])
     #    env["builtin_vulkan"] = False
     # elif not env["builtin_vulkan"]:
     #    env.Append(LIBS=["vulkan"])
