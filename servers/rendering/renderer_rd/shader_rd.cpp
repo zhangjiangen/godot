@@ -613,9 +613,6 @@ void ShaderRD::_compile_version(Version *p_version) {
 		_save_to_cache(p_version);
 	}
 
-	if (p_version->shader_info) {
-		memdelete(p_version->shader_info);
-	}
 	if (p_version->variant_data) {
 		memdelete_arr(p_version->variant_data);
 	}
