@@ -85,11 +85,11 @@ class ShaderRD {
 			String uniform;
 			List<String> ret;
 			for (int i = 0; i < var_count; ++i) {
-				uniform = itos(i);
-				uniform += " Version---";
 				RD::ShaderInfo &info = shader_info[i];
 				for (int j = 0; j < 5; ++j) {
 					for (int k = 0; k < info.uniform_info->size(); ++k) {
+						uniform = itos(i);
+						uniform += " Version---";
 						uniform += get_stage_type(j);
 						uniform += "--- name:";
 						uniform += info.uniform_info[j][k].name;
@@ -212,6 +212,9 @@ public:
 	}
 	List<String> log_unifoem_info(RID p_version) {
 		Version *version = version_owner.get_or_null(p_version);
+		if (version->dirty) {
+			_compile_version(version);
+		}
 		return version->get_uniform_debug_info(variant_defines.size());
 	}
 

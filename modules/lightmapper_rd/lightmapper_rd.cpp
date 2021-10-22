@@ -630,7 +630,8 @@ LightmapperRD::BakeError LightmapperRD::_dilate(RenderingDevice *rd, Ref<RDShade
 		}
 	}
 
-	RID compute_shader_dilate = rd->shader_create_from_spirv(compute_shader->get_spirv_stages("dilate"));
+	RenderingDevice::ShaderInfo compute_shader_dilate_shader_info;
+	RID compute_shader_dilate = rd->shader_create_from_spirv(compute_shader->get_spirv_stages("dilate"), compute_shader_dilate_shader_info);
 	ERR_FAIL_COND_V(compute_shader_dilate.is_null(), BAKE_ERROR_LIGHTMAP_CANT_PRE_BAKE_MESHES); //internal check, should not happen
 	RID compute_shader_dilate_pipeline = rd->compute_pipeline_create(compute_shader_dilate);
 

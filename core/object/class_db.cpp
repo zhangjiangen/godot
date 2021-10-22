@@ -731,7 +731,7 @@ void ClassDB::bind_integer_constant(const StringName &p_class, const StringName 
 	ERR_FAIL_COND(!type);
 
 	if (type->constant_map.has(p_name)) {
-		ERR_FAIL_MSG(p_name);
+		ERR_FAIL_MSG((String)p_name);
 	}
 
 	type->constant_map[p_name] = p_constant;
