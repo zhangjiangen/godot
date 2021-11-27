@@ -405,11 +405,11 @@ static Error _parse_obj(const String &p_path, List<Ref<Mesh>> &r_meshes, bool p_
 			current_material_library = l.replace("mtllib", "").strip_edges();
 			if (!material_map.has(current_material_library)) {
 				Map<String, Ref<StandardMaterial3D>> lib;
-				Error err = _parse_material_library(current_material_library, lib, r_missing_deps);
-				if (err == ERR_CANT_OPEN) {
-					String dir = p_path.get_base_dir();
-					err = _parse_material_library(dir.plus_file(current_material_library), lib, r_missing_deps);
+				String lib_path = current_material_library;
+				if (lib_path.is_relative_path()) {
+					lib_path = p_path.get_base_dir().plus_file(current_material_library);
 				}
+				Error err = _parse_material_library(lib_path, lib, r_missing_deps);
 				if (err == OK) {
 					material_map[current_material_library] = lib;
 				}
@@ -448,7 +448,7 @@ Node *EditorOBJImporter::import_scene(const String &p_path, uint32_t p_flags, in
 		ImporterMeshInstance3D *mi = memnew(ImporterMeshInstance3D);
 		mi->set_mesh(mesh);
 		mi->set_name(m->get_name());
-		scene->add_child(mi);
+		scene->add_child(mi, true);
 		mi->set_owner(scene);
 	}
 
@@ -504,14 +504,14 @@ String ResourceImporterOBJ::get_preset_name(int p_idx) const {
 	return "";
 }
 
-void ResourceImporterOBJ::get_import_options(List<ImportOption> *r_options, int p_preset) const {
+void ResourceImporterOBJ::get_import_options(const String &p_path, List<ImportOption> *r_options, int p_preset) const {
 	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "generate_tangents"), true));
 	r_options->push_back(ImportOption(PropertyInfo(Variant::VECTOR3, "scale_mesh"), Vector3(1, 1, 1)));
 	r_options->push_back(ImportOption(PropertyInfo(Variant::VECTOR3, "offset_mesh"), Vector3(0, 0, 0)));
 	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "optimize_mesh"), true));
 }
 
-bool ResourceImporterOBJ::get_option_visibility(const String &p_option, const Map<StringName, Variant> &p_options) const {
+bool ResourceImporterOBJ::get_option_visibility(const String &p_path, const String &p_option, const Map<StringName, Variant> &p_options) const {
 	return true;
 }
 

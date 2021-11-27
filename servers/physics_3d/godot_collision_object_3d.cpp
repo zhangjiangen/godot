@@ -118,7 +118,7 @@ void GodotCollisionObject3D::remove_shape(int p_index) {
 		shapes.write[i].bpid = 0;
 	}
 	shapes[p_index].shape->remove_owner(this);
-	shapes.remove(p_index);
+	shapes.remove_at(p_index);
 
 	if (!pending_shape_update_list.in_list()) {
 		GodotPhysicsServer3D::godot_singleton->pending_shape_update_list.add(&pending_shape_update_list);
@@ -171,7 +171,7 @@ void GodotCollisionObject3D::_update_shapes() {
 		s.aabb_cache = shape_aabb;
 
 		Vector3 scale = xform.get_basis().get_scale();
-		s.area_cache = s.shape->get_area() * scale.x * scale.y * scale.z;
+		s.area_cache = s.shape->get_volume() * scale.x * scale.y * scale.z;
 
 		if (s.bpid == 0) {
 			s.bpid = space->get_broadphase()->create(this, i, shape_aabb, _static);

@@ -35,18 +35,6 @@
 
 #include "core/os/os.h"
 
-/*
-#define NO_ACCUMULATE_IMPULSES
-#define NO_SPLIT_IMPULSES
-
-#define NO_FRICTION
-*/
-
-#define NO_TANGENTIALS
-/* BODY PAIR */
-
-//#define ALLOWED_PENETRATION 0.01
-#define RELAXATION_TIMESTEPS 3
 #define MIN_VELOCITY 0.0001
 #define MAX_BIAS_ROTATION (Math_PI / 8)
 
@@ -191,7 +179,7 @@ bool GodotBodyPair3D::_test_ccd(real_t p_step, GodotBody3D *p_A, int p_shape_A, 
 	Vector3 local_to = from_inv.xform(to);
 
 	Vector3 rpos, rnorm;
-	if (!p_B->get_shape(p_shape_B)->intersect_segment(local_from, local_to, rpos, rnorm)) {
+	if (!p_B->get_shape(p_shape_B)->intersect_segment(local_from, local_to, rpos, rnorm, true)) {
 		return false;
 	}
 
@@ -370,10 +358,9 @@ bool GodotBodyPair3D::pre_solve(real_t p_step) {
 
 		c.bounce = combine_bounce(A, B);
 		if (c.bounce) {
-			Vector3 crA = A->get_angular_velocity().cross(c.rA);
-			Vector3 crB = B->get_angular_velocity().cross(c.rB);
-			Vector3 dv = B->get_linear_velocity() + crB - A->get_linear_velocity() - crA;
-			//normal impule
+			Vector3 crA = A->get_prev_angular_velocity().cross(c.rA);
+			Vector3 crB = B->get_prev_angular_velocity().cross(c.rB);
+			Vector3 dv = B->get_prev_linear_velocity() + crB - A->get_prev_linear_velocity() - crA;
 			c.bounce = c.bounce * dv.dot(c.normal);
 		}
 	}
@@ -495,8 +482,7 @@ void GodotBodyPair3D::solve(real_t p_step) {
 			Vector3 temp1 = inv_inertia_tensor_A.xform(c.rA.cross(tv));
 			Vector3 temp2 = inv_inertia_tensor_B.xform(c.rB.cross(tv));
 
-			real_t t = -tvl /
-					   (inv_mass_A + inv_mass_B + tv.dot(temp1.cross(c.rA) + temp2.cross(c.rB)));
+			real_t t = -tvl / (inv_mass_A + inv_mass_B + tv.dot(temp1.cross(c.rA) + temp2.cross(c.rB)));
 
 			Vector3 jt = t * tv;
 
@@ -863,8 +849,7 @@ void GodotBodySoftBodyPair3D::solve(real_t p_step) {
 
 			Vector3 temp1 = body_inv_inertia_tensor.xform(c.rA.cross(tv));
 
-			real_t t = -tvl /
-					   (body_inv_mass + node_inv_mass + tv.dot(temp1.cross(c.rA)));
+			real_t t = -tvl / (body_inv_mass + node_inv_mass + tv.dot(temp1.cross(c.rA)));
 
 			Vector3 jt = t * tv;
 

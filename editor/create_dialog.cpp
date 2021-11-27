@@ -352,10 +352,10 @@ void CreateDialog::_sbox_input(const Ref<InputEvent> &p_ie) {
 	Ref<InputEventKey> k = p_ie;
 	if (k.is_valid()) {
 		switch (k->get_keycode()) {
-			case KEY_UP:
-			case KEY_DOWN:
-			case KEY_PAGEUP:
-			case KEY_PAGEDOWN: {
+			case Key::UP:
+			case Key::DOWN:
+			case Key::PAGEUP:
+			case Key::PAGEDOWN: {
 				search_options->gui_input(k);
 				search_box->accept_event();
 			} break;
@@ -576,7 +576,7 @@ void CreateDialog::drop_data_fw(const Point2 &p_point, const Variant &p_data, Co
 		drop_idx--;
 	}
 
-	favorite_list.remove(from_idx);
+	favorite_list.remove_at(from_idx);
 
 	if (ds < 0) {
 		favorite_list.insert(drop_idx, type);

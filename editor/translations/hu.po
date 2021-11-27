@@ -17,13 +17,16 @@
 # Újvári Marcell <mmarci72@gmail.com>, 2021.
 # Gergő Pistai <gergopistai@gmail.com>, 2021.
 # Misi <varady.misi@gmail.com>, 2021.
+# Looky1173 <lgl1173and2006@gmail.com>, 2021.
+# Frontrider <frontrider@tutanota.com>, 2021.
+# Andras Virag <snowflake71@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: Godot Engine editor\n"
 "Report-Msgid-Bugs-To: https://github.com/godotengine/godot\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-10-09 16:52+0000\n"
-"Last-Translator: Misi <varady.misi@gmail.com>\n"
+"PO-Revision-Date: 2021-11-14 11:41+0000\n"
+"Last-Translator: Andras Virag <snowflake71@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/godot-engine/"
 "godot/hu/>\n"
 "Language: hu\n"
@@ -31,7 +34,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9-dev\n"
+"X-Generator: Weblate 4.9.1-dev\n"
 
 #: core/math/expression.cpp modules/gdscript/gdscript_functions.cpp
 #: modules/visual_script/visual_script_builtin_funcs.cpp
@@ -490,7 +493,7 @@ msgstr "Animáció - Kulcsok Mozgatása"
 #: editor/animation_track_editor.cpp
 #: modules/visual_script/visual_script_editor.cpp
 msgid "Clipboard is empty!"
-msgstr ""
+msgstr "A vágólap üres!"
 
 #: editor/animation_track_editor.cpp
 msgid "Paste Tracks"
@@ -1173,7 +1176,7 @@ msgstr "Köszönet a Godot közösségétől!"
 
 #: editor/editor_about.cpp editor/editor_node.cpp editor/project_manager.cpp
 msgid "Click to copy."
-msgstr ""
+msgstr "Kattints a másoláshoz."
 
 #: editor/editor_about.cpp
 msgid "Godot Engine contributors"
@@ -1558,6 +1561,8 @@ msgstr "A fájl nem létezik."
 #: editor/editor_autoload_settings.cpp
 msgid "%s is an invalid path. Not in resource path (res://)."
 msgstr ""
+"%s egy érvénytelen elérési útvonal. Nincs az erőforrás elérési útvonalában "
+"(res://)."
 
 #: editor/editor_autoload_settings.cpp
 msgid "Add AutoLoad"
@@ -1756,8 +1761,9 @@ msgid "Import Dock"
 msgstr "Dock importálása"
 
 #: editor/editor_feature_profile.cpp
+#, fuzzy
 msgid "Allows to view and edit 3D scenes."
-msgstr ""
+msgstr "Lehetővé teszi a 3D jelenetek megtekintését és szerkesztését."
 
 #: editor/editor_feature_profile.cpp
 msgid "Allows to edit scripts using the integrated script editor."
@@ -2139,22 +2145,20 @@ msgid "Methods"
 msgstr "Metódusok"
 
 #: editor/editor_help.cpp
-#, fuzzy
 msgid "Theme Properties"
-msgstr "Téma Tulajdonságok"
+msgstr "Téma Tulajdonságai"
 
 #: editor/editor_help.cpp
-#, fuzzy
 msgid "Enumerations"
-msgstr "Számlálók"
+msgstr "Listák"
 
 #: editor/editor_help.cpp editor/plugins/theme_editor_plugin.cpp
 msgid "Constants"
-msgstr "Konstansok"
+msgstr "Állandók"
 
 #: editor/editor_help.cpp
 msgid "Property Descriptions"
-msgstr "Tulajdonság leírások"
+msgstr "Tulajdonság leírásai"
 
 #: editor/editor_help.cpp
 msgid "(value)"
@@ -7734,11 +7738,11 @@ msgid "This skeleton has no bones, create some children Bone2D nodes."
 msgstr ""
 
 #: editor/plugins/skeleton_2d_editor_plugin.cpp
-msgid "Create Rest Pose from Bones"
+msgid "Set Rest Pose to Bones"
 msgstr ""
 
 #: editor/plugins/skeleton_2d_editor_plugin.cpp
-msgid "Set Rest Pose to Bones"
+msgid "Create Rest Pose from Bones"
 msgstr ""
 
 #: editor/plugins/skeleton_2d_editor_plugin.cpp
@@ -11019,12 +11023,12 @@ msgid ""
 msgstr ""
 
 #: editor/project_settings_editor.cpp
-msgid "Key "
-msgstr "Kulcs "
-
-#: editor/project_settings_editor.cpp
 msgid "Physical Key"
 msgstr ""
+
+#: editor/project_settings_editor.cpp
+msgid "Key "
+msgstr "Kulcs "
 
 #: editor/project_settings_editor.cpp
 msgid "Joy Button"

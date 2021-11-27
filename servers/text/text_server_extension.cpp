@@ -55,6 +55,15 @@ void TextServerExtension::_bind_methods() {
 	GDVIRTUAL_BIND(_font_set_data, "font_rid", "data");
 	GDVIRTUAL_BIND(_font_set_data_ptr, "font_rid", "data_ptr", "data_size");
 
+	GDVIRTUAL_BIND(_font_set_style, "font_rid", "style");
+	GDVIRTUAL_BIND(_font_get_style, "font_rid");
+
+	GDVIRTUAL_BIND(_font_set_name, "font_rid", "name");
+	GDVIRTUAL_BIND(_font_get_name, "font_rid");
+
+	GDVIRTUAL_BIND(_font_set_style_name, "font_rid", "name_style");
+	GDVIRTUAL_BIND(_font_get_style_name, "font_rid");
+
 	GDVIRTUAL_BIND(_font_set_antialiased, "font_rid", "antialiased");
 	GDVIRTUAL_BIND(_font_is_antialiased, "font_rid");
 
@@ -185,6 +194,9 @@ void TextServerExtension::_bind_methods() {
 
 	GDVIRTUAL_BIND(_shaped_text_set_bidi_override, "shaped", "override");
 
+	GDVIRTUAL_BIND(_shaped_text_set_custom_punctuation, "shaped", "punct");
+	GDVIRTUAL_BIND(_shaped_text_get_custom_punctuation, "shaped");
+
 	GDVIRTUAL_BIND(_shaped_text_set_orientation, "shaped", "orientation");
 	GDVIRTUAL_BIND(_shaped_text_get_orientation, "shaped");
 
@@ -248,6 +260,7 @@ void TextServerExtension::_bind_methods() {
 	GDVIRTUAL_BIND(_shaped_text_draw, "shaped", "canvas", "pos", "clip_l", "clip_r", "color");
 	GDVIRTUAL_BIND(_shaped_text_draw_outline, "shaped", "canvas", "pos", "clip_l", "clip_r", "outline_size", "color");
 
+	GDVIRTUAL_BIND(_shaped_text_get_grapheme_bounds, "shaped", "pos");
 	GDVIRTUAL_BIND(_shaped_text_next_grapheme_pos, "shaped", "pos");
 	GDVIRTUAL_BIND(_shaped_text_prev_grapheme_pos, "shaped", "pos");
 
@@ -366,6 +379,42 @@ void TextServerExtension::font_set_data(RID p_font_rid, const PackedByteArray &p
 
 void TextServerExtension::font_set_data_ptr(RID p_font_rid, const uint8_t *p_data_ptr, size_t p_data_size) {
 	GDVIRTUAL_CALL(_font_set_data_ptr, p_font_rid, p_data_ptr, p_data_size);
+}
+
+void TextServerExtension::font_set_style(RID p_font_rid, uint32_t /*FontStyle*/ p_style) {
+	GDVIRTUAL_CALL(_font_set_style, p_font_rid, p_style);
+}
+
+uint32_t /*FontStyle*/ TextServerExtension::font_get_style(RID p_font_rid) const {
+	uint32_t ret;
+	if (GDVIRTUAL_CALL(_font_get_style, p_font_rid, ret)) {
+		return ret;
+	}
+	return 0;
+}
+
+void TextServerExtension::font_set_style_name(RID p_font_rid, const String &p_name) {
+	GDVIRTUAL_CALL(_font_set_style_name, p_font_rid, p_name);
+}
+
+String TextServerExtension::font_get_style_name(RID p_font_rid) const {
+	String ret;
+	if (GDVIRTUAL_CALL(_font_get_style_name, p_font_rid, ret)) {
+		return ret;
+	}
+	return String();
+}
+
+void TextServerExtension::font_set_name(RID p_font_rid, const String &p_name) {
+	GDVIRTUAL_CALL(_font_set_name, p_font_rid, p_name);
+}
+
+String TextServerExtension::font_get_name(RID p_font_rid) const {
+	String ret;
+	if (GDVIRTUAL_CALL(_font_get_name, p_font_rid, ret)) {
+		return ret;
+	}
+	return String();
 }
 
 void TextServerExtension::font_set_antialiased(RID p_font_rid, bool p_antialiased) {
@@ -906,6 +955,18 @@ void TextServerExtension::shaped_text_set_bidi_override(RID p_shaped, const Arra
 	GDVIRTUAL_CALL(_shaped_text_set_bidi_override, p_shaped, p_override);
 }
 
+void TextServerExtension::shaped_text_set_custom_punctuation(RID p_shaped, const String &p_punct) {
+	GDVIRTUAL_CALL(_shaped_text_set_custom_punctuation, p_shaped, p_punct);
+}
+
+String TextServerExtension::shaped_text_get_custom_punctuation(RID p_shaped) const {
+	String ret;
+	if (GDVIRTUAL_CALL(_shaped_text_get_custom_punctuation, p_shaped, ret)) {
+		return ret;
+	}
+	return String();
+}
+
 void TextServerExtension::shaped_text_set_preserve_invalid(RID p_shaped, bool p_enabled) {
 	GDVIRTUAL_CALL(_shaped_text_set_preserve_invalid, p_shaped, p_enabled);
 }
@@ -1230,6 +1291,14 @@ void TextServerExtension::shaped_text_draw_outline(RID p_shaped, RID p_canvas, c
 		return;
 	}
 	shaped_text_draw_outline(p_shaped, p_canvas, p_pos, p_clip_l, p_clip_r, p_outline_size, p_color);
+}
+
+Vector2 TextServerExtension::shaped_text_get_grapheme_bounds(RID p_shaped, int p_pos) const {
+	Vector2 ret;
+	if (GDVIRTUAL_CALL(_shaped_text_get_grapheme_bounds, p_shaped, p_pos, ret)) {
+		return ret;
+	}
+	return TextServer::shaped_text_get_grapheme_bounds(p_shaped, p_pos);
 }
 
 int TextServerExtension::shaped_text_next_grapheme_pos(RID p_shaped, int p_pos) const {

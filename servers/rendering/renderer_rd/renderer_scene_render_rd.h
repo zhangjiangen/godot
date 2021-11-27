@@ -40,6 +40,7 @@
 #include "servers/rendering/renderer_rd/renderer_scene_sky_rd.h"
 #include "servers/rendering/renderer_rd/renderer_storage_rd.h"
 #include "servers/rendering/renderer_rd/shaders/volumetric_fog.glsl.gen.h"
+#include "servers/rendering/renderer_rd/shaders/volumetric_fog_process.glsl.gen.h"
 #include "servers/rendering/renderer_scene.h"
 #include "servers/rendering/renderer_scene_render.h"
 #include "servers/rendering/rendering_device.h"
@@ -64,6 +65,7 @@ struct RenderDataRD {
 	const PagedArray<RID> *voxel_gi_instances = nullptr;
 	const PagedArray<RID> *decals = nullptr;
 	const PagedArray<RID> *lightmaps = nullptr;
+	const PagedArray<RID> *fog_volumes = nullptr;
 	RID environment = RID();
 	RID camera_effects = RID();
 	RID shadow_atlas = RID();
@@ -393,6 +395,16 @@ private:
 
 	mutable RID_Owner<LightInstance> light_instance_owner;
 
+	/* FOG VOLUMES */
+
+	struct FogVolumeInstance {
+		RID volume;
+		Transform3D transform;
+		bool active = false;
+	};
+
+	mutable RID_Owner<FogVolumeInstance> fog_volume_instance_owner;
+
 	/* ENVIRONMENT */
 
 	RS::EnvironmentSSAOQuality ssao_quality = RS::ENV_SSAO_QUALITY_MEDIUM;
@@ -444,7 +456,11 @@ private:
 
 	struct RenderBuffers {
 		RenderBufferData *data = nullptr;
-		int width = 0, height = 0;
+		int internal_width = 0;
+		int internal_height = 0;
+		int width = 0;
+		int height = 0;
+		float fsr_sharpness = 0.2f;
 		RS::ViewportMSAA msaa = RS::VIEWPORT_MSAA_DISABLED;
 		RS::ViewportScreenSpaceAA screen_space_aa = RS::VIEWPORT_SCREEN_SPACE_AA_DISABLED;
 		bool use_debanding = false;
@@ -454,9 +470,12 @@ private:
 
 		uint64_t auto_exposure_version = 1;
 
-		RID texture; //main texture for rendering to, must be filled after done rendering
+		RID sss_texture; //texture for sss. This needs to be a different resolution than blur[0]
+		RID internal_texture; //main texture for rendering to, must be filled after done rendering
+		RID texture; //upscaled version of main texture (This uses the same resource as internal_texture if there is no upscaling)
 		RID depth_texture; //main depth texture
 		RID texture_fb; // framebuffer for the main texture, ONLY USED FOR MOBILE RENDERER POST EFFECTS, DO NOT USE FOR RENDERING 3D!!!
+		RID upscale_texture; //used when upscaling internal_texture (This uses the same resource as internal_texture if there is no upscaling)
 
 		RendererSceneGIRD::SDFGI *sdfgi = nullptr;
 		VolumetricFog *volumetric_fog = nullptr;
@@ -718,10 +737,15 @@ private:
 
 		RID light_density_map;
 		RID prev_light_density_map;
-
 		RID fog_map;
-		RID uniform_set;
-		RID uniform_set2;
+		RID density_map;
+		RID light_map;
+		RID emissive_map;
+
+		RID fog_uniform_set;
+		RID copy_uniform_set;
+		RID process_uniform_set;
+		RID process_uniform_set2;
 		RID sdfgi_uniform_set;
 		RID sky_uniform_set;
 
@@ -730,29 +754,90 @@ private:
 		Transform3D prev_cam_transform;
 	};
 
-	enum {
-		VOLUMETRIC_FOG_SHADER_DENSITY,
-		VOLUMETRIC_FOG_SHADER_DENSITY_WITH_SDFGI,
-		VOLUMETRIC_FOG_SHADER_FILTER,
-		VOLUMETRIC_FOG_SHADER_FOG,
-		VOLUMETRIC_FOG_SHADER_MAX,
-	};
-
 	struct VolumetricFogShader {
-		struct ParamsUBO {
+		enum FogSet {
+			FOG_SET_BASE,
+			FOG_SET_UNIFORMS,
+			FOG_SET_MATERIAL,
+			FOG_SET_MAX,
+		};
+
+		struct FogPushConstant {
+			float position[3];
+			float pad;
+
+			float extents[3];
+			float pad2;
+
+			int32_t corner[3];
+			uint32_t shape;
+
+			float transform[16];
+		};
+
+		struct VolumeUBO {
 			float fog_frustum_size_begin[2];
 			float fog_frustum_size_end[2];
 
 			float fog_frustum_end;
 			float z_near;
 			float z_far;
-			uint32_t filter_axis;
+			float time;
 
 			int32_t fog_volume_size[3];
 			uint32_t directional_light_count;
 
-			float light_energy[3];
+			uint32_t use_temporal_reprojection;
+			uint32_t temporal_frame;
+			float detail_spread;
+			float temporal_blend;
+
+			float to_prev_view[16];
+			float transform[16];
+		};
+
+		ShaderCompilerRD compiler;
+		VolumetricFogShaderRD shader;
+		FogPushConstant push_constant;
+		RID volume_ubo;
+
+		RID default_shader;
+		RID default_material;
+		RID default_shader_rd;
+
+		RID base_uniform_set;
+
+		RID params_ubo;
+
+		enum {
+			VOLUMETRIC_FOG_PROCESS_SHADER_DENSITY,
+			VOLUMETRIC_FOG_PROCESS_SHADER_DENSITY_WITH_SDFGI,
+			VOLUMETRIC_FOG_PROCESS_SHADER_FILTER,
+			VOLUMETRIC_FOG_PROCESS_SHADER_FOG,
+			VOLUMETRIC_FOG_PROCESS_SHADER_COPY,
+			VOLUMETRIC_FOG_PROCESS_SHADER_MAX,
+		};
+
+		struct ParamsUBO {
+			float fog_frustum_size_begin[2];
+			float fog_frustum_size_end[2];
+
+			float fog_frustum_end;
+			float ambient_inject;
+			float z_far;
+			uint32_t filter_axis;
+
+			float ambient_color[3];
+			float sky_contribution;
+
+			int32_t fog_volume_size[3];
+			uint32_t directional_light_count;
+
+			float base_emission[3];
 			float base_density;
+
+			float base_scattering[3];
+			float phase_g;
 
 			float detail_spread;
 			float gi_inject;
@@ -770,13 +855,13 @@ private:
 
 			float cam_rotation[12];
 			float to_prev_view[16];
+			float radiance_inverse_xform[12];
 		};
 
-		VolumetricFogShaderRD shader;
+		VolumetricFogProcessShaderRD process_shader;
 
-		RID params_ubo;
-		RID shader_version;
-		RID pipelines[VOLUMETRIC_FOG_SHADER_MAX];
+		RID process_shader_version;
+		RID process_pipelines[VOLUMETRIC_FOG_PROCESS_SHADER_MAX];
 
 	} volumetric_fog;
 
@@ -784,8 +869,57 @@ private:
 	uint32_t volumetric_fog_size = 128;
 	bool volumetric_fog_filter_active = true;
 
+	Vector3i _point_get_position_in_froxel_volume(const Vector3 &p_point, float fog_end, const Vector2 &fog_near_size, const Vector2 &fog_far_size, float volumetric_fog_detail_spread, const Vector3 &fog_size, const Transform3D &p_cam_transform);
 	void _volumetric_fog_erase(RenderBuffers *rb);
-	void _update_volumetric_fog(RID p_render_buffers, RID p_environment, const CameraMatrix &p_cam_projection, const Transform3D &p_cam_transform, RID p_shadow_atlas, int p_directional_light_count, bool p_use_directional_shadows, int p_positional_light_count, int p_voxel_gi_count);
+	void _update_volumetric_fog(RID p_render_buffers, RID p_environment, const CameraMatrix &p_cam_projection, const Transform3D &p_cam_transform, RID p_shadow_atlas, int p_directional_light_count, bool p_use_directional_shadows, int p_positional_light_count, int p_voxel_gi_count, const PagedArray<RID> &p_fog_volumes);
+
+	struct FogShaderData : public RendererStorageRD::ShaderData {
+		bool valid;
+		RID version;
+
+		RID pipeline;
+		Map<StringName, ShaderLanguage::ShaderNode::Uniform> uniforms;
+		Vector<ShaderCompilerRD::GeneratedCode::Texture> texture_uniforms;
+
+		Vector<uint32_t> ubo_offsets;
+		uint32_t ubo_size;
+
+		String path;
+		String code;
+		Map<StringName, Map<int, RID>> default_texture_params;
+
+		bool uses_time;
+
+		virtual void set_code(const String &p_Code);
+		virtual void set_default_texture_param(const StringName &p_name, RID p_texture, int p_index);
+		virtual void get_param_list(List<PropertyInfo> *p_param_list) const;
+		virtual void get_instance_param_list(List<RendererStorage::InstanceShaderParam> *p_param_list) const;
+		virtual bool is_param_texture(const StringName &p_param) const;
+		virtual bool is_animated() const;
+		virtual bool casts_shadows() const;
+		virtual Variant get_default_parameter(const StringName &p_parameter) const;
+		virtual RS::ShaderNativeSourceCode get_native_source_code() const;
+		FogShaderData();
+		virtual ~FogShaderData();
+	};
+
+	struct FogMaterialData : public RendererStorageRD::MaterialData {
+		uint64_t last_frame;
+		FogShaderData *shader_data;
+		RID uniform_set;
+		bool uniform_set_updated;
+
+		virtual void set_render_priority(int p_priority) {}
+		virtual void set_next_pass(RID p_pass) {}
+		virtual bool update_parameters(const Map<StringName, Variant> &p_parameters, bool p_uniform_dirty, bool p_textures_dirty);
+		virtual ~FogMaterialData();
+	};
+
+	RendererStorageRD::ShaderData *_create_fog_shader_func();
+	static RendererStorageRD::ShaderData *_create_fog_shader_funcs();
+
+	RendererStorageRD::MaterialData *_create_fog_material_func(FogShaderData *p_shader);
+	static RendererStorageRD::MaterialData *_create_fog_material_funcs(RendererStorageRD::ShaderData *p_shader);
 
 	RID shadow_sampler;
 
@@ -904,7 +1038,7 @@ public:
 	float environment_get_fog_height_density(RID p_env) const;
 	float environment_get_fog_aerial_perspective(RID p_env) const;
 
-	virtual void environment_set_volumetric_fog(RID p_env, bool p_enable, float p_density, const Color &p_light, float p_light_energy, float p_length, float p_detail_spread, float p_gi_inject, bool p_temporal_reprojection, float p_temporal_reprojection_amount) override;
+	virtual void environment_set_volumetric_fog(RID p_env, bool p_enable, float p_density, const Color &p_albedo, const Color &p_emission, float p_emission_energy, float p_anisotropy, float p_length, float p_detail_spread, float p_gi_inject, bool p_temporal_reprojection, float p_temporal_reprojection_amount, float p_ambient_inject) override;
 
 	virtual void environment_set_volumetric_fog_volume_size(int p_size, int p_depth) override;
 	virtual void environment_set_volumetric_fog_filter_active(bool p_enable) override;
@@ -931,6 +1065,8 @@ public:
 
 	virtual Ref<Image> environment_bake_panorama(RID p_env, bool p_bake_irradiance, const Size2i &p_size) override;
 
+	/* CAMERA EFFECTS */
+
 	virtual RID camera_effects_allocate() override;
 	virtual void camera_effects_initialize(RID p_rid) override;
 
@@ -945,6 +1081,8 @@ public:
 
 		return camfx && (camfx->dof_blur_near_enabled || camfx->dof_blur_far_enabled) && camfx->dof_blur_amount > 0.0;
 	}
+
+	/* LIGHT INSTANCE API */
 
 	virtual RID light_instance_create(RID p_light) override;
 	virtual void light_instance_set_transform(RID p_light_instance, const Transform3D &p_transform) override;
@@ -1082,6 +1220,14 @@ public:
 		return li->light_type;
 	}
 
+	/* FOG VOLUMES */
+
+	virtual RID fog_volume_instance_create(RID p_fog_volume) override;
+	virtual void fog_volume_instance_set_transform(RID p_fog_volume_instance, const Transform3D &p_transform) override;
+	virtual void fog_volume_instance_set_active(RID p_fog_volume_instance, bool p_active) override;
+	virtual RID fog_volume_instance_get_volume(RID p_fog_volume_instance) const override;
+	virtual Vector3 fog_volume_instance_get_position(RID p_fog_volume_instance) const override;
+
 	virtual RID reflection_atlas_create() override;
 	virtual void reflection_atlas_set_size(RID p_ref_atlas, int p_reflection_size, int p_reflection_count) override;
 	virtual int reflection_atlas_get_size(RID p_ref_atlas) const override;
@@ -1193,7 +1339,7 @@ public:
 	virtual RD::DataFormat _render_buffers_get_color_format();
 	virtual bool _render_buffers_can_be_storage();
 	virtual RID render_buffers_create() override;
-	virtual void render_buffers_configure(RID p_render_buffers, RID p_render_target, int p_width, int p_height, RS::ViewportMSAA p_msaa, RS::ViewportScreenSpaceAA p_screen_space_aa, bool p_use_debanding, uint32_t p_view_count) override;
+	virtual void render_buffers_configure(RID p_render_buffers, RID p_render_target, int p_internal_width, int p_internal_height, int p_width, int p_height, float p_fsr_sharpness, float p_fsr_mipmap_bias, RS::ViewportMSAA p_msaa, RS::ViewportScreenSpaceAA p_screen_space_aa, bool p_use_debanding, uint32_t p_view_count) override;
 	virtual void gi_set_use_half_resolution(bool p_enable) override;
 
 	RID render_buffers_get_depth_texture(RID p_render_buffers);
@@ -1224,7 +1370,9 @@ public:
 	float render_buffers_get_volumetric_fog_end(RID p_render_buffers);
 	float render_buffers_get_volumetric_fog_detail_spread(RID p_render_buffers);
 
-	virtual void render_scene(RID p_render_buffers, const CameraData *p_camera_data, const PagedArray<GeometryInstance *> &p_instances, const PagedArray<RID> &p_lights, const PagedArray<RID> &p_reflection_probes, const PagedArray<RID> &p_voxel_gi_instances, const PagedArray<RID> &p_decals, const PagedArray<RID> &p_lightmaps, RID p_environment, RID p_camera_effects, RID p_shadow_atlas, RID p_occluder_debug_tex, RID p_reflection_atlas, RID p_reflection_probe, int p_reflection_probe_pass, float p_screen_lod_threshold, const RenderShadowData *p_render_shadows, int p_render_shadow_count, const RenderSDFGIData *p_render_sdfgi_regions, int p_render_sdfgi_region_count, const RenderSDFGIUpdateData *p_sdfgi_update_data = nullptr, RendererScene::RenderInfo *r_render_info = nullptr) override;
+	virtual void update_uniform_sets(){};
+
+	virtual void render_scene(RID p_render_buffers, const CameraData *p_camera_data, const PagedArray<GeometryInstance *> &p_instances, const PagedArray<RID> &p_lights, const PagedArray<RID> &p_reflection_probes, const PagedArray<RID> &p_voxel_gi_instances, const PagedArray<RID> &p_decals, const PagedArray<RID> &p_lightmaps, const PagedArray<RID> &p_fog_volumes, RID p_environment, RID p_camera_effects, RID p_shadow_atlas, RID p_occluder_debug_tex, RID p_reflection_atlas, RID p_reflection_probe, int p_reflection_probe_pass, float p_screen_lod_threshold, const RenderShadowData *p_render_shadows, int p_render_shadow_count, const RenderSDFGIData *p_render_sdfgi_regions, int p_render_sdfgi_region_count, const RenderSDFGIUpdateData *p_sdfgi_update_data = nullptr, RendererScene::RenderInfo *r_render_info = nullptr) override;
 
 	virtual void render_material(const Transform3D &p_cam_transform, const CameraMatrix &p_cam_projection, bool p_cam_ortogonal, const PagedArray<GeometryInstance *> &p_instances, RID p_framebuffer, const Rect2i &p_region) override;
 

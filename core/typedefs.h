@@ -91,8 +91,8 @@
 #define ABS(m_v) (((m_v) < 0) ? (-(m_v)) : (m_v))
 #endif
 
-#ifndef SGN
-#define SGN(m_v) (((m_v) == 0) ? (0.0) : (((m_v) < 0) ? (-1.0) : (+1.0)))
+#ifndef SIGN
+#define SIGN(m_v) (((m_v) == 0) ? (0.0) : (((m_v) < 0) ? (-1.0) : (+1.0)))
 #endif
 
 #ifndef MIN
@@ -276,6 +276,9 @@ struct BuildIndexSequence : BuildIndexSequence<N - 1, N - 1, Is...> {};
 
 template <size_t... Is>
 struct BuildIndexSequence<0, Is...> : IndexSequence<Is...> {};
+
+// Limit the depth of recursive algorithms when dealing with Array/Dictionary
+#define MAX_RECURSION 100
 
 #ifdef DEBUG_ENABLED
 #define DEBUG_METHODS_ENABLED

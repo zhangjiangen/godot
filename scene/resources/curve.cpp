@@ -136,7 +136,7 @@ void Curve::clean_dupes() {
 	for (int i = 1; i < _points.size(); ++i) {
 		real_t diff = _points[i - 1].pos.x - _points[i].pos.x;
 		if (diff <= CMP_EPSILON) {
-			_points.remove(i);
+			_points.remove_at(i);
 			--i;
 			dirty = true;
 		}
@@ -207,7 +207,7 @@ Curve::TangentMode Curve::get_point_right_mode(int i) const {
 
 void Curve::remove_point(int p_index) {
 	ERR_FAIL_INDEX(p_index, _points.size());
-	_points.remove(p_index);
+	_points.remove_at(p_index);
 	mark_dirty();
 }
 
@@ -522,7 +522,7 @@ void Curve::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "min_value", PROPERTY_HINT_RANGE, "-1024,1024,0.01"), "set_min_value", "get_min_value");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "max_value", PROPERTY_HINT_RANGE, "-1024,1024,0.01"), "set_max_value", "get_max_value");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "bake_resolution", PROPERTY_HINT_RANGE, "1,1000,1"), "set_bake_resolution", "get_bake_resolution");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "_data", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NOEDITOR | PROPERTY_USAGE_INTERNAL), "_set_data", "_get_data");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "_data", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL), "_set_data", "_get_data");
 
 	ADD_SIGNAL(MethodInfo(SIGNAL_RANGE_CHANGED));
 
@@ -591,7 +591,7 @@ Vector2 Curve2D::get_point_out(int p_index) const {
 
 void Curve2D::remove_point(int p_index) {
 	ERR_FAIL_INDEX(p_index, points.size());
-	points.remove(p_index);
+	points.remove_at(p_index);
 	baked_cache_dirty = true;
 	emit_signal(CoreStringNames::get_singleton()->changed);
 }
@@ -1006,7 +1006,7 @@ void Curve2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_set_data"), &Curve2D::_set_data);
 
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "bake_interval", PROPERTY_HINT_RANGE, "0.01,512,0.01"), "set_bake_interval", "get_bake_interval");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "_data", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NOEDITOR | PROPERTY_USAGE_INTERNAL), "_set_data", "_get_data");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "_data", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL), "_set_data", "_get_data");
 }
 
 Curve2D::Curve2D() {
@@ -1095,7 +1095,7 @@ Vector3 Curve3D::get_point_out(int p_index) const {
 
 void Curve3D::remove_point(int p_index) {
 	ERR_FAIL_INDEX(p_index, points.size());
-	points.remove(p_index);
+	points.remove_at(p_index);
 	baked_cache_dirty = true;
 	emit_signal(CoreStringNames::get_singleton()->changed);
 }
@@ -1699,7 +1699,7 @@ void Curve3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_set_data"), &Curve3D::_set_data);
 
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "bake_interval", PROPERTY_HINT_RANGE, "0.01,512,0.01"), "set_bake_interval", "get_bake_interval");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "_data", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NOEDITOR | PROPERTY_USAGE_INTERNAL), "_set_data", "_get_data");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "_data", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL), "_set_data", "_get_data");
 
 	ADD_GROUP("Up Vector", "up_vector_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "up_vector_enabled"), "set_up_vector_enabled", "is_up_vector_enabled");

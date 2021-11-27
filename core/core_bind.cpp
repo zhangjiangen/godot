@@ -235,6 +235,19 @@ int OS::execute(const String &p_path, const Vector<String> &p_arguments, Array r
 	return exitcode;
 }
 
+int OS::create_instance(const Vector<String> &p_arguments) {
+	List<String> args;
+	for (int i = 0; i < p_arguments.size(); i++) {
+		args.push_back(p_arguments[i]);
+	}
+	::OS::ProcessID pid = 0;
+	Error err = ::OS::get_singleton()->create_instance(args, &pid);
+	if (err != OK) {
+		return -1;
+	}
+	return pid;
+}
+
 int OS::create_process(const String &p_path, const Vector<String> &p_arguments) {
 	List<String> args;
 	for (int i = 0; i < p_arguments.size(); i++) {
@@ -300,6 +313,10 @@ Error OS::set_thread_name(const String &p_name) {
 
 ::Thread::ID OS::get_thread_caller_id() const {
 	return ::Thread::get_caller_id();
+};
+
+::Thread::ID OS::get_main_thread_id() const {
+	return ::Thread::get_main_id();
 };
 
 bool OS::has_feature(const String &p_feature) const {
@@ -489,15 +506,15 @@ String OS::get_system_dir(SystemDir p_dir, bool p_shared_storage) const {
 	return ::OS::get_singleton()->get_system_dir(::OS::SystemDir(p_dir), p_shared_storage);
 }
 
-String OS::get_keycode_string(uint32_t p_code) const {
+String OS::get_keycode_string(Key p_code) const {
 	return ::keycode_get_string(p_code);
 }
 
-bool OS::is_keycode_unicode(uint32_t p_unicode) const {
-	return ::keycode_has_unicode(p_unicode);
+bool OS::is_keycode_unicode(char32_t p_unicode) const {
+	return ::keycode_has_unicode((Key)p_unicode);
 }
 
-int OS::find_keycode_from_string(const String &p_code) const {
+Key OS::find_keycode_from_string(const String &p_code) const {
 	return find_keycode(p_code);
 }
 
@@ -537,6 +554,7 @@ void OS::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_executable_path"), &OS::get_executable_path);
 	ClassDB::bind_method(D_METHOD("execute", "path", "arguments", "output", "read_stderr"), &OS::execute, DEFVAL(Array()), DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("create_process", "path", "arguments"), &OS::create_process);
+	ClassDB::bind_method(D_METHOD("create_instance", "arguments"), &OS::create_instance);
 	ClassDB::bind_method(D_METHOD("kill", "pid"), &OS::kill);
 	ClassDB::bind_method(D_METHOD("shell_open", "uri"), &OS::shell_open);
 	ClassDB::bind_method(D_METHOD("get_process_id"), &OS::get_process_id);
@@ -587,6 +605,7 @@ void OS::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("set_thread_name", "name"), &OS::set_thread_name);
 	ClassDB::bind_method(D_METHOD("get_thread_caller_id"), &OS::get_thread_caller_id);
+	ClassDB::bind_method(D_METHOD("get_main_thread_id"), &OS::get_main_thread_id);
 
 	ClassDB::bind_method(D_METHOD("has_feature", "tag_name"), &OS::has_feature);
 
@@ -603,8 +622,8 @@ void OS::_bind_methods() {
 	ADD_PROPERTY_DEFAULT("low_processor_usage_mode", false);
 	ADD_PROPERTY_DEFAULT("low_processor_usage_mode_sleep_usec", 6900);
 
-	BIND_ENUM_CONSTANT(VIDEO_DRIVER_GLES2);
 	BIND_ENUM_CONSTANT(VIDEO_DRIVER_VULKAN);
+	BIND_ENUM_CONSTANT(VIDEO_DRIVER_OPENGL_3);
 
 	BIND_ENUM_CONSTANT(DAY_SUNDAY);
 	BIND_ENUM_CONSTANT(DAY_MONDAY);

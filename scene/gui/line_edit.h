@@ -97,6 +97,7 @@ private:
 	float full_width = 0.0;
 
 	bool selecting_enabled = true;
+	bool deselect_on_focus_loss_enabled = true;
 
 	bool context_menu_enabled = true;
 	PopupMenu *menu = nullptr;
@@ -128,7 +129,11 @@ private:
 
 	bool middle_mouse_paste_enabled = true;
 
+	bool drag_action = false;
+	bool drag_caret_force_displayed = false;
+
 	Ref<Texture2D> right_icon;
+	bool flat = false;
 
 	struct Selection {
 		int begin = 0;
@@ -168,7 +173,7 @@ private:
 	void _clear_redo();
 	void _create_undo_state();
 
-	int _get_menu_action_accelerator(const String &p_action);
+	Key _get_menu_action_accelerator(const String &p_action);
 
 	void _shape();
 	void _fit_to_width();
@@ -325,8 +330,14 @@ public:
 	void set_selecting_enabled(bool p_enabled);
 	bool is_selecting_enabled() const;
 
+	void set_deselect_on_focus_loss_enabled(const bool p_enabled);
+	bool is_deselect_on_focus_loss_enabled() const;
+
 	void set_right_icon(const Ref<Texture2D> &p_icon);
 	Ref<Texture2D> get_right_icon();
+
+	void set_flat(bool p_enabled);
+	bool is_flat() const;
 
 	virtual bool is_text_field() const override;
 

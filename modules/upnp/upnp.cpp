@@ -30,17 +30,17 @@
 
 #include "upnp.h"
 
-#include <miniupnpc/miniwget.h>
-#include <miniupnpc/upnpcommands.h>
+#include <miniwget.h>
+#include <upnpcommands.h>
 
 #include <stdlib.h>
 
 bool UPNP::is_common_device(const String &dev) const {
 	return dev.is_empty() ||
-		   dev.find("InternetGatewayDevice") >= 0 ||
-		   dev.find("WANIPConnection") >= 0 ||
-		   dev.find("WANPPPConnection") >= 0 ||
-		   dev.find("rootdevice") >= 0;
+			dev.find("InternetGatewayDevice") >= 0 ||
+			dev.find("WANIPConnection") >= 0 ||
+			dev.find("WANPPPConnection") >= 0 ||
+			dev.find("rootdevice") >= 0;
 }
 
 int UPNP::discover(int timeout, int ttl, const String &device_filter) {
@@ -257,7 +257,7 @@ void UPNP::set_device(int index, Ref<UPNPDevice> device) {
 void UPNP::remove_device(int index) {
 	ERR_FAIL_INDEX(index, devices.size());
 
-	devices.remove(index);
+	devices.remove_at(index);
 }
 
 void UPNP::clear_devices() {

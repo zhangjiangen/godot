@@ -38,15 +38,19 @@ Vector3 GodotPhysicsDirectBodyState3D::get_total_gravity() const {
 }
 
 real_t GodotPhysicsDirectBodyState3D::get_total_angular_damp() const {
-	return body->area_angular_damp;
+	return body->total_angular_damp;
 }
 
 real_t GodotPhysicsDirectBodyState3D::get_total_linear_damp() const {
-	return body->area_linear_damp;
+	return body->total_linear_damp;
 }
 
 Vector3 GodotPhysicsDirectBodyState3D::get_center_of_mass() const {
 	return body->get_center_of_mass();
+}
+
+Vector3 GodotPhysicsDirectBodyState3D::get_center_of_mass_local() const {
+	return body->get_center_of_mass_local();
 }
 
 Basis GodotPhysicsDirectBodyState3D::get_principal_inertia_axes() const {

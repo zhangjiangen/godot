@@ -42,7 +42,10 @@ class GodotSoftBody3D;
 class GodotConstraint3D;
 
 class GodotArea3D : public GodotCollisionObject3D {
-	PhysicsServer3D::AreaSpaceOverrideMode space_override_mode = PhysicsServer3D::AREA_SPACE_OVERRIDE_DISABLED;
+	PhysicsServer3D::AreaSpaceOverrideMode gravity_override_mode = PhysicsServer3D::AREA_SPACE_OVERRIDE_DISABLED;
+	PhysicsServer3D::AreaSpaceOverrideMode linear_damping_override_mode = PhysicsServer3D::AREA_SPACE_OVERRIDE_DISABLED;
+	PhysicsServer3D::AreaSpaceOverrideMode angular_damping_override_mode = PhysicsServer3D::AREA_SPACE_OVERRIDE_DISABLED;
+
 	real_t gravity = 9.80665;
 	Vector3 gravity_vector = Vector3(0, -1, 0);
 	bool gravity_is_point = false;
@@ -57,11 +60,8 @@ class GodotArea3D : public GodotCollisionObject3D {
 	int priority = 0;
 	bool monitorable = false;
 
-	ObjectID monitor_callback_id;
-	StringName monitor_callback_method;
-
-	ObjectID area_monitor_callback_id;
-	StringName area_monitor_callback_method;
+	Callable monitor_callback;
+	Callable area_monitor_callback;
 
 	SelfList<GodotArea3D> monitor_query_list;
 	SelfList<GodotArea3D> moved_list;
@@ -105,12 +105,14 @@ class GodotArea3D : public GodotCollisionObject3D {
 	virtual void _shapes_changed();
 	void _queue_monitor_update();
 
-public:
-	void set_monitor_callback(ObjectID p_id, const StringName &p_method);
-	_FORCE_INLINE_ bool has_monitor_callback() const { return monitor_callback_id.is_valid(); }
+	void _set_space_override_mode(PhysicsServer3D::AreaSpaceOverrideMode &r_mode, PhysicsServer3D::AreaSpaceOverrideMode p_new_mode);
 
-	void set_area_monitor_callback(ObjectID p_id, const StringName &p_method);
-	_FORCE_INLINE_ bool has_area_monitor_callback() const { return area_monitor_callback_id.is_valid(); }
+public:
+	void set_monitor_callback(const Callable &p_callback);
+	_FORCE_INLINE_ bool has_monitor_callback() const { return !monitor_callback.is_null(); }
+
+	void set_area_monitor_callback(const Callable &p_callback);
+	_FORCE_INLINE_ bool has_area_monitor_callback() const { return !area_monitor_callback.is_null(); }
 
 	_FORCE_INLINE_ void add_body_to_query(GodotBody3D *p_body, uint32_t p_body_shape, uint32_t p_area_shape);
 	_FORCE_INLINE_ void remove_body_from_query(GodotBody3D *p_body, uint32_t p_body_shape, uint32_t p_area_shape);
@@ -123,9 +125,6 @@ public:
 
 	void set_param(PhysicsServer3D::AreaParameter p_param, const Variant &p_value);
 	Variant get_param(PhysicsServer3D::AreaParameter p_param) const;
-
-	void set_space_override_mode(PhysicsServer3D::AreaSpaceOverrideMode p_mode);
-	PhysicsServer3D::AreaSpaceOverrideMode get_space_override_mode() const { return space_override_mode; }
 
 	_FORCE_INLINE_ void set_gravity(real_t p_gravity) { gravity = p_gravity; }
 	_FORCE_INLINE_ real_t get_gravity() const { return gravity; }

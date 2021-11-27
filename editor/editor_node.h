@@ -170,6 +170,7 @@ private:
 		RUN_PROJECT_DATA_FOLDER,
 		RUN_RELOAD_CURRENT_PROJECT,
 		RUN_PROJECT_MANAGER,
+		RUN_VCS_METADATA,
 		RUN_VCS_SETTINGS,
 		RUN_VCS_SHUT_DOWN,
 		SETTINGS_UPDATE_CONTINUOUSLY,
@@ -206,7 +207,7 @@ private:
 		HELP_ABOUT,
 		HELP_SUPPORT_GODOT_DEVELOPMENT,
 
-		SET_VIDEO_DRIVER_SAVE_AND_RESTART,
+		SET_RENDERING_DRIVER_SAVE_AND_RESTART,
 
 		GLOBAL_NEW_WINDOW,
 		GLOBAL_SCENE,
@@ -222,14 +223,14 @@ private:
 	Control *theme_base;
 	Control *gui_base;
 	VBoxContainer *main_vbox;
-	OptionButton *video_driver;
+	OptionButton *rendering_driver;
 
 	ConfirmationDialog *video_restart_dialog;
 
-	int video_driver_current;
-	String video_driver_request;
-	void _video_driver_selected(int);
-	void _update_video_driver_color();
+	int rendering_driver_current;
+	String rendering_driver_request;
+	void _rendering_driver_selected(int);
+	void _update_rendering_driver_color();
 
 	// Split containers
 
@@ -407,7 +408,7 @@ private:
 
 	bool waiting_for_sources_changed;
 
-	uint32_t update_spinner_step_msec;
+	uint64_t update_spinner_step_msec;
 	uint64_t update_spinner_step_frame;
 	int update_spinner_step;
 

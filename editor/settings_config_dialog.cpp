@@ -164,7 +164,7 @@ void EditorSettingsDialog::unhandled_input(const Ref<InputEvent> &p_event) {
 			handled = true;
 		}
 
-		if (k->get_keycode_with_modifiers() == (KEY_MASK_CMD | KEY_F)) {
+		if (k->get_keycode_with_modifiers() == (KeyModifierMask::CMD | Key::F)) {
 			_focus_current_search_box();
 			handled = true;
 		}
@@ -486,7 +486,7 @@ void EditorSettingsDialog::_shortcut_button_pressed(Object *p_item, int p_column
 					_update_shortcut_events(current_edited_identifier, Array());
 				}
 			} else if (type == "event") {
-				current_events.remove(current_event_index);
+				current_events.remove_at(current_event_index);
 
 				if (is_editing_action) {
 					_update_builtin_action(current_edited_identifier, current_events);
@@ -564,7 +564,7 @@ void EditorSettingsDialog::drop_data_fw(const Point2 &p_point, const Variant &p_
 	Array events = selected->get_parent()->get_meta("events");
 
 	Variant event_moved = events[index_moving_from];
-	events.remove(index_moving_from);
+	events.remove_at(index_moving_from);
 	events.insert(target_event_index, event_moved);
 
 	String ident = selected->get_parent()->get_meta("shortcut_identifier");

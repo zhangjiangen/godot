@@ -47,7 +47,7 @@ private:
 
 	bool use_apk_expansion;
 
-#if defined(OPENGL_ENABLED)
+#if defined(GLES3_ENABLED)
 	const char *gl_extensions;
 #endif
 
@@ -102,7 +102,6 @@ public:
 	void set_display_size(const Size2i &p_size);
 	Size2i get_display_size() const;
 
-	void set_context_is_16_bits(bool p_is_16);
 	void set_opengl_extensions(const char *p_gl_extensions);
 
 	void set_native_window(ANativeWindow *p_native_window);

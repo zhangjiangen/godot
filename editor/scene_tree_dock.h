@@ -48,6 +48,8 @@
 #include "scene/gui/tree.h"
 #include "scene_tree_editor.h"
 
+#include "modules/modules_enabled.gen.h" // For regex.
+
 class EditorNode;
 class ShaderCreateDialog;
 
@@ -300,8 +302,8 @@ public:
 	void attach_script_to_selected(bool p_extend);
 	void open_script_dialog(Node *p_for_node, bool p_extend);
 
-	void attach_shader_to_selected();
-	void open_shader_dialog(Ref<ShaderMaterial> &p_for_material);
+	void attach_shader_to_selected(int p_preferred_mode = -1);
+	void open_shader_dialog(Ref<ShaderMaterial> &p_for_material, int p_preferred_mode = -1);
 
 	void open_add_child_dialog();
 	void open_instance_child_dialog();

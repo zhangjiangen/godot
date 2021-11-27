@@ -133,9 +133,6 @@ public:
 	FUNC2(area_set_space, RID, RID);
 	FUNC1RC(RID, area_get_space, RID);
 
-	FUNC2(area_set_space_override_mode, RID, AreaSpaceOverrideMode);
-	FUNC1RC(AreaSpaceOverrideMode, area_get_space_override_mode, RID);
-
 	FUNC4(area_add_shape, RID, RID, const Transform2D &, bool);
 	FUNC3(area_set_shape, RID, int, RID);
 	FUNC3(area_set_shape_transform, RID, int, const Transform2D &);
@@ -165,8 +162,8 @@ public:
 	FUNC2(area_set_monitorable, RID, bool);
 	FUNC2(area_set_pickable, RID, bool);
 
-	FUNC3(area_set_monitor_callback, RID, Object *, const StringName &);
-	FUNC3(area_set_area_monitor_callback, RID, Object *, const StringName &);
+	FUNC2(area_set_monitor_callback, RID, const Callable &);
+	FUNC2(area_set_area_monitor_callback, RID, const Callable &);
 
 	/* BODY API */
 
