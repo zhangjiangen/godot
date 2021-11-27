@@ -150,6 +150,7 @@ RID ShaderRD::version_create() {
 	version.valid = false;
 	version.initialize_needed = true;
 	version.variants = nullptr;
+	version.shader_info = nullptr;
 	return version_owner.make_rid(version);
 }
 
@@ -167,6 +168,10 @@ void ShaderRD::_clear_version(Version *p_version) {
 			memdelete_arr(p_version->variant_data);
 		}
 		p_version->variants = nullptr;
+		if (p_version->shader_info) {
+			memdelete(p_version->shader_info);
+		}
+		p_version->shader_info = nullptr;
 	}
 }
 
@@ -518,9 +523,6 @@ bool ShaderRD::_load_from_cache(Version *p_version) {
 		}
 	}
 
-	if (p_version->shader_info) {
-		memdelete(p_version->shader_info);
-	}
 	if (p_version->variant_data) {
 		memdelete_arr(p_version->variant_data);
 	}

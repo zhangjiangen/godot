@@ -787,7 +787,31 @@ public:
 			binding = 0;
 		}
 	};
+	struct UniformInfo {
+		UniformType type = UniformType::UNIFORM_TYPE_MAX;
+		int binding = 0;
+		uint32_t stages = 0;
+		int length = 0; //size of arrays (in total elements), or ubos (in bytes * total elements)
 
+		bool operator!=(const UniformInfo &p_info) const {
+			return (binding != p_info.binding || type != p_info.type || stages != p_info.stages || length != p_info.length);
+		}
+
+		bool operator<(const UniformInfo &p_info) const {
+			if (binding != p_info.binding) {
+				return binding < p_info.binding;
+			}
+			if (type != p_info.type) {
+				return type < p_info.type;
+			}
+			if (stages != p_info.stages) {
+				return stages < p_info.stages;
+			}
+			return length < p_info.length;
+		}
+	};
+	virtual String _shader_uniform_debug(RID p_shader, int p_set = -1) = 0;
+	virtual void uniform_info_set_get(RID p_shader, Vector<Vector<UniformInfo>> &p_out_uniform_set_info) = 0;
 	virtual RID uniform_set_create(const Vector<Uniform> &p_uniforms, RID p_shader, uint32_t p_shader_set) = 0;
 	virtual bool uniform_set_is_valid(RID p_uniform_set) = 0;
 	typedef void (*UniformSetInvalidatedCallback)(const RID &, void *);

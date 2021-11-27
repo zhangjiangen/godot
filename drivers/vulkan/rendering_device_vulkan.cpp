@@ -4381,21 +4381,24 @@ static VkShaderStageFlagBits shader_stage_masks[RenderingDevice::SHADER_STAGE_MA
 };
 
 String RenderingDeviceVulkan::_shader_uniform_debug(RID p_shader, int p_set) {
-	String ret;
 	const Shader *shader = shader_owner.get_or_null(p_shader);
 	ERR_FAIL_COND_V(!shader, String());
+	String ret = "    uniform set count " + itos(shader->sets.size()) + ": { \n";
 	for (int i = 0; i < shader->sets.size(); i++) {
 		if (p_set >= 0 && i != p_set) {
 			continue;
 		}
+		ret += "        set " + itos(i) + "  uniform count" + itos(shader->sets[i].uniform_info.size()) + ":{ \n";
 		for (int j = 0; j < shader->sets[i].uniform_info.size(); j++) {
 			const UniformInfo &ui = shader->sets[i].uniform_info[j];
 			if (ret != String()) {
 				ret += "\n";
 			}
-			ret += "Set: " + itos(i) + " Binding: " + itos(ui.binding) + " Type: " + shader_uniform_names[ui.type] + " Length: " + itos(ui.length);
+			ret += "            Binding: " + itos(ui.binding) + "stage: " + shader_stage_names[ui.stages] + " Type: " + shader_uniform_names[ui.type] + " Length: " + itos(ui.length);
 		}
+		ret += "\n        }\n";
 	}
+	ret += "    }\n";
 	return ret;
 }
 #if 0
@@ -5644,6 +5647,17 @@ void RenderingDeviceVulkan::_descriptor_pool_free(const DescriptorPoolKey &p_key
 	}
 }
 
+void RenderingDeviceVulkan::uniform_info_set_get(RID p_shader, Vector<Vector<UniformInfo>> &p_out_uniform_set_info) {
+	_THREAD_SAFE_METHOD_
+
+	Shader *shader = shader_owner.get_or_null(p_shader);
+	if (shader == nullptr) {
+		return;
+	}
+	for (auto &set : shader->sets) {
+		p_out_uniform_set_info.push_back(set.uniform_info);
+	}
+}
 RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms, RID p_shader, uint32_t p_shader_set) {
 	_THREAD_SAFE_METHOD_
 

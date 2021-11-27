@@ -547,29 +547,29 @@ private:
 		MAX_UNIFORM_SETS = 16
 	};
 
-	struct UniformInfo {
-		UniformType type = UniformType::UNIFORM_TYPE_MAX;
-		int binding = 0;
-		uint32_t stages = 0;
-		int length = 0; //size of arrays (in total elements), or ubos (in bytes * total elements)
+	// struct UniformInfo {
+	// 	UniformType type = UniformType::UNIFORM_TYPE_MAX;
+	// 	int binding = 0;
+	// 	uint32_t stages = 0;
+	// 	int length = 0; //size of arrays (in total elements), or ubos (in bytes * total elements)
 
-		bool operator!=(const UniformInfo &p_info) const {
-			return (binding != p_info.binding || type != p_info.type || stages != p_info.stages || length != p_info.length);
-		}
+	// 	bool operator!=(const UniformInfo &p_info) const {
+	// 		return (binding != p_info.binding || type != p_info.type || stages != p_info.stages || length != p_info.length);
+	// 	}
 
-		bool operator<(const UniformInfo &p_info) const {
-			if (binding != p_info.binding) {
-				return binding < p_info.binding;
-			}
-			if (type != p_info.type) {
-				return type < p_info.type;
-			}
-			if (stages != p_info.stages) {
-				return stages < p_info.stages;
-			}
-			return length < p_info.length;
-		}
-	};
+	// 	bool operator<(const UniformInfo &p_info) const {
+	// 		if (binding != p_info.binding) {
+	// 			return binding < p_info.binding;
+	// 		}
+	// 		if (type != p_info.type) {
+	// 			return type < p_info.type;
+	// 		}
+	// 		if (stages != p_info.stages) {
+	// 			return stages < p_info.stages;
+	// 		}
+	// 		return length < p_info.length;
+	// 	}
+	// };
 
 	struct UniformSetFormat {
 		Vector<UniformInfo> uniform_info;
@@ -1109,6 +1109,7 @@ public:
 	virtual RID storage_buffer_create(uint32_t p_size_bytes, const Vector<uint8_t> &p_data = Vector<uint8_t>(), uint32_t p_usage = 0);
 	virtual RID texture_buffer_create(uint32_t p_size_elements, DataFormat p_format, const Vector<uint8_t> &p_data = Vector<uint8_t>());
 
+	virtual void uniform_info_set_get(RID p_shader, Vector<Vector<UniformInfo>> &p_out_uniform_set_info);
 	virtual RID uniform_set_create(const Vector<Uniform> &p_uniforms, RID p_shader, uint32_t p_shader_set);
 	virtual bool uniform_set_is_valid(RID p_uniform_set);
 	virtual void uniform_set_set_invalidation_callback(RID p_uniform_set, UniformSetInvalidatedCallback p_callback, void *p_userdata);
