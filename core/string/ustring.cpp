@@ -38,6 +38,7 @@
 #include "core/string/translation.h"
 #include "core/string/ucaps.h"
 #include "core/variant/variant.h"
+#include "core/version_generated.gen.h"
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -951,10 +952,6 @@ signed char String::naturalnocasecmp_to(const String &p_str) const {
 const char32_t *String::get_data() const {
 	static const char32_t zero = 0;
 	return size() ? &operator[](0) : &zero;
-}
-
-void String::erase(int p_pos, int p_chars) {
-	*this = left(MAX(p_pos, 0)) + substr(p_pos + p_chars, length() - ((p_pos + p_chars)));
 }
 
 String String::capitalize() const {
@@ -2200,7 +2197,7 @@ int64_t String::bin_to_int() const {
 		s++;
 	}
 
-	if (len > 2 && s[0] == '0' && s[1] == 'b') {
+	if (len > 2 && s[0] == '0' && lower_case(s[1]) == 'b') {
 		s += 2;
 	}
 
@@ -2339,28 +2336,33 @@ bool String::is_numeric() const {
 }
 
 template <class C>
-static double built_in_strtod(const C *string, /* A decimal ASCII floating-point number,
-				 * optionally preceded by white space. Must
-				 * have form "-I.FE-X", where I is the integer
-				 * part of the mantissa, F is the fractional
-				 * part of the mantissa, and X is the
-				 * exponent. Either of the signs may be "+",
-				 * "-", or omitted. Either I or F may be
-				 * omitted, or both. The decimal point isn't
-				 * necessary unless F is present. The "E" may
-				 * actually be an "e". E and X may both be
-				 * omitted (but not just one). */
-		C **endPtr = nullptr) /* If non-nullptr, store terminating Cacter's
-				 * address here. */
-{
-	static const int maxExponent = 511; /* Largest possible base 10 exponent.  Any
-					 * exponent larger than this will already
-					 * produce underflow or overflow, so there's
-					 * no need to worry about additional digits.
-					 */
-	static const double powersOf10[] = { /* Table giving binary powers of 10.  Entry */
-		10., /* is 10^2^i.  Used to convert decimal */
-		100., /* exponents into floating-point numbers. */
+static double built_in_strtod(
+		/* A decimal ASCII floating-point number,
+		 * optionally preceded by white space. Must
+		 * have form "-I.FE-X", where I is the integer
+		 * part of the mantissa, F is the fractional
+		 * part of the mantissa, and X is the
+		 * exponent. Either of the signs may be "+",
+		 * "-", or omitted. Either I or F may be
+		 * omitted, or both. The decimal point isn't
+		 * necessary unless F is present. The "E" may
+		 * actually be an "e". E and X may both be
+		 * omitted (but not just one). */
+		const C *string,
+		/* If non-nullptr, store terminating Cacter's
+		 * address here. */
+		C **endPtr = nullptr) {
+	/* Largest possible base 10 exponent. Any
+	 * exponent larger than this will already
+	 * produce underflow or overflow, so there's
+	 * no need to worry about additional digits. */
+	static const int maxExponent = 511;
+	/* Table giving binary powers of 10. Entry
+	 * is 10^2^i. Used to convert decimal
+	 * exponents into floating-point numbers. */
+	static const double powersOf10[] = {
+		10.,
+		100.,
 		1.0e4,
 		1.0e8,
 		1.0e16,
@@ -2375,25 +2377,28 @@ static double built_in_strtod(const C *string, /* A decimal ASCII floating-point
 	const double *d;
 	const C *p;
 	int c;
-	int exp = 0; /* Exponent read from "EX" field. */
-	int fracExp = 0; /* Exponent that derives from the fractional
-				 * part. Under normal circumstances, it is
-				 * the negative of the number of digits in F.
-				 * However, if I is very long, the last digits
-				 * of I get dropped (otherwise a long I with a
-				 * large negative exponent could cause an
-				 * unnecessary overflow on I alone). In this
-				 * case, fracExp is incremented one for each
-				 * dropped digit. */
-	int mantSize; /* Number of digits in mantissa. */
-	int decPt; /* Number of mantissa digits BEFORE decimal
-				 * point. */
-	const C *pExp; /* Temporarily holds location of exponent in
-				 * string. */
+	/* Exponent read from "EX" field. */
+	int exp = 0;
+	/* Exponent that derives from the fractional
+	 * part. Under normal circumstances, it is
+	 * the negative of the number of digits in F.
+	 * However, if I is very long, the last digits
+	 * of I get dropped (otherwise a long I with a
+	 * large negative exponent could cause an
+	 * unnecessary overflow on I alone). In this
+	 * case, fracExp is incremented one for each
+	 * dropped digit. */
+	int fracExp = 0;
+	/* Number of digits in mantissa. */
+	int mantSize;
+	/* Number of mantissa digits BEFORE decimal point. */
+	int decPt;
+	/* Temporarily holds location of exponent in string. */
+	const C *pExp;
 
 	/*
-     * Strip off leading blanks and check for a sign.
-     */
+	 * Strip off leading blanks and check for a sign.
+	 */
 
 	p = string;
 	while (*p == ' ' || *p == '\t' || *p == '\n') {
@@ -2410,9 +2415,9 @@ static double built_in_strtod(const C *string, /* A decimal ASCII floating-point
 	}
 
 	/*
-     * Count the number of digits in the mantissa (including the decimal
-     * point), and also locate the decimal point.
-     */
+	 * Count the number of digits in the mantissa (including the decimal
+	 * point), and also locate the decimal point.
+	 */
 
 	decPt = -1;
 	for (mantSize = 0;; mantSize += 1) {
@@ -2427,11 +2432,11 @@ static double built_in_strtod(const C *string, /* A decimal ASCII floating-point
 	}
 
 	/*
-     * Now suck up the digits in the mantissa. Use two integers to collect 9
-     * digits each (this is faster than using floating-point). If the mantissa
-     * has more than 18 digits, ignore the extras, since they can't affect the
-     * value anyway.
-     */
+	 * Now suck up the digits in the mantissa. Use two integers to collect 9
+	 * digits each (this is faster than using floating-point). If the mantissa
+	 * has more than 18 digits, ignore the extras, since they can't affect the
+	 * value anyway.
+	 */
 
 	pExp = p;
 	p -= mantSize;
@@ -2477,8 +2482,8 @@ static double built_in_strtod(const C *string, /* A decimal ASCII floating-point
 	}
 
 	/*
-     * Skim off the exponent.
-     */
+	 * Skim off the exponent.
+	 */
 
 	p = pExp;
 	if ((*p == 'E') || (*p == 'e')) {
@@ -2508,10 +2513,10 @@ static double built_in_strtod(const C *string, /* A decimal ASCII floating-point
 	}
 
 	/*
-     * Generate a floating-point number that represents the exponent. Do this
-     * by processing the exponent one bit at a time to combine many powers of
-     * 2 of 10. Then combine the exponent with the fraction.
-     */
+	 * Generate a floating-point number that represents the exponent. Do this
+	 * by processing the exponent one bit at a time to combine many powers of
+	 * 2 of 10. Then combine the exponent with the fraction.
+	 */
 
 	if (exp < 0) {
 		expSign = true;
@@ -3759,15 +3764,15 @@ String String::simplify_path() const {
 	for (int i = 0; i < dirs.size(); i++) {
 		String d = dirs[i];
 		if (d == ".") {
-			dirs.remove(i);
+			dirs.remove_at(i);
 			i--;
 		} else if (d == "..") {
 			if (i == 0) {
-				dirs.remove(i);
+				dirs.remove_at(i);
 				i--;
 			} else {
-				dirs.remove(i);
-				dirs.remove(i - 1);
+				dirs.remove_at(i);
+				dirs.remove_at(i - 1);
 				i -= 2;
 			}
 		}
@@ -4506,7 +4511,7 @@ String String::property_name_encode() const {
 	// as well as '"', '=' or ' ' (32)
 	const char32_t *cstr = get_data();
 	for (int i = 0; cstr[i]; i++) {
-		if (cstr[i] == '=' || cstr[i] == '"' || cstr[i] < 33 || cstr[i] > 126) {
+		if (cstr[i] == '=' || cstr[i] == '"' || cstr[i] == ';' || cstr[i] == '[' || cstr[i] == ']' || cstr[i] < 33 || cstr[i] > 126) {
 			return "\"" + c_escape_multiline() + "\"";
 		}
 	}
@@ -4958,15 +4963,20 @@ String TTRN(const String &p_text, const String &p_text_plural, int p_n, const St
 	return p_text_plural;
 }
 
+/* DTR and DTRN are used for the documentation, handling descriptions extracted
+ * from the XML.
+ * They also replace `$DOCS_URL` with the actual URL to the documentation's branch,
+ * to allow dehardcoding it in the XML and doing proper substitutions everywhere.
+ */
 String DTR(const String &p_text, const String &p_context) {
 	// Comes straight from the XML, so remove indentation and any trailing whitespace.
 	const String text = p_text.dedent().strip_edges();
 
 	if (TranslationServer::get_singleton()) {
-		return TranslationServer::get_singleton()->doc_translate(text, p_context);
+		return String(TranslationServer::get_singleton()->doc_translate(text, p_context)).replace("$DOCS_URL", VERSION_DOCS_URL);
 	}
 
-	return text;
+	return text.replace("$DOCS_URL", VERSION_DOCS_URL);
 }
 
 String DTRN(const String &p_text, const String &p_text_plural, int p_n, const String &p_context) {
@@ -4974,14 +4984,14 @@ String DTRN(const String &p_text, const String &p_text_plural, int p_n, const St
 	const String text_plural = p_text_plural.dedent().strip_edges();
 
 	if (TranslationServer::get_singleton()) {
-		return TranslationServer::get_singleton()->doc_translate_plural(text, text_plural, p_n, p_context);
+		return String(TranslationServer::get_singleton()->doc_translate_plural(text, text_plural, p_n, p_context)).replace("$DOCS_URL", VERSION_DOCS_URL);
 	}
 
 	// Return message based on English plural rule if translation is not possible.
 	if (p_n == 1) {
-		return text;
+		return text.replace("$DOCS_URL", VERSION_DOCS_URL);
 	}
-	return text_plural;
+	return text_plural.replace("$DOCS_URL", VERSION_DOCS_URL);
 }
 #endif
 

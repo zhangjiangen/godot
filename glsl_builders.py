@@ -1,4 +1,4 @@
-#!/usr/bin/python 
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 """Functions used to generate source files during build time
@@ -35,6 +35,10 @@ def include_file_in_rd_header(filename, header_data, depth):
     line = fs.readline()
 
     while line:
+
+        index = line.find("//")
+        if index != -1:
+            line = line[:index]
 
         if line.find("#[vertex]") != -1:
             header_data.reading = "vertex"
@@ -75,8 +79,15 @@ def include_file_in_rd_header(filename, header_data, depth):
 
             import os.path
 
-            included_file = os.path.relpath(
-                os.path.dirname(filename) + "/" + includeline)
+            included_file = ""
+
+            if includeline.startswith("thirdparty/"):
+                included_file = os.path.relpath(includeline)
+
+            else:
+                included_file = os.path.relpath(
+                    os.path.dirname(filename) + "/" + includeline)
+
             if not included_file in header_data.vertex_included_files and header_data.reading == "vertex":
                 header_data.vertex_included_files += [included_file]
                 if include_file_in_rd_header(included_file, header_data, depth + 1) is None:
@@ -195,7 +206,7 @@ def build_rd_header(filename):
                     fd.write(str(ord(c)) + ",")
                 fd.write(str(ord("\n")) + ",")
             fd.write("\t\t0};\n\n")
-        if use_tesc and use_tese :
+        if use_tesc and use_tese:
             fd.write(
                 '\t\tsetup(_vertex_code, _fragment_code, nullptr, "' + out_file_class + '", _tesc_code, _tese_code);\n')
         else:

@@ -3296,16 +3296,16 @@ bool ShaderLanguage::is_float_type(DataType p_type) {
 }
 bool ShaderLanguage::is_sampler_type(DataType p_type) {
 	return p_type == TYPE_SAMPLER2D ||
-		   p_type == TYPE_ISAMPLER2D ||
-		   p_type == TYPE_USAMPLER2D ||
-		   p_type == TYPE_SAMPLER2DARRAY ||
-		   p_type == TYPE_ISAMPLER2DARRAY ||
-		   p_type == TYPE_USAMPLER2DARRAY ||
-		   p_type == TYPE_SAMPLER3D ||
-		   p_type == TYPE_ISAMPLER3D ||
-		   p_type == TYPE_USAMPLER3D ||
-		   p_type == TYPE_SAMPLERCUBE ||
-		   p_type == TYPE_SAMPLERCUBEARRAY;
+			p_type == TYPE_ISAMPLER2D ||
+			p_type == TYPE_USAMPLER2D ||
+			p_type == TYPE_SAMPLER2DARRAY ||
+			p_type == TYPE_ISAMPLER2DARRAY ||
+			p_type == TYPE_USAMPLER2DARRAY ||
+			p_type == TYPE_SAMPLER3D ||
+			p_type == TYPE_ISAMPLER3D ||
+			p_type == TYPE_USAMPLER3D ||
+			p_type == TYPE_SAMPLERCUBE ||
+			p_type == TYPE_SAMPLERCUBEARRAY;
 }
 
 Variant ShaderLanguage::constant_value_to_variant(const Vector<ShaderLanguage::ConstantNode::Value> &p_value, DataType p_type, int p_array_size, ShaderLanguage::ShaderNode::Uniform::Hint p_hint) {
@@ -3873,16 +3873,16 @@ void ShaderLanguage::get_keyword_list(List<String> *r_keywords) {
 
 bool ShaderLanguage::is_control_flow_keyword(String p_keyword) {
 	return p_keyword == "break" ||
-		   p_keyword == "case" ||
-		   p_keyword == "continue" ||
-		   p_keyword == "default" ||
-		   p_keyword == "do" ||
-		   p_keyword == "else" ||
-		   p_keyword == "for" ||
-		   p_keyword == "if" ||
-		   p_keyword == "return" ||
-		   p_keyword == "switch" ||
-		   p_keyword == "while";
+			p_keyword == "case" ||
+			p_keyword == "continue" ||
+			p_keyword == "default" ||
+			p_keyword == "do" ||
+			p_keyword == "else" ||
+			p_keyword == "for" ||
+			p_keyword == "if" ||
+			p_keyword == "return" ||
+			p_keyword == "switch" ||
+			p_keyword == "while";
 }
 
 void ShaderLanguage::get_builtin_funcs(List<String> *r_keywords) {
@@ -4923,7 +4923,9 @@ ShaderLanguage::Node *ShaderLanguage::_parse_expression(BlockNode *p_block, cons
 										bool error = false;
 										Node *n = func->arguments[argidx];
 										if (n->type == Node::TYPE_CONSTANT || n->type == Node::TYPE_OPERATOR) {
-											error = true;
+											if (!call_function->arguments[i].is_const) {
+												error = true;
+											}
 										} else if (n->type == Node::TYPE_ARRAY) {
 											ArrayNode *an = static_cast<ArrayNode *>(n);
 											if (an->call_expression != nullptr || an->is_const) {
@@ -6074,7 +6076,7 @@ ShaderLanguage::Node *ShaderLanguage::_parse_expression(BlockNode *p_block, cons
 					_set_error("Invalid arguments to unary operator '" + get_operator_text(op->op) + "' :" + at);
 					return nullptr;
 				}
-				expression.remove(i + 1);
+				expression.remove_at(i + 1);
 			}
 
 		} else if (is_ternary) {
@@ -6114,7 +6116,7 @@ ShaderLanguage::Node *ShaderLanguage::_parse_expression(BlockNode *p_block, cons
 			}
 
 			for (int i = 0; i < 4; i++) {
-				expression.remove(next_op);
+				expression.remove_at(next_op);
 			}
 
 		} else {
@@ -6175,8 +6177,8 @@ ShaderLanguage::Node *ShaderLanguage::_parse_expression(BlockNode *p_block, cons
 				return nullptr;
 			}
 
-			expression.remove(next_op);
-			expression.remove(next_op);
+			expression.remove_at(next_op);
+			expression.remove_at(next_op);
 		}
 	}
 
@@ -7191,11 +7193,6 @@ Error ShaderLanguage::_parse_block(BlockNode *p_block, const FunctionInfo &p_fun
 			//check return type
 			BlockNode *b = p_block;
 
-			if (b && b->parent_function && p_function_info.main_function) {
-				_set_error(vformat("Using 'return' in '%s' processor function results in undefined behavior!", b->parent_function->name));
-				return ERR_PARSE_ERROR;
-			}
-
 			while (b && !b->parent_function) {
 				b = b->parent_block;
 			}
@@ -7203,6 +7200,11 @@ Error ShaderLanguage::_parse_block(BlockNode *p_block, const FunctionInfo &p_fun
 			if (!b) {
 				_set_error("Bug");
 				return ERR_BUG;
+			}
+
+			if (b && b->parent_function && p_function_info.main_function) {
+				_set_error(vformat("Using 'return' in '%s' processor function results in undefined behavior!", b->parent_function->name));
+				return ERR_PARSE_ERROR;
 			}
 
 			String return_struct_name = String(b->parent_function->return_struct_name);
@@ -7648,7 +7650,7 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 				bool uniform = tk.type == TK_UNIFORM;
 
 				if (!uniform) {
-					if (shader_type_identifier == "particles" || shader_type_identifier == "sky") {
+					if (shader_type_identifier == "particles" || shader_type_identifier == "sky" || shader_type_identifier == "fog") {
 						_set_error(vformat("Varyings cannot be used in '%s' shaders!", shader_type_identifier));
 						return ERR_PARSE_ERROR;
 					}
@@ -9373,15 +9375,6 @@ Error ShaderLanguage::complete(const String &p_code, const Map<StringName, Funct
 					limit = 4;
 
 				} break;
-				case TYPE_MAT2:
-					limit = 2;
-					break;
-				case TYPE_MAT3:
-					limit = 3;
-					break;
-				case TYPE_MAT4:
-					limit = 4;
-					break;
 				default: {
 				}
 			}

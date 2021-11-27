@@ -130,8 +130,8 @@ void Occluder3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_indices", "indices"), &Occluder3D::set_indices);
 	ClassDB::bind_method(D_METHOD("get_indices"), &Occluder3D::get_indices);
 
-	ADD_PROPERTY(PropertyInfo(Variant::PACKED_VECTOR3_ARRAY, "vertices", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NOEDITOR), "set_vertices", "get_vertices");
-	ADD_PROPERTY(PropertyInfo(Variant::PACKED_INT32_ARRAY, "indices", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NOEDITOR), "set_indices", "get_indices");
+	ADD_PROPERTY(PropertyInfo(Variant::PACKED_VECTOR3_ARRAY, "vertices", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), "set_vertices", "get_vertices");
+	ADD_PROPERTY(PropertyInfo(Variant::PACKED_INT32_ARRAY, "indices", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), "set_indices", "get_indices");
 }
 
 Occluder3D::Occluder3D() {
@@ -329,9 +329,6 @@ TypedArray<String> OccluderInstance3D::get_configuration_warnings() const {
 	}
 
 	if (bake_mask == 0) {
-		// NOTE: This warning will not be emitted if none of the 20 checkboxes
-		// exposed in the editor are checked. This is because there are
-		// currently 12 unexposed layers in the editor inspector.
 		warnings.push_back(TTR("The Bake Mask has no bits enabled, which means baking will not produce any occluder meshes for this OccluderInstance3D.\nTo resolve this, enable at least one bit in the Bake Mask property."));
 	}
 

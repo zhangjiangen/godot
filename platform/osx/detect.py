@@ -37,6 +37,8 @@ def get_opts():
             "use_asan", "Use LLVM/GCC compiler address sanitizer (ASAN)", False),
         BoolVariable(
             "use_tsan", "Use LLVM/GCC compiler thread sanitizer (TSAN)", False),
+        BoolVariable(
+            "use_coverage", "Use instrumentation codes in the binary (e.g. for code coverage)", False),
     ]
 
 
@@ -87,7 +89,7 @@ def configure(env):
         env.Append(CCFLAGS=["-arch", "arm64", "-mmacosx-version-min=10.15"])
         env.Append(LINKFLAGS=["-arch", "arm64", "-mmacosx-version-min=10.15"])
     else:
-        print("Building for macOS 10.12+, platform x86-64.")
+        print("Building for macOS 10.12+, platform x86_64.")
         env.Append(CCFLAGS=["-arch", "x86_64", "-mmacosx-version-min=10.12"])
         env.Append(LINKFLAGS=["-arch", "x86_64", "-mmacosx-version-min=10.12"])
 
@@ -156,9 +158,14 @@ def configure(env):
             env.Append(CCFLAGS=["-fsanitize=thread"])
             env.Append(LINKFLAGS=["-fsanitize=thread"])
 
+
+   if env["use_coverage"]:
+        env.Append(CCFLAGS=["-ftest-coverage", "-fprofile-arcs"])
+        env.Append(LINKFLAGS=["-ftest-coverage", "-fprofile-arcs"])
+
     # Dependencies
 
-    if env["builtin_libtheora"]:
+   if env["builtin_libtheora"]:
         if env["arch"] != "arm64":
             env["x86_libtheora_opt_gcc"] = True
 
@@ -193,24 +200,17 @@ def configure(env):
     )
     env.Append(LIBS=["pthread", "z"])
 
-    env.Append(CPPDEFINES=["VULKAN_ENABLED"])
-    env.Append(LINKFLAGS=["-framework", "Metal", "-framework",
-               "QuartzCore", "-framework", "IOSurface"])
-    # if env["use_static_mvk"]:
+   if env["opengl3"]:
+        env.Append(CPPDEFINES=["GLES_ENABLED", "GLES3_ENABLED"])
+        # Disable deprecation warnings
+        env.Append(CCFLAGS=["-Wno-deprecated-declarations"])
+        env.Append(LINKFLAGS=["-framework", "OpenGL"])
 
-    # env.Append(LINKFLAGS=["-framework", "MoltenVK"])
-    #   env.Append(
-    #        LINKFLAGS="/Users/zhangjiangen/Downloads/vulkansdk-macos-1.2.135.0/lib/macos-arm64_x86_64/libMoltenVK.a")
-    # env.Append(LINKFLAGS=["-L$VULKAN_SDK_PATH/MoltenVK/MoltenVK.xcframework/macos-arm64_x86_64/", "-lMoltenVK"])
-    #    env["builtin_vulkan"] = False
-    # elif not env["builtin_vulkan"]:
-    #    env.Append(LIBS=["vulkan"])
-    if env["vulkan"]:
+   if env["vulkan"]:
         env.Append(CPPDEFINES=["VULKAN_ENABLED"])
         env.Append(LINKFLAGS=["-framework", "Metal", "-framework",
                    "QuartzCore", "-framework", "IOSurface"])
         if not env["use_volk"]:
-            env.Append(
-                LINKFLAGS="/Users/zhangjiangen/Downloads/vulkansdk-macos-1.2.135.0/lib/macos-arm64_x86_64/libMoltenVK.a")
+   # env.Append(LINKFLAGS="/Users/zhangjiangen/Downloads/vulkansdk-macos-1.2.135.0/lib/macos-arm64_x86_64/libMoltenVK.a")
 
-            # env.Append(CPPDEFINES=['GLES_ENABLED', 'OPENGL_ENABLED'])
+   env.Append(LINKFLAGS=["-L$VULKAN_SDK_PATH/MoltenVK/MoltenVK.xcframework/macos-arm64_x86_64/", "-lMoltenVK"])

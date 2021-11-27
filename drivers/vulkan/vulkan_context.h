@@ -69,6 +69,14 @@ public:
 		return gpu_props;
 	}
 
+	struct ShaderCapabilities {
+		bool shader_float16_is_supported;
+	};
+
+	struct StorageBufferCapabilities {
+		bool storage_buffer_16_bit_access_is_supported;
+	};
+
 private:
 	enum {
 		MAX_EXTENSIONS = 128,
@@ -91,6 +99,8 @@ private:
 	uint32_t vulkan_patch = 0;
 	SubgroupCapabilities subgroup_capabilities;
 	MultiviewCapabilities multiview_capabilities;
+	ShaderCapabilities shader_capabilities;
+	StorageBufferCapabilities storage_buffer_capabilities;
 
 	String device_vendor;
 	String device_name;
@@ -242,6 +252,8 @@ public:
 	uint32_t get_vulkan_minor() const { return vulkan_minor; };
 	SubgroupCapabilities get_subgroup_capabilities() const { return subgroup_capabilities; };
 	MultiviewCapabilities get_multiview_capabilities() const { return multiview_capabilities; };
+	ShaderCapabilities get_shader_capabilities() const { return shader_capabilities; };
+	StorageBufferCapabilities get_storage_buffer_capabilities() const { return storage_buffer_capabilities; };
 
 	VkDevice get_device();
 	VkPhysicalDevice get_physical_device();

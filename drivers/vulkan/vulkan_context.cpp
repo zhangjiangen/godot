@@ -137,10 +137,10 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanContext::_debug_messenger_callback(
 	}
 
 	String error_message(type_string +
-						 " - Message Id Number: " + String::num_int64(pCallbackData->messageIdNumber) +
-						 " | Message Id Name: " + pCallbackData->pMessageIdName +
-						 "\n\t" + pCallbackData->pMessage +
-						 objects_string + labels_string);
+			" - Message Id Number: " + String::num_int64(pCallbackData->messageIdNumber) +
+			" | Message Id Name: " + pCallbackData->pMessageIdName +
+			"\n\t" + pCallbackData->pMessage +
+			objects_string + labels_string);
 
 	// Convert VK severity to our own log macros.
 	switch (messageSeverity) {
@@ -175,7 +175,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanContext::_debug_report_callback(
 		const char *pMessage,
 		void *pUserData) {
 	String debugMessage = String("Vulkan Debug Report: object - ") +
-						  String::num_int64(object) + "\n" + pMessage;
+			String::num_int64(object) + "\n" + pMessage;
 
 	switch (flags) {
 		case VK_DEBUG_REPORT_DEBUG_BIT_EXT:
@@ -535,6 +535,24 @@ Error VulkanContext::_check_capabilities() {
 		multiview_capabilities.is_supported = multiview_features.multiview;
 		multiview_capabilities.geometry_shader_is_supported = multiview_features.multiviewGeometryShader;
 		multiview_capabilities.tessellation_shader_is_supported = multiview_features.multiviewTessellationShader;
+
+		VkPhysicalDeviceShaderFloat16Int8FeaturesKHR shader_features;
+		shader_features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_FLOAT16_INT8_FEATURES_KHR;
+		shader_features.pNext = NULL;
+
+		device_features.pNext = &shader_features;
+
+		device_features_func(gpu, &device_features);
+		shader_capabilities.shader_float16_is_supported = shader_features.shaderFloat16;
+
+		VkPhysicalDevice16BitStorageFeaturesKHR storage_feature;
+		storage_feature.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES_KHR;
+		storage_feature.pNext = NULL;
+
+		device_features.pNext = &storage_feature;
+
+		device_features_func(gpu, &device_features);
+		storage_buffer_capabilities.storage_buffer_16_bit_access_is_supported = storage_feature.storageBuffer16BitAccess;
 	}
 
 	// check extended properties
@@ -631,10 +649,10 @@ Error VulkanContext::_create_physical_device() {
 	}
 
 	/*
-	   * This is info for a temp callback to use during CreateInstance.
-	   * After the instance is created, we use the instance-based
-	   * function to register the final callback.
-	   */
+	 * This is info for a temp callback to use during CreateInstance.
+	 * After the instance is created, we use the instance-based
+	 * function to register the final callback.
+	 */
 	VkDebugUtilsMessengerCreateInfoEXT dbg_messenger_create_info;
 	VkDebugReportCallbackCreateInfoEXT dbg_report_callback_create_info{};
 	if (enabled_debug_utils) {
@@ -645,18 +663,18 @@ Error VulkanContext::_create_physical_device() {
 		dbg_messenger_create_info.messageSeverity =
 				VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
 		dbg_messenger_create_info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-												VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-												VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+				VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+				VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 		dbg_messenger_create_info.pfnUserCallback = _debug_messenger_callback;
 		dbg_messenger_create_info.pUserData = this;
 		inst_info.pNext = &dbg_messenger_create_info;
 	} else if (enabled_debug_report) {
 		dbg_report_callback_create_info.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
 		dbg_report_callback_create_info.flags = VK_DEBUG_REPORT_INFORMATION_BIT_EXT |
-												VK_DEBUG_REPORT_WARNING_BIT_EXT |
-												VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT |
-												VK_DEBUG_REPORT_ERROR_BIT_EXT |
-												VK_DEBUG_REPORT_DEBUG_BIT_EXT;
+				VK_DEBUG_REPORT_WARNING_BIT_EXT |
+				VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT |
+				VK_DEBUG_REPORT_ERROR_BIT_EXT |
+				VK_DEBUG_REPORT_DEBUG_BIT_EXT;
 		dbg_report_callback_create_info.pfnCallback = _debug_report_callback;
 		dbg_report_callback_create_info.pUserData = this;
 		inst_info.pNext = &dbg_report_callback_create_info;

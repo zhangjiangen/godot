@@ -1,4 +1,4 @@
-#!/usr/bin/python 
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os
 import sys
@@ -32,17 +32,26 @@ def get_opts():
 
     return [
         ("initial_memory", "Initial WASM memory (in MiB)", 32),
-        BoolVariable("use_assertions", "Use Emscripten runtime assertions", False),
+        BoolVariable("use_assertions",
+                     "Use Emscripten runtime assertions", False),
         BoolVariable("use_thinlto", "Use ThinLTO", False),
-        BoolVariable("use_ubsan", "Use Emscripten undefined behavior sanitizer (UBSAN)", False),
-        BoolVariable("use_asan", "Use Emscripten address sanitizer (ASAN)", False),
-        BoolVariable("use_lsan", "Use Emscripten leak sanitizer (LSAN)", False),
-        BoolVariable("use_safe_heap", "Use Emscripten SAFE_HEAP sanitizer", False),
+        BoolVariable(
+            "use_ubsan", "Use Emscripten undefined behavior sanitizer (UBSAN)", False),
+        BoolVariable(
+            "use_asan", "Use Emscripten address sanitizer (ASAN)", False),
+        BoolVariable(
+            "use_lsan", "Use Emscripten leak sanitizer (LSAN)", False),
+        BoolVariable("use_safe_heap",
+                     "Use Emscripten SAFE_HEAP sanitizer", False),
         # eval() can be a security concern, so it can be disabled.
-        BoolVariable("javascript_eval", "Enable JavaScript eval interface", True),
-        BoolVariable("threads_enabled", "Enable WebAssembly Threads support (limited browser support)", True),
-        BoolVariable("gdnative_enabled", "Enable WebAssembly GDNative support (produces bigger binaries)", False),
-        BoolVariable("use_closure_compiler", "Use closure compiler to minimize JavaScript code", False),
+        BoolVariable("javascript_eval",
+                     "Enable JavaScript eval interface", True),
+        BoolVariable(
+            "threads_enabled", "Enable WebAssembly Threads support (limited browser support)", True),
+        BoolVariable("gdnative_enabled",
+                     "Enable WebAssembly GDNative support (produces bigger binaries)", False),
+        BoolVariable("use_closure_compiler",
+                     "Use closure compiler to minimize JavaScript code", False),
     ]
 
 
@@ -66,7 +75,7 @@ def configure(env):
         print("Initial memory must be a valid integer")
         sys.exit(255)
 
-    ## Build type
+    # Build type
     if env["target"].startswith("release"):
         # Use -Os to prioritize optimizing for reduced file size. This is
         # particularly valuable for the web platform because it directly
@@ -91,7 +100,8 @@ def configure(env):
 
     if env["tools"]:
         if not env["threads_enabled"]:
-            print("Threads must be enabled to build the editor. Please add the 'threads_enabled=yes' option")
+            print(
+                "Threads must be enabled to build the editor. Please add the 'threads_enabled=yes' option")
             sys.exit(255)
         if env["initial_memory"] < 64:
             print("Editor build requires at least 64MiB of initial memory. Forcing it.")
@@ -108,7 +118,7 @@ def configure(env):
 
     env.Append(LINKFLAGS=["-s", "INITIAL_MEMORY=%sMB" % env["initial_memory"]])
 
-    ## Copy env variables.
+    # Copy env variables.
     env["ENV"] = os.environ
 
     # LTO
@@ -137,7 +147,8 @@ def configure(env):
         # For emscripten support code.
         env.Append(LINKFLAGS=["--closure", "1"])
         # Register builder for our Engine files
-        jscc = env.Builder(generator=run_closure_compiler, suffix=".cc.js", src_suffix=".js")
+        jscc = env.Builder(generator=run_closure_compiler,
+                           suffix=".cc.js", src_suffix=".js")
         env.Append(BUILDERS={"BuildJS": jscc})
 
     # Add helper method for adding libraries, externs, pre-js.
@@ -165,7 +176,8 @@ def configure(env):
 
     # Use TempFileMunge since some AR invocations are too long for cmd.exe.
     # Use POSIX-style paths, required with TempFileMunge.
-    env["ARCOM_POSIX"] = env["ARCOM"].replace("$TARGET", "$TARGET.posix").replace("$SOURCES", "$SOURCES.posix")
+    env["ARCOM_POSIX"] = env["ARCOM"].replace(
+        "$TARGET", "$TARGET.posix").replace("$SOURCES", "$SOURCES.posix")
     env["ARCOM"] = "${TEMPFILE(ARCOM_POSIX)}"
 
     # All intermediate files are just LLVM bitcode.
@@ -181,6 +193,13 @@ def configure(env):
 
     env.Prepend(CPPPATH=["#platform/javascript"])
     env.Append(CPPDEFINES=["JAVASCRIPT_ENABLED", "UNIX_ENABLED"])
+
+    if env["opengl3"]:
+        env.AppendUnique(CPPDEFINES=["GLES3_ENABLED"])
+        # This setting just makes WebGL 2 APIs available, it does NOT disable WebGL 1.
+        env.Append(LINKFLAGS=["-s", "USE_WEBGL2=1"])
+        # Allow use to take control of swapping WebGL buffers.
+        env.Append(LINKFLAGS=["-s", "OFFSCREEN_FRAMEBUFFER=1"])
 
     if env["javascript_eval"]:
         env.Append(CPPDEFINES=["JAVASCRIPT_EVAL_ENABLED"])
@@ -203,7 +222,8 @@ def configure(env):
     if env["gdnative_enabled"]:
         major, minor, patch = get_compiler_version(env)
         if major < 2 or (major == 2 and minor == 0 and patch < 10):
-            print("GDNative support requires emscripten >= 2.0.10, detected: %s.%s.%s" % (major, minor, patch))
+            print("GDNative support requires emscripten >= 2.0.10, detected: %s.%s.%s" % (
+                major, minor, patch))
             sys.exit(255)
         env.Append(CCFLAGS=["-s", "RELOCATABLE=1"])
         env.Append(LINKFLAGS=["-s", "RELOCATABLE=1"])
@@ -220,25 +240,12 @@ def configure(env):
     # us since we don't know requirements at compile-time.
     env.Append(LINKFLAGS=["-s", "ALLOW_MEMORY_GROWTH=1"])
 
-    # This setting just makes WebGL 2 APIs available, it does NOT disable WebGL 1.
-    env.Append(LINKFLAGS=["-s", "USE_WEBGL2=1"])
-
     # Do not call main immediately when the support code is ready.
     env.Append(LINKFLAGS=["-s", "INVOKE_RUN=0"])
 
-    # Allow use to take control of swapping WebGL buffers.
-    env.Append(LINKFLAGS=["-s", "OFFSCREEN_FRAMEBUFFER=1"])
-
     # callMain for manual start, cwrap for the mono version.
-    env.Append(LINKFLAGS=["-s", "EXPORTED_RUNTIME_METHODS=['callMain','cwrap']"])
+    env.Append(
+        LINKFLAGS=["-s", "EXPORTED_RUNTIME_METHODS=['callMain','cwrap']"])
 
     # Add code that allow exiting runtime.
     env.Append(LINKFLAGS=["-s", "EXIT_RUNTIME=1"])
-
-    # TODO remove once we have GLES support back (temporary fix undefined symbols due to dead code elimination).
-    env.Append(
-        LINKFLAGS=[
-            "-s",
-            "EXPORTED_FUNCTIONS=['_main', '_emscripten_webgl_get_current_context']",
-        ]
-    )

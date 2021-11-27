@@ -64,7 +64,9 @@ void CollisionObject3D::_notification(int p_what) {
 			}
 
 			if (!disabled || (disable_mode != DISABLE_MODE_REMOVE)) {
-				RID space = get_world_3d()->get_space();
+				Ref<World3D> world_ref = get_world_3d();
+				ERR_FAIL_COND(!world_ref.is_valid());
+				RID space = world_ref->get_space();
 				if (area) {
 					PhysicsServer3D::get_singleton()->area_set_space(rid, space);
 				} else {
@@ -626,7 +628,7 @@ void CollisionObject3D::shape_owner_remove_shape(uint32_t p_owner, int p_shape) 
 		--debug_shapes_count;
 	}
 
-	shapes[p_owner].shapes.remove(p_shape);
+	shapes[p_owner].shapes.remove_at(p_shape);
 
 	for (KeyValue<uint32_t, ShapeData> &E : shapes) {
 		for (int i = 0; i < E.value.shapes.size(); i++) {

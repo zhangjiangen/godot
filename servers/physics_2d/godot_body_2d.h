@@ -50,11 +50,21 @@ class GodotBody2D : public GodotCollisionObject2D {
 	Vector2 linear_velocity;
 	real_t angular_velocity = 0.0;
 
+	Vector2 prev_linear_velocity;
+	real_t prev_angular_velocity = 0.0;
+
 	Vector2 constant_linear_velocity;
 	real_t constant_angular_velocity = 0.0;
 
-	real_t linear_damp = -1.0;
-	real_t angular_damp = -1.0;
+	PhysicsServer2D::BodyDampMode linear_damp_mode = PhysicsServer2D::BODY_DAMP_MODE_COMBINE;
+	PhysicsServer2D::BodyDampMode angular_damp_mode = PhysicsServer2D::BODY_DAMP_MODE_COMBINE;
+
+	real_t linear_damp = 0.0;
+	real_t angular_damp = 0.0;
+
+	real_t total_linear_damp = 0.0;
+	real_t total_angular_damp = 0.0;
+
 	real_t gravity_scale = 1.0;
 
 	real_t bounce = 0.0;
@@ -73,8 +83,6 @@ class GodotBody2D : public GodotCollisionObject2D {
 	bool calculate_center_of_mass = true;
 
 	Vector2 gravity;
-	real_t area_linear_damp = 0.0;
-	real_t area_angular_damp = 0.0;
 
 	real_t still_time = 0.0;
 
@@ -140,8 +148,6 @@ class GodotBody2D : public GodotCollisionObject2D {
 
 	uint64_t island_step = 0;
 
-	void _compute_area_gravity_and_damping(const GodotArea2D *p_area);
-
 	void _update_transform_dependent();
 
 	friend class GodotPhysicsDirectBodyState2D; // i give up, too many functions to expose
@@ -166,7 +172,7 @@ public:
 		if (index > -1) {
 			areas.write[index].refCount -= 1;
 			if (areas[index].refCount < 1) {
-				areas.remove(index);
+				areas.remove_at(index);
 			}
 		}
 	}
@@ -205,6 +211,9 @@ public:
 
 	_FORCE_INLINE_ void set_angular_velocity(real_t p_velocity) { angular_velocity = p_velocity; }
 	_FORCE_INLINE_ real_t get_angular_velocity() const { return angular_velocity; }
+
+	_FORCE_INLINE_ Vector2 get_prev_linear_velocity() const { return prev_linear_velocity; }
+	_FORCE_INLINE_ real_t get_prev_angular_velocity() const { return prev_angular_velocity; }
 
 	_FORCE_INLINE_ void set_biased_linear_velocity(const Vector2 &p_velocity) { biased_linear_velocity = p_velocity; }
 	_FORCE_INLINE_ Vector2 get_biased_linear_velocity() const { return biased_linear_velocity; }
@@ -276,14 +285,12 @@ public:
 	void update_mass_properties();
 	void reset_mass_properties();
 
-	_FORCE_INLINE_ Vector2 get_center_of_mass() const { return center_of_mass; }
+	_FORCE_INLINE_ const Vector2 &get_center_of_mass() const { return center_of_mass; }
+	_FORCE_INLINE_ const Vector2 &get_center_of_mass_local() const { return center_of_mass_local; }
 	_FORCE_INLINE_ real_t get_inv_mass() const { return _inv_mass; }
 	_FORCE_INLINE_ real_t get_inv_inertia() const { return _inv_inertia; }
 	_FORCE_INLINE_ real_t get_friction() const { return friction; }
-	_FORCE_INLINE_ Vector2 get_gravity() const { return gravity; }
 	_FORCE_INLINE_ real_t get_bounce() const { return bounce; }
-	_FORCE_INLINE_ real_t get_linear_damp() const { return linear_damp; }
-	_FORCE_INLINE_ real_t get_angular_damp() const { return angular_damp; }
 
 	void integrate_forces(real_t p_step);
 	void integrate_velocities(real_t p_step);

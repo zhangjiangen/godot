@@ -79,8 +79,8 @@ public:
 		ERR_FAIL_COND_V(p_buffer.size() == 0, 0);
 		int total_bandwidth = 0;
 
-		uint32_t timestamp = OS::get_singleton()->get_ticks_msec();
-		uint32_t final_timestamp = timestamp - 1000;
+		uint64_t timestamp = OS::get_singleton()->get_ticks_msec();
+		uint64_t final_timestamp = timestamp - 1000;
 
 		int i = (p_pointer + p_buffer.size() - 1) % p_buffer.size();
 
@@ -475,7 +475,7 @@ void RemoteDebugger::_err_handler(void *p_this, const char *p_func, const char *
 	}
 
 	// send_error will lock internally.
-	rd->script_debugger->send_error(p_func, p_file, p_line, p_err, p_descr, p_editor_notify, p_type, si);
+	rd->script_debugger->send_error(String::utf8(p_func), String::utf8(p_file), p_line, String::utf8(p_err), String::utf8(p_descr), p_editor_notify, p_type, si);
 }
 
 void RemoteDebugger::_print_handler(void *p_this, const String &p_string, bool p_error) {

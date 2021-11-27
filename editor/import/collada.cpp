@@ -541,7 +541,10 @@ void Collada::_parse_effect_material(XMLParser &parser, Effect &effect, String &
 
 			COLLADA_PRINT("node name: " + parser.get_node_name());
 
-			if (!parser.is_empty() && (parser.get_node_name() == "profile_COMMON" || parser.get_node_name() == "technique" || parser.get_node_name() == "extra")) {
+			if (!parser.is_empty() &&
+					(parser.get_node_name() == "profile_COMMON" ||
+							parser.get_node_name() == "technique" ||
+							parser.get_node_name() == "extra")) {
 				_parse_effect_material(parser, effect, id); // try again
 
 			} else if (parser.get_node_name() == "newparam") {
@@ -551,9 +554,9 @@ void Collada::_parse_effect_material(XMLParser &parser, Effect &effect, String &
 				COLLADA_PRINT("param: " + name + " value:" + String(value));
 
 			} else if (parser.get_node_name() == "constant" ||
-					   parser.get_node_name() == "lambert" ||
-					   parser.get_node_name() == "phong" ||
-					   parser.get_node_name() == "blinn") {
+					parser.get_node_name() == "lambert" ||
+					parser.get_node_name() == "phong" ||
+					parser.get_node_name() == "blinn") {
 				COLLADA_PRINT("shade model: " + parser.get_node_name());
 				while (parser.read() == OK) {
 					if (parser.get_node_type() == XMLParser::NODE_ELEMENT) {
@@ -627,10 +630,11 @@ void Collada::_parse_effect_material(XMLParser &parser, Effect &effect, String &
 						} else if (what == "shininess") {
 							effect.shininess = _parse_param(parser);
 						}
-					} else if (parser.get_node_type() == XMLParser::NODE_ELEMENT_END && (parser.get_node_name() == "constant" ||
-																								parser.get_node_name() == "lambert" ||
-																								parser.get_node_name() == "phong" ||
-																								parser.get_node_name() == "blinn")) {
+					} else if (parser.get_node_type() == XMLParser::NODE_ELEMENT_END &&
+							(parser.get_node_name() == "constant" ||
+									parser.get_node_name() == "lambert" ||
+									parser.get_node_name() == "phong" ||
+									parser.get_node_name() == "blinn")) {
 						break;
 					}
 				}
@@ -681,10 +685,10 @@ void Collada::_parse_effect_material(XMLParser &parser, Effect &effect, String &
 				parser.skip_section();
 			}
 		} else if (parser.get_node_type() == XMLParser::NODE_ELEMENT_END &&
-				   (parser.get_node_name() == "effect" ||
-						   parser.get_node_name() == "profile_COMMON" ||
-						   parser.get_node_name() == "technique" ||
-						   parser.get_node_name() == "extra")) {
+				(parser.get_node_name() == "effect" ||
+						parser.get_node_name() == "profile_COMMON" ||
+						parser.get_node_name() == "technique" ||
+						parser.get_node_name() == "extra")) {
 			break;
 		}
 	}
@@ -2020,7 +2024,7 @@ void Collada::_create_skeletons(Collada::Node **p_node, NodeSkeleton *p_skeleton
 bool Collada::_remove_node(Node *p_parent, Node *p_node) {
 	for (int i = 0; i < p_parent->children.size(); i++) {
 		if (p_parent->children[i] == p_node) {
-			p_parent->children.remove(i);
+			p_parent->children.remove_at(i);
 			return true;
 		}
 		if (_remove_node(p_parent->children[i], p_node)) {
@@ -2034,7 +2038,7 @@ bool Collada::_remove_node(Node *p_parent, Node *p_node) {
 void Collada::_remove_node(VisualScene *p_vscene, Node *p_node) {
 	for (int i = 0; i < p_vscene->root_nodes.size(); i++) {
 		if (p_vscene->root_nodes[i] == p_node) {
-			p_vscene->root_nodes.remove(i);
+			p_vscene->root_nodes.remove_at(i);
 			return;
 		}
 		if (_remove_node(p_vscene->root_nodes[i], p_node)) {
@@ -2267,7 +2271,7 @@ bool Collada::_move_geometry_to_skeletons(VisualScene *p_vscene, Node *p_node, L
 
 	for (int i = 0; i < p_node->children.size(); i++) {
 		if (_move_geometry_to_skeletons(p_vscene, p_node->children[i], p_mgeom)) {
-			p_node->children.remove(i);
+			p_node->children.remove_at(i);
 			i--;
 		}
 	}
@@ -2321,7 +2325,7 @@ void Collada::_optimize() {
 		for (int i = 0; i < vs.root_nodes.size(); i++) {
 			List<Node *> mgeom;
 			if (_move_geometry_to_skeletons(&vs, vs.root_nodes[i], &mgeom)) {
-				vs.root_nodes.remove(i);
+				vs.root_nodes.remove_at(i);
 				i--;
 			}
 

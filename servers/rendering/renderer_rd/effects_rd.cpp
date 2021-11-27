@@ -237,6 +237,43 @@ RID EffectsRD::_get_compute_uniform_set_from_image_pair(RID p_texture1, RID p_te
 	return uniform_set;
 }
 
+void EffectsRD::fsr_upscale(RID p_source_rd_texture, RID p_secondary_texture, RID p_destination_texture, const Size2i &p_internal_size, const Size2i &p_size, float p_fsr_upscale_sharpness) {
+	memset(&FSR_upscale.push_constant, 0, sizeof(FSRUpscalePushConstant));
+
+	int dispatch_x = (p_size.x + 15) / 16;
+	int dispatch_y = (p_size.y + 15) / 16;
+
+	RD::ComputeListID compute_list = RD::get_singleton()->compute_list_begin();
+	RD::get_singleton()->compute_list_bind_compute_pipeline(compute_list, FSR_upscale.pipeline);
+
+	FSR_upscale.push_constant.resolution_width = p_internal_size.width;
+	FSR_upscale.push_constant.resolution_height = p_internal_size.height;
+	FSR_upscale.push_constant.upscaled_width = p_size.width;
+	FSR_upscale.push_constant.upscaled_height = p_size.height;
+	FSR_upscale.push_constant.sharpness = p_fsr_upscale_sharpness;
+
+	//FSR Easc
+	FSR_upscale.push_constant.pass = FSR_UPSCALE_PASS_EASU;
+	RD::get_singleton()->compute_list_bind_uniform_set(compute_list, _get_compute_uniform_set_from_texture(p_source_rd_texture), 0);
+	RD::get_singleton()->compute_list_bind_uniform_set(compute_list, _get_uniform_set_from_image(p_secondary_texture), 1);
+
+	RD::get_singleton()->compute_list_set_push_constant(compute_list, &FSR_upscale.push_constant, sizeof(FSRUpscalePushConstant));
+
+	RD::get_singleton()->compute_list_dispatch(compute_list, dispatch_x, dispatch_y, 1);
+	RD::get_singleton()->compute_list_add_barrier(compute_list);
+
+	//FSR Rcas
+	FSR_upscale.push_constant.pass = FSR_UPSCALE_PASS_RCAS;
+	RD::get_singleton()->compute_list_bind_uniform_set(compute_list, _get_compute_uniform_set_from_texture(p_secondary_texture), 0);
+	RD::get_singleton()->compute_list_bind_uniform_set(compute_list, _get_uniform_set_from_image(p_destination_texture), 1);
+
+	RD::get_singleton()->compute_list_set_push_constant(compute_list, &FSR_upscale.push_constant, sizeof(FSRUpscalePushConstant));
+
+	RD::get_singleton()->compute_list_dispatch(compute_list, dispatch_x, dispatch_y, 1);
+
+	RD::get_singleton()->compute_list_end(compute_list);
+}
+
 void EffectsRD::copy_to_atlas_fb(RID p_source_rd_texture, RID p_dest_framebuffer, const Rect2 &p_uv_rect, RD::DrawListID p_draw_list, bool p_flip_y, bool p_panorama) {
 	memset(&copy_to_fb.push_constant, 0, sizeof(CopyToFbPushConstant));
 
@@ -443,7 +480,7 @@ void EffectsRD::gaussian_blur(RID p_source_rd_texture, RID p_texture, RID p_back
 	RD::get_singleton()->compute_list_end();
 }
 
-void EffectsRD::gaussian_glow(RID p_source_rd_texture, RID p_back_texture, const Size2i &p_size, float p_strength, bool p_high_quality, bool p_first_pass, float p_luminance_cap, float p_exposure, float p_bloom, float p_hdr_bleed_treshold, float p_hdr_bleed_scale, RID p_auto_exposure, float p_auto_exposure_grey) {
+void EffectsRD::gaussian_glow(RID p_source_rd_texture, RID p_back_texture, const Size2i &p_size, float p_strength, bool p_high_quality, bool p_first_pass, float p_luminance_cap, float p_exposure, float p_bloom, float p_hdr_bleed_threshold, float p_hdr_bleed_scale, RID p_auto_exposure, float p_auto_exposure_grey) {
 	ERR_FAIL_COND_MSG(prefer_raster_effects, "Can't use the compute version of the gaussian glow with the mobile renderer.");
 
 	memset(&copy.push_constant, 0, sizeof(CopyPushConstant));
@@ -456,7 +493,7 @@ void EffectsRD::gaussian_glow(RID p_source_rd_texture, RID p_back_texture, const
 
 	copy.push_constant.glow_strength = p_strength;
 	copy.push_constant.glow_bloom = p_bloom;
-	copy.push_constant.glow_hdr_threshold = p_hdr_bleed_treshold;
+	copy.push_constant.glow_hdr_threshold = p_hdr_bleed_threshold;
 	copy.push_constant.glow_hdr_scale = p_hdr_bleed_scale;
 	copy.push_constant.glow_exposure = p_exposure;
 	copy.push_constant.glow_white = 0; //actually unused
@@ -479,7 +516,7 @@ void EffectsRD::gaussian_glow(RID p_source_rd_texture, RID p_back_texture, const
 	RD::get_singleton()->compute_list_end();
 }
 
-void EffectsRD::gaussian_glow_raster(RID p_source_rd_texture, RID p_framebuffer_half, RID p_rd_texture_half, RID p_dest_framebuffer, const Vector2 &p_pixel_size, float p_strength, bool p_high_quality, bool p_first_pass, float p_luminance_cap, float p_exposure, float p_bloom, float p_hdr_bleed_treshold, float p_hdr_bleed_scale, RID p_auto_exposure, float p_auto_exposure_grey) {
+void EffectsRD::gaussian_glow_raster(RID p_source_rd_texture, RID p_framebuffer_half, RID p_rd_texture_half, RID p_dest_framebuffer, const Vector2 &p_pixel_size, float p_strength, bool p_high_quality, bool p_first_pass, float p_luminance_cap, float p_exposure, float p_bloom, float p_hdr_bleed_threshold, float p_hdr_bleed_scale, RID p_auto_exposure, float p_auto_exposure_grey) {
 	ERR_FAIL_COND_MSG(!prefer_raster_effects, "Can't use the raster version of the gaussian glow with the clustered renderer.");
 
 	memset(&blur_raster.push_constant, 0, sizeof(BlurRasterPushConstant));
@@ -492,7 +529,7 @@ void EffectsRD::gaussian_glow_raster(RID p_source_rd_texture, RID p_framebuffer_
 
 	blur_raster.push_constant.glow_strength = p_strength;
 	blur_raster.push_constant.glow_bloom = p_bloom;
-	blur_raster.push_constant.glow_hdr_threshold = p_hdr_bleed_treshold;
+	blur_raster.push_constant.glow_hdr_threshold = p_hdr_bleed_threshold;
 	blur_raster.push_constant.glow_hdr_scale = p_hdr_bleed_scale;
 	blur_raster.push_constant.glow_exposure = p_exposure;
 	blur_raster.push_constant.glow_white = 0; //actually unused
@@ -1888,6 +1925,27 @@ void EffectsRD::sort_buffer(RID p_uniform_set, int p_size) {
 }
 
 EffectsRD::EffectsRD(bool p_prefer_raster_effects) {
+	{
+		Vector<String> FSR_upscale_modes;
+
+#if defined(OSX_ENABLED) || defined(IPHONE_ENABLED)
+		// MoltenVK does not support some of the operations used by the normal mode of FSR. Fallback works just fine though.
+		FSR_upscale_modes.push_back("\n#define MODE_FSR_UPSCALE_FALLBACK\n");
+#else
+		// Everyone else can use normal mode when available.
+		if (RD::get_singleton()->get_device_capabilities()->supports_fsr_half_float) {
+			FSR_upscale_modes.push_back("\n#define MODE_FSR_UPSCALE_NORMAL\n");
+		} else {
+			FSR_upscale_modes.push_back("\n#define MODE_FSR_UPSCALE_FALLBACK\n");
+		}
+#endif
+
+		FSR_upscale.shader.initialize(FSR_upscale_modes);
+
+		FSR_upscale.shader_version = FSR_upscale.shader.version_create();
+		FSR_upscale.pipeline = RD::get_singleton()->compute_pipeline_create(FSR_upscale.shader.version_get_shader(FSR_upscale.shader_version, 0));
+	}
+
 	prefer_raster_effects = p_prefer_raster_effects;
 
 	if (prefer_raster_effects) {
@@ -2523,6 +2581,7 @@ EffectsRD::~EffectsRD() {
 	RD::get_singleton()->free(index_buffer); //array gets freed as dependency
 	RD::get_singleton()->free(filter.coefficient_buffer);
 
+	FSR_upscale.shader.version_free(FSR_upscale.shader_version);
 	if (prefer_raster_effects) {
 		blur_raster.shader.version_free(blur_raster.shader_version);
 		bokeh.raster_shader.version_free(blur_raster.shader_version);

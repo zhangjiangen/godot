@@ -86,16 +86,16 @@ void GodotArea3D::set_space(GodotSpace3D *p_space) {
 	_set_space(p_space);
 }
 
-void GodotArea3D::set_monitor_callback(ObjectID p_id, const StringName &p_method) {
-	if (p_id == monitor_callback_id) {
-		monitor_callback_method = p_method;
+void GodotArea3D::set_monitor_callback(const Callable &p_callback) {
+	ObjectID id = p_callback.get_object_id();
+	if (id == monitor_callback.get_object_id()) {
+		monitor_callback = p_callback;
 		return;
 	}
 
 	_unregister_shapes();
 
-	monitor_callback_id = p_id;
-	monitor_callback_method = p_method;
+	monitor_callback = p_callback;
 
 	monitored_bodies.clear();
 	monitored_areas.clear();
@@ -107,16 +107,16 @@ void GodotArea3D::set_monitor_callback(ObjectID p_id, const StringName &p_method
 	}
 }
 
-void GodotArea3D::set_area_monitor_callback(ObjectID p_id, const StringName &p_method) {
-	if (p_id == area_monitor_callback_id) {
-		area_monitor_callback_method = p_method;
+void GodotArea3D::set_area_monitor_callback(const Callable &p_callback) {
+	ObjectID id = p_callback.get_object_id();
+	if (id == area_monitor_callback.get_object_id()) {
+		area_monitor_callback = p_callback;
 		return;
 	}
 
 	_unregister_shapes();
 
-	area_monitor_callback_id = p_id;
-	area_monitor_callback_method = p_method;
+	area_monitor_callback = p_callback;
 
 	monitored_bodies.clear();
 	monitored_areas.clear();
@@ -128,18 +128,21 @@ void GodotArea3D::set_area_monitor_callback(ObjectID p_id, const StringName &p_m
 	}
 }
 
-void GodotArea3D::set_space_override_mode(PhysicsServer3D::AreaSpaceOverrideMode p_mode) {
-	bool do_override = p_mode != PhysicsServer3D::AREA_SPACE_OVERRIDE_DISABLED;
-	if (do_override == (space_override_mode != PhysicsServer3D::AREA_SPACE_OVERRIDE_DISABLED)) {
+void GodotArea3D::_set_space_override_mode(PhysicsServer3D::AreaSpaceOverrideMode &r_mode, PhysicsServer3D::AreaSpaceOverrideMode p_new_mode) {
+	bool do_override = p_new_mode != PhysicsServer3D::AREA_SPACE_OVERRIDE_DISABLED;
+	if (do_override == (r_mode != PhysicsServer3D::AREA_SPACE_OVERRIDE_DISABLED)) {
 		return;
 	}
 	_unregister_shapes();
-	space_override_mode = p_mode;
+	r_mode = p_new_mode;
 	_shape_changed();
 }
 
 void GodotArea3D::set_param(PhysicsServer3D::AreaParameter p_param, const Variant &p_value) {
 	switch (p_param) {
+		case PhysicsServer3D::AREA_PARAM_GRAVITY_OVERRIDE_MODE:
+			_set_space_override_mode(gravity_override_mode, (PhysicsServer3D::AreaSpaceOverrideMode)(int)p_value);
+			break;
 		case PhysicsServer3D::AREA_PARAM_GRAVITY:
 			gravity = p_value;
 			break;
@@ -155,8 +158,14 @@ void GodotArea3D::set_param(PhysicsServer3D::AreaParameter p_param, const Varian
 		case PhysicsServer3D::AREA_PARAM_GRAVITY_POINT_ATTENUATION:
 			point_attenuation = p_value;
 			break;
+		case PhysicsServer3D::AREA_PARAM_LINEAR_DAMP_OVERRIDE_MODE:
+			_set_space_override_mode(linear_damping_override_mode, (PhysicsServer3D::AreaSpaceOverrideMode)(int)p_value);
+			break;
 		case PhysicsServer3D::AREA_PARAM_LINEAR_DAMP:
 			linear_damp = p_value;
+			break;
+		case PhysicsServer3D::AREA_PARAM_ANGULAR_DAMP_OVERRIDE_MODE:
+			_set_space_override_mode(angular_damping_override_mode, (PhysicsServer3D::AreaSpaceOverrideMode)(int)p_value);
 			break;
 		case PhysicsServer3D::AREA_PARAM_ANGULAR_DAMP:
 			angular_damp = p_value;
@@ -183,6 +192,8 @@ void GodotArea3D::set_param(PhysicsServer3D::AreaParameter p_param, const Varian
 
 Variant GodotArea3D::get_param(PhysicsServer3D::AreaParameter p_param) const {
 	switch (p_param) {
+		case PhysicsServer3D::AREA_PARAM_GRAVITY_OVERRIDE_MODE:
+			return gravity_override_mode;
 		case PhysicsServer3D::AREA_PARAM_GRAVITY:
 			return gravity;
 		case PhysicsServer3D::AREA_PARAM_GRAVITY_VECTOR:
@@ -193,8 +204,12 @@ Variant GodotArea3D::get_param(PhysicsServer3D::AreaParameter p_param) const {
 			return gravity_distance_scale;
 		case PhysicsServer3D::AREA_PARAM_GRAVITY_POINT_ATTENUATION:
 			return point_attenuation;
+		case PhysicsServer3D::AREA_PARAM_LINEAR_DAMP_OVERRIDE_MODE:
+			return linear_damping_override_mode;
 		case PhysicsServer3D::AREA_PARAM_LINEAR_DAMP:
 			return linear_damp;
+		case PhysicsServer3D::AREA_PARAM_ANGULAR_DAMP_OVERRIDE_MODE:
+			return angular_damping_override_mode;
 		case PhysicsServer3D::AREA_PARAM_ANGULAR_DAMP:
 			return angular_damp;
 		case PhysicsServer3D::AREA_PARAM_PRIORITY:
@@ -227,80 +242,79 @@ void GodotArea3D::set_monitorable(bool p_monitorable) {
 
 	monitorable = p_monitorable;
 	_set_static(!monitorable);
+	_shapes_changed();
 }
 
 void GodotArea3D::call_queries() {
-	if (monitor_callback_id.is_valid() && !monitored_bodies.is_empty()) {
-		Variant res[5];
-		Variant *resptr[5];
-		for (int i = 0; i < 5; i++) {
-			resptr[i] = &res[i];
-		}
+	if (!monitor_callback.is_null() && !monitored_bodies.is_empty()) {
+		if (monitor_callback.is_valid()) {
+			Variant res[5];
+			Variant *resptr[5];
+			for (int i = 0; i < 5; i++) {
+				resptr[i] = &res[i];
+			}
 
-		Object *obj = ObjectDB::get_instance(monitor_callback_id);
-		if (!obj) {
-			monitored_bodies.clear();
-			monitor_callback_id = ObjectID();
-			return;
-		}
+			for (Map<BodyKey, BodyState>::Element *E = monitored_bodies.front(); E;) {
+				if (E->get().state == 0) { // Nothing happened
+					Map<BodyKey, BodyState>::Element *next = E->next();
+					monitored_bodies.erase(E);
+					E = next;
+					continue;
+				}
 
-		for (Map<BodyKey, BodyState>::Element *E = monitored_bodies.front(); E;) {
-			if (E->get().state == 0) { // Nothing happened
+				res[0] = E->get().state > 0 ? PhysicsServer3D::AREA_BODY_ADDED : PhysicsServer3D::AREA_BODY_REMOVED;
+				res[1] = E->key().rid;
+				res[2] = E->key().instance_id;
+				res[3] = E->key().body_shape;
+				res[4] = E->key().area_shape;
+
 				Map<BodyKey, BodyState>::Element *next = E->next();
 				monitored_bodies.erase(E);
 				E = next;
-				continue;
+
+				Callable::CallError ce;
+				Variant ret;
+				monitor_callback.call((const Variant **)resptr, 5, ret, ce);
 			}
-
-			res[0] = E->get().state > 0 ? PhysicsServer3D::AREA_BODY_ADDED : PhysicsServer3D::AREA_BODY_REMOVED;
-			res[1] = E->key().rid;
-			res[2] = E->key().instance_id;
-			res[3] = E->key().body_shape;
-			res[4] = E->key().area_shape;
-
-			Map<BodyKey, BodyState>::Element *next = E->next();
-			monitored_bodies.erase(E);
-			E = next;
-
-			Callable::CallError ce;
-			obj->call(monitor_callback_method, (const Variant **)resptr, 5, ce);
+		} else {
+			monitored_bodies.clear();
+			monitor_callback = Callable();
 		}
 	}
 
-	if (area_monitor_callback_id.is_valid() && !monitored_areas.is_empty()) {
-		Variant res[5];
-		Variant *resptr[5];
-		for (int i = 0; i < 5; i++) {
-			resptr[i] = &res[i];
-		}
+	if (!area_monitor_callback.is_null() && !monitored_areas.is_empty()) {
+		if (area_monitor_callback.is_valid()) {
+			Variant res[5];
+			Variant *resptr[5];
+			for (int i = 0; i < 5; i++) {
+				resptr[i] = &res[i];
+			}
 
-		Object *obj = ObjectDB::get_instance(area_monitor_callback_id);
-		if (!obj) {
-			monitored_areas.clear();
-			area_monitor_callback_id = ObjectID();
-			return;
-		}
+			for (Map<BodyKey, BodyState>::Element *E = monitored_areas.front(); E;) {
+				if (E->get().state == 0) { // Nothing happened
+					Map<BodyKey, BodyState>::Element *next = E->next();
+					monitored_areas.erase(E);
+					E = next;
+					continue;
+				}
 
-		for (Map<BodyKey, BodyState>::Element *E = monitored_areas.front(); E;) {
-			if (E->get().state == 0) { // Nothing happened
+				res[0] = E->get().state > 0 ? PhysicsServer3D::AREA_BODY_ADDED : PhysicsServer3D::AREA_BODY_REMOVED;
+				res[1] = E->key().rid;
+				res[2] = E->key().instance_id;
+				res[3] = E->key().body_shape;
+				res[4] = E->key().area_shape;
+
 				Map<BodyKey, BodyState>::Element *next = E->next();
 				monitored_areas.erase(E);
 				E = next;
-				continue;
+
+				Callable::CallError ce;
+				Variant ret;
+				area_monitor_callback.call((const Variant **)resptr, 5, ret, ce);
 			}
-
-			res[0] = E->get().state > 0 ? PhysicsServer3D::AREA_BODY_ADDED : PhysicsServer3D::AREA_BODY_REMOVED;
-			res[1] = E->key().rid;
-			res[2] = E->key().instance_id;
-			res[3] = E->key().body_shape;
-			res[4] = E->key().area_shape;
-
-			Map<BodyKey, BodyState>::Element *next = E->next();
-			monitored_areas.erase(E);
-			E = next;
-
-			Callable::CallError ce;
-			obj->call(area_monitor_callback_method, (const Variant **)resptr, 5, ce);
+		} else {
+			monitored_areas.clear();
+			area_monitor_callback = Callable();
 		}
 	}
 }

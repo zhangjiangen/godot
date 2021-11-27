@@ -30,6 +30,8 @@
 
 #include "visual_shader_particle_nodes.h"
 
+#include "core/core_string_names.h"
+
 // VisualShaderNodeParticleEmitter
 
 int VisualShaderNodeParticleEmitter::get_output_port_count() const {
@@ -49,6 +51,38 @@ String VisualShaderNodeParticleEmitter::get_output_port_name(int p_port) const {
 
 bool VisualShaderNodeParticleEmitter::has_output_port_preview(int p_port) const {
 	return false;
+}
+
+void VisualShaderNodeParticleEmitter::set_mode_2d(bool p_enabled) {
+	mode_2d = p_enabled;
+	emit_changed();
+}
+
+bool VisualShaderNodeParticleEmitter::is_mode_2d() const {
+	return mode_2d;
+}
+
+Vector<StringName> VisualShaderNodeParticleEmitter::get_editable_properties() const {
+	Vector<StringName> props;
+	props.push_back("mode_2d");
+	return props;
+}
+
+Map<StringName, String> VisualShaderNodeParticleEmitter::get_editable_properties_names() const {
+	Map<StringName, String> names;
+	names.insert("mode_2d", TTR("2D Mode"));
+	return names;
+}
+
+bool VisualShaderNodeParticleEmitter::is_show_prop_names() const {
+	return true;
+}
+
+void VisualShaderNodeParticleEmitter::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_mode_2d", "enabled"), &VisualShaderNodeParticleEmitter::set_mode_2d);
+	ClassDB::bind_method(D_METHOD("is_mode_2d"), &VisualShaderNodeParticleEmitter::is_mode_2d);
+
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "mode_2d"), "set_mode_2d", "is_mode_2d");
 }
 
 VisualShaderNodeParticleEmitter::VisualShaderNodeParticleEmitter() {
@@ -79,15 +113,27 @@ String VisualShaderNodeParticleSphereEmitter::get_input_port_name(int p_port) co
 
 String VisualShaderNodeParticleSphereEmitter::generate_global_per_node(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const {
 	String code;
+
+	code += "vec2 __get_random_point_in_circle(inout uint seed, float radius, float inner_radius) {\n";
+	code += "	return __get_random_unit_vec2(seed) * __randf_range(seed, inner_radius, radius);\n";
+	code += "}\n\n";
+
 	code += "vec3 __get_random_point_in_sphere(inout uint seed, float radius, float inner_radius) {\n";
 	code += "	return __get_random_unit_vec3(seed) * __randf_range(seed, inner_radius, radius);\n";
 	code += "}\n\n";
+
 	return code;
 }
 
 String VisualShaderNodeParticleSphereEmitter::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
 	String code;
-	code += "	" + p_output_vars[0] + " = __get_random_point_in_sphere(__seed, " + (p_input_vars[0].is_empty() ? (String)get_input_port_default_value(0) : p_input_vars[0]) + ", " + (p_input_vars[1].is_empty() ? (String)get_input_port_default_value(1) : p_input_vars[1]) + ");\n";
+
+	if (mode_2d) {
+		code += "	" + p_output_vars[0] + " = vec3(__get_random_point_in_circle(__seed, " + (p_input_vars[0].is_empty() ? (String)get_input_port_default_value(0) : p_input_vars[0]) + ", " + (p_input_vars[1].is_empty() ? (String)get_input_port_default_value(1) : p_input_vars[1]) + "), 0.0);\n";
+	} else {
+		code += "	" + p_output_vars[0] + " = __get_random_point_in_sphere(__seed, " + (p_input_vars[0].is_empty() ? (String)get_input_port_default_value(0) : p_input_vars[0]) + ", " + (p_input_vars[1].is_empty() ? (String)get_input_port_default_value(1) : p_input_vars[1]) + ");\n";
+	}
+
 	return code;
 }
 
@@ -122,16 +168,27 @@ String VisualShaderNodeParticleBoxEmitter::get_input_port_name(int p_port) const
 
 String VisualShaderNodeParticleBoxEmitter::generate_global_per_node(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const {
 	String code;
-	code += "vec3 __get_random_point_in_box(inout uint seed, vec3 extents) {\n";
+
+	code += "vec2 __get_random_point_in_box2d(inout uint seed, vec2 extents) {\n";
+	code += "	vec2 half_extents = extents / 2.0;\n";
+	code += "	return vec2(__randf_range(seed, -half_extents.x, half_extents.x), __randf_range(seed, -half_extents.y, half_extents.y));\n";
+	code += "}\n\n";
+
+	code += "vec3 __get_random_point_in_box3d(inout uint seed, vec3 extents) {\n";
 	code += "	vec3 half_extents = extents / 2.0;\n";
 	code += "	return vec3(__randf_range(seed, -half_extents.x, half_extents.x), __randf_range(seed, -half_extents.y, half_extents.y), __randf_range(seed, -half_extents.z, half_extents.z));\n";
 	code += "}\n\n";
+
 	return code;
 }
 
 String VisualShaderNodeParticleBoxEmitter::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
 	String code;
-	code += "	" + p_output_vars[0] + " = __get_random_point_in_box(__seed, " + (p_input_vars[0].is_empty() ? (String)get_input_port_default_value(0) : p_input_vars[0]) + ");\n";
+	if (mode_2d) {
+		code += "	" + p_output_vars[0] + " = vec3(__get_random_point_in_box2d(__seed, " + (p_input_vars[0].is_empty() ? (String)get_input_port_default_value(0) : p_input_vars[0]) + ".xy), 0.0);\n";
+	} else {
+		code += "	" + p_output_vars[0] + " = __get_random_point_in_box3d(__seed, " + (p_input_vars[0].is_empty() ? (String)get_input_port_default_value(0) : p_input_vars[0]) + ");\n";
+	}
 	return code;
 }
 
@@ -166,17 +223,31 @@ String VisualShaderNodeParticleRingEmitter::get_input_port_name(int p_port) cons
 
 String VisualShaderNodeParticleRingEmitter::generate_global_per_node(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const {
 	String code;
-	code += "vec3 __get_random_point_on_ring(inout uint seed, float radius, float inner_radius, float height) {\n";
-	code += "	float angle = __rand_from_seed(seed) * PI * 2.0;\n";
+
+	code += "vec2 __get_random_point_on_ring2d(inout uint seed, float radius, float inner_radius) {\n";
+	code += "	float angle = __rand_from_seed(seed) * TAU;\n";
+	code += "	vec2 ring = vec2(sin(angle), cos(angle)) * __randf_range(seed, inner_radius, radius);\n";
+	code += "	return vec2(ring.x, ring.y);\n";
+	code += "}\n\n";
+
+	code += "vec3 __get_random_point_on_ring3d(inout uint seed, float radius, float inner_radius, float height) {\n";
+	code += "	float angle = __rand_from_seed(seed) * TAU;\n";
 	code += "	vec2 ring = vec2(sin(angle), cos(angle)) * __randf_range(seed, inner_radius, radius);\n";
 	code += "	return vec3(ring.x, __randf_range(seed, min(0.0, height), max(0.0, height)), ring.y);\n";
 	code += "}\n\n";
+
 	return code;
 }
 
 String VisualShaderNodeParticleRingEmitter::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
 	String code;
-	code = "	" + p_output_vars[0] + " = __get_random_point_on_ring(__seed, " + (p_input_vars[0].is_empty() ? (String)get_input_port_default_value(0) : p_input_vars[0]) + ", " + (p_input_vars[1].is_empty() ? (String)get_input_port_default_value(1) : p_input_vars[1]) + ", " + (p_input_vars[2].is_empty() ? (String)get_input_port_default_value(2) : p_input_vars[2]) + ");\n";
+
+	if (mode_2d) {
+		code = "	" + p_output_vars[0] + " = vec3(__get_random_point_on_ring2d(__seed, " + (p_input_vars[0].is_empty() ? (String)get_input_port_default_value(0) : p_input_vars[0]) + ", " + (p_input_vars[1].is_empty() ? (String)get_input_port_default_value(1) : p_input_vars[1]) + "), 0.0);\n";
+	} else {
+		code = "	" + p_output_vars[0] + " = __get_random_point_on_ring3d(__seed, " + (p_input_vars[0].is_empty() ? (String)get_input_port_default_value(0) : p_input_vars[0]) + ", " + (p_input_vars[1].is_empty() ? (String)get_input_port_default_value(1) : p_input_vars[1]) + ", " + (p_input_vars[2].is_empty() ? (String)get_input_port_default_value(2) : p_input_vars[2]) + ");\n";
+	}
+
 	return code;
 }
 
@@ -184,6 +255,430 @@ VisualShaderNodeParticleRingEmitter::VisualShaderNodeParticleRingEmitter() {
 	set_input_port_default_value(0, 10.0);
 	set_input_port_default_value(1, 0.0);
 	set_input_port_default_value(2, 0.0);
+}
+
+// VisualShaderNodeParticleMeshEmitter
+
+String VisualShaderNodeParticleMeshEmitter::get_caption() const {
+	return "MeshEmitter";
+}
+
+int VisualShaderNodeParticleMeshEmitter::get_output_port_count() const {
+	return 6;
+}
+
+VisualShaderNodeParticleBoxEmitter::PortType VisualShaderNodeParticleMeshEmitter::get_output_port_type(int p_port) const {
+	switch (p_port) {
+		case 0:
+			return PORT_TYPE_VECTOR; // position
+		case 1:
+			return PORT_TYPE_VECTOR; // normal
+		case 2:
+			return PORT_TYPE_VECTOR; // color
+		case 3:
+			return PORT_TYPE_SCALAR; // alpha
+		case 4:
+			return PORT_TYPE_VECTOR; // uv
+		case 5:
+			return PORT_TYPE_VECTOR; // uv2
+	}
+	return PORT_TYPE_SCALAR;
+}
+
+String VisualShaderNodeParticleMeshEmitter::get_output_port_name(int p_port) const {
+	switch (p_port) {
+		case 0:
+			return "position";
+		case 1:
+			return "normal";
+		case 2:
+			return "color";
+		case 3:
+			return "alpha";
+		case 4:
+			return "uv";
+		case 5:
+			return "uv2";
+	}
+	return String();
+}
+
+int VisualShaderNodeParticleMeshEmitter::get_input_port_count() const {
+	return 0;
+}
+
+VisualShaderNodeParticleBoxEmitter::PortType VisualShaderNodeParticleMeshEmitter::get_input_port_type(int p_port) const {
+	return PORT_TYPE_SCALAR;
+}
+
+String VisualShaderNodeParticleMeshEmitter::get_input_port_name(int p_port) const {
+	return String();
+}
+
+String VisualShaderNodeParticleMeshEmitter::generate_global(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const {
+	String code;
+
+	if (mesh.is_valid()) {
+		if (is_output_port_connected(0)) { // position
+			code += "uniform sampler2D " + make_unique_id(p_type, p_id, "mesh_vx") + ";\n";
+		}
+
+		if (is_output_port_connected(1)) { // normal
+			code += "uniform sampler2D " + make_unique_id(p_type, p_id, "mesh_nm") + ";\n";
+		}
+
+		if (is_output_port_connected(2) || is_output_port_connected(3)) { // color & alpha
+			code += "uniform sampler2D " + make_unique_id(p_type, p_id, "mesh_col") + ";\n";
+		}
+
+		if (is_output_port_connected(4)) { // uv
+			code += "uniform sampler2D " + make_unique_id(p_type, p_id, "mesh_uv") + ";\n";
+		}
+
+		if (is_output_port_connected(5)) { // uv2
+			code += "uniform sampler2D " + make_unique_id(p_type, p_id, "mesh_uv2") + ";\n";
+		}
+	}
+
+	return code;
+}
+
+String VisualShaderNodeParticleMeshEmitter::_generate_code(VisualShader::Type p_type, int p_id, const String *p_output_vars, int p_index, const String &p_texture_name, bool p_ignore_mode2d) const {
+	String code;
+	if (is_output_port_connected(p_index)) {
+		if (mode_2d && !p_ignore_mode2d) {
+			code += "	" + p_output_vars[p_index] + " = vec3(";
+			code += "texelFetch(";
+			code += make_unique_id(p_type, p_id, p_texture_name) + ", ";
+			code += "ivec2(__scalar_ibuff, 0), 0).xy, 0.0);\n";
+		} else {
+			code += "	" + p_output_vars[p_index] + " = texelFetch(";
+			code += make_unique_id(p_type, p_id, p_texture_name) + ", ";
+			code += "ivec2(__scalar_ibuff, 0), 0).xyz;\n";
+		}
+	}
+	return code;
+}
+
+String VisualShaderNodeParticleMeshEmitter::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	String code;
+	code += "	__scalar_ibuff = int(__rand_from_seed(__seed) * 65535.0) % " + itos(position_texture->get_width()) + ";\n";
+
+	code += _generate_code(p_type, p_id, p_output_vars, 0, "mesh_vx");
+	code += _generate_code(p_type, p_id, p_output_vars, 1, "mesh_nm");
+
+	if (is_output_port_connected(2) || is_output_port_connected(3)) {
+		code += "	__vec4_buff = texelFetch(";
+		code += make_unique_id(p_type, p_id, "mesh_col") + ", ";
+		code += "ivec2(__scalar_ibuff, 0), 0);\n";
+		if (is_output_port_connected(2)) {
+			code += "	" + p_output_vars[2] + " = __vec4_buff.rgb;\n";
+		} else {
+			code += "	" + p_output_vars[2] + " = vec3(0.0);\n";
+		}
+		if (is_output_port_connected(3)) {
+			code += "	" + p_output_vars[3] + " = __vec4_buff.a;\n";
+		} else {
+			code += "	" + p_output_vars[3] + " = 0.0;\n";
+		}
+	}
+
+	code += _generate_code(p_type, p_id, p_output_vars, 4, "mesh_uv", true);
+	code += _generate_code(p_type, p_id, p_output_vars, 5, "mesh_uv2", true);
+
+	return code;
+}
+
+Vector<VisualShader::DefaultTextureParam> VisualShaderNodeParticleMeshEmitter::get_default_texture_parameters(VisualShader::Type p_type, int p_id) const {
+	Vector<VisualShader::DefaultTextureParam> ret;
+
+	if (is_output_port_connected(0)) {
+		VisualShader::DefaultTextureParam dtp;
+		dtp.name = make_unique_id(p_type, p_id, "mesh_vx");
+		dtp.params.push_back(position_texture);
+		ret.push_back(dtp);
+	}
+
+	if (is_output_port_connected(1)) {
+		VisualShader::DefaultTextureParam dtp;
+		dtp.name = make_unique_id(p_type, p_id, "mesh_nm");
+		dtp.params.push_back(normal_texture);
+		ret.push_back(dtp);
+	}
+
+	if (is_output_port_connected(2) || is_output_port_connected(3)) {
+		VisualShader::DefaultTextureParam dtp;
+		dtp.name = make_unique_id(p_type, p_id, "mesh_col");
+		dtp.params.push_back(color_texture);
+		ret.push_back(dtp);
+	}
+
+	if (is_output_port_connected(4)) {
+		VisualShader::DefaultTextureParam dtp;
+		dtp.name = make_unique_id(p_type, p_id, "mesh_uv");
+		dtp.params.push_back(uv_texture);
+		ret.push_back(dtp);
+	}
+
+	if (is_output_port_connected(5)) {
+		VisualShader::DefaultTextureParam dtp;
+		dtp.name = make_unique_id(p_type, p_id, "mesh_uv2");
+		dtp.params.push_back(uv2_texture);
+		ret.push_back(dtp);
+	}
+
+	return ret;
+}
+
+void VisualShaderNodeParticleMeshEmitter::_update_texture(const Vector<Vector2> &p_array, Ref<ImageTexture> &r_texture) {
+	Ref<Image> image;
+	image.instantiate();
+
+	if (p_array.size() == 0) {
+		image->create(1, 1, false, Image::Format::FORMAT_RGBF);
+	} else {
+		image->create(p_array.size(), 1, false, Image::Format::FORMAT_RGBF);
+	}
+
+	for (int i = 0; i < p_array.size(); i++) {
+		Vector2 v = p_array[i];
+		image->set_pixel(i, 0, Color(v.x, v.y, 0));
+	}
+	if (r_texture->get_width() != p_array.size() || p_array.size() == 0) {
+		r_texture->create_from_image(image);
+	} else {
+		r_texture->update(image);
+	}
+}
+
+void VisualShaderNodeParticleMeshEmitter::_update_texture(const Vector<Vector3> &p_array, Ref<ImageTexture> &r_texture) {
+	Ref<Image> image;
+	image.instantiate();
+
+	if (p_array.size() == 0) {
+		image->create(1, 1, false, Image::Format::FORMAT_RGBF);
+	} else {
+		image->create(p_array.size(), 1, false, Image::Format::FORMAT_RGBF);
+	}
+
+	for (int i = 0; i < p_array.size(); i++) {
+		Vector3 v = p_array[i];
+		image->set_pixel(i, 0, Color(v.x, v.y, v.z));
+	}
+	if (r_texture->get_width() != p_array.size() || p_array.size() == 0) {
+		r_texture->create_from_image(image);
+	} else {
+		r_texture->update(image);
+	}
+}
+
+void VisualShaderNodeParticleMeshEmitter::_update_texture(const Vector<Color> &p_array, Ref<ImageTexture> &r_texture) {
+	Ref<Image> image;
+	image.instantiate();
+
+	if (p_array.size() == 0) {
+		image->create(1, 1, false, Image::Format::FORMAT_RGBA8);
+	} else {
+		image->create(p_array.size(), 1, false, Image::Format::FORMAT_RGBA8);
+	}
+
+	for (int i = 0; i < p_array.size(); i++) {
+		image->set_pixel(i, 0, p_array[i]);
+	}
+	if (r_texture->get_width() != p_array.size() || p_array.size() == 0) {
+		r_texture->create_from_image(image);
+	} else {
+		r_texture->update(image);
+	}
+}
+
+void VisualShaderNodeParticleMeshEmitter::_update_textures() {
+	if (!mesh.is_valid()) {
+		return;
+	}
+
+	Vector<Vector3> vertices;
+	Vector<Vector3> normals;
+	Vector<Color> colors;
+	Vector<Vector2> uvs;
+	Vector<Vector2> uvs2;
+
+	if (use_all_surfaces) {
+		for (int i = 0; i < max_surface_index; i++) {
+			// position
+			Array vertex_array = mesh->surface_get_arrays(i)[Mesh::ARRAY_VERTEX];
+			for (int j = 0; j < vertex_array.size(); j++) {
+				vertices.push_back((Vector3)vertex_array[j]);
+			}
+
+			// normal
+			Array normal_array = mesh->surface_get_arrays(i)[Mesh::ARRAY_NORMAL];
+			for (int j = 0; j < normal_array.size(); j++) {
+				normals.push_back((Vector3)normal_array[j]);
+			}
+
+			// color
+			Array color_array = mesh->surface_get_arrays(i)[Mesh::ARRAY_COLOR];
+			for (int j = 0; j < color_array.size(); j++) {
+				colors.push_back((Color)color_array[j]);
+			}
+
+			// uv
+			Array uv_array = mesh->surface_get_arrays(i)[Mesh::ARRAY_TEX_UV];
+			for (int j = 0; j < uv_array.size(); j++) {
+				uvs.push_back((Vector2)uv_array[j]);
+			}
+
+			// uv2
+			Array uv2_array = mesh->surface_get_arrays(i)[Mesh::ARRAY_TEX_UV2];
+			for (int j = 0; j < uv2_array.size(); j++) {
+				uvs2.push_back((Vector2)uv2_array[j]);
+			}
+		}
+	} else {
+		// position
+		Array vertex_array = mesh->surface_get_arrays(surface_index)[Mesh::ARRAY_VERTEX];
+		for (int i = 0; i < vertex_array.size(); i++) {
+			vertices.push_back((Vector3)vertex_array[i]);
+		}
+
+		// normal
+		Array normal_array = mesh->surface_get_arrays(surface_index)[Mesh::ARRAY_NORMAL];
+		for (int i = 0; i < normal_array.size(); i++) {
+			normals.push_back((Vector3)normal_array[i]);
+		}
+
+		// color
+		Array color_array = mesh->surface_get_arrays(surface_index)[Mesh::ARRAY_COLOR];
+		for (int i = 0; i < color_array.size(); i++) {
+			colors.push_back((Color)color_array[i]);
+		}
+
+		// uv
+		Array uv_array = mesh->surface_get_arrays(surface_index)[Mesh::ARRAY_TEX_UV];
+		for (int j = 0; j < uv_array.size(); j++) {
+			uvs.push_back((Vector2)uv_array[j]);
+		}
+
+		// uv2
+		Array uv2_array = mesh->surface_get_arrays(surface_index)[Mesh::ARRAY_TEX_UV2];
+		for (int j = 0; j < uv2_array.size(); j++) {
+			uvs2.push_back((Vector2)uv2_array[j]);
+		}
+	}
+
+	_update_texture(vertices, position_texture);
+	_update_texture(normals, normal_texture);
+	_update_texture(colors, color_texture);
+	_update_texture(uvs, uv_texture);
+	_update_texture(uvs2, uv2_texture);
+}
+
+void VisualShaderNodeParticleMeshEmitter::set_mesh(Ref<Mesh> p_mesh) {
+	if (mesh == p_mesh) {
+		return;
+	}
+
+	if (p_mesh.is_valid()) {
+		max_surface_index = p_mesh->get_surface_count();
+	} else {
+		max_surface_index = 0;
+	}
+
+	if (mesh.is_valid()) {
+		Callable callable = callable_mp(this, &VisualShaderNodeParticleMeshEmitter::_update_textures);
+
+		if (mesh->is_connected(CoreStringNames::get_singleton()->changed, callable)) {
+			mesh->disconnect(CoreStringNames::get_singleton()->changed, callable);
+		}
+	}
+
+	mesh = p_mesh;
+
+	if (mesh.is_valid()) {
+		Callable callable = callable_mp(this, &VisualShaderNodeParticleMeshEmitter::_update_textures);
+
+		if (!mesh->is_connected(CoreStringNames::get_singleton()->changed, callable)) {
+			mesh->connect(CoreStringNames::get_singleton()->changed, callable);
+		}
+	}
+
+	emit_changed();
+}
+
+Ref<Mesh> VisualShaderNodeParticleMeshEmitter::get_mesh() const {
+	return mesh;
+}
+
+void VisualShaderNodeParticleMeshEmitter::set_use_all_surfaces(bool p_enabled) {
+	if (use_all_surfaces == p_enabled) {
+		return;
+	}
+	use_all_surfaces = p_enabled;
+	emit_changed();
+}
+
+bool VisualShaderNodeParticleMeshEmitter::is_use_all_surfaces() const {
+	return use_all_surfaces;
+}
+
+void VisualShaderNodeParticleMeshEmitter::set_surface_index(int p_surface_index) {
+	if (p_surface_index == surface_index || p_surface_index < 0 || p_surface_index >= max_surface_index) {
+		return;
+	}
+	surface_index = p_surface_index;
+	emit_changed();
+}
+
+int VisualShaderNodeParticleMeshEmitter::get_surface_index() const {
+	return surface_index;
+}
+
+Vector<StringName> VisualShaderNodeParticleMeshEmitter::get_editable_properties() const {
+	Vector<StringName> props = VisualShaderNodeParticleEmitter::get_editable_properties();
+
+	props.push_back("mesh");
+	props.push_back("use_all_surfaces");
+	if (!use_all_surfaces) {
+		props.push_back("surface_index");
+	}
+
+	return props;
+}
+
+Map<StringName, String> VisualShaderNodeParticleMeshEmitter::get_editable_properties_names() const {
+	Map<StringName, String> names = VisualShaderNodeParticleEmitter::get_editable_properties_names();
+
+	names.insert("mesh", TTR("Mesh"));
+	names.insert("use_all_surfaces", TTR("Use All Surfaces"));
+	if (!use_all_surfaces) {
+		names.insert("surface_index", TTR("Surface Index"));
+	}
+
+	return names;
+}
+
+void VisualShaderNodeParticleMeshEmitter::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_mesh", "mesh"), &VisualShaderNodeParticleMeshEmitter::set_mesh);
+	ClassDB::bind_method(D_METHOD("get_mesh"), &VisualShaderNodeParticleMeshEmitter::get_mesh);
+	ClassDB::bind_method(D_METHOD("set_use_all_surfaces", "enabled"), &VisualShaderNodeParticleMeshEmitter::set_use_all_surfaces);
+	ClassDB::bind_method(D_METHOD("is_use_all_surfaces"), &VisualShaderNodeParticleMeshEmitter::is_use_all_surfaces);
+	ClassDB::bind_method(D_METHOD("set_surface_index", "surface_index"), &VisualShaderNodeParticleMeshEmitter::set_surface_index);
+	ClassDB::bind_method(D_METHOD("get_surface_index"), &VisualShaderNodeParticleMeshEmitter::get_surface_index);
+
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "mesh", PROPERTY_HINT_RESOURCE_TYPE, "Mesh"), "set_mesh", "get_mesh");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "use_all_surfaces"), "set_use_all_surfaces", "is_use_all_surfaces");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "surface_index"), "set_surface_index", "get_surface_index");
+}
+
+VisualShaderNodeParticleMeshEmitter::VisualShaderNodeParticleMeshEmitter() {
+	connect(CoreStringNames::get_singleton()->changed, callable_mp(this, &VisualShaderNodeParticleMeshEmitter::_update_textures));
+
+	position_texture.instantiate();
+	normal_texture.instantiate();
+	color_texture.instantiate();
+	uv_texture.instantiate();
+	uv2_texture.instantiate();
 }
 
 // VisualShaderNodeParticleMultiplyByAxisAngle
@@ -265,7 +760,6 @@ bool VisualShaderNodeParticleMultiplyByAxisAngle::is_degrees_mode() const {
 Vector<StringName> VisualShaderNodeParticleMultiplyByAxisAngle::get_editable_properties() const {
 	Vector<StringName> props;
 	props.push_back("degrees_mode");
-	props.push_back("axis_amount");
 	return props;
 }
 

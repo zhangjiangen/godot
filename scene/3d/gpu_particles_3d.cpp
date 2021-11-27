@@ -277,7 +277,7 @@ TypedArray<String> GPUParticles3D::get_configuration_warnings() const {
 	TypedArray<String> warnings = Node::get_configuration_warnings();
 
 	if (RenderingServer::get_singleton()->is_low_end()) {
-		warnings.push_back(TTR("GPU-based particles are not supported by the GLES2 video driver.\nUse the CPUParticles3D node instead. You can use the \"Convert to CPUParticles3D\" option for this purpose."));
+		warnings.push_back(TTR("GPU-based particles are not supported by the OpenGL video driver.\nUse the CPUParticles3D node instead. You can use the \"Convert to CPUParticles3D\" option for this purpose."));
 	}
 
 	bool meshes_found = false;
@@ -388,6 +388,8 @@ void GPUParticles3D::_validate_property(PropertyInfo &property) const {
 			return;
 		}
 	}
+
+	GeometryInstance3D::_validate_property(property);
 }
 
 void GPUParticles3D::emit_particle(const Transform3D &p_transform, const Vector3 &p_velocity, const Color &p_color, const Color &p_custom, uint32_t p_emit_flags) {

@@ -498,11 +498,11 @@ bool EditorExportPlatformAndroid::is_package_name_valid(const String &p_package,
 
 bool EditorExportPlatformAndroid::_should_compress_asset(const String &p_path, const Vector<uint8_t> &p_data) {
 	/*
-     *  By not compressing files with little or not benefit in doing so,
-     *  a performance gain is expected attime. Moreover, if the APK is
-     *  zip-aligned, assets stored as they are can be efficiently read by
-     *  Android by memory-mapping them.
-     */
+	 *  By not compressing files with little or not benefit in doing so,
+	 *  a performance gain is expected attime. Moreover, if the APK is
+	 *  zip-aligned, assets stored as they are can be efficiently read by
+	 *  Android by memory-mapping them.
+	 */
 
 	// -- Unconditional uncompress to mimic AAPT plus some other
 
@@ -751,9 +751,9 @@ void EditorExportPlatformAndroid::_get_permissions(const Ref<EditorExportPreset>
 	}
 
 	int xr_mode_index = p_preset->get("xr_features/xr_mode");
-	if (xr_mode_index == 1 /* XRMode.OVR */) {
+	if (xr_mode_index == XR_MODE_OPENXR) {
 		int hand_tracking_index = p_preset->get("xr_features/hand_tracking"); // 0: none, 1: optional, 2: required
-		if (hand_tracking_index > 0) {
+		if (hand_tracking_index > XR_HAND_TRACKING_NONE) {
 			if (r_permissions.find("com.oculus.permission.HAND_TRACKING") == -1) {
 				r_permissions.push_back("com.oculus.permission.HAND_TRACKING");
 			}
@@ -851,16 +851,11 @@ void EditorExportPlatformAndroid::_fix_manifest(const Ref<EditorExportPreset> &p
 				int iofs = ofs + 8;
 
 				string_count = decode_uint32(&p_manifest[iofs]);
-				//styles_count = decode_uint32(&p_manifest[iofs + 4]);
+				// iofs + 4 is `styles_count`.
 				string_flags = decode_uint32(&p_manifest[iofs + 8]);
 				string_data_offset = decode_uint32(&p_manifest[iofs + 12]);
-				//styles_offset = decode_uint32(&p_manifest[iofs + 16]);
-				/*
-                printf("string count: %i\n",string_count);
-                printf("flags: %i\n",string_flags);
-                printf("sdata ofs: %i\n",string_data_offset);
-                printf("styles ofs: %i\n",styles_offset);
-                */
+				// iofs + 16 is `styles_offset`.
+
 				uint32_t st_offset = iofs + 20;
 				string_table.resize(string_count);
 				uint32_t string_end = 0;
@@ -969,6 +964,20 @@ void EditorExportPlatformAndroid::_fix_manifest(const Ref<EditorExportPreset> &p
 						}
 					}
 
+					if (tname == "meta-data" && attrname == "name" && value == "xr_mode_metadata_name") {
+						// Update the meta-data 'android:name' attribute based on the selected XR mode.
+						if (xr_mode_index == XR_MODE_OPENXR) {
+							string_table.write[attr_value] = "com.samsung.android.vr.application.mode";
+						}
+					}
+
+					if (tname == "meta-data" && attrname == "value" && value == "xr_mode_metadata_value") {
+						// Update the meta-data 'android:value' attribute based on the selected XR mode.
+						if (xr_mode_index == XR_MODE_OPENXR) {
+							string_table.write[attr_value] = "vr_only";
+						}
+					}
+
 					iofs += 20;
 				}
 
@@ -983,7 +992,7 @@ void EditorExportPlatformAndroid::_fix_manifest(const Ref<EditorExportPreset> &p
 					Vector<bool> feature_required_list;
 					Vector<int> feature_versions;
 
-					if (xr_mode_index == 1 /* XRMode.OVR */) {
+					if (xr_mode_index == XR_MODE_OPENXR) {
 						// Set degrees of freedom
 						feature_names.push_back("android.hardware.vr.headtracking");
 						feature_required_list.push_back(true);
@@ -991,10 +1000,18 @@ void EditorExportPlatformAndroid::_fix_manifest(const Ref<EditorExportPreset> &p
 
 						// Check for hand tracking
 						int hand_tracking_index = p_preset->get("xr_features/hand_tracking"); // 0: none, 1: optional, 2: required
-						if (hand_tracking_index > 0) {
+						if (hand_tracking_index > XR_HAND_TRACKING_NONE) {
 							feature_names.push_back("oculus.software.handtracking");
-							feature_required_list.push_back(hand_tracking_index == 2);
+							feature_required_list.push_back(hand_tracking_index == XR_HAND_TRACKING_REQUIRED);
 							feature_versions.push_back(-1); // no version attribute should be added.
+						}
+
+						// Check for passthrough
+						int passthrough_mode = p_preset->get("xr_features/passthrough");
+						if (passthrough_mode > XR_PASSTHROUGH_NONE) {
+							feature_names.push_back("com.oculus.feature.PASSTHROUGH");
+							feature_required_list.push_back(passthrough_mode == XR_PASSTHROUGH_REQUIRED);
+							feature_versions.push_back(-1);
 						}
 					}
 
@@ -1617,11 +1634,11 @@ Vector<String> EditorExportPlatformAndroid::get_enabled_abis(const Ref<EditorExp
 
 void EditorExportPlatformAndroid::get_preset_features(const Ref<EditorExportPreset> &p_preset, List<String> *r_features) {
 	String driver = ProjectSettings::get_singleton()->get("rendering/driver/driver_name");
-	if (driver == "GLES2") {
+	if (driver == "opengl3") {
 		r_features->push_back("etc");
 	}
 	// FIXME: Review what texture formats are used for Vulkan.
-	if (driver == "Vulkan") {
+	if (driver == "vulkan") {
 		r_features->push_back("etc2");
 	}
 
@@ -1672,11 +1689,11 @@ void EditorExportPlatformAndroid::get_export_options(List<ExportOption> *r_optio
 	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, launcher_adaptive_icon_foreground_option, PROPERTY_HINT_FILE, "*.png"), ""));
 	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, launcher_adaptive_icon_background_option, PROPERTY_HINT_FILE, "*.png"), ""));
 
-	r_options->push_back(ExportOption(PropertyInfo(Variant::BOOL, "graphics/32_bits_framebuffer"), true));
 	r_options->push_back(ExportOption(PropertyInfo(Variant::BOOL, "graphics/opengl_debug"), false));
 
-	r_options->push_back(ExportOption(PropertyInfo(Variant::INT, "xr_features/xr_mode", PROPERTY_HINT_ENUM, "Regular,Oculus Mobile VR"), 0));
+	r_options->push_back(ExportOption(PropertyInfo(Variant::INT, "xr_features/xr_mode", PROPERTY_HINT_ENUM, "Regular,OpenXR"), 0));
 	r_options->push_back(ExportOption(PropertyInfo(Variant::INT, "xr_features/hand_tracking", PROPERTY_HINT_ENUM, "None,Optional,Required"), 0));
+	r_options->push_back(ExportOption(PropertyInfo(Variant::INT, "xr_features/passthrough", PROPERTY_HINT_ENUM, "None,Optional,Required"), 0));
 
 	r_options->push_back(ExportOption(PropertyInfo(Variant::BOOL, "screen/immersive_mode"), true));
 	r_options->push_back(ExportOption(PropertyInfo(Variant::BOOL, "screen/support_small"), true));
@@ -2143,10 +2160,17 @@ bool EditorExportPlatformAndroid::can_export(const Ref<EditorExportPreset> &p_pr
 	// Validate the Xr features are properly populated
 	int xr_mode_index = p_preset->get("xr_features/xr_mode");
 	int hand_tracking = p_preset->get("xr_features/hand_tracking");
-	if (xr_mode_index != /* XRMode.OVR*/ 1) {
-		if (hand_tracking > 0) {
+	int passthrough_mode = p_preset->get("xr_features/passthrough");
+	if (xr_mode_index != XR_MODE_OPENXR) {
+		if (hand_tracking > XR_HAND_TRACKING_NONE) {
 			valid = false;
-			err += TTR("\"Hand Tracking\" is only valid when \"Xr Mode\" is \"Oculus Mobile VR\".");
+			err += TTR("\"Hand Tracking\" is only valid when \"Xr Mode\" is \"OpenXR\".");
+			err += "\n";
+		}
+
+		if (passthrough_mode > XR_PASSTHROUGH_NONE) {
+			valid = false;
+			err += TTR("\"Passthrough\" is only valid when \"Xr Mode\" is \"OpenXR\".");
 			err += "\n";
 		}
 	}
@@ -2188,7 +2212,7 @@ void EditorExportPlatformAndroid::get_command_line_flags(const Ref<EditorExportP
 	Vector<String> command_line_strings = cmdline.strip_edges().split(" ");
 	for (int i = 0; i < command_line_strings.size(); i++) {
 		if (command_line_strings[i].strip_edges().length() == 0) {
-			command_line_strings.remove(i);
+			command_line_strings.remove_at(i);
 			i--;
 		}
 	}
@@ -2208,15 +2232,10 @@ void EditorExportPlatformAndroid::get_command_line_flags(const Ref<EditorExportP
 	}
 
 	int xr_mode_index = p_preset->get("xr_features/xr_mode");
-	if (xr_mode_index == 1) {
-		command_line_strings.push_back("--xr_mode_ovr");
+	if (xr_mode_index == XR_MODE_OPENXR) {
+		command_line_strings.push_back("--xr_mode_openxr");
 	} else { // XRMode.REGULAR is the default.
 		command_line_strings.push_back("--xr_mode_regular");
-	}
-
-	bool use_32_bit_framebuffer = p_preset->get("graphics/32_bits_framebuffer");
-	if (use_32_bit_framebuffer) {
-		command_line_strings.push_back("--use_depth_32");
 	}
 
 	bool immersive = p_preset->get("screen/immersive_mode");

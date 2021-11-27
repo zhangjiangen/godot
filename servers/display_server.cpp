@@ -148,7 +148,7 @@ Point2i DisplayServer::mouse_get_position() const {
 }
 
 MouseButton DisplayServer::mouse_get_button_state() const {
-	ERR_FAIL_V_MSG(MOUSE_BUTTON_NONE, "Mouse is not supported by this display server.");
+	ERR_FAIL_V_MSG(MouseButton::NONE, "Mouse is not supported by this display server.");
 }
 
 void DisplayServer::clipboard_set(const String &p_text) {
@@ -206,6 +206,10 @@ void DisplayServer::delete_sub_window(WindowID p_id) {
 
 void DisplayServer::window_set_mouse_passthrough(const Vector<Vector2> &p_region, WindowID p_window) {
 	ERR_FAIL_MSG("Mouse passthrough not supported by this display server.");
+}
+
+void DisplayServer::gl_window_make_current(DisplayServer::WindowID p_window_id) {
+	// noop except in gles
 }
 
 void DisplayServer::window_set_ime_active(const bool p_active, WindowID p_window) {
@@ -497,6 +501,7 @@ void DisplayServer::_bind_methods() {
 	BIND_ENUM_CONSTANT(FEATURE_NATIVE_ICON);
 	BIND_ENUM_CONSTANT(FEATURE_ORIENTATION);
 	BIND_ENUM_CONSTANT(FEATURE_SWAP_BUFFERS);
+	BIND_ENUM_CONSTANT(FEATURE_CLIPBOARD_PRIMARY);
 
 	BIND_ENUM_CONSTANT(MOUSE_MODE_VISIBLE);
 	BIND_ENUM_CONSTANT(MOUSE_MODE_HIDDEN);

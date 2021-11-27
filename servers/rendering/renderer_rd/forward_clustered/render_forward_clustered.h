@@ -129,6 +129,7 @@ class RenderForwardClustered : public RendererSceneRenderRD {
 	virtual void _base_uniforms_changed() override;
 	virtual RID _render_buffers_get_normal_texture(RID p_render_buffers) override;
 
+	bool base_uniform_set_updated = false;
 	void _update_render_base_uniform_set();
 	RID _setup_sdfgi_render_pass_uniform_set(RID p_albedo_texture, RID p_emission_texture, RID p_emission_aniso_texture, RID p_geom_facing_texture);
 	RID _setup_render_pass_uniform_set(RenderListType p_render_list, const RenderDataRD *p_render_data, RID p_radiance_texture, bool p_use_directional_shadow_atlas = false, int p_index = 0);
@@ -208,6 +209,8 @@ class RenderForwardClustered : public RendererSceneRenderRD {
 		INSTANCE_DATA_FLAG_MULTIMESH_HAS_CUSTOM_DATA = 1 << 15,
 		INSTANCE_DATA_FLAGS_PARTICLE_TRAIL_SHIFT = 16,
 		INSTANCE_DATA_FLAGS_PARTICLE_TRAIL_MASK = 0xFF,
+		INSTANCE_DATA_FLAGS_FADE_SHIFT = 24,
+		INSTANCE_DATA_FLAGS_FADE_MASK = 0xFF << INSTANCE_DATA_FLAGS_FADE_SHIFT
 	};
 
 	struct SceneState {
@@ -255,7 +258,8 @@ class RenderForwardClustered : public RendererSceneRenderRD {
 
 			float roughness_limiter_amount;
 			float roughness_limiter_limit;
-			uint32_t roughness_limiter_pad[2];
+			float opaque_prepass_threshold;
+			uint32_t roughness_limiter_pad;
 
 			float sdf_to_bounds[16];
 
@@ -466,6 +470,15 @@ class RenderForwardClustered : public RendererSceneRenderRD {
 		bool can_sdfgi = false;
 		bool using_projectors = false;
 		bool using_softshadows = false;
+		bool fade_near = false;
+		float fade_near_begin = 0;
+		float fade_near_end = 0;
+		bool fade_far = false;
+		float fade_far_begin = 0;
+		float fade_far_end = 0;
+		float force_alpha = 1.0;
+		float parent_fade_alpha = 1.0;
+
 		//used during setup
 		uint32_t base_flags = 0;
 		Transform3D transform;
@@ -591,6 +604,11 @@ protected:
 	virtual void _render_particle_collider_heightfield(RID p_fb, const Transform3D &p_cam_transform, const CameraMatrix &p_cam_projection, const PagedArray<GeometryInstance *> &p_instances) override;
 
 public:
+	_FORCE_INLINE_ virtual void update_uniform_sets() override {
+		base_uniform_set_updated = true;
+		_update_render_base_uniform_set();
+	}
+
 	virtual GeometryInstance *geometry_instance_create(RID p_base) override;
 	virtual void geometry_instance_set_skeleton(GeometryInstance *p_geometry_instance, RID p_skeleton) override;
 	virtual void geometry_instance_set_material_override(GeometryInstance *p_geometry_instance, RID p_override) override;
@@ -599,6 +617,9 @@ public:
 	virtual void geometry_instance_set_transform(GeometryInstance *p_geometry_instance, const Transform3D &p_transform, const AABB &p_aabb, const AABB &p_transformed_aabb) override;
 	virtual void geometry_instance_set_layer_mask(GeometryInstance *p_geometry_instance, uint32_t p_layer_mask) override;
 	virtual void geometry_instance_set_lod_bias(GeometryInstance *p_geometry_instance, float p_lod_bias) override;
+	virtual void geometry_instance_set_fade_range(GeometryInstance *p_geometry_instance, bool p_enable_near, float p_near_begin, float p_near_end, bool p_enable_far, float p_far_begin, float p_far_end) override;
+	virtual void geometry_instance_set_parent_fade_alpha(GeometryInstance *p_geometry_instance, float p_alpha) override;
+	virtual void geometry_instance_set_transparency(GeometryInstance *p_geometry_instance, float p_transparency) override;
 	virtual void geometry_instance_set_use_baked_light(GeometryInstance *p_geometry_instance, bool p_enable) override;
 	virtual void geometry_instance_set_use_dynamic_gi(GeometryInstance *p_geometry_instance, bool p_enable) override;
 	virtual void geometry_instance_set_use_lightmap(GeometryInstance *p_geometry_instance, RID p_lightmap_instance, const Rect2 &p_lightmap_uv_scale, int p_lightmap_slice_index) override;

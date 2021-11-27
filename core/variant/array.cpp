@@ -97,11 +97,38 @@ void Array::clear() {
 }
 
 bool Array::operator==(const Array &p_array) const {
-	return _p == p_array._p;
+	return recursive_equal(p_array, 0);
 }
 
 bool Array::operator!=(const Array &p_array) const {
-	return !operator==(p_array);
+	return !recursive_equal(p_array, 0);
+}
+
+bool Array::recursive_equal(const Array &p_array, int recursion_count) const {
+	// Cheap checks
+	if (_p == p_array._p) {
+		return true;
+	}
+	const Vector<Variant> &a1 = _p->array;
+	const Vector<Variant> &a2 = p_array._p->array;
+	const int size = a1.size();
+	if (size != a2.size()) {
+		return false;
+	}
+
+	// Heavy O(n) check
+	if (recursion_count > MAX_RECURSION) {
+		ERR_PRINT("Max recursion reached");
+		return true;
+	}
+	recursion_count++;
+	for (int i = 0; i < size; i++) {
+		if (!a1[i].hash_compare(a2[i], recursion_count)) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 bool Array::operator<(const Array &p_array) const {
@@ -132,10 +159,20 @@ bool Array::operator>=(const Array &p_array) const {
 }
 
 uint32_t Array::hash() const {
-	uint32_t h = hash_djb2_one_32(0);
+	return recursive_hash(0);
+}
 
+uint32_t Array::recursive_hash(int recursion_count) const {
+	if (recursion_count > MAX_RECURSION) {
+		ERR_PRINT("Max recursion reached");
+		return 0;
+	}
+
+	uint32_t h = hash_djb2_one_32(Variant::ARRAY);
+
+	recursion_count++;
 	for (int i = 0; i < _p->array.size(); i++) {
-		h = hash_djb2_one_32(_p->array[i].hash(), h);
+		h = hash_djb2_one_32(_p->array[i].recursive_hash(recursion_count), h);
 	}
 	return h;
 }
@@ -285,8 +322,8 @@ bool Array::has(const Variant &p_value) const {
 	return _p->array.find(p_value, 0) != -1;
 }
 
-void Array::remove(int p_pos) {
-	_p->array.remove(p_pos);
+void Array::remove_at(int p_pos) {
+	_p->array.remove_at(p_pos);
 }
 
 void Array::set(int p_idx, const Variant &p_value) {
@@ -300,12 +337,29 @@ const Variant &Array::get(int p_idx) const {
 }
 
 Array Array::duplicate(bool p_deep) const {
+	return recursive_duplicate(p_deep, 0);
+}
+
+Array Array::recursive_duplicate(bool p_deep, int recursion_count) const {
 	Array new_arr;
+
+	if (recursion_count > MAX_RECURSION) {
+		ERR_PRINT("Max recursion reached");
+		return new_arr;
+	}
+
 	int element_count = size();
 	new_arr.resize(element_count);
 	new_arr._p->typed = _p->typed;
-	for (int i = 0; i < element_count; i++) {
-		new_arr[i] = p_deep ? get(i).duplicate(p_deep) : get(i);
+	if (p_deep) {
+		recursion_count++;
+		for (int i = 0; i < element_count; i++) {
+			new_arr[i] = get(i).recursive_duplicate(true, recursion_count);
+		}
+	} else {
+		for (int i = 0; i < element_count; i++) {
+			new_arr[i] = get(i);
+		}
 	}
 
 	return new_arr;
@@ -522,7 +576,7 @@ Variant Array::pop_back() {
 Variant Array::pop_front() {
 	if (!_p->array.is_empty()) {
 		const Variant ret = _p->array.get(0);
-		_p->array.remove(0);
+		_p->array.remove_at(0);
 		return ret;
 	}
 	return Variant();
@@ -549,7 +603,7 @@ Variant Array::pop_at(int p_pos) {
 					_p->array.size()));
 
 	const Variant ret = _p->array.get(p_pos);
-	_p->array.remove(p_pos);
+	_p->array.remove_at(p_pos);
 	return ret;
 }
 

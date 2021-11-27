@@ -704,7 +704,7 @@ struct VariantIndexedSetGet_String {
 		String *b = VariantGetInternalPtr<String>::get_ptr(base);
 		const String *v = VariantInternal::get_string(value);
 		if (v->length() == 0) {
-			b->remove(index);
+			b->remove_at(index);
 		} else {
 			b->set(index, v->get(0));
 		}
@@ -723,7 +723,7 @@ struct VariantIndexedSetGet_String {
 		String *b = VariantGetInternalPtr<String>::get_ptr(base);
 		const String *v = VariantInternal::get_string(value);
 		if (v->length() == 0) {
-			b->remove(index);
+			b->remove_at(index);
 		} else {
 			b->set(index, v->get(0));
 		}
@@ -738,7 +738,7 @@ struct VariantIndexedSetGet_String {
 		OOB_TEST(index, v.length());
 		const String &m = *reinterpret_cast<const String *>(member);
 		if (unlikely(m.length() == 0)) {
-			v.remove(index);
+			v.remove_at(index);
 		} else {
 			v.set(index, m.unicode_at(0));
 		}
@@ -1824,11 +1824,15 @@ Variant Variant::iter_get(const Variant &r_iter, bool &r_valid) const {
 	return Variant();
 }
 
-Variant Variant::duplicate(bool deep) const {
+Variant Variant::duplicate(bool p_deep) const {
+	return recursive_duplicate(p_deep, 0);
+}
+
+Variant Variant::recursive_duplicate(bool p_deep, int recursion_count) const {
 	switch (type) {
 		case OBJECT: {
 			/*  breaks stuff :(
-			if (deep && !_get_obj().ref.is_null()) {
+			if (p_deep && !_get_obj().ref.is_null()) {
 				Ref<Resource> resource = _get_obj().ref;
 				if (resource.is_valid()) {
 					return resource->duplicate(true);
@@ -1838,9 +1842,9 @@ Variant Variant::duplicate(bool deep) const {
 			return *this;
 		} break;
 		case DICTIONARY:
-			return operator Dictionary().duplicate(deep);
+			return operator Dictionary().recursive_duplicate(p_deep, recursion_count);
 		case ARRAY:
-			return operator Array().duplicate(deep);
+			return operator Array().recursive_duplicate(p_deep, recursion_count);
 		case PACKED_BYTE_ARRAY:
 			return operator Vector<uint8_t>().duplicate();
 		case PACKED_INT32_ARRAY:

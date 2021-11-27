@@ -73,8 +73,8 @@ Dictionary Control::_edit_get_state() const {
 
 void Control::_edit_set_state(const Dictionary &p_state) {
 	ERR_FAIL_COND((p_state.size() <= 0) ||
-				  !p_state.has("rotation") || !p_state.has("scale") ||
-				  !p_state.has("pivot") || !p_state.has("anchors") || !p_state.has("offsets"));
+			!p_state.has("rotation") || !p_state.has("scale") ||
+			!p_state.has("pivot") || !p_state.has("anchors") || !p_state.has("offsets"));
 	Dictionary state = p_state;
 
 	set_rotation(state["rotation"]);
@@ -400,7 +400,7 @@ void Control::_get_property_list(List<PropertyInfo> *p_list) const {
 				usage |= PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_CHECKED;
 			}
 
-			p_list->push_back(PropertyInfo(Variant::INT, "theme_override_font_sizes/" + E, PROPERTY_HINT_NONE, "", usage));
+			p_list->push_back(PropertyInfo(Variant::INT, "theme_override_font_sizes/" + E, PROPERTY_HINT_RANGE, "1,256,1,or_greater", usage));
 		}
 	}
 	{
@@ -637,7 +637,9 @@ void Control::_notification(int p_notification) {
 				}
 			} else {
 				//is a regular root control or top_level
-				data.RI = get_viewport()->_gui_add_root_control(this);
+				Viewport *viewport = get_viewport();
+				ERR_FAIL_COND(!viewport);
+				data.RI = viewport->_gui_add_root_control(this);
 			}
 
 			data.parent_canvas_item = get_parent_item();
@@ -646,7 +648,9 @@ void Control::_notification(int p_notification) {
 				data.parent_canvas_item->connect("item_rect_changed", callable_mp(this, &Control::_size_changed));
 			} else {
 				//connect viewport
-				get_viewport()->connect("size_changed", callable_mp(this, &Control::_size_changed));
+				Viewport *viewport = get_viewport();
+				ERR_FAIL_COND(!viewport);
+				viewport->connect("size_changed", callable_mp(this, &Control::_size_changed));
 			}
 		} break;
 		case NOTIFICATION_EXIT_CANVAS: {
@@ -655,7 +659,9 @@ void Control::_notification(int p_notification) {
 				data.parent_canvas_item = nullptr;
 			} else if (!is_set_as_top_level()) {
 				//disconnect viewport
-				get_viewport()->disconnect("size_changed", callable_mp(this, &Control::_size_changed));
+				Viewport *viewport = get_viewport();
+				ERR_FAIL_COND(!viewport);
+				viewport->disconnect("size_changed", callable_mp(this, &Control::_size_changed));
 			}
 
 			if (data.RI) {
@@ -802,6 +808,10 @@ void Control::set_drag_preview(Control *p_control) {
 	ERR_FAIL_COND(!is_inside_tree());
 	ERR_FAIL_COND(!get_viewport()->gui_is_dragging());
 	get_viewport()->_gui_set_drag_preview(this, p_control);
+}
+
+bool Control::is_drag_successful() const {
+	return is_inside_tree() && get_viewport()->gui_is_drag_successful();
 }
 
 void Control::_call_gui_input(const Ref<InputEvent> &p_event) {
@@ -979,7 +989,7 @@ Ref<StyleBox> Control::get_theme_stylebox(const StringName &p_name, const String
 Ref<Font> Control::get_theme_font(const StringName &p_name, const StringName &p_theme_type) const {
 	if (p_theme_type == StringName() || p_theme_type == get_class_name() || p_theme_type == data.theme_type_variation) {
 		const Ref<Font> *font = data.font_override.getptr(p_name);
-		if (font) {
+		if (font && (*font)->get_data_count() > 0) {
 			return *font;
 		}
 	}
@@ -992,7 +1002,7 @@ Ref<Font> Control::get_theme_font(const StringName &p_name, const StringName &p_
 int Control::get_theme_font_size(const StringName &p_name, const StringName &p_theme_type) const {
 	if (p_theme_type == StringName() || p_theme_type == get_class_name() || p_theme_type == data.theme_type_variation) {
 		const int *font_size = data.font_size_override.getptr(p_name);
-		if (font_size) {
+		if (font_size && (*font_size) > 0) {
 			return *font_size;
 		}
 	}
@@ -1815,6 +1825,10 @@ Size2 Control::get_size() const {
 	return data.size_cache;
 }
 
+void Control::reset_size() {
+	set_size(Size2());
+}
+
 Rect2 Control::get_global_rect() const {
 	return Rect2(get_global_position(), get_size());
 }
@@ -2580,16 +2594,6 @@ void Control::warp_mouse(const Point2 &p_to_pos) {
 }
 
 bool Control::is_text_field() const {
-	/*
-    if (get_script_instance()) {
-        Variant v=p_point;
-        const Variant *p[2]={&v,&p_data};
-        Callable::CallError ce;
-        Variant ret = get_script_instance()->call("is_text_field",p,2,ce);
-        if (ce.error==Callable::CallError::CALL_OK)
-            return ret;
-    }
-  */
 	return false;
 }
 
@@ -2845,6 +2849,7 @@ void Control::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_position", "position", "keep_offsets"), &Control::set_position, DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("_set_position", "position"), &Control::_set_position);
 	ClassDB::bind_method(D_METHOD("set_size", "size", "keep_offsets"), &Control::set_size, DEFVAL(false));
+	ClassDB::bind_method(D_METHOD("reset_size"), &Control::reset_size);
 	ClassDB::bind_method(D_METHOD("_set_size", "size"), &Control::_set_size);
 	ClassDB::bind_method(D_METHOD("set_custom_minimum_size", "size"), &Control::set_custom_minimum_size);
 	ClassDB::bind_method(D_METHOD("set_global_position", "position", "keep_offsets"), &Control::set_global_position, DEFVAL(false));
@@ -2968,6 +2973,7 @@ void Control::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("set_drag_forwarding", "target"), &Control::set_drag_forwarding);
 	ClassDB::bind_method(D_METHOD("set_drag_preview", "control"), &Control::set_drag_preview);
+	ClassDB::bind_method(D_METHOD("is_drag_successful"), &Control::is_drag_successful);
 
 	ClassDB::bind_method(D_METHOD("warp_mouse", "to_position"), &Control::warp_mouse);
 

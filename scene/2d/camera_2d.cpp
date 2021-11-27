@@ -232,6 +232,7 @@ void Camera2D::_notification(int p_what) {
 
 		} break;
 		case NOTIFICATION_ENTER_TREE: {
+			ERR_FAIL_COND(!is_inside_tree());
 			if (custom_viewport && ObjectDB::get_instance(custom_viewport_id)) {
 				viewport = custom_viewport;
 			} else {
@@ -660,7 +661,7 @@ bool Camera2D::is_margin_drawing_enabled() const {
 
 void Camera2D::_validate_property(PropertyInfo &property) const {
 	if (!smoothing_enabled && property.name == "smoothing_speed") {
-		property.usage = PROPERTY_USAGE_NOEDITOR;
+		property.usage = PROPERTY_USAGE_NO_EDITOR;
 	}
 }
 

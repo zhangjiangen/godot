@@ -12,8 +12,8 @@
 		[b]Note:[/b] Unless otherwise specified, all methods that have angle parameters must have angles specified as [i]radians[/i]. To convert degrees to radians, use [method @GlobalScope.deg2rad].
 	</description>
 	<tutorials>
-		<link title="Viewport and canvas transforms">https://docs.godotengine.org/en/latest/tutorials/2d/2d_transforms.html</link>
-		<link title="Custom drawing in 2D">https://docs.godotengine.org/en/latest/tutorials/2d/custom_drawing_in_2d.html</link>
+		<link title="Viewport and canvas transforms">$DOCS_URL/tutorials/2d/2d_transforms.html</link>
+		<link title="Custom drawing in 2D">$DOCS_URL/tutorials/2d/custom_drawing_in_2d.html</link>
 		<link title="Audio Spectrum Demo">https://godotengine.org/asset-library/asset/528</link>
 	</tutorials>
 	<methods>
@@ -53,7 +53,7 @@
 			<argument index="1" name="pos" type="Vector2" />
 			<argument index="2" name="char" type="String" />
 			<argument index="3" name="next" type="String" default="&quot;&quot;" />
-			<argument index="4" name="size" type="int" default="-1" />
+			<argument index="4" name="size" type="int" default="16" />
 			<argument index="5" name="modulate" type="Color" default="Color(1, 1, 1, 1)" />
 			<argument index="6" name="outline_size" type="int" default="0" />
 			<argument index="7" name="outline_modulate" type="Color" default="Color(1, 1, 1, 0)" />
@@ -146,7 +146,7 @@
 			<argument index="3" name="align" type="int" enum="HAlign" default="0" />
 			<argument index="4" name="width" type="float" default="-1" />
 			<argument index="5" name="max_lines" type="int" default="-1" />
-			<argument index="6" name="size" type="int" default="-1" />
+			<argument index="6" name="size" type="int" default="16" />
 			<argument index="7" name="modulate" type="Color" default="Color(1, 1, 1, 1)" />
 			<argument index="8" name="outline_size" type="int" default="0" />
 			<argument index="9" name="outline_modulate" type="Color" default="Color(1, 1, 1, 0)" />
@@ -238,7 +238,7 @@
 			<argument index="2" name="text" type="String" />
 			<argument index="3" name="align" type="int" enum="HAlign" default="0" />
 			<argument index="4" name="width" type="float" default="-1" />
-			<argument index="5" name="size" type="int" default="-1" />
+			<argument index="5" name="size" type="int" default="16" />
 			<argument index="6" name="modulate" type="Color" default="Color(1, 1, 1, 1)" />
 			<argument index="7" name="outline_size" type="int" default="0" />
 			<argument index="8" name="outline_modulate" type="Color" default="Color(1, 1, 1, 0)" />
