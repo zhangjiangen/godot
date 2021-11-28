@@ -17,9 +17,6 @@ EnsurePythonVersion(3, 6)
 # System
 
 # Local
-<< << << < HEAD
-== == == =
->>>>>> > master
 
 # Scan possible build platforms
 

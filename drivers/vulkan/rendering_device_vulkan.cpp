@@ -4394,7 +4394,7 @@ String RenderingDeviceVulkan::_shader_uniform_debug(RID p_shader, int p_set) {
 			if (ret != String()) {
 				ret += "\n";
 			}
-			ret += "            Binding: " + itos(ui.binding) + "stage: " + shader_stage_names[ui.stages] + " Type: " + shader_uniform_names[ui.type] + " Length: " + itos(ui.length);
+			ret += "            Binding: " + itos(ui.binding) + "stage: " + itos(ui.stages) + " Type: " + shader_uniform_names[ui.type] + " Length: " + itos(ui.length);
 		}
 		ret += "\n        }\n";
 	}

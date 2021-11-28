@@ -158,14 +158,13 @@ def configure(env):
             env.Append(CCFLAGS=["-fsanitize=thread"])
             env.Append(LINKFLAGS=["-fsanitize=thread"])
 
-
-   if env["use_coverage"]:
+    if env["use_coverage"]:
         env.Append(CCFLAGS=["-ftest-coverage", "-fprofile-arcs"])
         env.Append(LINKFLAGS=["-ftest-coverage", "-fprofile-arcs"])
 
     # Dependencies
 
-   if env["builtin_libtheora"]:
+    if env["builtin_libtheora"]:
         if env["arch"] != "arm64":
             env["x86_libtheora_opt_gcc"] = True
 
@@ -200,17 +199,17 @@ def configure(env):
     )
     env.Append(LIBS=["pthread", "z"])
 
-   if env["opengl3"]:
+    if env["opengl3"]:
         env.Append(CPPDEFINES=["GLES_ENABLED", "GLES3_ENABLED"])
         # Disable deprecation warnings
         env.Append(CCFLAGS=["-Wno-deprecated-declarations"])
         env.Append(LINKFLAGS=["-framework", "OpenGL"])
 
-   if env["vulkan"]:
+    if env["vulkan"]:
         env.Append(CPPDEFINES=["VULKAN_ENABLED"])
         env.Append(LINKFLAGS=["-framework", "Metal", "-framework",
                    "QuartzCore", "-framework", "IOSurface"])
         if not env["use_volk"]:
-   # env.Append(LINKFLAGS="/Users/zhangjiangen/Downloads/vulkansdk-macos-1.2.135.0/lib/macos-arm64_x86_64/libMoltenVK.a")
-
-   env.Append(LINKFLAGS=["-L$VULKAN_SDK_PATH/MoltenVK/MoltenVK.xcframework/macos-arm64_x86_64/", "-lMoltenVK"])
+           # env.Append(LINKFLAGS="/Users/zhangjiangen/Downloads/vulkansdk-macos-1.2.135.0/lib/macos-arm64_x86_64/libMoltenVK.a")
+            env.Append(LINKFLAGS=[
+                       "-L$VULKAN_SDK_PATH/MoltenVK/MoltenVK.xcframework/macos-arm64_x86_64/", "-lMoltenVK"])
