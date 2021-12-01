@@ -4293,7 +4293,7 @@ ShaderLanguage::Node *ShaderLanguage::_parse_array_size(BlockNode *p_block, cons
 	return n;
 }
 
-Error ShaderLanguage::_parse_global_array_size(int &r_array_size) {
+Error ShaderLanguage::_parse_global_array_size(int &r_array_size, const FunctionInfo &p_function_info) {
 	if (r_array_size > 0) {
 		_set_error("Array size is already defined!");
 		return ERR_PARSE_ERROR;
@@ -4305,7 +4305,7 @@ Error ShaderLanguage::_parse_global_array_size(int &r_array_size) {
 
 	if (tk.type != TK_INT_CONSTANT || ((int)tk.constant) <= 0) {
 		_set_tkpos(pos);
-		Node *n = _parse_array_size(nullptr, FunctionInfo(), array_size);
+		Node *n = _parse_array_size(nullptr, p_function_info, array_size);
 		if (!n) {
 			return ERR_PARSE_ERROR;
 		}
@@ -5208,9 +5208,21 @@ ShaderLanguage::Node *ShaderLanguage::_parse_expression(BlockNode *p_block, cons
 			expression.push_back(e);
 			continue;
 		} else {
-			_set_error("Expected expression, found: " + get_token_text(tk));
-			return nullptr;
-			//nothing
+			if (tk.type != TK_SEMICOLON) {
+				_set_error("Expected expression, found: " + get_token_text(tk));
+				return nullptr;
+			} else {
+#if DEBUG_ENABLED
+				if (check_warnings && HAS_WARNING(ShaderWarning::FORMATTING_ERROR_FLAG)) {
+					_add_line_warning(ShaderWarning::FORMATTING_ERROR, "Empty statement. Remove ';' to fix this warning.");
+				}
+#endif // DEBUG_ENABLED
+				_set_tkpos(prepos);
+
+				OperatorNode *func = alloc_node<OperatorNode>();
+				func->op = OP_EMPTY;
+				expr = func;
+			}
 		}
 
 		ERR_FAIL_COND_V(!expr, nullptr);
@@ -6386,7 +6398,7 @@ Error ShaderLanguage::_parse_block(BlockNode *p_block, const FunctionInfo &p_fun
 				ArrayDeclarationNode::Declaration adecl;
 
 				if (tk.type != TK_IDENTIFIER && tk.type != TK_BRACKET_OPEN) {
-					_set_error("Expected identifier or '[' after type.");
+					_set_error("Expected identifier or '[' after datatype.");
 					return ERR_PARSE_ERROR;
 				}
 
@@ -7446,6 +7458,7 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 	ShaderNode::Uniform::Scope uniform_scope = ShaderNode::Uniform::SCOPE_LOCAL;
 
 	stages = &p_functions;
+	const FunctionInfo &constants = p_functions.has("constants") ? p_functions["constants"] : FunctionInfo();
 
 	while (tk.type != TK_EOF) {
 		switch (tk.type) {
@@ -7561,7 +7574,7 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 						int array_size = 0;
 
 						if (tk.type == TK_BRACKET_OPEN) {
-							Error error = _parse_global_array_size(array_size);
+							Error error = _parse_global_array_size(array_size, constants);
 							if (error != OK) {
 								return error;
 							}
@@ -7588,7 +7601,7 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 						tk = _get_token();
 
 						if (tk.type == TK_BRACKET_OPEN) {
-							Error error = _parse_global_array_size(member->array_size);
+							Error error = _parse_global_array_size(member->array_size, constants);
 							if (error != OK) {
 								return error;
 							}
@@ -7715,7 +7728,7 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 				}
 
 				if (tk.type == TK_BRACKET_OPEN) {
-					Error error = _parse_global_array_size(array_size);
+					Error error = _parse_global_array_size(array_size, constants);
 					if (error != OK) {
 						return error;
 					}
@@ -7730,7 +7743,7 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 				prev_pos = _get_tkpos();
 				name = tk.text;
 
-				if (_find_identifier(nullptr, false, FunctionInfo(), name)) {
+				if (_find_identifier(nullptr, false, constants, name)) {
 					_set_error("Redefinition of '" + String(name) + "'");
 					return ERR_PARSE_ERROR;
 				}
@@ -7763,7 +7776,7 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 
 					tk = _get_token();
 					if (tk.type == TK_BRACKET_OPEN) {
-						Error error = _parse_global_array_size(uniform2.array_size);
+						Error error = _parse_global_array_size(uniform2.array_size, constants);
 						if (error != OK) {
 							return error;
 						}
@@ -8017,7 +8030,7 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 							return ERR_PARSE_ERROR;
 						}
 
-						Node *expr = _parse_and_reduce_expression(nullptr, FunctionInfo());
+						Node *expr = _parse_and_reduce_expression(nullptr, constants);
 						if (!expr) {
 							return ERR_PARSE_ERROR;
 						}
@@ -8113,7 +8126,7 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 				DataPrecision precision = PRECISION_DEFAULT;
 				DataType type;
 				StringName name;
-				int return_array_size = 0;
+				int array_size = 0;
 
 				if (tk.type == TK_CONST) {
 					is_constant = true;
@@ -8152,13 +8165,19 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 				prev_pos = _get_tkpos();
 				tk = _get_token();
 
+				bool unknown_size = false;
+
 				if (tk.type == TK_BRACKET_OPEN) {
+					if (is_constant && RenderingServer::get_singleton()->is_low_end()) {
+						_set_error("Global const arrays are only supported on high-end platform!");
+						return ERR_PARSE_ERROR;
+					}
 					bool error = false;
 					tk = _get_token();
 
 					if (tk.type == TK_INT_CONSTANT) {
-						return_array_size = (int)tk.constant;
-						if (return_array_size > 0) {
+						array_size = (int)tk.constant;
+						if (array_size > 0) {
 							tk = _get_token();
 							if (tk.type != TK_BRACKET_CLOSE) {
 								_set_error("Expected ']'");
@@ -8167,11 +8186,13 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 						} else {
 							error = true;
 						}
+					} else if (tk.type == TK_BRACKET_CLOSE) {
+						unknown_size = true;
 					} else {
 						error = true;
 					}
 					if (error) {
-						_set_error("Expected integer constant > 0");
+						_set_error("Expected integer constant > 0 or ']'");
 						return ERR_PARSE_ERROR;
 					}
 
@@ -8183,11 +8204,15 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 				_get_completable_identifier(nullptr, COMPLETION_MAIN_FUNCTION, name);
 
 				if (name == StringName()) {
-					_set_error("Expected function name after datatype");
+					if (is_constant) {
+						_set_error("Expected identifier or '[' after datatype.");
+					} else {
+						_set_error("Expected function name after datatype.");
+					}
 					return ERR_PARSE_ERROR;
 				}
 
-				if (_find_identifier(nullptr, false, FunctionInfo(), name)) {
+				if (_find_identifier(nullptr, false, constants, name)) {
 					_set_error("Redefinition of '" + String(name) + "'");
 					return ERR_PARSE_ERROR;
 				}
@@ -8205,7 +8230,7 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 					}
 
 					//variable
-
+					bool first = true;
 					while (true) {
 						ShaderNode::Constant constant;
 						constant.name = name;
@@ -8213,16 +8238,18 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 						constant.type_str = struct_name;
 						constant.precision = precision;
 						constant.initializer = nullptr;
-						constant.array_size = 0;
-
-						bool unknown_size = false;
+						constant.array_size = (first ? array_size : 0);
+						first = false;
 
 						if (tk.type == TK_BRACKET_OPEN) {
 							if (RenderingServer::get_singleton()->is_low_end()) {
-								_set_error("Global const arrays are supported only on high-end platform!");
+								_set_error("Global const arrays are only supported on high-end platform!");
 								return ERR_PARSE_ERROR;
 							}
-
+							if (constant.array_size > 0 || unknown_size) {
+								_set_error("Array size is already defined!");
+								return ERR_PARSE_ERROR;
+							}
 							tk = _get_token();
 							if (tk.type == TK_BRACKET_CLOSE) {
 								unknown_size = true;
@@ -8300,7 +8327,7 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 										} else {
 											_set_tkpos(prev_pos);
 
-											Node *n = _parse_and_reduce_expression(nullptr, FunctionInfo());
+											Node *n = _parse_and_reduce_expression(nullptr, constants);
 											if (!n || n->type != Node::TYPE_CONSTANT || n->get_datatype() != TYPE_INT) {
 												_set_error("Expected single integer constant > 0");
 												return ERR_PARSE_ERROR;
@@ -8381,7 +8408,7 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 
 								if (tk.type == TK_PARENTHESIS_OPEN || curly) { // initialization
 									while (true) {
-										Node *n = _parse_and_reduce_expression(nullptr, FunctionInfo());
+										Node *n = _parse_and_reduce_expression(nullptr, constants);
 										if (!n) {
 											return ERR_PARSE_ERROR;
 										}
@@ -8436,7 +8463,7 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 								constant.initializer = static_cast<ConstantNode *>(expr);
 							} else {
 								//variable created with assignment! must parse an expression
-								Node *expr = _parse_and_reduce_expression(nullptr, FunctionInfo());
+								Node *expr = _parse_and_reduce_expression(nullptr, constants);
 								if (!expr) {
 									return ERR_PARSE_ERROR;
 								}
@@ -8452,7 +8479,7 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 
 								constant.initializer = static_cast<ConstantNode *>(expr);
 
-								if (!_compare_datatypes(type, struct_name, 0, expr->get_datatype(), expr->get_datatype_name(), 0)) {
+								if (!_compare_datatypes(type, struct_name, 0, expr->get_datatype(), expr->get_datatype_name(), expr->get_array_size())) {
 									return ERR_PARSE_ERROR;
 								}
 							}
@@ -8483,7 +8510,7 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 							}
 
 							name = tk.text;
-							if (_find_identifier(nullptr, false, FunctionInfo(), name)) {
+							if (_find_identifier(nullptr, false, constants, name)) {
 								_set_error("Redefinition of '" + String(name) + "'");
 								return ERR_PARSE_ERROR;
 							}
@@ -8517,6 +8544,12 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 					}
 				}
 
+				if (p_functions.has("constants")) { // Adds global constants: 'PI', 'TAU', 'E'
+					for (const KeyValue<StringName, BuiltInInfo> &E : p_functions["constants"].built_ins) {
+						builtins.built_ins.insert(E.key, E.value);
+					}
+				}
+
 				ShaderNode::Function function;
 
 				function.callable = !p_functions.has(name);
@@ -8532,7 +8565,7 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 				func_node->return_type = type;
 				func_node->return_struct_name = struct_name;
 				func_node->return_precision = precision;
-				func_node->return_array_size = return_array_size;
+				func_node->return_array_size = array_size;
 
 				if (p_functions.has(name)) {
 					func_node->can_discard = p_functions[name].can_discard;
@@ -8586,7 +8619,7 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 					StringName param_struct_name;
 					DataPrecision pprecision = PRECISION_DEFAULT;
 					bool use_precision = false;
-					int array_size = 0;
+					int arg_array_size = 0;
 
 					if (is_token_precision(tk.type)) {
 						pprecision = get_token_precision(tk.type);
@@ -8637,9 +8670,9 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 						tk = _get_token();
 
 						if (tk.type == TK_INT_CONSTANT) {
-							array_size = (int)tk.constant;
+							arg_array_size = (int)tk.constant;
 
-							if (array_size > 0) {
+							if (arg_array_size > 0) {
 								tk = _get_token();
 								if (tk.type != TK_BRACKET_CLOSE) {
 									_set_error("Expected ']'");
@@ -8691,7 +8724,7 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 
 					tk = _get_token();
 					if (tk.type == TK_BRACKET_OPEN) {
-						if (array_size > 0) {
+						if (arg_array_size > 0) {
 							_set_error("Array size is already defined!");
 							return ERR_PARSE_ERROR;
 						}
@@ -8699,9 +8732,9 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 						tk = _get_token();
 
 						if (tk.type == TK_INT_CONSTANT) {
-							array_size = (int)tk.constant;
+							arg_array_size = (int)tk.constant;
 
-							if (array_size > 0) {
+							if (arg_array_size > 0) {
 								tk = _get_token();
 								if (tk.type != TK_BRACKET_CLOSE) {
 									_set_error("Expected ']'");
@@ -8721,7 +8754,7 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 						tk = _get_token();
 					}
 
-					arg.array_size = array_size;
+					arg.array_size = arg_array_size;
 					func_node->arguments.push_back(arg);
 
 					if (tk.type == TK_COMMA) {
@@ -9059,6 +9092,16 @@ Error ShaderLanguage::complete(const String &p_code, const Map<StringName, Funct
 				if (comp_ident) {
 					if (p_functions.has("global")) {
 						for (const KeyValue<StringName, BuiltInInfo> &E : p_functions["global"].built_ins) {
+							ScriptCodeCompletionOption::Kind kind = ScriptCodeCompletionOption::KIND_MEMBER;
+							if (E.value.constant) {
+								kind = ScriptCodeCompletionOption::KIND_CONSTANT;
+							}
+							matches.insert(E.key, kind);
+						}
+					}
+
+					if (p_functions.has("constants")) {
+						for (const KeyValue<StringName, BuiltInInfo> &E : p_functions["constants"].built_ins) {
 							ScriptCodeCompletionOption::Kind kind = ScriptCodeCompletionOption::KIND_MEMBER;
 							if (E.value.constant) {
 								kind = ScriptCodeCompletionOption::KIND_CONSTANT;
