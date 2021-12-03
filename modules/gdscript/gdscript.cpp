@@ -1925,6 +1925,9 @@ void GDScriptLanguage::reload_tool_script(const Ref<Script> &p_script, bool p_so
 			}
 			obj->set_script(scr);
 
+            // 跳过按钮和不存档的属性
+            List<PropertyInfo> p_list;
+            obj->get_property_list(&p_list,true);
 			ScriptInstance *script_instance = obj->get_script_instance();
 
 			if (!script_instance) {
@@ -1942,7 +1945,25 @@ void GDScriptLanguage::reload_tool_script(const Ref<Script> &p_script, bool p_so
 				}
 			} else {
 				for (List<Pair<StringName, Variant>>::Element *G = saved_state.front(); G; G = G->next()) {
-					script_instance->set(G->get().first, G->get().second);
+                    
+                    bool is_skip = false;
+                    for(int p = 0; p < p_list.size(); ++p)
+                    {
+                        if(p_list[p].name == G->get().first)
+                        {
+                            if(p_list[p].hint == PROPERTY_HINT_BUTTON
+                             || (p_list[p].usage & PROPERTY_USAGE_STORAGE) == 0)
+                            {
+                                is_skip = true;
+                            }
+                            break;
+                        }
+                    }
+                    // 跳过按钮和不用存档的属性
+                    if(is_skip == false)
+                    {
+                        script_instance->set(G->get().first, G->get().second);
+                    }
 				}
 			}
 

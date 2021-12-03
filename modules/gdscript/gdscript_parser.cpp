@@ -138,7 +138,11 @@ GDScriptParser::GDScriptParser() {
 	// TODO: Warning annotations.
 
 	// 增加一个按钮，必须是bool类型
-	register_annotation(MethodInfo("@export_button", { Variant::STRING, "hint1" }), AnnotationInfo::VARIABLE, &GDScriptParser::export_annotations<PROPERTY_HINT_BUTTON, Variant::BOOL>, 1, true);
+	register_annotation(MethodInfo("@export_button", { Variant::STRING, "hint1" }), AnnotationInfo::VARIABLE, &GDScriptParser::export_annotations<PROPERTY_HINT_BUTTON, Variant::OBJECT>, 1, true);
+	register_annotation(MethodInfo("@export_resource", { Variant::STRING, "resource_type_name" }), AnnotationInfo::VARIABLE, &GDScriptParser::export_annotations<PROPERTY_HINT_RESOURCE_TYPE, Variant::OBJECT>, 1, true);
+	register_annotation(MethodInfo("@export_preview_res", { Variant::STRING, "resource_type_name" }), AnnotationInfo::VARIABLE, &GDScriptParser::export_annotations< PROPERTY_HINT_RESOURCE_TYPE, Variant::OBJECT>, 1, true);
+
+	register_annotation(MethodInfo("@export_resource_list", { Variant::STRING, "resource_type_name" }), AnnotationInfo::VARIABLE, &GDScriptParser::export_annotations<PROPERTY_HINT_RESOURCE_TYPE, Variant::ARRAY>, 1, true);
 }
 
 GDScriptParser::~GDScriptParser() {
@@ -3505,6 +3509,10 @@ bool GDScriptParser::export_annotations(const AnnotationNode *p_annotation, Node
 
 	// This is called after tne analyzer is done finding the type, so this should be set here.
 	DataType export_type = variable->get_datatype();
+	if(p_annotation->name == "@export_preview_res")
+	{
+		variable->export_info.usage = PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_EDITOR_INSTANTIATE_OBJECT;
+	}
 
 	if (p_annotation->name == "@export") {
 		if (variable->datatype_specifier == nullptr && variable->initializer == nullptr) {

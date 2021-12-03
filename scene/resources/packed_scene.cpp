@@ -273,7 +273,29 @@ Node *SceneState::instantiate(GenEditState p_edit_state) const {
 						} else if (p_edit_state == GEN_EDIT_STATE_INSTANCE) {
 							value = value.duplicate(true); // Duplicate arrays and dictionaries for the editor
 						}
-						node->set(snames[nprops[j].name], value, &valid);
+						bool is_skip = false;
+                        // 跳过按钮和不存档的属性
+                        List<PropertyInfo> p_list;
+                        node->get_property_list(&p_list,true);
+                        String pro_name,dest_name;
+                        dest_name = snames[nprops[j].name];
+						for(int p = 0; p < p_list.size(); ++p)
+						{
+                            pro_name = p_list[p].name;
+							if(pro_name == dest_name)
+							{
+								if(p_list[p].hint == PROPERTY_HINT_BUTTON
+								 || (p_list[p].usage & PROPERTY_USAGE_STORAGE) == 0)
+								{
+									is_skip = true;
+								}
+								break;
+							}
+						}
+						if(is_skip == false)
+						{
+							node->set(dest_name, value, &valid);
+						}
 					}
 				}
 			}
