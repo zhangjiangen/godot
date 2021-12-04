@@ -558,6 +558,7 @@ GDScriptParser::DataType GDScriptAnalyzer::resolve_datatype(GDScriptParser::Type
 		}
 	}
 	if (!result.is_set()) {
+		
 		push_error(vformat(R"("%s" was not found in the current scope.)", first), p_type);
 		result.kind = GDScriptParser::DataType::VARIANT; // Leave Variant anyway so future type check don't use an unresolved type.
 		return result;

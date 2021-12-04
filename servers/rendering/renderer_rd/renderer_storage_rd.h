@@ -2306,23 +2306,23 @@ public:
 
 	/* FOG VOLUMES */
 
-	virtual RID fog_volume_allocate();
-	virtual void fog_volume_initialize(RID p_rid);
+	virtual RID fog_volume_allocate() override;
+	virtual void fog_volume_initialize(RID p_rid)override;
 
-	virtual void fog_volume_set_shape(RID p_fog_volume, RS::FogVolumeShape p_shape);
-	virtual void fog_volume_set_extents(RID p_fog_volume, const Vector3 &p_extents);
-	virtual void fog_volume_set_material(RID p_fog_volume, RID p_material);
-	virtual RS::FogVolumeShape fog_volume_get_shape(RID p_fog_volume) const;
+	virtual void fog_volume_set_shape(RID p_fog_volume, RS::FogVolumeShape p_shape)override;
+	virtual void fog_volume_set_extents(RID p_fog_volume, const Vector3 &p_extents)override;
+	virtual void fog_volume_set_material(RID p_fog_volume, RID p_material)override;
+	virtual RS::FogVolumeShape fog_volume_get_shape(RID p_fog_volume) const override;
 	virtual RID fog_volume_get_material(RID p_fog_volume) const;
-	virtual AABB fog_volume_get_aabb(RID p_fog_volume) const;
+	virtual AABB fog_volume_get_aabb(RID p_fog_volume) const override;
 	virtual Vector3 fog_volume_get_extents(RID p_fog_volume) const;
 
 	/* VISIBILITY NOTIFIER */
 
-	virtual RID visibility_notifier_allocate();
-	virtual void visibility_notifier_initialize(RID p_notifier);
-	virtual void visibility_notifier_set_aabb(RID p_notifier, const AABB &p_aabb);
-	virtual void visibility_notifier_set_callbacks(RID p_notifier, const Callable &p_enter_callbable, const Callable &p_exit_callable);
+	virtual RID visibility_notifier_allocate()override;
+	virtual void visibility_notifier_initialize(RID p_notifier)override;
+	virtual void visibility_notifier_set_aabb(RID p_notifier, const AABB &p_aabb)override;
+	virtual void visibility_notifier_set_callbacks(RID p_notifier, const Callable &p_enter_callbable, const Callable &p_exit_callable)override;
 
 	virtual AABB visibility_notifier_get_aabb(RID p_notifier) const override;
 	virtual void visibility_notifier_call(RID p_notifier, bool p_enter, bool p_deferred) override;

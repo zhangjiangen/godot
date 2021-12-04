@@ -53,6 +53,7 @@ public:
 	enum {
 		NOTIFICATION_PRE_SORT_CHILDREN = 50,
 		NOTIFICATION_SORT_CHILDREN = 51,
+		NOTIFICATION_START_FLOATING = 51,
 	};
 
 	void fit_child_in_rect(Control *p_child, const Rect2 &p_rect);
