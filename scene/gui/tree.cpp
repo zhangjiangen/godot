@@ -2532,7 +2532,7 @@ int Tree::propagate_mouse_event(const Point2i &p_pos, int x_ofs, int y_ofs, int 
 					}
 
 					popup_menu->set_size(Size2(col_width, 0));
-					popup_menu->set_position(get_global_position() + Point2i(col_ofs, _get_title_button_height() + y_ofs + item_h) - cache.offset);
+					popup_menu->set_position(get_screen_position() + Point2i(col_ofs, _get_title_button_height() + y_ofs + item_h) - cache.offset);
 					popup_menu->popup();
 					popup_edited_item = p_item;
 					popup_edited_item_col = col;
@@ -3441,7 +3441,7 @@ bool Tree::edit_selected() {
 		}
 
 		popup_menu->set_size(Size2(rect.size.width, 0));
-		popup_menu->set_position(get_global_position() + rect.position + Point2i(0, rect.size.height));
+		popup_menu->set_position(get_screen_position() + rect.position + Point2i(0, rect.size.height));
 		popup_menu->popup();
 		popup_edited_item = s;
 		popup_edited_item_col = col;
@@ -4370,7 +4370,7 @@ void Tree::scroll_to_item(TreeItem *p_item) {
 
 void Tree::set_h_scroll_enabled(bool p_enable) {
 	h_scroll_enabled = p_enable;
-	minimum_size_changed();
+	update_minimum_size();
 }
 
 bool Tree::is_h_scroll_enabled() const {
@@ -4379,7 +4379,7 @@ bool Tree::is_h_scroll_enabled() const {
 
 void Tree::set_v_scroll_enabled(bool p_enable) {
 	v_scroll_enabled = p_enable;
-	minimum_size_changed();
+	update_minimum_size();
 }
 
 bool Tree::is_v_scroll_enabled() const {

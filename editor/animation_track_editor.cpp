@@ -2884,8 +2884,7 @@ void AnimationTrackEdit::gui_input(const Ref<InputEvent> &p_event) {
 			}
 			menu->set_as_minsize();
 
-			Vector2 popup_pos = get_screen_transform().xform(get_local_mouse_position());
-			menu->set_position(popup_pos);
+			menu->set_position(get_screen_position() + get_local_mouse_position());
 			menu->popup();
 
 			insert_at_pos = offset + timeline->get_value();
@@ -3251,7 +3250,7 @@ void AnimationTrackEditGroup::set_type_and_name(const Ref<Texture2D> &p_type, co
 	node_name = p_name;
 	node = p_node;
 	update();
-	minimum_size_changed();
+	update_minimum_size();
 }
 
 Size2 AnimationTrackEditGroup::get_minimum_size() const {
@@ -5757,6 +5756,7 @@ void AnimationTrackEditor::_edit_menu_pressed(int p_option) {
 					}
 				}
 
+				int existing_idx = -1;
 				if (dst_track == -1) {
 					// If adding multiple tracks, make sure that correct track is referenced.
 					dst_track = reset_tracks;
@@ -5765,9 +5765,9 @@ void AnimationTrackEditor::_edit_menu_pressed(int p_option) {
 					undo_redo->add_do_method(reset.ptr(), "add_track", animation->track_get_type(sk.track));
 					undo_redo->add_do_method(reset.ptr(), "track_set_path", dst_track, path);
 					undo_redo->add_undo_method(reset.ptr(), "remove_track", dst_track);
+				} else {
+					existing_idx = reset->track_find_key(dst_track, 0, true);
 				}
-
-				int existing_idx = reset->track_find_key(dst_track, 0, true);
 
 				undo_redo->add_do_method(reset.ptr(), "track_insert_key", dst_track, 0, animation->track_get_key_value(sk.track, sk.key), animation->track_get_key_transition(sk.track, sk.key));
 				undo_redo->add_undo_method(reset.ptr(), "track_remove_key_at_time", dst_track, 0);

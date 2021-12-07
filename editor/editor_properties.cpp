@@ -832,7 +832,7 @@ public:
 				update();
 			} else if (expand_hovered) {
 				expanded = !expanded;
-				minimum_size_changed();
+				update_minimum_size();
 				update();
 			}
 		}
@@ -935,7 +935,7 @@ public:
 				}
 
 				if ((expansion_rows != prev_expansion_rows) && expanded) {
-					minimum_size_changed();
+					update_minimum_size();
 				}
 
 				if ((expansion_rows == 0) && (layer_index == layer_count)) {
@@ -1283,7 +1283,8 @@ void EditorPropertyEasing::_drag_easing(const Ref<InputEvent> &p_ev) {
 		}
 
 		if (mb->is_pressed() && mb->get_button_index() == MouseButton::RIGHT) {
-			preset->set_position(easing_draw->get_screen_transform().xform(mb->get_position()));
+			preset->set_position(easing_draw->get_screen_position() + mb->get_position());
+			preset->reset_size();
 			preset->popup();
 
 			// Ensure the easing doesn't appear as being dragged
