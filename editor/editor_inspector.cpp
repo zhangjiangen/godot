@@ -1144,7 +1144,7 @@ void EditorInspectorSection::_test_unfold() {
 void EditorInspectorSection::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
-			minimum_size_changed();
+			update_minimum_size();
 		} break;
 		case NOTIFICATION_SORT_CHILDREN: {
 			if (!vbox_added) {
@@ -1555,7 +1555,7 @@ void EditorInspectorArray::_panel_gui_input(Ref<InputEvent> p_event, int p_index
 			popup_array_index_pressed = begin_array_index + p_index;
 			rmb_popup->set_item_disabled(OPTION_MOVE_UP, popup_array_index_pressed == 0);
 			rmb_popup->set_item_disabled(OPTION_MOVE_DOWN, popup_array_index_pressed == count - 1);
-			rmb_popup->set_position(mb->get_global_position());
+			rmb_popup->set_position(get_screen_position() + mb->get_position());
 			rmb_popup->reset_size();
 			rmb_popup->popup();
 		}
@@ -1995,7 +1995,7 @@ void EditorInspectorArray::_notification(int p_what) {
 			prev_page_button->set_icon(get_theme_icon(SNAME("PagePrevious"), SNAME("EditorIcons")));
 			next_page_button->set_icon(get_theme_icon(SNAME("PageNext"), SNAME("EditorIcons")));
 			last_page_button->set_icon(get_theme_icon(SNAME("PageLast"), SNAME("EditorIcons")));
-			minimum_size_changed();
+			update_minimum_size();
 		} break;
 		case NOTIFICATION_DRAG_BEGIN: {
 			Dictionary dict = get_viewport()->gui_get_drag_data();
@@ -3540,8 +3540,7 @@ EditorInspector::EditorInspector() {
 	main_vbox->set_h_size_flags(SIZE_EXPAND_FILL);
 	main_vbox->add_theme_constant_override("separation", 0);
 	add_child(main_vbox);
-	set_enable_h_scroll(false);
-	set_enable_v_scroll(true);
+	set_horizontal_scroll_mode(SCROLL_MODE_DISABLED);
 
 	wide_editors = false;
 	show_categories = false;

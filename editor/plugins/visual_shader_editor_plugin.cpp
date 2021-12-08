@@ -2087,6 +2087,7 @@ void VisualShaderEditor::_comment_desc_popup_show(const Point2 &p_position, int 
 	}
 	comment_desc_change_edit->set_text(node->get_description());
 	comment_desc_change_popup->set_meta("id", p_node_id);
+	comment_desc_change_popup->reset_size();
 	comment_desc_change_popup->popup();
 	comment_desc_change_popup->set_position(p_position);
 }
@@ -3238,7 +3239,7 @@ void VisualShaderEditor::_graph_gui_input(const Ref<InputEvent> &p_event) {
 			}
 
 			menu_point = graph->get_local_mouse_position();
-			Point2 gpos = Input::get_singleton()->get_mouse_position();
+			Point2 gpos = get_screen_position() + get_local_mouse_position();
 			popup_menu->set_position(gpos);
 			popup_menu->reset_size();
 			popup_menu->popup();
@@ -3257,28 +3258,21 @@ void VisualShaderEditor::_show_members_dialog(bool at_mouse_pos, VisualShaderNod
 		saved_node_pos_dirty = true;
 		saved_node_pos = graph->get_local_mouse_position();
 
-		Point2 gpos = Input::get_singleton()->get_mouse_position();
-		members_dialog->popup();
+		Point2 gpos = get_screen_position() + get_local_mouse_position();
 		members_dialog->set_position(gpos);
 	} else {
-		members_dialog->popup();
 		saved_node_pos_dirty = false;
-		members_dialog->set_position(graph->get_global_position() + Point2(5 * EDSCALE, 65 * EDSCALE));
+		members_dialog->set_position(graph->get_screen_position() + Point2(5 * EDSCALE, 65 * EDSCALE));
 	}
+	members_dialog->popup();
 
-	// keep dialog within window bounds
-	Size2 window_size = DisplayServer::get_singleton()->window_get_size();
+	// Keep dialog within window bounds.
+	Rect2 window_rect = Rect2(DisplayServer::get_singleton()->window_get_position(), DisplayServer::get_singleton()->window_get_size());
 	Rect2 dialog_rect = Rect2(members_dialog->get_position(), members_dialog->get_size());
-	if (dialog_rect.position.y + dialog_rect.size.y > window_size.y) {
-		int difference = dialog_rect.position.y + dialog_rect.size.y - window_size.y;
-		members_dialog->set_position(members_dialog->get_position() - Point2(0, difference));
-	}
-	if (dialog_rect.position.x + dialog_rect.size.x > window_size.x) {
-		int difference = dialog_rect.position.x + dialog_rect.size.x - window_size.x;
-		members_dialog->set_position(members_dialog->get_position() - Point2(difference, 0));
-	}
+	Vector2 difference = (dialog_rect.get_end() - window_rect.get_end()).max(Vector2());
+	members_dialog->set_position(members_dialog->get_position() - difference);
 
-	node_filter->call_deferred(SNAME("grab_focus")); // still not visible
+	node_filter->call_deferred(SNAME("grab_focus")); // Still not visible.
 	node_filter->select_all();
 }
 
@@ -3854,10 +3848,10 @@ void VisualShaderEditor::_node_menu_id_pressed(int p_idx) {
 			_convert_constants_to_uniforms(true);
 			break;
 		case NodeMenuOptions::SET_COMMENT_TITLE:
-			_comment_title_popup_show(get_global_mouse_position(), selected_comment);
+			_comment_title_popup_show(get_screen_position() + get_local_mouse_position(), selected_comment);
 			break;
 		case NodeMenuOptions::SET_COMMENT_DESCRIPTION:
-			_comment_desc_popup_show(get_global_mouse_position(), selected_comment);
+			_comment_desc_popup_show(get_screen_position() + get_local_mouse_position(), selected_comment);
 			break;
 		default:
 			break;
@@ -4022,9 +4016,15 @@ void VisualShaderEditor::_update_preview() {
 
 	preview_text->set_text(code);
 
+	ShaderLanguage::ShaderCompileInfo info;
+	info.functions = ShaderTypes::get_singleton()->get_functions(RenderingServer::ShaderMode(visual_shader->get_mode()));
+	info.render_modes = ShaderTypes::get_singleton()->get_modes(RenderingServer::ShaderMode(visual_shader->get_mode()));
+	info.shader_types = ShaderTypes::get_singleton()->get_types();
+	info.global_variable_type_func = _get_global_variable_type;
+
 	ShaderLanguage sl;
 
-	Error err = sl.compile(code, ShaderTypes::get_singleton()->get_functions(RenderingServer::ShaderMode(visual_shader->get_mode())), ShaderTypes::get_singleton()->get_modes(RenderingServer::ShaderMode(visual_shader->get_mode())), ShaderLanguage::VaryingFunctionNames(), ShaderTypes::get_singleton()->get_types(), _get_global_variable_type);
+	Error err = sl.compile(code, info);
 
 	for (int i = 0; i < preview_text->get_line_count(); i++) {
 		preview_text->set_line_background_color(i, Color(0, 0, 0, 0));

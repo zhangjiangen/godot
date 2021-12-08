@@ -856,7 +856,7 @@ public:
 				update();
 			} else if (expand_hovered) {
 				expanded = !expanded;
-				minimum_size_changed();
+				update_minimum_size();
 				update();
 			}
 		}
@@ -959,7 +959,7 @@ public:
 				}
 
 				if ((expansion_rows != prev_expansion_rows) && expanded) {
-					minimum_size_changed();
+					update_minimum_size();
 				}
 
 				if ((expansion_rows == 0) && (layer_index == layer_count)) {
@@ -1307,7 +1307,8 @@ void EditorPropertyEasing::_drag_easing(const Ref<InputEvent> &p_ev) {
 		}
 
 		if (mb->is_pressed() && mb->get_button_index() == MouseButton::RIGHT) {
-			preset->set_position(easing_draw->get_screen_transform().xform(mb->get_position()));
+			preset->set_position(easing_draw->get_screen_position() + mb->get_position());
+			preset->reset_size();
 			preset->popup();
 
 			// Ensure the easing doesn't appear as being dragged
@@ -3088,7 +3089,7 @@ void EditorPropertyResource::update_property() {
 		if (res.is_valid() && get_edited_object()->editor_is_section_unfolded(get_edited_property())) {
 			if (!sub_inspector) {
 				sub_inspector = memnew(EditorInspector);
-				sub_inspector->set_enable_v_scroll(false);
+				sub_inspector->set_horizontal_scroll_mode(ScrollContainer::SCROLL_MODE_DISABLED);
 				sub_inspector->set_use_doc_hints(true);
 
 				sub_inspector->set_sub_inspector(true);

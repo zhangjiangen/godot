@@ -47,7 +47,7 @@ void ThemeEditorPreview::add_preview_overlay(Control *p_overlay) {
 
 void ThemeEditorPreview::_propagate_redraw(Control *p_at) {
 	p_at->notification(NOTIFICATION_THEME_CHANGED);
-	p_at->minimum_size_changed();
+	p_at->update_minimum_size();
 	p_at->update();
 	for (int i = 0; i < p_at->get_child_count(); i++) {
 		Control *a = Object::cast_to<Control>(p_at->get_child(i));
@@ -228,8 +228,6 @@ ThemeEditorPreview::ThemeEditorPreview() {
 	add_child(preview_body);
 
 	preview_container = memnew(ScrollContainer);
-	preview_container->set_enable_v_scroll(true);
-	preview_container->set_enable_h_scroll(true);
 	preview_body->add_child(preview_container);
 
 	MarginContainer *preview_root = memnew(MarginContainer);
