@@ -1104,6 +1104,32 @@ void Node::_add_child_nocheck(Node *p_child, const StringName &p_name) {
 	add_child_notify(p_child);
 }
 
+void Node::add_child_by_sort(Node *p_child, int p_sort_weight, bool p_legible_unique_name) {
+	p_child->data.sort_weight = p_sort_weight;
+	if (data.children.size() == 0) {
+		p_child->data.sort_weight = p_sort_weight;
+		add_child(p_child, p_legible_unique_name);
+		return;
+	}
+	Node *node = nullptr;
+	int index = 0;
+	for (auto &c : data.children) {
+		if (c->data.sort_weight > p_sort_weight) {
+			node = c;
+			break;
+		}
+		++index;
+	}
+	if (node == nullptr) {
+		add_child(p_child, p_legible_unique_name);
+	} else {
+		_validate_child_name(p_child, p_legible_unique_name);
+
+		_add_child_nocheck(p_child, p_child->data.name);
+
+		_move_child(p_child, index);
+	}
+}
 void Node::add_child(Node *p_child, bool p_legible_unique_name, InternalMode p_internal) {
 	ERR_FAIL_NULL(p_child);
 	ERR_FAIL_COND_MSG(p_child == this, vformat("Can't add child '%s' to itself.", p_child->get_name())); // adding to itself!
@@ -2699,6 +2725,7 @@ void Node::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_name", "name"), &Node::set_name);
 	ClassDB::bind_method(D_METHOD("get_name"), &Node::get_name);
 	ClassDB::bind_method(D_METHOD("add_child", "node", "legible_unique_name", "internal"), &Node::add_child, DEFVAL(false), DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("add_child_by_sort", "node", "sort_weight", "legible_unique_name"), &Node::add_child_by_sort, DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("remove_child", "node"), &Node::remove_child);
 	ClassDB::bind_method(D_METHOD("get_child_count", "include_internal"), &Node::get_child_count, DEFVAL(false)); // Note that the default value bound for include_internal is false, while the method is declared with true. This is because internal nodes are irrelevant for GDSCript.
 	ClassDB::bind_method(D_METHOD("get_children", "include_internal"), &Node::_get_children, DEFVAL(false));

@@ -53,6 +53,7 @@ class ShaderTextEditor : public CodeTextEditor {
 
 	Ref<CodeHighlighter> syntax_highlighter;
 	RichTextLabel *warnings_panel = nullptr;
+	RichTextLabel *resource_path_panel = nullptr;
 	Ref<Shader> shader;
 	List<ShaderWarning> warnings;
 
@@ -70,6 +71,7 @@ public:
 
 	void reload_text();
 	void set_warnings_panel(RichTextLabel *p_warnings_panel);
+	void set_resource_path_panel(RichTextLabel *p_resource_path_panel);
 
 	Ref<Shader> get_edited_shader() const;
 	void set_edited_shader(const Ref<Shader> &p_shader);
@@ -112,6 +114,7 @@ class ShaderEditor : public PanelContainer {
 	MenuButton *help_menu;
 	PopupMenu *context_menu;
 	RichTextLabel *warnings_panel = nullptr;
+	RichTextLabel *resource_path_panel = nullptr;
 	uint64_t idle;
 
 	GotoLineDialog *goto_line_dialog;

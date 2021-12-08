@@ -69,6 +69,10 @@ void ShaderTextEditor::set_edited_shader(const Ref<Shader> &p_shader) {
 
 	_validate_script();
 	_line_col_changed();
+	if (resource_path_panel) {
+		resource_path_panel->clear();
+		resource_path_panel->add_text(p_shader->get_path());
+	}
 }
 
 void ShaderTextEditor::reload_text() {
@@ -93,6 +97,9 @@ void ShaderTextEditor::reload_text() {
 
 void ShaderTextEditor::set_warnings_panel(RichTextLabel *p_warnings_panel) {
 	warnings_panel = p_warnings_panel;
+}
+void ShaderTextEditor::set_resource_path_panel(RichTextLabel *p_resource_path_panel) {
+	resource_path_panel = p_resource_path_panel;
 }
 
 void ShaderTextEditor::_load_theme_settings() {
@@ -162,7 +169,10 @@ void ShaderTextEditor::_load_theme_settings() {
 	if (!text_editor->has_auto_brace_completion_open_key("/*")) {
 		text_editor->add_auto_brace_completion_pair("/*", "*/");
 	}
-
+	if (resource_path_panel) {
+		resource_path_panel->add_theme_font_override("normal_font", EditorNode::get_singleton()->get_gui_base()->get_theme_font(SNAME("main"), SNAME("EditorFonts")));
+		resource_path_panel->add_theme_font_size_override("normal_font_size", EditorNode::get_singleton()->get_gui_base()->get_theme_font_size(SNAME("main_size"), SNAME("EditorFonts")));
+	}
 	if (warnings_panel) {
 		// Warnings panel
 		warnings_panel->add_theme_font_override("normal_font", EditorNode::get_singleton()->get_gui_base()->get_theme_font(SNAME("main"), SNAME("EditorFonts")));
@@ -744,6 +754,14 @@ ShaderEditor::ShaderEditor(EditorNode *p_node) {
 
 	add_child(main_container);
 	main_container->add_child(hbc);
+
+	// 资源目录
+	resource_path_panel = memnew(RichTextLabel);
+	resource_path_panel->set_custom_minimum_size(Size2(10, 40));
+	resource_path_panel->set_h_size_flags(Control::SIZE_FILL);
+	main_container->add_child(resource_path_panel);
+	shader_editor->set_resource_path_panel(resource_path_panel);
+
 	hbc->add_child(search_menu);
 	hbc->add_child(edit_menu);
 	hbc->add_child(goto_menu);
@@ -807,14 +825,20 @@ bool ShaderEditorPlugin::handles(Object *p_object) const {
 
 void ShaderEditorPlugin::make_visible(bool p_visible) {
 	if (p_visible) {
-		button->show();
-		editor->make_bottom_panel_item_visible(shader_editor);
+		if (button != nullptr) {
+			button->show();
+			editor->make_bottom_panel_item_visible(shader_editor);
+		} else
+			dock_make_float(shader_editor);
 
 	} else {
-		button->hide();
-		if (shader_editor->is_visible_in_tree()) {
-			editor->hide_bottom_panel();
-		}
+		if (button != nullptr) {
+			button->hide();
+			if (shader_editor->is_visible_in_tree()) {
+				editor->hide_bottom_panel();
+			}
+		} else
+			dock_floating_close(shader_editor);
 		shader_editor->apply_shaders();
 	}
 }
@@ -836,8 +860,12 @@ ShaderEditorPlugin::ShaderEditorPlugin(EditorNode *p_node) {
 	shader_editor = memnew(ShaderEditor(p_node));
 
 	shader_editor->set_custom_minimum_size(Size2(0, 300) * EDSCALE);
-	button = editor->add_bottom_panel_item(TTR("Shader"), shader_editor);
-	button->hide();
+	//button = editor->add_bottom_panel_item(TTR("Shader"), shader_editor);
+	//button->hide();
+	// 换个地方吧，这里能够悬浮出来多窗口编辑
+	button = nullptr;
+	shader_editor->set_name(TTR("Shader"));
+	add_control_to_dock(DOCK_SLOT_RIGHT_BL, shader_editor);
 
 	_2d = false;
 }

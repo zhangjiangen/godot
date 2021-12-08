@@ -167,10 +167,8 @@ private:
 		Point2 pos_cache;
 		Size2 size_cache;
 		Size2 minimum_size_cache;
-		bool minimum_size_valid = false;
 
 		Size2 last_minimum_size;
-		bool updating_last_minimum_size = false;
 
 		real_t offset[4] = { 0.0, 0.0, 0.0, 0.0 };
 		real_t anchor[4] = { ANCHOR_BEGIN, ANCHOR_BEGIN, ANCHOR_BEGIN, ANCHOR_BEGIN };
@@ -179,6 +177,10 @@ private:
 		GrowDirection v_grow = GROW_DIRECTION_END;
 
 		LayoutDirection layout_dir = LAYOUT_DIRECTION_INHERITED;
+		// 编辑器的Dock索引信息
+		int edit_dock_slot;
+		bool updating_last_minimum_size = false;
+		bool minimum_size_valid = false;
 		bool is_rtl_dirty = true;
 		bool is_rtl = false;
 
@@ -342,6 +344,9 @@ public:
 	virtual bool _edit_use_pivot() const override;
 
 	virtual Size2 _edit_get_minimum_size() const override;
+
+	void _edit_set_dock_slot(int p_slot) { data.edit_dock_slot = p_slot; }
+	int _edit_get_dock_slot() { return data.edit_dock_slot; }
 #endif
 
 	virtual void gui_input(const Ref<InputEvent> &p_event);

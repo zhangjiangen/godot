@@ -108,6 +108,8 @@ private:
 		int pos = -1;
 		int depth = -1;
 		int blocked = 0; // Safeguard that throws an error when attempting to modify the tree in a harmful way while being traversed.
+		// 排序权重
+		int sort_weight = 0;
 		StringName name;
 		SceneTree *tree = nullptr;
 		bool inside_tree = false;
@@ -295,6 +297,7 @@ public:
 	StringName get_name() const;
 	void set_name(const String &p_name);
 
+	void add_child_by_sort(Node *p_child, int p_sort_weight, bool p_legible_unique_name = false);
 	void add_child(Node *p_child, bool p_legible_unique_name = false, InternalMode p_internal = INTERNAL_MODE_DISABLED);
 	void add_sibling(Node *p_sibling, bool p_legible_unique_name = false);
 	void remove_child(Node *p_child);

@@ -604,6 +604,7 @@ private:
 	void _dock_popup_exit();
 	void _dock_floating_close_request(Control *p_control);
 	void _dock_make_float();
+
 	void _scene_tab_changed(int p_tab);
 	void _scene_tab_closed(int p_tab, int option = SCENE_TAB_CLOSE);
 	void _scene_tab_hovered(int p_tab);
@@ -732,6 +733,9 @@ public:
 	bool is_distraction_free_mode_enabled() const;
 
 	void add_control_to_dock(DockSlot p_slot, Control *p_control);
+	// 转成悬浮面板
+	void _dock_make_float_by_dock_item(Control *p_control);
+	void dock_floating_close(Control *p_control);
 	void remove_control_from_dock(Control *p_control);
 
 	void set_addon_plugin_enabled(const String &p_addon, bool p_enabled, bool p_config_changed = false);

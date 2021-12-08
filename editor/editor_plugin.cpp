@@ -393,6 +393,14 @@ void EditorPlugin::add_control_to_dock(DockSlot p_slot, Control *p_control) {
 	EditorNode::get_singleton()->add_control_to_dock(EditorNode::DockSlot(p_slot), p_control);
 }
 
+void EditorPlugin::dock_make_float(Control *p_control) {
+	ERR_FAIL_NULL(p_control);
+	EditorNode::get_singleton()->_dock_make_float_by_dock_item(p_control);
+}
+void EditorPlugin::dock_floating_close(Control *p_control) {
+	ERR_FAIL_NULL(p_control);
+	EditorNode::get_singleton()->dock_floating_close(p_control);
+}
 void EditorPlugin::remove_control_from_docks(Control *p_control) {
 	ERR_FAIL_NULL(p_control);
 	EditorNode::get_singleton()->remove_control_from_dock(p_control);
@@ -861,6 +869,8 @@ void EditorPlugin::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("add_control_to_container", "container", "control"), &EditorPlugin::add_control_to_container);
 	ClassDB::bind_method(D_METHOD("add_control_to_bottom_panel", "control", "title"), &EditorPlugin::add_control_to_bottom_panel);
 	ClassDB::bind_method(D_METHOD("add_control_to_dock", "slot", "control"), &EditorPlugin::add_control_to_dock);
+	ClassDB::bind_method(D_METHOD("dock_make_float", "control"), &EditorPlugin::dock_make_float);
+	ClassDB::bind_method(D_METHOD("dock_floating_close", "control"), &EditorPlugin::dock_floating_close);
 	ClassDB::bind_method(D_METHOD("remove_control_from_docks", "control"), &EditorPlugin::remove_control_from_docks);
 	ClassDB::bind_method(D_METHOD("remove_control_from_bottom_panel", "control"), &EditorPlugin::remove_control_from_bottom_panel);
 	ClassDB::bind_method(D_METHOD("remove_control_from_container", "container", "control"), &EditorPlugin::remove_control_from_container);

@@ -257,14 +257,20 @@ void AnimationTreeEditorPlugin::make_visible(bool p_visible) {
 	if (p_visible) {
 		//editor->hide_animation_player_editors();
 		//editor->animation_panel_make_visible(true);
-		button->show();
-		editor->make_bottom_panel_item_visible(anim_tree_editor);
+		if (button != nullptr) {
+			button->show();
+			editor->make_bottom_panel_item_visible(anim_tree_editor);
+		} else
+			dock_make_float(anim_tree_editor);
 		anim_tree_editor->set_process(true);
 	} else {
-		if (anim_tree_editor->is_visible_in_tree()) {
-			editor->hide_bottom_panel();
-		}
-		button->hide();
+		if (button != nullptr) {
+			button->hide();
+			if (anim_tree_editor->is_visible_in_tree()) {
+				editor->hide_bottom_panel();
+			}
+		} else
+			dock_floating_close(anim_tree_editor);
 		anim_tree_editor->set_process(false);
 	}
 }
@@ -274,8 +280,12 @@ AnimationTreeEditorPlugin::AnimationTreeEditorPlugin(EditorNode *p_node) {
 	anim_tree_editor = memnew(AnimationTreeEditor);
 	anim_tree_editor->set_custom_minimum_size(Size2(0, 300) * EDSCALE);
 
-	button = editor->add_bottom_panel_item(TTR("AnimationTree"), anim_tree_editor);
-	button->hide();
+	//button = editor->add_bottom_panel_item(TTR("AnimationTree"), anim_tree_editor);
+	// 换个地方吧，这里能够悬浮出来多窗口编辑
+	anim_tree_editor->set_name(TTR("AnimationTree"));
+	button = nullptr;
+	add_control_to_dock(DOCK_SLOT_RIGHT_BL, anim_tree_editor);
+	//button->hide();
 }
 
 AnimationTreeEditorPlugin::~AnimationTreeEditorPlugin() {

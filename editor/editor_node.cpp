@@ -4210,17 +4210,37 @@ void EditorNode::show_warning(const String &p_text, const String &p_title) {
 void EditorNode::_copy_warning(const String &p_str) {
 	DisplayServer::get_singleton()->clipboard_set(warning->get_text());
 }
-
 void EditorNode::_dock_floating_close_request(Control *p_control) {
 	// Through the MarginContainer to the Window.
-	Window *window = (Window *)p_control->get_parent()->get_parent();
+	dock_floating_close(p_control);
+}
+void EditorNode::dock_floating_close(Control *p_control) {
+	Node *parent = p_control->get_parent();
+	if (parent == nullptr) {
+		return;
+	}
+	parent = parent->get_parent();
+	if (parent == nullptr) {
+		return;
+	}
+	if (!parent->is_class("Window")) {
+		return;
+	}
+	Window *window = (Window *)parent;
+	if (!window->has_meta("dock_slot")) {
+		return;
+	}
+	if (!window->has_meta("dock_index")) {
+		return;
+	}
+
 	int window_slot = window->get_meta("dock_slot");
 
 	p_control->get_parent()->remove_child(p_control);
 	dock_slot[window_slot]->add_child(p_control);
 	dock_slot[window_slot]->move_child(p_control, MIN((int)window->get_meta("dock_index"), dock_slot[window_slot]->get_child_count()));
 	dock_slot[window_slot]->set_current_tab(window->get_meta("dock_index"));
-
+	window->hide();
 	window->queue_delete();
 
 	_update_dock_containers();
@@ -4231,13 +4251,24 @@ void EditorNode::_dock_floating_close_request(Control *p_control) {
 void EditorNode::_dock_make_float() {
 	Control *dock = dock_slot[dock_popup_selected]->get_current_tab_control();
 	ERR_FAIL_COND(!dock);
+	dock_floating_close(dock);
+	_dock_make_float_by_dock_item(dock);
+}
+
+void EditorNode::_dock_make_float_by_dock_item(Control *p_control) {
+	int slot = p_control->_edit_get_dock_slot();
+	if (slot < 0) {
+		return;
+	}
+	Control *dock = p_control;
+	ERR_FAIL_COND(!dock);
 
 	const Size2i borders = Size2i(4, 4) * EDSCALE;
 	Size2 dock_size = dock->get_size() + borders * 2; // remember size
 	Point2 dock_screen_pos = dock->get_global_position() + get_tree()->get_root()->get_position() - borders;
 
 	int dock_index = dock->get_index();
-	dock_slot[dock_popup_selected]->remove_child(dock);
+	dock_slot[slot]->remove_child(dock);
 
 	Window *window = memnew(Window);
 	window->set_title(dock->get_name());
@@ -4245,6 +4276,7 @@ void EditorNode::_dock_make_float() {
 	p->set_mode(Panel::MODE_FOREGROUND);
 	p->set_anchors_and_offsets_preset(Control::PRESET_WIDE);
 	window->add_child(p);
+
 	MarginContainer *margin = memnew(MarginContainer);
 	margin->set_anchors_and_offsets_preset(Control::PRESET_WIDE);
 	margin->add_theme_constant_override("margin_right", borders.width);
@@ -4259,7 +4291,7 @@ void EditorNode::_dock_make_float() {
 	window->set_position(dock_screen_pos);
 	window->set_transient(true);
 	window->connect("close_requested", callable_mp(this, &EditorNode::_dock_floating_close_request), varray(dock));
-	window->set_meta("dock_slot", dock_popup_selected);
+	window->set_meta("dock_slot", slot);
 	window->set_meta("dock_index", dock_index);
 	gui_base->add_child(window);
 
@@ -4331,7 +4363,8 @@ void EditorNode::_dock_select_input(const Ref<InputEvent> &p_input) {
 			} else {
 				dock_slot[dock_popup_selected]->set_current_tab(0);
 			}
-
+			// 重新设置对应的插槽
+			dock->_edit_set_dock_slot(nrect);
 			dock_slot[nrect]->add_child(dock);
 			dock_popup_selected = nrect;
 			dock_slot[nrect]->set_current_tab(dock_slot[nrect]->get_tab_count() - 1);
@@ -4685,6 +4718,7 @@ void EditorNode::_load_docks_from_config(Ref<ConfigFile> p_layout, const String 
 				dock_slot[atidx]->hide();
 			}
 			dock_slot[i]->add_child(node);
+			node->_edit_set_dock_slot(i);
 			dock_slot[i]->show();
 		}
 	}
@@ -5266,6 +5300,7 @@ bool EditorNode::is_distraction_free_mode_enabled() const {
 void EditorNode::add_control_to_dock(DockSlot p_slot, Control *p_control) {
 	ERR_FAIL_INDEX(p_slot, DOCK_SLOT_MAX);
 	dock_slot[p_slot]->add_child(p_control);
+	p_control->_edit_set_dock_slot(p_slot);
 	_update_dock_slots_visibility();
 }
 
@@ -5281,6 +5316,7 @@ void EditorNode::remove_control_from_dock(Control *p_control) {
 	ERR_FAIL_COND_MSG(!dock, "Control was not in dock.");
 
 	dock->remove_child(p_control);
+	p_control->_edit_set_dock_slot(-1);
 	_update_dock_slots_visibility();
 }
 

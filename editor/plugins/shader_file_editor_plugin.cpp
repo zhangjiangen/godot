@@ -300,14 +300,20 @@ bool ShaderFileEditorPlugin::handles(Object *p_object) const {
 
 void ShaderFileEditorPlugin::make_visible(bool p_visible) {
 	if (p_visible) {
-		button->show();
-		editor->make_bottom_panel_item_visible(shader_editor);
+		if (button != nullptr) {
+			button->show();
+			editor->make_bottom_panel_item_visible(shader_editor);
+		} else
+			dock_make_float(shader_editor);
 
 	} else {
-		button->hide();
-		if (shader_editor->is_visible_in_tree()) {
-			editor->hide_bottom_panel();
-		}
+		if (button != nullptr) {
+			button->hide();
+			if (shader_editor->is_visible_in_tree()) {
+				editor->hide_bottom_panel();
+			}
+		} else
+			dock_floating_close(shader_editor);
 	}
 }
 
@@ -316,8 +322,12 @@ ShaderFileEditorPlugin::ShaderFileEditorPlugin(EditorNode *p_node) {
 	shader_editor = memnew(ShaderFileEditor(p_node));
 
 	shader_editor->set_custom_minimum_size(Size2(0, 300) * EDSCALE);
-	button = editor->add_bottom_panel_item(TTR("ShaderFile"), shader_editor);
-	button->hide();
+	//button = editor->add_bottom_panel_item(TTR("ShaderFile"), shader_editor);
+	button = nullptr;
+	// 换个地方吧，这里能够悬浮出来多窗口编辑
+	shader_editor->set_name(TTR("ShaderFile"));
+	add_control_to_dock(DOCK_SLOT_RIGHT_BL, shader_editor);
+	//button->hide();
 }
 
 ShaderFileEditorPlugin::~ShaderFileEditorPlugin() {
