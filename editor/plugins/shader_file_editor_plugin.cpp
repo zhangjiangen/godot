@@ -321,7 +321,7 @@ ShaderFileEditorPlugin::ShaderFileEditorPlugin(EditorNode *p_node) {
 	editor = p_node;
 	shader_editor = memnew(ShaderFileEditor(p_node));
 
-	shader_editor->set_custom_minimum_size(Size2(0, 300) * EDSCALE);
+	//shader_editor->set_custom_minimum_size(Size2(0, 300) * EDSCALE);
 	//button = editor->add_bottom_panel_item(TTR("ShaderFile"), shader_editor);
 	button = nullptr;
 	// 换个地方吧，这里能够悬浮出来多窗口编辑

@@ -501,7 +501,7 @@ void FileSystemDock::_set_current_path_text(const String &p_path) {
 		current_path->set_text(path);
 	}
 	// 发送选择文件消息
-	emit_signal("on_select_file",p_path);
+	emit_signal("on_select_file", p_path);
 }
 
 void FileSystemDock::_navigate_to_path(const String &p_path, bool p_select_in_favorites) {
@@ -2803,6 +2803,7 @@ void FileSystemDock::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("folder_moved", PropertyInfo(Variant::STRING, "old_folder"), PropertyInfo(Variant::STRING, "new_file")));
 
 	ADD_SIGNAL(MethodInfo("display_mode_changed"));
+	ADD_SIGNAL(MethodInfo("on_file_system_select_file", PropertyInfo(Variant::STRING, "file")));
 }
 
 FileSystemDock::FileSystemDock(EditorNode *p_editor) {
