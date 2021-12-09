@@ -45,6 +45,7 @@ class EditorResourcePicker : public HBoxContainer {
 
 	String base_type;
 	RES edited_resource;
+	String select_file_path;
 
 	bool editable = true;
 	bool dropping = false;
@@ -54,6 +55,8 @@ class EditorResourcePicker : public HBoxContainer {
 	Button *assign_button;
 	TextureRect *preview_rect;
 	Button *edit_button;
+	Button *search_button;
+	Button *set_resource_button;
 	EditorFileDialog *file_dialog = nullptr;
 	EditorQuickOpen *quick_open = nullptr;
 
@@ -87,6 +90,7 @@ class EditorResourcePicker : public HBoxContainer {
 
 	void _button_draw();
 	void _button_input(const Ref<InputEvent> &p_event);
+	void _button_search(const Ref<InputEvent> &p_event);
 
 	void _get_allowed_types(bool p_with_convert, Set<String> *p_vector) const;
 	bool _is_drop_valid(const Dictionary &p_drag_data) const;
@@ -101,6 +105,8 @@ class EditorResourcePicker : public HBoxContainer {
 protected:
 	static void _bind_methods();
 	void _notification(int p_what);
+	void on_file_system_select_file(const String file_path);
+	void update_set_resource_button();
 
 public:
 	static void clear_caches();

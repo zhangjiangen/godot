@@ -43,6 +43,15 @@ void EditorResourcePicker::clear_caches() {
 }
 
 void EditorResourcePicker::_update_resource() {
+	if (edited_resource.is_valid() && edited_resource->get_path().is_resource_file())
+	{
+		search_button->set_visible(true);
+	}
+	else
+	{
+		search_button->set_visible(false);
+	}
+	update_set_resource_button();
 	preview_rect->set_texture(Ref<Texture2D>());
 	assign_button->set_custom_minimum_size(Size2(1, 1));
 
@@ -68,6 +77,7 @@ void EditorResourcePicker::_update_resource() {
 		// Preview will override the above, so called at the end.
 		EditorResourcePreview::get_singleton()->queue_edited_resource_preview(edited_resource, this, "_update_resource_preview", edited_resource->get_instance_id());
 	}
+	
 }
 
 void EditorResourcePicker::_update_resource_preview(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, ObjectID p_obj) {
@@ -474,6 +484,15 @@ void EditorResourcePicker::_button_input(const Ref<InputEvent> &p_event) {
 		}
 	}
 }
+void EditorResourcePicker::_button_search(const Ref<InputEvent> &p_event)
+{
+	if (edited_resource.is_valid()) {
+	{
+		FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+		file_system_dock->navigate_to_path(edited_resource->get_path());
+	}
+	
+}
 
 void EditorResourcePicker::_get_allowed_types(bool p_with_convert, Set<String> *p_vector) const {
 	Vector<String> allowed_types = base_type.split(",");
@@ -863,8 +882,66 @@ EditorResourcePicker::EditorResourcePicker() {
 	edit_button->connect("pressed", callable_mp(this, &EditorResourcePicker::_update_menu));
 	add_child(edit_button);
 	edit_button->connect("gui_input", callable_mp(this, &EditorResourcePicker::_button_input));
+
+	
+	search_button = memnew(Button);
+	search_button->set_flat(true);
+	search_button->set_toggle_mode(true);
+	search_button->connect("pressed", callable_mp(this, &EditorResourcePicker::_update_menu));
+	add_child(search_button);
+	search_button->connect("gui_input", callable_mp(this, &EditorResourcePicker::_button_search));
+	search_button->set_icon(get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
+	// 绑定文件选择消息
+	set_resource_button = memnew(Button);
+	set_resource_button->set_flat(true);
+	set_resource_button->set_toggle_mode(true);
+	set_resource_button->connect("pressed", callable_mp(this, &EditorResourcePicker::_update_menu));
+	add_child(set_resource_button);
+	set_resource_button->connect("gui_input", callable_mp(this, &EditorResourcePicker::_button_search));
+	set_resource_button->set_icon(get_theme_icon(SNAME("ArrowLeft"), SNAME("EditorIcons")));
+	
+	FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+	if(file_system_dock)
+	{
+		file_system_dock->connect("on_select_file",callable_mp(EditorScriptPicker::on_file_system_select_file));
+	}
 }
 
+void EditorScriptPicker::update_set_resource_button()
+{
+	FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+	if(file_system_dock)
+	{
+		on_file_system_select_file(file_system_dock->get_selected_path());
+	}
+}
+void EditorScriptPicker::on_file_system_select_file(const String file_path)
+{
+	if (!edited_resource.is_valid() || !edited_resource->get_path().is_resource_file())
+	{
+		set_resource_button->set_visible(is_visible);
+		return;
+	}
+	select_file_path = file_path;
+	Set<String> allowed_types;
+	_get_allowed_types(true, &allowed_types);
+
+
+	bool is_visible = false;
+	if (drag_data.has("type") && String(drag_data["type"]) == "files") {
+		Vector<String> files = drag_data["files"];
+
+		if (files.size() == 1) {
+			String file = files[0];
+
+			String file_type = EditorFileSystem::get_singleton()->get_file_type(file_path);
+			if (file_type != "" && _is_type_valid(file_type, allowed_types)) {
+				is_visible = true;
+			}
+		}
+	}
+	set_resource_button->set_visible(is_visible);
+}
 // EditorScriptPicker
 
 void EditorScriptPicker::set_create_options(Object *p_menu_node) {
