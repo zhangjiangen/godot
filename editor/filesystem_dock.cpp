@@ -500,6 +500,8 @@ void FileSystemDock::_set_current_path_text(const String &p_path) {
 	} else {
 		current_path->set_text(path);
 	}
+	// 发送选择文件消息
+	emit_signal("on_select_file",p_path);
 }
 
 void FileSystemDock::_navigate_to_path(const String &p_path, bool p_select_in_favorites) {
