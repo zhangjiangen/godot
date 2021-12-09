@@ -915,7 +915,7 @@ public:
 							Vector2 offset;
 							offset.y = rect2.size.y * 0.75;
 
-							draw_string(font, rect2.position + offset, itos(layer_index + 1), HALIGN_CENTER, rect2.size.x, font_size, on ? text_color_on : text_color);
+							draw_string(font, rect2.position + offset, itos(layer_index + 1), HORIZONTAL_ALIGNMENT_CENTER, rect2.size.x, font_size, on ? text_color_on : text_color);
 
 							ofs.x += bsize + 1;
 
@@ -1407,7 +1407,7 @@ void EditorPropertyEasing::_draw_easing() {
 	} else {
 		decimals = 1;
 	}
-	f->draw_string(ci, Point2(10, 10 + f->get_ascent(font_size)), TS->format_number(rtos(exp).pad_decimals(decimals)), HALIGN_LEFT, -1, font_size, font_color);
+	f->draw_string(ci, Point2(10, 10 + f->get_ascent(font_size)), TS->format_number(rtos(exp).pad_decimals(decimals)), HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, font_color);
 }
 
 void EditorPropertyEasing::update_property() {
@@ -3089,7 +3089,7 @@ void EditorPropertyResource::update_property() {
 		if (res.is_valid() && get_edited_object()->editor_is_section_unfolded(get_edited_property())) {
 			if (!sub_inspector) {
 				sub_inspector = memnew(EditorInspector);
-				sub_inspector->set_horizontal_scroll_mode(ScrollContainer::SCROLL_MODE_DISABLED);
+				sub_inspector->set_vertical_scroll_mode(ScrollContainer::SCROLL_MODE_DISABLED);
 				sub_inspector->set_use_doc_hints(true);
 
 				sub_inspector->set_sub_inspector(true);
