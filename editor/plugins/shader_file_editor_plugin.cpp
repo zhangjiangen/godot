@@ -253,7 +253,7 @@ ShaderFileEditor::ShaderFileEditor(EditorNode *p_node) {
 
 	versions = memnew(ItemList);
 	versions->connect("item_selected", callable_mp(this, &ShaderFileEditor::_version_selected));
-	versions->set_custom_minimum_size(Size2i(200 * EDSCALE, 0));
+	//versions->set_custom_minimum_size(Size2i(200 * EDSCALE, 0));
 	main_hs->add_child(versions);
 
 	VBoxContainer *main_vb = memnew(VBoxContainer);

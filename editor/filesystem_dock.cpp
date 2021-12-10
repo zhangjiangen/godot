@@ -2803,7 +2803,7 @@ void FileSystemDock::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("folder_moved", PropertyInfo(Variant::STRING, "old_folder"), PropertyInfo(Variant::STRING, "new_file")));
 
 	ADD_SIGNAL(MethodInfo("display_mode_changed"));
-	ADD_SIGNAL(MethodInfo("on_file_system_select_file", PropertyInfo(Variant::STRING, "file")));
+	ADD_SIGNAL(MethodInfo("on_select_file", PropertyInfo(Variant::STRING, "file")));
 }
 
 FileSystemDock::FileSystemDock(EditorNode *p_editor) {

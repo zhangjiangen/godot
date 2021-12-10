@@ -277,7 +277,7 @@ void AnimationTreeEditorPlugin::make_visible(bool p_visible) {
 AnimationTreeEditorPlugin::AnimationTreeEditorPlugin(EditorNode *p_node) {
 	editor = p_node;
 	anim_tree_editor = memnew(AnimationTreeEditor);
-	anim_tree_editor->set_custom_minimum_size(Size2(0, 300) * EDSCALE);
+	//anim_tree_editor->set_custom_minimum_size(Size2(0, 300) * EDSCALE);
 
 	//button = editor->add_bottom_panel_item(TTR("AnimationTree"), anim_tree_editor);
 	// 换个地方吧，这里能够悬浮出来多窗口编辑
