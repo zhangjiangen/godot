@@ -889,7 +889,7 @@ EditorResourcePicker::EditorResourcePicker() {
 	set_resource_button->set_toggle_mode(true);
 	set_resource_button->connect("pressed", callable_mp(this, &EditorResourcePicker::_update_menu));
 	add_child(set_resource_button);
-	set_resource_button->connect("gui_input", callable_mp(this, &EditorResourcePicker::_button_search));
+	set_resource_button->connect("gui_input", callable_mp(this, &EditorResourcePicker::update_set_resource_button));
 	set_resource_button->set_icon(get_theme_icon(SNAME("ArrowLeft"), SNAME("EditorIcons")));
 	if (EditorNode::get_singleton()) {
 		FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();

@@ -712,7 +712,6 @@ String ShaderCompilerRD::_dump_node_code(const SL::Node *p_node, int p_level, Ge
 					if (align != 0) {
 						uniform_sizes[i - 1] += uniform_alignments[i] - align;
 					}
-
 					uniform_sizes[i] = uniform_sizes[i] + uniform_sizes[i - 1];
 				}
 			}
@@ -729,9 +728,7 @@ String ShaderCompilerRD::_dump_node_code(const SL::Node *p_node, int p_level, Ge
 				if (SL::is_sampler_type(E->get().type)) {
 					continue;
 				}
-
 			}
-
 */
 			if (uniform_sizes.size()) {
 				r_gen_code.uniform_total_size = uniform_sizes[uniform_sizes.size() - 1];
@@ -963,7 +960,7 @@ String ShaderCompilerRD::_dump_node_code(const SL::Node *p_node, int p_level, Ge
 
 				} else {
 					if (use_fragment_varying) {
-						//code = "frag_to_light.";
+						code = "frag_to_light.";
 					}
 					code += _mkid(vnode->name); //its something else (local var most likely) use as is
 				}
