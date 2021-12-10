@@ -2597,7 +2597,7 @@ bool Control::is_text_field() const {
 	return false;
 }
 
-Array Control::structured_text_parser(StructuredTextParser p_theme_type, const Array &p_args, const String p_text) const {
+Array Control::structured_text_parser(StructuredTextParser p_theme_type, const Array &p_args, const String &p_text) const {
 	Array ret;
 	switch (p_theme_type) {
 		case STRUCTURED_TEXT_URI: {
@@ -2791,7 +2791,7 @@ void Control::get_argument_options(const StringName &p_function, int p_idx, List
 TypedArray<String> Control::get_configuration_warnings() const {
 	TypedArray<String> warnings = Node::get_configuration_warnings();
 
-	if (data.mouse_filter == MOUSE_FILTER_IGNORE && data.tooltip != "") {
+	if (data.mouse_filter == MOUSE_FILTER_IGNORE && !data.tooltip.is_empty()) {
 		warnings.push_back(TTR("The Hint Tooltip won't be displayed as the control's Mouse Filter is set to \"Ignore\". To solve this, set the Mouse Filter to \"Stop\" or \"Pass\"."));
 	}
 
