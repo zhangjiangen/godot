@@ -44,8 +44,7 @@ void SceneShaderForwardClustered::ShaderData::set_code(const String &p_code) {
 	uniforms.clear();
 	uses_screen_texture = false;
 
-	if (code == String()) {
-		LOG_INFO_PRINT("code null !");
+	if (code.is_empty()) {
 		return; //just invalid, but no error
 	}
 

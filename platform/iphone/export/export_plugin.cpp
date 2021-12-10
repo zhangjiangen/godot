@@ -1364,10 +1364,10 @@ Error EditorExportPlatformIOS::export_project(const Ref<EditorExportPreset> &p_p
 		src_pkg_name = p_preset->get("custom_template/release");
 	}
 
-	if (src_pkg_name == "") {
+	if (src_pkg_name.is_empty()) {
 		String err;
 		src_pkg_name = find_export_template("iphone.zip", &err);
-		if (src_pkg_name == "") {
+		if (src_pkg_name.is_empty()) {
 			EditorNode::add_io_error(err);
 			return ERR_FILE_NOT_FOUND;
 		}
@@ -1767,8 +1767,8 @@ bool EditorExportPlatformIOS::can_export(const Ref<EditorExportPreset> &p_preset
 		}
 	}
 
-	String etc_error = test_etc2_or_pvrtc_or_astc();
-	if (etc_error != String()) {
+	String etc_error = test_etc2_or_pvrtc();
+	if (!etc_error.is_empty()) {
 		valid = false;
 		err += etc_error;
 	}

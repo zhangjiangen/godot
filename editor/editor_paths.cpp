@@ -143,7 +143,7 @@ EditorPaths::EditorPaths() {
 		WARN_PRINT("cache_dir:" + cache_dir);
 	}
 
-	paths_valid = (data_path != "" && config_path != "" && cache_path != "");
+	paths_valid = (!data_path.is_empty() && !config_path.is_empty() && !cache_path.is_empty());
 	ERR_FAIL_COND_MSG(!paths_valid, "Editor data, config, or cache paths are invalid.");
 
 	// Validate or create each dir and its relevant subdirectories.
