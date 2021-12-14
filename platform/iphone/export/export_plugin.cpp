@@ -1767,7 +1767,7 @@ bool EditorExportPlatformIOS::can_export(const Ref<EditorExportPreset> &p_preset
 		}
 	}
 
-	String etc_error = test_etc2_or_pvrtc();
+	String etc_error = test_etc2_or_pvrtc_or_astc();
 	if (!etc_error.is_empty()) {
 		valid = false;
 		err += etc_error;

@@ -34,8 +34,8 @@
 #include "core/object/class_db.h"
 #include "core/templates/safe_refcount.h"
 
-#include <stdint.h>
 #include <assert.h>
+#include <stdint.h>
 
 class RefCounted : public Object {
 	GDCLASS(RefCounted, Object);
@@ -342,14 +342,14 @@ public:
 	}
 };
 
-/** Reference-counted shared pointer, used for objects where implicit destruction is 
-        required. 
-    @remarks
-        This is a standard shared pointer implementation which uses a reference 
-        count to work out when to delete the object. 
-    @par
-        If OGRE_THREAD_SUPPORT is defined to be 1, use of this class is thread-safe.
-    */
+/** Reference-counted shared pointer, used for objects where implicit destruction is
+		required.
+	@remarks
+		This is a standard shared pointer implementation which uses a reference
+		count to work out when to delete the object.
+	@par
+		If OGRE_THREAD_SUPPORT is defined to be 1, use of this class is thread-safe.
+	*/
 template <class T>
 class SharedPtr {
 	template <typename Y>
@@ -357,16 +357,16 @@ class SharedPtr {
 
 protected:
 	/* DO NOT ADD MEMBERS TO THIS CLASS!
-         *
-         * The average Ogre application has *thousands* of them. Every extra
-         * member causes extra memory use in general, and causes extra padding
-         * to be added to a multitude of structures. 
-         *
-         * Everything you need to do can be acomplished by creatively working 
-         * with the SharedPtrInfo object.
-         *
-         * There is no reason for this object to ever have more than two members.
-         */
+	 *
+	 * The average Ogre application has *thousands* of them. Every extra
+	 * member causes extra memory use in general, and causes extra padding
+	 * to be added to a multitude of structures.
+	 *
+	 * Everything you need to do can be acomplished by creatively working
+	 * with the SharedPtrInfo object.
+	 *
+	 * There is no reason for this object to ever have more than two members.
+	 */
 
 	T *pRep;
 	SharedPtrInfo *pInfo;
@@ -378,9 +378,9 @@ protected:
 public:
 	typedef T DataType;
 	/** Constructor, does not initialise the SharedPtr.
-            @remarks
-                <b>Dangerous!</b> You have to call bind() before using the SharedPtr.
-        */
+			@remarks
+				<b>Dangerous!</b> You have to call bind() before using the SharedPtr.
+		*/
 	SharedPtr() :
 			pRep(0), pInfo(0) {}
 
@@ -401,9 +401,9 @@ private:
 
 public:
 	/** Constructor.
-        @param rep The pointer to take ownership of
-        @param inFreeMethod The mechanism to use to free the pointer
-        */
+		@param rep The pointer to take ownership of
+		@param inFreeMethod The mechanism to use to free the pointer
+		*/
 	template <class Y>
 	explicit SharedPtr(Y *rep, SharedPtrFreeMethod inFreeMethod = SPFM_DELETE_T) :
 			pRep(rep), pInfo(rep ? createInfoForMethod(rep, inFreeMethod) : 0) {
@@ -449,10 +449,10 @@ public:
 	}
 
 	/* For C++11 compilers, use enable_if to only expose functions when viable
-         *
-         * MSVC 2012 and earlier only claim conformance to C++98. This is fortunate,
-         * because they don't support default template parameters
-         */
+	 *
+	 * MSVC 2012 and earlier only claim conformance to C++98. This is fortunate,
+	 * because they don't support default template parameters
+	 */
 #if __cplusplus >= 201103L && !defined(__APPLE__)
 	template <class Y,
 			class = typename std::enable_if<std::is_convertible<Y *, T *>::value>::type>
@@ -521,14 +521,14 @@ public:
 	inline T *get() const { return pRep; }
 
 	/** Binds rep to the SharedPtr.
-            @remarks
-                Assumes that the SharedPtr is uninitialised!
+			@remarks
+				Assumes that the SharedPtr is uninitialised!
 
-            @warning
-                The object must not be bound into a SharedPtr elsewhere
+			@warning
+				The object must not be bound into a SharedPtr elsewhere
 
-            @deprecated this api will be dropped. use reset(T*) instead
-        */
+			@deprecated this api will be dropped. use reset(T*) instead
+		*/
 	void bind(T *rep, SharedPtrFreeMethod inFreeMethod = SPFM_DELETE_T) {
 		assert(!pRep && !pInfo);
 		pInfo = createInfoForMethod(rep, inFreeMethod);
@@ -581,9 +581,9 @@ protected:
 	}
 
 	/** IF YOU GET A CRASH HERE, YOU FORGOT TO FREE UP POINTERS
-         BEFORE SHUTTING OGRE DOWN
-         Use reset() before shutdown or make sure your pointer goes
-         out of scope before OGRE shuts down to avoid this. */
+		 BEFORE SHUTTING OGRE DOWN
+		 Use reset() before shutdown or make sure your pointer goes
+		 out of scope before OGRE shuts down to avoid this. */
 	inline void destroy(void) {
 		assert(pRep && pInfo);
 		memdelete(pInfo);
@@ -594,6 +594,249 @@ protected:
 		std::swap(pInfo, other.pInfo);
 	}
 };
+
+// 对象类型智能指针
+template <class T>
+class TObjectPtr {
+	template <typename Y>
+	friend class TObjectPtr;
+
+protected:
+	/* DO NOT ADD MEMBERS TO THIS CLASS!
+	 *
+	 * The average Ogre application has *thousands* of them. Every extra
+	 * member causes extra memory use in general, and causes extra padding
+	 * to be added to a multitude of structures.
+	 *
+	 * Everything you need to do can be acomplished by creatively working
+	 * with the SharedPtrInfo object.
+	 *
+	 * There is no reason for this object to ever have more than two members.
+	 */
+
+	T *pRep;
+
+public:
+	TObjectPtr(T *rep) :
+			pRep(nullptr) {
+		reset(rep);
+	}
+
+public:
+	typedef T DataType;
+	/** Constructor, does not initialise the SharedPtr.
+			@remarks
+				<b>Dangerous!</b> You have to call bind() before using the SharedPtr.
+		*/
+	TObjectPtr() :
+			pRep(0) {}
+
+private:
+public:
+	/** Constructor.
+		@param rep The pointer to take ownership of
+		@param inFreeMethod The mechanism to use to free the pointer
+		*/
+	template <class Y>
+	explicit TObjectPtr(Y *rep) :
+			pRep(nullptr) {
+		reset(rep);
+	}
+
+	TObjectPtr(const TObjectPtr &r) :
+			pRep(nullptr) {
+		reset(r.pRep);
+	}
+	void instantiate() {
+		T *ptr = memnew(T);
+		reset(ptr);
+	}
+
+	TObjectPtr &operator=(const TObjectPtr &r) {
+		// One resource could have several non-controlling control blocks but only one controlling.
+		assert(pRep != r.pRep);
+
+		// Swap current data into a local copy
+		// this ensures we deal with rhs and this being dependent
+		TObjectPtr<T> tmp(r);
+		swap(tmp);
+		return *this;
+	}
+
+	/* For C++11 compilers, use enable_if to only expose functions when viable
+	 *
+	 * MSVC 2012 and earlier only claim conformance to C++98. This is fortunate,
+	 * because they don't support default template parameters
+	 */
+#if __cplusplus >= 201103L && !defined(__APPLE__)
+	template <class Y,
+			class = typename std::enable_if<std::is_convertible<Y *, T *>::value>::type>
+#else
+	template <class Y>
+#endif
+	TObjectPtr(const TObjectPtr<Y> &r) :
+			pRep(nullptr) {
+
+		reset(r.pRep);
+	}
+
+#if __cplusplus >= 201103L && !defined(__APPLE__)
+	template <class Y,
+			class = typename std::enable_if<std::is_assignable<T *, Y *>::value>::type>
+#else
+	template <class Y>
+#endif
+	TObjectPtr &operator=(const TObjectPtr<Y> &r) {
+		// One resource could have several non-controlling control blocks but only one controlling.
+		assert(pRep != r.pRep);
+
+		// Swap current data into a local copy
+		// this ensures we deal with rhs and this being dependent
+		TObjectPtr<T> tmp(r);
+		swap(tmp);
+		return *this;
+	}
+
+	~TObjectPtr() {
+		release();
+	}
+
+	/// @deprecated use Ogre::static_pointer_cast instead
+	template <typename Y>
+	TObjectPtr<Y> staticCast() const {
+		if (pRep) {
+			return TObjectPtr<Y>(static_cast<Y *>(pRep));
+		} else
+			return TObjectPtr<Y>();
+	}
+
+	/// @deprecated use Ogre::dynamic_pointer_cast instead
+	template <typename Y>
+	TObjectPtr<Y> dynamicCast() const {
+		Y *rep = dynamic_cast<Y *>(pRep);
+		if (rep) {
+			return TObjectPtr<Y>(rep);
+		} else
+			return TObjectPtr<Y>();
+	}
+
+	inline T &operator*() const {
+		assert(pRep);
+		return *pRep;
+	}
+	inline T *operator->() const {
+		assert(pRep);
+		return pRep;
+	}
+	inline T *get() const { return pRep; }
+
+	/** Binds rep to the SharedPtr.
+			@remarks
+				Assumes that the SharedPtr is uninitialised!
+
+			@warning
+				The object must not be bound into a SharedPtr elsewhere
+
+			@deprecated this api will be dropped. use reset(T*) instead
+		*/
+	void bind(T *rep) {
+		assert(!pRep);
+		pRep = rep;
+	}
+
+	inline bool unique() const {
+		return pRep->get_ref_count() == 1;
+	}
+
+	unsigned int use_count() const {
+		return pRep->get_ref_count();
+	}
+
+	/// @deprecated use get() instead
+	T *getPointer() const { return pRep; }
+
+	static void unspecified_bool(TObjectPtr ***) {
+	}
+
+	typedef void (*unspecified_bool_type)(TObjectPtr ***);
+
+	operator unspecified_bool_type() const {
+		return pRep == 0 ? 0 : unspecified_bool;
+	}
+
+	/// @deprecated use SharedPtr::operator unspecified_bool_type() instead
+	bool isNull(void) const { return pRep == 0; }
+
+	/// @deprecated use reset() instead
+	void setNull() { reset(); }
+
+	void reset(void) {
+		release();
+	}
+	void reset(T *rep) {
+		release();
+		pRep = rep;
+		if (pRep != nullptr) {
+			pRep->add_ref_count();
+		}
+	}
+	template <class Y>
+	void reset(Y *rep) {
+		release();
+		pRep = static_cast<T *>(rep);
+		if (pRep != nullptr) {
+			pRep->add_ref_count();
+		}
+	}
+
+protected:
+	inline void release(void) {
+		if (pRep) {
+			int32_t count = pRep->inv_ref_count();
+			if (count == 0)
+				destroy();
+		}
+
+		pRep = nullptr;
+	}
+
+	/** IF YOU GET A CRASH HERE, YOU FORGOT TO FREE UP POINTERS
+		 BEFORE SHUTTING OGRE DOWN
+		 Use reset() before shutdown or make sure your pointer goes
+		 out of scope before OGRE shuts down to avoid this. */
+	inline void destroy(void) {
+		memdelete(pRep);
+	}
+
+	inline void swap(TObjectPtr<T> &other) {
+		std::swap(pRep, other.pRep);
+	}
+};
+
+template <class T, class U>
+inline bool operator==(TObjectPtr<T> const &a, TObjectPtr<U> const &b) {
+	return a.get() == b.get();
+}
+
+template <class T, class U>
+inline bool operator!=(TObjectPtr<T> const &a, TObjectPtr<U> const &b) {
+	return a.get() != b.get();
+}
+
+template <class T, class U>
+inline bool operator<(TObjectPtr<T> const &a, TObjectPtr<U> const &b) {
+	return std::less<const void *>()(a.get(), b.get());
+}
+
+template <class T, class U>
+inline TObjectPtr<T> static_pointer_cast(TObjectPtr<U> const &r) {
+	return r.template staticCast<T>();
+}
+
+template <class T, class U>
+inline TObjectPtr<T> dynamic_pointer_cast(TObjectPtr<U> const &r) {
+	return r.template dynamicCast<T>();
+}
 
 template <class T, class U>
 inline bool operator==(SharedPtr<T> const &a, SharedPtr<U> const &b) {
