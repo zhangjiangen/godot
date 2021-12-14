@@ -232,7 +232,6 @@ void ShaderRD::_compile_variant(uint32_t p_variant, Version *p_version) {
 		return; //variant is disabled, return
 	}
 
-	LOG_INFO_PRINT(String("_compile_variant :") + p_version->GetString());
 	Vector<RD::ShaderStageSPIRVData> stages;
 
 	String error;

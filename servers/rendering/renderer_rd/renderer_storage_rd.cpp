@@ -2993,6 +2993,7 @@ void RendererStorageRD::MaterialData::free_parameters_uniform_set(RID p_uniform_
 }
 
 bool RendererStorageRD::MaterialData::update_parameters_uniform_set(const Map<StringName, Variant> &p_parameters, bool p_uniform_dirty, bool p_textures_dirty, const Map<StringName, ShaderLanguage::ShaderNode::Uniform> &p_uniforms, const uint32_t *p_uniform_offsets, const Vector<ShaderCompilerRD::GeneratedCode::Texture> &p_texture_uniforms, const Map<StringName, Map<int, RID>> &p_default_texture_params, uint32_t p_ubo_size, RID &uniform_set, RID p_shader, uint32_t p_shader_uniform_set, uint32_t p_barrier) {
+	bool is_update_buffer = false;
 	if ((uint32_t)ubo_data.size() != p_ubo_size) {
 		p_uniform_dirty = true;
 		if (uniform_buffer.is_valid()) {
@@ -3003,6 +3004,7 @@ bool RendererStorageRD::MaterialData::update_parameters_uniform_set(const Map<St
 		ubo_data.resize(p_ubo_size);
 		if (ubo_data.size()) {
 			uniform_buffer = RD::get_singleton()->uniform_buffer_create(ubo_data.size());
+			is_update_buffer = true;
 			memset(ubo_data.ptrw(), 0, ubo_data.size()); //clear
 		}
 
@@ -3010,6 +3012,7 @@ bool RendererStorageRD::MaterialData::update_parameters_uniform_set(const Map<St
 		if (uniform_set.is_valid() && RD::get_singleton()->uniform_set_is_valid(uniform_set)) {
 			RD::get_singleton()->uniform_set_set_invalidation_callback(uniform_set, nullptr, nullptr);
 			RD::get_singleton()->free(uniform_set);
+			is_update_buffer = true;
 			uniform_set = RID();
 		}
 	}
@@ -3034,21 +3037,23 @@ bool RendererStorageRD::MaterialData::update_parameters_uniform_set(const Map<St
 			RD::get_singleton()->uniform_set_set_invalidation_callback(uniform_set, nullptr, nullptr);
 			RD::get_singleton()->free(uniform_set);
 			uniform_set = RID();
+			is_update_buffer = true;
 		}
 	}
 
 	if (p_textures_dirty && tex_uniform_count) {
 		update_textures(p_parameters, p_default_texture_params, p_texture_uniforms, texture_cache.ptrw(), true);
 	}
+	if (!is_update_buffer) {
+		if (p_ubo_size == 0 && p_texture_uniforms.size() == 0) {
+			// This material does not require an uniform set, so don't create it.
+			return false;
+		}
 
-	if (p_ubo_size == 0 && p_texture_uniforms.size() == 0) {
-		// This material does not require an uniform set, so don't create it.
-		return false;
-	}
-
-	if (!p_textures_dirty && uniform_set.is_valid() && RD::get_singleton()->uniform_set_is_valid(uniform_set)) {
-		//no reason to update uniform set, only UBO (or nothing) was needed to update
-		return false;
+		if (!p_textures_dirty && uniform_set.is_valid() && RD::get_singleton()->uniform_set_is_valid(uniform_set)) {
+			//no reason to update uniform set, only UBO (or nothing) was needed to update
+			return false;
+		}
 	}
 
 	Vector<RD::Uniform> uniforms;
@@ -8377,6 +8382,15 @@ void RendererStorageRD::base_update_dependency(RID p_base, DependencyTracker *p_
 	} else if (visibility_notifier_owner.owns(p_base)) {
 		VisibilityNotifier *vn = visibility_notifier_owner.get_or_null(p_base);
 		p_instance->update_dependency(&vn->dependency);
+	} else if (material_owner.owns(p_base)) {
+		Material *mat = material_owner.get_or_null(p_base);
+		p_instance->update_dependency(&mat->dependency);
+		if (mat->next_pass.is_valid()) {
+			base_update_dependency(mat->next_pass, p_instance);
+		}
+	} else if (skeleton_owner.owns(p_base)) {
+		Skeleton *skeleton = skeleton_owner.get_or_null(p_base);
+		p_instance->update_dependency(&skeleton->dependency);
 	}
 }
 
