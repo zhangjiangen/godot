@@ -5562,8 +5562,8 @@ String VisualShaderNodeTextureUniform::generate_global(Shader::Mode p_mode, Visu
 		case TYPE_NORMAL_MAP:
 			code += " : hint_normal;\n";
 			break;
-		case TYPE_ANISO:
-			code += " : hint_aniso;\n";
+		case TYPE_ANISOTROPY:
+			code += " : hint_anisotropy;\n";
 			break;
 		default:
 			code += ";\n";
@@ -5652,7 +5652,7 @@ void VisualShaderNodeTextureUniform::_bind_methods() {
 	BIND_ENUM_CONSTANT(TYPE_DATA);
 	BIND_ENUM_CONSTANT(TYPE_COLOR);
 	BIND_ENUM_CONSTANT(TYPE_NORMAL_MAP);
-	BIND_ENUM_CONSTANT(TYPE_ANISO);
+	BIND_ENUM_CONSTANT(TYPE_ANISOTROPY);
 	BIND_ENUM_CONSTANT(TYPE_MAX);
 
 	BIND_ENUM_CONSTANT(COLOR_DEFAULT_WHITE);
@@ -5839,8 +5839,8 @@ String VisualShaderNodeTexture2DArrayUniform::generate_global(Shader::Mode p_mod
 		case TYPE_NORMAL_MAP:
 			code += " : hint_normal;\n";
 			break;
-		case TYPE_ANISO:
-			code += " : hint_aniso;\n";
+		case TYPE_ANISOTROPY:
+			code += " : hint_anisotropy;\n";
 			break;
 		default:
 			code += ";\n";
@@ -5912,8 +5912,8 @@ String VisualShaderNodeTexture3DUniform::generate_global(Shader::Mode p_mode, Vi
 		case TYPE_NORMAL_MAP:
 			code += " : hint_normal;\n";
 			break;
-		case TYPE_ANISO:
-			code += " : hint_aniso;\n";
+		case TYPE_ANISOTROPY:
+			code += " : hint_anisotropy;\n";
 			break;
 		default:
 			code += ";\n";
@@ -5985,8 +5985,8 @@ String VisualShaderNodeCubemapUniform::generate_global(Shader::Mode p_mode, Visu
 		case TYPE_NORMAL_MAP:
 			code += " : hint_normal;\n";
 			break;
-		case TYPE_ANISO:
-			code += " : hint_aniso;\n";
+		case TYPE_ANISOTROPY:
+			code += " : hint_anisotropy;\n";
 			break;
 		default:
 			code += ";\n";
