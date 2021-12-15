@@ -214,8 +214,8 @@ const char *ShaderLanguage::token_names[TK_MAX] = {
 	"FILTER_LINEAR",
 	"FILTER_NEAREST_MIPMAP",
 	"FILTER_LINEAR_MIPMAP",
-	"FILTER_NEAREST_MIPMAP_ANISO",
-	"FILTER_LINEAR_MIPMAP_ANISO",
+	"FILTER_NEAREST_MIPMAP_ANISOTROPY",
+	"FILTER_LINEAR_MIPMAP_ANISOTROPY",
 	"REPEAT_ENABLE",
 	"REPEAT_DISABLE",
 	"SHADER_TYPE",
@@ -328,8 +328,8 @@ const ShaderLanguage::KeyWord ShaderLanguage::keyword_list[] = {
 	{ TK_FILTER_LINEAR, "filter_linear" },
 	{ TK_FILTER_NEAREST_MIPMAP, "filter_nearest_mipmap" },
 	{ TK_FILTER_LINEAR_MIPMAP, "filter_linear_mipmap" },
-	{ TK_FILTER_NEAREST_MIPMAP_ANISO, "filter_nearest_mipmap_aniso" },
-	{ TK_FILTER_LINEAR_MIPMAP_ANISO, "filter_linear_mipmap_aniso" },
+	{ TK_FILTER_NEAREST_MIPMAP_ANISOTROPY, "filter_nearest_mipmap_anisotropy" },
+	{ TK_FILTER_LINEAR_MIPMAP_ANISOTROPY, "filter_linear_mipmap_anisotropy" },
 	{ TK_REPEAT_ENABLE, "repeat_enable" },
 	{ TK_REPEAT_DISABLE, "repeat_disable" },
 	{ TK_SHADER_TYPE, "shader_type" },
@@ -7648,57 +7648,71 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 							_set_error("void datatype not allowed here");
 							return ERR_PARSE_ERROR;
 						}
-						tk = _get_token();
 
-						if (tk.type != TK_IDENTIFIER && tk.type != TK_BRACKET_OPEN) {
-							_set_error("Expected identifier or '['.");
-							return ERR_PARSE_ERROR;
-						}
-
+						bool first = true;
+						bool fixed_array_size = false;
 						int array_size = 0;
 
-						if (tk.type == TK_BRACKET_OPEN) {
-							Error error = _parse_global_array_size(array_size, constants);
-							if (error != OK) {
-								return error;
-							}
+						do {
 							tk = _get_token();
-						}
 
-						if (tk.type != TK_IDENTIFIER) {
-							_set_error("Expected identifier!");
-							return ERR_PARSE_ERROR;
-						}
+							if (first) {
+								first = false;
 
-						MemberNode *member = alloc_node<MemberNode>();
-						member->precision = precision;
-						member->datatype = type;
-						member->struct_name = struct_name;
-						member->name = tk.text;
-						member->array_size = array_size;
+								if (tk.type != TK_IDENTIFIER && tk.type != TK_BRACKET_OPEN) {
+									_set_error("Expected identifier or '['.");
+									return ERR_PARSE_ERROR;
+								}
 
-						if (member_names.has(member->name)) {
-							_set_error("Redefinition of '" + String(member->name) + "'");
-							return ERR_PARSE_ERROR;
-						}
-						member_names.insert(member->name);
-						tk = _get_token();
-
-						if (tk.type == TK_BRACKET_OPEN) {
-							Error error = _parse_global_array_size(member->array_size, constants);
-							if (error != OK) {
-								return error;
+								if (tk.type == TK_BRACKET_OPEN) {
+									Error error = _parse_global_array_size(array_size, constants);
+									if (error != OK) {
+										return error;
+									}
+									fixed_array_size = true;
+									tk = _get_token();
+								}
 							}
+
+							if (tk.type != TK_IDENTIFIER) {
+								_set_error("Expected identifier!");
+								return ERR_PARSE_ERROR;
+							}
+
+							MemberNode *member = alloc_node<MemberNode>();
+							member->precision = precision;
+							member->datatype = type;
+							member->struct_name = struct_name;
+							member->name = tk.text;
+							member->array_size = array_size;
+
+							if (member_names.has(member->name)) {
+								_set_error("Redefinition of '" + String(member->name) + "'");
+								return ERR_PARSE_ERROR;
+							}
+							member_names.insert(member->name);
 							tk = _get_token();
-						}
 
-						if (tk.type != TK_SEMICOLON) {
-							_set_error("Expected ';'");
-							return ERR_PARSE_ERROR;
-						}
+							if (tk.type == TK_BRACKET_OPEN) {
+								Error error = _parse_global_array_size(member->array_size, constants);
+								if (error != OK) {
+									return error;
+								}
+								tk = _get_token();
+							}
 
-						st_node->members.push_back(member);
-						member_count++;
+							if (!fixed_array_size) {
+								array_size = 0;
+							}
+
+							if (tk.type != TK_SEMICOLON && tk.type != TK_COMMA) {
+								_set_error("Expected ',' or ';' after struct member.");
+								return ERR_PARSE_ERROR;
+							}
+
+							st_node->members.push_back(member);
+							member_count++;
+						} while (tk.type == TK_COMMA); // another member
 					}
 				}
 				if (member_count == 0) {
@@ -8082,10 +8096,10 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 								uniform2.filter = FILTER_NEAREST_MIPMAP;
 							} else if (tk.type == TK_FILTER_LINEAR_MIPMAP) {
 								uniform2.filter = FILTER_LINEAR_MIPMAP;
-							} else if (tk.type == TK_FILTER_NEAREST_MIPMAP_ANISO) {
-								uniform2.filter = FILTER_NEAREST_MIPMAP_ANISO;
-							} else if (tk.type == TK_FILTER_LINEAR_MIPMAP_ANISO) {
-								uniform2.filter = FILTER_LINEAR_MIPMAP_ANISO;
+							} else if (tk.type == TK_FILTER_NEAREST_MIPMAP_ANISOTROPY) {
+								uniform2.filter = FILTER_NEAREST_MIPMAP_ANISOTROPY;
+							} else if (tk.type == TK_FILTER_LINEAR_MIPMAP_ANISOTROPY) {
+								uniform2.filter = FILTER_LINEAR_MIPMAP_ANISOTROPY;
 							} else if (tk.type == TK_REPEAT_DISABLE) {
 								uniform2.repeat = REPEAT_DISABLE;
 							} else if (tk.type == TK_REPEAT_ENABLE) {
@@ -9535,10 +9549,10 @@ Error ShaderLanguage::complete(const String &p_code, const ShaderCompileInfo &p_
 				if (options.is_empty()) {
 					options.push_back("filter_linear");
 					options.push_back("filter_linear_mipmap");
-					options.push_back("filter_linear_mipmap_aniso");
+					options.push_back("filter_linear_mipmap_anisotropy");
 					options.push_back("filter_nearest");
 					options.push_back("filter_nearest_mipmap");
-					options.push_back("filter_nearest_mipmap_aniso");
+					options.push_back("filter_nearest_mipmap_anisotropy");
 					options.push_back("hint_albedo");
 					options.push_back("hint_anisotropy");
 					options.push_back("hint_black");
