@@ -179,8 +179,8 @@ public:
 		TK_FILTER_LINEAR,
 		TK_FILTER_NEAREST_MIPMAP,
 		TK_FILTER_LINEAR_MIPMAP,
-		TK_FILTER_NEAREST_MIPMAP_ANISO,
-		TK_FILTER_LINEAR_MIPMAP_ANISO,
+		TK_FILTER_NEAREST_MIPMAP_ANISOTROPY,
+		TK_FILTER_LINEAR_MIPMAP_ANISOTROPY,
 		TK_REPEAT_ENABLE,
 		TK_REPEAT_DISABLE,
 		TK_SHADER_TYPE,
@@ -322,8 +322,8 @@ public:
 		FILTER_LINEAR,
 		FILTER_NEAREST_MIPMAP,
 		FILTER_LINEAR_MIPMAP,
-		FILTER_NEAREST_MIPMAP_ANISO,
-		FILTER_LINEAR_MIPMAP_ANISO,
+		FILTER_NEAREST_MIPMAP_ANISOTROPY,
+		FILTER_LINEAR_MIPMAP_ANISOTROPY,
 		FILTER_DEFAULT,
 	};
 
@@ -576,7 +576,7 @@ public:
 
 		virtual DataType get_datatype() const override { return datatype; }
 		virtual String get_datatype_name() const override { return String(struct_name); }
-		virtual int get_array_size() const override { return array_size; }
+		virtual int get_array_size() const override { return (index_expression || call_expression) ? 0 : array_size; }
 		virtual bool is_indexed() const override { return index_expression != nullptr || call_expression != nullptr; }
 
 		MemberNode() :
