@@ -214,8 +214,8 @@ const char *ShaderLanguage::token_names[TK_MAX] = {
 	"FILTER_LINEAR",
 	"FILTER_NEAREST_MIPMAP",
 	"FILTER_LINEAR_MIPMAP",
-	"FILTER_NEAREST_MIPMAP_ANISOTROPY",
-	"FILTER_LINEAR_MIPMAP_ANISOTROPY",
+	"FILTER_NEAREST_MIPMAP_ANISOTROPIC",
+	"FILTER_LINEAR_MIPMAP_ANISOTROPIC",
 	"REPEAT_ENABLE",
 	"REPEAT_DISABLE",
 	"SHADER_TYPE",
@@ -328,8 +328,8 @@ const ShaderLanguage::KeyWord ShaderLanguage::keyword_list[] = {
 	{ TK_FILTER_LINEAR, "filter_linear" },
 	{ TK_FILTER_NEAREST_MIPMAP, "filter_nearest_mipmap" },
 	{ TK_FILTER_LINEAR_MIPMAP, "filter_linear_mipmap" },
-	{ TK_FILTER_NEAREST_MIPMAP_ANISOTROPY, "filter_nearest_mipmap_anisotropy" },
-	{ TK_FILTER_LINEAR_MIPMAP_ANISOTROPY, "filter_linear_mipmap_anisotropy" },
+	{ TK_FILTER_NEAREST_MIPMAP_ANISOTROPIC, "filter_nearest_mipmap_anisotropic" },
+	{ TK_FILTER_LINEAR_MIPMAP_ANISOTROPIC, "filter_linear_mipmap_anisotropic" },
 	{ TK_REPEAT_ENABLE, "repeat_enable" },
 	{ TK_REPEAT_DISABLE, "repeat_disable" },
 	{ TK_SHADER_TYPE, "shader_type" },
@@ -4399,13 +4399,14 @@ Error ShaderLanguage::_parse_global_array_size(int &r_array_size, const Function
 	return OK;
 }
 
-Error ShaderLanguage::_parse_local_array_size(BlockNode *p_block, const FunctionInfo &p_function_info, ArrayDeclarationNode *p_node, ArrayDeclarationNode::Declaration *p_decl, int &r_array_size, bool &r_is_unknown_size) {
+Error ShaderLanguage::_parse_local_array_size(BlockNode *p_block, const FunctionInfo &p_function_info, Node *&r_size_expression, int &r_array_size, bool &r_is_unknown_size) {
 	TkPos pos = _get_tkpos();
 	Token tk = _get_token();
 
 	if (tk.type == TK_BRACKET_CLOSE) {
 		r_is_unknown_size = true;
 	} else {
+		int size = 0;
 		if (!tk.is_integer_constant() || ((int)tk.constant) <= 0) {
 			_set_tkpos(pos);
 			int array_size = 0;
@@ -4413,13 +4414,13 @@ Error ShaderLanguage::_parse_local_array_size(BlockNode *p_block, const Function
 			if (!n) {
 				return ERR_PARSE_ERROR;
 			}
-			p_decl->size = array_size;
-			p_node->size_expression = n;
+			size = array_size;
+			r_size_expression = n;
 		} else if (((int)tk.constant) > 0) {
-			p_decl->size = (uint32_t)tk.constant;
+			size = (uint32_t)tk.constant;
 		}
 
-		if (p_decl->size <= 0) {
+		if (size <= 0) {
 			_set_error("Expected single integer constant > 0");
 			return ERR_PARSE_ERROR;
 		}
@@ -4430,7 +4431,7 @@ Error ShaderLanguage::_parse_local_array_size(BlockNode *p_block, const Function
 			return ERR_PARSE_ERROR;
 		}
 
-		r_array_size = p_decl->size;
+		r_array_size = size;
 	}
 
 	return OK;
@@ -4849,11 +4850,6 @@ ShaderLanguage::Node *ShaderLanguage::_parse_expression(BlockNode *p_block, cons
 
 			if (shader->structs.has(identifier)) {
 				pstruct = shader->structs[identifier].shader_struct;
-#ifdef DEBUG_ENABLED
-				if (check_warnings && HAS_WARNING(ShaderWarning::UNUSED_STRUCT_FLAG) && used_structs.has(identifier)) {
-					used_structs[identifier].used = true;
-				}
-#endif // DEBUG_ENABLED
 				struct_init = true;
 			}
 
@@ -6419,6 +6415,11 @@ Error ShaderLanguage::_parse_block(BlockNode *p_block, const FunctionInfo &p_fun
 			String struct_name = "";
 			if (is_struct) {
 				struct_name = tk.text;
+#ifdef DEBUG_ENABLED
+				if (check_warnings && HAS_WARNING(ShaderWarning::UNUSED_STRUCT_FLAG) && used_structs.has(struct_name)) {
+					used_structs[struct_name].used = true;
+				}
+#endif // DEBUG_ENABLED
 			}
 
 			bool is_const = false;
@@ -6464,49 +6465,44 @@ Error ShaderLanguage::_parse_block(BlockNode *p_block, const FunctionInfo &p_fun
 				return ERR_PARSE_ERROR;
 			}
 
-			tk = _get_token();
-
 			Node *vardecl = nullptr;
+			int array_size = 0;
+			bool fixed_array_size = false;
+			bool first = true;
 
-			while (true) {
+			do {
 				bool unknown_size = false;
-				int array_size = 0;
+				Node *size_expr = nullptr;
 
 				ArrayDeclarationNode *anode = nullptr;
 				ArrayDeclarationNode::Declaration adecl;
 
-				if (tk.type != TK_IDENTIFIER && tk.type != TK_BRACKET_OPEN) {
-					_set_error("Expected identifier or '[' after datatype.");
-					return ERR_PARSE_ERROR;
-				}
+				tk = _get_token();
 
-				if (tk.type == TK_BRACKET_OPEN) {
-					anode = alloc_node<ArrayDeclarationNode>();
+				if (first) {
+					first = false;
 
-					if (is_struct) {
-						anode->struct_name = struct_name;
-						anode->datatype = TYPE_STRUCT;
-					} else {
-						anode->datatype = type;
-					}
-
-					anode->precision = precision;
-					anode->is_const = is_const;
-					vardecl = (Node *)anode;
-
-					adecl.size = 0U;
-					adecl.single_expression = false;
-
-					Error error = _parse_local_array_size(p_block, p_function_info, anode, &adecl, array_size, unknown_size);
-					if (error != OK) {
-						return error;
-					}
-					tk = _get_token();
-
-					if (tk.type != TK_IDENTIFIER) {
-						_set_error("Expected identifier!");
+					if (tk.type != TK_IDENTIFIER && tk.type != TK_BRACKET_OPEN) {
+						_set_error("Expected identifier or '[' after datatype.");
 						return ERR_PARSE_ERROR;
 					}
+
+					if (tk.type == TK_BRACKET_OPEN) {
+						Error error = _parse_local_array_size(p_block, p_function_info, size_expr, array_size, unknown_size);
+						if (error != OK) {
+							return error;
+						}
+						adecl.single_expression = false;
+						adecl.size = array_size;
+
+						fixed_array_size = true;
+						tk = _get_token();
+					}
+				}
+
+				if (tk.type != TK_IDENTIFIER) {
+					_set_error("Expected identifier!");
+					return ERR_PARSE_ERROR;
 				}
 
 				StringName name = tk.text;
@@ -6544,8 +6540,10 @@ Error ShaderLanguage::_parse_block(BlockNode *p_block, const FunctionInfo &p_fun
 
 				tk = _get_token();
 
+				bool is_array_decl = var.array_size > 0 || unknown_size;
+
 				if (tk.type == TK_BRACKET_OPEN) {
-					if (var.array_size > 0 || unknown_size) {
+					if (is_array_decl) {
 						_set_error("Array size is already defined!");
 						return ERR_PARSE_ERROR;
 					}
@@ -6555,28 +6553,37 @@ Error ShaderLanguage::_parse_block(BlockNode *p_block, const FunctionInfo &p_fun
 						return ERR_PARSE_ERROR;
 					}
 
-					anode = alloc_node<ArrayDeclarationNode>();
-					if (is_struct) {
-						anode->struct_name = struct_name;
-						anode->datatype = TYPE_STRUCT;
-					} else {
-						anode->datatype = type;
-					}
-					anode->precision = precision;
-					anode->is_const = is_const;
-					vardecl = (Node *)anode;
-
-					adecl.size = 0U;
-					adecl.single_expression = false;
-
-					Error error = _parse_local_array_size(p_block, p_function_info, anode, &adecl, var.array_size, unknown_size);
+					Error error = _parse_local_array_size(p_block, p_function_info, size_expr, var.array_size, unknown_size);
 					if (error != OK) {
 						return error;
 					}
+
+					adecl.single_expression = false;
+					adecl.size = var.array_size;
+					array_size = var.array_size;
+
+					is_array_decl = true;
 					tk = _get_token();
 				}
 
-				if (var.array_size > 0 || unknown_size) {
+				if (is_array_decl) {
+					{
+						anode = alloc_node<ArrayDeclarationNode>();
+
+						if (is_struct) {
+							anode->struct_name = struct_name;
+							anode->datatype = TYPE_STRUCT;
+						} else {
+							anode->datatype = type;
+						}
+
+						anode->precision = precision;
+						anode->is_const = is_const;
+						anode->size_expression = size_expr;
+
+						vardecl = (Node *)anode;
+					}
+
 					bool full_def = false;
 
 					if (tk.type == TK_OP_ASSIGN) {
@@ -6794,6 +6801,7 @@ Error ShaderLanguage::_parse_block(BlockNode *p_block, const FunctionInfo &p_fun
 						}
 					}
 
+					array_size = var.array_size;
 					anode->declarations.push_back(adecl);
 				} else if (tk.type == TK_OP_ASSIGN) {
 					VariableDeclarationNode *node = alloc_node<VariableDeclarationNode>();
@@ -6862,22 +6870,24 @@ Error ShaderLanguage::_parse_block(BlockNode *p_block, const FunctionInfo &p_fun
 				}
 
 				p_block->statements.push_back(vardecl);
-
 				p_block->variables[name] = var;
+
+				if (!fixed_array_size) {
+					array_size = 0;
+				}
+
 				if (tk.type == TK_COMMA) {
 					if (p_block->block_type == BlockNode::BLOCK_TYPE_FOR) {
 						_set_error("Multiple declarations in 'for' loop are not implemented yet.");
 						return ERR_PARSE_ERROR;
 					}
-					tk = _get_token();
-					//another variable
 				} else if (tk.type == TK_SEMICOLON) {
 					break;
 				} else {
 					_set_error("Expected ',' or ';' after variable");
 					return ERR_PARSE_ERROR;
 				}
-			}
+			} while (tk.type == TK_COMMA); //another variable
 		} else if (tk.type == TK_CURLY_BRACKET_OPEN) {
 			//a sub block, just because..
 			BlockNode *block = alloc_node<BlockNode>();
@@ -7628,6 +7638,11 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 
 					if (shader->structs.has(tk.text)) {
 						struct_name = tk.text;
+#ifdef DEBUG_ENABLED
+						if (check_warnings && HAS_WARNING(ShaderWarning::UNUSED_STRUCT_FLAG) && used_structs.has(struct_name)) {
+							used_structs[struct_name].used = true;
+						}
+#endif // DEBUG_ENABLED
 						struct_dt = true;
 						if (use_precision) {
 							_set_error("Precision modifier cannot be used on structs.");
@@ -8096,10 +8111,10 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 								uniform2.filter = FILTER_NEAREST_MIPMAP;
 							} else if (tk.type == TK_FILTER_LINEAR_MIPMAP) {
 								uniform2.filter = FILTER_LINEAR_MIPMAP;
-							} else if (tk.type == TK_FILTER_NEAREST_MIPMAP_ANISOTROPY) {
-								uniform2.filter = FILTER_NEAREST_MIPMAP_ANISOTROPY;
-							} else if (tk.type == TK_FILTER_LINEAR_MIPMAP_ANISOTROPY) {
-								uniform2.filter = FILTER_LINEAR_MIPMAP_ANISOTROPY;
+							} else if (tk.type == TK_FILTER_NEAREST_MIPMAP_ANISOTROPIC) {
+								uniform2.filter = FILTER_NEAREST_MIPMAP_ANISOTROPIC;
+							} else if (tk.type == TK_FILTER_LINEAR_MIPMAP_ANISOTROPIC) {
+								uniform2.filter = FILTER_LINEAR_MIPMAP_ANISOTROPIC;
 							} else if (tk.type == TK_REPEAT_DISABLE) {
 								uniform2.repeat = REPEAT_DISABLE;
 							} else if (tk.type == TK_REPEAT_ENABLE) {
@@ -8735,6 +8750,11 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 					if (shader->structs.has(tk.text)) {
 						is_struct = true;
 						param_struct_name = tk.text;
+#ifdef DEBUG_ENABLED
+						if (check_warnings && HAS_WARNING(ShaderWarning::UNUSED_STRUCT_FLAG) && used_structs.has(param_struct_name)) {
+							used_structs[param_struct_name].used = true;
+						}
+#endif // DEBUG_ENABLED
 						if (use_precision) {
 							_set_error("Precision modifier cannot be used on structs.");
 							return ERR_PARSE_ERROR;
@@ -9549,10 +9569,10 @@ Error ShaderLanguage::complete(const String &p_code, const ShaderCompileInfo &p_
 				if (options.is_empty()) {
 					options.push_back("filter_linear");
 					options.push_back("filter_linear_mipmap");
-					options.push_back("filter_linear_mipmap_anisotropy");
+					options.push_back("filter_linear_mipmap_anisotropic");
 					options.push_back("filter_nearest");
 					options.push_back("filter_nearest_mipmap");
-					options.push_back("filter_nearest_mipmap_anisotropy");
+					options.push_back("filter_nearest_mipmap_anisotropic");
 					options.push_back("hint_albedo");
 					options.push_back("hint_anisotropy");
 					options.push_back("hint_black");

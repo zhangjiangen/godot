@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  dir_access_unix.h                                                    */
+/*  editor_translation.cpp                                               */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,69 +28,72 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef DIR_ACCESS_UNIX_H
-#define DIR_ACCESS_UNIX_H
+#include "editor/editor_translation.h"
 
-#if defined(UNIX_ENABLED) || defined(LIBC_FILEIO_ENABLED)
+#include "core/io/compression.h"
+#include "core/io/file_access_memory.h"
+#include "core/io/translation_loader_po.h"
+#include "editor/doc_translations.gen.h"
+#include "editor/editor_translations.gen.h"
 
-#include "core/io/dir_access.h"
+Vector<String> get_editor_locales() {
+	Vector<String> locales;
 
-#include <dirent.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
+	EditorTranslationList *etl = _editor_translations;
+	while (etl->data) {
+		const String &locale = etl->lang;
+		locales.push_back(locale);
 
-class DirAccessUnix : public DirAccess {
-	DIR *dir_stream;
+		etl++;
+	}
 
-	static DirAccess *create_fs();
+	return locales;
+}
 
-	String current_dir;
-	bool _cisdir;
-	bool _cishidden;
+void load_editor_translations(const String &p_locale) {
+	EditorTranslationList *etl = _editor_translations;
+	while (etl->data) {
+		if (etl->lang == p_locale) {
+			Vector<uint8_t> data;
+			data.resize(etl->uncomp_size);
+			Compression::decompress(data.ptrw(), etl->uncomp_size, etl->data, etl->comp_size, Compression::MODE_DEFLATE);
 
-protected:
-	virtual String fix_unicode_name(const char *p_name) const { return String::utf8(p_name); }
-	virtual bool is_hidden(const String &p_name);
+			FileAccessMemory *fa = memnew(FileAccessMemory);
+			fa->open_custom(data.ptr(), data.size());
 
-public:
-	virtual Error list_dir_begin(); ///< This starts dir listing
-	virtual String get_next();
-	virtual bool current_is_dir() const;
-	virtual bool current_is_hidden() const;
+			Ref<Translation> tr = TranslationLoaderPO::load_translation(fa);
 
-	virtual void list_dir_end(); ///<
+			if (tr.is_valid()) {
+				tr->set_locale(etl->lang);
+				TranslationServer::get_singleton()->set_tool_translation(tr);
+				break;
+			}
+		}
 
-	virtual int get_drive_count();
-	virtual String get_drive(int p_drive);
-	virtual int get_current_drive();
-	virtual bool drives_are_shortcuts();
+		etl++;
+	}
+}
 
-	virtual Error change_dir(String p_dir); ///< can be relative or absolute, return false on success
-	virtual String get_current_dir(bool p_include_drive = true); ///< return current dir location
-	virtual Error make_dir(String p_dir);
+void load_doc_translations(const String &p_locale) {
+	DocTranslationList *dtl = _doc_translations;
+	while (dtl->data) {
+		if (dtl->lang == p_locale) {
+			Vector<uint8_t> data;
+			data.resize(dtl->uncomp_size);
+			Compression::decompress(data.ptrw(), dtl->uncomp_size, dtl->data, dtl->comp_size, Compression::MODE_DEFLATE);
 
-	virtual bool file_exists(String p_file);
-	virtual bool dir_exists(String p_dir);
-	virtual bool is_readable(String p_dir);
-	virtual bool is_writable(String p_dir);
+			FileAccessMemory *fa = memnew(FileAccessMemory);
+			fa->open_custom(data.ptr(), data.size());
 
-	virtual uint64_t get_modified_time(String p_file);
+			Ref<Translation> tr = TranslationLoaderPO::load_translation(fa);
 
-	virtual Error rename(String p_path, String p_new_path);
-	virtual Error remove(String p_path);
+			if (tr.is_valid()) {
+				tr->set_locale(dtl->lang);
+				TranslationServer::get_singleton()->set_doc_translation(tr);
+				break;
+			}
+		}
 
-	virtual bool is_link(String p_file);
-	virtual String read_link(String p_file);
-	virtual Error create_link(String p_source, String p_target);
-
-	virtual uint64_t get_space_left();
-
-	virtual String get_filesystem_type() const;
-
-	DirAccessUnix();
-	~DirAccessUnix();
-};
-
-#endif //UNIX ENABLED
-#endif
+		dtl++;
+	}
+}
