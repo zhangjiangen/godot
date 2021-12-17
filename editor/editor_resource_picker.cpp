@@ -45,9 +45,17 @@ void EditorResourcePicker::clear_caches() {
 void EditorResourcePicker::_update_resource() {
 	if (edited_resource.is_valid() && edited_resource->get_path().is_resource_file()) {
 		search_button->set_visible(true);
+
 	} else {
 		search_button->set_visible(false);
 	}
+	bool save_button_visble = false;
+	FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+	String file_path = file_system_dock->get_current_path();
+	if (edited_resource.is_valid()  && !file_path.is_empty()) {
+		save_button_visble = true;
+	}
+	save_button->set_visible(save_button_visble);
 	update_set_resource_button();
 	preview_rect->set_texture(Ref<Texture2D>());
 	assign_button->set_custom_minimum_size(Size2(1, 1));
@@ -480,7 +488,7 @@ void EditorResourcePicker::_button_input(const Ref<InputEvent> &p_event) {
 		}
 	}
 }
-void EditorResourcePicker::_button_search(const Ref<InputEvent> &p_event) {
+void EditorResourcePicker::_button_search() {
 	if (edited_resource.is_valid()) {
 		FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
 		file_system_dock->navigate_to_path(edited_resource->get_path());
@@ -638,7 +646,7 @@ void EditorResourcePicker::drop_data_fw(const Point2 &p_point, const Variant &p_
 			dropped_resource = ResourceLoader::load(file);
 		}
 	}
-
+	bool is_change_res = true;
 	if (dropped_resource.is_valid()) {
 		Set<String> allowed_types;
 		_get_allowed_types(false, &allowed_types);
@@ -649,16 +657,41 @@ void EditorResourcePicker::drop_data_fw(const Point2 &p_point, const Variant &p_
 				String at = E->get().strip_edges();
 
 				if (at == "StandardMaterial3D" && ClassDB::is_parent_class(dropped_resource->get_class(), "Texture2D")) {
-					Ref<StandardMaterial3D> mat = memnew(StandardMaterial3D);
-					mat->set_texture(StandardMaterial3D::TextureParam::TEXTURE_ALBEDO, dropped_resource);
-					dropped_resource = mat;
+					Ref<StandardMaterial3D> mat = edited_resource;
+					if (mat.is_valid()) {
+						mat->set_texture(StandardMaterial3D::TextureParam::TEXTURE_ALBEDO, dropped_resource);
+						is_change_res = false;
+					} else {
+						mat.instantiate();
+						mat->set_texture(StandardMaterial3D::TextureParam::TEXTURE_ALBEDO, dropped_resource);
+						dropped_resource = mat;
+					}
 					break;
 				}
 
 				if (at == "ShaderMaterial" && ClassDB::is_parent_class(dropped_resource->get_class(), "Shader")) {
-					Ref<ShaderMaterial> mat = memnew(ShaderMaterial);
-					mat->set_shader(dropped_resource);
-					dropped_resource = mat;
+					Ref<ShaderMaterial> mat = edited_resource;
+					if (mat.is_valid()) {
+						mat->set_shader(dropped_resource);
+						is_change_res = false;
+					} else {
+						mat.instantiate();
+						mat->set_shader(dropped_resource);
+						dropped_resource = mat;
+					}
+					break;
+				}
+				if (at == "ShaderMaterial" && ClassDB::is_parent_class(dropped_resource->get_class(), "Shader")) {
+					Ref<ShaderMaterial> mat = edited_resource;
+					if (mat.is_valid()) {
+						mat->set_shader_param("ColorTexture", dropped_resource);
+						is_change_res = false;
+					} else {
+						mat.instantiate();
+
+						mat->set_shader_param("ColorTexture", dropped_resource);
+						dropped_resource = mat;
+					}
 					break;
 				}
 
@@ -670,9 +703,10 @@ void EditorResourcePicker::drop_data_fw(const Point2 &p_point, const Variant &p_
 				}
 			}
 		}
-
-		edited_resource = dropped_resource;
-		emit_signal(SNAME("resource_changed"), edited_resource);
+		if (is_change_res) {
+			edited_resource = dropped_resource;
+			emit_signal(SNAME("resource_changed"), edited_resource);
+		}
 		_update_resource();
 	}
 }
@@ -714,6 +748,9 @@ void EditorResourcePicker::_notification(int p_what) {
 		}
 		case NOTIFICATION_THEME_CHANGED: {
 			edit_button->set_icon(get_theme_icon(SNAME("select_arrow"), SNAME("Tree")));
+			search_button->set_icon(get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
+			set_resource_button->set_icon(get_theme_icon(SNAME("ArrowLeft"), SNAME("EditorIcons")));
+			save_button->set_icon(get_theme_icon(SNAME("Save"), SNAME("EditorIcons")));
 		} break;
 
 		case NOTIFICATION_DRAW: {
@@ -876,21 +913,23 @@ EditorResourcePicker::EditorResourcePicker() {
 	add_child(edit_button);
 	edit_button->connect("gui_input", callable_mp(this, &EditorResourcePicker::_button_input));
 
+	save_button = memnew(Button);
+	save_button->set_custom_minimum_size(Size2(10, 10));
+	save_button->set_v_size_flags(SIZE_EXPAND_FILL);
+	save_button->connect("pressed", callable_mp(this, &EditorResourcePicker::_button_save_resource));
+	add_child(save_button);
+
 	search_button = memnew(Button);
-	search_button->set_flat(true);
-	search_button->set_toggle_mode(true);
-	search_button->connect("pressed", callable_mp(this, &EditorResourcePicker::_update_menu));
+	search_button->set_custom_minimum_size(Size2(10, 10));
+	search_button->set_v_size_flags(SIZE_EXPAND_FILL);
 	add_child(search_button);
-	search_button->connect("gui_input", callable_mp(this, &EditorResourcePicker::_button_search));
-	search_button->set_icon(get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
+	search_button->connect("pressed", callable_mp(this, &EditorResourcePicker::_button_search));
 	// 绑定文件选择消息
 	set_resource_button = memnew(Button);
-	set_resource_button->set_flat(true);
-	set_resource_button->set_toggle_mode(true);
-	set_resource_button->connect("pressed", callable_mp(this, &EditorResourcePicker::_update_menu));
+	set_resource_button->set_custom_minimum_size(Size2(10, 10));
+	set_resource_button->set_v_size_flags(SIZE_EXPAND_FILL);
 	add_child(set_resource_button);
-	set_resource_button->connect("gui_input", callable_mp(this, &EditorResourcePicker::update_set_resource_button));
-	set_resource_button->set_icon(get_theme_icon(SNAME("ArrowLeft"), SNAME("EditorIcons")));
+	set_resource_button->connect("pressed", callable_mp(this, &EditorResourcePicker::_button_set_resource));
 	if (EditorNode::get_singleton()) {
 		FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
 		if (file_system_dock) {
@@ -899,26 +938,118 @@ EditorResourcePicker::EditorResourcePicker() {
 	}
 }
 
+void EditorResourcePicker::_button_save_resource() {
+    FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+	String file_path = file_system_dock->get_selected_path();
+	if (file_path.is_empty()) {
+		return;
+	}
+	if (!edited_resource.is_valid()) {
+		return;
+	}
+	//String ext = edited_resource->get_base_extension();
+	String name = edited_resource->get_class_name() ;
+	String path = file_system_dock->get_selected_path() + name + ".tres";
+    edited_resource->set_path(path, true); // Set path to save externally.
+	Error err = ResourceSaver::save(path, edited_resource, ResourceSaver::FLAG_CHANGE_PATH);
+}
+void EditorResourcePicker::_button_set_resource() {
+	FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+	String file_path = file_system_dock->get_current_path();
+	String file_type = EditorFileSystem::get_singleton()->get_file_type(file_path);
+
+	String file = file_path;
+	RES dropped_resource = ResourceLoader::load(file);
+
+	if (dropped_resource.is_valid()) {
+		Set<String> allowed_types;
+		_get_allowed_types(false, &allowed_types);
+		// If the accepted dropped resource is from the extended list, it requires conversion.
+		if (!_is_type_valid(dropped_resource->get_class(), allowed_types)) {
+			for (Set<String>::Element *E = allowed_types.front(); E; E = E->next()) {
+				String at = E->get().strip_edges();
+
+				if (at == "StandardMaterial3D" && ClassDB::is_parent_class(dropped_resource->get_class(), "Texture2D")) {
+					Ref<StandardMaterial3D> mat = memnew(StandardMaterial3D);
+					mat->set_texture(StandardMaterial3D::TextureParam::TEXTURE_ALBEDO, dropped_resource);
+					dropped_resource = mat;
+					break;
+				}
+
+				if (at == "ShaderMaterial" && ClassDB::is_parent_class(dropped_resource->get_class(), "Shader")) {
+					Ref<ShaderMaterial> mat = memnew(ShaderMaterial);
+					mat->set_shader(dropped_resource);
+					dropped_resource = mat;
+					break;
+				}
+				if (at == "ShaderMaterial" && ClassDB::is_parent_class(dropped_resource->get_class(), "Texture2D")) {
+					Ref<ShaderMaterial> mat = memnew(ShaderMaterial);
+					mat->set_shader(dropped_resource);
+					dropped_resource = mat;
+					break;
+				}
+
+				if (at == "Font" && ClassDB::is_parent_class(dropped_resource->get_class(), "FontData")) {
+					Ref<Font> font = memnew(Font);
+					font->add_data(dropped_resource);
+					dropped_resource = font;
+					break;
+				}
+			}
+		}
+
+		edited_resource = dropped_resource;
+		emit_signal(SNAME("resource_changed"), edited_resource);
+		_update_resource();
+	}
+}
+
 void EditorResourcePicker::update_set_resource_button() {
 	FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
 	if (file_system_dock) {
-		on_file_system_select_file(file_system_dock->get_selected_path());
+		on_file_system_select_file(file_system_dock->get_current_path());
 	}
 }
 void EditorResourcePicker::on_file_system_select_file(const String file_path) {
-	if (!edited_resource.is_valid() || !edited_resource->get_path().is_resource_file()) {
-		set_resource_button->set_visible(false);
-		return;
-	}
 	select_file_path = file_path;
 	Set<String> allowed_types;
-	_get_allowed_types(true, &allowed_types);
+	_get_allowed_types(false, &allowed_types);
 
 	bool is_visible = false;
+	bool save_button_visble = false;
+	FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+	const String curr_file_path = file_system_dock->get_current_path();
+	if (edited_resource.is_valid() &&  curr_file_path != "res://") {
+		save_button_visble = true;
+	}
+	save_button->set_visible(save_button_visble);
 
 	String file_type = EditorFileSystem::get_singleton()->get_file_type(file_path);
 	if (file_type != "" && _is_type_valid(file_type, allowed_types)) {
 		is_visible = true;
+	} else {
+		for (Set<String>::Element *E = allowed_types.front(); E; E = E->next()) {
+			String at = E->get().strip_edges();
+
+			if (at == "StandardMaterial3D" && ClassDB::is_parent_class(file_type, "Texture2D")) {
+				is_visible = true;
+				break;
+			}
+
+			if (at == "ShaderMaterial" && ClassDB::is_parent_class(file_type, "Shader")) {
+				is_visible = true;
+				break;
+			}
+			if (at == "ShaderMaterial" && ClassDB::is_parent_class(file_type, "Texture2D")) {
+				is_visible = true;
+				break;
+			}
+
+			if (at == "Font" && ClassDB::is_parent_class(file_type, "FontData")) {
+				is_visible = true;
+				break;
+			}
+		}
 	}
 	set_resource_button->set_visible(is_visible);
 }

@@ -57,6 +57,7 @@ class EditorResourcePicker : public HBoxContainer {
 	Button *edit_button;
 	Button *search_button;
 	Button *set_resource_button;
+	Button *save_button;
 	EditorFileDialog *file_dialog = nullptr;
 	EditorQuickOpen *quick_open = nullptr;
 
@@ -90,7 +91,9 @@ class EditorResourcePicker : public HBoxContainer {
 
 	void _button_draw();
 	void _button_input(const Ref<InputEvent> &p_event);
-	void _button_search(const Ref<InputEvent> &p_event);
+	void _button_search();
+	void _button_set_resource();
+	void _button_save_resource();
 
 	void _get_allowed_types(bool p_with_convert, Set<String> *p_vector) const;
 	bool _is_drop_valid(const Dictionary &p_drag_data) const;
