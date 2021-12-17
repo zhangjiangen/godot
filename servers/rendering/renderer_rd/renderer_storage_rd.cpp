@@ -3232,7 +3232,8 @@ void RendererStorageRD::mesh_add_surface(RID p_mesh, const RS::SurfaceData &p_su
 	}
 
 #endif
-
+    
+    ERR_FAIL_COND_MSG(p_surface.vertex_data.size() == 0, "Zero vertex data");
 	Mesh::Surface *s = memnew(Mesh::Surface);
 
 	s->format = p_surface.format;

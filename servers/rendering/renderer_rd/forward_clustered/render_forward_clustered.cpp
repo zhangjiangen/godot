@@ -827,6 +827,9 @@ void RenderForwardClustered::_setup_environment(const RenderDataRD *p_render_dat
 	RD::get_singleton()->buffer_update(scene_state.uniform_buffers[p_index], 0, sizeof(SceneState::UBO), &scene_state.ubo, RD::BARRIER_MASK_RASTER);
 }
 
+uint32_t RenderForwardClustered::get_instance_data_count(RenderListType p_render_list) {
+	return scene_state.instance_data[p_render_list].size();
+}
 void RenderForwardClustered::_update_instance_data_buffer(RenderListType p_render_list) {
 	if (scene_state.instance_data[p_render_list].size() > 0) {
 		if (scene_state.instance_buffer[p_render_list] == RID() || scene_state.instance_buffer_size[p_render_list] < scene_state.instance_data[p_render_list].size()) {
@@ -2390,7 +2393,10 @@ RID RenderForwardClustered::_setup_sdfgi_render_pass_uniform_set(RID p_albedo_te
 	if (sdfgi_pass_uniform_set.is_valid() && RD::get_singleton()->uniform_set_is_valid(sdfgi_pass_uniform_set)) {
 		RD::get_singleton()->free(sdfgi_pass_uniform_set);
 	}
-
+	// 不知道为啥有时候这个缓冲会丢失
+	if (!scene_state.instance_buffer[RENDER_LIST_SECONDARY].is_valid()) {
+		_update_instance_data_buffer(RENDER_LIST_SECONDARY);
+	}
 	Vector<RD::Uniform> uniforms;
 
 	{

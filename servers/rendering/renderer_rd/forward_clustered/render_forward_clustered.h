@@ -67,14 +67,6 @@ class RenderForwardClustered : public RendererSceneRenderRD {
 		INSTANCE_DATA_BUFFER_MIN_SIZE = 4096
 	};
 
-	enum RenderListType {
-		RENDER_LIST_OPAQUE, //used for opaque objects
-		RENDER_LIST_ALPHA, //used for transparent objects
-		RENDER_LIST_SECONDARY, //used for shadows and other objects
-		RENDER_LIST_MAX
-
-	};
-
 	/* Scene Shader */
 
 	SceneShaderForwardClustered scene_shader;
@@ -373,6 +365,7 @@ class RenderForwardClustered : public RendererSceneRenderRD {
 	template <PassMode p_pass_mode>
 	_FORCE_INLINE_ void _render_list_template(RenderingDevice::DrawListID p_draw_list, RenderingDevice::FramebufferFormatID p_framebuffer_Format, RenderListParameters *p_params, uint32_t p_from_element, uint32_t p_to_element);
 
+	virtual uint32_t get_instance_data_count(RenderListType p_render_list) override;
 	void _render_list(RenderingDevice::DrawListID p_draw_list, RenderingDevice::FramebufferFormatID p_framebuffer_Format, RenderListParameters *p_params, uint32_t p_from_element, uint32_t p_to_element);
 
 	LocalVector<RD::DrawListID> thread_draw_lists;
