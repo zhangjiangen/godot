@@ -1734,7 +1734,7 @@ void main() {
 		albedo16 |= clamp(uint(albedo.g * 31.0), 0, 31) << 6;
 		albedo16 |= clamp(uint(albedo.b * 31.0), 0, 31) << 1;
 
-		imageStore(albedo_volume_grid, grid_pos, uvec4(albedo16));
+		imageStore(albedo_volume_grid, grid_pos, uvec4(albedo16, albedo16, albedo16, albedo16));
 
 		uint facing_bits = 0;
 		const vec3 aniso_dir[6] = vec3[](
@@ -1811,8 +1811,8 @@ void main() {
 			//store as 8985 to have 2 extra neighbour bits
 			uint light_rgbe = ((uint(sRed) & 0x1FF) >> 1) | ((uint(sGreen) & 0x1FF) << 8) | (((uint(sBlue) & 0x1FF) >> 1) << 17) | ((uint(exps) & 0x1F) << 25);
 
-			imageStore(emission_grid, grid_pos, uvec4(light_rgbe));
-			imageStore(emission_aniso_grid, grid_pos, uvec4(light_aniso));
+			imageStore(emission_grid, grid_pos, uvec4(light_rgbe, light_rgbe, light_rgbe, light_rgbe));
+			imageStore(emission_aniso_grid, grid_pos, uvec4(light_aniso, light_aniso, light_aniso, light_aniso));
 		}
 	}
 

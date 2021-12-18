@@ -1409,9 +1409,9 @@ void RenderForwardClustered::_render_scene(RenderDataRD *p_render_data, const Co
 
 		bool needs_pre_resolve = _needs_post_prepass_render(p_render_data, using_sdfgi || using_voxelgi);
 		if (needs_pre_resolve) {
-			RENDER_TIMESTAMP("GI + Render Depth Pre-Pass (parallel)");
+			RENDER_TIMESTAMP("GI + SDFGI NormalDepth Pre-Pass (parallel)");
 		} else {
-			RENDER_TIMESTAMP("Render Depth Pre-Pass");
+			RENDER_TIMESTAMP("SDFGI NormalDepth Pre-Pass");
 		}
 		if (needs_pre_resolve) {
 			//pre clear the depth framebuffer, as AMD (and maybe others?) use compute for it, and barrier other compute shaders.
@@ -1421,7 +1421,7 @@ void RenderForwardClustered::_render_scene(RenderDataRD *p_render_data, const Co
 			_post_prepass_render(p_render_data, using_sdfgi || using_voxelgi);
 		}
 
-		RD::get_singleton()->draw_command_begin_label("Render Depth Pre-Pass");
+		RD::get_singleton()->draw_command_begin_label("SDFGI NormalDepth Pre-Pass");
 
 		RID rp_uniform_set = _setup_render_pass_uniform_set(RENDER_LIST_OPAQUE, nullptr, RID());
 

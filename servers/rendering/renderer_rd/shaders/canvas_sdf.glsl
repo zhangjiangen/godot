@@ -149,7 +149,7 @@ void main() {
 
 	d /= SDF_MAX_LENGTH;
 	d = clamp(d, -1.0, 1.0);
-	imageStore(dst_sdf, pos, vec4(d));
+	imageStore(dst_sdf, pos, vec4(d, d, d, d));
 
 #endif
 
@@ -173,7 +173,7 @@ void main() {
 	}
 	d /= SDF_MAX_LENGTH;
 	d = clamp(d, -1.0, 1.0);
-	imageStore(dst_sdf, pos, vec4(d));
+	imageStore(dst_sdf, pos, vec4(d, d, d, d));
 
 #endif
 }

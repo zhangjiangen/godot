@@ -76,8 +76,8 @@ void main() {
 	}
 
 	float min_max_diff = maxV - minV;
-
-	imageStore(dest_image, ssC, vec4(pow(clamp(min_max_diff * 2.0, 0.0, 1.0), 0.8)));
+	float diff_result = pow(clamp(min_max_diff * 2.0, 0.0, 1.0), 0.8);
+	imageStore(dest_image, ssC, vec4(diff_result, diff_result, diff_result, diff_result));
 #endif
 
 #ifdef PROCESS_MAPA
@@ -95,7 +95,7 @@ void main() {
 
 	float avg = dot(vals, vec4(0.25, 0.25, 0.25, 0.25));
 
-	imageStore(dest_image, ssC, vec4(avg));
+	imageStore(dest_image, ssC, vec4(avg, avg, avg, avg));
 #endif
 
 #ifdef PROCESS_MAPB
@@ -113,7 +113,7 @@ void main() {
 
 	float avg = dot(vals, vec4(0.25, 0.25, 0.25, 0.25));
 
-	imageStore(dest_image, ssC, vec4(avg));
+	imageStore(dest_image, ssC, vec4(avg, avg, avg, avg));
 
 	// sum the average; to avoid overflowing we assume max AO resolution is not bigger than 16384x16384; so quarter res (used here) will be 4096x4096, which leaves us with 8 bits per pixel
 	uint sum = uint(clamp(avg, 0.0, 1.0) * 255.0 + 0.5);

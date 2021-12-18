@@ -234,7 +234,7 @@ void main() {
 		pos.y = params.section.w - pos.y - 1;
 	}
 
-	imageStore(dest_buffer, pos + params.target, vec4(color.r));
+	imageStore(dest_buffer, pos + params.target, vec4(color.r, color.r, color.r, color.r));
 
 #endif
 

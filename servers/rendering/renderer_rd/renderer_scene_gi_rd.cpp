@@ -130,11 +130,11 @@ void RendererSceneGIRD::SDFGI::create(RendererSceneEnvironmentRD *p_env, const V
 	history_size = p_requested_history_size;
 
 	RD::TextureFormat tf_probe_history = tf_probes;
-	tf_probe_history.format = RD::DATA_FORMAT_R16G16B16A16_SINT; //signed integer because SH are signed
+	tf_probe_history.format = RD::DATA_FORMAT_R16_SINT; //signed integer because SH are signed
 	tf_probe_history.array_layers = history_size;
 
 	RD::TextureFormat tf_probe_average = tf_probes;
-	tf_probe_average.format = RD::DATA_FORMAT_R32G32B32A32_SINT; //signed integer because SH are signed
+	tf_probe_average.format = RD::DATA_FORMAT_R16_SINT; //signed integer because SH are signed
 	tf_probe_average.texture_type = RD::TEXTURE_TYPE_2D;
 
 	lightprobe_history_scroll = RD::get_singleton()->texture_create(tf_probe_history, RD::TextureView());

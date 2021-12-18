@@ -62,7 +62,7 @@ void main() {
 		dist_8 = clamp(uint(closest_dist), 0, 254) + 1; //conservative, 0 is 1, so <1 is considered solid
 	}
 
-	imageStore(sdf_tex, ivec3(gl_GlobalInvocationID), uvec4(dist_8));
+	imageStore(sdf_tex, ivec3(gl_GlobalInvocationID), uvec4(dist_8, dist_8, dist_8, dist_8));
 	//imageStore(sdf_tex,pos,uvec4(pos*2,0));
 }
 
@@ -176,6 +176,6 @@ void main() {
 		dist_8 = clamp(uint(closest_distance), 0, 254) + 1; //conservative, 0 is 1, so <1 is considered solid
 	}
 
-	imageStore(sdf_tex, pos, uvec4(dist_8));
+	imageStore(sdf_tex, pos, uvec4(dist_8,dist_8,dist_8,dist_8));
 }
 #endif

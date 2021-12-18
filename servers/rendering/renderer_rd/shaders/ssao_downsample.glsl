@@ -94,10 +94,10 @@ void prepare_depths_and_mips(vec4 p_samples, uvec2 p_output_coord, uvec2 p_gtid)
 	depth_buffer[2][p_gtid.x][p_gtid.y] = p_samples.x;
 	depth_buffer[3][p_gtid.x][p_gtid.y] = p_samples.y;
 
-	imageStore(dest_image0, ivec3(p_output_coord.x, p_output_coord.y, 0), vec4(p_samples.w));
-	imageStore(dest_image0, ivec3(p_output_coord.x, p_output_coord.y, 1), vec4(p_samples.z));
-	imageStore(dest_image0, ivec3(p_output_coord.x, p_output_coord.y, 2), vec4(p_samples.x));
-	imageStore(dest_image0, ivec3(p_output_coord.x, p_output_coord.y, 3), vec4(p_samples.y));
+	imageStore(dest_image0, ivec3(p_output_coord.x, p_output_coord.y, 0), vec4(p_samples.w, p_samples.w, p_samples.w, p_samples.w));
+	imageStore(dest_image0, ivec3(p_output_coord.x, p_output_coord.y, 1), vec4(p_samples.z, p_samples.z, p_samples.z, p_samples.z));
+	imageStore(dest_image0, ivec3(p_output_coord.x, p_output_coord.y, 2), vec4(p_samples.x, p_samples.x, p_samples.x, p_samples.x));
+	imageStore(dest_image0, ivec3(p_output_coord.x, p_output_coord.y, 3), vec4(p_samples.y, p_samples.y, p_samples.y, p_samples.y));
 
 	uint depth_array_index = 2 * (p_gtid.y % 2) + (p_gtid.x % 2);
 	uvec2 depth_array_offset = ivec2(p_gtid.x % 2, p_gtid.y % 2);
@@ -115,7 +115,7 @@ void prepare_depths_and_mips(vec4 p_samples, uvec2 p_output_coord, uvec2 p_gtid)
 		float sample_11 = depth_buffer[depth_array_index][buffer_coord.x + 1][buffer_coord.y + 1];
 
 		float avg = mip_smart_average(vec4(sample_00, sample_01, sample_10, sample_11));
-		imageStore(dest_image1, ivec3(p_output_coord.x, p_output_coord.y, depth_array_index), vec4(avg));
+		imageStore(dest_image1, ivec3(p_output_coord.x, p_output_coord.y, depth_array_index), vec4(avg, avg, avg, avg));
 		depth_buffer[depth_array_index][buffer_coord.x][buffer_coord.y] = avg;
 	}
 
@@ -132,7 +132,7 @@ void prepare_depths_and_mips(vec4 p_samples, uvec2 p_output_coord, uvec2 p_gtid)
 		float sample_11 = depth_buffer[depth_array_index][buffer_coord.x + 2][buffer_coord.y + 2];
 
 		float avg = mip_smart_average(vec4(sample_00, sample_01, sample_10, sample_11));
-		imageStore(dest_image2, ivec3(p_output_coord.x, p_output_coord.y, depth_array_index), vec4(avg));
+		imageStore(dest_image2, ivec3(p_output_coord.x, p_output_coord.y, depth_array_index), vec4(avg, avg, avg, avg));
 		depth_buffer[depth_array_index][buffer_coord.x][buffer_coord.y] = avg;
 	}
 
@@ -149,7 +149,7 @@ void prepare_depths_and_mips(vec4 p_samples, uvec2 p_output_coord, uvec2 p_gtid)
 		float sample_11 = depth_buffer[depth_array_index][buffer_coord.x + 4][buffer_coord.y + 4];
 
 		float avg = mip_smart_average(vec4(sample_00, sample_01, sample_10, sample_11));
-		imageStore(dest_image3, ivec3(p_output_coord.x, p_output_coord.y, depth_array_index), vec4(avg));
+		imageStore(dest_image3, ivec3(p_output_coord.x, p_output_coord.y, depth_array_index), vec4(avg, avg, avg, avg));
 	}
 }
 #else
@@ -157,10 +157,10 @@ void prepare_depths_and_mips(vec4 p_samples, uvec2 p_output_coord, uvec2 p_gtid)
 void prepare_depths(vec4 p_samples, uvec2 p_tid) {
 	p_samples = screen_space_to_view_space_depth(p_samples);
 
-	imageStore(dest_image0, ivec3(p_tid, 0), vec4(p_samples.w));
-	imageStore(dest_image0, ivec3(p_tid, 1), vec4(p_samples.z));
-	imageStore(dest_image0, ivec3(p_tid, 2), vec4(p_samples.x));
-	imageStore(dest_image0, ivec3(p_tid, 3), vec4(p_samples.y));
+	imageStore(dest_image0, ivec3(p_tid, 0), vec4(p_samples.w, p_samples.w, p_samples.w, p_samples.w));
+	imageStore(dest_image0, ivec3(p_tid, 1), vec4(p_samples.z, p_samples.z, p_samples.z, p_samples.z));
+	imageStore(dest_image0, ivec3(p_tid, 2), vec4(p_samples.x, p_samples.x, p_samples.x, p_samples.x));
+	imageStore(dest_image0, ivec3(p_tid, 3), vec4(p_samples.y, p_samples.y, p_samples.y, p_samples.y));
 }
 #endif
 #endif
@@ -177,8 +177,8 @@ void main() {
 	sample_00 = screen_space_to_view_space_depth(sample_00);
 	sample_11 = screen_space_to_view_space_depth(sample_11);
 
-	imageStore(dest_image0, ivec3(gl_GlobalInvocationID.xy, 0), vec4(sample_00));
-	imageStore(dest_image0, ivec3(gl_GlobalInvocationID.xy, 3), vec4(sample_11));
+	imageStore(dest_image0, ivec3(gl_GlobalInvocationID.xy, 0), vec4(sample_00, sample_00, sample_00, sample_00));
+	imageStore(dest_image0, ivec3(gl_GlobalInvocationID.xy, 3), vec4(sample_11, sample_11, sample_11, sample_11));
 #else //!USE_HALF_BUFFERS
 #ifdef USE_HALF_SIZE
 	ivec2 depth_buffer_coord = 4 * ivec2(gl_GlobalInvocationID.xy);

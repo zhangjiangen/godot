@@ -720,9 +720,9 @@ void main() {
 	light_only_map[lpos] = 0;
 	emissive_only_map[lpos] = 0;
 #else
-	imageStore(density_only_map, pos, uvec4(0));
-	imageStore(light_only_map, pos, uvec4(0));
-	imageStore(emissive_only_map, pos, uvec4(0));
+	imageStore(density_only_map, pos, uvec4(0, 0, 0, 0));
+	imageStore(light_only_map, pos, uvec4(0, 0, 0, 0));
+	imageStore(emissive_only_map, pos, uvec4(0, 0, 0, 0));
 #endif
 #endif
 

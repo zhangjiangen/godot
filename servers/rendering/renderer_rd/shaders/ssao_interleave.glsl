@@ -97,7 +97,7 @@ void main() {
 	float blendWeightsSum = dot(blendWeights, vec4(1.0, 1.0, 1.0, 1.0));
 	ao = dot(vec4(ao, ao_horizontal, ao_vertical, ao_diagonal), blendWeights) / blendWeightsSum;
 
-	imageStore(dest_image, ivec2(gl_GlobalInvocationID.xy), vec4(ao));
+	imageStore(dest_image, ivec2(gl_GlobalInvocationID.xy), vec4(ao, ao, ao, ao));
 #else // !MODE_SMART
 
 	vec2 uv = (gl_GlobalInvocationID.xy + vec2(0.5)) * params.pixel_size;
@@ -114,6 +114,6 @@ void main() {
 	float avg = (a + b + c + d) * 0.25;
 
 #endif
-	imageStore(dest_image, ivec2(gl_GlobalInvocationID.xy), vec4(avg));
+	imageStore(dest_image, ivec2(gl_GlobalInvocationID.xy), vec4(avg, avg, avg, avg));
 #endif
 }

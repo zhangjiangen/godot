@@ -81,7 +81,7 @@ void main() {
 	vec3 ray_dir = normalize(reflect(view_dir, normal));
 
 	if (dot(ray_dir, normal) < 0.001) {
-		imageStore(ssr_image, ssC, vec4(0.0));
+		imageStore(ssr_image, ssC, vec4(0.0, 0.0, 0.0, 0.0));
 		return;
 	}
 	//ray_dir = normalize(view_dir - normal * dot(normal,view_dir) * 2.0);
@@ -178,7 +178,7 @@ void main() {
 		vec2 margin = vec2((params.screen_size.x + params.screen_size.y) * 0.5 * 0.05); // make a uniform margin
 		if (any(bvec4(lessThan(pos, -margin), greaterThan(pos, params.screen_size + margin)))) {
 			// clip outside screen + margin
-			imageStore(ssr_image, ssC, vec4(0.0));
+			imageStore(ssr_image, ssC, vec4(0.0, 0.0, 0.0, 0.0));
 			return;
 		}
 
@@ -226,7 +226,7 @@ void main() {
 
 		final_color = imageLoad(source_diffuse, ivec2((final_pos - 0.5) * pixel_size));
 
-		imageStore(blur_radius_image, ssC, vec4(blur_radius / 255.0)); //stored in r8
+		imageStore(blur_radius_image, ssC, vec4(blur_radius / 255.0, blur_radius / 255.0, blur_radius / 255.0, blur_radius / 255.0)); //stored in r8
 
 #endif
 
@@ -241,6 +241,6 @@ void main() {
 #ifdef MODE_ROUGH
 		imageStore(blur_radius_image, ssC, vec4(0.0));
 #endif
-		imageStore(ssr_image, ssC, vec4(0.0));
+		imageStore(ssr_image, ssC, vec4(0.0, 0.0, 0.0, 0.0));
 	}
 }
