@@ -870,6 +870,8 @@ void RendererSceneGIRD::SDFGI::update_light() {
 
 	for (uint32_t i = 0; i < cascades.size(); i++) {
 		SDFGI::Cascade &cascade = cascades[i];
+		// 如果没有更新过会导致电脑直接死机，所以这里拦截一下
+		ERR_FAIL_COND(cascades[i].is_update == false);
 		push_constant.light_count = cascade_dynamic_light_count[i];
 		push_constant.cascade = i;
 
@@ -1021,6 +1023,8 @@ void RendererSceneGIRD::SDFGI::store_probes() {
 	push_constant.image_size[1] *= SDFGI::LIGHTPROBE_OCT_SIZE;
 
 	for (uint32_t i = 0; i < cascades.size(); i++) {
+		// 如果没有更新过会导致电脑直接死机，所以这里拦截一下
+		ERR_FAIL_COND(cascades[i].is_update == false);
 		push_constant.cascade = i;
 		RD::get_singleton()->compute_list_bind_uniform_set(compute_list, cascades[i].integrate_uniform_set, 0);
 		RD::get_singleton()->compute_list_bind_uniform_set(compute_list, gi->sdfgi_shader.integrate_default_sky_uniform_set, 1);
@@ -1118,6 +1122,8 @@ void RendererSceneGIRD::SDFGI::debug_draw(const CameraMatrix &p_projection, cons
 			u.binding = 1;
 			u.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
 			for (uint32_t i = 0; i < SDFGI::MAX_CASCADES; i++) {
+				// 如果没有更新过会导致电脑直接死机，所以这里拦截一下
+				ERR_FAIL_COND(cascades[i].is_update == false);
 				if (i < cascades.size()) {
 					u.ids.push_back(cascades[i].sdf_tex);
 				} else {
@@ -1131,6 +1137,8 @@ void RendererSceneGIRD::SDFGI::debug_draw(const CameraMatrix &p_projection, cons
 			u.binding = 2;
 			u.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
 			for (uint32_t i = 0; i < SDFGI::MAX_CASCADES; i++) {
+				// 如果没有更新过会导致电脑直接死机，所以这里拦截一下
+				ERR_FAIL_COND(cascades[i].is_update == false);
 				if (i < cascades.size()) {
 					u.ids.push_back(cascades[i].light_tex);
 				} else {
@@ -1144,6 +1152,8 @@ void RendererSceneGIRD::SDFGI::debug_draw(const CameraMatrix &p_projection, cons
 			u.binding = 3;
 			u.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
 			for (uint32_t i = 0; i < SDFGI::MAX_CASCADES; i++) {
+				// 如果没有更新过会导致电脑直接死机，所以这里拦截一下
+				ERR_FAIL_COND(cascades[i].is_update == false);
 				if (i < cascades.size()) {
 					u.ids.push_back(cascades[i].light_aniso_0_tex);
 				} else {
@@ -1157,6 +1167,8 @@ void RendererSceneGIRD::SDFGI::debug_draw(const CameraMatrix &p_projection, cons
 			u.binding = 4;
 			u.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
 			for (uint32_t i = 0; i < SDFGI::MAX_CASCADES; i++) {
+				// 如果没有更新过会导致电脑直接死机，所以这里拦截一下
+				ERR_FAIL_COND(cascades[i].is_update == false);
 				if (i < cascades.size()) {
 					u.ids.push_back(cascades[i].light_aniso_1_tex);
 				} else {
@@ -1591,10 +1603,11 @@ void RendererSceneGIRD::SDFGI::render_region(RID p_render_buffers, int p_region,
 
 		push_constant.grid_size = cascade_size;
 		push_constant.cascade = cascade;
+		// 标记为已经更新了
+		cascades[cascade].is_update = true;
 
 		if (cascades[cascade].dirty_regions != SDFGI::Cascade::DIRTY_ALL) {
 			RD::ComputeListID compute_list = RD::get_singleton()->compute_list_begin();
-
 			//must pre scroll existing data because not all is dirty
 			RD::get_singleton()->compute_list_bind_compute_pipeline(compute_list, gi->sdfgi_shader.preprocess_pipeline[SDFGIShader::PRE_PROCESS_SCROLL]);
 			RD::get_singleton()->compute_list_bind_uniform_set(compute_list, cascades[cascade].scroll_uniform_set, 0);

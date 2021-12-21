@@ -453,6 +453,8 @@ public:
 			RID lights_buffer;
 
 			bool all_dynamic_lights_dirty = true;
+			// 是否刷新过
+			bool is_update = false;
 		};
 
 		// access to our containers
