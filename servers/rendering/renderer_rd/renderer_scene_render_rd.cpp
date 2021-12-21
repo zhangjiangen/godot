@@ -4732,7 +4732,7 @@ void RendererSceneRenderRD::render_scene(RID p_render_buffers, const CameraData 
 	}
 
 	//sdfgi first
-	if (rb != nullptr && rb->sdfgi != nullptr && get_instance_data_count(RENDER_LIST_SECONDARY) > 0) {
+	if (rb != nullptr && rb->sdfgi != nullptr) {
 		for (int i = 0; i < render_state.render_sdfgi_region_count; i++) {
 			rb->sdfgi->render_region(p_render_buffers, render_state.render_sdfgi_regions[i].region, render_state.render_sdfgi_regions[i].instances, this);
 		}
