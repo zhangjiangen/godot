@@ -435,7 +435,7 @@ JNIEXPORT void JNICALL Java_org_godotengine_godot_GodotLib_callobject(JNIEnv *en
 	};
 
 	Callable::CallError err;
-	obj->call_void(str_method, (const Variant **)vptr, count, err);
+	obj->call_r(str_method, (const Variant **)vptr, count, err);
 	// something
 
 	env->PopLocalFrame(nullptr);

@@ -163,7 +163,7 @@ public:
 			} break;
 			default: {
 				env->PopLocalFrame(nullptr);
-				ERR_FAIL_V(Variant());
+				ERR_FAIL();
 			} break;
 		}
 
