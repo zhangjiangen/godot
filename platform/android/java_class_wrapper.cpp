@@ -507,7 +507,7 @@ JavaClass::JavaClass() {
 /////////////////////
 
 void JavaObject::call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
-	ret.clear() ；
+	ret.clear();
 }
 void JavaObject::call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
 }
