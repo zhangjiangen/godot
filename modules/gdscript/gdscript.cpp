@@ -934,7 +934,7 @@ void GDScript::call_r(Variant &ret, const StringName &p_method, const Variant **
 	while (top) {
 		Map<StringName, GDScriptFunction *>::Element *E = top->member_functions.find(p_method);
 		if (E) {
-			ERR_FAIL_COND_V_MSG(!E->get()->is_static(), , "Can't call non-static function '" + String(p_method) + "' in script.");
+			ERR_FAIL_COND_MSG(!E->get()->is_static(), "Can't call non-static function '" + String(p_method) + "' in script.");
 
 			E->get()->call_r(ret, nullptr, p_args, p_argcount, r_error);
 			return;
@@ -952,7 +952,7 @@ void GDScript::call_r(const StringName &p_method, const Variant **p_args, int p_
 	while (top) {
 		Map<StringName, GDScriptFunction *>::Element *E = top->member_functions.find(p_method);
 		if (E) {
-			ERR_FAIL_COND_V_MSG(!E->get()->is_static(), , "Can't call non-static function '" + String(p_method) + "' in script.");
+			ERR_FAIL_COND_MSG(!E->get()->is_static(), "Can't call non-static function '" + String(p_method) + "' in script.");
 			Variant ret;
 			E->get()->call_r(ret, nullptr, p_args, p_argcount, r_error);
 			return;
