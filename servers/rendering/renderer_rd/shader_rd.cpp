@@ -582,7 +582,7 @@ void ShaderRD::_compile_version(Version *p_version) {
 	bool all_valid = true;
 	for (int i = 0; i < variant_defines.size(); i++) {
 		if (!variants_enabled[i]) {
-			LOG_INFO_PRINT(String("shader disable variants :") + String(variant_defines[i].ptr()));
+			//LOG_INFO_PRINT(String("shader disable variants :") + String(variant_defines[i].ptr()));
 			continue; //disabled
 		}
 		if (p_version->variants[i].is_null()) {

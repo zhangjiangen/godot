@@ -951,7 +951,7 @@ void EditorResourcePicker::_button_save_resource() {
 	String name = edited_resource->get_class_name();
 	String path = file_system_dock->get_selected_path() + name + ".tres";
 	edited_resource->set_path(path, true); // Set path to save externally.
-	Error err = ResourceSaver::save(path, edited_resource, ResourceSaver::FLAG_CHANGE_PATH);
+	ResourceSaver::save(path, edited_resource, ResourceSaver::FLAG_CHANGE_PATH);
 }
 void EditorResourcePicker::_button_set_resource() {
 	FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();

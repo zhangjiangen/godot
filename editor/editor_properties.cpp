@@ -594,7 +594,7 @@ void EditorPropertyButton::_button_pressed() {
 void EditorPropertyButton::_bind_methods() {
 }
 void EditorPropertyButton::update_property() {
-	bool c = get_edited_object()->get(get_edited_property());
+	get_edited_object()->get(get_edited_property());
 	button->set_visible(true);
 }
 void EditorPropertyButton::set_button_name(const String &name) {
