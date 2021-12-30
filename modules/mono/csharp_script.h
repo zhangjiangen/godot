@@ -299,7 +299,7 @@ public:
 	void get_method_list(List<MethodInfo> *p_list) const override;
 	bool has_method(const StringName &p_method) const override;
 	void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override;
-	void call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override;
+	void call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override;
 
 	void mono_object_disposed(MonoObject *p_obj);
 

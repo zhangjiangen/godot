@@ -54,11 +54,11 @@ public:
 
 	// Skys need less info from Directional Lights than the normal shaders
 	struct SkyDirectionalLightData {
-		float direction[3];
-		float energy;
-		float color[3];
-		float size;
-		uint32_t enabled;
+		float direction[3] = { 0, 0, 1 };
+		float energy = 1;
+		float color[3] = { 1, 1, 1 };
+		float size = 0;
+		uint32_t enabled = 0;
 		uint32_t pad[3];
 	};
 
