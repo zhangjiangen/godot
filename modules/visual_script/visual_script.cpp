@@ -1759,7 +1759,7 @@ void VisualScriptInstance::call_r(Variant &ret, const StringName &p_method, cons
 	if (!E) {
 		r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
 
-		ERR_FAIL_V_MSG(, "No VisualScriptFunction node in function.");
+		ERR_FAIL_MSG("No VisualScriptFunction node in function.");
 	}
 
 	VisualScriptNodeInstance *node = E->get();
@@ -1781,7 +1781,7 @@ void VisualScriptInstance::call_r(Variant &ret, const StringName &p_method, cons
 		r_error.error = Callable::CallError::CALL_ERROR_TOO_MANY_ARGUMENTS;
 		r_error.argument = node->get_input_port_count();
 
-		return ;
+		return;
 	}
 
 	// Allocate variant stack.
@@ -1846,7 +1846,7 @@ void VisualScriptInstance::call_r(const StringName &p_method, const Variant **p_
 	if (!E) {
 		r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
 
-		ERR_FAIL_V_MSG(, "No VisualScriptFunction node in function.");
+		ERR_FAIL_MSG("No VisualScriptFunction node in function.");
 	}
 
 	VisualScriptNodeInstance *node = E->get();
