@@ -929,7 +929,7 @@ void CSharpLanguage::reload_assemblies(bool p_soft_reload) {
 
 			// Call OnBeforeSerialize
 			if (csi->script->script_class->implements_interface(CACHED_CLASS(ISerializationListener))) {
-				obj->get_script_instance()->call_void(string_names.on_before_serialize);
+				obj->get_script_instance()->call(string_names.on_before_serialize);
 			}
 
 			// Save instance info
@@ -1152,7 +1152,7 @@ void CSharpLanguage::reload_assemblies(bool p_soft_reload) {
 
 				// Call OnAfterDeserialization
 				if (csi->script->script_class->implements_interface(CACHED_CLASS(ISerializationListener))) {
-					obj->get_script_instance()->call_r(string_names.on_after_deserialize);
+					obj->get_script_instance()->call(string_names.on_after_deserialize);
 				}
 			}
 		}
@@ -1923,7 +1923,7 @@ bool CSharpInstance::has_method(const StringName &p_method) const {
 }
 
 void CSharpInstance::call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
-	ERR_FAIL_COND_V(!script.is_valid(), Variant());
+	ERR_FAIL_COND(!script.is_valid());
 
 	GD_MONO_SCOPE_THREAD_ATTACH;
 	ret.clear();
@@ -1961,14 +1961,14 @@ void CSharpInstance::call_r(Variant &ret, const StringName &p_method, const Vari
 }
 
 void CSharpInstance::call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
-	ERR_FAIL_COND_V(!script.is_valid(), Variant());
+	ERR_FAIL_COND(!script.is_valid());
 
 	GD_MONO_SCOPE_THREAD_ATTACH;
 	MonoObject *mono_object = get_mono_object();
 
 	if (!mono_object) {
 		r_error.error = Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL;
-		ERR_FAIL_V(Variant());
+		ERR_FAIL();
 	}
 
 	GDMonoClass *top = script->script_class;
@@ -2993,9 +2993,10 @@ void CSharpScript::call_r(Variant &ret, const StringName &p_method, const Varian
 			MonoObject *result = method->invoke(nullptr, p_args);
 
 			if (result) {
-				return GDMonoMarshal::mono_object_to_variant(result);
+				GDMonoMarshal::mono_object_to_variant(result);
+				return;
 			} else {
-				return Variant();
+				return;
 			}
 		}
 
@@ -3009,7 +3010,7 @@ void CSharpScript::call_r(const StringName &p_method, const Variant **p_args, in
 	if (unlikely(GDMono::get_singleton() == nullptr)) {
 		// Probably not the best error but eh.
 		r_error.error = Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL;
-		return Variant();
+		return;
 	}
 
 	GD_MONO_SCOPE_THREAD_ATTACH;
