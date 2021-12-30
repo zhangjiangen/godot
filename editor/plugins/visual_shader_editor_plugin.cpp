@@ -1479,6 +1479,12 @@ void VisualShaderEditor::_draw_color_over_button(Object *obj, Color p_color) {
 
 void VisualShaderEditor::_update_created_node(GraphNode *node) {
 	const Ref<StyleBoxFlat> sb = node->get_theme_stylebox(SNAME("frame"), SNAME("GraphNode"));
+	if (!sb.is_valid()) {
+		node->add_theme_color_override("title_color", Color(1, 0.8f, 0.9f, 1));
+		node->add_theme_color_override("close_color", Color(1, 0.8f, 0.9f, 0.7f));
+		node->add_theme_color_override("resizer_color", Color(1, 0.8f, 0.9f, 0.7f));
+		return;
+	}
 	Color c = sb->get_border_color();
 	const Color mono_color = ((c.r + c.g + c.b) / 3) < 0.7 ? Color(1.0, 1.0, 1.0, 0.85) : Color(0.0, 0.0, 0.0, 0.85);
 	c = mono_color;
@@ -2839,7 +2845,7 @@ void VisualShaderEditor::_update_constant(VisualShader::Type p_type_id, int p_no
 	Ref<VisualShaderNode> node = visual_shader->get_node(p_type_id, p_node_id);
 	ERR_FAIL_COND(!node.is_valid());
 	ERR_FAIL_COND(!node->has_method("set_constant"));
-	node->call("set_constant", p_var);
+	node->call_void("set_constant", p_var);
 	if (p_preview_port != -1) {
 		node->set_output_port_for_preview(p_preview_port);
 	}
@@ -2854,8 +2860,8 @@ void VisualShaderEditor::_update_uniform(VisualShader::Type p_type_id, int p_nod
 	graph_plugin->set_uniform_name(p_type_id, p_node_id, valid_name);
 
 	if (uniform->has_method("set_default_value_enabled")) {
-		uniform->call("set_default_value_enabled", true);
-		uniform->call("set_default_value", p_var);
+		uniform->call_void("set_default_value_enabled", true);
+		uniform->call_void("set_default_value", p_var);
 	}
 	if (p_preview_port != -1) {
 		uniform->set_output_port_for_preview(p_preview_port);
@@ -3373,7 +3379,9 @@ void VisualShaderEditor::_scroll_changed(const Vector2 &p_scroll) {
 		return;
 	}
 	updating = true;
-	visual_shader->set_graph_offset(p_scroll / EDSCALE);
+	if (visual_shader.is_valid()) {
+		visual_shader->set_graph_offset(p_scroll / EDSCALE);
+	}
 	updating = false;
 }
 
@@ -4881,8 +4889,9 @@ void VisualShaderEditorPlugin::make_visible(bool p_visible) {
 	if (p_visible) {
 		//editor->hide_animation_player_editors();
 		//editor->animation_panel_make_visible(true);
-		button->show();
-		editor->make_bottom_panel_item_visible(visual_shader_editor);
+		//button->show();
+		//editor->make_bottom_panel_item_visible(visual_shader_editor);
+		dock_make_float(visual_shader_editor);
 		visual_shader_editor->update_custom_nodes();
 		visual_shader_editor->set_process_input(true);
 		//visual_shader_editor->set_process(true);
@@ -4890,7 +4899,8 @@ void VisualShaderEditorPlugin::make_visible(bool p_visible) {
 		if (visual_shader_editor->is_visible_in_tree()) {
 			editor->hide_bottom_panel();
 		}
-		button->hide();
+		//button->hide();
+		dock_floating_close(visual_shader_editor);
 		visual_shader_editor->set_process_input(false);
 		//visual_shader_editor->set_process(false);
 	}
@@ -4900,9 +4910,10 @@ VisualShaderEditorPlugin::VisualShaderEditorPlugin(EditorNode *p_node) {
 	editor = p_node;
 	visual_shader_editor = memnew(VisualShaderEditor);
 	visual_shader_editor->set_custom_minimum_size(Size2(0, 300) * EDSCALE);
-
-	button = editor->add_bottom_panel_item(TTR("VisualShader"), visual_shader_editor);
-	button->hide();
+	visual_shader_editor->set_name(TTR("VisualShader"));
+	//button = editor->add_control_to_dock(DOCK_SLOT_RIGHT_BL, visual_shader_editor);
+	add_control_to_dock(DOCK_SLOT_RIGHT_BL, visual_shader_editor);
+	//button->hide();
 }
 
 VisualShaderEditorPlugin::~VisualShaderEditorPlugin() {

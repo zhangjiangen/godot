@@ -4573,9 +4573,9 @@ bool TextServerAdvanced::shaped_text_shape(RID p_shaped) {
 							}
 							sd->glyphs.push_back(gl);
 						} else {
-							Vector<RID> fonts;
-							Vector<RID> fonts_scr_only;
-							Vector<RID> fonts_no_match;
+							fonts.clear();
+							fonts_scr_only.clear();
+							fonts_no_match.clear();
 							int font_count = span.fonts.size();
 							for (int l = 0; l < font_count; l++) {
 								if (font_is_script_supported(span.fonts[l], script)) {

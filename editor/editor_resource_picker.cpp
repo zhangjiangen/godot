@@ -52,7 +52,7 @@ void EditorResourcePicker::_update_resource() {
 	bool save_button_visble = false;
 	FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
 	String file_path = file_system_dock->get_current_path();
-	if (edited_resource.is_valid()  && !file_path.is_empty()) {
+	if (edited_resource.is_valid() && !file_path.is_empty()) {
 		save_button_visble = true;
 	}
 	save_button->set_visible(save_button_visble);
@@ -939,7 +939,7 @@ EditorResourcePicker::EditorResourcePicker() {
 }
 
 void EditorResourcePicker::_button_save_resource() {
-    FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+	FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
 	String file_path = file_system_dock->get_selected_path();
 	if (file_path.is_empty()) {
 		return;
@@ -948,9 +948,9 @@ void EditorResourcePicker::_button_save_resource() {
 		return;
 	}
 	//String ext = edited_resource->get_base_extension();
-	String name = edited_resource->get_class_name() ;
+	String name = edited_resource->get_class_name();
 	String path = file_system_dock->get_selected_path() + name + ".tres";
-    edited_resource->set_path(path, true); // Set path to save externally.
+	edited_resource->set_path(path, true); // Set path to save externally.
 	Error err = ResourceSaver::save(path, edited_resource, ResourceSaver::FLAG_CHANGE_PATH);
 }
 void EditorResourcePicker::_button_set_resource() {
@@ -1019,7 +1019,7 @@ void EditorResourcePicker::on_file_system_select_file(const String file_path) {
 	bool save_button_visble = false;
 	FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
 	const String curr_file_path = file_system_dock->get_current_path();
-	if (edited_resource.is_valid() &&  curr_file_path != "res://") {
+	if (edited_resource.is_valid() && curr_file_path != "res://") {
 		save_button_visble = true;
 	}
 	save_button->set_visible(save_button_visble);

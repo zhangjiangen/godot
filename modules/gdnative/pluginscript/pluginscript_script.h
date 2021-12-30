@@ -84,7 +84,7 @@ protected:
 	virtual void _placeholder_erased(PlaceHolderScriptInstance *p_placeholder) override;
 #endif
 public:
-	String get_script_class_name() const {
+	String get_script_class_name() const override {
 		return _name;
 	}
 

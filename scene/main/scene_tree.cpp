@@ -256,7 +256,7 @@ void SceneTree::call_group_flags(uint32_t p_call_flags, const StringName &p_grou
 			}
 
 			if (p_call_flags & GROUP_CALL_REALTIME) {
-				nodes[i]->call(p_function, VARIANT_ARG_PASS);
+				nodes[i]->call_void(p_function, VARIANT_ARG_PASS);
 			} else {
 				MessageQueue::get_singleton()->push_call(nodes[i], p_function, VARIANT_ARG_PASS);
 			}
@@ -269,7 +269,7 @@ void SceneTree::call_group_flags(uint32_t p_call_flags, const StringName &p_grou
 			}
 
 			if (p_call_flags & GROUP_CALL_REALTIME) {
-				nodes[i]->call(p_function, VARIANT_ARG_PASS);
+				nodes[i]->call_void(p_function, VARIANT_ARG_PASS);
 			} else {
 				MessageQueue::get_singleton()->push_call(nodes[i], p_function, VARIANT_ARG_PASS);
 			}

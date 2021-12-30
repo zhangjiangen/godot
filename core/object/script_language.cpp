@@ -308,6 +308,12 @@ void ScriptInstance::get_property_state(List<Pair<StringName, Variant>> &state) 
 	}
 }
 
+Variant ScriptInstance::call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	Callable::CallError error;
+	Variant ret;
+	call_r(ret, p_method, p_args, p_argcount, error);
+	return ret;
+}
 Variant ScriptInstance::call(const StringName &p_method, VARIANT_ARG_DECLARE) {
 	VARIANT_ARGPTRS;
 	int argc = 0;
@@ -319,7 +325,9 @@ Variant ScriptInstance::call(const StringName &p_method, VARIANT_ARG_DECLARE) {
 	}
 
 	Callable::CallError error;
-	return call(p_method, argptr, argc, error);
+	Variant ret;
+	call_r(ret, p_method, argptr, argc, error);
+	return ret;
 }
 
 void ScriptInstance::property_set_fallback(const StringName &, const Variant &, bool *r_valid) {

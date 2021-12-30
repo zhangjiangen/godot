@@ -2344,7 +2344,7 @@ void Viewport::push_text_input(const String &p_text) {
 	}
 
 	if (gui.key_focus) {
-		gui.key_focus->call("set_text", p_text);
+		gui.key_focus->call_void("set_text", p_text);
 	}
 }
 
@@ -3891,12 +3891,12 @@ bool SubViewport::is_size_2d_override_stretch_enabled() const {
 	return size_2d_override_stretch;
 }
 
-void SubViewport::set_update_mode(UpdateMode p_mode) {
-	update_mode = p_mode;
+void SubViewport::set_update_mode(int p_mode) {
+	update_mode = (UpdateMode)p_mode;
 	RS::get_singleton()->viewport_set_update_mode(get_viewport_rid(), RS::ViewportUpdateMode(p_mode));
 }
 
-SubViewport::UpdateMode SubViewport::get_update_mode() const {
+int SubViewport::get_update_mode() const {
 	return update_mode;
 }
 

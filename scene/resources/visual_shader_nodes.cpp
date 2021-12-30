@@ -4904,15 +4904,17 @@ String VisualShaderNodeColorUniform::get_input_port_name(int p_port) const {
 }
 
 int VisualShaderNodeColorUniform::get_output_port_count() const {
-	return 2;
+	return 3;
 }
 
 VisualShaderNodeColorUniform::PortType VisualShaderNodeColorUniform::get_output_port_type(int p_port) const {
-	return p_port == 0 ? PORT_TYPE_VECTOR : PORT_TYPE_SCALAR;
+	return p_port == 0 ? PORT_TYPE_VECTOR : p_port == 1 ? PORT_TYPE_SCALAR
+														: PORT_TYPE_VECTOR4;
 }
 
 String VisualShaderNodeColorUniform::get_output_port_name(int p_port) const {
-	return p_port == 0 ? "color" : "alpha"; //no output port means the editor will be used as port
+	return p_port == 0 ? "color" : p_port == 1 ? "alpha"
+											   : "rgba"; //no output port means the editor will be used as port
 }
 
 void VisualShaderNodeColorUniform::set_default_value_enabled(bool p_enabled) {
@@ -4951,6 +4953,7 @@ String VisualShaderNodeColorUniform::generate_global(Shader::Mode p_mode, Visual
 String VisualShaderNodeColorUniform::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
 	String code = "	" + p_output_vars[0] + " = " + get_uniform_name() + ".rgb;\n";
 	code += "	" + p_output_vars[1] + " = " + get_uniform_name() + ".a;\n";
+	code += "	" + p_output_vars[2] + " = " + get_uniform_name() + ";\n";
 	return code;
 }
 
@@ -5522,7 +5525,7 @@ VisualShaderNodeTextureUniform::PortType VisualShaderNodeTextureUniform::get_out
 		case 1:
 			return PORT_TYPE_SCALAR;
 		case 2:
-			return PORT_TYPE_SAMPLER;
+			return PORT_TYPE_VECTOR4;
 		default:
 			return PORT_TYPE_SCALAR;
 	}
@@ -5535,7 +5538,7 @@ String VisualShaderNodeTextureUniform::get_output_port_name(int p_port) const {
 		case 1:
 			return "alpha";
 		case 2:
-			return "sampler2D";
+			return "rgba";
 		default:
 			return "";
 	}
@@ -5646,7 +5649,7 @@ String VisualShaderNodeTextureUniform::generate_global(Shader::Mode p_mode, Visu
 }
 
 bool VisualShaderNodeTextureUniform::is_code_generated() const {
-	return is_output_port_connected(0) || is_output_port_connected(1); // rgb or alpha
+	return is_output_port_connected(0) || is_output_port_connected(1) || is_output_port_connected(2) || is_output_port_connected(3); // rgb or alpha
 }
 
 String VisualShaderNodeTextureUniform::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
@@ -5674,6 +5677,7 @@ String VisualShaderNodeTextureUniform::generate_code(Shader::Mode p_mode, Visual
 
 	code += "		" + p_output_vars[0] + " = n_tex_read.rgb;\n";
 	code += "		" + p_output_vars[1] + " = n_tex_read.a;\n";
+	code += "		" + p_output_vars[2] + " = n_tex_read;\n";
 	code += "	}\n";
 	return code;
 }

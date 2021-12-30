@@ -577,7 +577,7 @@ void LiveEditor::_node_call_func(int p_id, const StringName &p_method, VARIANT_A
 		}
 		Node *n2 = n->get_node(np);
 
-		n2->call(p_method, VARIANT_ARG_PASS);
+		n2->call_void(p_method, VARIANT_ARG_PASS);
 	}
 }
 
@@ -624,7 +624,7 @@ void LiveEditor::_res_call_func(int p_id, const StringName &p_method, VARIANT_AR
 		return;
 	}
 
-	r->call(p_method, VARIANT_ARG_PASS);
+	r->call_void(p_method, VARIANT_ARG_PASS);
 }
 
 void LiveEditor::_root_func(const NodePath &p_scene_path, const String &p_scene_from) {

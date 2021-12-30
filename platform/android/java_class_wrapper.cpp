@@ -481,14 +481,23 @@ bool JavaClass::_call_method(JavaObject *p_instance, const StringName &p_method,
 	return success;
 }
 
-Variant JavaClass::call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
-	Variant ret;
+void JavaClass::call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	ret.clear();
 	bool found = _call_method(nullptr, p_method, p_args, p_argcount, r_error, ret);
 	if (found) {
-		return ret;
+		return;
 	}
 
-	return RefCounted::call(p_method, p_args, p_argcount, r_error);
+	RefCounted::call_r(ret, p_method, p_args, p_argcount, r_error);
+}
+
+void JavaClass::call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	bool found = _call_method(nullptr, p_method, p_args, p_argcount, r_error, ret);
+	if (found) {
+		return;
+	}
+
+	RefCounted::call_r(p_method, p_args, p_argcount, r_error);
 }
 
 JavaClass::JavaClass() {
@@ -496,8 +505,10 @@ JavaClass::JavaClass() {
 
 /////////////////////
 
-Variant JavaObject::call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
-	return Variant();
+void JavaObject::call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	ret.clear()
+}
+void JavaObject::call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
 }
 
 JavaObject::JavaObject(const Ref<JavaClass> &p_base, jobject *p_instance) {

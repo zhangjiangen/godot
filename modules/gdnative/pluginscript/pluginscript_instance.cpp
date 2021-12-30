@@ -79,14 +79,20 @@ bool PluginScriptInstance::has_method(const StringName &p_method) const {
 	return _script->has_method(p_method);
 }
 
-Variant PluginScriptInstance::call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+void PluginScriptInstance::call_r(Variant &var_ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
 	// TODO: optimize when calling a Godot method from Godot to avoid param conversion ?
 	godot_variant ret = _desc->call_method(
 			_data, (godot_string_name *)&p_method, (const godot_variant **)p_args,
 			p_argcount, (godot_variant_call_error *)&r_error);
-	Variant var_ret = *(Variant *)&ret;
+	var_ret = *(Variant *)&ret;
 	godot_variant_destroy(&ret);
-	return var_ret;
+}
+void PluginScriptInstance::call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	// TODO: optimize when calling a Godot method from Godot to avoid param conversion ?
+	godot_variant ret = _desc->call_method(
+			_data, (godot_string_name *)&p_method, (const godot_variant **)p_args,
+			p_argcount, (godot_variant_call_error *)&r_error);
+	godot_variant_destroy(&ret);
 }
 
 void PluginScriptInstance::notification(int p_notification) {

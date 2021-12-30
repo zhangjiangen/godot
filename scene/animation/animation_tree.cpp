@@ -490,7 +490,7 @@ void AnimationTree::set_active(bool p_active) {
 	if (!active && is_inside_tree()) {
 		for (Set<TrackCache *>::Element *E = playing_caches.front(); E; E = E->next()) {
 			if (ObjectDB::get_instance(E->get()->object_id)) {
-				E->get()->object->call("stop");
+				E->get()->object->call_void("stop");
 			}
 		}
 
@@ -1331,7 +1331,7 @@ void AnimationTree::_process_graph(real_t p_delta) {
 
 							Ref<AudioStream> stream = a->audio_track_get_key_stream(i, idx);
 							if (!stream.is_valid()) {
-								t->object->call("stop");
+								t->object->call_void("stop");
 								t->playing = false;
 								playing_caches.erase(t);
 							} else {
@@ -1341,14 +1341,14 @@ void AnimationTree::_process_graph(real_t p_delta) {
 								real_t len = stream->get_length();
 
 								if (start_ofs > len - end_ofs) {
-									t->object->call("stop");
+									t->object->call_void("stop");
 									t->playing = false;
 									playing_caches.erase(t);
 									continue;
 								}
 
-								t->object->call("set_stream", stream);
-								t->object->call("play", start_ofs);
+								t->object->call_void("set_stream", stream);
+								t->object->call_void("play", start_ofs);
 
 								t->playing = true;
 								playing_caches.insert(t);
@@ -1370,7 +1370,7 @@ void AnimationTree::_process_graph(real_t p_delta) {
 
 								Ref<AudioStream> stream = a->audio_track_get_key_stream(i, idx);
 								if (!stream.is_valid()) {
-									t->object->call("stop");
+									t->object->call_void("stop");
 									t->playing = false;
 									playing_caches.erase(t);
 								} else {
@@ -1378,8 +1378,8 @@ void AnimationTree::_process_graph(real_t p_delta) {
 									real_t end_ofs = a->audio_track_get_key_end_offset(i, idx);
 									real_t len = stream->get_length();
 
-									t->object->call("set_stream", stream);
-									t->object->call("play", start_ofs);
+									t->object->call_void("set_stream", stream);
+									t->object->call_void("play", start_ofs);
 
 									t->playing = true;
 									playing_caches.insert(t);
@@ -1416,7 +1416,7 @@ void AnimationTree::_process_graph(real_t p_delta) {
 
 								if (stop) {
 									//time to stop
-									t->object->call("stop");
+									t->object->call_void("stop");
 									t->playing = false;
 									playing_caches.erase(t);
 								}
@@ -1425,9 +1425,9 @@ void AnimationTree::_process_graph(real_t p_delta) {
 
 						real_t db = Math::linear2db(MAX(blend, 0.00001));
 						if (t->object->has_method("set_unit_db")) {
-							t->object->call("set_unit_db", db);
+							t->object->call_void("set_unit_db", db);
 						} else {
-							t->object->call("set_volume_db", db);
+							t->object->call_void("set_volume_db", db);
 						}
 					} break;
 					case Animation::TYPE_ANIMATION: {

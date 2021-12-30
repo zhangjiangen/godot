@@ -738,7 +738,7 @@ bool CanvasItemEditor::_select_click_on_item(CanvasItem *item, Point2 p_click_po
 			// Reselect
 			if (Engine::get_singleton()->is_editor_hint()) {
 				selected_from_canvas = true;
-				editor->call("edit_node", item);
+				editor->call_void("edit_node", item);
 			}
 		}
 	}
@@ -1920,7 +1920,7 @@ bool CanvasItemEditor::_gui_input_scale(const Ref<InputEvent> &p_event) {
 				}
 			}
 
-			canvas_item->call("set_scale", scale);
+			canvas_item->call_void("set_scale", scale);
 			return true;
 		}
 

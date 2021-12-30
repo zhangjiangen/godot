@@ -133,7 +133,7 @@ public:
 	Ref<GDNativeLibrary> get_library() const;
 
 	void set_script_class_name(String p_type);
-	String get_script_class_name() const;
+	String get_script_class_name() const override;
 	void set_script_class_icon_path(String p_icon_path);
 	String get_script_class_icon_path() const;
 
@@ -208,7 +208,8 @@ public:
 	virtual Variant::Type get_property_type(const StringName &p_name, bool *r_is_valid) const;
 	virtual void get_method_list(List<MethodInfo> *p_list) const;
 	virtual bool has_method(const StringName &p_method) const;
-	virtual Variant call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
+	virtual void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
+	virtual void call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
 	virtual void notification(int p_notification);
 	String to_string(bool *r_valid);
 	virtual Ref<Script> get_script() const;

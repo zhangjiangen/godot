@@ -2486,7 +2486,8 @@ Error GDScriptCompiler::_parse_class_blocks(GDScript *p_script, const GDScriptPa
 					/* STEP 2, INITIALIZE AND CONSTRUCT */
 
 					Callable::CallError ce;
-					p_script->initializer->call(instance, nullptr, 0, ce);
+					Variant ret;
+					p_script->initializer->call_r(ret, instance, nullptr, 0, ce);
 
 					if (ce.error != Callable::CallError::CALL_OK) {
 						//well, tough luck, not gonna do anything here

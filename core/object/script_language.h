@@ -160,6 +160,7 @@ public:
 	virtual bool is_placeholder_fallback_enabled() const { return false; }
 
 	virtual const Vector<Multiplayer::RPCConfig> get_rpc_methods() const = 0;
+	virtual String get_script_class_name() const = 0;
 
 	Script() {}
 };
@@ -176,8 +177,11 @@ public:
 
 	virtual void get_method_list(List<MethodInfo> *p_list) const = 0;
 	virtual bool has_method(const StringName &p_method) const = 0;
-	virtual Variant call(const StringName &p_method, VARIANT_ARG_LIST);
-	virtual Variant call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) = 0;
+	Variant call(const StringName &p_method, VARIANT_ARG_LIST);
+	Variant call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
+	virtual void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) = 0;
+	virtual void call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) = 0;
+
 	virtual void notification(int p_notification) = 0;
 	virtual String to_string(bool *r_valid) {
 		if (r_valid) {
@@ -399,11 +403,15 @@ public:
 
 	virtual void get_method_list(List<MethodInfo> *p_list) const;
 	virtual bool has_method(const StringName &p_method) const;
-	virtual Variant call(const StringName &p_method, VARIANT_ARG_LIST) { return Variant(); }
-	virtual Variant call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+
+	virtual void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
 		r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
-		return Variant();
+		ret.clear();
 	}
+	virtual void call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+		r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
+	}
+
 	virtual void notification(int p_notification) {}
 
 	virtual Ref<Script> get_script() const { return script; }

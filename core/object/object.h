@@ -760,6 +760,10 @@ public:
 		return &ptr;
 	}
 
+	virtual String _get_script_class() const;
+	String get_script_class() const {
+		return _get_script_class();
+	}
 	bool _is_gpl_reversed() const { return false; }
 
 	_FORCE_INLINE_ ObjectID get_instance_id() const { return _instance_id; }
@@ -848,8 +852,12 @@ public:
 	bool has_method(const StringName &p_method) const;
 	void get_method_list(List<MethodInfo> *p_list) const;
 	Variant callv(const StringName &p_method, const Array &p_args);
-	virtual Variant call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
+	Variant call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
 	Variant call(const StringName &p_name, VARIANT_ARG_LIST); // C++ helper
+	void call_void(const StringName &p_name, VARIANT_ARG_LIST); // C++ helper
+	virtual void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
+	virtual void call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
+	void call_r(Variant &ret, const StringName &p_name, VARIANT_ARG_LIST); // C++ helper
 
 	void notification(int p_notification, bool p_reversed = false);
 	virtual String to_string();

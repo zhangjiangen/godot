@@ -1018,7 +1018,7 @@ void Variant::call(const StringName &p_method, const Variant **p_args, int p_arg
 		}
 
 #endif
-		r_ret = _get_obj().obj->call(p_method, p_args, p_argcount, r_error);
+		_get_obj().obj->call_r(r_ret, p_method, p_args, p_argcount, r_error);
 
 		//else if (type==Variant::METHOD) {
 	} else {

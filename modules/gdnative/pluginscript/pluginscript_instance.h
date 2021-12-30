@@ -59,8 +59,8 @@ public:
 
 	virtual void get_method_list(List<MethodInfo> *p_list) const;
 	virtual bool has_method(const StringName &p_method) const;
-
-	virtual Variant call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
+	virtual void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
+	virtual void call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
 
 	virtual void notification(int p_notification);
 	virtual String to_string(bool *r_valid);

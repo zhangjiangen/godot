@@ -184,7 +184,9 @@ private:
 protected:
 	static void _bind_methods();
 
-	Variant call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override;
+	void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override;
+	void call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override;
+
 	void _resource_path_changed() override;
 	bool _get(const StringName &p_name, Variant &r_ret) const;
 	bool _set(const StringName &p_name, const Variant &p_value);
@@ -211,6 +213,7 @@ public:
 
 	Error reload(bool p_keep_state = false) override;
 
+	String get_script_class_name() const override { return name; }
 	bool has_script_signal(const StringName &p_signal) const override;
 	void get_script_signal_list(List<MethodInfo> *r_signals) const override;
 
@@ -295,7 +298,8 @@ public:
 
 	void get_method_list(List<MethodInfo> *p_list) const override;
 	bool has_method(const StringName &p_method) const override;
-	Variant call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override;
+	void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override;
+	void call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override;
 
 	void mono_object_disposed(MonoObject *p_obj);
 

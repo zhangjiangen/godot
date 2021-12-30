@@ -75,7 +75,9 @@ static bool _create_project_solution_if_needed() {
 		// A solution does not yet exist, create a new one
 
 		CRASH_COND(CSharpLanguage::get_singleton()->get_godotsharp_editor() == nullptr);
-		return CSharpLanguage::get_singleton()->get_godotsharp_editor()->call("CreateProjectSolution");
+		Variant ret;
+		CSharpLanguage::get_singleton()->get_godotsharp_editor()->call_r(ret, "CreateProjectSolution");
+		return ret;
 	}
 
 	return true;
@@ -769,7 +771,7 @@ void CSharpLanguage::reload_tool_script(const Ref<Script> &p_script, bool p_soft
 	CRASH_COND(!Engine::get_singleton()->is_editor_hint());
 
 #ifdef TOOLS_ENABLED
-	get_godotsharp_editor()->get_node(NodePath("HotReloadAssemblyWatcher"))->call("RestartTimer");
+	get_godotsharp_editor()->get_node(NodePath("HotReloadAssemblyWatcher"))->call_void("RestartTimer");
 #endif
 
 #ifdef GD_MONO_HOT_RELOAD
@@ -927,7 +929,7 @@ void CSharpLanguage::reload_assemblies(bool p_soft_reload) {
 
 			// Call OnBeforeSerialize
 			if (csi->script->script_class->implements_interface(CACHED_CLASS(ISerializationListener))) {
-				obj->get_script_instance()->call(string_names.on_before_serialize);
+				obj->get_script_instance()->call_void(string_names.on_before_serialize);
 			}
 
 			// Save instance info
@@ -1150,7 +1152,7 @@ void CSharpLanguage::reload_assemblies(bool p_soft_reload) {
 
 				// Call OnAfterDeserialization
 				if (csi->script->script_class->implements_interface(CACHED_CLASS(ISerializationListener))) {
-					obj->get_script_instance()->call(string_names.on_after_deserialize);
+					obj->get_script_instance()->call_r(string_names.on_after_deserialize);
 				}
 			}
 		}
@@ -1258,11 +1260,15 @@ void CSharpLanguage::get_recognized_extensions(List<String> *p_extensions) const
 
 #ifdef TOOLS_ENABLED
 Error CSharpLanguage::open_in_external_editor(const Ref<Script> &p_script, int p_line, int p_col) {
-	return (Error)(int)get_godotsharp_editor()->call("OpenInExternalEditor", p_script, p_line, p_col);
+	Variant ret;
+	get_godotsharp_editor()->call_r(ret, "OpenInExternalEditor", p_script, p_line, p_col);
+	return (Error)(int)ret;
 }
 
 bool CSharpLanguage::overrides_external_editor() {
-	return get_godotsharp_editor()->call("OverridesExternalEditor");
+	Variant ret;
+	get_godotsharp_editor()->call_r(ret, "OverridesExternalEditor");
+	return ret;
 }
 #endif
 
@@ -1907,11 +1913,11 @@ bool CSharpInstance::has_method(const StringName &p_method) const {
 	return false;
 }
 
-Variant CSharpInstance::call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+void CSharpInstance::call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
 	ERR_FAIL_COND_V(!script.is_valid(), Variant());
 
 	GD_MONO_SCOPE_THREAD_ATTACH;
-
+	ret.clear();
 	MonoObject *mono_object = get_mono_object();
 
 	if (!mono_object) {
@@ -1930,9 +1936,10 @@ Variant CSharpInstance::call(const StringName &p_method, const Variant **p_args,
 			r_error.error = Callable::CallError::CALL_OK;
 
 			if (return_value) {
-				return GDMonoMarshal::mono_object_to_variant(return_value);
+				ret = GDMonoMarshal::mono_object_to_variant(return_value);
+				return;
 			} else {
-				return Variant();
+				return;
 			}
 		}
 
@@ -1941,9 +1948,45 @@ Variant CSharpInstance::call(const StringName &p_method, const Variant **p_args,
 
 	r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
 
-	return Variant();
+	return;
 }
 
+void CSharpInstance::call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	ERR_FAIL_COND_V(!script.is_valid(), Variant());
+
+	GD_MONO_SCOPE_THREAD_ATTACH;
+	MonoObject *mono_object = get_mono_object();
+
+	if (!mono_object) {
+		r_error.error = Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL;
+		ERR_FAIL_V(Variant());
+	}
+
+	GDMonoClass *top = script->script_class;
+
+	while (top && top != script->native) {
+		GDMonoMethod *method = top->get_method(p_method, p_argcount);
+
+		if (method) {
+			MonoObject *return_value = method->invoke(mono_object, p_args);
+
+			r_error.error = Callable::CallError::CALL_OK;
+
+			if (return_value) {
+				GDMonoMarshal::mono_object_to_variant(return_value);
+				return;
+			} else {
+				return;
+			}
+		}
+
+		top = top->get_parent_class();
+	}
+
+	r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
+
+	return;
+}
 bool CSharpInstance::_reference_owner_unsafe() {
 #ifdef DEBUG_ENABLED
 	CRASH_COND(!base_ref_counted);
@@ -2922,11 +2965,12 @@ int CSharpScript::_try_get_member_export_hint(IMonoClassMember *p_member, Manage
 }
 #endif
 
-Variant CSharpScript::call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+void CSharpScript::call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	ret.clear();
 	if (unlikely(GDMono::get_singleton() == nullptr)) {
 		// Probably not the best error but eh.
 		r_error.error = Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL;
-		return Variant();
+		return;
 	}
 
 	GD_MONO_SCOPE_THREAD_ATTACH;
@@ -2950,7 +2994,33 @@ Variant CSharpScript::call(const StringName &p_method, const Variant **p_args, i
 	}
 
 	// No static method found. Try regular instance calls
-	return Script::call(p_method, p_args, p_argcount, r_error);
+	Script::call_r(ret, p_method, p_args, p_argcount, r_error);
+}
+void CSharpScript::call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	if (unlikely(GDMono::get_singleton() == nullptr)) {
+		// Probably not the best error but eh.
+		r_error.error = Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL;
+		return Variant();
+	}
+
+	GD_MONO_SCOPE_THREAD_ATTACH;
+
+	GDMonoClass *top = script_class;
+
+	while (top && top != native) {
+		GDMonoMethod *method = top->get_method(p_method, p_argcount);
+
+		if (method && method->is_static()) {
+			method->invoke(nullptr, p_args);
+
+			return;
+		}
+
+		top = top->get_parent_class();
+	}
+
+	// No static method found. Try regular instance calls
+	Script::call_r(p_method, p_args, p_argcount, r_error);
 }
 
 void CSharpScript::_resource_path_changed() {

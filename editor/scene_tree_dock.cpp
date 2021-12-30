@@ -2109,7 +2109,7 @@ void SceneTreeDock::_delete_confirm(bool p_cut) {
 	// Fixes the EditorHistory from still offering deleted notes
 	EditorHistory *editor_history = EditorNode::get_singleton()->get_editor_history();
 	editor_history->cleanup_history();
-	EditorNode::get_singleton()->get_inspector_dock()->call("_prepare_history");
+	EditorNode::get_singleton()->get_inspector_dock()->call_void("_prepare_history");
 }
 
 void SceneTreeDock::_update_script_button() {
@@ -2380,7 +2380,7 @@ void SceneTreeDock::replace_node(Node *p_node, Node *p_by_node, bool p_keep_prop
 	//small hack to make collisionshapes and other kind of nodes to work
 	for (int i = 0; i < newnode->get_child_count(); i++) {
 		Node *c = newnode->get_child(i);
-		c->call("set_transform", c->call("get_transform"));
+		c->call_void("set_transform", c->call("get_transform"));
 	}
 	//p_remove_old was added to support undo
 	if (p_remove_old) {

@@ -79,10 +79,10 @@ void GDScriptLambdaCallable::call(const Variant **p_arguments, int p_argcount, V
 			args.write[i + captures_amount] = p_arguments[i];
 		}
 
-		r_return_value = function->call(nullptr, args.ptrw(), args.size(), r_call_error);
+		function->call_r(r_return_value, nullptr, args.ptrw(), args.size(), r_call_error);
 		r_call_error.argument -= captures_amount;
 	} else {
-		r_return_value = function->call(nullptr, p_arguments, p_argcount, r_call_error);
+		function->call_r(r_return_value, nullptr, p_arguments, p_argcount, r_call_error);
 	}
 }
 

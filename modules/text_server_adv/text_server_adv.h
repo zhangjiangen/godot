@@ -89,6 +89,10 @@ class TextServerAdvanced : public TextServer {
 
 	Vector<NumSystemData> num_systems;
 	Map<StringName, int32_t> feature_sets;
+	// 临时变量
+	Vector<RID> fonts;
+	Vector<RID> fonts_scr_only;
+	Vector<RID> fonts_no_match;
 
 	void _insert_num_systems_lang();
 	void _insert_feature_sets();

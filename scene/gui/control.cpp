@@ -755,10 +755,12 @@ void Control::set_drag_forwarding(Object *p_target) {
 }
 
 Variant Control::get_drag_data(const Point2 &p_point) {
+	Variant ret;
 	if (data.drag_owner.is_valid()) {
 		Object *obj = ObjectDB::get_instance(data.drag_owner);
 		if (obj) {
-			return obj->call("_get_drag_data_fw", p_point, this);
+			obj->call_r(ret, "_get_drag_data_fw", p_point, this);
+			return ret;
 		}
 	}
 
@@ -789,7 +791,7 @@ void Control::drop_data(const Point2 &p_point, const Variant &p_data) {
 	if (data.drag_owner.is_valid()) {
 		Object *obj = ObjectDB::get_instance(data.drag_owner);
 		if (obj) {
-			obj->call("_drop_data_fw", p_point, p_data, this);
+			obj->call_void("_drop_data_fw", p_point, p_data, this);
 			return;
 		}
 	}

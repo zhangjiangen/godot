@@ -202,6 +202,7 @@ private:
 	friend class VisualScriptInstance;
 
 	StringName base_type;
+	StringName name;
 	struct Argument {
 		String name;
 		Variant::Type type = Variant::Type::NIL;
@@ -349,6 +350,7 @@ public:
 
 	virtual ScriptLanguage *get_language() const override;
 
+	String get_script_class_name() const override { return get_name(); }
 	virtual bool has_script_signal(const StringName &p_signal) const override;
 	virtual void get_script_signal_list(List<MethodInfo> *r_signals) const override;
 
@@ -410,7 +412,9 @@ public:
 
 	virtual void get_method_list(List<MethodInfo> *p_list) const;
 	virtual bool has_method(const StringName &p_method) const;
-	virtual Variant call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
+	void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
+	void call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
+
 	virtual void notification(int p_notification);
 	String to_string(bool *r_valid);
 

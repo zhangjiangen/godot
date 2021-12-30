@@ -2889,7 +2889,7 @@ void EditorPropertyResource::_resource_changed(const RES &p_resource) {
 	// Make visual script the correct type.
 	Ref<Script> s = p_resource;
 	if (get_edited_object() && s.is_valid()) {
-		s->call("set_instance_base_type", get_edited_object()->get_class());
+		s->call_void("set_instance_base_type", get_edited_object()->get_class());
 	}
 
 	// Prevent the creation of invalid ViewportTextures when possible.

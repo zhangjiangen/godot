@@ -724,8 +724,8 @@ public:
 	void set_size_2d_override_stretch(bool p_enable);
 	bool is_size_2d_override_stretch_enabled() const;
 
-	void set_update_mode(UpdateMode p_mode);
-	UpdateMode get_update_mode() const;
+	void set_update_mode(int p_mode);
+	int get_update_mode() const;
 
 	void set_clear_mode(ClearMode p_mode);
 	ClearMode get_clear_mode() const;

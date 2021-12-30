@@ -216,7 +216,7 @@ private:
 	void reference(const Variant &p_variant);
 
 	void _clear_internal();
-
+	public:
 	_FORCE_INLINE_ void clear() {
 		static const bool needs_deinit[Variant::VARIANT_MAX] = {
 			false, //NIL,
@@ -265,7 +265,7 @@ private:
 		}
 		type = NIL;
 	}
-
+private:
 	static void _register_variant_operators();
 	static void _unregister_variant_operators();
 	static void _register_variant_methods();

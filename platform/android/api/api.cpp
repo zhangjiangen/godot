@@ -64,15 +64,19 @@ void JavaClassWrapper::_bind_methods() {
 
 #if !defined(ANDROID_ENABLED)
 
-Variant JavaClass::call(const StringName &, const Variant **, int, Callable::CallError &) {
-	return Variant();
+void JavaClass::call_r(Variant &ret, const StringName &, const Variant **, int, Callable::CallError &) {
+	ret.clear();
+}
+void JavaClass::call_r(const StringName &, const Variant **, int, Callable::CallError &) {
 }
 
 JavaClass::JavaClass() {
 }
 
-Variant JavaObject::call(const StringName &, const Variant **, int, Callable::CallError &) {
-	return Variant();
+void JavaObject::call_r(Variant &ret, const StringName &, const Variant **, int, Callable::CallError &) {
+	ret.clear();
+}
+void JavaObject::call_r(const StringName &, const Variant **, int, Callable::CallError &) {
 }
 
 JavaClassWrapper *JavaClassWrapper::singleton = nullptr;

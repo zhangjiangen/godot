@@ -2815,7 +2815,7 @@ void GPUParticlesCollision3DGizmoPlugin::set_handle(const EditorNode3DGizmo *p_g
 			d = 0.001;
 		}
 
-		sn->call("set_radius", d);
+		sn->call_void("set_radius", d);
 	}
 
 	if (Object::cast_to<GPUParticlesCollisionBox3D>(sn) || Object::cast_to<GPUParticlesAttractorBox3D>(sn) || Object::cast_to<GPUParticlesAttractorVectorField3D>(sn) || Object::cast_to<GPUParticlesCollisionSDF3D>(sn) || Object::cast_to<GPUParticlesCollisionHeightField3D>(sn)) {
@@ -2834,7 +2834,7 @@ void GPUParticlesCollision3DGizmoPlugin::set_handle(const EditorNode3DGizmo *p_g
 
 		Vector3 he = sn->call("get_extents");
 		he[p_id] = d;
-		sn->call("set_extents", he);
+		sn->call_void("set_extents", he);
 	}
 }
 
@@ -2843,7 +2843,7 @@ void GPUParticlesCollision3DGizmoPlugin::commit_handle(const EditorNode3DGizmo *
 
 	if (Object::cast_to<GPUParticlesCollisionSphere3D>(sn) || Object::cast_to<GPUParticlesAttractorSphere3D>(sn)) {
 		if (p_cancel) {
-			sn->call("set_radius", p_restore);
+			sn->call_void("set_radius", p_restore);
 			return;
 		}
 
@@ -2856,7 +2856,7 @@ void GPUParticlesCollision3DGizmoPlugin::commit_handle(const EditorNode3DGizmo *
 
 	if (Object::cast_to<GPUParticlesCollisionBox3D>(sn) || Object::cast_to<GPUParticlesAttractorBox3D>(sn) || Object::cast_to<GPUParticlesAttractorVectorField3D>(sn) || Object::cast_to<GPUParticlesCollisionSDF3D>(sn) || Object::cast_to<GPUParticlesCollisionHeightField3D>(sn)) {
 		if (p_cancel) {
-			sn->call("set_extents", p_restore);
+			sn->call_void("set_extents", p_restore);
 			return;
 		}
 
@@ -5332,14 +5332,14 @@ void FogVolumeGizmoPlugin::set_handle(const EditorNode3DGizmo *p_gizmo, int p_id
 
 	Vector3 he = sn->call("get_extents");
 	he[p_id] = d;
-	sn->call("set_extents", he);
+	sn->call_void("set_extents", he);
 }
 
 void FogVolumeGizmoPlugin::commit_handle(const EditorNode3DGizmo *p_gizmo, int p_id, const Variant &p_restore, bool p_cancel) {
 	Node3D *sn = p_gizmo->get_spatial_node();
 
 	if (p_cancel) {
-		sn->call("set_extents", p_restore);
+		sn->call_void("set_extents", p_restore);
 		return;
 	}
 
