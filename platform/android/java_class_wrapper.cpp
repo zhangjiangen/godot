@@ -492,6 +492,7 @@ void JavaClass::call_r(Variant &ret, const StringName &p_method, const Variant *
 }
 
 void JavaClass::call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	Variant ret;
 	bool found = _call_method(nullptr, p_method, p_args, p_argcount, r_error, ret);
 	if (found) {
 		return;
@@ -506,7 +507,7 @@ JavaClass::JavaClass() {
 /////////////////////
 
 void JavaObject::call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
-	ret.clear()
+	ret.clear() ；
 }
 void JavaObject::call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
 }

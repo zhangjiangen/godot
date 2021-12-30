@@ -57,6 +57,7 @@ public:
 		call_r(ret, p_method, p_args, p_argcount, r_error);
 	}
 	virtual void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override {
+		ret.clear();
 #ifdef ANDROID_ENABLED
 		Map<StringName, MethodData>::Element *E = method_map.find(p_method);
 
@@ -78,7 +79,7 @@ public:
 			return;
 		}
 
-		ERR_FAIL_COND_V(!instance, Variant());
+		ERR_FAIL_COND(!instance);
 
 		r_error.error = Callable::CallError::CALL_OK;
 
@@ -92,7 +93,7 @@ public:
 
 		int res = env->PushLocalFrame(16);
 
-		ERR_FAIL_COND_V(res != 0, Variant());
+		ERR_FAIL_COND(res != 0);
 
 		List<jobject> to_erase;
 		for (int i = 0; i < p_argcount; i++) {
