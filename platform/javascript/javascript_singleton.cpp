@@ -36,7 +36,7 @@ extern void godot_js_os_download_buffer(const uint8_t *p_buf, int p_buf_size, co
 }
 
 #ifdef JAVASCRIPT_EVAL_ENABLED
-
+//#if 1
 extern "C" {
 typedef union {
 	int64_t i;
@@ -79,7 +79,8 @@ protected:
 public:
 	Variant getvar(const Variant &p_key, bool *r_valid = nullptr) const override;
 	void setvar(const Variant &p_key, const Variant &p_value, bool *r_valid = nullptr) override;
-	Variant call(const StringName &p_method, const Variant **p_args, int p_argc, Callable::CallError &r_error) override;
+	virtual void call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override;
+	virtual void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override;
 	JavaScriptObjectImpl() {}
 	JavaScriptObjectImpl(int p_id) { _js_id = p_id; }
 	~JavaScriptObjectImpl() {
@@ -229,7 +230,8 @@ int JavaScriptObjectImpl::_variant2js(const void **p_args, int p_pos, godot_js_w
 	return type;
 }
 
-Variant JavaScriptObjectImpl::call(const StringName &p_method, const Variant **p_args, int p_argc, Callable::CallError &r_error) {
+void JavaScriptObjectImpl::call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argc, Callable::CallError &r_error) {
+	ret.clear();
 	godot_js_wrapper_ex exchange;
 	const String method = p_method;
 	void *lock = nullptr;
@@ -237,9 +239,21 @@ Variant JavaScriptObjectImpl::call(const StringName &p_method, const Variant **p
 	r_error.error = Callable::CallError::CALL_OK;
 	if (type < 0) {
 		r_error.error = Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL;
-		return Variant();
+		return;
 	}
-	return _js2variant(type, &exchange);
+	ret = _js2variant(type, &exchange);
+}
+void JavaScriptObjectImpl::call_r(const StringName &p_method, const Variant **p_args, int p_argc, Callable::CallError &r_error) {
+	godot_js_wrapper_ex exchange;
+	const String method = p_method;
+	void *lock = nullptr;
+	const int type = godot_js_wrapper_object_call(_js_id, method.utf8().get_data(), (void **)p_args, p_argc, &_variant2js, &exchange, &lock, &_free_lock);
+	r_error.error = Callable::CallError::CALL_OK;
+	if (type < 0) {
+		r_error.error = Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL;
+		return;
+	}
+	_js2variant(type, &exchange);
 }
 
 void JavaScriptObjectImpl::_callback(void *p_ref, int p_args_id, int p_argc) {
