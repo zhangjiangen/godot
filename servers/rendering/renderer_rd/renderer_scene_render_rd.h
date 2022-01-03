@@ -602,7 +602,7 @@ private:
 			float inv_spot_attenuation;
 			float cos_spot_angle;
 			float specular_amount;
-			uint32_t shadow_enabled ;
+			uint32_t shadow_enabled;
 
 			float atlas_rect[4]; // in omni, used for atlas uv, in spot, used for projector uv
 			float shadow_matrix[16];
@@ -933,7 +933,7 @@ private:
 	};
 	*/
 
-	uint32_t max_cluster_elements = 512;
+	uint32_t max_cluster_elements = 128;
 
 	void _render_shadow_pass(RID p_light, RID p_shadow_atlas, int p_pass, const PagedArray<GeometryInstance *> &p_instances, const Plane &p_camera_plane = Plane(), float p_lod_distance_multiplier = 0, float p_screen_lod_threshold = 0.0, bool p_open_pass = true, bool p_close_pass = true, bool p_clear_region = true, RendererScene::RenderInfo *p_render_info = nullptr);
 

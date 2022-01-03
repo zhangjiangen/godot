@@ -94,21 +94,33 @@ private:
 	}
 
 	_FORCE_INLINE_ size_t _get_alloc_size(size_t p_elements) const {
-		return next_power_of_2(p_elements * sizeof(T));
+		if (p_elements < 8)
+			return next_power_of_2(p_elements * sizeof(T));
+		else if (p_elements < 64) {
+			return (p_elements + p_elements / 2) * sizeof(T);
+		} else if (p_elements < 128) {
+			return (p_elements + 16) * sizeof(T);
+
+		} else if (p_elements < 512) {
+			return (p_elements + 32) * sizeof(T);
+
+		} else {
+			return (p_elements + 64) * sizeof(T);
+		}
 	}
 
 	_FORCE_INLINE_ bool _get_alloc_size_checked(size_t p_elements, size_t *out) const {
 #if defined(__GNUC__)
-		size_t o;
-		size_t p;
-		if (__builtin_mul_overflow(p_elements, sizeof(T), &o)) {
-			*out = 0;
-			return false;
-		}
-		*out = next_power_of_2(o);
-		if (__builtin_add_overflow(o, static_cast<size_t>(32), &p)) {
-			return false; // No longer allocated here.
-		}
+//		size_t o;
+//		size_t p;
+//		if (__builtin_mul_overflow(p_elements, sizeof(T), &o)) {
+//			*out = 0;
+//			return false;
+//		}
+		*out = _get_alloc_size(p_elements);
+//		if (__builtin_add_overflow(o, static_cast<size_t>(32), &p)) {
+//			return false; // No longer allocated here.
+//		}
 		return true;
 #else
 		// Speed is more important than correctness here, do the operations unchecked

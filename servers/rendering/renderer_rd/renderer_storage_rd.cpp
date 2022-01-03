@@ -3232,8 +3232,8 @@ void RendererStorageRD::mesh_add_surface(RID p_mesh, const RS::SurfaceData &p_su
 	}
 
 #endif
-    
-    ERR_FAIL_COND_MSG(p_surface.vertex_data.size() == 0, "Zero vertex data");
+
+	ERR_FAIL_COND_MSG(p_surface.vertex_data.size() == 0, "Zero vertex data");
 	Mesh::Surface *s = memnew(Mesh::Surface);
 
 	s->format = p_surface.format;
@@ -9609,7 +9609,8 @@ RendererStorageRD::RendererStorageRD() {
 	static_assert(sizeof(GlobalVariables::Value) == 16);
 
 	global_variables.buffer_size = GLOBAL_GET("rendering/limits/global_shader_variables/buffer_size");
-	global_variables.buffer_size = MAX(4096, global_variables.buffer_size);
+	global_variables.buffer_size = MIN(256, global_variables.buffer_size);
+	global_variables.buffer_size = MAX(32, global_variables.buffer_size);
 	global_variables.buffer_values = memnew_arr(GlobalVariables::Value, global_variables.buffer_size);
 	memset(global_variables.buffer_values, 0, sizeof(GlobalVariables::Value) * global_variables.buffer_size);
 	global_variables.buffer_usage = memnew_arr(GlobalVariables::ValueUsage, global_variables.buffer_size);

@@ -254,17 +254,16 @@ enum PropertyUsageFlags {
 #define ADD_ARRAY(m_array_path, m_prefix) ClassDB::add_property_array(get_class_static(), m_array_path, m_prefix)
 
 struct PropertyInfo {
-	Variant::Type type = Variant::NIL;
-	String name;
 	StringName class_name; // For classes
 	StringName update_read_state; // For classes
-	PropertyHint hint = PROPERTY_HINT_NONE;
+    String name;
 	String hint_string;
-	uint32_t usage = PROPERTY_USAGE_DEFAULT;
-
 #ifdef TOOLS_ENABLED
 	Vector<String> linked_properties;
 #endif
+	PropertyHint hint = PROPERTY_HINT_NONE;
+	Variant::Type type = Variant::NIL;
+	uint32_t usage = PROPERTY_USAGE_DEFAULT;
 
 	_FORCE_INLINE_ PropertyInfo added_usage(uint32_t p_fl) const {
 		PropertyInfo pi = *this;
@@ -279,10 +278,10 @@ struct PropertyInfo {
 	PropertyInfo() {}
 
 	PropertyInfo(const Variant::Type p_type, const String p_name, const PropertyHint p_hint = PROPERTY_HINT_NONE, const String &p_hint_string = "", const uint32_t p_usage = PROPERTY_USAGE_DEFAULT, const StringName &p_class_name = StringName(), const StringName &read_only_state = StringName()) :
-			type(p_type),
 			name(p_name),
-			hint(p_hint),
 			hint_string(p_hint_string),
+            hint(p_hint),
+            type(p_type),
 			usage(p_usage) {
 		if (hint == PROPERTY_HINT_RESOURCE_TYPE) {
 			class_name = hint_string;
@@ -293,8 +292,8 @@ struct PropertyInfo {
 	}
 
 	PropertyInfo(const StringName &p_class_name) :
-			type(Variant::OBJECT),
-			class_name(p_class_name) {}
+            class_name(p_class_name),
+			type(Variant::OBJECT) {}
 
 	bool operator==(const PropertyInfo &p_info) const {
 		return ((type == p_info.type) &&
@@ -313,12 +312,12 @@ struct PropertyInfo {
 Array convert_property_list(const List<PropertyInfo> *p_list);
 
 struct MethodInfo {
+	List<PropertyInfo> arguments;
+	Vector<Variant> default_arguments;
 	String name;
 	PropertyInfo return_val;
 	uint32_t flags; // NOLINT - prevent clang-tidy to assign method_bind.h constant here, it should stay in .cpp.
 	int id = 0;
-	List<PropertyInfo> arguments;
-	Vector<Variant> default_arguments;
 
 	inline bool operator==(const MethodInfo &p_method) const { return id == p_method.id; }
 	inline bool operator<(const MethodInfo &p_method) const { return id == p_method.id ? (name < p_method.name) : (id < p_method.id); }

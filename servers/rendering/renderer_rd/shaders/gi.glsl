@@ -392,7 +392,7 @@ void sdfgi_process(vec3 vertex, vec3 normal, vec3 reflection, float roughness, o
 
 						float fdistance2 = textureLod(sampler3D(sdf_cascades[next_i], linear_sampler), pos, 0.0).r * 255.0 - 1.1;
 
-						vec4 hit_light2 = vec4(0.0);
+						vec4 hit_light2 = vec4(0.0,0.0,0.0,0.0);
 						if (fdistance2 < softness) {
 							hit_light2.rgb = textureLod(sampler3D(light_cascades[next_i], linear_sampler), pos, 0.0).rgb;
 							hit_light2.rgb *= 0.5; //approximation given value read is actually meant for anisotropy

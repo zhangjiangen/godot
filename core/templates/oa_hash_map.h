@@ -182,7 +182,15 @@ private:
 	}
 
 	void _resize_and_rehash() {
-		_resize_and_rehash(capacity * 2);
+        if (capacity < 128) {
+            _resize_and_rehash(capacity + 16);
+
+        } else if (capacity < 512) {
+            _resize_and_rehash(capacity + 32);
+
+        } else {
+            _resize_and_rehash( capacity + 64);
+        }
 	}
 
 public:

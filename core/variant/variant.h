@@ -72,7 +72,7 @@ typedef Vector<Color> PackedColorArray;
 class Variant {
 public:
 	// If this changes the table in variant_op must be updated
-	enum Type {
+	enum Type : uint8_t {
 		NIL,
 
 		// atomic types
@@ -216,7 +216,8 @@ private:
 	void reference(const Variant &p_variant);
 
 	void _clear_internal();
-	public:
+
+public:
 	_FORCE_INLINE_ void clear() {
 		static const bool needs_deinit[Variant::VARIANT_MAX] = {
 			false, //NIL,
@@ -265,6 +266,7 @@ private:
 		}
 		type = NIL;
 	}
+
 private:
 	static void _register_variant_operators();
 	static void _unregister_variant_operators();
@@ -651,7 +653,7 @@ public:
 	static ValidatedUtilityFunction get_validated_utility_function(const StringName &p_name);
 	static PTRUtilityFunction get_ptr_utility_function(const StringName &p_name);
 
-	enum UtilityFunctionType {
+	enum UtilityFunctionType : uint8_t {
 		UTILITY_FUNC_TYPE_MATH,
 		UTILITY_FUNC_TYPE_RANDOM,
 		UTILITY_FUNC_TYPE_GENERAL,
