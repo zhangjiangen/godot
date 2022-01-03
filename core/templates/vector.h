@@ -64,6 +64,9 @@ private:
 	CowData<T> _cowdata;
 
 public:
+	void set_debug_file_info(const char *file_name, int line) {
+		_cowdata.set_debug_file_info(file_name, line);
+	}
 	bool push_back(T p_elem);
 	_FORCE_INLINE_ bool append(const T &p_elem) { return push_back(p_elem); } //alias
 	void fill(T p_elem);
@@ -257,8 +260,13 @@ public:
 		return ConstIterator(ptr() + size());
 	}
 
-	_FORCE_INLINE_ Vector() {}
-	_FORCE_INLINE_ Vector(const Vector &p_from) { _cowdata._ref(p_from._cowdata); }
+	_FORCE_INLINE_ Vector() {
+		_cowdata.set_debug_file_info("vector.h", 200);
+	}
+	_FORCE_INLINE_ Vector(const Vector &p_from) {
+        _cowdata.set_debug_file_info("vector.h", 200);
+		_cowdata._ref(p_from._cowdata);
+	}
 
 	_FORCE_INLINE_ ~Vector() {}
 };

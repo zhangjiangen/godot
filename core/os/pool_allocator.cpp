@@ -574,7 +574,7 @@ PoolAllocator::PoolAllocator(void *p_mem, int p_size, int p_align, bool p_needs_
 
 PoolAllocator::PoolAllocator(int p_align, int p_size, bool p_needs_locking, int p_max_entries) {
 	ERR_FAIL_COND(p_align < 1);
-	mem_ptr = Memory::alloc_static(p_size + p_align, true);
+	mem_ptr = Memory::alloc_static(p_size + p_align, __FILE__, __LINE__, true);
 	uint8_t *mem8 = (uint8_t *)mem_ptr;
 	uint64_t ofs = (uint64_t)mem8;
 	if (ofs % p_align) {

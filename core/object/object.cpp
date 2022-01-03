@@ -1943,6 +1943,14 @@ bool Object::has_instance_binding(void *p_token) {
 }
 
 void Object::_construct_object(bool p_reference) {
+	_block_signals = false;
+	_can_translate = true;
+	_emitting = false;
+	type_is_reference = false;
+#ifdef TOOLS_ENABLED
+	_edited = false;
+#endif
+
 	type_is_reference = p_reference;
 	_instance_id = ObjectDB::add_instance(this);
 

@@ -46,6 +46,30 @@
 VARIANT_ENUM_CAST(Node::ProcessMode);
 VARIANT_ENUM_CAST(Node::InternalMode);
 
+Node::Data::Data() {
+	process_mode = PROCESS_MODE_INHERIT;
+	inside_tree = false;
+	ready_notified = false; // This is a small hack, so if a node is added during _ready() to the tree, it correctly gets the _ready() notification.
+	ready_first = true;
+	// Variables used to properly sort the node when processing, ignored otherwise.
+	// TODO: Should move all the stuff below to bits.
+	physics_process = false;
+	process = false;
+
+	physics_process_internal = false;
+	process_internal = false;
+
+	input = false;
+	unhandled_input = false;
+	unhandled_key_input = false;
+
+	parent_owned = false;
+	in_constructor = true;
+	use_placeholder = false;
+
+	display_folded = false;
+	editable_instance = false;
+}
 int Node::orphan_node_count = 0;
 
 void Node::_notification(int p_notification) {

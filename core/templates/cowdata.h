@@ -54,6 +54,8 @@ SAFE_NUMERIC_TYPE_PUN_GUARANTEES(uint32_t)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wplacement-new"
 #endif
+// 设置调试信息
+#define DEBUG_USING_INFO(v) v.set_debug_file_info(__FILE__, __LINE__)
 
 template <class T>
 class CowData {
@@ -111,16 +113,16 @@ private:
 
 	_FORCE_INLINE_ bool _get_alloc_size_checked(size_t p_elements, size_t *out) const {
 #if defined(__GNUC__)
-//		size_t o;
-//		size_t p;
-//		if (__builtin_mul_overflow(p_elements, sizeof(T), &o)) {
-//			*out = 0;
-//			return false;
-//		}
+		//		size_t o;
+		//		size_t p;
+		//		if (__builtin_mul_overflow(p_elements, sizeof(T), &o)) {
+		//			*out = 0;
+		//			return false;
+		//		}
 		*out = _get_alloc_size(p_elements);
-//		if (__builtin_add_overflow(o, static_cast<size_t>(32), &p)) {
-//			return false; // No longer allocated here.
-//		}
+		//		if (__builtin_add_overflow(o, static_cast<size_t>(32), &p)) {
+		//			return false; // No longer allocated here.
+		//		}
 		return true;
 #else
 		// Speed is more important than correctness here, do the operations unchecked
@@ -136,6 +138,8 @@ private:
 	uint32_t _copy_on_write();
 
 public:
+	void set_debug_file_info(const char *file_name, int line) {
+	}
 	void operator=(const CowData<T> &p_from) { _ref(p_from); }
 
 	_FORCE_INLINE_ T *ptrw() {
@@ -248,7 +252,7 @@ uint32_t CowData<T>::_copy_on_write() {
 		/* in use by more than me */
 		uint32_t current_size = *_get_size();
 
-		uint32_t *mem_new = (uint32_t *)Memory::alloc_static(_get_alloc_size(current_size), true);
+		uint32_t *mem_new = (uint32_t *)Memory::alloc_static(_get_alloc_size(current_size), __FILE__, 0, true);
 
 		new (mem_new - 2) SafeNumeric<uint32_t>(1); //refcount
 		*(mem_new - 1) = current_size; //size
@@ -301,7 +305,7 @@ Error CowData<T>::resize(int p_size) {
 		if (alloc_size != current_alloc_size) {
 			if (current_size == 0) {
 				// alloc from scratch
-				uint32_t *ptr = (uint32_t *)Memory::alloc_static(alloc_size, true);
+				uint32_t *ptr = (uint32_t *)Memory::alloc_static(alloc_size, __FILE__, 0, true);
 				ERR_FAIL_COND_V(!ptr, ERR_OUT_OF_MEMORY);
 				*(ptr - 1) = 0; //size, currently none
 				new (ptr - 2) SafeNumeric<uint32_t>(1); //refcount
@@ -309,7 +313,7 @@ Error CowData<T>::resize(int p_size) {
 				_ptr = (T *)ptr;
 
 			} else {
-				uint32_t *_ptrnew = (uint32_t *)Memory::realloc_static(_ptr, alloc_size, true);
+				uint32_t *_ptrnew = (uint32_t *)Memory::realloc_static(_ptr, alloc_size, __FILE__, 0, true);
 				ERR_FAIL_COND_V(!_ptrnew, ERR_OUT_OF_MEMORY);
 				new (_ptrnew - 2) SafeNumeric<uint32_t>(rc); //refcount
 
@@ -339,7 +343,7 @@ Error CowData<T>::resize(int p_size) {
 		}
 
 		if (alloc_size != current_alloc_size) {
-			uint32_t *_ptrnew = (uint32_t *)Memory::realloc_static(_ptr, alloc_size, true);
+			uint32_t *_ptrnew = (uint32_t *)Memory::realloc_static(_ptr, alloc_size, __FILE__, 0, true);
 			ERR_FAIL_COND_V(!_ptrnew, ERR_OUT_OF_MEMORY);
 			new (_ptrnew - 2) SafeNumeric<uint32_t>(rc); //refcount
 

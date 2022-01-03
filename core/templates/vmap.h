@@ -114,6 +114,13 @@ private:
 	}
 
 public:
+	const char *owenr_source_file = "vmap.h";
+	int owenr_file_line = 200;
+	void set_debug_file_info(const char *file_name, int line) {
+		owenr_source_file = file_name;
+		owenr_file_line = line;
+		_cowdata.set_debug_file_info(file_name, line);
+	}
 	int insert(const T &p_key, const V &p_val) {
 		bool exact;
 		int pos = _find(p_key, exact);
@@ -190,8 +197,13 @@ public:
 		return _cowdata.get_m(pos).value;
 	}
 
-	_FORCE_INLINE_ VMap() {}
-	_FORCE_INLINE_ VMap(const VMap &p_from) { _cowdata._ref(p_from._cowdata); }
+	_FORCE_INLINE_ VMap() {
+		_cowdata.set_debug_file_info(owenr_source_file, owenr_file_line);
+	}
+	_FORCE_INLINE_ VMap(const VMap &p_from) {
+		_cowdata.set_debug_file_info(owenr_source_file, owenr_file_line);
+		_cowdata._ref(p_from._cowdata);
+	}
 
 	inline void operator=(const VMap &p_from) {
 		_cowdata._ref(p_from._cowdata);

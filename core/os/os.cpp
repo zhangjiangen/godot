@@ -76,7 +76,7 @@ public:
 			va_copy(list_copy, p_list);
 			int len = vsnprintf(buf, static_buf_size, p_format, p_list);
 			if (len >= static_buf_size) {
-				buf = (char *)Memory::alloc_static(len + 1);
+				buf = (char *)Memory::alloc_static(len + 1, __FILE__, __LINE__);
 				vsnprintf(buf, len + 1, p_format, list_copy);
 			}
 			va_end(list_copy);

@@ -152,9 +152,9 @@ private:
 		uint32_t *old_hashes = hashes;
 
 		num_elements = 0;
-		keys = static_cast<TKey *>(Memory::alloc_static(sizeof(TKey) * capacity));
-		values = static_cast<TValue *>(Memory::alloc_static(sizeof(TValue) * capacity));
-		hashes = static_cast<uint32_t *>(Memory::alloc_static(sizeof(uint32_t) * capacity));
+		keys = static_cast<TKey *>(Memory::alloc_static(sizeof(TKey) * capacity, __FILE__, __LINE__));
+		values = static_cast<TValue *>(Memory::alloc_static(sizeof(TValue) * capacity, __FILE__, __LINE__));
+		hashes = static_cast<uint32_t *>(Memory::alloc_static(sizeof(uint32_t) * capacity, __FILE__, __LINE__));
 
 		for (uint32_t i = 0; i < capacity; i++) {
 			hashes[i] = 0;
@@ -182,15 +182,15 @@ private:
 	}
 
 	void _resize_and_rehash() {
-        if (capacity < 128) {
-            _resize_and_rehash(capacity + 16);
+		if (capacity < 128) {
+			_resize_and_rehash(capacity + 16);
 
-        } else if (capacity < 512) {
-            _resize_and_rehash(capacity + 32);
+		} else if (capacity < 512) {
+			_resize_and_rehash(capacity + 32);
 
-        } else {
-            _resize_and_rehash( capacity + 64);
-        }
+		} else {
+			_resize_and_rehash(capacity + 64);
+		}
 	}
 
 public:
@@ -377,9 +377,9 @@ public:
 		// Capacity can't be 0.
 		capacity = MAX(1, p_initial_capacity);
 
-		keys = static_cast<TKey *>(Memory::alloc_static(sizeof(TKey) * capacity));
-		values = static_cast<TValue *>(Memory::alloc_static(sizeof(TValue) * capacity));
-		hashes = static_cast<uint32_t *>(Memory::alloc_static(sizeof(uint32_t) * capacity));
+		keys = static_cast<TKey *>(Memory::alloc_static(sizeof(TKey) * capacity, __FILE__, __LINE__));
+		values = static_cast<TValue *>(Memory::alloc_static(sizeof(TValue) * capacity, __FILE__, __LINE__));
+		hashes = static_cast<uint32_t *>(Memory::alloc_static(sizeof(uint32_t) * capacity, __FILE__, __LINE__));
 
 		for (uint32_t i = 0; i < capacity; i++) {
 			hashes[i] = EMPTY_HASH;

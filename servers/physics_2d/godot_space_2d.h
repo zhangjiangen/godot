@@ -105,7 +105,7 @@ private:
 	real_t constraint_bias = 0.0;
 
 	enum {
-		INTERSECTION_QUERY_MAX = 2048
+		INTERSECTION_QUERY_MAX = 16
 	};
 
 	GodotCollisionObject2D *intersection_query_results[INTERSECTION_QUERY_MAX];

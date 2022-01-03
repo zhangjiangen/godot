@@ -628,6 +628,17 @@ void ScrollBar::_bind_methods() {
 }
 
 ScrollBar::ScrollBar(Orientation p_orientation) {
+    highlight = HIGHLIGHT_NONE ;
+
+	incr_active = false;
+	decr_active = false;
+	drag_node_enabled = true;
+	drag_node_touching = false;
+	drag_node_touching_deaccel = false;
+	click_handled = false;
+
+	scrolling = false;
+	smooth_scroll_enabled = false;
 	orientation = p_orientation;
 
 	if (focus_by_default) {

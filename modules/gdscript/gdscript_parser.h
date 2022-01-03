@@ -101,7 +101,7 @@ public:
 		DataType *container_element_type = nullptr;
 
 	public:
-		enum Kind {
+		enum Kind : uint8_t {
 			BUILTIN,
 			NATIVE,
 			SCRIPT,
@@ -113,7 +113,7 @@ public:
 		};
 		Kind kind = UNRESOLVED;
 
-		enum TypeSource {
+		enum TypeSource : uint8_t {
 			UNDETECTED, // Can be any type.
 			INFERRED, // Has inferred type, but still dynamic.
 			ANNOTATED_EXPLICIT, // Has a specific type annotated.
@@ -249,7 +249,7 @@ public:
 	};
 
 	struct Node {
-		enum Type {
+		enum Type : uint8_t {
 			NONE,
 			ANNOTATION,
 			ARRAY,
@@ -291,14 +291,14 @@ public:
 			WHILE,
 		};
 
-		Type type = NONE;
-		int start_line = 0, end_line = 0;
-		int start_column = 0, end_column = 0;
-		int leftmost_column = 0, rightmost_column = 0;
-		Node *next = nullptr;
 		List<AnnotationNode *> annotations;
+		Node *next = nullptr;
+		int start_line = 0, end_line = 0;
+		uint16_t start_column = 0, end_column = 0;
+		uint16_t leftmost_column = 0, rightmost_column = 0;
 
 		DataType datatype;
+		Type type = NONE;
 
 		virtual DataType get_datatype() const { return datatype; }
 		virtual void set_datatype(const DataType &p_datatype) { datatype = p_datatype; }
@@ -355,7 +355,7 @@ public:
 
 	struct AssignmentNode : public ExpressionNode {
 		// Assignment is not really an expression but it's easier to parse as if it were.
-		enum Operation {
+		enum Operation : uint8_t {
 			OP_NONE,
 			OP_ADDITION,
 			OP_SUBTRACTION,
@@ -369,10 +369,10 @@ public:
 			OP_BIT_XOR,
 		};
 
-		Operation operation = OP_NONE;
 		Variant::Operator variant_op = Variant::OP_MAX;
 		ExpressionNode *assignee = nullptr;
 		ExpressionNode *assigned_value = nullptr;
+		Operation operation = OP_NONE;
 		bool use_conversion_assign = false;
 
 		AssignmentNode() {
@@ -389,7 +389,7 @@ public:
 	};
 
 	struct BinaryOpNode : public ExpressionNode {
-		enum OpType {
+		enum OpType : uint8_t {
 			OP_ADDITION,
 			OP_SUBTRACTION,
 			OP_MULTIPLICATION,
@@ -412,10 +412,10 @@ public:
 			OP_COMP_GREATER_EQUAL,
 		};
 
-		OpType operation = OpType::OP_ADDITION;
-		Variant::Operator variant_op = Variant::OP_MAX;
 		ExpressionNode *left_operand = nullptr;
 		ExpressionNode *right_operand = nullptr;
+		OpType operation = OpType::OP_ADDITION;
+		Variant::Operator variant_op = Variant::OP_MAX;
 
 		BinaryOpNode() {
 			type = BINARY_OPERATOR;
@@ -760,7 +760,7 @@ public:
 	struct IdentifierNode : public ExpressionNode {
 		StringName name;
 
-		enum Source {
+		enum Source : uint8_t {
 			UNDEFINED_SOURCE,
 			FUNCTION_PARAMETER,
 			LOCAL_CONSTANT,
@@ -770,7 +770,6 @@ public:
 			MEMBER_VARIABLE,
 			MEMBER_CONSTANT,
 		};
-		Source source = UNDEFINED_SOURCE;
 
 		union {
 			ParameterNode *parameter_source = nullptr;
@@ -779,8 +778,9 @@ public:
 			IdentifierNode *bind_source;
 		};
 		FunctionNode *source_function = nullptr;
+		Source source = UNDEFINED_SOURCE;
 
-		int usages = 0; // Useful for binds/iterator variable.
+		int16_t usages = 0; // Useful for binds/iterator variable.
 
 		IdentifierNode() {
 			type = IDENTIFIER;

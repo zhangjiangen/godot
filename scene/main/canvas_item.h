@@ -83,17 +83,6 @@ private:
 	int light_mask = 1;
 
 	Window *window = nullptr;
-	bool first_draw = false;
-	bool visible = true;
-	bool clip_children = false;
-	bool pending_update = false;
-	bool top_level = false;
-	bool drawing = false;
-	bool block_transform_notify = false;
-	bool behind = false;
-	bool use_parent_material = false;
-	bool notify_local_transform = false;
-	bool notify_transform = false;
 
 	RS::CanvasItemTextureFilter texture_filter_cache = RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR;
 	RS::CanvasItemTextureRepeat texture_repeat_cache = RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED;
@@ -103,7 +92,18 @@ private:
 	Ref<Material> material;
 
 	mutable Transform2D global_transform;
-	mutable bool global_invalid = true;
+	bool first_draw : 2;
+	bool visible : 2;
+	bool clip_children : 2;
+	bool pending_update : 2;
+	bool top_level : 2;
+	bool drawing : 2;
+	bool block_transform_notify : 2;
+	bool behind : 2;
+	bool use_parent_material : 2;
+	bool notify_local_transform : 2;
+	bool notify_transform : 2;
+	mutable bool global_invalid : 2;
 
 	void _top_level_raise_self();
 

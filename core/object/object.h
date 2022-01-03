@@ -256,7 +256,7 @@ enum PropertyUsageFlags {
 struct PropertyInfo {
 	StringName class_name; // For classes
 	StringName update_read_state; // For classes
-    String name;
+	String name;
 	String hint_string;
 #ifdef TOOLS_ENABLED
 	Vector<String> linked_properties;
@@ -280,8 +280,8 @@ struct PropertyInfo {
 	PropertyInfo(const Variant::Type p_type, const String p_name, const PropertyHint p_hint = PROPERTY_HINT_NONE, const String &p_hint_string = "", const uint32_t p_usage = PROPERTY_USAGE_DEFAULT, const StringName &p_class_name = StringName(), const StringName &read_only_state = StringName()) :
 			name(p_name),
 			hint_string(p_hint_string),
-            hint(p_hint),
-            type(p_type),
+			hint(p_hint),
+			type(p_type),
 			usage(p_usage) {
 		if (hint == PROPERTY_HINT_RESOURCE_TYPE) {
 			class_name = hint_string;
@@ -292,7 +292,7 @@ struct PropertyInfo {
 	}
 
 	PropertyInfo(const StringName &p_class_name) :
-            class_name(p_class_name),
+			class_name(p_class_name),
 			type(Variant::OBJECT) {}
 
 	bool operator==(const PropertyInfo &p_info) const {
@@ -620,6 +620,9 @@ private:
 
 		MethodInfo user;
 		VMap<Callable, Slot> slot_map;
+		SignalData() {
+			DEBUG_USING_INFO(slot_map);
+		}
 	};
 
 	HashMap<StringName, SignalData> signal_map;
@@ -627,15 +630,16 @@ private:
 #ifdef DEBUG_ENABLED
 	SafeRefCount _lock_index;
 #endif
-	bool _block_signals = false;
 	int _predelete_ok = 0;
 	ObjectID _instance_id;
 	bool _predelete();
 	void _postinitialize();
-	bool _can_translate = true;
-	bool _emitting = false;
+	bool _block_signals : 2;
+	bool _can_translate : 2;
+	bool _emitting : 2;
+	bool type_is_reference : 2;
 #ifdef TOOLS_ENABLED
-	bool _edited = false;
+	bool _edited : 2;
 	uint32_t _edited_version = 0;
 	Set<String> editor_section_folding;
 #endif
@@ -659,7 +663,6 @@ private:
 	_FORCE_INLINE_ void _construct_object(bool p_reference);
 
 	friend class RefCounted;
-	bool type_is_reference = false;
 
 	std::mutex _instance_binding_mutex;
 	struct InstanceBinding {

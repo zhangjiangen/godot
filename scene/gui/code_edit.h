@@ -192,6 +192,8 @@ private:
 	/* Code Hint */
 	String code_hint = "";
 
+	Ref<TextLine> text_line;
+
 	bool code_hint_draw_below = true;
 	int code_hint_xpos = -0xFFFF;
 

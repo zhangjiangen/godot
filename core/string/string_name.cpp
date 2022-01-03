@@ -223,7 +223,7 @@ StringName::StringName(const char *p_name, bool p_static) {
 		return;
 	}
 
-	_data = memnew(_Data);
+	_data = _post_initialize(new (__FILE__, -3) _Data); //memnew(_Data);
 	_data->name = p_name;
 	_data->refcount.init();
 	_data->static_count.set(p_static ? 1 : 0);

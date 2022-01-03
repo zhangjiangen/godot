@@ -3856,6 +3856,9 @@ void EditorNode::register_editor_types() {
 	GDREGISTER_VIRTUAL_CLASS(ScriptEditorBase);
 	GDREGISTER_CLASS(EditorSyntaxHighlighter);
 	GDREGISTER_VIRTUAL_CLASS(EditorInterface);
+	// 注册编辑面板分段类
+	GDREGISTER_CLASS(EditorInspectorSection);
+	GDREGISTER_CLASS(EditorInspectorArray);
 	GDREGISTER_CLASS(EditorExportPlugin);
 	GDREGISTER_CLASS(EditorResourceConversionPlugin);
 	GDREGISTER_CLASS(EditorSceneFormatImporter);

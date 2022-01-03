@@ -1148,6 +1148,18 @@ CanvasItem::TextureRepeat CanvasItem::get_texture_repeat() const {
 
 CanvasItem::CanvasItem() :
 		xform_change(this) {
+	first_draw = false;
+	visible = true;
+	clip_children = false;
+	pending_update = false;
+	top_level = false;
+	drawing = false;
+	block_transform_notify = false;
+	behind = false;
+	use_parent_material = false;
+	notify_local_transform = false;
+	notify_transform = false;
+	global_invalid = true;
 	canvas_item = RenderingServer::get_singleton()->canvas_item_create();
 }
 

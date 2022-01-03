@@ -935,6 +935,8 @@ String VisualShader::generate_preview_shader(Type p_type, int p_node, int p_port
 	//make it faster to go around through shader
 	VMap<ConnectionKey, const List<Connection>::Element *> input_connections;
 	VMap<ConnectionKey, const List<Connection>::Element *> output_connections;
+	DEBUG_USING_INFO(input_connections);
+	DEBUG_USING_INFO(output_connections);
 
 	for (const List<Connection>::Element *E = graph[p_type].connections.front(); E; E = E->next()) {
 		ConnectionKey from_key;
@@ -1762,6 +1764,8 @@ void VisualShader::_update_shader() const {
 		//make it faster to go around through shader
 		VMap<ConnectionKey, const List<Connection>::Element *> input_connections;
 		VMap<ConnectionKey, const List<Connection>::Element *> output_connections;
+		DEBUG_USING_INFO(input_connections);
+		DEBUG_USING_INFO(output_connections);
 
 		StringBuilder func_code;
 

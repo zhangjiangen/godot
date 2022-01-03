@@ -335,9 +335,9 @@ void ShaderRD::_compile_variant(uint32_t p_variant, Version *p_version) {
 		ERR_PRINT("Error compiling " + String(current_stage == RD::SHADER_STAGE_COMPUTE ? "Compute " : (current_stage == RD::SHADER_STAGE_VERTEX ? "Vertex" : "Fragment")) + " shader, variant #" + itos(p_variant) + " (" + variant_defines[p_variant].get_data() + ").");
 		ERR_PRINT(error);
 
-#ifdef DEBUG_ENABLED
+		//#ifdef DEBUG_ENABLED
 		ERR_PRINT("code:\n" + current_source.get_with_code_lines());
-#endif
+		//#endif
 		return;
 	}
 	RD::ShaderInfo p_shader_info;
@@ -778,6 +778,7 @@ void ShaderRD::initialize(const Vector<String> &p_variant_defines, const String 
 
 void ShaderRD::set_shader_cache_dir(const String &p_dir) {
 	shader_cache_dir = p_dir;
+	printf(p_dir.utf8());
 }
 
 void ShaderRD::set_shader_cache_save_compressed(bool p_enable) {

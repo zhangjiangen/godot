@@ -50,8 +50,8 @@ class Memory {
 	static SafeNumeric<uint64_t> alloc_count;
 
 public:
-	static void *alloc_static(size_t p_bytes, bool p_pad_align = false);
-	static void *realloc_static(void *p_memory, size_t p_bytes, bool p_pad_align = false);
+	static void *alloc_static(size_t p_bytes, const char *p_description, int line, bool p_pad_align = false);
+	static void *realloc_static(void *p_memory, size_t p_bytes, const char *p_description, int line, bool p_pad_align = false);
 	static void free_static(void *p_ptr, bool p_pad_align = false);
 
 	static uint64_t get_mem_available();
@@ -59,14 +59,33 @@ public:
 	static uint64_t get_mem_max_usage();
 };
 
+// 这个类目前不能操作脚本创建出来的类Array，Variant，Dictctionary，
+// 因为内存来源目前没有完全管理，下一步会整体应用内存管理 需要记录一下内存的大小
 class DefaultAllocator {
+	// 是否管理
+	_FORCE_INLINE_ static bool is_manager(size_t count) {
+		return count <= 512;
+	}
+	static void *alloc_manager(size_t p_memory);
+	static void free_manager(void *ptr, size_t count);
+
 public:
-	_FORCE_INLINE_ static void *alloc(size_t p_memory) { return Memory::alloc_static(p_memory, false); }
-	_FORCE_INLINE_ static void free(void *p_ptr) { Memory::free_static(p_ptr, false); }
+	_FORCE_INLINE_ static void *alloc(size_t p_memory, const char *file_name, int file_lne) {
+		if (is_manager(p_memory)) {
+			return alloc_manager(p_memory);
+		}
+		return Memory::alloc_static(p_memory, file_name, file_lne, false);
+	}
+	_FORCE_INLINE_ static void free(void *p_ptr, size_t p_memory) {
+		if (is_manager(p_memory)) {
+			return free_manager(p_ptr, p_memory);
+		}
+		Memory::free_static(p_ptr, false);
+	}
 };
 
-void *operator new(size_t p_size, const char *p_description); ///< operator new that takes a description and uses MemoryStaticPool
-void *operator new(size_t p_size, void *(*p_allocfunc)(size_t p_size)); ///< operator new that takes a description and uses MemoryStaticPool
+void *operator new(size_t p_size, const char *p_description, size_t line); ///< operator new that takes a description and uses MemoryStaticPool
+void *operator new(size_t p_size, void *(*p_allocfunc)(size_t p_size, const char *file_name, int file_lne), const char *p_description, size_t line); ///< operator new that takes a description and uses MemoryStaticPool
 
 void *operator new(size_t p_size, void *p_pointer, size_t check, const char *p_description); ///< operator new that takes a description and uses a pointer to the preallocated memory
 
@@ -78,8 +97,8 @@ void operator delete(void *p_mem, void *(*p_allocfunc)(size_t p_size));
 void operator delete(void *p_mem, void *p_pointer, size_t check, const char *p_description);
 #endif
 
-#define memalloc(m_size) Memory::alloc_static(m_size)
-#define memrealloc(m_mem, m_size) Memory::realloc_static(m_mem, m_size)
+#define memalloc(m_size) Memory::alloc_static(m_size, __FILE__, __LINE__)
+#define memrealloc(m_mem, m_size) Memory::realloc_static(m_mem, m_size, __FILE__, __LINE__)
 #define memfree(m_mem) Memory::free_static(m_mem)
 
 _ALWAYS_INLINE_ void postinitialize_handler(void *) {}
@@ -90,9 +109,9 @@ _ALWAYS_INLINE_ T *_post_initialize(T *p_obj) {
 	return p_obj;
 }
 
-#define memnew(m_class) _post_initialize(new ("") m_class)
+#define memnew(m_class) _post_initialize(new (__FILE__, __LINE__) m_class)
 
-#define memnew_allocator(m_class, m_allocator) _post_initialize(new (m_allocator::alloc) m_class)
+#define memnew_allocator(m_class, m_allocator) _post_initialize(new (m_allocator::alloc, __FILE__, __LINE__) m_class)
 #define memnew_placement(m_placement, m_class) _post_initialize(new (m_placement) m_class)
 
 _ALWAYS_INLINE_ bool predelete_handler(void *) {
@@ -120,7 +139,7 @@ void memdelete_allocator(T *p_class) {
 		p_class->~T();
 	}
 
-	A::free(p_class);
+	A::free(p_class, sizeof(T));
 }
 
 #define memdelete_notnull(m_v) \
@@ -130,10 +149,10 @@ void memdelete_allocator(T *p_class) {
 		}                      \
 	}
 
-#define memnew_arr(m_class, m_count) memnew_arr_template<m_class>(m_count)
+#define memnew_arr(m_class, m_count) memnew_arr_template<m_class>(m_count, __FILE__, __LINE__)
 
 template <typename T>
-T *memnew_arr_template(size_t p_elements) {
+T *memnew_arr_template(size_t p_elements, const char *p_description, size_t line) {
 	if (p_elements == 0) {
 		return nullptr;
 	}
@@ -141,7 +160,7 @@ T *memnew_arr_template(size_t p_elements) {
 	same strategy used by std::vector, and the Vector class, so it should be safe.*/
 
 	size_t len = sizeof(T) * p_elements;
-	uint64_t *mem = (uint64_t *)Memory::alloc_static(len, true);
+	uint64_t *mem = (uint64_t *)Memory::alloc_static(len, p_description, line, true);
 	T *failptr = nullptr; //get rid of a warning
 	ERR_FAIL_COND_V(!mem, failptr);
 	*(mem - 1) = p_elements;

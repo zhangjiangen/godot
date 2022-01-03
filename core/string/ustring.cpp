@@ -1383,7 +1383,7 @@ String String::form_format(const char *p_format, ...) {
 	char *buf = static_buf;
 	int len = vsnprintf(buf, static_buf_size, p_format, argp);
 	if (len >= static_buf_size) {
-		buf = (char *)Memory::alloc_static(len + 1);
+		buf = (char *)Memory::alloc_static(len + 1, __FILE__, __LINE__);
 		vsnprintf(buf, len + 1, p_format, argp);
 	}
 	ret = buf;

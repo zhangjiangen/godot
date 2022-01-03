@@ -177,31 +177,13 @@ private:
 		GrowDirection v_grow = GROW_DIRECTION_END;
 
 		LayoutDirection layout_dir = LAYOUT_DIRECTION_INHERITED;
-		// 编辑器的Dock索引信息
-		int edit_dock_slot;
-		bool updating_last_minimum_size = false;
-		bool minimum_size_valid = false;
-		bool is_rtl_dirty = true;
-		bool is_rtl = false;
-
-		bool auto_translate = true;
 
 		real_t rotation = 0.0;
 		Vector2 scale = Vector2(1, 1);
 		Vector2 pivot_offset;
-		bool size_warning = true;
 
-		int h_size_flags = SIZE_FILL;
-		int v_size_flags = SIZE_FILL;
 		real_t expand = 1.0;
 		Point2 custom_minimum_size;
-
-		MouseFilter mouse_filter = MOUSE_FILTER_STOP;
-
-		bool clip_contents = false;
-
-		bool block_minimum_size_adjust = false;
-		bool disable_visibility_clip = false;
 
 		Control *parent = nullptr;
 		ObjectID drag_owner;
@@ -221,14 +203,52 @@ private:
 		NodePath focus_neighbor[4];
 		NodePath focus_next;
 		NodePath focus_prev;
-
-		bool bulk_theme_override = false;
 		HashMap<StringName, Ref<Texture2D>> icon_override;
 		HashMap<StringName, Ref<StyleBox>> style_override;
 		HashMap<StringName, Ref<Font>> font_override;
 		HashMap<StringName, int> font_size_override;
 		HashMap<StringName, Color> color_override;
 		HashMap<StringName, int> constant_override;
+		MouseFilter mouse_filter : 4;
+		int h_size_flags : 4;
+		int v_size_flags : 4;
+		// 编辑器的Dock索引信息
+		int edit_dock_slot : 4;
+		bool updating_last_minimum_size : 2;
+		bool minimum_size_valid : 2;
+		bool is_rtl_dirty : 2;
+		bool is_rtl : 2;
+		bool size_warning : 2;
+
+		bool auto_translate : 2;
+
+		bool clip_contents : 2;
+
+		bool block_minimum_size_adjust : 2;
+		bool disable_visibility_clip : 2;
+
+		bool bulk_theme_override : 2;
+		Data() {
+			mouse_filter = MOUSE_FILTER_STOP;
+			h_size_flags = SIZE_FILL;
+			v_size_flags = SIZE_FILL;
+			// 编辑器的Dock索引信息
+            edit_dock_slot = 0;
+			updating_last_minimum_size = false;
+			minimum_size_valid = false;
+			is_rtl_dirty = true;
+			is_rtl = false;
+			size_warning = true;
+
+			auto_translate = true;
+
+			clip_contents = false;
+
+			block_minimum_size_adjust = false;
+			disable_visibility_clip = false;
+
+			bulk_theme_override = false;
+		}
 
 	} data;
 
