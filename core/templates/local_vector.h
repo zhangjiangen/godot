@@ -59,7 +59,7 @@ public:
 			} else {
 				capacity <<= 1;
 			}
-			data = (T *)memrealloc(data, capacity * sizeof(T));
+			data = (T *)Memory::realloc_static(data, capacity * sizeof(T), __FILE__, -5);
 			CRASH_COND_MSG(!data, "Out of memory");
 		}
 
@@ -144,7 +144,7 @@ public:
 				while (capacity < p_size) {
 					capacity <<= 1;
 				}
-				data = (T *)memrealloc(data, capacity * sizeof(T));
+				data = (T *)Memory::realloc_static(data, capacity * sizeof(T), __FILE__, -5);
 				CRASH_COND_MSG(!data, "Out of memory");
 			}
 			if (!__has_trivial_constructor(T) && !force_trivial) {

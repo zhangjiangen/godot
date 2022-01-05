@@ -43,7 +43,7 @@
 #include <hb.h>
 
 class ScriptIterator {
-	static const int PAREN_STACK_DEPTH = 128;
+	static const int PAREN_STACK_DEPTH = 124;
 
 public:
 	struct ScriptRange {

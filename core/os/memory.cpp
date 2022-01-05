@@ -516,6 +516,10 @@ static class SmallMemoryManager {
 	DECL_MEMUBER_TYPE(384);
 	DECL_MEMUBER_TYPE(440);
 	DECL_MEMUBER_TYPE(512);
+
+	DECL_MEMUBER_TYPE(640);
+	DECL_MEMUBER_TYPE(960);
+	DECL_MEMUBER_TYPE(1024);
 #undef DECL_MEMUBER_TYPE
 
 public:
@@ -560,6 +564,12 @@ public:
 				else OP_MEMORY_NEW(440)
 				//
 				else OP_MEMORY_NEW(512)
+				//
+				else OP_MEMORY_NEW(640)
+				//
+				else OP_MEMORY_NEW(960)
+				//
+				else OP_MEMORY_NEW(1024)
 				//
 				return nullptr;
 	}
@@ -608,6 +618,12 @@ public:
 				else OP_MEMORY_FREE(440)
 				//
 				else OP_MEMORY_FREE(512)
+				//
+				else OP_MEMORY_FREE(640)
+				//
+				else OP_MEMORY_FREE(960)
+				//
+				else OP_MEMORY_FREE(1024)
 		//
 	}
 #undef OP_MEMORY_FREE
@@ -629,7 +645,12 @@ void DefaultAllocator::free_manager(void *ptr, size_t count) {
 	SmallMemoryManager::get().free_manager(ptr, count);
 }
 void *operator new(size_t p_size, const char *p_description, size_t line) {
-	return Memory::alloc_static(p_size, p_description, line, false);
+	size_t len = p_size + sizeof(uint64_t);
+	uint64_t *ptr = (uint64_t *)DefaultAllocator::alloc(len, p_description, line);
+	// 记录内存大小
+	*ptr = len;
+	ptr += 1;
+	return ptr;
 }
 
 void *operator new(size_t p_size, void *(*p_allocfunc)(size_t p_size, const char *file_name, int file_lne), const char *p_description, size_t line) {

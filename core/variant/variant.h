@@ -148,25 +148,6 @@ private:
 				return nullptr;
 			}
 		}
-		static _FORCE_INLINE_ PackedArrayRefBase *reference_from(PackedArrayRefBase *p_base, PackedArrayRefBase *p_from) {
-			if (p_base == p_from) {
-				return p_base; //same thing, do nothing
-			}
-
-			if (p_from->reference()) {
-				if (p_base->refcount.unref()) {
-					memdelete(p_base);
-				}
-				return p_from;
-			} else {
-				return p_base; //keep, could not reference new
-			}
-		}
-		static _FORCE_INLINE_ void destroy(PackedArrayRefBase *p_array) {
-			if (p_array->refcount.unref()) {
-				memdelete(p_array);
-			}
-		}
 		_FORCE_INLINE_ virtual ~PackedArrayRefBase() {} //needs virtual destructor, but make inline
 	};
 
@@ -174,10 +155,10 @@ private:
 	struct PackedArrayRef : public PackedArrayRefBase {
 		Vector<T> array;
 		static _FORCE_INLINE_ PackedArrayRef<T> *create() {
-			return memnew(PackedArrayRef<T>);
+			return memnew_allocator(PackedArrayRef<T>, DefaultAllocator);
 		}
 		static _FORCE_INLINE_ PackedArrayRef<T> *create(const Vector<T> &p_from) {
-			return memnew(PackedArrayRef<T>(p_from));
+			return memnew_allocator(PackedArrayRef<T>(p_from), DefaultAllocator);
 		}
 
 		static _FORCE_INLINE_ const Vector<T> &get_array(PackedArrayRefBase *p_base) {
@@ -193,6 +174,25 @@ private:
 		}
 		_FORCE_INLINE_ PackedArrayRef() {
 			refcount.init();
+		}
+		static _FORCE_INLINE_ PackedArrayRefBase *reference_from(PackedArrayRefBase *p_base, PackedArrayRefBase *p_from) {
+			if (p_base == p_from) {
+				return p_base; //same thing, do nothing
+			}
+
+			if (p_from->reference()) {
+				if (p_base->refcount.unref()) {
+					memdelete_allocator<PackedArrayRef<T>, DefaultAllocator>((PackedArrayRef<T>*)p_base);
+				}
+				return p_from;
+			} else {
+				return p_base; //keep, could not reference new
+			}
+		}
+		static _FORCE_INLINE_ void destroy(PackedArrayRef<T> *p_array) {
+			if (p_array->refcount.unref()) {
+                memdelete_allocator<PackedArrayRef<T>, DefaultAllocator>(p_array);
+			}
 		}
 	};
 

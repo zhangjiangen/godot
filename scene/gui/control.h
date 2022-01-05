@@ -49,24 +49,24 @@ class Control : public CanvasItem {
 	OBJ_CATEGORY("GUI Nodes");
 
 public:
-	enum Anchor {
+	enum Anchor : uint8_t {
 		ANCHOR_BEGIN = 0,
 		ANCHOR_END = 1
 	};
 
-	enum GrowDirection {
+	enum GrowDirection : uint8_t {
 		GROW_DIRECTION_BEGIN,
 		GROW_DIRECTION_END,
 		GROW_DIRECTION_BOTH
 	};
 
-	enum FocusMode {
+	enum FocusMode : uint8_t {
 		FOCUS_NONE,
 		FOCUS_CLICK,
 		FOCUS_ALL
 	};
 
-	enum SizeFlags {
+	enum SizeFlags : uint8_t {
 		SIZE_FILL = 1,
 		SIZE_EXPAND = 2,
 		SIZE_EXPAND_FILL = SIZE_EXPAND | SIZE_FILL,
@@ -75,13 +75,13 @@ public:
 
 	};
 
-	enum MouseFilter {
+	enum MouseFilter : uint8_t {
 		MOUSE_FILTER_STOP,
 		MOUSE_FILTER_PASS,
 		MOUSE_FILTER_IGNORE
 	};
 
-	enum CursorShape {
+	enum CursorShape : uint8_t {
 		CURSOR_ARROW,
 		CURSOR_IBEAM,
 		CURSOR_POINTING_HAND,
@@ -102,7 +102,7 @@ public:
 		CURSOR_MAX
 	};
 
-	enum LayoutPreset {
+	enum LayoutPreset : uint8_t {
 		PRESET_TOP_LEFT,
 		PRESET_TOP_RIGHT,
 		PRESET_BOTTOM_LEFT,
@@ -121,28 +121,28 @@ public:
 		PRESET_WIDE
 	};
 
-	enum LayoutPresetMode {
+	enum LayoutPresetMode : uint8_t {
 		PRESET_MODE_MINSIZE,
 		PRESET_MODE_KEEP_WIDTH,
 		PRESET_MODE_KEEP_HEIGHT,
 		PRESET_MODE_KEEP_SIZE
 	};
 
-	enum LayoutDirection {
+	enum LayoutDirection : uint8_t {
 		LAYOUT_DIRECTION_INHERITED,
 		LAYOUT_DIRECTION_LOCALE,
 		LAYOUT_DIRECTION_LTR,
 		LAYOUT_DIRECTION_RTL
 	};
 
-	enum TextDirection {
+	enum TextDirection : uint8_t {
 		TEXT_DIRECTION_AUTO = TextServer::DIRECTION_AUTO,
 		TEXT_DIRECTION_LTR = TextServer::DIRECTION_LTR,
 		TEXT_DIRECTION_RTL = TextServer::DIRECTION_RTL,
 		TEXT_DIRECTION_INHERITED,
 	};
 
-	enum StructuredTextParser {
+	enum StructuredTextParser : uint8_t {
 		STRUCTURED_TEXT_DEFAULT,
 		STRUCTURED_TEXT_URI,
 		STRUCTURED_TEXT_FILE,
@@ -172,11 +172,6 @@ private:
 
 		real_t offset[4] = { 0.0, 0.0, 0.0, 0.0 };
 		real_t anchor[4] = { ANCHOR_BEGIN, ANCHOR_BEGIN, ANCHOR_BEGIN, ANCHOR_BEGIN };
-		FocusMode focus_mode = FOCUS_NONE;
-		GrowDirection h_grow = GROW_DIRECTION_END;
-		GrowDirection v_grow = GROW_DIRECTION_END;
-
-		LayoutDirection layout_dir = LAYOUT_DIRECTION_INHERITED;
 
 		real_t rotation = 0.0;
 		Vector2 scale = Vector2(1, 1);
@@ -191,10 +186,6 @@ private:
 		Control *theme_owner = nullptr;
 		Window *theme_owner_window = nullptr;
 		Window *parent_window = nullptr;
-		StringName theme_type_variation;
-
-		String tooltip;
-		CursorShape default_cursor = CURSOR_ARROW;
 
 		List<Control *>::Element *RI = nullptr;
 
@@ -203,12 +194,21 @@ private:
 		NodePath focus_neighbor[4];
 		NodePath focus_next;
 		NodePath focus_prev;
+		StringName theme_type_variation;
+
+		String tooltip;
 		HashMap<StringName, Ref<Texture2D>> icon_override;
 		HashMap<StringName, Ref<StyleBox>> style_override;
 		HashMap<StringName, Ref<Font>> font_override;
 		HashMap<StringName, int> font_size_override;
 		HashMap<StringName, Color> color_override;
 		HashMap<StringName, int> constant_override;
+		FocusMode focus_mode = FOCUS_NONE;
+		GrowDirection h_grow = GROW_DIRECTION_END;
+		GrowDirection v_grow = GROW_DIRECTION_END;
+
+		LayoutDirection layout_dir = LAYOUT_DIRECTION_INHERITED;
+		CursorShape default_cursor = CURSOR_ARROW;
 		MouseFilter mouse_filter : 4;
 		int h_size_flags : 4;
 		int v_size_flags : 4;
@@ -233,7 +233,7 @@ private:
 			h_size_flags = SIZE_FILL;
 			v_size_flags = SIZE_FILL;
 			// 编辑器的Dock索引信息
-            edit_dock_slot = 0;
+			edit_dock_slot = 0;
 			updating_last_minimum_size = false;
 			minimum_size_valid = false;
 			is_rtl_dirty = true;

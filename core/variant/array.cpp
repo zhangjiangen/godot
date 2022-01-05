@@ -677,7 +677,7 @@ Array::Array(const Array &p_from) {
 }
 
 Array::Array() {
-	_p = memnew(ArrayPrivate);
+	_p = _post_initialize(new (__FILE__, -4) ArrayPrivate); //memnew(ArrayPrivate);
 	_p->refcount.init();
 }
 

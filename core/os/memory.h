@@ -62,14 +62,14 @@ public:
 // 这个类目前不能操作脚本创建出来的类Array，Variant，Dictctionary，
 // 因为内存来源目前没有完全管理，下一步会整体应用内存管理 需要记录一下内存的大小
 class DefaultAllocator {
-	// 是否管理
-	_FORCE_INLINE_ static bool is_manager(size_t count) {
-		return count <= 512;
-	}
 	static void *alloc_manager(size_t p_memory);
 	static void free_manager(void *ptr, size_t count);
 
 public:
+	// 是否管理
+	_FORCE_INLINE_ static bool is_manager(size_t count) {
+		return count <= 1024;
+	}
 	_FORCE_INLINE_ static void *alloc(size_t p_memory, const char *file_name, int file_lne) {
 		if (is_manager(p_memory)) {
 			return alloc_manager(p_memory);
@@ -126,8 +126,12 @@ void memdelete(T *p_class) {
 	if (!__has_trivial_destructor(T)) {
 		p_class->~T();
 	}
+	// 偏移到内存起始地址
+	uint64_t *base = (uint64_t *)p_class;
+	--base;
 
-	Memory::free_static(p_class, false);
+	DefaultAllocator::free(base, *base);
+	//Memory::free_static(p_class, false);
 }
 
 template <class T, class A>
@@ -160,7 +164,15 @@ T *memnew_arr_template(size_t p_elements, const char *p_description, size_t line
 	same strategy used by std::vector, and the Vector class, so it should be safe.*/
 
 	size_t len = sizeof(T) * p_elements;
-	uint64_t *mem = (uint64_t *)Memory::alloc_static(len, p_description, line, true);
+	uint64_t *mem = nullptr;
+	if (DefaultAllocator::is_manager(len + sizeof(uint64_t))) {
+		mem = (uint64_t*)DefaultAllocator::alloc(len + sizeof(uint64_t),p_description,line);
+		mem += 1;
+	} else
+
+	{
+		mem = (uint64_t *)Memory::alloc_static(len, p_description, line, true);
+	}
 	T *failptr = nullptr; //get rid of a warning
 	ERR_FAIL_COND_V(!mem, failptr);
 	*(mem - 1) = p_elements;
@@ -195,12 +207,20 @@ void memdelete_arr(T *p_class) {
 	if (!__has_trivial_destructor(T)) {
 		uint64_t elem_count = *(ptr - 1);
 
+		size_t len = sizeof(T) * elem_count;
+
 		for (uint64_t i = 0; i < elem_count; i++) {
 			p_class[i].~T();
 		}
+        
+        // 内存管理起来
+        if (DefaultAllocator::is_manager(len + sizeof(uint64_t))) {
+            ptr -= 1;
+            DefaultAllocator::free(ptr, len + sizeof(uint64_t));
+        }
 	}
 
-	Memory::free_static(ptr, true);
+	//Memory::free_static(ptr, true);
 }
 
 struct _GlobalNil {

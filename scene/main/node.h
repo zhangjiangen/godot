@@ -49,7 +49,7 @@ class Node : public Object {
 	OBJ_CATEGORY("Nodes");
 
 public:
-	enum ProcessMode {
+	enum ProcessMode : uint8_t {
 		PROCESS_MODE_INHERIT, // same as parent node
 		PROCESS_MODE_PAUSABLE, // process only if not paused
 		PROCESS_MODE_WHEN_PAUSED, // process only if paused
@@ -57,7 +57,7 @@ public:
 		PROCESS_MODE_DISABLED, // never process
 	};
 
-	enum DuplicateFlags {
+	enum DuplicateFlags : uint8_t {
 		DUPLICATE_SIGNALS = 1,
 		DUPLICATE_GROUPS = 2,
 		DUPLICATE_SCRIPTS = 4,
@@ -67,13 +67,13 @@ public:
 #endif
 	};
 
-	enum NameCasing {
+	enum NameCasing : uint8_t {
 		NAME_CASING_PASCAL_CASE,
 		NAME_CASING_CAMEL_CASE,
 		NAME_CASING_SNAKE_CASE
 	};
 
-	enum InternalMode {
+	enum InternalMode : uint8_t {
 		INTERNAL_MODE_DISABLED,
 		INTERNAL_MODE_FRONT,
 		INTERNAL_MODE_BACK,

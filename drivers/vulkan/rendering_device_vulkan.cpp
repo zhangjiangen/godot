@@ -1533,11 +1533,9 @@ Error RenderingDeviceVulkan::_buffer_allocate(Buffer *p_buffer, uint32_t p_size,
 	allocInfo.pUserData = nullptr;
 
 	VkResult err = vmaCreateBuffer(allocator, &bufferInfo, &allocInfo, &p_buffer->buffer, &p_buffer->allocation, nullptr);
-    if(err)
-    {
-        ERR_FAIL_COND_V_MSG(err, ERR_CANT_CREATE, "Can't create buffer of size: " + itos(p_size) + ", error " + itos(err) + ".");
-        
-    }
+	if (err) {
+		ERR_FAIL_COND_V_MSG(err, ERR_CANT_CREATE, "Can't create buffer of size: " + itos(p_size) + ", error " + itos(err) + ".");
+	}
 	p_buffer->size = p_size;
 	p_buffer->buffer_info.buffer = p_buffer->buffer;
 	p_buffer->buffer_info.offset = 0;
@@ -5552,7 +5550,7 @@ RenderingDeviceVulkan::DescriptorPool *RenderingDeviceVulkan::_descriptor_pool_a
 
 	if (!pool) {
 		//create a new one
-		pool = memnew(DescriptorPool);
+		pool = memnew_allocator(DescriptorPool, DefaultAllocator);
 		pool->usage = 0;
 
 		VkDescriptorPoolCreateInfo descriptor_pool_create_info;
@@ -5624,7 +5622,7 @@ RenderingDeviceVulkan::DescriptorPool *RenderingDeviceVulkan::_descriptor_pool_a
 		descriptor_pool_create_info.pPoolSizes = sizes.ptr();
 		VkResult res = vkCreateDescriptorPool(device, &descriptor_pool_create_info, nullptr, &pool->pool);
 		if (res) {
-			memdelete(pool);
+			memdelete_allocator<DescriptorPool, DefaultAllocator>(pool);
 			ERR_FAIL_COND_V_MSG(res, nullptr, "vkCreateDescriptorPool failed with error " + itos(res) + ".");
 		}
 		descriptor_pools[p_key].insert(pool);
@@ -5644,7 +5642,7 @@ void RenderingDeviceVulkan::_descriptor_pool_free(const DescriptorPoolKey &p_key
 	if (p_pool->usage == 0) {
 		vkDestroyDescriptorPool(device, p_pool->pool, nullptr);
 		descriptor_pools[p_key].erase(p_pool);
-		memdelete(p_pool);
+		memdelete_allocator<DescriptorPool, DefaultAllocator>(p_pool);
 		if (descriptor_pools[p_key].is_empty()) {
 			descriptor_pools.erase(p_key);
 		}
@@ -6028,10 +6026,9 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 
 					ERR_FAIL_COND_V_MSG(!(buffer->usage & VK_BUFFER_USAGE_STORAGE_BUFFER_BIT), RID(), "Vertex buffer supplied (binding: " + itos(uniform.binding) + ") was not created with storage flag.");
 				}
-                if(!buffer)
-                {
-				ERR_FAIL_COND_V_MSG(!buffer, RID(), "Storage buffer supplied (binding: " + itos(uniform.binding) + ") is invalid.");
-                }
+				if (!buffer) {
+					ERR_FAIL_COND_V_MSG(!buffer, RID(), "Storage buffer supplied (binding: " + itos(uniform.binding) + ") is invalid.");
+				}
 
 				//if 0, then it's sized on link time
 				ERR_FAIL_COND_V_MSG(set_uniform.length > 0 && buffer->size != (uint32_t)set_uniform.length, RID(),
@@ -7457,11 +7454,9 @@ void RenderingDeviceVulkan::draw_list_bind_uniform_set(DrawListID p_list, RID p_
 #endif
 
 	const UniformSet *uniform_set = uniform_set_owner.get_or_null(p_uniform_set);
-    if(uniform_set == nullptr)
-    {
-        ERR_FAIL_COND(!uniform_set);
-        
-    }
+	if (uniform_set == nullptr) {
+		ERR_FAIL_COND(!uniform_set);
+	}
 
 	if (p_index > dl->state.set_count) {
 		dl->state.set_count = p_index;
@@ -7768,7 +7763,7 @@ Error RenderingDeviceVulkan::draw_list_switch_to_next_pass_split(uint32_t p_spli
 
 Error RenderingDeviceVulkan::_draw_list_allocate(const Rect2i &p_viewport, uint32_t p_splits, uint32_t p_subpass) {
 	if (p_splits == 0) {
-		draw_list = memnew(DrawList);
+		draw_list = memnew_allocator(DrawList, DefaultAllocator);
 		draw_list->command_buffer = frames[frame].draw_command_buffer;
 		draw_list->viewport = p_viewport;
 		draw_list_count = 0;
@@ -7874,7 +7869,7 @@ void RenderingDeviceVulkan::_draw_list_free(Rect2i *r_last_viewport) {
 			*r_last_viewport = draw_list->viewport;
 		}
 		//just end the list
-		memdelete(draw_list);
+		memdelete_allocator<DrawList, DefaultAllocator>(draw_list);
 		draw_list = nullptr;
 	}
 }
@@ -7990,7 +7985,7 @@ RenderingDevice::ComputeListID RenderingDeviceVulkan::compute_list_begin(bool p_
 	ERR_FAIL_COND_V_MSG(!p_allow_draw_overlap && draw_list != nullptr, INVALID_ID, "Only one draw list can be active at the same time.");
 	ERR_FAIL_COND_V_MSG(compute_list != nullptr, INVALID_ID, "Only one draw/compute list can be active at the same time.");
 
-	compute_list = memnew(ComputeList);
+	compute_list = memnew_allocator(ComputeList, DefaultAllocator);
 	compute_list->command_buffer = frames[frame].draw_command_buffer;
 	compute_list->state.allow_draw_overlap = p_allow_draw_overlap;
 
@@ -8463,7 +8458,7 @@ void RenderingDeviceVulkan::compute_list_end(uint32_t p_post_barrier) {
 
 #endif
 
-	memdelete(compute_list);
+	memdelete_allocator<ComputeList, DefaultAllocator>(compute_list);
 	compute_list = nullptr;
 }
 

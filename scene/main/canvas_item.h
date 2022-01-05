@@ -47,7 +47,7 @@ class CanvasItem : public Node {
 	GDCLASS(CanvasItem, Node);
 
 public:
-	enum TextureFilter {
+	enum TextureFilter : uint8_t {
 		TEXTURE_FILTER_PARENT_NODE,
 		TEXTURE_FILTER_NEAREST,
 		TEXTURE_FILTER_LINEAR,
@@ -58,7 +58,7 @@ public:
 		TEXTURE_FILTER_MAX
 	};
 
-	enum TextureRepeat {
+	enum TextureRepeat : uint8_t {
 		TEXTURE_REPEAT_PARENT_NODE,
 		TEXTURE_REPEAT_DISABLED,
 		TEXTURE_REPEAT_ENABLED,
@@ -67,12 +67,12 @@ public:
 	};
 
 private:
+	CanvasLayer *canvas_layer = nullptr;
+	Window *window = nullptr;
 	mutable SelfList<Node> xform_change;
 
 	RID canvas_item;
 	StringName group;
-
-	CanvasLayer *canvas_layer = nullptr;
 
 	Color modulate = Color(1, 1, 1, 1);
 	Color self_modulate = Color(1, 1, 1, 1);
@@ -80,18 +80,14 @@ private:
 	List<CanvasItem *> children_items;
 	List<CanvasItem *>::Element *C = nullptr;
 
+	Ref<Material> material;
+
+	mutable Transform2D global_transform;
 	int light_mask = 1;
-
-	Window *window = nullptr;
-
 	RS::CanvasItemTextureFilter texture_filter_cache = RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR;
 	RS::CanvasItemTextureRepeat texture_repeat_cache = RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED;
 	TextureFilter texture_filter = TEXTURE_FILTER_PARENT_NODE;
 	TextureRepeat texture_repeat = TEXTURE_REPEAT_PARENT_NODE;
-
-	Ref<Material> material;
-
-	mutable Transform2D global_transform;
 	bool first_draw : 2;
 	bool visible : 2;
 	bool clip_children : 2;

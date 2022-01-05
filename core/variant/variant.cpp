@@ -1071,7 +1071,7 @@ void Variant::reference(const Variant &p_variant) {
 			memnew_placement(_data._mem, Rect2i(*reinterpret_cast<const Rect2i *>(p_variant._data._mem)));
 		} break;
 		case TRANSFORM2D: {
-			_data._transform2d = memnew(Transform2D(*p_variant._data._transform2d));
+			_data._transform2d = memnew_allocator(Transform2D(*p_variant._data._transform2d), DefaultAllocator);
 		} break;
 		case VECTOR3: {
 			memnew_placement(_data._mem, Vector3(*reinterpret_cast<const Vector3 *>(p_variant._data._mem)));
@@ -1084,18 +1084,18 @@ void Variant::reference(const Variant &p_variant) {
 		} break;
 
 		case AABB: {
-			_data._aabb = memnew(::AABB(*p_variant._data._aabb));
+			_data._aabb = memnew_allocator(::AABB(*p_variant._data._aabb), DefaultAllocator);
 		} break;
 		case QUATERNION: {
 			memnew_placement(_data._mem, Quaternion(*reinterpret_cast<const Quaternion *>(p_variant._data._mem)));
 
 		} break;
 		case BASIS: {
-			_data._basis = memnew(Basis(*p_variant._data._basis));
+			_data._basis = memnew_allocator(Basis(*p_variant._data._basis), DefaultAllocator);
 
 		} break;
 		case TRANSFORM3D: {
-			_data._transform3d = memnew(Transform3D(*p_variant._data._transform3d));
+			_data._transform3d = memnew_allocator(Transform3D(*p_variant._data._transform3d), DefaultAllocator);
 		} break;
 
 		// misc types
@@ -1275,16 +1275,16 @@ void Variant::_clear_internal() {
 		RECT2
 		*/
 		case TRANSFORM2D: {
-			memdelete(_data._transform2d);
+			memdelete_allocator<Transform2D, DefaultAllocator>(_data._transform2d);
 		} break;
 		case AABB: {
-			memdelete(_data._aabb);
+			memdelete_allocator<::AABB, DefaultAllocator>(_data._aabb);
 		} break;
 		case BASIS: {
-			memdelete(_data._basis);
+			memdelete_allocator<Basis, DefaultAllocator>(_data._basis);
 		} break;
 		case TRANSFORM3D: {
-			memdelete(_data._transform3d);
+			memdelete_allocator<Transform3D, DefaultAllocator>(_data._transform3d);
 		} break;
 
 			// misc types
@@ -1325,31 +1325,31 @@ void Variant::_clear_internal() {
 		} break;
 		// arrays
 		case PACKED_BYTE_ARRAY: {
-			PackedArrayRefBase::destroy(_data.packed_array);
+			PackedArrayRef<Vector<uint8_t>>::destroy((PackedArrayRef<Vector<uint8_t>>*)_data.packed_array);
 		} break;
 		case PACKED_INT32_ARRAY: {
-			PackedArrayRefBase::destroy(_data.packed_array);
+			PackedArrayRef<Vector<uint32_t>>::destroy((PackedArrayRef<Vector<uint32_t>>*)_data.packed_array);
 		} break;
 		case PACKED_INT64_ARRAY: {
-			PackedArrayRefBase::destroy(_data.packed_array);
+			PackedArrayRef<Vector<uint64_t>>::destroy((PackedArrayRef<Vector<uint64_t>>*)_data.packed_array);
 		} break;
 		case PACKED_FLOAT32_ARRAY: {
-			PackedArrayRefBase::destroy(_data.packed_array);
+			PackedArrayRef<Vector<float>>::destroy((PackedArrayRef<Vector<float>>*)_data.packed_array);
 		} break;
 		case PACKED_FLOAT64_ARRAY: {
-			PackedArrayRefBase::destroy(_data.packed_array);
+			PackedArrayRef<Vector<double>>::destroy((PackedArrayRef<Vector<double>>*)_data.packed_array);
 		} break;
 		case PACKED_STRING_ARRAY: {
-			PackedArrayRefBase::destroy(_data.packed_array);
+			PackedArrayRef<Vector<String>>::destroy((PackedArrayRef<Vector<String>>*)_data.packed_array);
 		} break;
 		case PACKED_VECTOR2_ARRAY: {
-			PackedArrayRefBase::destroy(_data.packed_array);
+			PackedArrayRef<Vector<Vector2>>::destroy((PackedArrayRef<Vector<Vector2>>*)_data.packed_array);
 		} break;
 		case PACKED_VECTOR3_ARRAY: {
-			PackedArrayRefBase::destroy(_data.packed_array);
+			PackedArrayRef<Vector<Vector3>>::destroy((PackedArrayRef<Vector<Vector3>>*)_data.packed_array);
 		} break;
 		case PACKED_COLOR_ARRAY: {
-			PackedArrayRefBase::destroy(_data.packed_array);
+			PackedArrayRef<Vector<Color>>::destroy((PackedArrayRef<Vector<Color>>*)_data.packed_array);
 		} break;
 		default: {
 		} /* not needed */
@@ -2404,12 +2404,12 @@ Variant::Variant(const Plane &p_plane) {
 
 Variant::Variant(const ::AABB &p_aabb) {
 	type = AABB;
-	_data._aabb = memnew(::AABB(p_aabb));
+	_data._aabb = memnew_allocator(::AABB(p_aabb), DefaultAllocator);
 }
 
 Variant::Variant(const Basis &p_matrix) {
 	type = BASIS;
-	_data._basis = memnew(Basis(p_matrix));
+	_data._basis = memnew_allocator(Basis(p_matrix), DefaultAllocator);
 }
 
 Variant::Variant(const Quaternion &p_quaternion) {
@@ -2419,12 +2419,12 @@ Variant::Variant(const Quaternion &p_quaternion) {
 
 Variant::Variant(const Transform3D &p_transform) {
 	type = TRANSFORM3D;
-	_data._transform3d = memnew(Transform3D(p_transform));
+	_data._transform3d = memnew_allocator(Transform3D(p_transform), DefaultAllocator);
 }
 
 Variant::Variant(const Transform2D &p_transform) {
 	type = TRANSFORM2D;
-	_data._transform2d = memnew(Transform2D(p_transform));
+	_data._transform2d = memnew_allocator(Transform2D(p_transform), DefaultAllocator);
 }
 
 Variant::Variant(const Color &p_color) {
