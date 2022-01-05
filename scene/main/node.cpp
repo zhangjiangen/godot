@@ -176,12 +176,6 @@ void Node::_notification(int p_notification) {
 			data.in_constructor = false;
 		} break;
 		case NOTIFICATION_PREDELETE: {
-			set_owner(nullptr);
-
-			while (data.owned.size()) {
-				data.owned.front()->get()->set_owner(nullptr);
-			}
-
 			if (data.parent) {
 				data.parent->remove_child(this);
 			}
@@ -189,10 +183,8 @@ void Node::_notification(int p_notification) {
 			// kill children as cleanly as possible
 			while (data.children.size()) {
 				Node *child = data.children[data.children.size() - 1]; //begin from the end because its faster and more consistent with creation
-				remove_child(child);
 				memdelete(child);
 			}
-
 		} break;
 	}
 }
@@ -261,8 +253,12 @@ void Node::_propagate_enter_tree() {
 }
 
 void Node::_propagate_after_exit_tree() {
+	if (data.owner) {
+		data.owner->data.owned.erase(data.OW);
+		data.owner = nullptr;
+	}
 	data.blocked++;
-	for (int i = 0; i < data.children.size(); i++) {
+	for (int i = data.children.size() - 1; i >= 0; i--) {
 		data.children[i]->_propagate_after_exit_tree();
 	}
 	data.blocked--;
@@ -920,7 +916,7 @@ void Node::set_name(const String &p_name) {
 	data.name = name;
 
 	if (data.parent) {
-		data.parent->_validate_child_name(this);
+		data.parent->_validate_child_name(this, true);
 	}
 
 	propagate_notification(NOTIFICATION_PATH_RENAMED);
@@ -1194,31 +1190,6 @@ void Node::add_sibling(Node *p_sibling, bool p_legible_unique_name) {
 	data.parent->_move_child(p_sibling, get_index() + 1);
 }
 
-void Node::_propagate_validate_owner() {
-	if (data.owner) {
-		bool found = false;
-		Node *parent = data.parent;
-
-		while (parent) {
-			if (parent == data.owner) {
-				found = true;
-				break;
-			}
-
-			parent = parent->data.parent;
-		}
-
-		if (!found) {
-			data.owner->data.owned.erase(data.OW);
-			data.owner = nullptr;
-		}
-	}
-
-	for (int i = 0; i < data.children.size(); i++) {
-		data.children[i]->_propagate_validate_owner();
-	}
-}
-
 void Node::remove_child(Node *p_child) {
 	ERR_FAIL_NULL(p_child);
 	ERR_FAIL_COND_MSG(data.blocked > 0, "Parent node is busy setting up children, remove_node() failed. Consider using call_deferred(\"remove_child\", child) instead.");
@@ -1271,9 +1242,6 @@ void Node::remove_child(Node *p_child) {
 
 	p_child->data.parent = nullptr;
 	p_child->data.pos = -1;
-
-	// validate owner
-	p_child->_propagate_validate_owner();
 
 	if (data.inside_tree) {
 		p_child->_propagate_after_exit_tree();

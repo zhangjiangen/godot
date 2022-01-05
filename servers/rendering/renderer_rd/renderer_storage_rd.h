@@ -1074,7 +1074,7 @@ private:
 		bool box_projection = false;
 		bool enable_shadows = false;
 		uint32_t cull_mask = (1 << 20) - 1;
-		float lod_threshold = 0.01;
+		float mesh_lod_threshold = 0.01;
 
 		Dependency dependency;
 	};
@@ -1120,7 +1120,7 @@ private:
 		AABB bounds;
 		Vector3i octree_size;
 
-		float dynamic_range = 4.0;
+		float dynamic_range = 2.0;
 		float energy = 1.0;
 		float bias = 1.4;
 		float normal_bias = 0.0;
@@ -1578,7 +1578,7 @@ public:
 		return s->index_count ? s->index_count : s->vertex_count;
 	}
 
-	_FORCE_INLINE_ uint32_t mesh_surface_get_lod(void *p_surface, float p_model_scale, float p_distance_threshold, float p_lod_threshold, uint32_t *r_index_count = nullptr) const {
+	_FORCE_INLINE_ uint32_t mesh_surface_get_lod(void *p_surface, float p_model_scale, float p_distance_threshold, float p_mesh_lod_threshold, uint32_t *r_index_count = nullptr) const {
 		Mesh::Surface *s = reinterpret_cast<Mesh::Surface *>(p_surface);
 
 		int32_t current_lod = -1;
@@ -1587,7 +1587,7 @@ public:
 		}
 		for (uint32_t i = 0; i < s->lod_count; i++) {
 			float screen_size = s->lods[i].edge_length * p_model_scale / p_distance_threshold;
-			if (screen_size > p_lod_threshold) {
+			if (screen_size > p_mesh_lod_threshold) {
 				break;
 			}
 			current_lod = i;
@@ -1961,31 +1961,31 @@ public:
 
 	/* PROBE API */
 
-	RID reflection_probe_allocate() override;
-	void reflection_probe_initialize(RID p_reflection_probe) override;
+	RID reflection_probe_allocate();
+	void reflection_probe_initialize(RID p_reflection_probe);
 
-	void reflection_probe_set_update_mode(RID p_probe, RS::ReflectionProbeUpdateMode p_mode) override;
-	void reflection_probe_set_intensity(RID p_probe, float p_intensity) override;
-	void reflection_probe_set_ambient_mode(RID p_probe, RS::ReflectionProbeAmbientMode p_mode) override;
-	void reflection_probe_set_ambient_color(RID p_probe, const Color &p_color) override;
-	void reflection_probe_set_ambient_energy(RID p_probe, float p_energy) override;
-	void reflection_probe_set_max_distance(RID p_probe, float p_distance) override;
-	void reflection_probe_set_extents(RID p_probe, const Vector3 &p_extents) override;
-	void reflection_probe_set_origin_offset(RID p_probe, const Vector3 &p_offset) override;
-	void reflection_probe_set_as_interior(RID p_probe, bool p_enable) override;
-	void reflection_probe_set_enable_box_projection(RID p_probe, bool p_enable) override;
-	void reflection_probe_set_enable_shadows(RID p_probe, bool p_enable) override;
-	void reflection_probe_set_cull_mask(RID p_probe, uint32_t p_layers) override;
-	void reflection_probe_set_resolution(RID p_probe, int p_resolution) override;
-	void reflection_probe_set_lod_threshold(RID p_probe, float p_ratio) override;
+	void reflection_probe_set_update_mode(RID p_probe, RS::ReflectionProbeUpdateMode p_mode);
+	void reflection_probe_set_intensity(RID p_probe, float p_intensity);
+	void reflection_probe_set_ambient_mode(RID p_probe, RS::ReflectionProbeAmbientMode p_mode);
+	void reflection_probe_set_ambient_color(RID p_probe, const Color &p_color);
+	void reflection_probe_set_ambient_energy(RID p_probe, float p_energy);
+	void reflection_probe_set_max_distance(RID p_probe, float p_distance);
+	void reflection_probe_set_extents(RID p_probe, const Vector3 &p_extents);
+	void reflection_probe_set_origin_offset(RID p_probe, const Vector3 &p_offset);
+	void reflection_probe_set_as_interior(RID p_probe, bool p_enable);
+	void reflection_probe_set_enable_box_projection(RID p_probe, bool p_enable);
+	void reflection_probe_set_enable_shadows(RID p_probe, bool p_enable);
+	void reflection_probe_set_cull_mask(RID p_probe, uint32_t p_layers);
+	void reflection_probe_set_resolution(RID p_probe, int p_resolution);
+	void reflection_probe_set_mesh_lod_threshold(RID p_probe, float p_ratio);
 
-	AABB reflection_probe_get_aabb(RID p_probe) const override;
-	RS::ReflectionProbeUpdateMode reflection_probe_get_update_mode(RID p_probe) const override;
-	uint32_t reflection_probe_get_cull_mask(RID p_probe) const override;
-	Vector3 reflection_probe_get_extents(RID p_probe) const override;
-	Vector3 reflection_probe_get_origin_offset(RID p_probe) const override;
-	float reflection_probe_get_origin_max_distance(RID p_probe) const override;
-	float reflection_probe_get_lod_threshold(RID p_probe) const override;
+	AABB reflection_probe_get_aabb(RID p_probe) const;
+	RS::ReflectionProbeUpdateMode reflection_probe_get_update_mode(RID p_probe) const;
+	uint32_t reflection_probe_get_cull_mask(RID p_probe) const;
+	Vector3 reflection_probe_get_extents(RID p_probe) const;
+	Vector3 reflection_probe_get_origin_offset(RID p_probe) const;
+	float reflection_probe_get_origin_max_distance(RID p_probe) const;
+	float reflection_probe_get_mesh_lod_threshold(RID p_probe) const;
 
 	int reflection_probe_get_resolution(RID p_probe) const;
 	bool reflection_probe_renders_shadows(RID p_probe) const override;
@@ -2307,11 +2307,11 @@ public:
 	/* FOG VOLUMES */
 
 	virtual RID fog_volume_allocate() override;
-	virtual void fog_volume_initialize(RID p_rid)override;
+	virtual void fog_volume_initialize(RID p_rid) override;
 
-	virtual void fog_volume_set_shape(RID p_fog_volume, RS::FogVolumeShape p_shape)override;
-	virtual void fog_volume_set_extents(RID p_fog_volume, const Vector3 &p_extents)override;
-	virtual void fog_volume_set_material(RID p_fog_volume, RID p_material)override;
+	virtual void fog_volume_set_shape(RID p_fog_volume, RS::FogVolumeShape p_shape) override;
+	virtual void fog_volume_set_extents(RID p_fog_volume, const Vector3 &p_extents) override;
+	virtual void fog_volume_set_material(RID p_fog_volume, RID p_material) override;
 	virtual RS::FogVolumeShape fog_volume_get_shape(RID p_fog_volume) const override;
 	virtual RID fog_volume_get_material(RID p_fog_volume) const;
 	virtual AABB fog_volume_get_aabb(RID p_fog_volume) const override;
@@ -2319,10 +2319,10 @@ public:
 
 	/* VISIBILITY NOTIFIER */
 
-	virtual RID visibility_notifier_allocate()override;
-	virtual void visibility_notifier_initialize(RID p_notifier)override;
-	virtual void visibility_notifier_set_aabb(RID p_notifier, const AABB &p_aabb)override;
-	virtual void visibility_notifier_set_callbacks(RID p_notifier, const Callable &p_enter_callbable, const Callable &p_exit_callable)override;
+	virtual RID visibility_notifier_allocate() override;
+	virtual void visibility_notifier_initialize(RID p_notifier) override;
+	virtual void visibility_notifier_set_aabb(RID p_notifier, const AABB &p_aabb) override;
+	virtual void visibility_notifier_set_callbacks(RID p_notifier, const Callable &p_enter_callbable, const Callable &p_exit_callable) override;
 
 	virtual AABB visibility_notifier_get_aabb(RID p_notifier) const override;
 	virtual void visibility_notifier_call(RID p_notifier, bool p_enter, bool p_deferred) override;
@@ -2413,8 +2413,9 @@ public:
 	virtual void update_memory_info() override;
 	virtual uint64_t get_rendering_info(RS::RenderingInfo p_info) override;
 
-	String get_video_adapter_name() const override;
-	String get_video_adapter_vendor() const override;
+	String get_video_adapter_name() const;
+	String get_video_adapter_vendor() const;
+	RenderingDevice::DeviceType get_video_adapter_type() const;
 
 	virtual void capture_timestamps_begin() override;
 	virtual void capture_timestamp(const String &p_name) override;

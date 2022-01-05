@@ -2688,8 +2688,8 @@ void Node3DEditorViewport::_project_settings_changed() {
 	const bool use_occlusion_culling = GLOBAL_GET("rendering/occlusion_culling/use_occlusion_culling");
 	viewport->set_use_occlusion_culling(use_occlusion_culling);
 
-	const float lod_threshold = GLOBAL_GET("rendering/mesh_lod/lod_change/threshold_pixels");
-	viewport->set_lod_threshold(lod_threshold);
+	const float mesh_lod_threshold = GLOBAL_GET("rendering/mesh_lod/lod_change/threshold_pixels");
+	viewport->set_mesh_lod_threshold(mesh_lod_threshold);
 }
 
 void Node3DEditorViewport::_notification(int p_what) {
@@ -3391,6 +3391,7 @@ void Node3DEditorViewport::_menu_option(int p_option) {
 		case VIEW_DISPLAY_DEBUG_VOXEL_GI_EMISSION:
 		case VIEW_DISPLAY_DEBUG_SCENE_LUMINANCE:
 		case VIEW_DISPLAY_DEBUG_SSAO:
+		case VIEW_DISPLAY_DEBUG_SSIL:
 		case VIEW_DISPLAY_DEBUG_PSSM_SPLITS:
 		case VIEW_DISPLAY_DEBUG_DECAL_ATLAS:
 		case VIEW_DISPLAY_DEBUG_SDFGI:
@@ -3417,6 +3418,7 @@ void Node3DEditorViewport::_menu_option(int p_option) {
 				VIEW_DISPLAY_DEBUG_VOXEL_GI_EMISSION,
 				VIEW_DISPLAY_DEBUG_SCENE_LUMINANCE,
 				VIEW_DISPLAY_DEBUG_SSAO,
+				VIEW_DISPLAY_DEBUG_SSIL,
 				VIEW_DISPLAY_DEBUG_GI_BUFFER,
 				VIEW_DISPLAY_DEBUG_DISABLE_LOD,
 				VIEW_DISPLAY_DEBUG_PSSM_SPLITS,
@@ -3445,6 +3447,7 @@ void Node3DEditorViewport::_menu_option(int p_option) {
 				Viewport::DEBUG_DRAW_VOXEL_GI_EMISSION,
 				Viewport::DEBUG_DRAW_SCENE_LUMINANCE,
 				Viewport::DEBUG_DRAW_SSAO,
+				Viewport::DEBUG_DRAW_SSIL,
 				Viewport::DEBUG_DRAW_GI_BUFFER,
 				Viewport::DEBUG_DRAW_DISABLE_LOD,
 				Viewport::DEBUG_DRAW_PSSM_SPLITS,
@@ -3985,6 +3988,37 @@ AABB Node3DEditorViewport::_calculate_spatial_bounds(const Node3D *p_parent, boo
 	return bounds;
 }
 
+Node *Node3DEditorViewport::_sanitize_preview_node(Node *p_node) const {
+	Node3D *node_3d = Object::cast_to<Node3D>(p_node);
+	if (node_3d == nullptr) {
+		Node3D *replacement_node = memnew(Node3D);
+		replacement_node->set_name(p_node->get_name());
+		p_node->replace_by(replacement_node);
+		memdelete(p_node);
+		p_node = replacement_node;
+	} else {
+		VisualInstance3D *visual_instance = Object::cast_to<VisualInstance3D>(node_3d);
+		if (visual_instance == nullptr) {
+			Node3D *replacement_node = memnew(Node3D);
+			replacement_node->set_name(node_3d->get_name());
+			replacement_node->set_visible(node_3d->is_visible());
+			replacement_node->set_transform(node_3d->get_transform());
+			replacement_node->set_rotation_edit_mode(node_3d->get_rotation_edit_mode());
+			replacement_node->set_rotation_order(node_3d->get_rotation_order());
+			replacement_node->set_as_top_level(node_3d->is_set_as_top_level());
+			p_node->replace_by(replacement_node);
+			memdelete(p_node);
+			p_node = replacement_node;
+		}
+	}
+
+	for (int i = 0; i < p_node->get_child_count(); i++) {
+		_sanitize_preview_node(p_node->get_child(i));
+	}
+
+	return p_node;
+}
+
 void Node3DEditorViewport::_create_preview(const Vector<String> &files) const {
 	for (int i = 0; i < files.size(); i++) {
 		String path = files[i];
@@ -4001,6 +4035,7 @@ void Node3DEditorViewport::_create_preview(const Vector<String> &files) const {
 				if (scene.is_valid()) {
 					Node *instance = scene->instantiate();
 					if (instance) {
+						instance = _sanitize_preview_node(instance);
 						preview_node->add_child(instance);
 					}
 				}
@@ -4092,7 +4127,7 @@ bool Node3DEditorViewport::_create_instance(Node *parent, String &path, const Po
 		instantiated_scene->set_scene_file_path(ProjectSettings::get_singleton()->localize_path(path));
 	}
 
-	editor_data->get_undo_redo().add_do_method(parent, "add_child", instantiated_scene);
+	editor_data->get_undo_redo().add_do_method(parent, "add_child", instantiated_scene, true);
 	editor_data->get_undo_redo().add_do_method(instantiated_scene, "set_owner", editor->get_edited_scene());
 	editor_data->get_undo_redo().add_do_reference(instantiated_scene);
 	editor_data->get_undo_redo().add_undo_method(parent, "remove_child", instantiated_scene);
@@ -4352,6 +4387,7 @@ Node3DEditorViewport::Node3DEditorViewport(Node3DEditor *p_spatial_editor, Edito
 	display_submenu->add_radio_check_item(TTR("Scene Luminance"), VIEW_DISPLAY_DEBUG_SCENE_LUMINANCE);
 	display_submenu->add_separator();
 	display_submenu->add_radio_check_item(TTR("SSAO"), VIEW_DISPLAY_DEBUG_SSAO);
+	display_submenu->add_radio_check_item(TTR("SSIL"), VIEW_DISPLAY_DEBUG_SSIL);
 	display_submenu->add_separator();
 	display_submenu->add_radio_check_item(TTR("GI Buffer"), VIEW_DISPLAY_DEBUG_GI_BUFFER);
 	display_submenu->add_separator();

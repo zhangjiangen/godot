@@ -292,10 +292,8 @@ public:
 		};
 
 		List<AnnotationNode *> annotations;
-		Node *next = nullptr;
-		int start_line = 0, end_line = 0;
-		uint16_t start_column = 0, end_column = 0;
-		uint16_t leftmost_column = 0, rightmost_column = 0;
+
+		Vector<uint32_t> ignored_warnings;
 
 		DataType datatype;
 		Type type = NONE;
@@ -1204,6 +1202,7 @@ private:
 #ifdef DEBUG_ENABLED
 	List<GDScriptWarning> warnings;
 	Set<String> ignored_warnings;
+	Set<uint32_t> ignored_warning_codes;
 	Set<int> unsafe_lines;
 #endif
 

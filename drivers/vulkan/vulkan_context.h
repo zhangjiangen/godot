@@ -37,6 +37,7 @@
 #include "core/templates/map.h"
 #include "core/templates/rid_owner.h"
 #include "servers/display_server.h"
+#include "servers/rendering/rendering_device.h"
 
 #ifdef USE_VOLK
 #include <volk.h>
@@ -104,6 +105,7 @@ private:
 
 	String device_vendor;
 	String device_name;
+	VkPhysicalDeviceType device_type;
 	String pipeline_cache_id;
 	uint32_t device_api_version = 0;
 
@@ -293,6 +295,7 @@ public:
 
 	String get_device_vendor_name() const;
 	String get_device_name() const;
+	RenderingDevice::DeviceType get_device_type() const;
 	String get_device_pipeline_cache_uuid() const;
 
 	void set_vsync_mode(DisplayServer::WindowID p_window, DisplayServer::VSyncMode p_mode);
