@@ -75,14 +75,18 @@ public:
 			va_list list_copy;
 			va_copy(list_copy, p_list);
 			int len = vsnprintf(buf, static_buf_size, p_format, p_list);
+			bool is_new = false;
 			if (len >= static_buf_size) {
-				buf = (char *)Memory::alloc_static(len + 1, __FILE__, __LINE__);
+				buf = (char *)memalloc(len + 1);
 				vsnprintf(buf, len + 1, p_format, list_copy);
+				is_new = true;
 			}
 			va_end(list_copy);
 			fwrite(buf, len, 1, file);
 			fwrite("\n\r", 2, 1, file);
 			fclose(file);
+			if (is_new)
+				memfree(buf);
 		}
 	}
 	virtual ~GodetBaseLogger() {}

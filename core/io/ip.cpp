@@ -70,6 +70,7 @@ struct _IP_ResolverPrivate {
 		return IP::RESOLVER_INVALID_ID;
 	}
 
+	HashMap<String, List<IPAddress>> cache;
 	Mutex mutex;
 	Semaphore sem;
 
@@ -111,8 +112,6 @@ struct _IP_ResolverPrivate {
 			ipr->resolve_queues();
 		}
 	}
-
-	HashMap<String, List<IPAddress>> cache;
 
 	static String get_cache_key(String p_hostname, IP::Type p_type) {
 		return itos(p_type) + p_hostname;

@@ -836,7 +836,7 @@ void ConnectionsDock::_go_to_script(TreeItem &p_item) {
 		return;
 	}
 
-	if (script.is_valid() && ScriptEditor::get_singleton()->script_goto_method(script, c.method)) {
+	if (script.is_valid() && ScriptEditor::get_singleton()->script_goto_method(script, cd.method)) {
 		editor->call_void("_editor_select", EditorNode::EDITOR_SCRIPT);
 	}
 }

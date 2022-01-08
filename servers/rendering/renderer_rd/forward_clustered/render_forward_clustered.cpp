@@ -3178,19 +3178,19 @@ RenderForwardClustered::RenderForwardClustered(RendererStorageRD *p_storage) :
 	/* SCENE SHADER */
 
 	{
-		String defines;
-		defines += "\n#define MAX_ROUGHNESS_LOD " + itos(get_roughness_layers() - 1) + ".0\n";
+		StringBuilder defines;
+		defines + "\n#define MAX_ROUGHNESS_LOD " + itos(get_roughness_layers() - 1) + ".0\n";
 		if (is_using_radiance_cubemap_array()) {
-			defines += "\n#define USE_RADIANCE_CUBEMAP_ARRAY \n";
+			defines + "\n#define USE_RADIANCE_CUBEMAP_ARRAY \n";
 		}
-		defines += "\n#define SDFGI_OCT_SIZE " + itos(gi.sdfgi_get_lightprobe_octahedron_size()) + "\n";
-		defines += "\n#define MAX_DIRECTIONAL_LIGHT_DATA_STRUCTS " + itos(MAX_DIRECTIONAL_LIGHTS) + "\n";
+		defines + "\n#define SDFGI_OCT_SIZE " + itos(gi.sdfgi_get_lightprobe_octahedron_size()) + "\n";
+		defines + "\n#define MAX_DIRECTIONAL_LIGHT_DATA_STRUCTS " + itos(MAX_DIRECTIONAL_LIGHTS) + "\n";
 
 		{
 			//lightmaps
 			scene_state.max_lightmaps = MAX_LIGHTMAPS;
-			defines += "\n#define MAX_LIGHTMAP_TEXTURES " + itos(scene_state.max_lightmaps) + "\n";
-			defines += "\n#define MAX_LIGHTMAPS " + itos(scene_state.max_lightmaps) + "\n";
+			defines + "\n#define MAX_LIGHTMAP_TEXTURES " + itos(scene_state.max_lightmaps) + "\n";
+			defines + "\n#define MAX_LIGHTMAPS " + itos(scene_state.max_lightmaps) + "\n";
 
 			scene_state.lightmap_buffer = RD::get_singleton()->storage_buffer_create(sizeof(LightmapData) * scene_state.max_lightmaps);
 		}
@@ -3201,7 +3201,7 @@ RenderForwardClustered::RenderForwardClustered(RendererStorageRD *p_storage) :
 			scene_state.lightmap_capture_buffer = RD::get_singleton()->storage_buffer_create(sizeof(LightmapCaptureData) * scene_state.max_lightmap_captures);
 		}
 		{
-			defines += "\n#define MATERIAL_UNIFORM_SET " + itos(MATERIAL_UNIFORM_SET) + "\n";
+			defines + "\n#define MATERIAL_UNIFORM_SET " + itos(MATERIAL_UNIFORM_SET) + "\n";
 		}
 
 		scene_shader.init(p_storage, defines);

@@ -645,6 +645,8 @@ private:
 		Vector<SpecializationConstant> specialization_constants;
 		VkPipelineLayout pipeline_layout = VK_NULL_HANDLE;
 		String name; //used for debug
+		// 临时变量
+		LocalVector<VkWriteDescriptorSet> writes;
 	};
 
 	String _shader_uniform_debug(RID p_shader, int p_set = -1);

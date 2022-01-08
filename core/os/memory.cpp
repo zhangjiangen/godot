@@ -646,10 +646,12 @@ void DefaultAllocator::free_manager(void *ptr, size_t count) {
 }
 void *operator new(size_t p_size, const char *p_description, size_t line) {
 	size_t len = p_size + sizeof(uint64_t);
-	uint64_t *ptr = (uint64_t *)DefaultAllocator::alloc(len, p_description, line);
+	uint32_t *ptr = (uint32_t *)DefaultAllocator::alloc(len, p_description, line);
 	// 记录内存大小
-	*ptr = len;
-	ptr += 1;
+	*ptr = MEMORY_TAG_NEW;
+    ++ ptr;
+	*ptr = (uint32_t)p_size;
+    ++ ptr;
 	return ptr;
 }
 
@@ -670,6 +672,64 @@ void operator delete(void *p_mem, void *p_pointer, size_t check, const char *p_d
 	CRASH_NOW_MSG("Call to placement delete should not happen.");
 }
 #endif
+
+void *MallocAllocator::alloc_memory(size_t p_memory, const char *file_name, int file_lne) {
+	size_t size = p_memory + sizeof(uint64_t);
+	uint32_t *p = (uint32_t *)DefaultAllocator::alloc(size, file_name, file_lne);
+
+	*p = MEMORY_TAG_MALLOC;
+    uint32_t tag = *p;
+	++p;
+	*p = p_memory;
+    uint32_t memsize = *p;
+	++p;
+	return p;
+}
+void MallocAllocator::free_memory(void *p_ptr) {
+	uint32_t *base = (uint32_t *)p_ptr;
+    base -= 2;
+    uint32_t tag, size;
+    tag = * base;
+    size = *(base + 1);
+	if (tag != MEMORY_TAG_MALLOC) {
+		throw std::runtime_error("memory free error!");
+	}
+	DefaultAllocator::free(base, size + sizeof(uint64_t));
+}
+void *MallocAllocator::realloc_memory(void *p_ptr, size_t p_new_size, const char *file_name, int file_lne) {
+	if (!p_ptr) {
+		if (p_new_size == 0) {
+			return nullptr;
+		}
+		// NULL ptr. realloc should act like malloc.
+		return alloc_memory(p_new_size, file_name, file_lne);
+	}
+	if (p_new_size == 0) {
+		free_memory(p_ptr);
+		return nullptr;
+	}
+	uint32_t *base = (uint32_t *)p_ptr;
+	base -= 2;
+	uint32_t tag, size;
+    tag = * base;
+    size = *(base + 1);
+	if (tag != MEMORY_TAG_MALLOC) {
+		throw std::runtime_error("memory free error!");
+	}
+	void *new_ptr;
+	new_ptr = alloc_memory(p_new_size, file_name, file_lne);
+	if (!new_ptr) {
+		free_memory(p_ptr);
+		return NULL; // TODO: set errno on failure.
+	}
+	// 下面拷贝旧的数据
+	if (size > p_new_size) {
+		size = p_new_size;
+	}
+	memcpy(new_ptr, p_ptr, size);
+	free_memory(p_ptr);
+	return new_ptr;
+}
 
 #ifdef DEBUG_ENABLED
 SafeNumeric<uint64_t> Memory::mem_usage;
@@ -700,10 +760,10 @@ void *Memory::alloc_static(size_t p_bytes, const char *p_description, int line, 
 
 		uint8_t *s8 = (uint8_t *)mem;
 
-#ifdef DEBUG_ENABLED
-		uint64_t new_mem_usage = mem_usage.add(p_bytes);
-		max_usage.exchange_if_greater(new_mem_usage);
-#endif
+		//#ifdef DEBUG_ENABLED
+		//		uint64_t new_mem_usage = mem_usage.add(p_bytes);
+		//		max_usage.exchange_if_greater(new_mem_usage);
+		//#endif
 		return s8 + PAD_ALIGN;
 	} else {
 		return mem;
@@ -729,14 +789,14 @@ void *Memory::realloc_static(void *p_memory, size_t p_bytes, const char *p_descr
 		mem -= PAD_ALIGN;
 		uint64_t *s = (uint64_t *)mem;
 
-#ifdef DEBUG_ENABLED
-		if (p_bytes > *s) {
-			uint64_t new_mem_usage = mem_usage.add(p_bytes - *s);
-			max_usage.exchange_if_greater(new_mem_usage);
-		} else {
-			mem_usage.sub(*s - p_bytes);
-		}
-#endif
+		//#ifdef DEBUG_ENABLED
+		//		if (p_bytes > *s) {
+		//			uint64_t new_mem_usage = mem_usage.add(p_bytes - *s);
+		//			max_usage.exchange_if_greater(new_mem_usage);
+		//		} else {
+		//			mem_usage.sub(*s - p_bytes);
+		//		}
+		//#endif
 
 		if (p_bytes == 0) {
 			free(mem);
@@ -781,10 +841,10 @@ void Memory::free_static(void *p_ptr, bool p_pad_align) {
 	if (prepad) {
 		mem -= PAD_ALIGN;
 
-#ifdef DEBUG_ENABLED
-		uint64_t *s = (uint64_t *)mem;
-		mem_usage.sub(*s);
-#endif
+		//#ifdef DEBUG_ENABLED
+		//		uint64_t *s = (uint64_t *)mem;
+		//		mem_usage.sub(*s);
+		//#endif
 
 		free(mem);
 		//TCMallocInternalFree(mem);

@@ -153,7 +153,7 @@ void prepare_depths_and_mips(vec4 p_samples, uvec2 p_output_coord, uvec2 p_gtid)
 
 		float avg = mip_smart_average(vec4(sample_00, sample_01, sample_10, sample_11));
 
-		imageStore(dest_image3, ivec3(p_output_coord.x, p_output_coord.y, depth_array_index), vec4(avg，avg，avg，avg));
+		imageStore(dest_image3, ivec3(p_output_coord.x, p_output_coord.y, depth_array_index), vec4(avg, avg, avg, avg));
 #ifndef GENERATE_FULL_MIPS
 	}
 #else
@@ -172,7 +172,7 @@ void prepare_depths_and_mips(vec4 p_samples, uvec2 p_output_coord, uvec2 p_gtid)
 		float sample_11 = depth_buffer[depth_array_index][buffer_coord.x + 8][buffer_coord.y + 8];
 
 		float avg = mip_smart_average(vec4(sample_00, sample_01, sample_10, sample_11));
-		imageStore(dest_image4, ivec3(p_output_coord.x, p_output_coord.y, depth_array_index), vec4(avg));
+		imageStore(dest_image4, ivec3(p_output_coord.x, p_output_coord.y, depth_array_index), vec4(avg, avg, avg, avg));
 	}
 #endif
 }

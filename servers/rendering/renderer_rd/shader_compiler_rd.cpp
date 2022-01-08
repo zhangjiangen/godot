@@ -289,7 +289,7 @@ String ShaderCompilerRD::_get_sampler_name(ShaderLanguage::TextureFilter p_filte
 	return actions.sampler_array_name + "[" + itos(p_filter + (p_repeat == ShaderLanguage::REPEAT_ENABLE ? ShaderLanguage::FILTER_DEFAULT : 0)) + "]";
 }
 
-void ShaderCompilerRD::_dump_function_deps(const SL::ShaderNode *p_node, const StringName &p_for_func, const Map<StringName, String> &p_func_code, String &r_to_add, Set<StringName> &added) {
+void ShaderCompilerRD::_dump_function_deps(const SL::ShaderNode *p_node, const StringName &p_for_func, const Map<StringName, String> &p_func_code, StringBuilder &r_to_add, Set<StringName> &added) {
 	int fidx = -1;
 
 	for (int i = 0; i < p_node->functions.size(); i++) {
@@ -328,11 +328,11 @@ void ShaderCompilerRD::_dump_function_deps(const SL::ShaderNode *p_node, const S
 
 		r_to_add += "\n";
 
-		String header;
+		StringBuilder header;
 		if (fnode->return_type == SL::TYPE_STRUCT) {
-			header = _mkid(fnode->return_struct_name);
+			header + _mkid(fnode->return_struct_name);
 		} else {
-			header = _typestr(fnode->return_type);
+			header + _typestr(fnode->return_type);
 		}
 
 		if (fnode->return_array_size > 0) {
@@ -436,7 +436,7 @@ static String _get_global_variable_from_type_and_index(const String &p_buffer, c
 }
 
 String ShaderCompilerRD::_dump_node_code(const SL::Node *p_node, int p_level, GeneratedCode &r_gen_code, IdentifierActions &p_actions, const DefaultIdentifierActions &p_default_actions, bool p_assigning, bool p_use_scope) {
-	String code;
+	StringBuilder code;
 
 	switch (p_node->type) {
 		case SL::Node::TYPE_SHADER: {
@@ -530,7 +530,7 @@ String ShaderCompilerRD::_dump_node_code(const SL::Node *p_node, int p_level, Ge
 				StringName uniform_name = uniform_names[k];
 				const SL::ShaderNode::Uniform &uniform = pnode->uniforms[uniform_name];
 
-				String ucode;
+				StringBuilder ucode;
 
 				if (uniform.scope == SL::ShaderNode::Uniform::SCOPE_INSTANCE) {
 					//insert, but don't generate any code.
@@ -580,7 +580,7 @@ String ShaderCompilerRD::_dump_node_code(const SL::Node *p_node, int p_level, Ge
 					if (!uses_uniforms) {
 						uses_uniforms = true;
 					}
-					uniform_defines.write[uniform.order] = ucode;
+					uniform_defines.write[uniform.order] = ucode.as_string();
 					if (is_buffer_global) {
 						//globals are indices into the global table
 						uniform_sizes.write[uniform.order] = ShaderLanguage::get_datatype_size(ShaderLanguage::TYPE_UINT);
@@ -684,7 +684,7 @@ String ShaderCompilerRD::_dump_node_code(const SL::Node *p_node, int p_level, Ge
 					continue;
 				}
 
-				String vcode;
+				StringBuilder vcode;
 				String interp_mode = _interpstr(varying.interpolation);
 				vcode += _prestr(varying.precision, ShaderLanguage::is_float_type(varying.type));
 				vcode += _typestr(varying.type);
@@ -696,14 +696,16 @@ String ShaderCompilerRD::_dump_node_code(const SL::Node *p_node, int p_level, Ge
 				}
 				vcode += ";\n";
 
-				r_gen_code.stage_globals[STAGE_VERTEX] += "layout(location=" + itos(index) + ") " + interp_mode + "out " + vcode;
-				r_gen_code.stage_globals[STAGE_FRAGMENT] += "layout(location=" + itos(index) + ") " + interp_mode + "in " + vcode;
+				r_gen_code.stage_globals[STAGE_VERTEX] + "layout(location=" + itos(index) + ") " + interp_mode + "out " + vcode;
+				r_gen_code.stage_globals[STAGE_FRAGMENT] + "layout(location=" + itos(index) + ") " + interp_mode + "in " + vcode;
 
 				index++;
 			}
 
 			if (var_frag_to_light.size() > 0) {
-				String gcode = "\n\nstruct {\n";
+				StringBuilder gcode;
+
+				gcode + "\n\nstruct {\n";
 				for (const Pair<StringName, SL::ShaderNode::Varying> &E : var_frag_to_light) {
 					gcode += "\t" + _prestr(E.second.precision) + _typestr(E.second.type) + " " + _mkid(E.first);
 					if (E.second.array_size > 0) {
@@ -719,7 +721,7 @@ String ShaderCompilerRD::_dump_node_code(const SL::Node *p_node, int p_level, Ge
 
 			for (int i = 0; i < pnode->vconstants.size(); i++) {
 				const SL::ShaderNode::Constant &cnode = pnode->vconstants[i];
-				String gcode;
+				StringBuilder gcode;
 				gcode += _constr(true);
 				gcode += _prestr(cnode.precision, ShaderLanguage::is_float_type(cnode.type));
 				if (cnode.type == SL::TYPE_STRUCT) {
@@ -803,7 +805,7 @@ String ShaderCompilerRD::_dump_node_code(const SL::Node *p_node, int p_level, Ge
 		case SL::Node::TYPE_VARIABLE_DECLARATION: {
 			SL::VariableDeclarationNode *vdnode = (SL::VariableDeclarationNode *)p_node;
 
-			String declaration;
+			StringBuilder declaration;
 			declaration += _constr(vdnode->is_const);
 			if (vdnode->datatype == SL::TYPE_STRUCT) {
 				declaration += _mkid(vdnode->struct_name);

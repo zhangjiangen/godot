@@ -39,10 +39,10 @@
 struct _CoreConstant {
 #ifdef DEBUG_METHODS_ENABLED
 	StringName enum_name;
-	bool ignore_value_in_docs = false;
 #endif
 	const char *name;
 	int value = 0;
+	bool ignore_value_in_docs = false;
 
 	_CoreConstant() {}
 

@@ -39,7 +39,7 @@
 #define SL ShaderLanguage
 
 static String _mktab(int p_level) {
-	String tb;
+	StringBuilder tb;
 	for (int i = 0; i < p_level; i++) {
 		tb += "\t";
 	}

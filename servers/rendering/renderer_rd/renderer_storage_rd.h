@@ -1961,31 +1961,31 @@ public:
 
 	/* PROBE API */
 
-	RID reflection_probe_allocate();
-	void reflection_probe_initialize(RID p_reflection_probe);
+	RID reflection_probe_allocate() override;
+	void reflection_probe_initialize(RID p_reflection_probe) override;
 
-	void reflection_probe_set_update_mode(RID p_probe, RS::ReflectionProbeUpdateMode p_mode);
-	void reflection_probe_set_intensity(RID p_probe, float p_intensity);
-	void reflection_probe_set_ambient_mode(RID p_probe, RS::ReflectionProbeAmbientMode p_mode);
-	void reflection_probe_set_ambient_color(RID p_probe, const Color &p_color);
-	void reflection_probe_set_ambient_energy(RID p_probe, float p_energy);
-	void reflection_probe_set_max_distance(RID p_probe, float p_distance);
-	void reflection_probe_set_extents(RID p_probe, const Vector3 &p_extents);
-	void reflection_probe_set_origin_offset(RID p_probe, const Vector3 &p_offset);
-	void reflection_probe_set_as_interior(RID p_probe, bool p_enable);
-	void reflection_probe_set_enable_box_projection(RID p_probe, bool p_enable);
-	void reflection_probe_set_enable_shadows(RID p_probe, bool p_enable);
-	void reflection_probe_set_cull_mask(RID p_probe, uint32_t p_layers);
-	void reflection_probe_set_resolution(RID p_probe, int p_resolution);
-	void reflection_probe_set_mesh_lod_threshold(RID p_probe, float p_ratio);
+	void reflection_probe_set_update_mode(RID p_probe, RS::ReflectionProbeUpdateMode p_mode) override;
+	void reflection_probe_set_intensity(RID p_probe, float p_intensity) override;
+	void reflection_probe_set_ambient_mode(RID p_probe, RS::ReflectionProbeAmbientMode p_mode) override;
+	void reflection_probe_set_ambient_color(RID p_probe, const Color &p_color) override;
+	void reflection_probe_set_ambient_energy(RID p_probe, float p_energy) override;
+	void reflection_probe_set_max_distance(RID p_probe, float p_distance) override;
+	void reflection_probe_set_extents(RID p_probe, const Vector3 &p_extents) override;
+	void reflection_probe_set_origin_offset(RID p_probe, const Vector3 &p_offset) override;
+	void reflection_probe_set_as_interior(RID p_probe, bool p_enable) override;
+	void reflection_probe_set_enable_box_projection(RID p_probe, bool p_enable) override;
+	void reflection_probe_set_enable_shadows(RID p_probe, bool p_enable) override;
+	void reflection_probe_set_cull_mask(RID p_probe, uint32_t p_layers) override;
+	void reflection_probe_set_resolution(RID p_probe, int p_resolution) override;
+	void reflection_probe_set_mesh_lod_threshold(RID p_probe, float p_ratio) override;
 
-	AABB reflection_probe_get_aabb(RID p_probe) const;
-	RS::ReflectionProbeUpdateMode reflection_probe_get_update_mode(RID p_probe) const;
-	uint32_t reflection_probe_get_cull_mask(RID p_probe) const;
-	Vector3 reflection_probe_get_extents(RID p_probe) const;
-	Vector3 reflection_probe_get_origin_offset(RID p_probe) const;
-	float reflection_probe_get_origin_max_distance(RID p_probe) const;
-	float reflection_probe_get_mesh_lod_threshold(RID p_probe) const;
+	AABB reflection_probe_get_aabb(RID p_probe) const override;
+	RS::ReflectionProbeUpdateMode reflection_probe_get_update_mode(RID p_probe) const override;
+	uint32_t reflection_probe_get_cull_mask(RID p_probe) const override;
+	Vector3 reflection_probe_get_extents(RID p_probe) const override;
+	Vector3 reflection_probe_get_origin_offset(RID p_probe) const override;
+	float reflection_probe_get_origin_max_distance(RID p_probe) const override;
+	float reflection_probe_get_mesh_lod_threshold(RID p_probe) const override;
 
 	int reflection_probe_get_resolution(RID p_probe) const;
 	bool reflection_probe_renders_shadows(RID p_probe) const override;
@@ -2413,9 +2413,9 @@ public:
 	virtual void update_memory_info() override;
 	virtual uint64_t get_rendering_info(RS::RenderingInfo p_info) override;
 
-	String get_video_adapter_name() const;
-	String get_video_adapter_vendor() const;
-	RenderingDevice::DeviceType get_video_adapter_type() const;
+	String get_video_adapter_name() const override;
+	String get_video_adapter_vendor() const override;
+	RenderingDevice::DeviceType get_video_adapter_type() const override;
 
 	virtual void capture_timestamps_begin() override;
 	virtual void capture_timestamp(const String &p_name) override;

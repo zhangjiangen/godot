@@ -294,7 +294,11 @@ public:
 		List<AnnotationNode *> annotations;
 
 		Vector<uint32_t> ignored_warnings;
+		Node *next = nullptr;
 
+		int start_line = 0, end_line = 0;
+		int start_column = 0, end_column = 0;
+		int leftmost_column = 0, rightmost_column = 0;
 		DataType datatype;
 		Type type = NONE;
 

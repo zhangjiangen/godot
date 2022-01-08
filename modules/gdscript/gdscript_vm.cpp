@@ -32,6 +32,7 @@
 
 #include "core/core_string_names.h"
 #include "core/os/os.h"
+#include "core/string/string_builder.h"
 #include "gdscript.h"
 #include "gdscript_lambda_callable.h"
 
@@ -81,41 +82,41 @@ static String _get_script_name(const Ref<Script> p_script) {
 }
 
 static String _get_var_type(const Variant *p_var) {
-	String basestr;
+	StringBuilder basestr;
 
 	if (p_var->get_type() == Variant::OBJECT) {
 		bool was_freed;
 		Object *bobj = p_var->get_validated_object_with_check(was_freed);
 		if (!bobj) {
 			if (was_freed) {
-				basestr = "previously freed";
+				basestr + "previously freed";
 			} else {
-				basestr = "null instance";
+				basestr + "null instance";
 			}
 		} else {
 			basestr = bobj->get_class();
 			if (bobj->get_script_instance()) {
-				basestr += " (" + _get_script_name(bobj->get_script_instance()->get_script()) + ")";
+				basestr + " (" + _get_script_name(bobj->get_script_instance()->get_script()) + ")";
 			}
 		}
 
 	} else {
 		if (p_var->get_type() == Variant::ARRAY) {
-			basestr = "Array";
+			basestr + "Array";
 			const Array *p_array = VariantInternal::get_array(p_var);
 			Variant::Type builtin_type = (Variant::Type)p_array->get_typed_builtin();
 			StringName native_type = p_array->get_typed_class_name();
 			Ref<Script> script_type = p_array->get_typed_script();
 
 			if (script_type.is_valid() && script_type->is_valid()) {
-				basestr += "[" + _get_script_name(script_type) + "]";
+				basestr + "[" + _get_script_name(script_type) + "]";
 			} else if (native_type != StringName()) {
-				basestr += "[" + native_type.operator String() + "]";
+				basestr + "[" + native_type.operator String() + "]";
 			} else if (builtin_type != Variant::NIL) {
-				basestr += "[" + Variant::get_type_name(builtin_type) + "]";
+				basestr + "[" + Variant::get_type_name(builtin_type) + "]";
 			}
 		} else {
-			basestr = Variant::get_type_name(p_var->get_type());
+			basestr + Variant::get_type_name(p_var->get_type());
 		}
 	}
 

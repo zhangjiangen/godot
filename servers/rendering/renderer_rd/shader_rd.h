@@ -81,31 +81,8 @@ class ShaderRD {
 			}
 			return "None_Stage";
 		}
-		List<String> get_uniform_debug_info(int var_count) {
-			String uniform;
-			List<String> ret;
-			for (int i = 0; i < var_count; ++i) {
-				RD::ShaderInfo &info = shader_info[i];
-				for (int j = 0; j < 5; ++j) {
-					for (int k = 0; k < info.uniform_info->size(); ++k) {
-						uniform = itos(i);
-						uniform += " Version---";
-						uniform += get_stage_type(j);
-						uniform += "--- name:";
-						uniform += info.uniform_info[j][k].name;
-						uniform += "--- set:";
-						uniform += itos(info.uniform_info[j][k].set);
-						uniform += "--- binding:";
-						uniform += itos(info.uniform_info[j][k].binding);
-						ret.push_back(uniform);
-					}
-				}
-			}
-			return ret;
-		}
 
 		Vector<uint8_t> *variant_data = nullptr;
-		RD::ShaderInfo *shader_info = nullptr;
 		RID *variants = nullptr; //same size as version defines
 
 		bool valid;
@@ -209,13 +186,6 @@ public:
 		}
 
 		return version->variants[p_variant];
-	}
-	List<String> log_unifoem_info(RID p_version) {
-		Version *version = version_owner.get_or_null(p_version);
-		if (version->dirty) {
-			_compile_version(version);
-		}
-		return version->get_uniform_debug_info(variant_defines.size());
 	}
 
 	bool version_is_valid(RID p_version);

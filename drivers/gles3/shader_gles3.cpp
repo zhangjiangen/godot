@@ -281,7 +281,7 @@ ShaderGLES3::Version *ShaderGLES3::get_current_version() {
 				iloglen = 4096; // buggy driver (Adreno 220+)
 			}
 
-			char *ilogmem = (char *)Memory::alloc_static(iloglen + 1, __FILE__, __LINE__);
+			char *ilogmem = (char *)memalloc(iloglen + 1);
 			ilogmem[iloglen] = '\0';
 			glGetShaderInfoLog(v.vert_id, iloglen, &iloglen, ilogmem);
 
@@ -291,7 +291,7 @@ ShaderGLES3::Version *ShaderGLES3::get_current_version() {
 
 			_display_error_with_code(err_string, strings);
 
-			Memory::free_static(ilogmem);
+			memfree(ilogmem);
 			glDeleteShader(v.vert_id);
 			glDeleteProgram(v.id);
 			v.id = 0;
@@ -356,7 +356,7 @@ ShaderGLES3::Version *ShaderGLES3::get_current_version() {
 				iloglen = 4096; // buggy driver (Adreno 220+)
 			}
 
-			char *ilogmem = (char *)Memory::alloc_static(iloglen + 1, __FILE__, __LINE__);
+			char *ilogmem = (char *)memalloc(iloglen + 1);
 			ilogmem[iloglen] = '\0';
 			glGetShaderInfoLog(v.frag_id, iloglen, &iloglen, ilogmem);
 
@@ -366,7 +366,7 @@ ShaderGLES3::Version *ShaderGLES3::get_current_version() {
 
 			_display_error_with_code(err_string, strings);
 
-			Memory::free_static(ilogmem);
+			memfree(ilogmem);
 			glDeleteShader(v.frag_id);
 			glDeleteShader(v.vert_id);
 			glDeleteProgram(v.id);
@@ -407,7 +407,7 @@ ShaderGLES3::Version *ShaderGLES3::get_current_version() {
 			iloglen = 4096; // buggy driver (Adreno 220+)
 		}
 
-		char *ilogmem = (char *)Memory::alloc_static(iloglen + 1, __FILE__, __LINE__);
+		char *ilogmem = (char *)memalloc(iloglen + 1);
 		ilogmem[iloglen] = '\0';
 		glGetProgramInfoLog(v.id, iloglen, &iloglen, ilogmem);
 
@@ -417,7 +417,7 @@ ShaderGLES3::Version *ShaderGLES3::get_current_version() {
 
 		_display_error_with_code(err_string, strings);
 
-		Memory::free_static(ilogmem);
+		memfree(ilogmem);
 		glDeleteShader(v.frag_id);
 		glDeleteShader(v.vert_id);
 		glDeleteProgram(v.id);

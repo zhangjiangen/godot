@@ -43,10 +43,17 @@ class StringBuilder {
 	// -1 means it's a Godot String
 	// a natural number means C string.
 	Vector<int32_t> appended_strings;
+	mutable String final_string;
 
 public:
 	StringBuilder &append(const String &p_string);
 	StringBuilder &append(const char *p_cstring);
+	void clear() {
+		final_string.clear();
+		strings.clear();
+		string_length = 0;
+		c_strings.clear();
+	}
 
 	_FORCE_INLINE_ StringBuilder &operator+(const String &p_string) {
 		return append(p_string);
@@ -61,6 +68,16 @@ public:
 	}
 
 	_FORCE_INLINE_ void operator+=(const char *p_cstring) {
+		append(p_cstring);
+	}
+
+	_FORCE_INLINE_ void operator=(const String &p_string) {
+		clear();
+		append(p_string);
+	}
+
+	_FORCE_INLINE_ void operator=(const char *p_cstring) {
+		clear();
 		append(p_cstring);
 	}
 

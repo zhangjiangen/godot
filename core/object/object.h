@@ -585,11 +585,11 @@ public:
 	};
 
 	struct Connection {
+		Vector<Variant> binds;
 		::Signal signal;
 		Callable callable;
 
 		uint32_t flags = 0;
-		Vector<Variant> binds;
 		bool operator<(const Connection &p_conn) const;
 
 		operator Variant() const;

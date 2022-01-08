@@ -31,6 +31,7 @@
 #ifndef SHADER_COMPILER_RD_H
 #define SHADER_COMPILER_RD_H
 
+#include "core/string/string_builder.h"
 #include "core/templates/pair.h"
 #include "servers/rendering/shader_language.h"
 #include "servers/rendering/shader_types.h"
@@ -73,7 +74,7 @@ public:
 		Vector<uint32_t> uniform_offsets;
 		uint32_t uniform_total_size;
 		String uniforms;
-		String stage_globals[STAGE_MAX];
+		StringBuilder stage_globals[STAGE_MAX];
 
 		Map<String, String> code;
 
@@ -104,7 +105,7 @@ private:
 
 	String _get_sampler_name(ShaderLanguage::TextureFilter p_filter, ShaderLanguage::TextureRepeat p_repeat);
 
-	void _dump_function_deps(const ShaderLanguage::ShaderNode *p_node, const StringName &p_for_func, const Map<StringName, String> &p_func_code, String &r_to_add, Set<StringName> &added);
+	void _dump_function_deps(const ShaderLanguage::ShaderNode *p_node, const StringName &p_for_func, const Map<StringName, String> &p_func_code, StringBuilder &r_to_add, Set<StringName> &added);
 	String _dump_node_code(const ShaderLanguage::Node *p_node, int p_level, GeneratedCode &r_gen_code, IdentifierActions &p_actions, const DefaultIdentifierActions &p_default_actions, bool p_assigning, bool p_scope = true);
 
 	const ShaderLanguage::ShaderNode *shader;

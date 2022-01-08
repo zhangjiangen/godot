@@ -150,7 +150,6 @@ RID ShaderRD::version_create() {
 	version.valid = false;
 	version.initialize_needed = true;
 	version.variants = nullptr;
-	version.shader_info = nullptr;
 	return version_owner.make_rid(version);
 }
 
@@ -168,10 +167,6 @@ void ShaderRD::_clear_version(Version *p_version) {
 			memdelete_arr(p_version->variant_data);
 		}
 		p_version->variants = nullptr;
-		if (p_version->shader_info) {
-			memdelete(p_version->shader_info);
-		}
-		p_version->shader_info = nullptr;
 	}
 }
 
@@ -350,7 +345,6 @@ void ShaderRD::_compile_variant(uint32_t p_variant, Version *p_version) {
 		MutexLock lock(variant_set_mutex);
 		p_version->variants[p_variant] = shader;
 		p_version->variant_data[p_variant] = shader_data;
-		p_version->shader_info[p_variant] = p_shader_info;
 	}
 }
 
@@ -562,7 +556,6 @@ void ShaderRD::_compile_version(Version *p_version) {
 	p_version->variants = memnew_arr(RID, variant_defines.size());
 	typedef Vector<uint8_t> ShaderStageData;
 	p_version->variant_data = memnew_arr(ShaderStageData, variant_defines.size());
-	p_version->shader_info = memnew_arr(RD::ShaderInfo, variant_defines.size());
 
 	if (shader_cache_dir_valid) {
 		if (_load_from_cache(p_version)) {
@@ -605,9 +598,6 @@ void ShaderRD::_compile_version(Version *p_version) {
 		memdelete_arr(p_version->variants);
 		if (p_version->variant_data) {
 			memdelete_arr(p_version->variant_data);
-		}
-		if (p_version->shader_info) {
-			memdelete(p_version->shader_info);
 		}
 		p_version->variants = nullptr;
 		p_version->variant_data = nullptr;

@@ -241,10 +241,10 @@ Error VulkanContext::_get_preferred_validation_layers(uint32_t *count, const cha
 		return OK;
 	}
 
-	VkLayerProperties *instance_layers = (VkLayerProperties *)malloc(sizeof(VkLayerProperties) * instance_layer_count);
+	VkLayerProperties *instance_layers = (VkLayerProperties *)memalloc(sizeof(VkLayerProperties) * instance_layer_count);
 	err = vkEnumerateInstanceLayerProperties(&instance_layer_count, instance_layers);
 	if (err) {
-		free(instance_layers);
+		memfree(instance_layers);
 		ERR_FAIL_V(ERR_CANT_CREATE);
 	}
 
@@ -258,7 +258,7 @@ Error VulkanContext::_get_preferred_validation_layers(uint32_t *count, const cha
 		}
 	}
 
-	free(instance_layers);
+	memfree(instance_layers);
 
 	return OK;
 }
@@ -310,10 +310,10 @@ Error VulkanContext::_initialize_extensions() {
 	ERR_FAIL_COND_V(err != VK_SUCCESS && err != VK_INCOMPLETE, ERR_CANT_CREATE);
 
 	if (instance_extension_count > 0) {
-		VkExtensionProperties *instance_extensions = (VkExtensionProperties *)malloc(sizeof(VkExtensionProperties) * instance_extension_count);
+		VkExtensionProperties *instance_extensions = (VkExtensionProperties *)memalloc(sizeof(VkExtensionProperties) * instance_extension_count);
 		err = vkEnumerateInstanceExtensionProperties(nullptr, &instance_extension_count, instance_extensions);
 		if (err != VK_SUCCESS && err != VK_INCOMPLETE) {
-			free(instance_extensions);
+			memfree(instance_extensions);
 			ERR_FAIL_V(ERR_CANT_CREATE);
 		}
 		for (uint32_t i = 0; i < instance_extension_count; i++) {
@@ -340,12 +340,12 @@ Error VulkanContext::_initialize_extensions() {
 				extension_names[enabled_extension_count++] = VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME;
 			}
 			if (enabled_extension_count >= MAX_EXTENSIONS) {
-				free(instance_extensions);
+				memfree(instance_extensions);
 				ERR_FAIL_V_MSG(ERR_BUG, "Enabled extension count reaches MAX_EXTENSIONS, BUG");
 			}
 		}
 
-		free(instance_extensions);
+		memfree(instance_extensions);
 	}
 
 	ERR_FAIL_COND_V_MSG(!surfaceExtFound, ERR_CANT_CREATE, "No surface extension found, is a driver installed?");
@@ -709,10 +709,10 @@ Error VulkanContext::_create_physical_device() {
 			"Do you have a compatible Vulkan installable client driver (ICD) installed?\n"
 			"vkEnumeratePhysicalDevices Failure");
 
-	VkPhysicalDevice *physical_devices = (VkPhysicalDevice *)malloc(sizeof(VkPhysicalDevice) * gpu_count);
+	VkPhysicalDevice *physical_devices = (VkPhysicalDevice *)memalloc(sizeof(VkPhysicalDevice) * gpu_count);
 	err = vkEnumeratePhysicalDevices(inst, &gpu_count, physical_devices);
 	if (err) {
-		free(physical_devices);
+		memfree(physical_devices);
 		ERR_FAIL_V(ERR_CANT_CREATE);
 	}
 
@@ -735,7 +735,7 @@ Error VulkanContext::_create_physical_device() {
 	}
 
 	gpu = physical_devices[device_index];
-	free(physical_devices);
+	memfree(physical_devices);
 
 	/* Look for device extensions */
 	uint32_t device_extension_count = 0;
@@ -785,10 +785,10 @@ Error VulkanContext::_create_physical_device() {
 	ERR_FAIL_COND_V(err, ERR_CANT_CREATE);
 
 	if (device_extension_count > 0) {
-		VkExtensionProperties *device_extensions = (VkExtensionProperties *)malloc(sizeof(VkExtensionProperties) * device_extension_count);
+		VkExtensionProperties *device_extensions = (VkExtensionProperties *)memalloc(sizeof(VkExtensionProperties) * device_extension_count);
 		err = vkEnumerateDeviceExtensionProperties(gpu, nullptr, &device_extension_count, device_extensions);
 		if (err) {
-			free(device_extensions);
+			memfree(device_extensions);
 			ERR_FAIL_V(ERR_CANT_CREATE);
 		}
 
@@ -802,7 +802,7 @@ Error VulkanContext::_create_physical_device() {
 				extension_names[enabled_extension_count++] = VK_KHR_MULTIVIEW_EXTENSION_NAME;
 			}
 			if (enabled_extension_count >= MAX_EXTENSIONS) {
-				free(device_extensions);
+				memfree(device_extensions);
 				ERR_FAIL_V_MSG(ERR_BUG, "Enabled extension count reaches MAX_EXTENSIONS, BUG");
 			}
 		}
@@ -819,7 +819,7 @@ Error VulkanContext::_create_physical_device() {
 					VK_KHR_incremental_present_enabled = true;
 				}
 				if (enabled_extension_count >= MAX_EXTENSIONS) {
-					free(device_extensions);
+					memfree(device_extensions);
 					ERR_FAIL_V_MSG(ERR_BUG, "Enabled extension count reaches MAX_EXTENSIONS, BUG");
 				}
 			}
@@ -837,13 +837,13 @@ Error VulkanContext::_create_physical_device() {
 					VK_GOOGLE_display_timing_enabled = true;
 				}
 				if (enabled_extension_count >= MAX_EXTENSIONS) {
-					free(device_extensions);
+					memfree(device_extensions);
 					ERR_FAIL_V_MSG(ERR_BUG, "Enabled extension count reaches MAX_EXTENSIONS, BUG");
 				}
 			}
 		}
 
-		free(device_extensions);
+		memfree(device_extensions);
 	}
 
 	ERR_FAIL_COND_V_MSG(!swapchainExtFound, ERR_CANT_CREATE,
@@ -926,7 +926,7 @@ Error VulkanContext::_create_physical_device() {
 	vkGetPhysicalDeviceQueueFamilyProperties(gpu, &queue_family_count, nullptr);
 	ERR_FAIL_COND_V(queue_family_count == 0, ERR_CANT_CREATE);
 
-	queue_props = (VkQueueFamilyProperties *)malloc(queue_family_count * sizeof(VkQueueFamilyProperties));
+	queue_props = (VkQueueFamilyProperties *)memalloc(queue_family_count * sizeof(VkQueueFamilyProperties));
 	vkGetPhysicalDeviceQueueFamilyProperties(gpu, &queue_family_count, queue_props);
 
 	// Query fine-grained feature support for this device.
@@ -1032,7 +1032,7 @@ Error VulkanContext::_create_device() {
 
 Error VulkanContext::_initialize_queues(VkSurfaceKHR p_surface) {
 	// Iterate over each queue to learn whether it supports presenting:
-	VkBool32 *supportsPresent = (VkBool32 *)malloc(queue_family_count * sizeof(VkBool32));
+	VkBool32 *supportsPresent = (VkBool32 *)memalloc(queue_family_count * sizeof(VkBool32));
 	for (uint32_t i = 0; i < queue_family_count; i++) {
 		fpGetPhysicalDeviceSurfaceSupportKHR(gpu, i, p_surface, &supportsPresent[i]);
 	}
@@ -1066,7 +1066,7 @@ Error VulkanContext::_initialize_queues(VkSurfaceKHR p_surface) {
 		}
 	}
 
-	free(supportsPresent);
+	memfree(supportsPresent);
 
 	// Generate error if could not find both a graphics and a present queue
 	ERR_FAIL_COND_V_MSG(graphicsQueueFamilyIndex == UINT32_MAX || presentQueueFamilyIndex == UINT32_MAX, ERR_CANT_CREATE,
@@ -1110,10 +1110,10 @@ Error VulkanContext::_initialize_queues(VkSurfaceKHR p_surface) {
 	uint32_t formatCount;
 	VkResult err = fpGetPhysicalDeviceSurfaceFormatsKHR(gpu, p_surface, &formatCount, nullptr);
 	ERR_FAIL_COND_V(err, ERR_CANT_CREATE);
-	VkSurfaceFormatKHR *surfFormats = (VkSurfaceFormatKHR *)malloc(formatCount * sizeof(VkSurfaceFormatKHR));
+	VkSurfaceFormatKHR *surfFormats = (VkSurfaceFormatKHR *)memalloc(formatCount * sizeof(VkSurfaceFormatKHR));
 	err = fpGetPhysicalDeviceSurfaceFormatsKHR(gpu, p_surface, &formatCount, surfFormats);
 	if (err) {
-		free(surfFormats);
+		memfree(surfFormats);
 		ERR_FAIL_V(ERR_CANT_CREATE);
 	}
 	// If the format list includes just one entry of VK_FORMAT_UNDEFINED,
@@ -1132,7 +1132,7 @@ Error VulkanContext::_initialize_queues(VkSurfaceKHR p_surface) {
 		uint32_t allowed_formats_count = sizeof(allowed_formats) / sizeof(VkFormat);
 
 		if (formatCount < 1) {
-			free(surfFormats);
+			memfree(surfFormats);
 			ERR_FAIL_V_MSG(ERR_CANT_CREATE, "formatCount less than 1");
 		}
 
@@ -1148,12 +1148,12 @@ Error VulkanContext::_initialize_queues(VkSurfaceKHR p_surface) {
 		}
 
 		if (format == VK_FORMAT_UNDEFINED) {
-			free(surfFormats);
+			memfree(surfFormats);
 			ERR_FAIL_V_MSG(ERR_CANT_CREATE, "No usable surface format found.");
 		}
 	}
 
-	free(surfFormats);
+	memfree(surfFormats);
 
 	Error serr = _create_semaphores();
 	if (serr) {
@@ -1312,7 +1312,7 @@ Error VulkanContext::_clean_up_swap_chain(Window *window) {
 			vkDestroyFramebuffer(device, window->swapchain_image_resources[i].framebuffer, nullptr);
 		}
 
-		free(window->swapchain_image_resources);
+		memfree(window->swapchain_image_resources);
 		window->swapchain_image_resources = nullptr;
 	}
 	if (separate_present_queue) {
@@ -1336,11 +1336,11 @@ Error VulkanContext::_update_swap_chain(Window *window) {
 	uint32_t presentModeCount;
 	err = fpGetPhysicalDeviceSurfacePresentModesKHR(gpu, window->surface, &presentModeCount, nullptr);
 	ERR_FAIL_COND_V(err, ERR_CANT_CREATE);
-	VkPresentModeKHR *presentModes = (VkPresentModeKHR *)malloc(presentModeCount * sizeof(VkPresentModeKHR));
+	VkPresentModeKHR *presentModes = (VkPresentModeKHR *)memalloc(presentModeCount * sizeof(VkPresentModeKHR));
 	ERR_FAIL_COND_V(!presentModes, ERR_CANT_CREATE);
 	err = fpGetPhysicalDeviceSurfacePresentModesKHR(gpu, window->surface, &presentModeCount, presentModes);
 	if (err) {
-		free(presentModes);
+		memfree(presentModes);
 		ERR_FAIL_V(ERR_CANT_CREATE);
 	}
 
@@ -1372,7 +1372,7 @@ Error VulkanContext::_update_swap_chain(Window *window) {
 	}
 
 	if (window->width == 0 || window->height == 0) {
-		free(presentModes);
+		memfree(presentModes);
 		//likely window minimized, no swapchain created
 		return OK;
 	}
@@ -1440,7 +1440,7 @@ Error VulkanContext::_update_swap_chain(Window *window) {
 
 	print_verbose("Using present mode: " + String(string_VkPresentModeKHR(window->presentMode)));
 
-	free(presentModes);
+	memfree(presentModes);
 
 	// Determine the number of VkImages to use in the swap chain.
 	// Application desires to acquire 3 images at a time for triple
@@ -1516,18 +1516,18 @@ Error VulkanContext::_update_swap_chain(Window *window) {
 		ERR_FAIL_COND_V(swapchainImageCount != sp_image_count, ERR_BUG);
 	}
 
-	VkImage *swapchainImages = (VkImage *)malloc(swapchainImageCount * sizeof(VkImage));
+	VkImage *swapchainImages = (VkImage *)memalloc(swapchainImageCount * sizeof(VkImage));
 	ERR_FAIL_COND_V(!swapchainImages, ERR_CANT_CREATE);
 	err = fpGetSwapchainImagesKHR(device, window->swapchain, &swapchainImageCount, swapchainImages);
 	if (err) {
-		free(swapchainImages);
+		memfree(swapchainImages);
 		ERR_FAIL_V(ERR_CANT_CREATE);
 	}
 
 	window->swapchain_image_resources =
-			(SwapchainImageResources *)malloc(sizeof(SwapchainImageResources) * swapchainImageCount);
+			(SwapchainImageResources *)memalloc(sizeof(SwapchainImageResources) * swapchainImageCount);
 	if (!window->swapchain_image_resources) {
-		free(swapchainImages);
+		memfree(swapchainImages);
 		ERR_FAIL_V(ERR_CANT_CREATE);
 	}
 
@@ -1558,12 +1558,12 @@ Error VulkanContext::_update_swap_chain(Window *window) {
 
 		err = vkCreateImageView(device, &color_image_view, nullptr, &window->swapchain_image_resources[i].view);
 		if (err) {
-			free(swapchainImages);
+			memfree(swapchainImages);
 			ERR_FAIL_V(ERR_CANT_CREATE);
 		}
 	}
 
-	free(swapchainImages);
+	memfree(swapchainImages);
 
 	/******** FRAMEBUFFER ************/
 
@@ -2236,7 +2236,7 @@ VulkanContext::VulkanContext() {
 
 VulkanContext::~VulkanContext() {
 	if (queue_props) {
-		free(queue_props);
+		memfree(queue_props);
 	}
 	if (device_initialized) {
 		for (uint32_t i = 0; i < FRAME_LAG; i++) {
