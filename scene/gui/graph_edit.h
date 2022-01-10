@@ -261,12 +261,15 @@ protected:
 	void _notification(int p_what);
 
 	GDVIRTUAL2RC(Vector<Vector2>, _get_connection_line, Vector2, Vector2)
+	GDVIRTUAL3R(bool, _is_in_input_hotzone, Object *, int, Vector2)
+	GDVIRTUAL3R(bool, _is_in_output_hotzone, Object *, int, Vector2)
 
 public:
 	Error connect_node(const StringName &p_from, int p_from_port, const StringName &p_to, int p_to_port);
 	bool is_node_connected(const StringName &p_from, int p_from_port, const StringName &p_to, int p_to_port);
 	void disconnect_node(const StringName &p_from, int p_from_port, const StringName &p_to, int p_to_port);
 	void clear_connections();
+	void force_connection_drag_end();
 
 	void set_connection_activity(const StringName &p_from, int p_from_port, const StringName &p_to, int p_to_port, float p_activity);
 

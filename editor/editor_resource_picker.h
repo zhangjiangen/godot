@@ -111,6 +111,9 @@ protected:
 	void on_file_system_select_file(const String file_path);
 	void update_set_resource_button();
 
+	GDVIRTUAL1(_set_create_options, Object *)
+	GDVIRTUAL1R(bool, _handle_menu_selected, int)
+
 public:
 	static void clear_caches();
 
