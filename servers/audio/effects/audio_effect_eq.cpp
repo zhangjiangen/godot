@@ -61,7 +61,7 @@ void AudioEffectEQInstance::process(const AudioFrame *p_src_frames, AudioFrame *
 
 Ref<AudioEffectInstance> AudioEffectEQ::instantiate() {
 	Ref<AudioEffectEQInstance> ins;
-	ins.instantiate();
+	New_instantiate(ins);
 	ins->base = Ref<AudioEffectEQ>(this);
 	ins->gains.resize(eq.get_band_count());
 	for (int i = 0; i < 2; i++) {

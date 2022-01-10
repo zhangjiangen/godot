@@ -114,7 +114,7 @@ void DisplayServerJavaScript::key_callback(int p_pressed, int p_repeat, int p_mo
 	OS_JavaScript::get_singleton()->resume_audio();
 
 	Ref<InputEventKey> ev;
-	ev.instantiate();
+	New_instantiate(ev);
 	ev->set_echo(p_repeat);
 	ev->set_keycode(dom_code2godot_scancode(key_event.code, key_event.key, false));
 	ev->set_physical_keycode(dom_code2godot_scancode(key_event.code, key_event.key, true));
@@ -139,7 +139,7 @@ int DisplayServerJavaScript::mouse_button_callback(int p_pressed, int p_button, 
 	Point2 pos(p_x, p_y);
 	Input::get_singleton()->set_mouse_position(pos);
 	Ref<InputEventMouseButton> ev;
-	ev.instantiate();
+	New_instantiate(ev);
 	ev->set_position(pos);
 	ev->set_global_position(pos);
 	ev->set_pressed(p_pressed);
@@ -221,7 +221,7 @@ void DisplayServerJavaScript::mouse_move_callback(double p_x, double p_y, double
 	Point2 pos(p_x, p_y);
 	Input::get_singleton()->set_mouse_position(pos);
 	Ref<InputEventMouseMotion> ev;
-	ev.instantiate();
+	New_instantiate(ev);
 	dom2godot_mod(ev, p_modifiers);
 	ev->set_button_mask(input_mask);
 
@@ -411,7 +411,7 @@ int DisplayServerJavaScript::mouse_wheel_callback(double p_delta_x, double p_del
 
 	Input *input = Input::get_singleton();
 	Ref<InputEventMouseButton> ev;
-	ev.instantiate();
+	New_instantiate(ev);
 	ev->set_position(input->get_mouse_position());
 	ev->set_global_position(ev->get_position());
 
@@ -459,7 +459,7 @@ void DisplayServerJavaScript::touch_callback(int p_type, int p_count) {
 		if (p_type == 2) {
 			// touchmove
 			Ref<InputEventScreenDrag> ev;
-			ev.instantiate();
+			New_instantiate(ev);
 			ev->set_index(touch_event.identifier[i]);
 			ev->set_position(point);
 
@@ -475,7 +475,7 @@ void DisplayServerJavaScript::touch_callback(int p_type, int p_count) {
 			// Resume audio context after input in case autoplay was denied.
 			OS_JavaScript::get_singleton()->resume_audio();
 
-			ev.instantiate();
+			New_instantiate(ev);
 			ev->set_index(touch_event.identifier[i]);
 			ev->set_position(point);
 			ev->set_pressed(p_type == 0);
@@ -509,12 +509,12 @@ void DisplayServerJavaScript::vk_input_text_callback(const char *p_text, int p_c
 	Input *input = Input::get_singleton();
 	Ref<InputEventKey> k;
 	for (int i = 0; i < p_cursor; i++) {
-		k.instantiate();
+		New_instantiate(k);
 		k->set_pressed(true);
 		k->set_echo(false);
 		k->set_keycode(Key::RIGHT);
 		input->parse_input_event(k);
-		k.instantiate();
+		New_instantiate(k);
 		k->set_pressed(false);
 		k->set_echo(false);
 		k->set_keycode(Key::RIGHT);

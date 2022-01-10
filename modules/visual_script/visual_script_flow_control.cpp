@@ -154,7 +154,7 @@ VisualScriptReturn::VisualScriptReturn() {
 template <bool with_value>
 static Ref<VisualScriptNode> create_return_node(const String &p_name) {
 	Ref<VisualScriptReturn> node;
-	node.instantiate();
+	New_instantiate(node);
 	node->set_enable_return_value(with_value);
 	return node;
 }

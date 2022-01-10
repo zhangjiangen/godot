@@ -113,7 +113,7 @@ public:
 			}
 
 			Ref<VisualScriptFunctionState> state;
-			state.instantiate();
+			New_instantiate(state);
 
 			int ret = STEP_YIELD_BIT;
 			switch (mode) {
@@ -202,7 +202,7 @@ VisualScriptYield::VisualScriptYield() {
 template <VisualScriptYield::YieldMode MODE>
 static Ref<VisualScriptNode> create_yield_node(const String &p_name) {
 	Ref<VisualScriptYield> node;
-	node.instantiate();
+	New_instantiate(node);
 	node->set_yield_mode(MODE);
 	return node;
 }
@@ -548,7 +548,7 @@ public:
 			}
 
 			Ref<VisualScriptFunctionState> state;
-			state.instantiate();
+			New_instantiate(state);
 
 			state->connect_to_signal(object, signal, Array());
 
@@ -578,7 +578,7 @@ VisualScriptYieldSignal::VisualScriptYieldSignal() {
 template <VisualScriptYieldSignal::CallMode cmode>
 static Ref<VisualScriptNode> create_yield_signal_node(const String &p_name) {
 	Ref<VisualScriptYieldSignal> node;
-	node.instantiate();
+	New_instantiate(node);
 	node->set_call_mode(cmode);
 	return node;
 }

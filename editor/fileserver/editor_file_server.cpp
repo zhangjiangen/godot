@@ -312,7 +312,7 @@ void EditorFileServer::stop() {
 }
 
 EditorFileServer::EditorFileServer() {
-	server.instantiate();
+	New_instantiate(server);
 	quit = false;
 	active = false;
 	cmd = CMD_NONE;

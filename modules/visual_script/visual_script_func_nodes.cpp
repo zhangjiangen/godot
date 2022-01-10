@@ -898,7 +898,7 @@ VisualScriptFunctionCall::VisualScriptFunctionCall() {
 template <VisualScriptFunctionCall::CallMode cmode>
 static Ref<VisualScriptNode> create_function_call_node(const String &p_name) {
 	Ref<VisualScriptFunctionCall> node;
-	node.instantiate();
+	New_instantiate(node);
 	node->set_call_mode(cmode);
 	return node;
 }
@@ -1628,7 +1628,7 @@ VisualScriptPropertySet::VisualScriptPropertySet() {
 template <VisualScriptPropertySet::CallMode cmode>
 static Ref<VisualScriptNode> create_property_set_node(const String &p_name) {
 	Ref<VisualScriptPropertySet> node;
-	node.instantiate();
+	New_instantiate(node);
 	node->set_call_mode(cmode);
 	return node;
 }
@@ -2237,7 +2237,7 @@ VisualScriptPropertyGet::VisualScriptPropertyGet() {
 template <VisualScriptPropertyGet::CallMode cmode>
 static Ref<VisualScriptNode> create_property_get_node(const String &p_name) {
 	Ref<VisualScriptPropertyGet> node;
-	node.instantiate();
+	New_instantiate(node);
 	node->set_call_mode(cmode);
 	return node;
 }
@@ -2388,7 +2388,7 @@ static Ref<VisualScriptNode> create_basic_type_call_node(const String &p_name) {
 	String method = path[3];
 
 	Ref<VisualScriptFunctionCall> node;
-	node.instantiate();
+	New_instantiate(node);
 
 	Variant::Type type = Variant::VARIANT_MAX;
 

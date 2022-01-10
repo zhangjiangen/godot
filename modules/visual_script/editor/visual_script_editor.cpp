@@ -1333,7 +1333,7 @@ void VisualScriptEditor::_create_function() {
 	Vector2 pos = _get_available_pos();
 
 	Ref<VisualScriptFunction> func_node;
-	func_node.instantiate();
+	New_instantiate(func_node);
 	func_node->set_name(name);
 
 	for (int i = 0; i < func_input_vbox->get_child_count(); i++) {
@@ -1450,7 +1450,7 @@ void VisualScriptEditor::_member_button(Object *p_item, int p_column, int p_butt
 				Vector2 pos = _get_available_pos();
 
 				Ref<VisualScriptFunction> func_node;
-				func_node.instantiate();
+				New_instantiate(func_node);
 				func_node->set_name(name);
 				int fn_id = script->get_available_id();
 
@@ -2225,11 +2225,11 @@ void VisualScriptEditor::drop_data_fw(const Point2 &p_point, const Variant &p_da
 		Ref<VisualScriptNode> vnode;
 		if (use_set) {
 			Ref<VisualScriptPropertySet> pset;
-			pset.instantiate();
+			New_instantiate(pset);
 			vnode = pset;
 		} else {
 			Ref<VisualScriptPropertyGet> pget;
-			pget.instantiate();
+			New_instantiate(pget);
 			vnode = pget;
 		}
 
@@ -2255,7 +2255,7 @@ void VisualScriptEditor::drop_data_fw(const Point2 &p_point, const Variant &p_da
 		Vector2 pos = _get_pos_in_graph(p_point);
 
 		Ref<VisualScriptFunctionCall> vnode;
-		vnode.instantiate();
+		New_instantiate(vnode);
 		vnode->set_call_mode(VisualScriptFunctionCall::CALL_MODE_SELF);
 
 		int new_id = script->get_available_id();
@@ -2281,7 +2281,7 @@ void VisualScriptEditor::drop_data_fw(const Point2 &p_point, const Variant &p_da
 		Vector2 pos = _get_pos_in_graph(p_point);
 
 		Ref<VisualScriptEmitSignal> vnode;
-		vnode.instantiate();
+		New_instantiate(vnode);
 		vnode->set_signal(d["signal"]);
 
 		int new_id = script->get_available_id();
@@ -2304,7 +2304,7 @@ void VisualScriptEditor::drop_data_fw(const Point2 &p_point, const Variant &p_da
 		Vector2 pos = _get_pos_in_graph(p_point);
 
 		Ref<VisualScriptPreload> prnode;
-		prnode.instantiate();
+		New_instantiate(prnode);
 		prnode->set_preload(d["resource"]);
 
 		int new_id = script->get_available_id();
@@ -2347,14 +2347,14 @@ void VisualScriptEditor::drop_data_fw(const Point2 &p_point, const Variant &p_da
 				Ref<Script> drop_script = ResourceLoader::load(files[i]);
 				if (drop_script.is_valid() && drop_script->is_tool() && drop_script->get_instance_base_type() == "VisualScriptCustomNode" && !use_preload) {
 					Ref<VisualScriptCustomNode> vscn;
-					vscn.instantiate();
+					New_instantiate(vscn);
 					vscn->set_script(drop_script);
 
 					undo_redo->add_do_method(script.ptr(), "add_node", new_id, vscn, pos);
 					undo_redo->add_undo_method(script.ptr(), "remove_node", new_id);
 				} else {
 					Ref<VisualScriptPreload> prnode;
-					prnode.instantiate();
+					New_instantiate(prnode);
 					prnode->set_preload(res);
 
 					undo_redo->add_do_method(script.ptr(), "add_node", new_id, prnode, pos);
@@ -2411,7 +2411,7 @@ void VisualScriptEditor::drop_data_fw(const Point2 &p_point, const Variant &p_da
 				Ref<VisualScriptNode> n;
 
 				Ref<VisualScriptSceneNode> scene_node;
-				scene_node.instantiate();
+				New_instantiate(scene_node);
 				scene_node->set_node_path(sn->get_path_to(node));
 				n = scene_node;
 
@@ -2471,13 +2471,13 @@ void VisualScriptEditor::drop_data_fw(const Point2 &p_point, const Variant &p_da
 
 			if (!use_get) {
 				Ref<VisualScriptPropertySet> pset;
-				pset.instantiate();
+				New_instantiate(pset);
 				pset->set_call_mode(VisualScriptPropertySet::CALL_MODE_INSTANCE);
 				pset->set_base_type(obj->get_class());
 				vnode = pset;
 			} else {
 				Ref<VisualScriptPropertyGet> pget;
-				pget.instantiate();
+				New_instantiate(pget);
 				pget->set_call_mode(VisualScriptPropertyGet::CALL_MODE_INSTANCE);
 				pget->set_base_type(obj->get_class());
 				vnode = pget;
@@ -2511,7 +2511,7 @@ void VisualScriptEditor::drop_data_fw(const Point2 &p_point, const Variant &p_da
 
 			if (!use_get) {
 				Ref<VisualScriptPropertySet> pset;
-				pset.instantiate();
+				New_instantiate(pset);
 				if (sn == node) {
 					pset->set_call_mode(VisualScriptPropertySet::CALL_MODE_SELF);
 				} else {
@@ -2521,7 +2521,7 @@ void VisualScriptEditor::drop_data_fw(const Point2 &p_point, const Variant &p_da
 				vnode = pset;
 			} else {
 				Ref<VisualScriptPropertyGet> pget;
-				pget.instantiate();
+				New_instantiate(pget);
 				if (sn == node) {
 					pget->set_call_mode(VisualScriptPropertyGet::CALL_MODE_SELF);
 				} else {
@@ -2770,7 +2770,7 @@ void VisualScriptEditor::add_callback(const String &p_function, PackedStringArra
 	}
 
 	Ref<VisualScriptFunction> func;
-	func.instantiate();
+	New_instantiate(func);
 	for (int i = 0; i < p_args.size(); i++) {
 		String name = p_args[i];
 		Variant::Type type = Variant::NIL;
@@ -3197,7 +3197,7 @@ void VisualScriptEditor::_port_action_menu(int p_option) {
 	switch (p_option) {
 		case CREATE_CALL_SET_GET: {
 			Ref<VisualScriptFunctionCall> n;
-			n.instantiate();
+			New_instantiate(n);
 
 			VisualScriptNode::TypeGuess tg = _guess_output_type(port_action_node, port_action_output, vn);
 
@@ -3343,7 +3343,7 @@ void VisualScriptEditor::_selected_connect_node(const String &p_text, const Stri
 
 	if (p_category == String("method")) {
 		Ref<VisualScriptFunctionCall> n;
-		n.instantiate();
+		New_instantiate(n);
 		if (!drop_path.is_empty()) {
 			if (drop_path == ".") {
 				n->set_call_mode(VisualScriptFunctionCall::CALL_MODE_SELF);
@@ -3361,7 +3361,7 @@ void VisualScriptEditor::_selected_connect_node(const String &p_text, const Stri
 		vnode = n;
 	} else if (p_category == String("set")) {
 		Ref<VisualScriptPropertySet> n;
-		n.instantiate();
+		New_instantiate(n);
 		if (!drop_path.is_empty()) {
 			if (drop_path == ".") {
 				n->set_call_mode(VisualScriptPropertySet::CALL_MODE_SELF);
@@ -3380,7 +3380,7 @@ void VisualScriptEditor::_selected_connect_node(const String &p_text, const Stri
 		script_prop_set = n;
 	} else if (p_category == String("get")) {
 		Ref<VisualScriptPropertyGet> n;
-		n.instantiate();
+		New_instantiate(n);
 		n->set_property(p_text);
 		if (!drop_path.is_empty()) {
 			if (drop_path == ".") {
@@ -3404,28 +3404,28 @@ void VisualScriptEditor::_selected_connect_node(const String &p_text, const Stri
 	if (p_category == String("action")) {
 		if (p_text == "VisualScriptCondition") {
 			Ref<VisualScriptCondition> n;
-			n.instantiate();
+			New_instantiate(n);
 			vnode = n;
 		}
 		if (p_text == "VisualScriptSwitch") {
 			Ref<VisualScriptSwitch> n;
-			n.instantiate();
+			New_instantiate(n);
 			vnode = n;
 		} else if (p_text == "VisualScriptSequence") {
 			Ref<VisualScriptSequence> n;
-			n.instantiate();
+			New_instantiate(n);
 			vnode = n;
 		} else if (p_text == "VisualScriptIterator") {
 			Ref<VisualScriptIterator> n;
-			n.instantiate();
+			New_instantiate(n);
 			vnode = n;
 		} else if (p_text == "VisualScriptWhile") {
 			Ref<VisualScriptWhile> n;
-			n.instantiate();
+			New_instantiate(n);
 			vnode = n;
 		} else if (p_text == "VisualScriptReturn") {
 			Ref<VisualScriptReturn> n;
-			n.instantiate();
+			New_instantiate(n);
 			vnode = n;
 		}
 	}
@@ -3621,7 +3621,7 @@ void VisualScriptEditor::_selected_new_virtual_method(const String &p_text, cons
 
 	selected = name;
 	Ref<VisualScriptFunction> func_node;
-	func_node.instantiate();
+	New_instantiate(func_node);
 	func_node->set_name(name);
 	int fn_id = script->get_available_id();
 	undo_redo->create_action(TTR("Add Function"));
@@ -3637,7 +3637,7 @@ void VisualScriptEditor::_selected_new_virtual_method(const String &p_text, cons
 	undo_redo->add_undo_method(script.ptr(), "remove_node", fn_id);
 	if (minfo.return_val.type != Variant::NIL || minfo.return_val.usage & PROPERTY_USAGE_NIL_IS_VARIANT) {
 		Ref<VisualScriptReturn> ret_node;
-		ret_node.instantiate();
+		New_instantiate(ret_node);
 		ret_node->set_return_type(minfo.return_val.type);
 		ret_node->set_enable_return_value(true);
 		ret_node->set_name(name);
@@ -4052,7 +4052,7 @@ void VisualScriptEditor::_menu_option(int p_what) {
 				Vector2 pos = _get_available_pos(false, script->get_node_position(start_node) - Vector2(80, 150));
 
 				Ref<VisualScriptFunction> func_node;
-				func_node.instantiate();
+				New_instantiate(func_node);
 				func_node->set_name(new_fn);
 
 				undo_redo->create_action(TTR("Create Function"));
@@ -4097,7 +4097,7 @@ void VisualScriptEditor::_menu_option(int p_what) {
 			int m = 1;
 			for (Set<int>::Element *G = end_nodes.front(); G; G = G->next()) {
 				Ref<VisualScriptReturn> ret_node;
-				ret_node.instantiate();
+				New_instantiate(ret_node);
 
 				int ret_id = fn_id + (m++);
 				selections.insert(ret_id);
@@ -4602,7 +4602,7 @@ void VisualScriptEditor::validate() {
 
 Ref<VisualScriptNode> VisualScriptCustomNodes::create_node_custom(const String &p_name) {
 	Ref<VisualScriptCustomNode> node;
-	node.instantiate();
+	New_instantiate(node);
 	node->set_script(singleton->custom_nodes[p_name]);
 	return node;
 }

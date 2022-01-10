@@ -1331,7 +1331,7 @@ void EditorNode::_get_scene_metadata(const String &p_file) {
 	String path = EditorSettings::get_singleton()->get_project_settings_dir().plus_file(p_file.get_file() + "-editstate-" + p_file.md5_text() + ".cfg");
 
 	Ref<ConfigFile> cf;
-	cf.instantiate();
+	New_instantiate(cf);
 
 	Error err = cf->load(path);
 	if (err != OK || !cf->has_section("editor_states")) {
@@ -1365,7 +1365,7 @@ void EditorNode::_set_scene_metadata(const String &p_file, int p_idx) {
 	String path = EditorSettings::get_singleton()->get_project_settings_dir().plus_file(p_file.get_file() + "-editstate-" + p_file.md5_text() + ".cfg");
 
 	Ref<ConfigFile> cf;
-	cf.instantiate();
+	New_instantiate(cf);
 
 	Dictionary md;
 
@@ -1510,7 +1510,7 @@ void EditorNode::_save_scene_with_preview(String p_file, int p_idx) {
 		// We cannot fallback on the 2D editor, because it may not have been used yet,
 		// which would result in an invalid texture.
 		if (c3d == 0 && c2d == 0) {
-			img.instantiate();
+			New_instantiate(img);
 			img->create(1, 1, false, Image::FORMAT_RGB8);
 		} else if (c3d < c2d) {
 			Ref<ViewportTexture> viewport_texture = scene_root->get_texture();
@@ -1702,10 +1702,10 @@ void EditorNode::_save_scene(String p_file, int idx) {
 		if (sdata.is_valid()) {
 			sdata->recreate_state();
 		} else {
-			sdata.instantiate();
+			New_instantiate(sdata);
 		}
 	} else {
-		sdata.instantiate();
+		New_instantiate(sdata);
 	}
 	Error err = sdata->pack(scene);
 
@@ -1939,11 +1939,11 @@ void EditorNode::_dialog_action(String p_file) {
 			}
 
 			Ref<ConfigFile> config;
-			config.instantiate();
+			New_instantiate(config);
 			Error err = config->load(EditorSettings::get_singleton()->get_editor_layouts_config());
 
 			if (err == ERR_FILE_CANT_OPEN || err == ERR_FILE_NOT_FOUND) {
-				config.instantiate(); // new config
+				New_instantiate(config); // new config
 			} else if (err != OK) {
 				show_warning(TTR("An error occurred while trying to save the editor layout.\nMake sure the editor's user data path is writable."));
 				return;
@@ -1967,7 +1967,7 @@ void EditorNode::_dialog_action(String p_file) {
 			}
 
 			Ref<ConfigFile> config;
-			config.instantiate();
+			New_instantiate(config);
 			Error err = config->load(EditorSettings::get_singleton()->get_editor_layouts_config());
 
 			if (err != OK || !config->has_section(p_file)) {
@@ -3254,7 +3254,7 @@ void EditorNode::set_addon_plugin_enabled(const String &p_addon, bool p_enabled,
 	}
 
 	Ref<ConfigFile> cf;
-	cf.instantiate();
+	New_instantiate(cf);
 	if (!DirAccess::exists(p_addon.get_base_dir())) {
 		_remove_plugin_from_enabled(p_addon);
 		WARN_PRINT("Addon '" + p_addon + "' failed to load. No directory found. Removing from enabled plugins.");
@@ -4520,7 +4520,7 @@ void EditorNode::_save_docks() {
 		return; // scanning, do not touch docks
 	}
 	Ref<ConfigFile> config;
-	config.instantiate();
+	New_instantiate(config);
 	// Load and amend existing config if it exists.
 	config->load(EditorSettings::get_singleton()->get_project_settings_dir().plus_file("editor_layout.cfg"));
 
@@ -4585,7 +4585,7 @@ void EditorNode::_dock_split_dragged(int ofs) {
 
 void EditorNode::_load_docks() {
 	Ref<ConfigFile> config;
-	config.instantiate();
+	New_instantiate(config);
 	Error err = config->load(EditorSettings::get_singleton()->get_project_settings_dir().plus_file("editor_layout.cfg"));
 	if (err != OK) {
 		// no config
@@ -4819,7 +4819,7 @@ bool EditorNode::has_scenes_in_session() {
 		return false;
 	}
 	Ref<ConfigFile> config;
-	config.instantiate();
+	New_instantiate(config);
 	Error err = config->load(EditorSettings::get_singleton()->get_project_settings_dir().plus_file("editor_layout.cfg"));
 	if (err != OK) {
 		return false;
@@ -4950,7 +4950,7 @@ void EditorNode::_update_layouts_menu() {
 	editor_layouts->add_shortcut(ED_SHORTCUT("layout/default", TTR("Default")), SETTINGS_LAYOUT_DEFAULT);
 
 	Ref<ConfigFile> config;
-	config.instantiate();
+	New_instantiate(config);
 	Error err = config->load(EditorSettings::get_singleton()->get_editor_layouts_config());
 	if (err != OK) {
 		return; // no config
@@ -4991,7 +4991,7 @@ void EditorNode::_layout_menu_option(int p_id) {
 		} break;
 		default: {
 			Ref<ConfigFile> config;
-			config.instantiate();
+			New_instantiate(config);
 			Error err = config->load(EditorSettings::get_singleton()->get_editor_layouts_config());
 			if (err != OK) {
 				return; // no config
@@ -5929,99 +5929,99 @@ EditorNode::EditorNode() {
 
 	{ // register importers at the beginning, so dialogs are created with the right extensions
 		Ref<ResourceImporterTexture> import_texture;
-		import_texture.instantiate();
+		New_instantiate(import_texture);
 		ResourceFormatImporter::get_singleton()->add_importer(import_texture);
 
 		Ref<ResourceImporterLayeredTexture> import_cubemap;
-		import_cubemap.instantiate();
+		New_instantiate(import_cubemap);
 		import_cubemap->set_mode(ResourceImporterLayeredTexture::MODE_CUBEMAP);
 		ResourceFormatImporter::get_singleton()->add_importer(import_cubemap);
 
 		Ref<ResourceImporterLayeredTexture> import_array;
-		import_array.instantiate();
+		New_instantiate(import_array);
 		import_array->set_mode(ResourceImporterLayeredTexture::MODE_2D_ARRAY);
 		ResourceFormatImporter::get_singleton()->add_importer(import_array);
 
 		Ref<ResourceImporterLayeredTexture> import_cubemap_array;
-		import_cubemap_array.instantiate();
+		New_instantiate(import_cubemap_array);
 		import_cubemap_array->set_mode(ResourceImporterLayeredTexture::MODE_CUBEMAP_ARRAY);
 		ResourceFormatImporter::get_singleton()->add_importer(import_cubemap_array);
 
 		Ref<ResourceImporterLayeredTexture> import_3d;
-		import_3d.instantiate();
+		New_instantiate(import_3d);
 		import_3d->set_mode(ResourceImporterLayeredTexture::MODE_3D);
 		ResourceFormatImporter::get_singleton()->add_importer(import_3d);
 
 		Ref<ResourceImporterImage> import_image;
-		import_image.instantiate();
+		New_instantiate(import_image);
 		ResourceFormatImporter::get_singleton()->add_importer(import_image);
 
 		Ref<ResourceImporterTextureAtlas> import_texture_atlas;
-		import_texture_atlas.instantiate();
+		New_instantiate(import_texture_atlas);
 		ResourceFormatImporter::get_singleton()->add_importer(import_texture_atlas);
 
 		Ref<ResourceImporterDynamicFont> import_font_data_dynamic;
-		import_font_data_dynamic.instantiate();
+		New_instantiate(import_font_data_dynamic);
 		ResourceFormatImporter::get_singleton()->add_importer(import_font_data_dynamic);
 
 		Ref<ResourceImporterBMFont> import_font_data_bmfont;
-		import_font_data_bmfont.instantiate();
+		New_instantiate(import_font_data_bmfont);
 		ResourceFormatImporter::get_singleton()->add_importer(import_font_data_bmfont);
 
 		Ref<ResourceImporterImageFont> import_font_data_image;
-		import_font_data_image.instantiate();
+		New_instantiate(import_font_data_image);
 		ResourceFormatImporter::get_singleton()->add_importer(import_font_data_image);
 
 		Ref<ResourceImporterCSVTranslation> import_csv_translation;
-		import_csv_translation.instantiate();
+		New_instantiate(import_csv_translation);
 		ResourceFormatImporter::get_singleton()->add_importer(import_csv_translation);
 
 		Ref<ResourceImporterWAV> import_wav;
-		import_wav.instantiate();
+		New_instantiate(import_wav);
 		ResourceFormatImporter::get_singleton()->add_importer(import_wav);
 
 		Ref<ResourceImporterOBJ> import_obj;
-		import_obj.instantiate();
+		New_instantiate(import_obj);
 		ResourceFormatImporter::get_singleton()->add_importer(import_obj);
 
 		Ref<ResourceImporterShaderFile> import_shader_file;
-		import_shader_file.instantiate();
+		New_instantiate(import_shader_file);
 		ResourceFormatImporter::get_singleton()->add_importer(import_shader_file);
 
 		Ref<ResourceImporterScene> import_scene;
-		import_scene.instantiate();
+		New_instantiate(import_scene);
 		ResourceFormatImporter::get_singleton()->add_importer(import_scene);
 
 		{
 			Ref<EditorSceneFormatImporterCollada> import_collada;
-			import_collada.instantiate();
+			New_instantiate(import_collada);
 			import_scene->add_importer(import_collada);
 
 			Ref<EditorOBJImporter> import_obj2;
-			import_obj2.instantiate();
+			New_instantiate(import_obj2);
 			import_scene->add_importer(import_obj2);
 
 			Ref<EditorSceneFormatImporterESCN> import_escn;
-			import_escn.instantiate();
+			New_instantiate(import_escn);
 			import_scene->add_importer(import_escn);
 		}
 
 		Ref<ResourceImporterBitMap> import_bitmap;
-		import_bitmap.instantiate();
+		New_instantiate(import_bitmap);
 		ResourceFormatImporter::get_singleton()->add_importer(import_bitmap);
 	}
 
 	{
 		Ref<EditorInspectorDefaultPlugin> eidp;
-		eidp.instantiate();
+		New_instantiate(eidp);
 		EditorInspector::add_inspector_plugin(eidp);
 
 		Ref<EditorInspectorRootMotionPlugin> rmp;
-		rmp.instantiate();
+		New_instantiate(rmp);
 		EditorInspector::add_inspector_plugin(rmp);
 
 		Ref<EditorInspectorShaderModePlugin> smp;
-		smp.instantiate();
+		New_instantiate(smp);
 		EditorInspector::add_inspector_plugin(smp);
 	}
 
@@ -6782,7 +6782,7 @@ EditorNode::EditorNode() {
 
 	const String docks_section = "docks";
 	overridden_default_layout = -1;
-	default_layout.instantiate();
+	New_instantiate(default_layout);
 	// Dock numbers are based on DockSlot enum value + 1
 	default_layout->set_value(docks_section, "dock_3", "Scene,Import");
 	default_layout->set_value(docks_section, "dock_4", "FileSystem");
@@ -7083,39 +7083,39 @@ EditorNode::EditorNode() {
 
 	{
 		Ref<StandardMaterial3DConversionPlugin> spatial_mat_convert;
-		spatial_mat_convert.instantiate();
+		New_instantiate(spatial_mat_convert);
 		resource_conversion_plugins.push_back(spatial_mat_convert);
 
 		Ref<ORMMaterial3DConversionPlugin> orm_mat_convert;
-		orm_mat_convert.instantiate();
+		New_instantiate(orm_mat_convert);
 		resource_conversion_plugins.push_back(orm_mat_convert);
 
 		Ref<CanvasItemMaterialConversionPlugin> canvas_item_mat_convert;
-		canvas_item_mat_convert.instantiate();
+		New_instantiate(canvas_item_mat_convert);
 		resource_conversion_plugins.push_back(canvas_item_mat_convert);
 
 		Ref<ParticlesMaterialConversionPlugin> particles_mat_convert;
-		particles_mat_convert.instantiate();
+		New_instantiate(particles_mat_convert);
 		resource_conversion_plugins.push_back(particles_mat_convert);
 
 		Ref<ProceduralSkyMaterialConversionPlugin> procedural_sky_mat_convert;
-		procedural_sky_mat_convert.instantiate();
+		New_instantiate(procedural_sky_mat_convert);
 		resource_conversion_plugins.push_back(procedural_sky_mat_convert);
 
 		Ref<PanoramaSkyMaterialConversionPlugin> panorama_sky_mat_convert;
-		panorama_sky_mat_convert.instantiate();
+		New_instantiate(panorama_sky_mat_convert);
 		resource_conversion_plugins.push_back(panorama_sky_mat_convert);
 
 		Ref<PhysicalSkyMaterialConversionPlugin> physical_sky_mat_convert;
-		physical_sky_mat_convert.instantiate();
+		New_instantiate(physical_sky_mat_convert);
 		resource_conversion_plugins.push_back(physical_sky_mat_convert);
 
 		Ref<FogMaterialConversionPlugin> fog_mat_convert;
-		fog_mat_convert.instantiate();
+		New_instantiate(fog_mat_convert);
 		resource_conversion_plugins.push_back(fog_mat_convert);
 
 		Ref<VisualShaderConversionPlugin> vshader_convert;
-		vshader_convert.instantiate();
+		New_instantiate(vshader_convert);
 		resource_conversion_plugins.push_back(vshader_convert);
 	}
 	update_spinner_step_msec = OS::get_singleton()->get_ticks_msec();
@@ -7128,12 +7128,12 @@ EditorNode::EditorNode() {
 	editor_plugins_force_input_forwarding = memnew(EditorPluginList);
 
 	Ref<EditorExportTextSceneToBinaryPlugin> export_text_to_binary_plugin;
-	export_text_to_binary_plugin.instantiate();
+	New_instantiate(export_text_to_binary_plugin);
 
 	EditorExport::get_singleton()->add_export_plugin(export_text_to_binary_plugin);
 
 	Ref<PackedSceneEditorTranslationParserPlugin> packed_scene_translation_parser_plugin;
-	packed_scene_translation_parser_plugin.instantiate();
+	New_instantiate(packed_scene_translation_parser_plugin);
 	EditorTranslationParser::get_singleton()->add_parser(packed_scene_translation_parser_plugin, EditorTranslationParser::STANDARD);
 
 	_edit_current();

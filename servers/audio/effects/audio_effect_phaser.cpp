@@ -80,7 +80,7 @@ void AudioEffectPhaserInstance::process(const AudioFrame *p_src_frames, AudioFra
 
 Ref<AudioEffectInstance> AudioEffectPhaser::instantiate() {
 	Ref<AudioEffectPhaserInstance> ins;
-	ins.instantiate();
+	New_instantiate(ins);
 	ins->base = Ref<AudioEffectPhaser>(this);
 	ins->phase = 0;
 	ins->h = AudioFrame(0, 0);

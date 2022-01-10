@@ -65,7 +65,7 @@ EditorDebuggerNode::EditorDebuggerNode() {
 	add_child(tabs);
 
 	Ref<StyleBoxEmpty> empty;
-	empty.instantiate();
+	New_instantiate(empty);
 	tabs->add_theme_style_override("panel", empty);
 
 	auto_switch_remote_scene_tree = EDITOR_DEF("debugger/auto_switch_to_remote_scene_tree", false);

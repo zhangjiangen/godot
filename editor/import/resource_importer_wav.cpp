@@ -508,7 +508,7 @@ Error ResourceImporterWAV::import(const String &p_source_file, const String &p_s
 	}
 
 	Ref<AudioStreamSample> sample;
-	sample.instantiate();
+	New_instantiate(sample);
 	sample->set_data(dst_data);
 	sample->set_format(dst_format);
 	sample->set_mix_rate(rate);

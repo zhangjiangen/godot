@@ -39,8 +39,8 @@ GradientEdit::GradientEdit() {
 	picker = memnew(ColorPicker);
 	popup->add_child(picker);
 
-	gradient_cache.instantiate();
-	preview_texture.instantiate();
+	New_instantiate(gradient_cache);
+	New_instantiate(preview_texture);
 
 	preview_texture->set_width(1024);
 	add_child(popup, false, INTERNAL_MODE_FRONT);

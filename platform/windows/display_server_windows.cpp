@@ -1819,7 +1819,7 @@ void DisplayServerWindows::_touch_event(WindowID p_window, bool p_pressed, float
 	}
 
 	Ref<InputEventScreenTouch> event;
-	event.instantiate();
+	New_instantiate(event);
 	event->set_index(idx);
 	event->set_window_id(p_window);
 	event->set_pressed(p_pressed);
@@ -1839,7 +1839,7 @@ void DisplayServerWindows::_drag_event(WindowID p_window, float p_x, float p_y, 
 	}
 
 	Ref<InputEventScreenDrag> event;
-	event.instantiate();
+	New_instantiate(event);
 	event->set_window_id(p_window);
 	event->set_index(idx);
 	event->set_position(Vector2(p_x, p_y));
@@ -2058,7 +2058,7 @@ LRESULT DisplayServerWindows::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 
 			if (raw->header.dwType == RIM_TYPEMOUSE) {
 				Ref<InputEventMouseMotion> mm;
-				mm.instantiate();
+				New_instantiate(mm);
 
 				mm->set_window_id(window_id);
 				mm->set_ctrl_pressed(control_mem);
@@ -2152,7 +2152,7 @@ LRESULT DisplayServerWindows::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 						break;
 
 					Ref<InputEventMouseMotion> mm;
-					mm.instantiate();
+					New_instantiate(mm);
 					mm->set_window_id(window_id);
 					mm->set_ctrl_pressed(GetKeyState(VK_CONTROL) < 0);
 					mm->set_shift_pressed(GetKeyState(VK_SHIFT) < 0);
@@ -2281,7 +2281,7 @@ LRESULT DisplayServerWindows::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			}
 
 			Ref<InputEventMouseMotion> mm;
-			mm.instantiate();
+			New_instantiate(mm);
 
 			mm->set_window_id(window_id);
 			if (pen_info.penMask & PEN_MASK_PRESSURE) {
@@ -2382,7 +2382,7 @@ LRESULT DisplayServerWindows::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			}
 
 			Ref<InputEventMouseMotion> mm;
-			mm.instantiate();
+			New_instantiate(mm);
 			mm->set_window_id(window_id);
 			mm->set_ctrl_pressed((wParam & MK_CONTROL) != 0);
 			mm->set_shift_pressed((wParam & MK_SHIFT) != 0);
@@ -2465,7 +2465,7 @@ LRESULT DisplayServerWindows::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 		case WM_XBUTTONDOWN:
 		case WM_XBUTTONUP: {
 			Ref<InputEventMouseButton> mb;
-			mb.instantiate();
+			New_instantiate(mb);
 			mb->set_window_id(window_id);
 
 			switch (uMsg) {
@@ -2924,7 +2924,7 @@ void DisplayServerWindows::_process_key_events() {
 						prev_wc = 0;
 					}
 					Ref<InputEventKey> k;
-					k.instantiate();
+					New_instantiate(k);
 
 					k->set_window_id(ke.window_id);
 					k->set_shift_pressed(ke.shift);
@@ -2951,7 +2951,7 @@ void DisplayServerWindows::_process_key_events() {
 			case WM_KEYUP:
 			case WM_KEYDOWN: {
 				Ref<InputEventKey> k;
-				k.instantiate();
+				New_instantiate(k);
 
 				k->set_window_id(ke.window_id);
 				k->set_shift_pressed(ke.shift);

@@ -414,7 +414,7 @@ void AnimationNodeBlendSpace1DEditor::_add_menu_type(int p_index) {
 
 void AnimationNodeBlendSpace1DEditor::_add_animation_type(int p_index) {
 	Ref<AnimationNodeAnimation> anim;
-	anim.instantiate();
+	New_instantiate(anim);
 
 	anim->set_animation(animations_to_add[p_index]);
 
@@ -595,7 +595,7 @@ AnimationNodeBlendSpace1DEditor::AnimationNodeBlendSpace1DEditor() {
 	add_child(top_hb);
 
 	Ref<ButtonGroup> bg;
-	bg.instantiate();
+	New_instantiate(bg);
 
 	tool_blend = memnew(Button);
 	tool_blend->set_flat(true);

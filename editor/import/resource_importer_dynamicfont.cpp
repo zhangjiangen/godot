@@ -184,7 +184,7 @@ Error ResourceImporterDynamicFont::import(const String &p_source_file, const Str
 
 	// Create font.
 	Ref<FontData> font;
-	font.instantiate();
+	New_instantiate(font);
 	font->set_data(data);
 	font->set_antialiased(antialiased);
 	font->set_multichannel_signed_distance_field(msdf);

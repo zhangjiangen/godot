@@ -53,7 +53,7 @@
 #ifdef TOOLS_ENABLED
 static void _editor_init() {
 	Ref<EditorSceneFormatImporterGLTF> import_gltf;
-	import_gltf.instantiate();
+	New_instantiate(import_gltf);
 	ResourceImporterScene::get_singleton()->add_importer(import_gltf);
 }
 #endif

@@ -135,7 +135,7 @@ void ShaderCreateDialog::_create_new() {
 
 	if (language_menu->get_selected() == int(SHADER_TYPE_TEXT)) {
 		Ref<Shader> text_shader;
-		text_shader.instantiate();
+		New_instantiate(text_shader);
 		shader = text_shader;
 
 		StringBuilder code;
@@ -178,7 +178,7 @@ void ShaderCreateDialog::_create_new() {
 		text_shader->set_code(code.as_string());
 	} else {
 		Ref<VisualShader> visual_shader;
-		visual_shader.instantiate();
+		New_instantiate(visual_shader);
 		shader = visual_shader;
 		visual_shader->set_engine_version(Engine::get_singleton()->get_version_info());
 		visual_shader->set_mode(Shader::Mode(current_mode));

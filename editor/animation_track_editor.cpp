@@ -3939,7 +3939,7 @@ Ref<Animation> AnimationTrackEditor::_create_and_get_reset_animation() {
 		return player->get_animation(SceneStringNames::get_singleton()->RESET);
 	} else {
 		Ref<Animation> reset_anim;
-		reset_anim.instantiate();
+		New_instantiate(reset_anim);
 		reset_anim->set_length(ANIM_MIN_LENGTH);
 		undo_redo->add_do_method(player, "add_animation", SceneStringNames::get_singleton()->RESET, reset_anim);
 		undo_redo->add_do_method(AnimationPlayerEditor::get_singleton(), "_animation_player_changed", player);
@@ -6270,7 +6270,7 @@ AnimationTrackEditor::AnimationTrackEditor() {
 	// Default Plugins.
 
 	Ref<AnimationTrackEditDefaultPlugin> def_plugin;
-	def_plugin.instantiate();
+	New_instantiate(def_plugin);
 	add_track_edit_plugin(def_plugin);
 
 	// Dialogs.

@@ -64,7 +64,7 @@ Ref<KinematicCollision2D> PhysicsBody2D::_move(const Vector2 &p_linear_velocity,
 	if (move_and_collide(parameters, result, p_test_only)) {
 		// Create a new instance when the cached reference is invalid or still in use in script.
 		if (motion_cache.is_null() || motion_cache->reference_get_count() > 1) {
-			motion_cache.instantiate();
+			New_instantiate(motion_cache);
 			motion_cache->owner = this;
 		}
 
@@ -1555,7 +1555,7 @@ Ref<KinematicCollision2D> CharacterBody2D::_get_slide_collision(int p_bounce) {
 
 	// Create a new instance when the cached reference is invalid or still in use in script.
 	if (slide_colliders[p_bounce].is_null() || slide_colliders[p_bounce]->reference_get_count() > 1) {
-		slide_colliders.write[p_bounce].instantiate();
+		New_instantiate(slide_colliders.write[p_bounce]);
 		slide_colliders.write[p_bounce]->owner = this;
 	}
 

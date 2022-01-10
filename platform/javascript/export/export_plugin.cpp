@@ -161,7 +161,7 @@ Error EditorExportPlatformJavaScript::_add_manifest_icon(const String &p_path, c
 
 	Ref<Image> icon;
 	if (!p_icon.is_empty()) {
-		icon.instantiate();
+		New_instantiate(icon);
 		const Error err = ImageLoader::load_image(p_icon, icon);
 		if (err != OK) {
 			EditorNode::get_singleton()->show_warning(TTR("Could not read file:") + "\n" + p_icon);
@@ -645,22 +645,22 @@ void EditorExportPlatformJavaScript::_server_thread_poll(void *data) {
 }
 
 EditorExportPlatformJavaScript::EditorExportPlatformJavaScript() {
-	server.instantiate();
+	New_instantiate(server);
 	server_thread.start(_server_thread_poll, this);
 
 	Ref<Image> img = memnew(Image(_javascript_logo));
-	logo.instantiate();
+	New_instantiate(logo);
 	logo->create_from_image(img);
 
 	img = Ref<Image>(memnew(Image(_javascript_run_icon)));
-	run_icon.instantiate();
+	New_instantiate(run_icon);
 	run_icon->create_from_image(img);
 
 	Ref<Theme> theme = EditorNode::get_singleton()->get_editor_theme();
 	if (theme.is_valid()) {
 		stop_icon = theme->get_icon("Stop", "EditorIcons");
 	} else {
-		stop_icon.instantiate();
+		New_instantiate(stop_icon);
 	}
 }
 

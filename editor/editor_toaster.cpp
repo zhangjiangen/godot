@@ -462,14 +462,14 @@ EditorToaster::EditorToaster() {
 	add_child(vbox_container);
 
 	// Theming (background).
-	info_panel_style_background.instantiate();
+	New_instantiate(info_panel_style_background);
 	info_panel_style_background->set_corner_radius_all(stylebox_radius * EDSCALE);
 
-	warning_panel_style_background.instantiate();
+	New_instantiate(warning_panel_style_background);
 	warning_panel_style_background->set_border_width(SIDE_LEFT, stylebox_radius * EDSCALE);
 	warning_panel_style_background->set_corner_radius_all(stylebox_radius * EDSCALE);
 
-	error_panel_style_background.instantiate();
+	New_instantiate(error_panel_style_background);
 	error_panel_style_background->set_border_width(SIDE_LEFT, stylebox_radius * EDSCALE);
 	error_panel_style_background->set_corner_radius_all(stylebox_radius * EDSCALE);
 
@@ -482,14 +482,14 @@ EditorToaster::EditorToaster() {
 	}
 
 	// Theming (progress).
-	info_panel_style_progress.instantiate();
+	New_instantiate(info_panel_style_progress);
 	info_panel_style_progress->set_corner_radius_all(stylebox_radius * EDSCALE);
 
-	warning_panel_style_progress.instantiate();
+	New_instantiate(warning_panel_style_progress);
 	warning_panel_style_progress->set_border_width(SIDE_LEFT, stylebox_radius * EDSCALE);
 	warning_panel_style_progress->set_corner_radius_all(stylebox_radius * EDSCALE);
 
-	error_panel_style_progress.instantiate();
+	New_instantiate(error_panel_style_progress);
 	error_panel_style_progress->set_border_width(SIDE_LEFT, stylebox_radius * EDSCALE);
 	error_panel_style_progress->set_corner_radius_all(stylebox_radius * EDSCALE);
 

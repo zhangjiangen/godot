@@ -79,7 +79,7 @@ private:
 		bool operator<(const Item &p_another) const { return text < p_another.text; }
 
 		Item() {
-			text_buf.instantiate();
+			New_instantiate(text_buf);
 		}
 	};
 

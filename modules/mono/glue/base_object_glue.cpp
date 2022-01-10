@@ -153,10 +153,10 @@ MonoObject *godot_icall_Object_weakref(Object *p_ptr) {
 			return nullptr;
 		}
 
-		wref.instantiate();
+		New_instantiate(wref);
 		wref->set_ref(r);
 	} else {
-		wref.instantiate();
+		New_instantiate(wref);
 		wref->set_obj(p_ptr);
 	}
 

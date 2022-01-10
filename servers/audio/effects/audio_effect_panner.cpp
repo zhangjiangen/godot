@@ -42,7 +42,7 @@ void AudioEffectPannerInstance::process(const AudioFrame *p_src_frames, AudioFra
 
 Ref<AudioEffectInstance> AudioEffectPanner::instantiate() {
 	Ref<AudioEffectPannerInstance> ins;
-	ins.instantiate();
+	New_instantiate(ins);
 	ins->base = Ref<AudioEffectPanner>(this);
 	return ins;
 }

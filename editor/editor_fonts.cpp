@@ -69,7 +69,7 @@
 
 #define MAKE_DEFAULT_FONT(m_name, m_variations)                       \
 	Ref<Font> m_name;                                                 \
-	m_name.instantiate();                                             \
+	New_instantiate(m_name);                                             \
 	if (CustomFont.is_valid()) {                                      \
 		m_name->add_data(CustomFont);                                 \
 		m_name->add_data(DefaultFont);                                \
@@ -95,7 +95,7 @@
 
 #define MAKE_BOLD_FONT(m_name, m_variations)                          \
 	Ref<Font> m_name;                                                 \
-	m_name.instantiate();                                             \
+	New_instantiate(m_name);                                             \
 	if (CustomFontBold.is_valid()) {                                  \
 		m_name->add_data(CustomFontBold);                             \
 		m_name->add_data(DefaultFontBold);                            \
@@ -121,7 +121,7 @@
 
 #define MAKE_SOURCE_FONT(m_name, m_variations)                        \
 	Ref<Font> m_name;                                                 \
-	m_name.instantiate();                                             \
+	New_instantiate(m_name);                                             \
 	if (CustomFontSource.is_valid()) {                                \
 		m_name->add_data(CustomFontSource);                           \
 		m_name->add_data(dfmono);                                     \
@@ -147,7 +147,7 @@
 
 Ref<FontData> load_cached_external_font(const String &p_path, TextServer::Hinting p_hinting, bool p_aa, bool p_autohint) {
 	Ref<FontData> font;
-	font.instantiate();
+	New_instantiate(font);
 
 	Vector<uint8_t> data = FileAccess::get_file_as_array(p_path);
 
@@ -161,7 +161,7 @@ Ref<FontData> load_cached_external_font(const String &p_path, TextServer::Hintin
 
 Ref<FontData> load_cached_internal_font(const uint8_t *p_data, size_t p_size, TextServer::Hinting p_hinting, bool p_aa, bool p_autohint) {
 	Ref<FontData> font;
-	font.instantiate();
+	New_instantiate(font);
 
 	font->set_data_ptr(p_data, p_size);
 	font->set_antialiased(p_aa);

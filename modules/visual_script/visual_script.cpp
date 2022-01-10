@@ -2334,7 +2334,7 @@ bool VisualScriptLanguage::is_using_templates() {
 
 Ref<Script> VisualScriptLanguage::make_template(const String &p_template, const String &p_class_name, const String &p_base_class_name) const {
 	Ref<VisualScript> script;
-	script.instantiate();
+	New_instantiate(script);
 	script->set_instance_base_type(p_base_class_name);
 	return script;
 }

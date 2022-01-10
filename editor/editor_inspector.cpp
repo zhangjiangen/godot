@@ -2067,8 +2067,8 @@ VBoxContainer *EditorInspectorArray::get_vbox(int p_index) {
 EditorInspectorArray::EditorInspectorArray() {
 	set_mouse_filter(Control::MOUSE_FILTER_STOP);
 
-	odd_style.instantiate();
-	even_style.instantiate();
+	New_instantiate(odd_style);
+	New_instantiate(even_style);
 
 	rmb_popup = memnew(PopupMenu);
 	rmb_popup->add_item(TTR("Move Up"), OPTION_MOVE_UP);

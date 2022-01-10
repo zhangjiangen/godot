@@ -192,7 +192,7 @@ RootMotionView::RootMotionView() {
 	if (Engine::get_singleton()->is_editor_hint()) {
 		set_process_internal(true);
 	}
-	immediate.instantiate();
+	New_instantiate(immediate);
 	set_base(immediate->get_rid());
 }
 

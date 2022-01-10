@@ -54,7 +54,7 @@ void VoxelGIData::_set_data(const Dictionary &p_data) {
 	} else if (p_data.has("octree_df_png")) {
 		Vector<uint8_t> octree_df_png = p_data["octree_df_png"];
 		Ref<Image> img;
-		img.instantiate();
+		New_instantiate(img);
 		Error err = img->load_png_from_buffer(octree_df_png);
 		ERR_FAIL_COND(err != OK);
 		ERR_FAIL_COND(img->get_format() != Image::FORMAT_L8);
@@ -75,7 +75,7 @@ Dictionary VoxelGIData::_get_data() const {
 	d["octree_data"] = get_data_cells();
 	if (otsize != Vector3i()) {
 		Ref<Image> img;
-		img.instantiate();
+		New_instantiate(img);
 		img->create(otsize.x * otsize.y, otsize.z, false, Image::FORMAT_L8, get_distance_field());
 		Vector<uint8_t> df_png = img->save_png_to_buffer();
 		ERR_FAIL_COND_V(df_png.size() == 0, Dictionary());
@@ -418,7 +418,7 @@ void VoxelGI::bake(Node *p_from_node, bool p_create_visual_debug) {
 		Ref<VoxelGIData> probe_data = get_probe_data();
 
 		if (probe_data.is_null()) {
-			probe_data.instantiate();
+			New_instantiate(probe_data);
 		}
 
 		if (bake_step_function) {

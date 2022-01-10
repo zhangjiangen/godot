@@ -268,25 +268,25 @@ void register_scene_types() {
 
 	Node::init_node_hrcr();
 
-	resource_loader_stream_texture.instantiate();
+	New_instantiate(resource_loader_stream_texture);
 	ResourceLoader::add_resource_format_loader(resource_loader_stream_texture);
 
-	resource_loader_texture_layered.instantiate();
+	New_instantiate(resource_loader_texture_layered);
 	ResourceLoader::add_resource_format_loader(resource_loader_texture_layered);
 
-	resource_loader_texture_3d.instantiate();
+	New_instantiate(resource_loader_texture_3d);
 	ResourceLoader::add_resource_format_loader(resource_loader_texture_3d);
 
-	resource_saver_text.instantiate();
+	New_instantiate(resource_saver_text);
 	ResourceSaver::add_resource_format_saver(resource_saver_text, true);
 
-	resource_loader_text.instantiate();
+	New_instantiate(resource_loader_text);
 	ResourceLoader::add_resource_format_loader(resource_loader_text, true);
 
-	resource_saver_shader.instantiate();
+	New_instantiate(resource_saver_shader);
 	ResourceSaver::add_resource_format_saver(resource_saver_shader, true);
 
-	resource_loader_shader.instantiate();
+	New_instantiate(resource_loader_shader);
 	ResourceLoader::add_resource_format_loader(resource_loader_shader, true);
 
 	OS::get_singleton()->yield(); // may take time to init

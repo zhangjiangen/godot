@@ -39,11 +39,11 @@ static Error fixup_embedded_pck(const String &p_path, int64_t p_embedded_start, 
 
 void register_linuxbsd_exporter() {
 	Ref<EditorExportPlatformPC> platform;
-	platform.instantiate();
+	New_instantiate(platform);
 
 	Ref<Image> img = memnew(Image(_linuxbsd_logo));
 	Ref<ImageTexture> logo;
-	logo.instantiate();
+	New_instantiate(logo);
 	logo->create_from_image(img);
 	platform->set_logo(logo);
 	platform->set_name("Linux/X11");

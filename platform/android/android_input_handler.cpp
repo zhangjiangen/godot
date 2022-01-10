@@ -80,7 +80,7 @@ void AndroidInputHandler::process_key_event(int p_keycode, int p_scancode, int p
 	}
 
 	Ref<InputEventKey> ev;
-	ev.instantiate();
+	New_instantiate(ev);
 	int val = unicode;
 	Key keycode = android_get_keysym(p_keycode);
 	Key phy_keycode = android_get_keysym(p_scancode);
@@ -129,7 +129,7 @@ void AndroidInputHandler::process_touch(int p_event, int p_pointer, const Vector
 				//end all if exist
 				for (int i = 0; i < touch.size(); i++) {
 					Ref<InputEventScreenTouch> ev;
-					ev.instantiate();
+					New_instantiate(ev);
 					ev->set_index(touch[i].id);
 					ev->set_pressed(false);
 					ev->set_position(touch[i].pos);
@@ -146,7 +146,7 @@ void AndroidInputHandler::process_touch(int p_event, int p_pointer, const Vector
 			//send touch
 			for (int i = 0; i < touch.size(); i++) {
 				Ref<InputEventScreenTouch> ev;
-				ev.instantiate();
+				New_instantiate(ev);
 				ev->set_index(touch[i].id);
 				ev->set_pressed(true);
 				ev->set_position(touch[i].pos);
@@ -172,7 +172,7 @@ void AndroidInputHandler::process_touch(int p_event, int p_pointer, const Vector
 					continue; //no move unncesearily
 
 				Ref<InputEventScreenDrag> ev;
-				ev.instantiate();
+				New_instantiate(ev);
 				ev->set_index(touch[i].id);
 				ev->set_position(p_points[idx].pos);
 				ev->set_relative(p_points[idx].pos - touch[i].pos);
@@ -187,7 +187,7 @@ void AndroidInputHandler::process_touch(int p_event, int p_pointer, const Vector
 				//end all if exist
 				for (int i = 0; i < touch.size(); i++) {
 					Ref<InputEventScreenTouch> ev;
-					ev.instantiate();
+					New_instantiate(ev);
 					ev->set_index(touch[i].id);
 					ev->set_pressed(false);
 					ev->set_position(touch[i].pos);
@@ -203,7 +203,7 @@ void AndroidInputHandler::process_touch(int p_event, int p_pointer, const Vector
 					touch.push_back(tp);
 
 					Ref<InputEventScreenTouch> ev;
-					ev.instantiate();
+					New_instantiate(ev);
 
 					ev->set_index(tp.id);
 					ev->set_pressed(true);
@@ -218,7 +218,7 @@ void AndroidInputHandler::process_touch(int p_event, int p_pointer, const Vector
 			for (int i = 0; i < touch.size(); i++) {
 				if (touch[i].id == p_pointer) {
 					Ref<InputEventScreenTouch> ev;
-					ev.instantiate();
+					New_instantiate(ev);
 					ev->set_index(touch[i].id);
 					ev->set_pressed(false);
 					ev->set_position(touch[i].pos);
@@ -239,7 +239,7 @@ void AndroidInputHandler::process_hover(int p_type, Point2 p_pos) {
 		case AMOTION_EVENT_ACTION_HOVER_ENTER: // hover enter
 		case AMOTION_EVENT_ACTION_HOVER_EXIT: { // hover exit
 			Ref<InputEventMouseMotion> ev;
-			ev.instantiate();
+			New_instantiate(ev);
 			_set_key_modifier_state(ev);
 			ev->set_position(p_pos);
 			ev->set_global_position(p_pos);
@@ -256,7 +256,7 @@ void AndroidInputHandler::process_mouse_event(int input_device, int event_action
 		case AMOTION_EVENT_ACTION_BUTTON_PRESS:
 		case AMOTION_EVENT_ACTION_BUTTON_RELEASE: {
 			Ref<InputEventMouseButton> ev;
-			ev.instantiate();
+			New_instantiate(ev);
 			_set_key_modifier_state(ev);
 			if ((input_device & AINPUT_SOURCE_MOUSE) == AINPUT_SOURCE_MOUSE) {
 				ev->set_position(event_pos);
@@ -277,7 +277,7 @@ void AndroidInputHandler::process_mouse_event(int input_device, int event_action
 
 		case AMOTION_EVENT_ACTION_MOVE: {
 			Ref<InputEventMouseMotion> ev;
-			ev.instantiate();
+			New_instantiate(ev);
 			_set_key_modifier_state(ev);
 			if ((input_device & AINPUT_SOURCE_MOUSE) == AINPUT_SOURCE_MOUSE) {
 				ev->set_position(event_pos);
@@ -294,7 +294,7 @@ void AndroidInputHandler::process_mouse_event(int input_device, int event_action
 		} break;
 		case AMOTION_EVENT_ACTION_SCROLL: {
 			Ref<InputEventMouseButton> ev;
-			ev.instantiate();
+			New_instantiate(ev);
 			if ((input_device & AINPUT_SOURCE_MOUSE) == AINPUT_SOURCE_MOUSE) {
 				ev->set_position(event_pos);
 				ev->set_global_position(event_pos);
@@ -335,7 +335,7 @@ void AndroidInputHandler::_wheel_button_click(MouseButton event_buttons_mask, co
 void AndroidInputHandler::process_double_tap(int event_android_button_mask, Point2 p_pos) {
 	MouseButton event_button_mask = _android_button_mask_to_godot_button_mask(event_android_button_mask);
 	Ref<InputEventMouseButton> ev;
-	ev.instantiate();
+	New_instantiate(ev);
 	_set_key_modifier_state(ev);
 	ev->set_position(p_pos);
 	ev->set_global_position(p_pos);
@@ -386,7 +386,7 @@ MouseButton AndroidInputHandler::_android_button_mask_to_godot_button_mask(int a
 
 void AndroidInputHandler::process_scroll(Point2 p_pos) {
 	Ref<InputEventPanGesture> ev;
-	ev.instantiate();
+	New_instantiate(ev);
 	_set_key_modifier_state(ev);
 	ev->set_position(p_pos);
 	ev->set_delta(p_pos - scroll_prev_pos);

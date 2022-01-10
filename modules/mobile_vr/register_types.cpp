@@ -38,7 +38,7 @@ void register_mobile_vr_types() {
 	GDREGISTER_CLASS(MobileVRInterface);
 
 	if (XRServer::get_singleton()) {
-		mobile_vr.instantiate();
+		New_instantiate(mobile_vr);
 		XRServer::get_singleton()->add_interface(mobile_vr);
 	}
 }

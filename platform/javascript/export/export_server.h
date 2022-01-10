@@ -90,7 +90,7 @@ public:
 		mimes["png"] = "image/png";
 		mimes["svg"] = "image/svg";
 		mimes["wasm"] = "application/wasm";
-		server.instantiate();
+		New_instantiate(server);
 		stop();
 	}
 

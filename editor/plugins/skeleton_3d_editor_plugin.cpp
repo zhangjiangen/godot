@@ -824,7 +824,7 @@ void fragment() {
 
 	handles_mesh_instance = memnew(MeshInstance3D);
 	handles_mesh_instance->set_cast_shadows_setting(GeometryInstance3D::SHADOW_CASTING_SETTING_OFF);
-	handles_mesh.instantiate();
+	New_instantiate(handles_mesh);
 	handles_mesh_instance->set_mesh(handles_mesh);
 }
 

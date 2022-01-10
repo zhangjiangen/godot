@@ -300,7 +300,7 @@ void AudioEffectPitchShiftInstance::process(const AudioFrame *p_src_frames, Audi
 
 Ref<AudioEffectInstance> AudioEffectPitchShift::instantiate() {
 	Ref<AudioEffectPitchShiftInstance> ins;
-	ins.instantiate();
+	New_instantiate(ins);
 	ins->base = Ref<AudioEffectPitchShift>(this);
 	static const int fft_sizes[FFT_SIZE_MAX] = { 256, 512, 1024, 2048, 4096 };
 	ins->fft_size = fft_sizes[fft_size];

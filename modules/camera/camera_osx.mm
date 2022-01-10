@@ -163,7 +163,7 @@
 			uint8_t *w = img_data[0].ptrw();
 			memcpy(w, dataY, new_width * new_height);
 
-			img[0].instantiate();
+			New_instantiate(img[0]);
 			img[0]->create(new_width, new_height, 0, Image::FORMAT_R8, img_data[0]);
 		}
 
@@ -182,7 +182,7 @@
 			memcpy(w, dataCbCr, 2 * new_width * new_height);
 
 			///TODO OpenGL doesn't support FORMAT_RG8, need to do some form of conversion
-			img[1].instantiate();
+			New_instantiate(img[1]);
 			img[1]->create(new_width, new_height, 0, Image::FORMAT_RG8, img_data[1]);
 		}
 
@@ -357,7 +357,7 @@ void CameraOSX::update_feeds() {
 
 		if (!found) {
 			Ref<CameraFeedOSX> newfeed;
-			newfeed.instantiate();
+			New_instantiate(newfeed);
 			newfeed->set_device(device);
 
 			// assume display camera so inverse

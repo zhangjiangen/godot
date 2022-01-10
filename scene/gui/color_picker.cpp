@@ -105,7 +105,7 @@ Ref<Shader> ColorPicker::wheel_shader;
 Ref<Shader> ColorPicker::circle_shader;
 
 void ColorPicker::init_shaders() {
-	wheel_shader.instantiate();
+	New_instantiate(wheel_shader);
 	wheel_shader->set_code(R"(
 // ColorPicker wheel shader.
 
@@ -129,7 +129,7 @@ void fragment() {
 }
 )");
 
-	circle_shader.instantiate();
+	New_instantiate(circle_shader);
 	circle_shader->set_code(R"(
 // ColorPicker circle shader.
 
@@ -1240,9 +1240,9 @@ ColorPicker::ColorPicker() :
 	wheel_edit->set_v_size_flags(SIZE_EXPAND_FILL);
 	hb_edit->add_child(wheel_edit);
 
-	wheel_mat.instantiate();
+	New_instantiate(wheel_mat);
 	wheel_mat->set_shader(wheel_shader);
-	circle_mat.instantiate();
+	New_instantiate(circle_mat);
 	circle_mat->set_shader(circle_shader);
 
 	wheel_margin->add_theme_constant_override("margin_bottom", 8);

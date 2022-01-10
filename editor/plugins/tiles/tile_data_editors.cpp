@@ -745,7 +745,7 @@ GenericTilePolygonEditor::GenericTilePolygonEditor() {
 	toolbar = memnew(HBoxContainer);
 	add_child(toolbar);
 
-	tools_button_group.instantiate();
+	New_instantiate(tools_button_group);
 
 	button_create = memnew(Button);
 	button_create->set_flat(true);
@@ -1260,7 +1260,7 @@ void TileDataOcclusionShapeEditor::draw_over_tile(CanvasItem *p_canvas_item, Tra
 
 Variant TileDataOcclusionShapeEditor::_get_painted_value() {
 	Ref<OccluderPolygon2D> occluder_polygon;
-	occluder_polygon.instantiate();
+	New_instantiate(occluder_polygon);
 	if (polygon_editor->get_polygon_count() >= 1) {
 		occluder_polygon->set_polygon(polygon_editor->get_polygon(0));
 	}
@@ -2508,7 +2508,7 @@ TileDataTerrainsEditor::~TileDataTerrainsEditor() {
 
 Variant TileDataNavigationEditor::_get_painted_value() {
 	Ref<NavigationPolygon> navigation_polygon;
-	navigation_polygon.instantiate();
+	New_instantiate(navigation_polygon);
 
 	for (int i = 0; i < polygon_editor->get_polygon_count(); i++) {
 		Vector<Vector2> polygon = polygon_editor->get_polygon(i);

@@ -206,6 +206,7 @@ struct HashMapHasherDefault {
 	static _FORCE_INLINE_ uint32_t hash(const StringName &p_string_name) { return p_string_name.hash(); }
 	static _FORCE_INLINE_ uint32_t hash(const NodePath &p_path) { return p_path.hash(); }
 	static _FORCE_INLINE_ uint32_t hash(const MemoryDebugInfo &p_info) { return p_info.hash(); }
+	static _FORCE_INLINE_ uint32_t hash(void *p_info) { return hash_one_uint64((uint64_t)p_info); }
 
 	//static _FORCE_INLINE_ uint32_t hash(const void* p_ptr)  { return uint32_t(uint64_t(p_ptr))*(0x9e3779b1L); }
 };

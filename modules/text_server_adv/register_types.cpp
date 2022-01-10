@@ -36,7 +36,7 @@ void preregister_text_server_adv_types() {
 	GDREGISTER_CLASS(TextServerAdvanced);
 	if (TextServerManager::get_singleton()) {
 		Ref<TextServerAdvanced> ts;
-		ts.instantiate();
+		New_instantiate(ts);
 		TextServerManager::get_singleton()->add_interface(ts);
 	}
 }

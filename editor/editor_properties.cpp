@@ -3063,7 +3063,7 @@ void EditorPropertyResource::_viewport_selected(const NodePath &p_path) {
 	}
 
 	Ref<ViewportTexture> vt;
-	vt.instantiate();
+	New_instantiate(vt);
 	vt->set_viewport_path_in_scene(get_tree()->get_edited_scene_root()->get_path_to(to_node));
 	vt->setup_local_to_scene();
 

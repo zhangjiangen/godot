@@ -1549,7 +1549,7 @@ EditorFileDialog::EditorFileDialog() {
 	pathhb->add_child(memnew(VSeparator));
 
 	Ref<ButtonGroup> view_mode_group;
-	view_mode_group.instantiate();
+	New_instantiate(view_mode_group);
 
 	mode_thumbnails = memnew(Button);
 	mode_thumbnails->set_flat(true);

@@ -75,7 +75,7 @@ private:
 		Rect2 cb_rect;
 
 		Tab() {
-			text_buf.instantiate();
+			New_instantiate(text_buf);
 		}
 	};
 

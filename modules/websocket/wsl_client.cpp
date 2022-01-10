@@ -354,8 +354,8 @@ Error WSLClient::set_buffers(int p_in_buffer, int p_in_packets, int p_out_buffer
 }
 
 WSLClient::WSLClient() {
-	_peer.instantiate();
-	_tcp.instantiate();
+	New_instantiate(_peer);
+	New_instantiate(_tcp);
 	disconnect_from_host();
 }
 

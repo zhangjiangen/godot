@@ -108,7 +108,7 @@ float OGGPacketSequence::get_length() const {
 
 Ref<OGGPacketSequencePlayback> OGGPacketSequence::instance_playback() {
 	Ref<OGGPacketSequencePlayback> playback;
-	playback.instantiate();
+	New_instantiate(playback);
 	playback->ogg_packet_sequence = Ref<OGGPacketSequence>(this);
 	playback->data_version = data_version;
 

@@ -2128,7 +2128,7 @@ Ref<Material> BaseMaterial3D::get_material_for_2d(bool p_shaded, bool p_transpar
 	}
 
 	Ref<StandardMaterial3D> material;
-	material.instantiate();
+	New_instantiate(material);
 
 	material->set_shading_mode(p_shaded ? SHADING_MODE_PER_PIXEL : SHADING_MODE_UNSHADED);
 	material->set_transparency(p_transparent ? (p_opaque_prepass ? TRANSPARENCY_ALPHA_DEPTH_PRE_PASS : (p_cut_alpha ? TRANSPARENCY_ALPHA_SCISSOR : TRANSPARENCY_ALPHA)) : TRANSPARENCY_DISABLED);

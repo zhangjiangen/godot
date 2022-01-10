@@ -114,7 +114,12 @@ private:
 		int custom_font_size = -1;
 
 		Cell() {
-			text_buf.instantiate();
+			New_instantiate(text_buf);
+		}
+		~Cell() {
+			text_buf.unref();
+			icon.unref();
+			buttons.clear();
 		}
 
 		Size2 get_icon_size() const;
@@ -423,7 +428,7 @@ private:
 		String language;
 		Control::TextDirection text_direction = Control::TEXT_DIRECTION_INHERITED;
 		ColumnInfo() {
-			text_buf.instantiate();
+			New_instantiate(text_buf);
 		}
 	};
 

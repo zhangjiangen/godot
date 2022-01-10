@@ -121,6 +121,6 @@ void EditorInspectorPluginTexture::parse_begin(Object *p_object) {
 
 TextureEditorPlugin::TextureEditorPlugin(EditorNode *p_node) {
 	Ref<EditorInspectorPluginTexture> plugin;
-	plugin.instantiate();
+	New_instantiate(plugin);
 	add_inspector_plugin(plugin);
 }

@@ -148,7 +148,7 @@ private:
 			int width = 0;
 
 			Line() {
-				data_buf.instantiate();
+				New_instantiate(data_buf);
 			}
 		};
 

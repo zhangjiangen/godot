@@ -84,7 +84,7 @@ Ref<AudioEffectInstance> AudioEffectCapture::instantiate() {
 	clear_buffer();
 
 	Ref<AudioEffectCaptureInstance> ins;
-	ins.instantiate();
+	New_instantiate(ins);
 	ins->base = Ref<AudioEffectCapture>(this);
 
 	return ins;

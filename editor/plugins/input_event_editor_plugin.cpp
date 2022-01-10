@@ -117,6 +117,6 @@ void EditorInspectorPluginInputEvent::parse_begin(Object *p_object) {
 
 InputEventEditorPlugin::InputEventEditorPlugin(EditorNode *p_node) {
 	Ref<EditorInspectorPluginInputEvent> plugin;
-	plugin.instantiate();
+	New_instantiate(plugin);
 	add_inspector_plugin(plugin);
 }

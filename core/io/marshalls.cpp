@@ -547,7 +547,7 @@ Error decode_variant(Variant &r_variant, const uint8_t *p_buffer, int p_len, int
 					r_variant = (Object *)nullptr;
 				} else {
 					Ref<EncodedObjectAsID> obj_as_id;
-					obj_as_id.instantiate();
+					New_instantiate(obj_as_id);
 					obj_as_id->set_object_id(val);
 
 					r_variant = obj_as_id;

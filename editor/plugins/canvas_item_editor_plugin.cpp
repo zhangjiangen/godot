@@ -6133,7 +6133,7 @@ CanvasItemEditorViewport::CanvasItemEditorViewport(EditorNode *p_node, CanvasIte
 	vbc->add_child(btn_group);
 	btn_group->set_h_size_flags(0);
 
-	button_group.instantiate();
+	New_instantiate(button_group);
 	for (int i = 0; i < texture_node_types.size(); i++) {
 		CheckBox *check = memnew(CheckBox);
 		btn_group->add_child(check);

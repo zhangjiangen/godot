@@ -52,9 +52,9 @@ Node *EditorSceneFormatImporterGLTF::import_scene(const String &p_path,
 		List<String> *r_missing_deps,
 		Error *r_err) {
 	Ref<GLTFDocument> doc;
-	doc.instantiate();
+	New_instantiate(doc);
 	Ref<GLTFState> state;
-	state.instantiate();
+	New_instantiate(state);
 	Error err = doc->append_from_file(p_path, state, p_flags, p_bake_fps);
 	if (err != OK) {
 		*r_err = err;

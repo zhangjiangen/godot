@@ -89,7 +89,7 @@ void ImageTexture::reload_from_file() {
 	}
 
 	Ref<Image> img;
-	img.instantiate();
+	New_instantiate(img);
 
 	if (ImageLoader::load_image(path, img) == OK) {
 		create_from_image(img);
@@ -232,7 +232,7 @@ bool ImageTexture::is_pixel_opaque(int p_x, int p_y) const {
 				decom->decompress();
 				img = decom;
 			}
-			alpha_cache.instantiate();
+			New_instantiate(alpha_cache);
 			alpha_cache->create_from_image_alpha(img);
 		}
 	}
@@ -367,7 +367,7 @@ Ref<Image> StreamTexture2D::load_image_from_file(FileAccess *f, int p_size_limit
 		//print_line("mipmap read total: " + itos(mipmap_images.size()));
 
 		Ref<Image> image;
-		image.instantiate();
+		New_instantiate(image);
 
 		if (mipmap_images.size() == 1) {
 			//only one image (which will most likely be the case anyway for this format)
@@ -419,7 +419,7 @@ Ref<Image> StreamTexture2D::load_image_from_file(FileAccess *f, int p_size_limit
 			}
 
 			Ref<Image> image;
-			image.instantiate();
+			New_instantiate(image);
 
 			image->create(tw, th, mipmaps - i ? true : false, format, data);
 			// 保存astc的通道信息
@@ -535,7 +535,7 @@ Error StreamTexture2D::_load_data(const String &p_path, int &r_width, int &r_hei
 Error StreamTexture2D::load(const String &p_path) {
 	int lw, lh;
 	Ref<Image> image;
-	image.instantiate();
+	New_instantiate(image);
 
 	bool request_3d;
 	bool request_normal;
@@ -663,7 +663,7 @@ bool StreamTexture2D::is_pixel_opaque(int p_x, int p_y) const {
 				img = decom;
 			}
 
-			alpha_cache.instantiate();
+			New_instantiate(alpha_cache);
 			alpha_cache->create_from_image_alpha(img);
 		}
 	}
@@ -732,7 +732,7 @@ StreamTexture2D::~StreamTexture2D() {
 
 RES ResourceFormatLoaderStreamTexture2D::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
 	Ref<StreamTexture2D> st;
-	st.instantiate();
+	New_instantiate(st);
 	Error err = st->load(p_path);
 	if (r_error) {
 		*r_error = err;
@@ -1030,7 +1030,7 @@ StreamTexture3D::~StreamTexture3D() {
 
 RES ResourceFormatLoaderStreamTexture3D::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
 	Ref<StreamTexture3D> st;
-	st.instantiate();
+	New_instantiate(st);
 	Error err = st->load(p_path);
 	if (r_error) {
 		*r_error = err;
@@ -1933,7 +1933,7 @@ void GradientTexture2D::_update() {
 		return;
 	}
 	Ref<Image> image;
-	image.instantiate();
+	New_instantiate(image);
 
 	if (gradient->get_points_count() <= 1) { // No need to interpolate.
 		image->create(width, height, false, (use_hdr) ? Image::FORMAT_RGBAF : Image::FORMAT_RGBA8);
@@ -2791,15 +2791,15 @@ RES ResourceFormatLoaderStreamTextureLayered::load(const String &p_path, const S
 	Ref<StreamTextureLayered> st;
 	if (p_path.get_extension().to_lower() == "stexarray") {
 		Ref<StreamTexture2DArray> s;
-		s.instantiate();
+		New_instantiate(s);
 		st = s;
 	} else if (p_path.get_extension().to_lower() == "scube") {
 		Ref<StreamCubemap> s;
-		s.instantiate();
+		New_instantiate(s);
 		st = s;
 	} else if (p_path.get_extension().to_lower() == "scubearray") {
 		Ref<StreamCubemapArray> s;
-		s.instantiate();
+		New_instantiate(s);
 		st = s;
 	} else {
 		if (r_error) {

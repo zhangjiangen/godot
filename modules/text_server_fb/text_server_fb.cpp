@@ -455,7 +455,7 @@ _FORCE_INLINE_ TextServerFallback::FontGlyph TextServerFallback::rasterize_msdf(
 			if (RenderingServer::get_singleton() != nullptr) {
 				Ref<Image> img = memnew(Image(tex.texture_w, tex.texture_h, 0, Image::FORMAT_RGBA8, tex.imgdata));
 				if (tex.texture.is_null()) {
-					tex.texture.instantiate();
+					New_instantiate(tex.texture);
 					tex.texture->create_from_image(img);
 				} else {
 					tex.texture->update(img);
@@ -538,7 +538,7 @@ _FORCE_INLINE_ TextServerFallback::FontGlyph TextServerFallback::rasterize_bitma
 			Ref<Image> img = memnew(Image(tex.texture_w, tex.texture_h, 0, require_format, tex.imgdata));
 
 			if (tex.texture.is_null()) {
-				tex.texture.instantiate();
+				New_instantiate(tex.texture);
 				tex.texture->create_from_image(img);
 			} else {
 				tex.texture->update(img);
@@ -1352,7 +1352,7 @@ void TextServerFallback::font_set_texture_image(RID p_font_rid, const Vector2i &
 
 	Ref<Image> img = memnew(Image(tex.texture_w, tex.texture_h, 0, tex.format, tex.imgdata));
 	tex.texture = Ref<ImageTexture>();
-	tex.texture.instantiate();
+	New_instantiate(tex.texture);
 	tex.texture->create_from_image(img);
 }
 

@@ -1120,7 +1120,7 @@ void SceneTree::add_current_scene(Node *p_current) {
 
 Ref<SceneTreeTimer> SceneTree::create_timer(double p_delay_sec, bool p_process_always) {
 	Ref<SceneTreeTimer> stt;
-	stt.instantiate();
+	New_instantiate(stt);
 	stt->set_process_always(p_process_always);
 	stt->set_time_left(p_delay_sec);
 	timers.push_back(stt);
@@ -1129,7 +1129,7 @@ Ref<SceneTreeTimer> SceneTree::create_timer(double p_delay_sec, bool p_process_a
 
 Ref<Tween> SceneTree::create_tween() {
 	Ref<Tween> tween;
-	tween.instantiate();
+	New_instantiate(tween);
 	tween->set_valid(true);
 	tweens.push_back(tween);
 	return tween;

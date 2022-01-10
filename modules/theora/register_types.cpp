@@ -35,7 +35,7 @@
 static Ref<ResourceFormatLoaderTheora> resource_loader_theora;
 
 void register_theora_types() {
-	resource_loader_theora.instantiate();
+	New_instantiate(resource_loader_theora);
 	ResourceLoader::add_resource_format_loader(resource_loader_theora, true);
 
 	GDREGISTER_CLASS(VideoStreamTheora);

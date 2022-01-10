@@ -83,7 +83,7 @@ public:
 
 	virtual Ref<EditorSyntaxHighlighter> _create() const override;
 
-	EditorStandardSyntaxHighlighter() { highlighter.instantiate(); }
+	EditorStandardSyntaxHighlighter() { New_instantiate(highlighter); }
 };
 
 class EditorPlainTextSyntaxHighlighter : public EditorSyntaxHighlighter {

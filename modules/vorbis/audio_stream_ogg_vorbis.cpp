@@ -323,7 +323,7 @@ Ref<AudioStreamPlayback> AudioStreamOGGVorbis::instance_playback() {
 
 	ERR_FAIL_COND_V(packet_sequence.is_null(), nullptr);
 
-	ovs.instantiate();
+	New_instantiate(ovs);
 	ovs->vorbis_stream = Ref<AudioStreamOGGVorbis>(this);
 	ovs->vorbis_data = packet_sequence;
 	ovs->frames_mixed = 0;

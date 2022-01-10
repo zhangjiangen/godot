@@ -106,7 +106,7 @@ void MeshEditor::_button_pressed(Node *p_button) {
 MeshEditor::MeshEditor() {
 	viewport = memnew(SubViewport);
 	Ref<World3D> world_3d;
-	world_3d.instantiate();
+	New_instantiate(world_3d);
 	viewport->set_world_3d(world_3d); //use own world
 	add_child(viewport);
 	viewport->set_disable_input(true);
@@ -178,6 +178,6 @@ void EditorInspectorPluginMesh::parse_begin(Object *p_object) {
 
 MeshEditorPlugin::MeshEditorPlugin(EditorNode *p_node) {
 	Ref<EditorInspectorPluginMesh> plugin;
-	plugin.instantiate();
+	New_instantiate(plugin);
 	add_inspector_plugin(plugin);
 }

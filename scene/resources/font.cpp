@@ -1467,7 +1467,7 @@ Size2 Font::get_string_size(const String &p_text, int p_size, HorizontalAlignmen
 	if (cache.has(hash)) {
 		buffer = cache.get(hash);
 	} else {
-		buffer.instantiate();
+		New_instantiate(buffer);
 		buffer->add_string(p_text, Ref<Font>(this), p_size, Dictionary(), TranslationServer::get_singleton()->get_tool_locale());
 		cache.insert(hash, buffer);
 	}
@@ -1490,7 +1490,7 @@ Size2 Font::get_multiline_string_size(const String &p_text, float p_width, int p
 	if (cache_wrap.has(wrp_hash)) {
 		lines_buffer = cache_wrap.get(wrp_hash);
 	} else {
-		lines_buffer.instantiate();
+		New_instantiate(lines_buffer);
 		lines_buffer->add_string(p_text, Ref<Font>(this), p_size, Dictionary(), TranslationServer::get_singleton()->get_tool_locale());
 		lines_buffer->set_width(p_width);
 		lines_buffer->set_flags(p_flags);
@@ -1529,7 +1529,7 @@ void Font::draw_string(RID p_canvas_item, const Point2 &p_pos, const String &p_t
 	if (cache.has(hash)) {
 		buffer = cache.get(hash);
 	} else {
-		buffer.instantiate();
+		New_instantiate(buffer);
 		buffer->add_string(p_text, Ref<Font>(this), p_size, Dictionary(), TranslationServer::get_singleton()->get_tool_locale());
 		cache.insert(hash, buffer);
 	}
@@ -1567,7 +1567,7 @@ void Font::draw_multiline_string(RID p_canvas_item, const Point2 &p_pos, const S
 	if (cache_wrap.has(wrp_hash)) {
 		lines_buffer = cache_wrap.get(wrp_hash);
 	} else {
-		lines_buffer.instantiate();
+		New_instantiate(lines_buffer);
 		lines_buffer->add_string(p_text, Ref<Font>(this), p_size, Dictionary(), TranslationServer::get_singleton()->get_tool_locale());
 		lines_buffer->set_width(p_width);
 		lines_buffer->set_flags(p_flags);

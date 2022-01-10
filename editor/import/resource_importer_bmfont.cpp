@@ -343,7 +343,7 @@ Error ResourceImporterBMFont::import(const String &p_source_file, const String &
 	print_verbose("Importing BMFont font from: " + p_source_file);
 
 	Ref<FontData> font;
-	font.instantiate();
+	New_instantiate(font);
 	font->set_antialiased(false);
 	font->set_multichannel_signed_distance_field(false);
 	font->set_force_autohinter(false);
@@ -437,7 +437,7 @@ Error ResourceImporterBMFont::import(const String &p_source_file, const String &
 							String file = base_dir.plus_file(String::utf8(cs.ptr(), cs.length()));
 							if (RenderingServer::get_singleton() != nullptr) {
 								Ref<Image> img;
-								img.instantiate();
+								New_instantiate(img);
 								Error err = ImageLoader::load_image(file, img);
 								ERR_FAIL_COND_V_MSG(err != OK, ERR_FILE_CANT_READ, TTR("Can't load font texture: ") + "\"" + file + "\".");
 
@@ -670,7 +670,7 @@ Error ResourceImporterBMFont::import(const String &p_source_file, const String &
 					String file = base_dir.plus_file(keys["file"]);
 					if (RenderingServer::get_singleton() != nullptr) {
 						Ref<Image> img;
-						img.instantiate();
+						New_instantiate(img);
 						Error err = ImageLoader::load_image(file, img);
 						ERR_FAIL_COND_V_MSG(err != OK, ERR_FILE_CANT_READ, TTR("Can't load font texture: ") + "\"" + file + "\".");
 						if (packed) {

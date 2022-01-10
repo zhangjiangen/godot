@@ -432,7 +432,7 @@ Vector<VisualShader::DefaultTextureParam> VisualShaderNodeParticleMeshEmitter::g
 
 void VisualShaderNodeParticleMeshEmitter::_update_texture(const Vector<Vector2> &p_array, Ref<ImageTexture> &r_texture) {
 	Ref<Image> image;
-	image.instantiate();
+	New_instantiate(image);
 
 	if (p_array.size() == 0) {
 		image->create(1, 1, false, Image::Format::FORMAT_RGBF);
@@ -453,7 +453,7 @@ void VisualShaderNodeParticleMeshEmitter::_update_texture(const Vector<Vector2> 
 
 void VisualShaderNodeParticleMeshEmitter::_update_texture(const Vector<Vector3> &p_array, Ref<ImageTexture> &r_texture) {
 	Ref<Image> image;
-	image.instantiate();
+	New_instantiate(image);
 
 	if (p_array.size() == 0) {
 		image->create(1, 1, false, Image::Format::FORMAT_RGBF);
@@ -474,7 +474,7 @@ void VisualShaderNodeParticleMeshEmitter::_update_texture(const Vector<Vector3> 
 
 void VisualShaderNodeParticleMeshEmitter::_update_texture(const Vector<Color> &p_array, Ref<ImageTexture> &r_texture) {
 	Ref<Image> image;
-	image.instantiate();
+	New_instantiate(image);
 
 	if (p_array.size() == 0) {
 		image->create(1, 1, false, Image::Format::FORMAT_RGBA8);
@@ -707,11 +707,11 @@ void VisualShaderNodeParticleMeshEmitter::_bind_methods() {
 VisualShaderNodeParticleMeshEmitter::VisualShaderNodeParticleMeshEmitter() {
 	connect(CoreStringNames::get_singleton()->changed, callable_mp(this, &VisualShaderNodeParticleMeshEmitter::_update_textures));
 
-	position_texture.instantiate();
-	normal_texture.instantiate();
-	color_texture.instantiate();
-	uv_texture.instantiate();
-	uv2_texture.instantiate();
+	New_instantiate(position_texture);
+	New_instantiate(normal_texture);
+	New_instantiate(color_texture);
+	New_instantiate(uv_texture);
+	New_instantiate(uv2_texture);
 }
 
 // VisualShaderNodeParticleMultiplyByAxisAngle

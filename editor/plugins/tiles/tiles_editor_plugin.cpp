@@ -122,7 +122,7 @@ void TilesEditorPlugin::_thread() {
 
 				Ref<Image> image = viewport->get_texture()->get_image();
 				Ref<ImageTexture> image_texture;
-				image_texture.instantiate();
+				New_instantiate(image_texture);
 				image_texture->create_from_image(image);
 
 				// Find the index for the given pattern. TODO: optimize.

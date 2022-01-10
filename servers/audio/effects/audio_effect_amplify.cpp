@@ -46,7 +46,7 @@ void AudioEffectAmplifyInstance::process(const AudioFrame *p_src_frames, AudioFr
 
 Ref<AudioEffectInstance> AudioEffectAmplify::instantiate() {
 	Ref<AudioEffectAmplifyInstance> ins;
-	ins.instantiate();
+	New_instantiate(ins);
 	ins->base = Ref<AudioEffectAmplify>(this);
 	ins->mix_volume_db = volume_db;
 	return ins;

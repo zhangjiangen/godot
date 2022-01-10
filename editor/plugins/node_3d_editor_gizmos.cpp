@@ -1085,7 +1085,7 @@ Ref<EditorNode3DGizmo> EditorNode3DGizmoPlugin::create_gizmo(Node3D *p_spatial) 
 
 	Ref<EditorNode3DGizmo> ref;
 	if (has_gizmo(p_spatial)) {
-		ref.instantiate();
+		New_instantiate(ref);
 	}
 	return ref;
 }
@@ -3687,7 +3687,7 @@ void LightmapGIGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 	array[RS::ARRAY_COLOR] = colors;
 
 	Ref<ArrayMesh> mesh;
-	mesh.instantiate();
+	New_instantiate(mesh);
 	mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, array, Array(), Dictionary(), 0); //no compression
 	mesh->surface_set_material(0, material_probes);
 

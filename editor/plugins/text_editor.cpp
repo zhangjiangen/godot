@@ -600,11 +600,11 @@ TextEditor::TextEditor() {
 	highlighter_menu->connect("id_pressed", callable_mp(this, &TextEditor::_change_syntax_highlighter));
 
 	Ref<EditorPlainTextSyntaxHighlighter> plain_highlighter;
-	plain_highlighter.instantiate();
+	New_instantiate(plain_highlighter);
 	add_syntax_highlighter(plain_highlighter);
 
 	Ref<EditorStandardSyntaxHighlighter> highlighter;
-	highlighter.instantiate();
+	New_instantiate(highlighter);
 	add_syntax_highlighter(highlighter);
 	set_syntax_highlighter(plain_highlighter);
 

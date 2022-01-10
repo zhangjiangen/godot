@@ -143,7 +143,7 @@ void AudioEffectChorusInstance::_process_chunk(const AudioFrame *p_src_frames, A
 
 Ref<AudioEffectInstance> AudioEffectChorus::instantiate() {
 	Ref<AudioEffectChorusInstance> ins;
-	ins.instantiate();
+	New_instantiate(ins);
 	ins->base = Ref<AudioEffectChorus>(this);
 	for (int i = 0; i < 4; i++) {
 		ins->filter_h[i] = AudioFrame(0, 0);

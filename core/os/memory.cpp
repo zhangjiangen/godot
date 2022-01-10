@@ -34,26 +34,25 @@
 #include "core/os/mutex.h"
 #include "core/templates/safe_refcount.h"
 
+#include "core/templates/hashfuncs.h"
+
 //#include "core/os/tcmalloc/tcmalloc.cc"
 #include <stdio.h>
 #include <stdlib.h>
 struct MemmoryInfo {
-	MemmoryInfo *next;
-	char *source;
-	int line;
 	size_t size;
+	size_t count;
 };
-
+template <typename TKey, typename TData>
 class MemoryHashMap {
-	typedef void *TKey;
-	typedef MemmoryInfo TData;
 #define MIN_HASH_TABLE_POWER 3
 #define RELATIONSHIP 8
+	friend class SmallMemoryManager;
 
 public:
 	struct Pair {
-		void *key;
-		MemmoryInfo data;
+		TKey key;
+		TData data;
 		Pair() :
 				key(nullptr) {}
 		Pair(const TKey &p_key) :
@@ -68,8 +67,9 @@ public:
 	struct Element {
 	private:
 		friend class MemoryHashMap;
+		friend class SmallMemoryManager;
 
-		uint32_t hash = 0;
+		uint64_t hash = 0;
 		Element *next = nullptr;
 		Element() {}
 		Pair pair;
@@ -179,14 +179,14 @@ private:
 
 	/* I want to have only one function.. */
 	_FORCE_INLINE_ const Element *get_element(const TKey &p_key) const {
-		uint64_t hash = (uint64_t)p_key;
+		uint64_t hash = HashMapHasherDefault::hash(p_key);
 		uint32_t index = hash & ((1 << hash_table_power) - 1);
 
 		Element *e = hash_table[index];
 
 		while (e) {
 			/* checking hash first avoids comparing key, which may take longer */
-			if (e->hash == hash) {
+			if (e->hash == hash && e->key() == p_key) {
 				/* the pair exists in this hashtable, so just update data */
 				return e;
 			}
@@ -203,7 +203,7 @@ private:
 		if (!e) {
 			return nullptr;
 		}
-		uint64_t hash = (uint64_t)p_key;
+		uint64_t hash = HashMapHasherDefault::hash(p_key);
 		uint32_t index = hash & ((1 << hash_table_power) - 1);
 		e->next = hash_table[index];
 		e->hash = hash;
@@ -278,20 +278,14 @@ public:
 		return getptr(p_key) != nullptr;
 	}
 
-	/**
-	 * Get a key from data, return a const reference.
-	 * WARNING: this doesn't check errors, use either getptr and check nullptr, or check
-	 * first with has(key)
-	 */
-
-	const TData &get(const TKey &p_key) const {
-		const TData *res = getptr(p_key);
-		return *res;
+	bool try_get(const TKey &p_key, const TData *&data) const {
+		data = getptr(p_key);
+		return data != nullptr;
 	}
 
-	TData &get(const TKey &p_key) {
-		TData *res = getptr(p_key);
-		return *res;
+	bool try_get(const TKey &p_key, TData *&data) {
+		data = getptr(p_key);
+		return data != nullptr;
 	}
 
 	/**
@@ -335,14 +329,14 @@ public:
 			return false;
 		}
 
-		uint64_t hash = (uint64_t)(p_key);
+		uint64_t hash = HashMapHasherDefault::hash(p_key);
 		uint32_t index = hash & ((1 << hash_table_power) - 1);
 
 		Element *e = hash_table[index];
 		Element *p = nullptr;
 		while (e) {
 			/* checking hash first avoids comparing key, which may take longer */
-			if (e->hash == hash) {
+			if (e->hash == hash && e->key() == p_key) {
 				if (p) {
 					p->next = e->next;
 				} else {
@@ -456,7 +450,8 @@ public:
 	void clear() {
 		/* clean up */
 		if (hash_table) {
-			for (int i = 0; i < (1 << hash_table_power); i++) {
+			int size = 1 << hash_table_power;
+			for (int i = 0; i < size; i++) {
 				while (hash_table[i]) {
 					Element *e = hash_table[i];
 					hash_table[i] = e->next;
@@ -487,7 +482,7 @@ public:
 		clear();
 	}
 };
-static class SmallMemoryManager {
+class SmallMemoryManager {
 	// 存储的数据，内部用的联合，如果被回收了，那么里面的数据就没有意义了，就会变成链表的指针
 	template <int Count>
 	struct Data {
@@ -631,12 +626,118 @@ public:
 		static SmallMemoryManager *instance = new SmallMemoryManager;
 		return *instance;
 	}
+	void record_memory_alloc(void *ptr, size_t p_memory, const char *file_name, int file_lne) {
+		MemoryDebugInfo key;
+		key.file_name = file_name;
+		key.line = file_lne;
+		MutexLock<::Mutex> lock(_memory_info_mutex);
+		MemmoryInfo *info = nullptr;
+		if (_memory_info.try_get(key, info)) {
+			info->size += p_memory;
+			info->count += 1;
+		} else {
+			MemmoryInfo t;
+			t.size = p_memory;
+			t.count = 1;
+			_memory_info.set(key, t);
+		}
+		// 存储指针映射
+		point_map.set(ptr, key);
+		++TestCount;
+		if (TestCount > 50000) {
+			TestCount = 0;
+			log_memory_info();
+		}
+	}
+	void record_memory_free(void *ptr, size_t size) {
+		MemoryDebugInfo *key = nullptr;
+		MutexLock<::Mutex> lock(_memory_info_mutex);
+		if (point_map.try_get(ptr, key)) {
+			MemmoryInfo *info = nullptr;
+			if (_memory_info.try_get(*key, info)) {
+				info->size -= size;
+				info->count -= 1;
+				_memory_info.erase(*key);
+			}
+			point_map.erase(ptr);
+		} else {
+			printf("error : not fund ptr!!");
+			point_map.try_get(ptr, key);
+		}
+	}
+	struct MemoryLog {
+		const char *file_name;
+		int file_line;
+		int total_memory;
+		int total_count;
+		MemoryLog *Next;
+	};
+	void log_memory_info() {
+		MemoryLog *Root = nullptr;
+		int count = 0;
+		int total = 0;
+		{
+			MutexLock<::Mutex> lock(_memory_info_mutex);
+			int size = 1 << _memory_info.hash_table_power;
+			MemoryHashMap<MemoryDebugInfo, MemmoryInfo>::Element *e;
+			for (int i = 0; i < size; i++) {
+				e = _memory_info.hash_table[i];
+				while (e != nullptr) {
+					MemoryLog *info = (MemoryLog *)alloca(sizeof(MemoryLog));
+					info->file_name = e->key().file_name;
+					info->file_line = e->key().line;
+					info->total_count = e->value().count;
+					info->total_memory = e->value().size;
+					total += info->total_memory;
+					info->Next = Root;
+					Root = info;
+					e = e->next;
+					++count;
+				}
+			}
+		}
+		// 下面开始打印日志
+		float mb = ((float)total) / 1024.0f;
+		if (mb < 1024.0f)
+			printf("--------------begin log memory count:%d size: %0.3f KB------------\n", count, mb);
+		else {
+			mb /= 1024.0f;
+			printf("--------------begin log memory count:%d size: %0.3fMB------------\n", count, mb);
+		}
+		while (Root != nullptr) {
+			if (Root->total_count > 100) {
+				mb = ((float)Root->total_memory) / 1024.0f;
+				if (mb < 1024.0f)
+					printf("    source: %s ,line : %d ,memory size: %0.3fKB,count: %d\n", Root->file_name, (int)Root->file_line, mb, (int)Root->total_count);
+				else {
+					mb /= 1024.0f;
+					printf("    source: %s ,line : %d ,memory size: %0.3fMB,count: %d\n", Root->file_name, (int)Root->file_line, mb, (int)Root->total_count);
+				}
+			}
+			Root = Root->Next;
+		}
+		printf("------------------end log memory ----------------\n\n\n\n");
+	}
 
 private:
+	MemoryHashMap<MemoryDebugInfo, MemmoryInfo> _memory_info;
+	MemoryHashMap<void *, MemoryDebugInfo> point_map;
+	int TestCount = 0;
+	::Mutex _memory_info_mutex;
+
 	SmallMemoryManager() {
 	}
 };
 
+void DefaultAllocator::record_memory_alloc(void *p_ptr, size_t p_memory, const char *file_name, int file_lne) {
+	//SmallMemoryManager::get().record_memory_alloc(p_ptr, p_memory, file_name, file_lne);
+}
+void DefaultAllocator::record_memory_free(void *ptr, size_t size) {
+	//SmallMemoryManager::get().record_memory_free(ptr, size);
+}
+void DefaultAllocator::log_memory_info() {
+	//SmallMemoryManager::get().log_memory_info();
+}
 void *
 DefaultAllocator::alloc_manager(size_t p_memory) {
 	return SmallMemoryManager::get().alloc_manager(p_memory);
@@ -649,9 +750,9 @@ void *operator new(size_t p_size, const char *p_description, size_t line) {
 	uint32_t *ptr = (uint32_t *)DefaultAllocator::alloc(len, p_description, line);
 	// 记录内存大小
 	*ptr = MEMORY_TAG_NEW;
-    ++ ptr;
+	++ptr;
 	*ptr = (uint32_t)p_size;
-    ++ ptr;
+	++ptr;
 	return ptr;
 }
 
@@ -678,19 +779,18 @@ void *MallocAllocator::alloc_memory(size_t p_memory, const char *file_name, int 
 	uint32_t *p = (uint32_t *)DefaultAllocator::alloc(size, file_name, file_lne);
 
 	*p = MEMORY_TAG_MALLOC;
-    uint32_t tag = *p;
+	uint32_t tag = *p;
 	++p;
 	*p = p_memory;
-    uint32_t memsize = *p;
 	++p;
 	return p;
 }
 void MallocAllocator::free_memory(void *p_ptr) {
 	uint32_t *base = (uint32_t *)p_ptr;
-    base -= 2;
-    uint32_t tag, size;
-    tag = * base;
-    size = *(base + 1);
+	base -= 2;
+	uint32_t tag, size;
+	tag = *base;
+	size = *(base + 1);
 	if (tag != MEMORY_TAG_MALLOC) {
 		throw std::runtime_error("memory free error!");
 	}
@@ -711,8 +811,8 @@ void *MallocAllocator::realloc_memory(void *p_ptr, size_t p_new_size, const char
 	uint32_t *base = (uint32_t *)p_ptr;
 	base -= 2;
 	uint32_t tag, size;
-    tag = * base;
-    size = *(base + 1);
+	tag = *base;
+	size = *(base + 1);
 	if (tag != MEMORY_TAG_MALLOC) {
 		throw std::runtime_error("memory free error!");
 	}
@@ -739,8 +839,8 @@ SafeNumeric<uint64_t> Memory::max_usage;
 SafeNumeric<uint64_t> Memory::alloc_count;
 
 void *Memory::alloc_static(size_t p_bytes, const char *p_description, int line, bool p_pad_align) {
-	if (line > 0)
-		printf("memory new size %d ,source %s ,line : %d\n", (int)p_bytes, p_description, (int)line);
+	//if (line > 0)
+	//printf("memory new size %d ,source %s ,line : %d\n", (int)p_bytes, p_description, (int)line);
 #ifdef DEBUG_ENABLED
 	bool prepad = true;
 #else
@@ -775,8 +875,8 @@ void *Memory::realloc_static(void *p_memory, size_t p_bytes, const char *p_descr
 		return alloc_static(p_bytes, p_description, line, p_pad_align);
 	}
 
-	if (line > 0)
-		printf("memory new size %d ,source %s ,line : %d\n", (int)p_bytes, p_description, (int)line);
+	//if (line > 0)
+	//printf("memory new size %d ,source %s ,line : %d\n", (int)p_bytes, p_description, (int)line);
 	uint8_t *mem = (uint8_t *)p_memory;
 
 #ifdef DEBUG_ENABLED

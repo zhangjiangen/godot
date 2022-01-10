@@ -136,7 +136,7 @@ AudioEffectRecordInstance::~AudioEffectRecordInstance() {
 
 Ref<AudioEffectInstance> AudioEffectRecord::instantiate() {
 	Ref<AudioEffectRecordInstance> ins;
-	ins.instantiate();
+	New_instantiate(ins);
 	ins->base = Ref<AudioEffectRecord>(this);
 	ins->is_recording = false;
 
@@ -269,7 +269,7 @@ Ref<AudioStreamSample> AudioEffectRecord::get_recording() const {
 	}
 
 	Ref<AudioStreamSample> sample;
-	sample.instantiate();
+	New_instantiate(sample);
 	sample->set_data(dst_data);
 	sample->set_format(dst_format);
 	sample->set_mix_rate(AudioServer::get_singleton()->get_mix_rate());

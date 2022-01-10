@@ -1280,9 +1280,7 @@ private:
 	static ParseRule *get_rule(GDScriptTokenizer::Token::Type p_token_type);
 
 	template <class T>
-	T *alloc_node() {
-		T *node = memnew(T);
-
+	T *alloc_node(T *node) {
 		node->next = list;
 		list = node;
 

@@ -285,7 +285,7 @@ void TouchScreenButton::_press(int p_finger_pressed) {
 	if (action != StringName()) {
 		Input::get_singleton()->action_press(action);
 		Ref<InputEventAction> iea;
-		iea.instantiate();
+		New_instantiate(iea);
 		iea->set_action(action);
 		iea->set_pressed(true);
 		get_viewport()->push_input(iea, true);
@@ -302,7 +302,7 @@ void TouchScreenButton::_release(bool p_exiting_tree) {
 		Input::get_singleton()->action_release(action);
 		if (!p_exiting_tree) {
 			Ref<InputEventAction> iea;
-			iea.instantiate();
+			New_instantiate(iea);
 			iea->set_action(action);
 			iea->set_pressed(false);
 			get_viewport()->push_input(iea, true);

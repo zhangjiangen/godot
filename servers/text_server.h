@@ -511,6 +511,8 @@ struct GlyphCompare { // For line breaking reordering.
 class TextServerManager : public Object {
 	GDCLASS(TextServerManager, Object);
 
+public:
+
 protected:
 	static void _bind_methods();
 

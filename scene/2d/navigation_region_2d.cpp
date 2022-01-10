@@ -168,7 +168,7 @@ Ref<NavigationMesh> NavigationPolygon::get_mesh() {
 	MutexLock lock(navmesh_generation);
 
 	if (navmesh.is_null()) {
-		navmesh.instantiate();
+		New_instantiate(navmesh);
 		Vector<Vector3> verts;
 		{
 			verts.resize(get_vertices().size());

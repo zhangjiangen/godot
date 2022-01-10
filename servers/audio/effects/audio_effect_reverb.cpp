@@ -81,7 +81,7 @@ AudioEffectReverbInstance::AudioEffectReverbInstance() {
 
 Ref<AudioEffectInstance> AudioEffectReverb::instantiate() {
 	Ref<AudioEffectReverbInstance> ins;
-	ins.instantiate();
+	New_instantiate(ins);
 	ins->base = Ref<AudioEffectReverb>(this);
 	return ins;
 }

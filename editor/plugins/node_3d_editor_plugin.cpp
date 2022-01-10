@@ -4428,9 +4428,9 @@ Node3DEditorViewport::Node3DEditorViewport(Node3DEditor *p_spatial_editor, Edito
 	view_menu->get_popup()->connect("id_pressed", callable_mp(this, &Node3DEditorViewport::_menu_option));
 	display_submenu->connect("id_pressed", callable_mp(this, &Node3DEditorViewport::_menu_option));
 	view_menu->set_disable_shortcuts(true);
-// #ifndef _MSC_VER
-// #warning this needs to be fixed
-// #endif
+	// #ifndef _MSC_VER
+	// #warning this needs to be fixed
+	// #endif
 	//if (OS::get_singleton()->get_current_video_driver() == OS::VIDEO_DRIVER_GLES2) {
 	if (false) {
 		// Alternate display modes only work when using the Vulkan renderer; make this explicit.
@@ -5693,7 +5693,7 @@ void Node3DEditor::_init_indicators() {
 		origin_enabled = true;
 		grid_enabled = true;
 
-		indicator_mat.instantiate();
+		New_instantiate(indicator_mat);
 		indicator_mat->set_shading_mode(StandardMaterial3D::SHADING_MODE_UNSHADED);
 		indicator_mat->set_flag(StandardMaterial3D::FLAG_ALBEDO_FROM_VERTEX_COLOR, true);
 		indicator_mat->set_flag(StandardMaterial3D::FLAG_SRGB_VERTEX_COLOR, true);
@@ -5784,7 +5784,7 @@ void fragment() {
 )");
 
 		for (int i = 0; i < 3; i++) {
-			grid_mat[i].instantiate();
+			New_instantiate(grid_mat[i]);
 			grid_mat[i]->set_shader(grid_shader);
 		}
 
@@ -7706,7 +7706,7 @@ Node3DEditor::Node3DEditor(EditorNode *p_editor) {
 		sun_direction->connect("draw", callable_mp(this, &Node3DEditor::_sun_direction_draw));
 		sun_direction->set_default_cursor_shape(CURSOR_MOVE);
 
-		sun_direction_shader.instantiate();
+		New_instantiate(sun_direction_shader);
 		sun_direction_shader->set_code(R"(
 // 3D editor Preview Sun direction shader.
 
@@ -7723,7 +7723,7 @@ void fragment() {
 	COLOR.a = 1.0 - smoothstep(0.99, 1.0, length(n.xy));
 }
 )");
-		sun_direction_material.instantiate();
+		New_instantiate(sun_direction_material);
 		sun_direction_material->set_shader(sun_direction_shader);
 		sun_direction_material->set_shader_param("sun_direction", Vector3(0, 0, 1));
 		sun_direction_material->set_shader_param("sun_color", Vector3(1, 1, 1));
@@ -7858,11 +7858,11 @@ void fragment() {
 		preview_sun->set_shadow(true);
 		preview_sun->set_shadow_mode(DirectionalLight3D::SHADOW_PARALLEL_4_SPLITS);
 		preview_environment = memnew(WorldEnvironment);
-		environment.instantiate();
+		New_instantiate(environment);
 		preview_environment->set_environment(environment);
 		Ref<Sky> sky;
-		sky.instantiate();
-		sky_material.instantiate();
+		New_instantiate(sky);
+		New_instantiate(sky_material);
 		sky->set_material(sky_material);
 		environment->set_sky(sky);
 		environment->set_background(Environment::BG_SKY);

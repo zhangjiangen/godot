@@ -2054,7 +2054,7 @@ Ref<TileMapPattern> TileMap::get_pattern(int p_layer, TypedArray<Vector2i> p_coo
 	ERR_FAIL_COND_V(!tile_set.is_valid(), nullptr);
 
 	Ref<TileMapPattern> output;
-	output.instantiate();
+	New_instantiate(output);
 	if (p_coords_array.is_empty()) {
 		return output;
 	}

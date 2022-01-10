@@ -230,7 +230,7 @@ void TextControlEditor::_set_font() {
 			Ref<FontData> fd = ResourceLoader::load(fonts[name][style]);
 			if (fd.is_valid()) {
 				Ref<Font> font;
-				font.instantiate();
+				New_instantiate(font);
 				font->add_data(fd);
 				ur->add_do_method(edited_control, "add_theme_font_override", edited_font, font);
 			}

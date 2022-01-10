@@ -5688,7 +5688,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 	uint32_t set_uniform_count = set.uniform_info.size();
 	const UniformInfo *set_uniforms = set.uniform_info.ptr();
 
-	Vector<VkWriteDescriptorSet> &writes = shader->writes;
+	LocalVector<VkWriteDescriptorSet> &writes = shader->writes;
 	writes.clear();
 	DescriptorPoolKey pool_key;
 
@@ -6146,7 +6146,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 	//write the contents
 	if (writes.size()) {
 		for (int i = 0; i < writes.size(); i++) {
-			writes.write[i].dstSet = descriptor_set;
+			writes[i].dstSet = descriptor_set;
 		}
 		vkUpdateDescriptorSets(device, writes.size(), writes.ptr(), 0, nullptr);
 	}

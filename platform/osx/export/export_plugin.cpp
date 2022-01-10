@@ -713,7 +713,7 @@ Error EditorExportPlatformOSX::export_project(const Ref<EditorExportPreset> &p_p
 					}
 				} else {
 					Ref<Image> icon;
-					icon.instantiate();
+					New_instantiate(icon);
 					icon->load(iconpath);
 					if (!icon->is_empty()) {
 						_make_icon(icon, data);
@@ -1224,7 +1224,7 @@ bool EditorExportPlatformOSX::can_export(const Ref<EditorExportPreset> &p_preset
 
 EditorExportPlatformOSX::EditorExportPlatformOSX() {
 	Ref<Image> img = memnew(Image(_osx_logo));
-	logo.instantiate();
+	New_instantiate(logo);
 	logo->create_from_image(img);
 }
 

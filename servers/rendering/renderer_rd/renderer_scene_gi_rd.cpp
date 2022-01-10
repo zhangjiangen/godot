@@ -1880,7 +1880,7 @@ void RendererSceneGIRD::SDFGI::render_region(RID p_render_buffers, int p_region,
 #if 0
 		Vector<uint8_t> data = RD::get_singleton()->texture_get_data(cascades[cascade].sdf, 0);
 		Ref<Image> img;
-		img.instantiate();
+		New_instantiate(img);
 		for (uint32_t i = 0; i < cascade_size; i++) {
 			Vector<uint8_t> subarr = data.slice(128 * 128 * i, 128 * 128 * (i + 1));
 			img->create(cascade_size, cascade_size, false, Image::FORMAT_L8, subarr);
@@ -1893,7 +1893,7 @@ void RendererSceneGIRD::SDFGI::render_region(RID p_render_buffers, int p_region,
 #if 0
 		Vector<uint8_t> data = RD::get_singleton()->texture_get_data(render_albedo, 0);
 		Ref<Image> img;
-		img.instantiate();
+		New_instantiate(img);
 		for (uint32_t i = 0; i < cascade_size; i++) {
 			Vector<uint8_t> subarr = data.slice(128 * 128 * i * 2, 128 * 128 * (i + 1) * 2);
 			img->createcascade_size, cascade_size, false, Image::FORMAT_RGB565, subarr);

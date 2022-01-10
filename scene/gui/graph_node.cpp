@@ -1043,6 +1043,6 @@ void GraphNode::_bind_methods() {
 }
 
 GraphNode::GraphNode() {
-	title_buf.instantiate();
+	New_instantiate(title_buf);
 	set_mouse_filter(MOUSE_FILTER_STOP);
 }

@@ -2163,7 +2163,13 @@ void Variant::_register_variant_methods() {
 
 void Variant::_unregister_variant_methods() {
 	//clear methods
-	memdelete_arr(builtin_method_names);
-	memdelete_arr(builtin_method_info);
-	memdelete_arr(_VariantCall::constant_data);
+	if (builtin_method_names != nullptr) {
+		memdelete_arr(builtin_method_names);
+	}
+	if (builtin_method_info != nullptr) {
+		memdelete_arr(builtin_method_info);
+	}
+	if (_VariantCall::constant_data != nullptr) {
+		memdelete_arr(_VariantCall::constant_data);
+	}
 }

@@ -666,7 +666,7 @@ void EditorResourcePicker::drop_data_fw(const Point2 &p_point, const Variant &p_
 						mat->set_texture(StandardMaterial3D::TextureParam::TEXTURE_ALBEDO, dropped_resource);
 						is_change_res = false;
 					} else {
-						mat.instantiate();
+						New_instantiate(mat);
 						mat->set_texture(StandardMaterial3D::TextureParam::TEXTURE_ALBEDO, dropped_resource);
 						dropped_resource = mat;
 					}
@@ -681,7 +681,7 @@ void EditorResourcePicker::drop_data_fw(const Point2 &p_point, const Variant &p_
 						mat->set_shader(dropped_resource);
 						is_change_res = false;
 					} else {
-						mat.instantiate();
+						New_instantiate(mat);
 						mat->set_shader(dropped_resource);
 						dropped_resource = mat;
 					}
@@ -693,7 +693,7 @@ void EditorResourcePicker::drop_data_fw(const Point2 &p_point, const Variant &p_
 						mat->set_shader_param("ColorTexture", dropped_resource);
 						is_change_res = false;
 					} else {
-						mat.instantiate();
+						New_instantiate(mat);
 
 						mat->set_shader_param("ColorTexture", dropped_resource);
 						dropped_resource = mat;
@@ -704,7 +704,7 @@ void EditorResourcePicker::drop_data_fw(const Point2 &p_point, const Variant &p_
 				if (at == "Font" && ClassDB::is_parent_class(dropped_resource->get_class(), "FontData")) {
 					Ref<Font> font = edited_resource;
 					if (!font.is_valid()) {
-						font.instantiate();
+						New_instantiate(font);
 					}
 					font->add_data(dropped_resource);
 					dropped_resource = font;
@@ -714,7 +714,7 @@ void EditorResourcePicker::drop_data_fw(const Point2 &p_point, const Variant &p_
 				if (at == "Texture2D" && ClassDB::is_parent_class(dropped_resource->get_class(), "Image")) {
 					Ref<ImageTexture> texture = edited_resource;
 					if (!texture.is_valid()) {
-						texture.instantiate();
+						New_instantiate(texture);
 					}
 					texture->create_from_image(dropped_resource);
 					dropped_resource = texture;

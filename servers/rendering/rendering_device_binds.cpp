@@ -156,7 +156,7 @@ Error RDShaderFile::parse_versions_from_text(const String &p_text, const String 
 	}
 
 	Ref<RDShaderFile> shader_file;
-	shader_file.instantiate();
+	New_instantiate(shader_file);
 
 	if (base_error.is_empty()) {
 		if (stage_found[RD::SHADER_STAGE_COMPUTE] && stages_found > 1) {
@@ -173,7 +173,7 @@ Error RDShaderFile::parse_versions_from_text(const String &p_text, const String 
 
 		for (const KeyValue<StringName, String> &E : version_texts) {
 			Ref<RDShaderSPIRV> bytecode;
-			bytecode.instantiate();
+			New_instantiate(bytecode);
 
 			for (int i = 0; i < RD::SHADER_STAGE_MAX; i++) {
 				String code = stage_code[i];

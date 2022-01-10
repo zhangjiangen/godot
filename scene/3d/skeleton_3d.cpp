@@ -506,10 +506,9 @@ int Skeleton3D::get_bone_axis_forward_enum(int p_bone) {
 // Skeleton creation api
 
 void Skeleton3D::add_bone(const String &p_name) {
-    if(p_name.is_empty() || p_name.find(":") != -1 || p_name.find("/") != -1)
-    {
-        ERR_FAIL_COND(p_name.is_empty() || p_name.find(":") != -1 || p_name.find("/") != -1);
-    }
+	if (p_name.is_empty() || p_name.find(":") != -1 || p_name.find("/") != -1) {
+		ERR_FAIL_COND(p_name.is_empty() || p_name.find(":") != -1 || p_name.find("/") != -1);
+	}
 
 	for (int i = 0; i < bones.size(); i++) {
 		ERR_FAIL_COND(bones[i].name == p_name);
@@ -699,11 +698,9 @@ void Skeleton3D::clear_bones() {
 
 void Skeleton3D::set_bone_pose_position(int p_bone, const Vector3 &p_position) {
 	const int bone_size = bones.size();
-    if(p_bone >= bone_size )
-    {
-        ERR_FAIL_INDEX(p_bone, bone_size);
-        
-    }
+	if (p_bone >= bone_size) {
+		ERR_FAIL_INDEX(p_bone, bone_size);
+	}
 
 	bones.write[p_bone].pose_position = p_position;
 	bones.write[p_bone].pose_cache_dirty = true;
@@ -713,11 +710,9 @@ void Skeleton3D::set_bone_pose_position(int p_bone, const Vector3 &p_position) {
 }
 void Skeleton3D::set_bone_pose_rotation(int p_bone, const Quaternion &p_rotation) {
 	const int bone_size = bones.size();
-    if(p_bone >= bone_size )
-    {
-        ERR_FAIL_INDEX(p_bone, bone_size);
-        
-    }
+	if (p_bone >= bone_size) {
+		ERR_FAIL_INDEX(p_bone, bone_size);
+	}
 
 	bones.write[p_bone].pose_rotation = p_rotation;
 	bones.write[p_bone].pose_cache_dirty = true;
@@ -962,7 +957,7 @@ void Skeleton3D::_skin_changed() {
 Ref<Skin> Skeleton3D::create_skin_from_rest_transforms() {
 	Ref<Skin> skin;
 
-	skin.instantiate();
+	New_instantiate(skin);
 	skin->set_bind_count(bones.size());
 	_update_process_order(); // Just in case.
 
@@ -1011,7 +1006,7 @@ Ref<SkinReference> Skeleton3D::register_skin(const Ref<Skin> &p_skin) {
 	}
 
 	Ref<SkinReference> skin_ref;
-	skin_ref.instantiate();
+	New_instantiate(skin_ref);
 
 	skin_ref->skeleton_node = this;
 	skin_ref->bind_count = 0;

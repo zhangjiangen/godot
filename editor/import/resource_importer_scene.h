@@ -395,7 +395,7 @@ Vector<Ref<Shape3D>> ResourceImporterScene::get_collision_shapes(const Ref<Mesh>
 		return shapes;
 	} else if (generate_shape_type == SHAPE_TYPE_BOX) {
 		Ref<BoxShape3D> box;
-		box.instantiate();
+		New_instantiate(box);
 		if (p_options.has(SNAME("primitive/size"))) {
 			box->set_size(p_options[SNAME("primitive/size")]);
 		}
@@ -406,7 +406,7 @@ Vector<Ref<Shape3D>> ResourceImporterScene::get_collision_shapes(const Ref<Mesh>
 
 	} else if (generate_shape_type == SHAPE_TYPE_SPHERE) {
 		Ref<SphereShape3D> sphere;
-		sphere.instantiate();
+		New_instantiate(sphere);
 		if (p_options.has(SNAME("primitive/radius"))) {
 			sphere->set_radius(p_options[SNAME("primitive/radius")]);
 		}
@@ -416,7 +416,7 @@ Vector<Ref<Shape3D>> ResourceImporterScene::get_collision_shapes(const Ref<Mesh>
 		return shapes;
 	} else if (generate_shape_type == SHAPE_TYPE_CYLINDER) {
 		Ref<CylinderShape3D> cylinder;
-		cylinder.instantiate();
+		New_instantiate(cylinder);
 		if (p_options.has(SNAME("primitive/height"))) {
 			cylinder->set_height(p_options[SNAME("primitive/height")]);
 		}
@@ -429,7 +429,7 @@ Vector<Ref<Shape3D>> ResourceImporterScene::get_collision_shapes(const Ref<Mesh>
 		return shapes;
 	} else if (generate_shape_type == SHAPE_TYPE_CAPSULE) {
 		Ref<CapsuleShape3D> capsule;
-		capsule.instantiate();
+		New_instantiate(capsule);
 		if (p_options.has(SNAME("primitive/height"))) {
 			capsule->set_height(p_options[SNAME("primitive/height")]);
 		}

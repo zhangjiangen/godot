@@ -1483,7 +1483,7 @@ void NativeScriptLanguage::init_library(const Ref<GDNativeLibrary> &lib) {
 
 	if (!E) {
 		Ref<GDNative> gdn;
-		gdn.instantiate();
+		New_instantiate(gdn);
 		gdn->set_library(lib);
 
 		// TODO check the return value?

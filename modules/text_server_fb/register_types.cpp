@@ -36,7 +36,7 @@ void preregister_text_server_fb_types() {
 	GDREGISTER_CLASS(TextServerFallback);
 	if (TextServerManager::get_singleton()) {
 		Ref<TextServerFallback> ts;
-		ts.instantiate();
+		New_instantiate(ts);
 		TextServerManager::get_singleton()->add_interface(ts);
 	}
 }

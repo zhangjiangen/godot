@@ -212,7 +212,7 @@ ImporterMeshInstance3D *FBXMeshData::create_fbx_mesh(const ImportState &state, c
 			const int surface_id = polygon_surfaces[*polygon_id];
 			if (surfaces.has(surface_id) == false) {
 				SurfaceData sd;
-				sd.surface_tool.instantiate();
+				New_instantiate(sd.surface_tool);
 				sd.surface_tool->begin(Mesh::PRIMITIVE_TRIANGLES);
 
 				if (surface_id < 0) {
@@ -317,7 +317,7 @@ ImporterMeshInstance3D *FBXMeshData::create_fbx_mesh(const ImportState &state, c
 			Vector3 *normals_ptr = morph_data->normals.ptrw();
 
 			Ref<SurfaceTool> morph_st;
-			morph_st.instantiate();
+			New_instantiate(morph_st);
 			morph_st->begin(Mesh::PRIMITIVE_TRIANGLES);
 
 			for (unsigned int vi = 0; vi < surface->vertices_map.size(); vi += 1) {
@@ -346,7 +346,7 @@ ImporterMeshInstance3D *FBXMeshData::create_fbx_mesh(const ImportState &state, c
 
 	// Phase 6. Compose the mesh and return it.
 	Ref<ImporterMesh> mesh;
-	mesh.instantiate();
+	New_instantiate(mesh);
 
 	// Add blend shape info.
 	for (const String *morph_name = morphs.next(nullptr); morph_name != nullptr; morph_name = morphs.next(morph_name)) {

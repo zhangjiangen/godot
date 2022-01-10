@@ -157,7 +157,7 @@ int register_test_command(String p_command, TestFunc p_function);
 
 #define _CREATE_GUI_MOUSE_EVENT(m_object, m_local_pos, m_input, m_mask) \
 	Ref<InputEventMouseButton> event;                                   \
-	event.instantiate();                                                \
+	New_instantiate(event);                                             \
 	event->set_position(m_local_pos);                                   \
 	event->set_button_index(m_input);                                   \
 	event->set_button_mask(m_mask);                                     \

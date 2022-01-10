@@ -75,9 +75,9 @@ void SceneExporterGLTFPlugin::_gltf2_dialog_action(String p_file) {
 	}
 	List<String> deps;
 	Ref<GLTFDocument> doc;
-	doc.instantiate();
+	New_instantiate(doc);
 	Ref<GLTFState> state;
-	state.instantiate();
+	New_instantiate(state);
 	int32_t flags = 0;
 	flags |= EditorSceneFormatImporter::IMPORT_USE_NAMED_SKIN_BINDS;
 	Error err = doc->append_from_scene(root, state, flags, 30.0f);

@@ -875,7 +875,7 @@ Dictionary NativeExtensionAPIDump::generate_extension_api() {
 void NativeExtensionAPIDump::generate_extension_json_file(const String &p_path) {
 	Dictionary api = generate_extension_api();
 	Ref<JSON> json;
-	json.instantiate();
+	New_instantiate(json);
 
 	String text = json->stringify(api, "\t", false);
 	FileAccessRef fa = FileAccess::open(p_path, FileAccess::WRITE);

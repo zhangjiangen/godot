@@ -40,12 +40,12 @@ void AtlasMergingDialog::_property_changed(const StringName &p_property, const V
 }
 
 void AtlasMergingDialog::_generate_merged(Vector<Ref<TileSetAtlasSource>> p_atlas_sources, int p_max_columns) {
-	merged.instantiate();
+	New_instantiate(merged);
 	merged_mapping.clear();
 
 	if (p_atlas_sources.size() >= 2) {
 		Ref<Image> output_image;
-		output_image.instantiate();
+		New_instantiate(output_image);
 		output_image->create(1, 1, false, Image::FORMAT_RGBA8);
 
 		// Compute the new texture region size.
@@ -115,7 +115,7 @@ void AtlasMergingDialog::_generate_merged(Vector<Ref<TileSetAtlasSource>> p_atla
 		}
 
 		Ref<ImageTexture> output_image_texture;
-		output_image_texture.instantiate();
+		New_instantiate(output_image_texture);
 		output_image_texture->create_from_image(output_image);
 
 		merged->set_name(p_atlas_sources[0]->get_name());

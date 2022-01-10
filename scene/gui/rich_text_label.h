@@ -39,14 +39,14 @@ class RichTextLabel : public Control {
 	GDCLASS(RichTextLabel, Control);
 
 public:
-	enum ListType {
+	enum ListType : uint8_t {
 		LIST_NUMBERS,
 		LIST_LETTERS,
 		LIST_ROMAN,
 		LIST_DOTS
 	};
 
-	enum ItemType {
+	enum ItemType : uint8_t {
 		ITEM_FRAME,
 		ITEM_TEXT,
 		ITEM_IMAGE,
@@ -75,7 +75,7 @@ public:
 		ITEM_CUSTOMFX
 	};
 
-	enum VisibleCharactersBehavior {
+	enum VisibleCharactersBehavior : uint8_t {
 		VC_CHARS_BEFORE_SHAPING,
 		VC_CHARS_AFTER_SHAPING,
 		VC_GLYPHS_AUTO,
@@ -95,24 +95,24 @@ private:
 
 		Ref<TextParagraph> text_buf;
 		Color dc_color;
-		int dc_ol_size = 0;
 		Color dc_ol_color;
-
 		Vector2 offset;
+		int dc_ol_size = 0;
+
 		int char_offset = 0;
 		int char_count = 0;
 
-		Line() { text_buf.instantiate(); }
+		Line() { New_instantiate(text_buf); }
 	};
 
 	struct Item {
-		int index = 0;
-		int char_ofs = 0;
 		Item *parent = nullptr;
-		ItemType type = ITEM_FRAME;
 		List<Item *> subitems;
 		List<Item *>::Element *E = nullptr;
+		int index = 0;
+		int char_ofs = 0;
 		int line = 0;
+		ItemType type = ITEM_FRAME;
 
 		void _clear_children() {
 			while (subitems.size()) {
@@ -151,11 +151,11 @@ private:
 	struct ItemDropcap : public Item {
 		String text;
 		Ref<Font> font;
-		int font_size = 0;
 		Color color;
-		int ol_size = 0;
-		Color ol_color;
 		Rect2 dropcap_margins;
+		Color ol_color;
+		int ol_size = 0;
+		int font_size = 0;
 		ItemDropcap() { type = ITEM_DROPCAP; }
 	};
 
@@ -224,9 +224,9 @@ private:
 	};
 
 	struct ItemList : public Item {
+		int level = 0;
 		ListType list_type = LIST_DOTS;
 		bool capitalize = false;
-		int level = 0;
 		ItemList() { type = ITEM_LIST; }
 	};
 
@@ -264,11 +264,11 @@ private:
 	};
 
 	struct ItemShake : public ItemFX {
-		int strength = 0;
-		float rate = 0.0f;
 		uint64_t _current_rng = 0;
 		uint64_t _previous_rng = 0;
 		Vector2 prev_off;
+		int strength = 0;
+		float rate = 0.0f;
 
 		ItemShake() { type = ITEM_SHAKE; }
 
@@ -328,7 +328,7 @@ private:
 
 		ItemCustomFX() {
 			type = ITEM_CUSTOMFX;
-			char_fx_transform.instantiate();
+			New_instantiate(char_fx_transform);
 		}
 
 		virtual ~ItemCustomFX() {

@@ -1631,8 +1631,8 @@ void ScriptTextEditor::_prepare_edit_menu() {
 
 void ScriptTextEditor::_make_context_menu(bool p_selection, bool p_color, bool p_foldable, bool p_open_docs, bool p_goto_definition, Vector2 p_pos) {
 	context_menu->clear();
-    // 增加自动完成上下文菜单
-    context_menu->add_shortcut(ED_GET_SHORTCUT("ui_text_completion_query"), EDIT_COMPLETE);
+	// 增加自动完成上下文菜单
+	context_menu->add_shortcut(ED_GET_SHORTCUT("ui_text_completion_query"), EDIT_COMPLETE);
 	context_menu->add_shortcut(ED_GET_SHORTCUT("ui_undo"), EDIT_UNDO);
 	context_menu->add_shortcut(ED_GET_SHORTCUT("ui_redo"), EDIT_REDO);
 
@@ -1881,11 +1881,11 @@ ScriptTextEditor::ScriptTextEditor() {
 	highlighter_menu->set_name("highlighter_menu");
 
 	Ref<EditorPlainTextSyntaxHighlighter> plain_highlighter;
-	plain_highlighter.instantiate();
+	New_instantiate(plain_highlighter);
 	add_syntax_highlighter(plain_highlighter);
 
 	Ref<EditorStandardSyntaxHighlighter> highlighter;
-	highlighter.instantiate();
+	New_instantiate(highlighter);
 	add_syntax_highlighter(highlighter);
 	set_syntax_highlighter(highlighter);
 

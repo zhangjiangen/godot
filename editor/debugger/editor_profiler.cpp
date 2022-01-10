@@ -305,12 +305,12 @@ void EditorProfiler::_update_plot() {
 	}
 
 	Ref<Image> img;
-	img.instantiate();
+	New_instantiate(img);
 	img->create(w, h, false, Image::FORMAT_RGBA8, graph_image);
 
 	if (reset_texture) {
 		if (graph_texture.is_null()) {
-			graph_texture.instantiate();
+			New_instantiate(graph_texture);
 		}
 		graph_texture->create_from_image(img);
 	}

@@ -584,11 +584,11 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 
 	for (int i = 0; i < argc; i++) {
 		args.push_back(String::utf8(argv[i]));
-        
-        OS::get_singleton()->print("%s",argv[i]);
+
+		OS::get_singleton()->print("%s", argv[i]);
 	}
-    
-    OS::get_singleton()->print("1111111222222233333333");
+
+	OS::get_singleton()->print("1111111222222233333333");
 	List<String>::Element *I = args.front();
 
 	while (I) {
@@ -1740,7 +1740,7 @@ Error Main::setup2(Thread::ID p_main_tid_override) {
 
 		if (boot_logo_image) {
 			if (!boot_logo_path.is_empty()) {
-				boot_logo.instantiate();
+				New_instantiate(boot_logo);
 				Error load_err = ImageLoader::load_image(boot_logo_path, boot_logo);
 				if (load_err) {
 					ERR_PRINT("Non-existing or invalid boot splash at '" + boot_logo_path + "'. Loading default splash.");
@@ -1748,7 +1748,7 @@ Error Main::setup2(Thread::ID p_main_tid_override) {
 			}
 		} else {
 			// Create a 1×1 transparent image. This will effectively hide the splash image.
-			boot_logo.instantiate();
+			New_instantiate(boot_logo);
 			boot_logo->create(1, 1, false, Image::FORMAT_RGBA8);
 			boot_logo->set_pixel(0, 0, Color(0, 0, 0, 0));
 		}
@@ -1965,8 +1965,8 @@ Error Main::setup2(Thread::ID p_main_tid_override) {
 	print_verbose("CORE API HASH: " + uitos(ClassDB::get_api_hash(ClassDB::API_CORE)));
 	print_verbose("EDITOR API HASH: " + uitos(ClassDB::get_api_hash(ClassDB::API_EDITOR)));
 	MAIN_PRINT("Main: Done");
-    // 初始化引擎
-    Engine::get_singleton()->on_init();
+	// 初始化引擎
+	Engine::get_singleton()->on_init();
 
 	return OK;
 }
@@ -2532,7 +2532,7 @@ bool Main::start() {
 				String iconpath = GLOBAL_DEF("application/config/icon", "Variant()");
 				if ((!iconpath.is_empty()) && (!hasicon)) {
 					Ref<Image> icon;
-					icon.instantiate();
+					New_instantiate(icon);
 					if (ImageLoader::load_image(iconpath, icon) == OK) {
 						DisplayServer::get_singleton()->set_icon(icon);
 						hasicon = true;
@@ -2812,10 +2812,10 @@ void Main::cleanup(bool p_force) {
 
 	// Sync pending commands that may have been queued from a different thread during ScriptServer finalization
 	RenderingServer::get_singleton()->sync();
-    
-    // 清除引擎
-    Engine::get_singleton()->on_clear();
-    
+
+	// 清除引擎
+	Engine::get_singleton()->on_clear();
+
 	//clear global shader variables before scene and other graphics stuff are deinitialized.
 	rendering_server->global_variables_clear();
 

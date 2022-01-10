@@ -1100,7 +1100,7 @@ void CustomPropertyEditor::_node_path_selected(NodePath p_path) {
 		}
 
 		Ref<ViewportTexture> vt;
-		vt.instantiate();
+		New_instantiate(vt);
 		vt->set_viewport_path_in_scene(get_tree()->get_edited_scene_root()->get_path_to(to_node));
 		vt->setup_local_to_scene();
 		v = vt;
@@ -1440,7 +1440,7 @@ void CustomPropertyEditor::_modified(String p_string) {
 		case Variant::INT: {
 			String text = TS->parse_number(value_editor[0]->get_text());
 			Ref<Expression> expr;
-			expr.instantiate();
+			New_instantiate(expr);
 			Error err = expr->parse(text);
 			if (err != OK) {
 				v = value_editor[0]->get_text().to_int();
@@ -1616,7 +1616,7 @@ void CustomPropertyEditor::_modified(String p_string) {
 
 real_t CustomPropertyEditor::_parse_real_expression(String text) {
 	Ref<Expression> expr;
-	expr.instantiate();
+	New_instantiate(expr);
 	Error err = expr->parse(text);
 	real_t out;
 	if (err != OK) {

@@ -85,7 +85,7 @@ void EditorLayoutsDialog::_post_popup() {
 	layout_names->clear();
 
 	Ref<ConfigFile> config;
-	config.instantiate();
+	New_instantiate(config);
 	Error err = config->load(EditorSettings::get_singleton()->get_editor_layouts_config());
 	if (err != OK) {
 		return;

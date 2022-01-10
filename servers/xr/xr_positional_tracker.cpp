@@ -140,7 +140,7 @@ void XRPositionalTracker::invalidate_pose(const StringName &p_action_name) {
 void XRPositionalTracker::set_pose(const StringName &p_action_name, const Transform3D &p_transform, const Vector3 &p_linear_velocity, const Vector3 &p_angular_velocity) {
 	Ref<XRPose> new_pose;
 
-	new_pose.instantiate();
+	New_instantiate(new_pose);
 	new_pose->set_name(p_action_name);
 	new_pose->set_has_tracking_data(true);
 	new_pose->set_transform(p_transform);

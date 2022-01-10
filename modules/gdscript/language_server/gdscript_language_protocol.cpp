@@ -310,10 +310,10 @@ bool GDScriptLanguageProtocol::is_goto_native_symbols_enabled() const {
 }
 
 GDScriptLanguageProtocol::GDScriptLanguageProtocol() {
-	server.instantiate();
+	New_instantiate(server);
 	singleton = this;
-	workspace.instantiate();
-	text_document.instantiate();
+	New_instantiate(workspace);
+	New_instantiate(text_document);
 	set_scope("textDocument", text_document.ptr());
 	set_scope("completionItem", text_document.ptr());
 	set_scope("workspace", workspace.ptr());

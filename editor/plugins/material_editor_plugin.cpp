@@ -143,7 +143,7 @@ MaterialEditor::MaterialEditor() {
 	vc->set_anchors_and_offsets_preset(PRESET_WIDE);
 	viewport = memnew(SubViewport);
 	Ref<World3D> world_3d;
-	world_3d.instantiate();
+	New_instantiate(world_3d);
 	viewport->set_world_3d(world_3d); //use own world
 	vc->add_child(viewport);
 	viewport->set_disable_input(true);
@@ -178,9 +178,9 @@ MaterialEditor::MaterialEditor() {
 	box_xform.origin.y = 0.2;
 	box_instance->set_transform(box_xform);
 
-	sphere_mesh.instantiate();
+	New_instantiate(sphere_mesh);
 	sphere_instance->set_mesh(sphere_mesh);
-	box_mesh.instantiate();
+	New_instantiate(box_mesh);
 	box_instance->set_mesh(box_mesh);
 
 	set_custom_minimum_size(Size2(1, 150) * EDSCALE);
@@ -292,7 +292,7 @@ void EditorInspectorPluginMaterial::_undo_redo_inspector_callback(Object *p_undo
 }
 
 EditorInspectorPluginMaterial::EditorInspectorPluginMaterial() {
-	env.instantiate();
+	New_instantiate(env);
 	Ref<Sky> sky = memnew(Sky());
 	env->set_sky(sky);
 	env->set_background(Environment::BG_COLOR);
@@ -304,7 +304,7 @@ EditorInspectorPluginMaterial::EditorInspectorPluginMaterial() {
 
 MaterialEditorPlugin::MaterialEditorPlugin(EditorNode *p_node) {
 	Ref<EditorInspectorPluginMaterial> plugin;
-	plugin.instantiate();
+	New_instantiate(plugin);
 	add_inspector_plugin(plugin);
 }
 
@@ -322,10 +322,10 @@ Ref<Resource> StandardMaterial3DConversionPlugin::convert(const Ref<Resource> &p
 	ERR_FAIL_COND_V(!mat.is_valid(), Ref<Resource>());
 
 	Ref<ShaderMaterial> smat;
-	smat.instantiate();
+	New_instantiate(smat);
 
 	Ref<Shader> shader;
-	shader.instantiate();
+	New_instantiate(shader);
 
 	String code = RS::get_singleton()->shader_get_code(mat->get_shader_rid());
 
@@ -368,10 +368,10 @@ Ref<Resource> ORMMaterial3DConversionPlugin::convert(const Ref<Resource> &p_reso
 	ERR_FAIL_COND_V(!mat.is_valid(), Ref<Resource>());
 
 	Ref<ShaderMaterial> smat;
-	smat.instantiate();
+	New_instantiate(smat);
 
 	Ref<Shader> shader;
-	shader.instantiate();
+	New_instantiate(shader);
 
 	String code = RS::get_singleton()->shader_get_code(mat->get_shader_rid());
 
@@ -414,10 +414,10 @@ Ref<Resource> ParticlesMaterialConversionPlugin::convert(const Ref<Resource> &p_
 	ERR_FAIL_COND_V(!mat.is_valid(), Ref<Resource>());
 
 	Ref<ShaderMaterial> smat;
-	smat.instantiate();
+	New_instantiate(smat);
 
 	Ref<Shader> shader;
-	shader.instantiate();
+	New_instantiate(shader);
 
 	String code = RS::get_singleton()->shader_get_code(mat->get_shader_rid());
 
@@ -453,10 +453,10 @@ Ref<Resource> CanvasItemMaterialConversionPlugin::convert(const Ref<Resource> &p
 	ERR_FAIL_COND_V(!mat.is_valid(), Ref<Resource>());
 
 	Ref<ShaderMaterial> smat;
-	smat.instantiate();
+	New_instantiate(smat);
 
 	Ref<Shader> shader;
-	shader.instantiate();
+	New_instantiate(shader);
 
 	String code = RS::get_singleton()->shader_get_code(mat->get_shader_rid());
 
@@ -492,10 +492,10 @@ Ref<Resource> ProceduralSkyMaterialConversionPlugin::convert(const Ref<Resource>
 	ERR_FAIL_COND_V(!mat.is_valid(), Ref<Resource>());
 
 	Ref<ShaderMaterial> smat;
-	smat.instantiate();
+	New_instantiate(smat);
 
 	Ref<Shader> shader;
-	shader.instantiate();
+	New_instantiate(shader);
 
 	String code = RS::get_singleton()->shader_get_code(mat->get_shader_rid());
 
@@ -531,10 +531,10 @@ Ref<Resource> PanoramaSkyMaterialConversionPlugin::convert(const Ref<Resource> &
 	ERR_FAIL_COND_V(!mat.is_valid(), Ref<Resource>());
 
 	Ref<ShaderMaterial> smat;
-	smat.instantiate();
+	New_instantiate(smat);
 
 	Ref<Shader> shader;
-	shader.instantiate();
+	New_instantiate(shader);
 
 	String code = RS::get_singleton()->shader_get_code(mat->get_shader_rid());
 
@@ -570,10 +570,10 @@ Ref<Resource> PhysicalSkyMaterialConversionPlugin::convert(const Ref<Resource> &
 	ERR_FAIL_COND_V(!mat.is_valid(), Ref<Resource>());
 
 	Ref<ShaderMaterial> smat;
-	smat.instantiate();
+	New_instantiate(smat);
 
 	Ref<Shader> shader;
-	shader.instantiate();
+	New_instantiate(shader);
 
 	String code = RS::get_singleton()->shader_get_code(mat->get_shader_rid());
 
@@ -609,10 +609,10 @@ Ref<Resource> FogMaterialConversionPlugin::convert(const Ref<Resource> &p_resour
 	ERR_FAIL_COND_V(!mat.is_valid(), Ref<Resource>());
 
 	Ref<ShaderMaterial> smat;
-	smat.instantiate();
+	New_instantiate(smat);
 
 	Ref<Shader> shader;
-	shader.instantiate();
+	New_instantiate(shader);
 
 	String code = RS::get_singleton()->shader_get_code(mat->get_shader_rid());
 

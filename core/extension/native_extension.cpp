@@ -353,7 +353,7 @@ void NativeExtension::initialize_native_extensions() {
 
 RES NativeExtensionResourceLoader::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
 	Ref<ConfigFile> config;
-	config.instantiate();
+	New_instantiate(config);
 
 	Error err = config->load(p_path);
 
@@ -409,7 +409,7 @@ RES NativeExtensionResourceLoader::load(const String &p_path, const String &p_or
 	}
 
 	Ref<NativeExtension> lib;
-	lib.instantiate();
+	New_instantiate(lib);
 	String abs_path = ProjectSettings::get_singleton()->globalize_path(library_path);
 	err = lib->open_library(abs_path, entry_symbol);
 

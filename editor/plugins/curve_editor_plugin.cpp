@@ -775,7 +775,7 @@ void EditorInspectorPluginCurve::parse_begin(Object *p_object) {
 
 CurveEditorPlugin::CurveEditorPlugin(EditorNode *p_node) {
 	Ref<EditorInspectorPluginCurve> curve_plugin;
-	curve_plugin.instantiate();
+	New_instantiate(curve_plugin);
 	EditorInspector::add_inspector_plugin(curve_plugin);
 
 	get_editor_interface()->get_resource_previewer()->add_preview_generator(memnew(CurvePreviewGenerator));
@@ -797,7 +797,7 @@ Ref<Texture2D> CurvePreviewGenerator::generate(const Ref<Resource> &p_from, cons
 	int thumbnail_size = EditorSettings::get_singleton()->get("filesystem/file_dialog/thumbnail_size");
 	thumbnail_size *= EDSCALE;
 	Ref<Image> img_ref;
-	img_ref.instantiate();
+	New_instantiate(img_ref);
 	Image &im = **img_ref;
 
 	im.create(thumbnail_size, thumbnail_size / 2, false, Image::FORMAT_RGBA8);

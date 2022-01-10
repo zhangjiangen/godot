@@ -312,7 +312,7 @@ Error WSLServer::set_buffers(int p_in_buffer, int p_in_packets, int p_out_buffer
 }
 
 WSLServer::WSLServer() {
-	_server.instantiate();
+	New_instantiate(_server);
 }
 
 WSLServer::~WSLServer() {

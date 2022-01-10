@@ -170,7 +170,7 @@ void GPUParticles2DEditorPlugin::_generate_emission_mask() {
 	}
 
 	Ref<Image> img;
-	img.instantiate();
+	New_instantiate(img);
 	Error err = ImageLoader::load_image(source_emission_file, img);
 	ERR_FAIL_COND_MSG(err != OK, "Error loading image '" + source_emission_file + "'.");
 
@@ -294,11 +294,11 @@ void GPUParticles2DEditorPlugin::_generate_emission_mask() {
 		}
 	}
 
-	img.instantiate();
+	New_instantiate(img);
 	img->create(w, h, false, Image::FORMAT_RGF, texdata);
 
 	Ref<ImageTexture> imgt;
-	imgt.instantiate();
+	New_instantiate(imgt);
 	imgt->create_from_image(img);
 
 	pm->set_emission_point_texture(imgt);
@@ -315,10 +315,10 @@ void GPUParticles2DEditorPlugin::_generate_emission_mask() {
 			}
 		}
 
-		img.instantiate();
+		New_instantiate(img);
 		img->create(w, h, false, Image::FORMAT_RGBA8, colordata);
 
-		imgt.instantiate();
+		New_instantiate(imgt);
 		imgt->create_from_image(img);
 		pm->set_emission_color_texture(imgt);
 	}
@@ -338,10 +338,10 @@ void GPUParticles2DEditorPlugin::_generate_emission_mask() {
 			}
 		}
 
-		img.instantiate();
+		New_instantiate(img);
 		img->create(w, h, false, Image::FORMAT_RGF, normdata);
 
-		imgt.instantiate();
+		New_instantiate(imgt);
 		imgt->create_from_image(img);
 		pm->set_emission_normal_texture(imgt);
 

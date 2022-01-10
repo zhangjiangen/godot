@@ -1325,31 +1325,31 @@ void Variant::_clear_internal() {
 		} break;
 		// arrays
 		case PACKED_BYTE_ARRAY: {
-			PackedArrayRef<Vector<uint8_t>>::destroy((PackedArrayRef<Vector<uint8_t>>*)_data.packed_array);
+			PackedArrayRef<Vector<uint8_t>>::destroy((PackedArrayRef<Vector<uint8_t>> *)_data.packed_array);
 		} break;
 		case PACKED_INT32_ARRAY: {
-			PackedArrayRef<Vector<uint32_t>>::destroy((PackedArrayRef<Vector<uint32_t>>*)_data.packed_array);
+			PackedArrayRef<Vector<uint32_t>>::destroy((PackedArrayRef<Vector<uint32_t>> *)_data.packed_array);
 		} break;
 		case PACKED_INT64_ARRAY: {
-			PackedArrayRef<Vector<uint64_t>>::destroy((PackedArrayRef<Vector<uint64_t>>*)_data.packed_array);
+			PackedArrayRef<Vector<uint64_t>>::destroy((PackedArrayRef<Vector<uint64_t>> *)_data.packed_array);
 		} break;
 		case PACKED_FLOAT32_ARRAY: {
-			PackedArrayRef<Vector<float>>::destroy((PackedArrayRef<Vector<float>>*)_data.packed_array);
+			PackedArrayRef<Vector<float>>::destroy((PackedArrayRef<Vector<float>> *)_data.packed_array);
 		} break;
 		case PACKED_FLOAT64_ARRAY: {
-			PackedArrayRef<Vector<double>>::destroy((PackedArrayRef<Vector<double>>*)_data.packed_array);
+			PackedArrayRef<Vector<double>>::destroy((PackedArrayRef<Vector<double>> *)_data.packed_array);
 		} break;
 		case PACKED_STRING_ARRAY: {
-			PackedArrayRef<Vector<String>>::destroy((PackedArrayRef<Vector<String>>*)_data.packed_array);
+			PackedArrayRef<Vector<String>>::destroy((PackedArrayRef<Vector<String>> *)_data.packed_array);
 		} break;
 		case PACKED_VECTOR2_ARRAY: {
-			PackedArrayRef<Vector<Vector2>>::destroy((PackedArrayRef<Vector<Vector2>>*)_data.packed_array);
+			PackedArrayRef<Vector<Vector2>>::destroy((PackedArrayRef<Vector<Vector2>> *)_data.packed_array);
 		} break;
 		case PACKED_VECTOR3_ARRAY: {
-			PackedArrayRef<Vector<Vector3>>::destroy((PackedArrayRef<Vector<Vector3>>*)_data.packed_array);
+			PackedArrayRef<Vector<Vector3>>::destroy((PackedArrayRef<Vector<Vector3>> *)_data.packed_array);
 		} break;
 		case PACKED_COLOR_ARRAY: {
-			PackedArrayRef<Vector<Color>>::destroy((PackedArrayRef<Vector<Color>>*)_data.packed_array);
+			PackedArrayRef<Vector<Color>>::destroy((PackedArrayRef<Vector<Color>> *)_data.packed_array);
 		} break;
 		default: {
 		} /* not needed */
@@ -3478,19 +3478,25 @@ String vformat(const String &p_text, const Variant &p1, const Variant &p2, const
 
 	return fmt;
 }
-
+static bool is_register_types = false;
 void Variant::register_types() {
-	_register_variant_operators();
-	_register_variant_methods();
-	_register_variant_setters_getters();
-	_register_variant_constructors();
-	_register_variant_destructors();
-	_register_variant_utility_functions();
+	if (!is_register_types) {
+		is_register_types = true;
+		_register_variant_operators();
+		_register_variant_methods();
+		_register_variant_setters_getters();
+		_register_variant_constructors();
+		_register_variant_destructors();
+		_register_variant_utility_functions();
+	}
 }
 void Variant::unregister_types() {
-	_unregister_variant_operators();
-	_unregister_variant_methods();
-	_unregister_variant_setters_getters();
-	_unregister_variant_destructors();
-	_unregister_variant_utility_functions();
+	if (is_register_types) {
+		is_register_types = false;
+		_unregister_variant_operators();
+		_unregister_variant_methods();
+		_unregister_variant_setters_getters();
+		_unregister_variant_destructors();
+		_unregister_variant_utility_functions();
+	}
 }

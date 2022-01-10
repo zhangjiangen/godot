@@ -36,7 +36,7 @@
 #ifdef TOOLS_ENABLED
 static void _editor_init() {
 	Ref<EditorSceneFormatImporterFBX> import_fbx;
-	import_fbx.instantiate();
+	New_instantiate(import_fbx);
 	ResourceImporterScene::get_singleton()->add_importer(import_fbx);
 }
 #endif

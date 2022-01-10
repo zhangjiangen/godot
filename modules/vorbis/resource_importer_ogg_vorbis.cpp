@@ -93,10 +93,10 @@ Error ResourceImporterOGGVorbis::import(const String &p_source_file, const Strin
 	memdelete(f);
 
 	Ref<AudioStreamOGGVorbis> ogg_vorbis_stream;
-	ogg_vorbis_stream.instantiate();
+	New_instantiate(ogg_vorbis_stream);
 
 	Ref<OGGPacketSequence> ogg_packet_sequence;
-	ogg_packet_sequence.instantiate();
+	New_instantiate(ogg_packet_sequence);
 
 	ogg_stream_state stream_state;
 	ogg_sync_state sync_state;

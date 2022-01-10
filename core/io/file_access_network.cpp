@@ -210,7 +210,7 @@ FileAccessNetworkClient *FileAccessNetworkClient::singleton = nullptr;
 
 FileAccessNetworkClient::FileAccessNetworkClient() {
 	singleton = this;
-	client.instantiate();
+	New_instantiate(client);
 }
 
 FileAccessNetworkClient::~FileAccessNetworkClient() {

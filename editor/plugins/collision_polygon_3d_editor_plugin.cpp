@@ -514,7 +514,7 @@ CollisionPolygon3DEditor::CollisionPolygon3DEditor(EditorNode *p_editor) {
 	mode = MODE_EDIT;
 	wip_active = false;
 	imgeom = memnew(MeshInstance3D);
-	imesh.instantiate();
+	New_instantiate(imesh);
 	imgeom->set_mesh(imesh);
 	imgeom->set_transform(Transform3D(Basis(), Vector3(0, 0, 0.00001)));
 
@@ -537,7 +537,7 @@ CollisionPolygon3DEditor::CollisionPolygon3DEditor(EditorNode *p_editor) {
 
 	pointsm = memnew(MeshInstance3D);
 	imgeom->add_child(pointsm);
-	m.instantiate();
+	New_instantiate(m);
 	pointsm->set_mesh(m);
 	pointsm->set_transform(Transform3D(Basis(), Vector3(0, 0, 0.00001)));
 

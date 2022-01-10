@@ -78,7 +78,7 @@ Error ResourceImporterBitMap::import(const String &p_source_file, const String &
 	int create_from = p_options["create_from"];
 	float threshold = p_options["threshold"];
 	Ref<Image> image;
-	image.instantiate();
+	New_instantiate(image);
 	Error err = ImageLoader::load_image(p_source_file, image);
 	if (err != OK) {
 		return err;
@@ -88,7 +88,7 @@ Error ResourceImporterBitMap::import(const String &p_source_file, const String &
 	int h = image->get_height();
 
 	Ref<BitMap> bitmap;
-	bitmap.instantiate();
+	New_instantiate(bitmap);
 	bitmap->create(Size2(w, h));
 
 	for (int i = 0; i < h; i++) {

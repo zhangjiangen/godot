@@ -33,6 +33,7 @@
 
 #include "core/math/rect2.h"
 #include "core/math/transform_3d.h"
+#include "core/templates/local_vector.h"
 
 struct CameraMatrix {
 	enum Planes {
@@ -45,6 +46,7 @@ struct CameraMatrix {
 	};
 
 	real_t matrix[4][4];
+	mutable LocalVector<Plane> planes;
 
 	float determinant() const;
 	void set_identity();
@@ -71,7 +73,7 @@ struct CameraMatrix {
 	real_t get_fov() const;
 	bool is_orthogonal() const;
 
-	Vector<Plane> get_projection_planes(const Transform3D &p_transform) const;
+	LocalVector<Plane> get_projection_planes(const Transform3D &p_transform) const;
 
 	bool get_endpoints(const Transform3D &p_transform, Vector3 *p_8points) const;
 	Vector2 get_viewport_half_extents() const;

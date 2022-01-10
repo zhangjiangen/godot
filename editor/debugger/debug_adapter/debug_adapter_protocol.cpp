@@ -1009,7 +1009,7 @@ void DebugAdapterProtocol::stop() {
 }
 
 DebugAdapterProtocol::DebugAdapterProtocol() {
-	server.instantiate();
+	New_instantiate(server);
 	singleton = this;
 	parser = memnew(DebugAdapterParser);
 

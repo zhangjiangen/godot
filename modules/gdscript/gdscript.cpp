@@ -2338,7 +2338,7 @@ RES ResourceFormatLoaderGDScript::load(const String &p_path, const String &p_ori
 
 	if (script.is_null()) {
 		// Don't fail loading because of parsing error.
-		script.instantiate();
+		New_instantiate(script);
 	}
 
 	if (r_error) {

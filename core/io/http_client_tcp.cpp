@@ -71,7 +71,7 @@ Error HTTPClientTCP::connect_to_host(const String &p_host, int p_port, bool p_ss
 	connection = tcp_connection;
 
 	if (ssl && https_proxy_port != -1) {
-		proxy_client.instantiate(); // Needs proxy negotiation
+		New_instantiate(proxy_client); // Needs proxy negotiation
 		server_host = https_proxy_host;
 		server_port = https_proxy_port;
 	} else if (!ssl && http_proxy_port != -1) {
@@ -758,7 +758,7 @@ void HTTPClientTCP::set_https_proxy(const String &p_host, int p_port) {
 }
 
 HTTPClientTCP::HTTPClientTCP() {
-	tcp_connection.instantiate();
+	New_instantiate(tcp_connection);
 }
 
 HTTPClient *(*HTTPClient::_create)() = HTTPClientTCP::_create_func;

@@ -2575,7 +2575,7 @@ void DisplayServerX11::_handle_key_event(WindowID p_window, XKeyEvent *p_event, 
 			tmp.parse_utf8(utf8string, utf8bytes);
 			for (int i = 0; i < tmp.length(); i++) {
 				Ref<InputEventKey> k;
-				k.instantiate();
+				New_instantiate(k);
 				if (physical_keycode == Key::NONE && keycode == Key::NONE && tmp[i] == 0) {
 					continue;
 				}
@@ -2666,7 +2666,7 @@ void DisplayServerX11::_handle_key_event(WindowID p_window, XKeyEvent *p_event, 
 	//print_verbose("mod1: "+itos(xkeyevent->state&Mod1Mask)+" mod 5: "+itos(xkeyevent->state&Mod5Mask));
 
 	Ref<InputEventKey> k;
-	k.instantiate();
+	New_instantiate(k);
 	k->set_window_id(p_window);
 
 	_get_key_modifier_state(xkeyevent->state, k);
@@ -3246,7 +3246,7 @@ void DisplayServerX11::process_events() {
 						bool is_begin = event_data->evtype == XI_TouchBegin;
 
 						Ref<InputEventScreenTouch> st;
-						st.instantiate();
+						New_instantiate(st);
 						st->set_window_id(window_id);
 						st->set_index(index);
 						st->set_position(pos);
@@ -3280,7 +3280,7 @@ void DisplayServerX11::process_events() {
 
 						if (curr_pos_elem->value() != pos) {
 							Ref<InputEventScreenDrag> sd;
-							sd.instantiate();
+							New_instantiate(sd);
 							sd->set_window_id(window_id);
 							sd->set_index(index);
 							sd->set_position(pos);
@@ -3433,7 +3433,7 @@ void DisplayServerX11::process_events() {
 				// Release every pointer to avoid sticky points
 				for (const KeyValue<int, Vector2> &E : xi.state) {
 					Ref<InputEventScreenTouch> st;
-					st.instantiate();
+					New_instantiate(st);
 					st->set_index(E.key);
 					st->set_window_id(window_id);
 					st->set_position(E.value);
@@ -3468,7 +3468,7 @@ void DisplayServerX11::process_events() {
 				}
 
 				Ref<InputEventMouseButton> mb;
-				mb.instantiate();
+				New_instantiate(mb);
 
 				mb->set_window_id(window_id);
 				_get_key_modifier_state(event.xbutton.state, mb);
@@ -3633,7 +3633,7 @@ void DisplayServerX11::process_events() {
 				}
 
 				Ref<InputEventMouseMotion> mm;
-				mm.instantiate();
+				New_instantiate(mm);
 
 				mm->set_window_id(window_id);
 				if (xi.pressure_supported) {

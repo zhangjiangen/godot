@@ -94,7 +94,7 @@ void ResourceImporterTexture::update_imports() {
 
 		for (const KeyValue<StringName, MakeInfo> &E : make_flags) {
 			Ref<ConfigFile> cf;
-			cf.instantiate();
+			New_instantiate(cf);
 			String src_path = String(E.key) + ".import";
 
 			Error err = cf->load(src_path);
@@ -222,7 +222,7 @@ void ResourceImporterTexture::get_import_options(const String &p_path, List<Impo
 	r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "svg/scale", PROPERTY_HINT_RANGE, "0.001,100,0.001"), 1.0));
 }
 
-void ResourceImporterTexture::save_to_stex_format(FileAccess *f, const Ref<Image> &p_image, CompressMode p_compress_mode, Image::UsedChannels p_channels, Image::CompressMode p_compress_format, float p_lossy_quality,Image::CompressSource csource) {
+void ResourceImporterTexture::save_to_stex_format(FileAccess *f, const Ref<Image> &p_image, CompressMode p_compress_mode, Image::UsedChannels p_channels, Image::CompressMode p_compress_format, float p_lossy_quality, Image::CompressSource csource) {
 	switch (p_compress_mode) {
 		case COMPRESS_LOSSLESS: {
 			bool lossless_force_png = ProjectSettings::get_singleton()->get("rendering/textures/lossless_compression/force_png") ||
@@ -268,7 +268,7 @@ void ResourceImporterTexture::save_to_stex_format(FileAccess *f, const Ref<Image
 		case COMPRESS_VRAM_COMPRESSED: {
 			Ref<Image> image = p_image->duplicate();
 
-			image->compress_from_channels(p_compress_format, p_channels, p_lossy_quality,csource);
+			image->compress_from_channels(p_compress_format, p_channels, p_lossy_quality, csource);
 
 			f->store_32(StreamTexture2D::DATA_FORMAT_IMAGE);
 			f->store_16(image->get_width());
@@ -276,23 +276,18 @@ void ResourceImporterTexture::save_to_stex_format(FileAccess *f, const Ref<Image
 			f->store_32(image->get_mipmap_count());
 			f->store_32(image->get_format());
 			// astc 写入通道使用信息
-			if(image->get_format() >= Image::FORMAT_RGBA_ASTC_4x4 && image->get_format() <= Image::FORMAT_SRGB8_ALPHA8_ASTC_12x12)
-			{
+			if (image->get_format() >= Image::FORMAT_RGBA_ASTC_4x4 && image->get_format() <= Image::FORMAT_SRGB8_ALPHA8_ASTC_12x12) {
 				uint8_t swizzle = 0;
-				if(image->astc_r)
-				{
+				if (image->astc_r) {
 					swizzle |= 1;
 				}
-				if(image->astc_g)
-				{
+				if (image->astc_g) {
 					swizzle |= 1 << 1;
 				}
-				if(image->astc_b)
-				{
+				if (image->astc_b) {
 					swizzle |= 1 << 2;
 				}
-				if(image->astc_a)
-				{
+				if (image->astc_a) {
 					swizzle |= 1 << 3;
 				}
 				f->store_8(swizzle);
@@ -413,11 +408,10 @@ void ResourceImporterTexture::_save_stex(const Ref<Image> &p_image, const String
 
 	Image::UsedChannels used_channels = image->detect_used_channels(csource);
 
-	save_to_stex_format(f, image, p_compress_mode, used_channels, p_vram_compression, p_lossy_quality,csource);
+	save_to_stex_format(f, image, p_compress_mode, used_channels, p_vram_compression, p_lossy_quality, csource);
 
 	memdelete(f);
 }
-
 
 void ResourceImporterTexture::_save_astc_stex(const Ref<Image> &p_image, const String &p_to_path, CompressMode p_compress_mode, float p_lossy_quality, Image::CompressMode p_vram_compression, bool p_mipmaps, bool p_streamable, bool p_detect_3d, bool p_detect_roughness, bool p_detect_normal, bool p_force_normal, bool p_srgb_friendly, bool p_force_po2_for_compressed, uint32_t p_limit_mipmap, const Ref<Image> &p_normal, Image::RoughnessChannel p_roughness_channel) {
 	FileAccess *f = FileAccess::open(p_to_path, FileAccess::WRITE);
@@ -496,7 +490,7 @@ void ResourceImporterTexture::_save_astc_stex(const Ref<Image> &p_image, const S
 
 	Image::UsedChannels used_channels = image->detect_used_channels(csource);
 
-	save_to_stex_format(f, image, p_compress_mode, used_channels, p_vram_compression, p_lossy_quality,csource);
+	save_to_stex_format(f, image, p_compress_mode, used_channels, p_vram_compression, p_lossy_quality, csource);
 
 	memdelete(f);
 }
@@ -525,13 +519,13 @@ Error ResourceImporterTexture::import(const String &p_source_file, const String 
 	Image::RoughnessChannel roughness_channel = Image::ROUGHNESS_CHANNEL_R;
 
 	if (mipmaps && roughness > 1 && FileAccess::exists(normal_map)) {
-		normal_image.instantiate();
+		New_instantiate(normal_image);
 		if (ImageLoader::load_image(normal_map, normal_image) == OK) {
 			roughness_channel = Image::RoughnessChannel(roughness - 2);
 		}
 	}
 	Ref<Image> image;
-	image.instantiate();
+	New_instantiate(image);
 	Error err = ImageLoader::load_image(p_source_file, image, nullptr, hdr_as_srgb, scale);
 	if (err != OK) {
 		return err;

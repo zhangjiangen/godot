@@ -622,7 +622,7 @@ bool EditorData::check_and_update_scene(int p_idx) {
 
 	if (must_reload) {
 		Ref<PackedScene> pscene;
-		pscene.instantiate();
+		New_instantiate(pscene);
 
 		EditorProgress ep("update_scene", TTR("Updating Scene"), 2);
 		ep.step(TTR("Storing local changes..."), 0);

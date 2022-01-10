@@ -104,7 +104,7 @@ void TextureLayeredEditor::_update_material() {
 }
 
 void TextureLayeredEditor::_make_shaders() {
-	shaders[0].instantiate();
+	New_instantiate(shaders[0]);
 	shaders[0]->set_code(R"(
 // TextureLayeredEditor preview shader (2D array).
 
@@ -118,7 +118,7 @@ void fragment() {
 }
 )");
 
-	shaders[1].instantiate();
+	New_instantiate(shaders[1]);
 	shaders[1]->set_code(R"(
 // TextureLayeredEditor preview shader (cubemap).
 
@@ -134,7 +134,7 @@ void fragment() {
 }
 )");
 
-	shaders[2].instantiate();
+	New_instantiate(shaders[2]);
 	shaders[2]->set_code(R"(
 // TextureLayeredEditor preview shader (cubemap array).
 
@@ -152,7 +152,7 @@ void fragment() {
 )");
 
 	for (int i = 0; i < 3; i++) {
-		materials[i].instantiate();
+		New_instantiate(materials[i]);
 		materials[i]->set_shader(shaders[i]);
 	}
 }
@@ -279,6 +279,6 @@ void EditorInspectorPluginLayeredTexture::parse_begin(Object *p_object) {
 
 TextureLayeredEditorPlugin::TextureLayeredEditorPlugin(EditorNode *p_node) {
 	Ref<EditorInspectorPluginLayeredTexture> plugin;
-	plugin.instantiate();
+	New_instantiate(plugin);
 	add_inspector_plugin(plugin);
 }

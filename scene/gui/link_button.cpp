@@ -316,7 +316,7 @@ void LinkButton::_bind_methods() {
 }
 
 LinkButton::LinkButton() {
-	text_buf.instantiate();
+	New_instantiate(text_buf);
 	set_focus_mode(FOCUS_NONE);
 	set_default_cursor_shape(CURSOR_POINTING_HAND);
 }

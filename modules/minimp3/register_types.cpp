@@ -41,7 +41,7 @@ void register_minimp3_types() {
 #ifdef TOOLS_ENABLED
 	if (Engine::get_singleton()->is_editor_hint()) {
 		Ref<ResourceImporterMP3> mp3_import;
-		mp3_import.instantiate();
+		New_instantiate(mp3_import);
 		ResourceFormatImporter::get_singleton()->add_importer(mp3_import);
 	}
 #endif

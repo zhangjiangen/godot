@@ -1718,7 +1718,7 @@ Ref<AnimatedValuesBackup> AnimationPlayer::backup_animated_values(Node *p_root_o
 
 	_ensure_node_caches(playback.current.from, p_root_override);
 
-	backup.instantiate();
+	New_instantiate(backup);
 	for (int i = 0; i < playback.current.from->node_cache.size(); i++) {
 		TrackNodeCache *nc = playback.current.from->node_cache[i];
 		if (!nc) {

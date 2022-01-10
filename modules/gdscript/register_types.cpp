@@ -92,12 +92,12 @@ public:
 
 static void _editor_init() {
 	Ref<EditorExportGDScript> gd_export;
-	gd_export.instantiate();
+	New_instantiate(gd_export);
 	EditorExport::get_singleton()->add_export_plugin(gd_export);
 
 #ifdef TOOLS_ENABLED
 	Ref<GDScriptSyntaxHighlighter> gdscript_syntax_highlighter;
-	gdscript_syntax_highlighter.instantiate();
+	New_instantiate(gdscript_syntax_highlighter);
 	ScriptEditor::get_singleton()->register_syntax_highlighter(gdscript_syntax_highlighter);
 #endif
 
@@ -117,10 +117,10 @@ void register_gdscript_types() {
 	script_language_gd = memnew(GDScriptLanguage);
 	ScriptServer::register_language(script_language_gd);
 
-	resource_loader_gd.instantiate();
+	New_instantiate(resource_loader_gd);
 	ResourceLoader::add_resource_format_loader(resource_loader_gd);
 
-	resource_saver_gd.instantiate();
+	New_instantiate(resource_saver_gd);
 	ResourceSaver::add_resource_format_saver(resource_saver_gd);
 
 	gdscript_cache = memnew(GDScriptCache);
@@ -128,7 +128,7 @@ void register_gdscript_types() {
 #ifdef TOOLS_ENABLED
 	EditorNode::add_init_callback(_editor_init);
 
-	gdscript_translation_parser_plugin.instantiate();
+	New_instantiate(gdscript_translation_parser_plugin);
 	EditorTranslationParser::get_singleton()->add_parser(gdscript_translation_parser_plugin, EditorTranslationParser::STANDARD);
 #endif // TOOLS_ENABLED
 

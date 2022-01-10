@@ -434,7 +434,7 @@ void TileMapEditorTilesPlugin::_scenes_list_nothing_selected() {
 	scene_tiles_list->deselect_all();
 	tile_set_selection.clear();
 	tile_map_selection.clear();
-	selection_pattern.instantiate();
+	New_instantiate(selection_pattern);
 	_update_selection_pattern_from_tileset_tiles_selection();
 }
 
@@ -480,7 +480,7 @@ bool TileMapEditorTilesPlugin::forward_canvas_gui_input(const Ref<InputEvent> &p
 	if (ED_IS_SHORTCUT("tiles_editor/cut", p_event) || ED_IS_SHORTCUT("tiles_editor/copy", p_event)) {
 		// Fill in the clipboard.
 		if (!tile_map_selection.is_empty()) {
-			tile_map_clipboard.instantiate();
+			New_instantiate(tile_map_clipboard);
 			TypedArray<Vector2i> coords_array;
 			for (Set<Vector2i>::Element *E = tile_map_selection.front(); E; E = E->next()) {
 				coords_array.push_back(E->get());
@@ -980,7 +980,7 @@ Map<Vector2i, TileMapCell> TileMapEditorTilesPlugin::_draw_line(Vector2 p_start_
 
 	// Get or create the pattern.
 	Ref<TileMapPattern> erase_pattern;
-	erase_pattern.instantiate();
+	New_instantiate(erase_pattern);
 	erase_pattern->set_cell(Vector2i(0, 0), TileSet::INVALID_SOURCE, TileSetSource::INVALID_ATLAS_COORDS, TileSetSource::INVALID_TILE_ALTERNATIVE);
 	Ref<TileMapPattern> pattern = p_erase ? erase_pattern : selection_pattern;
 
@@ -1033,7 +1033,7 @@ Map<Vector2i, TileMapCell> TileMapEditorTilesPlugin::_draw_rect(Vector2i p_start
 
 	// Get or create the pattern.
 	Ref<TileMapPattern> erase_pattern;
-	erase_pattern.instantiate();
+	New_instantiate(erase_pattern);
 	erase_pattern->set_cell(Vector2i(0, 0), TileSet::INVALID_SOURCE, TileSetSource::INVALID_ATLAS_COORDS, TileSetSource::INVALID_TILE_ALTERNATIVE);
 	Ref<TileMapPattern> pattern = p_erase ? erase_pattern : selection_pattern;
 
@@ -1094,7 +1094,7 @@ Map<Vector2i, TileMapCell> TileMapEditorTilesPlugin::_draw_bucket_fill(Vector2i 
 
 	// Get or create the pattern.
 	Ref<TileMapPattern> erase_pattern;
-	erase_pattern.instantiate();
+	New_instantiate(erase_pattern);
 	erase_pattern->set_cell(Vector2i(0, 0), TileSet::INVALID_SOURCE, TileSetSource::INVALID_ATLAS_COORDS, TileSetSource::INVALID_TILE_ALTERNATIVE);
 	Ref<TileMapPattern> pattern = p_erase ? erase_pattern : selection_pattern;
 
@@ -1396,7 +1396,7 @@ void TileMapEditorTilesPlugin::_update_fix_selected_and_hovered() {
 		tile_set_selection.clear();
 		patterns_item_list->deselect_all();
 		tile_map_selection.clear();
-		selection_pattern.instantiate();
+		New_instantiate(selection_pattern);
 		return;
 	}
 
@@ -1408,7 +1408,7 @@ void TileMapEditorTilesPlugin::_update_fix_selected_and_hovered() {
 		tile_set_selection.clear();
 		patterns_item_list->deselect_all();
 		tile_map_selection.clear();
-		selection_pattern.instantiate();
+		New_instantiate(selection_pattern);
 		return;
 	}
 
@@ -1420,7 +1420,7 @@ void TileMapEditorTilesPlugin::_update_fix_selected_and_hovered() {
 		tile_set_selection.clear();
 		patterns_item_list->deselect_all();
 		tile_map_selection.clear();
-		selection_pattern.instantiate();
+		New_instantiate(selection_pattern);
 		return;
 	}
 
@@ -1487,7 +1487,7 @@ void TileMapEditorTilesPlugin::_update_selection_pattern_from_tilemap_selection(
 
 	ERR_FAIL_INDEX(tile_map_layer, tile_map->get_layers_count());
 
-	selection_pattern.instantiate();
+	New_instantiate(selection_pattern);
 
 	TypedArray<Vector2i> coords_array;
 	for (Set<Vector2i>::Element *E = tile_map_selection.front(); E; E = E->next()) {
@@ -1511,7 +1511,7 @@ void TileMapEditorTilesPlugin::_update_selection_pattern_from_tileset_tiles_sele
 	tile_map_selection.clear();
 
 	// Clear the selected pattern.
-	selection_pattern.instantiate();
+	New_instantiate(selection_pattern);
 
 	// Group per source.
 	Map<int, List<const TileMapCell *>> per_source;
@@ -1584,7 +1584,7 @@ void TileMapEditorTilesPlugin::_update_selection_pattern_from_tileset_pattern_se
 	tile_map_selection.clear();
 
 	// Clear the selected pattern.
-	selection_pattern.instantiate();
+	New_instantiate(selection_pattern);
 
 	if (patterns_item_list->get_selected_items().size() >= 1) {
 		selection_pattern = patterns_item_list->get_item_metadata(patterns_item_list->get_selected_items()[0]);
@@ -1944,7 +1944,7 @@ void TileMapEditorTilesPlugin::edit(ObjectID p_tile_map_id, int p_tile_map_layer
 		tile_set_selection.clear();
 		patterns_item_list->deselect_all();
 		tile_map_selection.clear();
-		selection_pattern.instantiate();
+		New_instantiate(selection_pattern);
 	}
 
 	tile_map_layer = p_tile_map_layer;
@@ -1967,8 +1967,8 @@ TileMapEditorTilesPlugin::TileMapEditorTilesPlugin() {
 	ED_SHORTCUT("tiles_editor/delete", TTR("Delete"), Key::KEY_DELETE);
 
 	// --- Initialize references ---
-	tile_map_clipboard.instantiate();
-	selection_pattern.instantiate();
+	New_instantiate(tile_map_clipboard);
+	New_instantiate(selection_pattern);
 
 	// --- Toolbar ---
 	toolbar = memnew(HBoxContainer);
@@ -1976,7 +1976,7 @@ TileMapEditorTilesPlugin::TileMapEditorTilesPlugin() {
 
 	HBoxContainer *tilemap_tiles_tools_buttons = memnew(HBoxContainer);
 
-	tool_buttons_group.instantiate();
+	New_instantiate(tool_buttons_group);
 
 	select_tool_button = memnew(Button);
 	select_tool_button->set_flat(true);
@@ -3226,7 +3226,7 @@ TileMapEditorTerrainsPlugin::TileMapEditorTerrainsPlugin() {
 
 	HBoxContainer *tilemap_tiles_tools_buttons = memnew(HBoxContainer);
 
-	tool_buttons_group.instantiate();
+	New_instantiate(tool_buttons_group);
 
 	paint_tool_button = memnew(Button);
 	paint_tool_button->set_flat(true);

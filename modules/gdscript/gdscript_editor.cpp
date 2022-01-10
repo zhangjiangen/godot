@@ -62,7 +62,7 @@ bool GDScriptLanguage::is_using_templates() {
 
 Ref<Script> GDScriptLanguage::make_template(const String &p_template, const String &p_class_name, const String &p_base_class_name) const {
 	Ref<GDScript> script;
-	script.instantiate();
+	New_instantiate(script);
 	String processed_template = p_template;
 #ifdef TOOLS_ENABLED
 	if (!EDITOR_DEF("text_editor/completion/add_type_hints", false)) {
@@ -2894,7 +2894,7 @@ static Error _lookup_symbol_from_base(const GDScriptParser::DataType &p_base, co
 				Variant v;
 				REF v_ref;
 				if (base_type.builtin_type == Variant::OBJECT) {
-					v_ref.instantiate();
+					New_instantiate(v_ref);
 					v = v_ref;
 				} else {
 					Callable::CallError err;

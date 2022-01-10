@@ -161,7 +161,7 @@ static void test_compiler(const String &p_code, const String &p_script_path, con
 
 	GDScriptCompiler compiler;
 	Ref<GDScript> script;
-	script.instantiate();
+	New_instantiate(script);
 	script->set_path(p_script_path);
 
 	err = compiler.compile(&parser, script.ptr(), false);

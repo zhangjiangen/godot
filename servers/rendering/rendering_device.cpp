@@ -190,7 +190,7 @@ Ref<RDShaderSPIRV> RenderingDevice::_shader_compile_spirv_from_source(const Ref<
 	ERR_FAIL_COND_V(p_source.is_null(), Ref<RDShaderSPIRV>());
 
 	Ref<RDShaderSPIRV> bytecode;
-	bytecode.instantiate();
+	New_instantiate(bytecode);
 	for (int i = 0; i < RD::SHADER_STAGE_MAX; i++) {
 		String error;
 

@@ -43,6 +43,6 @@ void register_javascript_exporter() {
 	EditorSettings::get_singleton()->add_property_hint(PropertyInfo(Variant::STRING, "export/web/ssl_certificate", PROPERTY_HINT_GLOBAL_FILE, "*.crt,*.pem"));
 
 	Ref<EditorExportPlatformJavaScript> platform;
-	platform.instantiate();
+	New_instantiate(platform);
 	EditorExport::get_singleton()->add_export_platform(platform);
 }

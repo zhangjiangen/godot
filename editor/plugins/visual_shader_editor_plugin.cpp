@@ -851,7 +851,7 @@ void VisualShaderGraphPlugin::add_node(VisualShader::Type p_type, int p_id) {
 	if (is_expression) {
 		CodeEdit *expression_box = memnew(CodeEdit);
 		Ref<CodeHighlighter> expression_syntax_highlighter;
-		expression_syntax_highlighter.instantiate();
+		New_instantiate(expression_syntax_highlighter);
 		expression_node->set_ctrl_pressed(expression_box, 0);
 		node->add_child(expression_box);
 		register_expression_edit(p_id, expression_box);
@@ -1127,7 +1127,7 @@ void VisualShaderEditor::update_custom_nodes() {
 			Ref<Script> script = Ref<Script>(res);
 
 			Ref<VisualShaderNodeCustom> ref;
-			ref.instantiate();
+			New_instantiate(ref);
 			ref->set_script(script);
 
 			String name;
@@ -4198,7 +4198,7 @@ VisualShaderEditor::VisualShaderEditor() {
 	preview_vbox->add_theme_constant_override("separation", 0);
 
 	preview_text = memnew(CodeEdit);
-	syntax_highlighter.instantiate();
+	New_instantiate(syntax_highlighter);
 	preview_vbox->add_child(preview_text);
 	preview_text->set_v_size_flags(Control::SIZE_EXPAND_FILL);
 	preview_text->set_syntax_highlighter(syntax_highlighter);
@@ -4833,10 +4833,10 @@ VisualShaderEditor::VisualShaderEditor() {
 	undo_redo = EditorNode::get_singleton()->get_undo_redo();
 
 	Ref<VisualShaderNodePluginDefault> default_plugin;
-	default_plugin.instantiate();
+	New_instantiate(default_plugin);
 	add_plugin(default_plugin);
 
-	graph_plugin.instantiate();
+	New_instantiate(graph_plugin);
 
 	property_editor = memnew(CustomPropertyEditor);
 	add_child(property_editor);
@@ -5309,7 +5309,7 @@ void VisualShaderNodePortPreview::_shader_changed() {
 	String shader_code = shader->generate_preview_shader(type, node, port, default_textures);
 
 	Ref<Shader> preview_shader;
-	preview_shader.instantiate();
+	New_instantiate(preview_shader);
 	preview_shader->set_code(shader_code);
 	for (int i = 0; i < default_textures.size(); i++) {
 		for (int j = 0; j < default_textures[i].params.size(); j++) {
@@ -5318,7 +5318,7 @@ void VisualShaderNodePortPreview::_shader_changed() {
 	}
 
 	Ref<ShaderMaterial> material;
-	material.instantiate();
+	New_instantiate(material);
 	material->set_shader(preview_shader);
 
 	//find if a material is also being edited and copy parameters to this one
@@ -5403,7 +5403,7 @@ Ref<Resource> VisualShaderConversionPlugin::convert(const Ref<Resource> &p_resou
 	ERR_FAIL_COND_V(!vshader.is_valid(), Ref<Resource>());
 
 	Ref<Shader> shader;
-	shader.instantiate();
+	New_instantiate(shader);
 
 	String code = vshader->get_code();
 	shader->set_code(code);

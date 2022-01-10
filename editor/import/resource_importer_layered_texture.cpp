@@ -186,7 +186,7 @@ void ResourceImporterLayeredTexture::_save_tex(Vector<Ref<Image>> p_images, cons
 
 				for (int i = 0; i < mm_d; i++) {
 					Ref<Image> mm;
-					mm.instantiate();
+					New_instantiate(mm);
 					mm->create(mm_w, mm_h, false, p_images[0]->get_format());
 					Vector3 pos;
 					pos.z = float(i) * float(d) / float(mm_d) + 0.5;
@@ -314,7 +314,7 @@ void ResourceImporterLayeredTexture::_save_astc_tex(Vector<Ref<Image>> p_images,
 
 				for (int i = 0; i < mm_d; i++) {
 					Ref<Image> mm;
-					mm.instantiate();
+					New_instantiate(mm);
 					mm->create(mm_w, mm_h, false, p_images[0]->get_format());
 					Vector3 pos;
 					pos.z = float(i) * float(d) / float(mm_d) + 0.5;
@@ -456,7 +456,7 @@ Error ResourceImporterLayeredTexture::import(const String &p_source_file, const 
 	}
 
 	Ref<Image> image;
-	image.instantiate();
+	New_instantiate(image);
 	Error err = ImageLoader::load_image(p_source_file, image, nullptr, false, 1.0);
 	if (err != OK) {
 		return err;

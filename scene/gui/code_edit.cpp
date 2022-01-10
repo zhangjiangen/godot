@@ -84,7 +84,7 @@ void CodeEdit::_notification(int p_what) {
 		} break;
 		case NOTIFICATION_DRAW: {
 			if (!text_line.is_valid())
-				text_line.instantiate();
+				New_instantiate(text_line);
 			RID ci = get_canvas_item();
 			const Size2 size = get_size();
 			const bool caret_visible = is_caret_visible();
@@ -187,7 +187,7 @@ void CodeEdit::_notification(int p_what) {
 						draw_rect(Rect2(match_pos + Point2(match_offset, 0), Size2(match_len, row_height)), code_completion_existing_color);
 					}
 
-					tl->draw(ci, title_pos, code_completion_options[l].font_color);
+					text_line->draw(ci, title_pos, code_completion_options[l].font_color);
 				}
 
 				/* Draw a small scroll rectangle to show a position in the options. */
@@ -1311,7 +1311,7 @@ bool CodeEdit::is_line_numbers_zero_padded() const {
 void CodeEdit::_line_number_draw_callback(int p_line, int p_gutter, const Rect2 &p_region) {
 	String fc = TS->format_number(String::num(p_line + 1).lpad(line_number_digits, line_number_padding));
 	if (!text_line.is_valid()) {
-		text_line.instantiate();
+		New_instantiate(text_line);
 	}
 	text_line->clear();
 	text_line->add_string(fc, font, font_size);

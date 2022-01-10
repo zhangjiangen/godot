@@ -335,7 +335,7 @@ void VideoStreamPlaybackTheora::set_file(const String &p_file) {
 		size.y = h;
 
 		Ref<Image> img;
-		img.instantiate();
+		New_instantiate(img);
 		img->create(w, h, false, Image::FORMAT_RGBA8);
 
 	} else {

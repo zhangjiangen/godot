@@ -73,7 +73,7 @@ Array EditorSyntaxHighlighter::_get_supported_languages() const {
 
 Ref<EditorSyntaxHighlighter> EditorSyntaxHighlighter::_create() const {
 	Ref<EditorSyntaxHighlighter> syntax_highlighter;
-	syntax_highlighter.instantiate();
+	New_instantiate(syntax_highlighter);
 	if (get_script_instance()) {
 		syntax_highlighter->set_script(get_script_instance()->get_script());
 	}
@@ -196,7 +196,7 @@ void EditorStandardSyntaxHighlighter::_update_cache() {
 
 Ref<EditorSyntaxHighlighter> EditorStandardSyntaxHighlighter::_create() const {
 	Ref<EditorStandardSyntaxHighlighter> syntax_highlighter;
-	syntax_highlighter.instantiate();
+	New_instantiate(syntax_highlighter);
 	return syntax_highlighter;
 }
 
@@ -204,7 +204,7 @@ Ref<EditorSyntaxHighlighter> EditorStandardSyntaxHighlighter::_create() const {
 
 Ref<EditorSyntaxHighlighter> EditorPlainTextSyntaxHighlighter::_create() const {
 	Ref<EditorPlainTextSyntaxHighlighter> syntax_highlighter;
-	syntax_highlighter.instantiate();
+	New_instantiate(syntax_highlighter);
 	return syntax_highlighter;
 }
 
@@ -3564,7 +3564,7 @@ void ScriptEditor::_bind_methods() {
 ScriptEditor::ScriptEditor(EditorNode *p_editor) {
 	current_theme = "";
 
-	script_editor_cache.instantiate();
+	New_instantiate(script_editor_cache);
 	script_editor_cache->load(EditorSettings::get_singleton()->get_project_settings_dir().plus_file("script_editor_cache.cfg"));
 
 	completion_cache = memnew(EditorScriptCodeCompletionCache);

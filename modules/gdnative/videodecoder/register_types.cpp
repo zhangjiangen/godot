@@ -36,7 +36,7 @@
 static Ref<ResourceFormatLoaderVideoStreamGDNative> resource_loader_vsgdnative;
 
 void register_videodecoder_types() {
-	resource_loader_vsgdnative.instantiate();
+	New_instantiate(resource_loader_vsgdnative);
 	ResourceLoader::add_resource_format_loader(resource_loader_vsgdnative, true);
 
 	GDREGISTER_CLASS(VideoStreamGDNative);

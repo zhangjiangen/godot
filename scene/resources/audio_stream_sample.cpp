@@ -603,7 +603,7 @@ Error AudioStreamSample::save_to_wav(const String &p_path) {
 
 Ref<AudioStreamPlayback> AudioStreamSample::instance_playback() {
 	Ref<AudioStreamPlaybackSample> sample;
-	sample.instantiate();
+	New_instantiate(sample);
 	sample->base = Ref<AudioStreamSample>(this);
 	return sample;
 }

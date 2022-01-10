@@ -240,7 +240,7 @@ void SpriteFramesEditor::_sheet_add_frames() {
 		Rect2 margin(region == Rect2() ? Point2() : region.position - frame.position, frame.size - region.size);
 
 		Ref<AtlasTexture> at;
-		at.instantiate();
+		New_instantiate(at);
 		at->set_atlas(split_sheet_preview->get_texture());
 		at->set_region(region);
 		at->set_margin(margin);

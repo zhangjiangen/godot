@@ -76,7 +76,7 @@ bool EditorSettings::_set_only(const StringName &p_name, const Variant &p_value)
 			Array shortcut_events = dict["shortcuts"];
 
 			Ref<Shortcut> sc;
-			sc.instantiate();
+			New_instantiate(sc);
 			sc->set_events(shortcut_events);
 			add_shortcut(name, sc);
 		}
@@ -1347,7 +1347,7 @@ Ref<Shortcut> EditorSettings::get_shortcut(const String &p_name) const {
 	Ref<Shortcut> sc;
 	const Map<String, List<Ref<InputEvent>>>::Element *builtin_override = builtin_action_overrides.find(p_name);
 	if (builtin_override) {
-		sc.instantiate();
+		New_instantiate(sc);
 		sc->set_events_list(&builtin_override->get());
 		sc->set_name(InputMap::get_singleton()->get_builtin_display_name(p_name));
 	}
@@ -1356,7 +1356,7 @@ Ref<Shortcut> EditorSettings::get_shortcut(const String &p_name) const {
 	if (sc.is_null()) {
 		const OrderedHashMap<String, List<Ref<InputEvent>>>::ConstElement builtin_default = InputMap::get_singleton()->get_builtins_with_feature_overrides_applied().find(p_name);
 		if (builtin_default) {
-			sc.instantiate();
+			New_instantiate(sc);
 			sc->set_events_list(&builtin_default.get());
 			sc->set_name(InputMap::get_singleton()->get_builtin_display_name(p_name));
 		}
@@ -1459,7 +1459,7 @@ Ref<Shortcut> ED_SHORTCUT_ARRAY(const String &p_path, const String &p_name, cons
 
 	if (!EditorSettings::get_singleton()) {
 		Ref<Shortcut> sc;
-		sc.instantiate();
+		New_instantiate(sc);
 		sc->set_name(p_name);
 		sc->set_events(events);
 		sc->set_meta("original", events.duplicate(true));
@@ -1473,7 +1473,7 @@ Ref<Shortcut> ED_SHORTCUT_ARRAY(const String &p_path, const String &p_name, cons
 		return sc;
 	}
 
-	sc.instantiate();
+	New_instantiate(sc);
 	sc->set_name(p_name);
 	sc->set_events(events);
 	sc->set_meta("original", events.duplicate(true)); //to compare against changes

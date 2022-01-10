@@ -1225,7 +1225,7 @@ void EditorAudioBuses::_file_dialog_callback(const String &p_string) {
 	} else if (file_dialog->get_file_mode() == EditorFileDialog::FILE_MODE_SAVE_FILE) {
 		if (new_layout) {
 			Ref<AudioBusLayout> empty_state;
-			empty_state.instantiate();
+			New_instantiate(empty_state);
 			AudioServer::get_singleton()->set_bus_layout(empty_state);
 		}
 

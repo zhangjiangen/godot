@@ -999,7 +999,7 @@ _FORCE_INLINE_ TextServerAdvanced::FontGlyph TextServerAdvanced::rasterize_msdf(
 			if (RenderingServer::get_singleton() != nullptr) {
 				Ref<Image> img = memnew(Image(tex.texture_w, tex.texture_h, 0, Image::FORMAT_RGBA8, tex.imgdata));
 				if (tex.texture.is_null()) {
-					tex.texture.instantiate();
+					New_instantiate(tex.texture);
 					tex.texture->create_from_image(img);
 				} else {
 					tex.texture->update(img);
@@ -1082,7 +1082,7 @@ _FORCE_INLINE_ TextServerAdvanced::FontGlyph TextServerAdvanced::rasterize_bitma
 			Ref<Image> img = memnew(Image(tex.texture_w, tex.texture_h, 0, require_format, tex.imgdata));
 
 			if (tex.texture.is_null()) {
-				tex.texture.instantiate();
+				New_instantiate(tex.texture);
 				tex.texture->create_from_image(img);
 			} else {
 				tex.texture->update(img);
@@ -2175,7 +2175,7 @@ void TextServerAdvanced::font_set_texture_image(RID p_font_rid, const Vector2i &
 
 	Ref<Image> img = memnew(Image(tex.texture_w, tex.texture_h, 0, tex.format, tex.imgdata));
 	tex.texture = Ref<ImageTexture>();
-	tex.texture.instantiate();
+	New_instantiate(tex.texture);
 	tex.texture->create_from_image(img);
 }
 
@@ -4326,12 +4326,12 @@ void TextServerAdvanced::_shape_run(ShapedTextDataAdvanced *p_sd, int32_t p_star
 					}
 				}
 				if (p_direction == HB_DIRECTION_RTL || p_direction == HB_DIRECTION_BTT) {
-                    TempGlyph[last_cluster_index].flags |= GRAPHEME_IS_RTL;
+					TempGlyph[last_cluster_index].flags |= GRAPHEME_IS_RTL;
 				}
 				if (last_cluster_valid) {
-                    TempGlyph[last_cluster_index].flags |= GRAPHEME_IS_VALID;
+					TempGlyph[last_cluster_index].flags |= GRAPHEME_IS_VALID;
 				}
-                TempGlyph[last_cluster_index].count = i - last_cluster_index;
+				TempGlyph[last_cluster_index].count = i - last_cluster_index;
 				last_cluster_index = i;
 				last_cluster_valid = true;
 			}

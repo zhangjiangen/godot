@@ -210,7 +210,7 @@ void AudioStream::_bind_methods() {
 
 Ref<AudioStreamPlayback> AudioStreamMicrophone::instance_playback() {
 	Ref<AudioStreamPlaybackMicrophone> playback;
-	playback.instantiate();
+	New_instantiate(playback);
 
 	playbacks.insert(playback.ptr());
 
@@ -377,7 +377,7 @@ float AudioStreamRandomPitch::get_random_pitch() const {
 
 Ref<AudioStreamPlayback> AudioStreamRandomPitch::instance_playback() {
 	Ref<AudioStreamPlaybackRandomPitch> playback;
-	playback.instantiate();
+	New_instantiate(playback);
 	if (audio_stream.is_valid()) {
 		playback->playback = audio_stream->instance_playback();
 	}

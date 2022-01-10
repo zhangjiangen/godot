@@ -622,7 +622,7 @@ public:
 template <class T>
 static Ref<VisualScriptNode> create_node_generic(const String &p_name) {
 	Ref<T> node;
-	node.instantiate();
+	New_instantiate(node);
 	return node;
 }
 

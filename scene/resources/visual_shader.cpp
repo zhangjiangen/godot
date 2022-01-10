@@ -2067,13 +2067,13 @@ VisualShader::VisualShader() {
 	for (int i = 0; i < TYPE_MAX; i++) {
 		if (i > (int)TYPE_LIGHT && i < (int)TYPE_SKY) {
 			Ref<VisualShaderNodeParticleOutput> output;
-			output.instantiate();
+			New_instantiate(output);
 			output->shader_type = Type(i);
 			output->shader_mode = shader_mode;
 			graph[i].nodes[NODE_ID_OUTPUT].node = output;
 		} else {
 			Ref<VisualShaderNodeOutput> output;
-			output.instantiate();
+			New_instantiate(output);
 			output->shader_type = Type(i);
 			output->shader_mode = shader_mode;
 			graph[i].nodes[NODE_ID_OUTPUT].node = output;

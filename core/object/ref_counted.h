@@ -226,8 +226,8 @@ public:
 		reference = nullptr;
 	}
 
-	void instantiate() {
-		ref(memnew(T));
+	void instantiate(const char *file_name = __FILE__, int file_line = __LINE__) {
+		ref(_post_initialize(new (file_name, file_line) T));
 	}
 
 	Ref() {}
@@ -236,6 +236,7 @@ public:
 		unref();
 	}
 };
+#define New_instantiate(ins) ins.instantiate(__FILE__, __LINE__)
 
 typedef Ref<RefCounted> REF;
 
@@ -415,7 +416,7 @@ public:
 			pInfo->useCount.ref();
 		}
 	}
-	void instantiate(int array_count = 1, SharedPtrFreeMethod inFreeMethod = SPFM_DELETE_T) {
+	void instantiate(const char *file_name = __FILE__, int file_line = __LINE__, int array_count = 1, SharedPtrFreeMethod inFreeMethod = SPFM_DELETE_T) {
 		T *ptr = nullptr;
 		switch (inFreeMethod) {
 			case SPFM_DELETE_ARRAY:
@@ -424,7 +425,7 @@ public:
 				}
 				break;
 			case SPFM_DELETE_T:
-				ptr = memnew(T);
+				ptr = _post_initialize(new (file_name, file_line) T);
 				break;
 			case SPFM_FREE:
 				break;

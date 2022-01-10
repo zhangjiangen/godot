@@ -44,6 +44,6 @@ void register_uwp_exporter() {
 #endif // WINDOWS_ENABLED
 
 	Ref<EditorExportPlatformUWP> exporter;
-	exporter.instantiate();
+	New_instantiate(exporter);
 	EditorExport::get_singleton()->add_export_platform(exporter);
 }

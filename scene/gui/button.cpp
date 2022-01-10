@@ -577,7 +577,7 @@ void Button::_bind_methods() {
 }
 
 Button::Button(const String &p_text) {
-	text_buf.instantiate();
+	New_instantiate(text_buf);
 	text_buf->set_flags(TextServer::BREAK_MANDATORY);
 	button_color = Color(1, 1, 1);
 

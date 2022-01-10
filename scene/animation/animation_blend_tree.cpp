@@ -1213,7 +1213,7 @@ void AnimationNodeBlendTree::_bind_methods() {
 
 void AnimationNodeBlendTree::_initialize_node_tree() {
 	Ref<AnimationNodeOutput> output;
-	output.instantiate();
+	New_instantiate(output);
 	Node n;
 	n.node = output;
 	n.position = Vector2(300, 150);

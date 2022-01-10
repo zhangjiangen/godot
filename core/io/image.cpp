@@ -2176,7 +2176,7 @@ Error Image::generate_mipmap_roughness(RoughnessChannel p_roughness_channel, con
 			memcpy(wr.ptr(), ptr, size);
 			wr = uint8_t*();
 			Ref<Image> im;
-			im.instantiate();
+			New_instantiate(im);
 			im->create(w, h, false, format, imgdata);
 			im->save_png("res://mipmap_" + itos(i) + ".png");
 		}
@@ -2636,20 +2636,19 @@ Error Image::decompress() {
 		_image_decompress_etc2(this);
 	} else if (format >= Image::FORMAT_RGBA_ASTC_4x4 && format <= Image::FORMAT_SRGB8_ALPHA8_ASTC_12x12 && _image_decompress_astc) {
 		_image_decompress_astc(this);
-	}
-		else {
+	} else {
 		return ERR_UNAVAILABLE;
 	}
 	return OK;
 }
 
-Error Image::compress(CompressMode p_mode, CompressSource p_source, float p_lossy_quality ) {
+Error Image::compress(CompressMode p_mode, CompressSource p_source, float p_lossy_quality) {
 	ERR_FAIL_INDEX_V_MSG(p_mode, COMPRESS_MAX, ERR_INVALID_PARAMETER, "Invalid compress mode.");
 	ERR_FAIL_INDEX_V_MSG(p_source, COMPRESS_SOURCE_MAX, ERR_INVALID_PARAMETER, "Invalid compress source.");
 	return compress_from_channels(p_mode, detect_used_channels(p_source), p_lossy_quality);
 }
 
-Error Image::compress_from_channels(CompressMode p_mode, UsedChannels p_channels, float p_lossy_quality,Image::CompressSource csource ) {
+Error Image::compress_from_channels(CompressMode p_mode, UsedChannels p_channels, float p_lossy_quality, Image::CompressSource csource) {
 	switch (p_mode) {
 		case COMPRESS_S3TC: {
 			ERR_FAIL_COND_V(!_image_compress_bc_func, ERR_UNAVAILABLE);
@@ -3070,7 +3069,7 @@ void (*Image::_image_compress_bptc_func)(Image *, float, Image::UsedChannels) = 
 void (*Image::_image_compress_pvrtc1_4bpp_func)(Image *) = nullptr;
 void (*Image::_image_compress_etc1_func)(Image *, float) = nullptr;
 void (*Image::_image_compress_etc2_func)(Image *, float, Image::UsedChannels) = nullptr;
-void (*Image::_image_compress_astc_func)(Image *, float, Image::CompressMode, Image::UsedChannels,Image::CompressSource) = nullptr;
+void (*Image::_image_compress_astc_func)(Image *, float, Image::CompressMode, Image::UsedChannels, Image::CompressSource) = nullptr;
 void (*Image::_image_decompress_pvrtc)(Image *) = nullptr;
 void (*Image::_image_decompress_bc)(Image *) = nullptr;
 void (*Image::_image_decompress_bptc)(Image *) = nullptr;
@@ -3486,7 +3485,7 @@ void Image::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("detect_used_channels", "source"), &Image::detect_used_channels, DEFVAL(COMPRESS_SOURCE_GENERIC));
 	ClassDB::bind_method(D_METHOD("compress", "mode", "source", "lossy_quality"), &Image::compress, DEFVAL(COMPRESS_SOURCE_GENERIC), DEFVAL(0.7));
-	ClassDB::bind_method(D_METHOD("compress_from_channels", "mode", "channels", "lossy_quality","csource"), &Image::compress_from_channels, DEFVAL(0.7));
+	ClassDB::bind_method(D_METHOD("compress_from_channels", "mode", "channels", "lossy_quality", "csource"), &Image::compress_from_channels, DEFVAL(0.7));
 	ClassDB::bind_method(D_METHOD("decompress"), &Image::decompress);
 	ClassDB::bind_method(D_METHOD("is_compressed"), &Image::is_compressed);
 
@@ -3662,7 +3661,7 @@ Ref<Image> Image::rgbe_to_srgb() {
 	ERR_FAIL_COND_V(format != FORMAT_RGBE9995, Ref<Image>());
 
 	Ref<Image> new_image;
-	new_image.instantiate();
+	New_instantiate(new_image);
 	new_image->create(width, height, false, Image::FORMAT_RGB8);
 
 	for (int row = 0; row < height; row++) {
@@ -3692,7 +3691,7 @@ Ref<Image> Image::get_image_from_mipmap(int p_mipamp) const {
 	}
 
 	Ref<Image> image;
-	image.instantiate();
+	New_instantiate(image);
 	image->width = w;
 	image->height = h;
 	image->format = format;
@@ -4009,7 +4008,7 @@ Image::Image(const uint8_t *p_mem_png_jpg, int p_len) {
 
 Ref<Resource> Image::duplicate(bool p_subresources) const {
 	Ref<Image> copy;
-	copy.instantiate();
+	New_instantiate(copy);
 	copy->_copy_internals_from(*this);
 	return copy;
 }

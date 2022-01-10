@@ -37,7 +37,7 @@ void register_vorbis_types() {
 #ifdef TOOLS_ENABLED
 	if (Engine::get_singleton()->is_editor_hint()) {
 		Ref<ResourceImporterOGGVorbis> ogg_vorbis_importer;
-		ogg_vorbis_importer.instantiate();
+		New_instantiate(ogg_vorbis_importer);
 		ResourceFormatImporter::get_singleton()->add_importer(ogg_vorbis_importer);
 	}
 #endif

@@ -1594,7 +1594,7 @@ void TileSet::draw_terrains(CanvasItem *p_canvas_item, Transform2D p_transform, 
 					}
 
 					Ref<ArrayMesh> mesh;
-					mesh.instantiate();
+					New_instantiate(mesh);
 					Vector<Vector2> uvs;
 					uvs.resize(polygon.size());
 					Vector<Color> colors;
@@ -1705,7 +1705,7 @@ Vector<Vector<Ref<Texture2D>>> TileSet::generate_terrains_icons(Size2i p_size) {
 	for (int terrain_set = 0; terrain_set < get_terrain_sets_count(); terrain_set++) {
 		for (int terrain = 0; terrain < get_terrains_count(terrain_set); terrain++) {
 			Ref<Image> image;
-			image.instantiate();
+			New_instantiate(image);
 			if (counts[terrain_set][terrain].count > 0) {
 				// Get the best tile.
 				Ref<Texture2D> texture = counts[terrain_set][terrain].texture;
@@ -1718,7 +1718,7 @@ Vector<Vector<Ref<Texture2D>>> TileSet::generate_terrains_icons(Size2i p_size) {
 				image->set_pixel(0, 0, get_terrain_color(terrain_set, terrain));
 			}
 			Ref<ImageTexture> icon;
-			icon.instantiate();
+			New_instantiate(icon);
 			icon->create_from_image(image);
 			icon->set_size_override(p_size);
 
@@ -3313,8 +3313,8 @@ void TileSet::_bind_methods() {
 
 TileSet::TileSet() {
 	// Instantiate the tile meshes.
-	tile_lines_mesh.instantiate();
-	tile_filled_mesh.instantiate();
+	New_instantiate(tile_lines_mesh);
+	New_instantiate(tile_filled_mesh);
 }
 
 TileSet::~TileSet() {
@@ -4430,7 +4430,7 @@ void TileSetAtlasSource::_update_padded_texture() {
 	Ref<Image> src = texture->get_image();
 
 	Ref<Image> image;
-	image.instantiate();
+	New_instantiate(image);
 	image->create(size.x, size.y, false, Image::FORMAT_RGBA8);
 
 	for (KeyValue<Vector2i, TileAlternativesData> kv : tiles) {
@@ -4462,7 +4462,7 @@ void TileSetAtlasSource::_update_padded_texture() {
 	}
 
 	if (!padded_texture.is_valid()) {
-		padded_texture.instantiate();
+		New_instantiate(padded_texture);
 	}
 	padded_texture->create_from_image(image);
 	emit_changed();
@@ -5038,7 +5038,7 @@ void TileData::set_collision_polygon_points(int p_layer_id, int p_polygon_index,
 		physics.write[p_layer_id].polygons.write[p_polygon_index].shapes.resize(decomp.size());
 		for (int i = 0; i < decomp.size(); i++) {
 			Ref<ConvexPolygonShape2D> shape;
-			shape.instantiate();
+			New_instantiate(shape);
 			shape->set_points(decomp[i]);
 			physics.write[p_layer_id].polygons.write[p_polygon_index].shapes[i] = shape;
 		}

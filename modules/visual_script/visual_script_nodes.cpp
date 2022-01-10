@@ -1142,7 +1142,7 @@ VisualScriptOperator::VisualScriptOperator() {
 template <Variant::Operator OP>
 static Ref<VisualScriptNode> create_op_node(const String &p_name) {
 	Ref<VisualScriptOperator> node;
-	node.instantiate();
+	New_instantiate(node);
 	node->set_operator(OP);
 	return node;
 }
@@ -3429,7 +3429,7 @@ static Ref<VisualScriptNode> create_constructor_node(const String &p_name) {
 	ERR_FAIL_COND_V(!constructor_map.has(p_name), Ref<VisualScriptNode>());
 
 	Ref<VisualScriptConstructor> vsc;
-	vsc.instantiate();
+	New_instantiate(vsc);
 	vsc->set_constructor_type(constructor_map[p_name].first);
 	vsc->set_constructor(constructor_map[p_name].second);
 
@@ -3968,7 +3968,7 @@ VisualScriptDeconstruct::VisualScriptDeconstruct() {
 template <Variant::Type T>
 static Ref<VisualScriptNode> create_node_deconst_typed(const String &p_name) {
 	Ref<VisualScriptDeconstruct> node;
-	node.instantiate();
+	New_instantiate(node);
 	node->set_deconstruct_type(T);
 	return node;
 }

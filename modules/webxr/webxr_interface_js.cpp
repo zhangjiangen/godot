@@ -230,7 +230,7 @@ bool WebXRInterfaceJS::initialize() {
 		}
 
 		// we must create a tracker for our head
-		head_tracker.instantiate();
+		New_instantiate(head_tracker);
 		head_tracker->set_tracker_type(XRServer::TRACKER_HEAD);
 		head_tracker->set_tracker_name("head");
 		head_tracker->set_tracker_desc("Players head");
@@ -433,7 +433,7 @@ void WebXRInterfaceJS::_update_tracker(int p_controller_id) {
 	Ref<XRPositionalTracker> tracker = controllers[p_controller_id];
 	if (godot_webxr_is_controller_connected(p_controller_id)) {
 		if (tracker.is_null()) {
-			tracker.instantiate();
+			New_instantiate(tracker);
 			tracker->set_tracker_type(XRServer::TRACKER_CONTROLLER);
 			// Controller id's 0 and 1 are always the left and right hands.
 			if (p_controller_id < 2) {

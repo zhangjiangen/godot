@@ -45,7 +45,6 @@
 #define MEMORY_TAG_NEW 0xBFBFBFBF
 #define MEMORY_TAG_NEW_ARRAY 0xACACACAC
 
-
 class Memory {
 #ifdef DEBUG_ENABLED
 	static SafeNumeric<uint64_t> mem_usage;
@@ -70,6 +69,8 @@ public:
 class DefaultAllocator {
 	static void *alloc_manager(size_t p_memory);
 	static void free_manager(void *ptr, size_t count);
+	static void record_memory_alloc(void *p_ptr, size_t p_memory, const char *file_name, int file_lne);
+	static void record_memory_free(void *p_ptr, size_t size);
 	friend class MallocAllocator;
 
 public:
@@ -79,16 +80,22 @@ public:
 	}
 	_FORCE_INLINE_ static void *alloc(size_t p_memory, const char *file_name, int file_lne) {
 		if (is_manager(p_memory)) {
-			return alloc_manager(p_memory);
+			void *ptr = alloc_manager(p_memory);
+			record_memory_alloc(ptr, p_memory, file_name, file_lne);
+			return ptr;
 		}
-		return Memory::alloc_static(p_memory, file_name, file_lne, false);
+		void *ptr = Memory::alloc_static(p_memory, file_name, file_lne, false);
+		record_memory_alloc(ptr, p_memory, file_name, file_lne);
+		return ptr;
 	}
 	_FORCE_INLINE_ static void free(void *p_ptr, size_t p_memory) {
+		record_memory_free(p_ptr, p_memory);
 		if (is_manager(p_memory)) {
 			return free_manager(p_ptr, p_memory);
 		}
 		Memory::free_static(p_ptr, false);
 	}
+	static void log_memory_info();
 };
 class MallocAllocator {
 public:
@@ -148,10 +155,10 @@ void memdelete(T *p_class) {
 		throw std::runtime_error("memory delete tag error!");
 	}
 	// 检测数据大小是否相等,类型不相等有可能内存大小不一致
-//    uint32_t type_size = sizeof(T);
-//	if (size != type_size) {
-//		throw std::runtime_error("memory delete type size error!");
-//	}
+	//    uint32_t type_size = sizeof(T);
+	//	if (size != type_size) {
+	//		throw std::runtime_error("memory delete type size error!");
+	//	}
 
 	DefaultAllocator::free(base, size + sizeof(uint64_t));
 	//Memory::free_static(p_class, false);

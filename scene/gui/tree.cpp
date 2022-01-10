@@ -2272,7 +2272,7 @@ void Tree::_range_click_timeout() {
 
 		click_handled = false;
 		Ref<InputEventMouseButton> mb;
-		mb.instantiate();
+		New_instantiate(mb);
 
 		int x_limit = get_size().width - cache.bg->get_minimum_size().width;
 		if (h_scroll->is_visible()) {

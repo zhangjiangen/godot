@@ -889,7 +889,7 @@ void DynamicFontImportSettings::_variation_add() {
 	vars_item->set_button_color(1, 0, Color(1, 1, 1, 0.75));
 
 	Ref<DynamicFontImportSettingsData> import_variation_data;
-	import_variation_data.instantiate();
+	New_instantiate(import_variation_data);
 	import_variation_data->owner = this;
 	ERR_FAIL_NULL(import_variation_data);
 
@@ -1333,10 +1333,10 @@ void DynamicFontImportSettings::open_settings(const String &p_path) {
 
 	// Load font for preview.
 	Ref<FontData> dfont_prev;
-	dfont_prev.instantiate();
+	New_instantiate(dfont_prev);
 	dfont_prev->set_data(data);
 
-	font_preview.instantiate();
+	New_instantiate(font_preview);
 	font_preview->add_data(dfont_prev);
 
 	String sample;
@@ -1353,11 +1353,11 @@ void DynamicFontImportSettings::open_settings(const String &p_path) {
 
 	// Load second copy of font with MSDF disabled for the glyph table and metadata extraction.
 	Ref<FontData> dfont_main;
-	dfont_main.instantiate();
+	New_instantiate(dfont_main);
 	dfont_main->set_data(data);
 	dfont_main->set_multichannel_signed_distance_field(false);
 
-	font_main.instantiate();
+	New_instantiate(font_main);
 	font_main->add_data(dfont_main);
 	text_edit->add_theme_font_override("font", font_main);
 
@@ -1400,7 +1400,7 @@ void DynamicFontImportSettings::open_settings(const String &p_path) {
 	}
 
 	Ref<ConfigFile> config;
-	config.instantiate();
+	New_instantiate(config);
 	ERR_FAIL_NULL(config);
 
 	Error err = config->load(p_path + ".import");
@@ -1471,7 +1471,7 @@ void DynamicFontImportSettings::open_settings(const String &p_path) {
 					vars_item->set_button_color(1, 0, Color(1, 1, 1, 0.75));
 
 					Ref<DynamicFontImportSettingsData> import_variation_data_custom;
-					import_variation_data_custom.instantiate();
+					New_instantiate(import_variation_data_custom);
 					import_variation_data_custom->owner = this;
 					ERR_FAIL_NULL(import_variation_data_custom);
 
@@ -1899,7 +1899,7 @@ DynamicFontImportSettings::DynamicFontImportSettings() {
 
 	// Common
 
-	import_settings_data.instantiate();
+	New_instantiate(import_settings_data);
 	import_settings_data->owner = this;
 
 	get_ok_button()->set_text(TTR("Reimport"));

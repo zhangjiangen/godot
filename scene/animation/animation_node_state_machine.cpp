@@ -526,7 +526,7 @@ void AnimationNodeStateMachine::get_parameter_list(List<PropertyInfo> *r_list) c
 Variant AnimationNodeStateMachine::get_parameter_default_value(const StringName &p_parameter) const {
 	if (p_parameter == playback) {
 		Ref<AnimationNodeStateMachinePlayback> p;
-		p.instantiate();
+		New_instantiate(p);
 		return p;
 	} else {
 		return false; //advance condition

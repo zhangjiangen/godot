@@ -80,8 +80,8 @@ class PopupMenu : public Popup {
 		}
 
 		Item() {
-			text_buf.instantiate();
-			accel_text_buf.instantiate();
+			New_instantiate(text_buf);
+			New_instantiate(accel_text_buf);
 			checkable_type = CHECKABLE_TYPE_NONE;
 		}
 	};

@@ -34,7 +34,7 @@
 
 void register_iphone_exporter() {
 	Ref<EditorExportPlatformIOS> platform;
-	platform.instantiate();
+	New_instantiate(platform);
 
 	EditorExport::get_singleton()->add_export_platform(platform);
 }

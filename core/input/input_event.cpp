@@ -389,7 +389,7 @@ String InputEventKey::to_string() {
 
 Ref<InputEventKey> InputEventKey::create_reference(Key p_keycode) {
 	Ref<InputEventKey> ie;
-	ie.instantiate();
+	New_instantiate(ie);
 	ie->set_keycode(p_keycode & KeyModifierMask::CODE_MASK);
 	ie->set_unicode(char32_t(p_keycode & KeyModifierMask::CODE_MASK));
 
@@ -567,7 +567,7 @@ Ref<InputEvent> InputEventMouseButton::xformed_by(const Transform2D &p_xform, co
 	Vector2 l = p_xform.xform(get_position() + p_local_ofs);
 
 	Ref<InputEventMouseButton> mb;
-	mb.instantiate();
+	New_instantiate(mb);
 
 	mb->set_device(get_device());
 	mb->set_window_id(get_window_id());
@@ -754,7 +754,7 @@ Ref<InputEvent> InputEventMouseMotion::xformed_by(const Transform2D &p_xform, co
 	Vector2 s = p_xform.basis_xform(get_speed());
 
 	Ref<InputEventMouseMotion> mm;
-	mm.instantiate();
+	New_instantiate(mm);
 
 	mm->set_device(get_device());
 	mm->set_window_id(get_window_id());
@@ -1077,7 +1077,7 @@ String InputEventJoypadButton::to_string() {
 
 Ref<InputEventJoypadButton> InputEventJoypadButton::create_reference(JoyButton p_btn_index) {
 	Ref<InputEventJoypadButton> ie;
-	ie.instantiate();
+	New_instantiate(ie);
 	ie->set_button_index(p_btn_index);
 
 	return ie;
@@ -1126,7 +1126,7 @@ bool InputEventScreenTouch::is_pressed() const {
 
 Ref<InputEvent> InputEventScreenTouch::xformed_by(const Transform2D &p_xform, const Vector2 &p_local_ofs) const {
 	Ref<InputEventScreenTouch> st;
-	st.instantiate();
+	New_instantiate(st);
 	st->set_device(get_device());
 	st->set_window_id(get_window_id());
 	st->set_index(index);
@@ -1199,7 +1199,7 @@ Vector2 InputEventScreenDrag::get_speed() const {
 Ref<InputEvent> InputEventScreenDrag::xformed_by(const Transform2D &p_xform, const Vector2 &p_local_ofs) const {
 	Ref<InputEventScreenDrag> sd;
 
-	sd.instantiate();
+	New_instantiate(sd);
 
 	sd->set_device(get_device());
 	sd->set_window_id(get_window_id());
@@ -1371,7 +1371,7 @@ real_t InputEventMagnifyGesture::get_factor() const {
 
 Ref<InputEvent> InputEventMagnifyGesture::xformed_by(const Transform2D &p_xform, const Vector2 &p_local_ofs) const {
 	Ref<InputEventMagnifyGesture> ev;
-	ev.instantiate();
+	New_instantiate(ev);
 
 	ev->set_device(get_device());
 	ev->set_window_id(get_window_id());
@@ -1411,7 +1411,7 @@ Vector2 InputEventPanGesture::get_delta() const {
 
 Ref<InputEvent> InputEventPanGesture::xformed_by(const Transform2D &p_xform, const Vector2 &p_local_ofs) const {
 	Ref<InputEventPanGesture> ev;
-	ev.instantiate();
+	New_instantiate(ev);
 
 	ev->set_device(get_device());
 	ev->set_window_id(get_window_id());

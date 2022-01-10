@@ -162,10 +162,10 @@ public:
 class InputEventKey : public InputEventWithModifiers {
 	GDCLASS(InputEventKey, InputEventWithModifiers);
 
-	bool pressed = false; /// otherwise release
-
 	Key keycode = Key::NONE; // Key enum, without modifier masks.
 	Key physical_keycode = Key::NONE;
+	bool pressed = false; /// otherwise release
+
 	uint32_t unicode = 0; ///unicode
 
 	bool echo = false; /// true if this is an echo key

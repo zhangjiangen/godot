@@ -360,7 +360,7 @@ bool CSharpLanguage::is_using_templates() {
 
 Ref<Script> CSharpLanguage::make_template(const String &p_template, const String &p_class_name, const String &p_base_class_name) const {
 	Ref<CSharpScript> script;
-	script.instantiate();
+	New_instantiate(script);
 
 	String class_name_no_spaces = p_class_name.replace(" ", "_");
 	String base_class_name = get_base_class_name(p_base_class_name, class_name_no_spaces);

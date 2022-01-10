@@ -63,7 +63,7 @@ EditorDebuggerServer *EditorDebuggerServerTCP::create(const String &p_protocol) 
 }
 
 EditorDebuggerServerTCP::EditorDebuggerServerTCP() {
-	server.instantiate();
+	New_instantiate(server);
 }
 
 String EditorDebuggerServerTCP::get_uri() const {

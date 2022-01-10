@@ -66,7 +66,7 @@ Error ResourceLoaderText::_parse_sub_resource_dummy(DummyReadData *p_data, Varia
 
 	if (!p_data->resource_map.has(unique_id)) {
 		Ref<DummyResource> dr;
-		dr.instantiate();
+		New_instantiate(dr);
 		dr->set_scene_unique_id(unique_id);
 		p_data->resource_map[unique_id] = dr;
 		uint32_t im_size = p_data->resource_index_map.size();
@@ -185,7 +185,7 @@ Error ResourceLoaderText::_parse_ext_resource(VariantParser::Stream *p_stream, R
 
 Ref<PackedScene> ResourceLoaderText::_parse_node_tag(VariantParser::ResourceParser &parser) {
 	Ref<PackedScene> packed_scene;
-	packed_scene.instantiate();
+	New_instantiate(packed_scene);
 
 	while (true) {
 		if (next_tag.name == "node") {
@@ -1083,7 +1083,7 @@ Error ResourceLoaderText::save_as_binary(FileAccess *p_f, const String &p_path) 
 
 		int lindex = dummy_read.external_resources.size();
 		Ref<DummyResource> dr;
-		dr.instantiate();
+		New_instantiate(dr);
 		dr->set_path("res://dummy" + itos(lindex)); //anything is good to detect it for saving as external
 		dummy_read.external_resources[dr] = lindex;
 		dummy_read.rev_external_resources[id] = dr;
