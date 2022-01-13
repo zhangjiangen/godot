@@ -520,13 +520,16 @@ class SmallMemoryManager {
 public:
 #define OP_MEMORY_NEW(Count)                                                \
 	if (p_memory <= Count) {                                                \
-		MutexLock<::Mutex> lock(_mutex##Count);                             \
-		if (_data##Count) {                                                 \
-			void *ret = (void *)&_data##Count->data;                        \
-			_data##Count = _data##Count->Next;                              \
-			--_count##Count;                                                \
-			return ret;                                                     \
-		} else {                                                            \
+		{                                                                   \
+			MutexLock<::Mutex> lock(_mutex##Count);                         \
+			if (_data##Count) {                                             \
+				void *ret = (void *)&_data##Count->data;                    \
+				_data##Count = _data##Count->Next;                          \
+				--_count##Count;                                            \
+				return ret;                                                 \
+			}                                                               \
+		}                                                                   \
+		{                                                                   \
 			Data<Count> *data = (Data<Count> *)malloc(sizeof(Data<Count>)); \
 			data->Next = nullptr;                                           \
 			++_curr_count##Count;                                           \
@@ -569,20 +572,23 @@ public:
 				return nullptr;
 	}
 #undef OP_MEMORY_NEW
-#define OP_MEMORY_FREE(Count)                                                       \
-	if (p_memory <= Count) {                                                        \
-		MutexLock<::Mutex> lock(_mutex##Count);                                     \
-		/*Data<Count> *data = (Data<Count> *)(((uint8_t *)ptr) - sizeof(void *));*/ \
-		Data<Count> *data = (Data<Count> *)ptr;                                     \
-		if (_count##Count < 512) {                                                  \
-			data->Next = _data##Count;                                              \
-			_data##Count = data;                                                    \
-			++_count##Count;                                                        \
-			return;                                                                 \
-		}                                                                           \
-		--_curr_count##Count;                                                       \
-		free(data);                                                                 \
-		return;                                                                     \
+#define OP_MEMORY_FREE(Count)                                                           \
+	if (p_memory <= Count) {                                                            \
+        Data<Count> *data = (Data<Count> *)ptr;                                     \
+		{                                                                               \
+			MutexLock<::Mutex> lock(_mutex##Count);                                     \
+			/*Data<Count> *data = (Data<Count> *)(((uint8_t *)ptr) - sizeof(void *));*/ \
+                                                                                        \
+			if (_count##Count < 512) {                                                  \
+				data->Next = _data##Count;                                              \
+				_data##Count = data;                                                    \
+				++_count##Count;                                                        \
+				return;                                                                 \
+			}                                                                           \
+			--_curr_count##Count;                                                       \
+		}                                                                               \
+		free(data);                                                                     \
+		return;                                                                         \
 	}
 	void free_manager(void *ptr, size_t p_memory) {
 		if (ptr == nullptr || p_memory == 0) {

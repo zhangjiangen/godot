@@ -375,9 +375,9 @@ RID RenderForwardMobile::_setup_render_pass_uniform_set(RenderListType p_render_
 				RID base = lightmap_instance_get_lightmap((*p_render_data->lightmaps)[i]);
 				RID texture = storage->lightmap_get_texture(base);
 				RID rd_texture = storage->texture_get_rd_texture(texture);
-				u.ids.write[i] = rd_texture;
+				u.ids[i] = rd_texture;
 			} else {
-				u.ids.write[i] = default_tex;
+				u.ids[i] = default_tex;
 			}
 		}
 
@@ -1146,7 +1146,7 @@ void RenderForwardMobile::_update_render_base_uniform_set() {
 			u.uniform_type = RD::UNIFORM_TYPE_SAMPLER;
 			u.binding = 1;
 			u.ids.resize(12);
-			RID *ids_ptr = u.ids.ptrw();
+			RID *ids_ptr = u.ids.ptr();
 			ids_ptr[0] = storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_NEAREST, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED);
 			ids_ptr[1] = storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED);
 			ids_ptr[2] = storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_NEAREST_WITH_MIPMAPS, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED);

@@ -33,6 +33,7 @@
 
 #include "core/error/error_macros.h"
 #include "core/os/memory.h"
+#include "core/os/mutex.h"
 #include "core/templates/sort_array.h"
 #include "core/templates/vector.h"
 
@@ -54,7 +55,7 @@ public:
 		return data;
 	}
 
-	_FORCE_INLINE_ void push_back(T p_elem) {
+	_FORCE_INLINE_ T &push_back(const T &p_elem) {
 		if (unlikely(count == capacity)) {
 			if (capacity == 0) {
 				capacity = 1;
@@ -70,6 +71,7 @@ public:
 		} else {
 			data[count++] = p_elem;
 		}
+		return data[count - 1];
 	}
 
 	void remove_at(U p_index) {
@@ -94,6 +96,15 @@ public:
 		if (!__has_trivial_destructor(T) && !force_trivial) {
 			data[count].~T();
 		}
+	}
+	T &back() {
+		return data[count - 1];
+	}
+	const T &back() const {
+		return data[count - 1];
+	}
+	void pop_back() {
+		remove_at(count - 1);
 	}
 
 	void erase(const T &p_val) {
@@ -166,7 +177,7 @@ public:
 		return data[p_index];
 	}
 
-	void insert(U p_pos, T p_val) {
+	void insert(U p_pos, const T &p_val) {
 		ERR_FAIL_UNSIGNED_INDEX(p_pos, count + 1);
 		if (p_pos == count) {
 			push_back(p_val);
@@ -259,6 +270,101 @@ public:
 		if (data) {
 			reset();
 		}
+	}
+};
+// 智能用在临时变量，不能返回给成员变量永远持有,并且如果复制给其他变量，当前变量就会清空，用的时候要小心
+template <class T>
+class LocalVectorPool {
+public:
+	class V {
+	private:
+		mutable LocalVector<T> *_vector;
+		LocalVectorPool *Owenr;
+
+	public:
+		V(LocalVectorPool *owenr, LocalVector<T> *v) :
+				_vector(v),
+				Owenr(owenr) {
+		}
+		V() :
+				_vector(nullptr), Owenr(nullptr) {
+		}
+		V(const V &v) :
+				_vector(v._vector),
+				Owenr(v.Owenr) {
+			v._vector = nullptr;
+		}
+		~V() {
+			if (_vector && Owenr)
+				Owenr->add(_vector);
+		}
+		void operator=(const V &o) {
+			_vector = o._vector;
+			Owenr = o.Owenr;
+			o._vector = nullptr;
+		}
+		_FORCE_INLINE_ const T &operator[](size_t p_index) const {
+			return (*_vector)[p_index];
+		}
+		_FORCE_INLINE_ T &operator[](size_t p_index) {
+			return (*_vector)[p_index];
+		}
+		_FORCE_INLINE_ void push_back(T &p_elem) {
+			_vector->push_back(p_elem);
+		}
+		T *ptr() {
+			return _vector->ptr();
+		}
+
+		T &back() {
+			return _vector->back();
+		}
+		const T &back() const {
+			return _vector->back();
+		}
+		const T *ptr() const {
+			return _vector->ptr();
+		}
+		uint32_t size() const {
+			return _vector->size();
+		}
+		void clear() {
+			_vector->clear();
+		}
+		LocalVector<T> &get() {
+			return *_vector;
+		}
+		const LocalVector<T> &get() const {
+			return *_vector;
+		}
+	};
+
+private:
+	void add(LocalVector<T> *v) {
+		mutex.lock();
+		v->clear();
+		pool.push_back(v);
+		mutex.unlock();
+	}
+	LocalVector<LocalVector<T> *> pool;
+	::Mutex mutex;
+
+public:
+	static LocalVectorPool &instance() {
+		static LocalVectorPool ins;
+
+		return ins;
+	}
+	V get() {
+		mutex.lock();
+		if (pool.size()) {
+			LocalVector<T> *ret = pool.back();
+			pool.pop_back();
+			mutex.unlock();
+			return V(this, ret);
+		}
+		mutex.unlock();
+		return V(this, memnew(LocalVector<T>));
 	}
 };
 

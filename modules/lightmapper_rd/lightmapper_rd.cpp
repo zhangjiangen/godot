@@ -1231,8 +1231,8 @@ LightmapperRD::BakeError LightmapperRD::bake(BakeQuality p_quality, bool p_use_d
 
 		RID secondary_uniform_set[2];
 		secondary_uniform_set[0] = rd->uniform_set_create(uniforms, compute_shader_secondary, 1);
-		uniforms.write[0].ids.write[0] = light_source_tex;
-		uniforms.write[1].ids.write[0] = light_dest_tex;
+		uniforms.write[0].ids[0] = light_source_tex;
+		uniforms.write[1].ids[0] = light_dest_tex;
 		secondary_uniform_set[1] = rd->uniform_set_create(uniforms, compute_shader_secondary, 1);
 
 		switch (p_quality) {

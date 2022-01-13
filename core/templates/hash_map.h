@@ -297,6 +297,15 @@ public:
 		CRASH_COND_MSG(!res, "Map key not found.");
 		return *res;
 	}
+	bool try_get(const TKey &p_key, const TData *&data) const {
+		data = getptr(p_key);
+		return data != nullptr;
+	}
+
+	bool try_get(const TKey &p_key, TData *&data) {
+		data = getptr(p_key);
+		return data != nullptr;
+	}
 
 	/**
 	 * Same as get, except it can return nullptr when item was not found.

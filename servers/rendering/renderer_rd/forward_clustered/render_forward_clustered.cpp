@@ -1989,7 +1989,7 @@ void RenderForwardClustered::_update_render_base_uniform_set() {
 			u.uniform_type = RD::UNIFORM_TYPE_SAMPLER;
 			u.binding = 1;
 			u.ids.resize(12);
-			RID *ids_ptr = u.ids.ptrw();
+			RID *ids_ptr = u.ids.ptr();
 			ids_ptr[0] = storage->sampler_rd_get_custom(RS::CANVAS_ITEM_TEXTURE_FILTER_NEAREST, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED);
 			ids_ptr[1] = storage->sampler_rd_get_custom(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED);
 			ids_ptr[2] = storage->sampler_rd_get_custom(RS::CANVAS_ITEM_TEXTURE_FILTER_NEAREST_WITH_MIPMAPS, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED);
@@ -2248,9 +2248,9 @@ RID RenderForwardClustered::_setup_render_pass_uniform_set(RenderListType p_rend
 				RID base = lightmap_instance_get_lightmap((*p_render_data->lightmaps)[i]);
 				RID texture = storage->lightmap_get_texture(base);
 				RID rd_texture = storage->texture_get_rd_texture(texture);
-				u.ids.write[i] = rd_texture;
+				u.ids[i] = rd_texture;
 			} else {
-				u.ids.write[i] = default_tex;
+				u.ids[i] = default_tex;
 			}
 		}
 
@@ -2268,9 +2268,9 @@ RID RenderForwardClustered::_setup_render_pass_uniform_set(RenderListType p_rend
 				if (!tex.is_valid()) {
 					tex = default_tex;
 				}
-				u.ids.write[i] = tex;
+				u.ids[i] = tex;
 			} else {
-				u.ids.write[i] = default_tex;
+				u.ids[i] = default_tex;
 			}
 		}
 
@@ -2486,7 +2486,7 @@ RID RenderForwardClustered::_setup_sdfgi_render_pass_uniform_set(RID p_albedo_te
 		u.ids.resize(scene_state.max_lightmaps);
 		RID default_tex = storage->texture_rd_get_default(RendererStorageRD::DEFAULT_RD_TEXTURE_2D_ARRAY_WHITE);
 		for (uint32_t i = 0; i < scene_state.max_lightmaps; i++) {
-			u.ids.write[i] = default_tex;
+			u.ids[i] = default_tex;
 		}
 
 		uniforms.push_back(u);
@@ -2500,7 +2500,7 @@ RID RenderForwardClustered::_setup_sdfgi_render_pass_uniform_set(RID p_albedo_te
 		u.ids.resize(MAX_VOXEL_GI_INSTANCESS);
 		RID default_tex = storage->texture_rd_get_default(RendererStorageRD::DEFAULT_RD_TEXTURE_3D_WHITE);
 		for (int i = 0; i < MAX_VOXEL_GI_INSTANCESS; i++) {
-			u.ids.write[i] = default_tex;
+			u.ids[i] = default_tex;
 		}
 
 		uniforms.push_back(u);

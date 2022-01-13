@@ -69,9 +69,9 @@ public:
 	void set_debug_file_info(const char *file_name, int line) {
 		_cowdata.set_debug_file_info(file_name, line);
 	}
-	bool push_back(T p_elem);
+	bool push_back(const T &p_elem);
 	_FORCE_INLINE_ bool append(const T &p_elem) { return push_back(p_elem); } //alias
-	void fill(T p_elem);
+	void fill(const T &p_elem);
 
 	void remove_at(int p_index) { _cowdata.remove_at(p_index); }
 	void erase(const T &p_val) {
@@ -262,7 +262,6 @@ public:
 		return ConstIterator(ptr() + size());
 	}
 
-
 	_FORCE_INLINE_ Vector() {}
 	_FORCE_INLINE_ Vector(std::initializer_list<T> p_init) {
 		Error err = _cowdata.resize(p_init.size());
@@ -300,7 +299,7 @@ void Vector<T>::append_array(Vector<T> p_other) {
 }
 
 template <class T>
-bool Vector<T>::push_back(T p_elem) {
+bool Vector<T>::push_back(const T &p_elem) {
 	Error err = resize(size() + 1);
 	ERR_FAIL_COND_V(err, true);
 	set(size() - 1, p_elem);
@@ -309,7 +308,7 @@ bool Vector<T>::push_back(T p_elem) {
 }
 
 template <class T>
-void Vector<T>::fill(T p_elem) {
+void Vector<T>::fill(const T &p_elem) {
 	T *p = ptrw();
 	for (int i = 0; i < size(); i++) {
 		p[i] = p_elem;

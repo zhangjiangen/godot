@@ -747,7 +747,7 @@ private:
 			RID texture;
 		};
 
-		LocalVector<AttachableTexture> attachable_textures; //used for validation
+		Vector<AttachableTexture> attachable_textures; //used for validation
 		Vector<Texture *> mutable_sampled_textures; //used for layout change
 		Vector<Texture *> mutable_storage_textures; //used for layout change
 		UniformSetInvalidatedCallback invalidated_callback = nullptr;

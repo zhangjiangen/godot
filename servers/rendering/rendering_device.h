@@ -30,8 +30,8 @@
 
 #ifndef RENDERING_DEVICE_H
 #define RENDERING_DEVICE_H
-
 #include "core/object/class_db.h"
+#include "core/templates/local_vector.h"
 #include "core/variant/typed_array.h"
 #include "servers/display_server.h"
 
@@ -792,7 +792,7 @@ public:
 		//provide more
 		//for sampler with texture, supply two IDs for each.
 		//accepted IDs are: Sampler, Texture, Uniform Buffer and Texture Buffer
-		Vector<RID> ids;
+		LocalVector<RID> ids;
 
 		Uniform() {
 			uniform_type = UNIFORM_TYPE_IMAGE;
