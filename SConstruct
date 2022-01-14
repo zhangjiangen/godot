@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from importlib.util import spec_from_file_location, module_from_spec
 import gles3_builders
 import glsl_builders
 import methods
@@ -15,6 +16,30 @@ EnsureSConsVersion(3, 0, 0)
 EnsurePythonVersion(3, 6)
 
 # System
+
+# Explicitly resolve the helper modules, this is done to avoid clash with
+# modules of the same name that might be randomly added (e.g. someone adding
+# an `editor.py` file at the root of the module creates a clash with the editor
+# folder when doing `import editor.template_builder`)
+
+
+def _helper_module(name, path):
+    spec = spec_from_file_location(name, path)
+    module = module_from_spec(spec)
+    spec.loader.exec_module(module)
+    sys.modules[name] = module
+
+
+_helper_module("gles3_builders", "gles3_builders.py")
+_helper_module("glsl_builders", "glsl_builders.py")
+_helper_module("methods", "methods.py")
+_helper_module("platform_methods", "platform_methods.py")
+_helper_module("version", "version.py")
+_helper_module("core.core_builders", "core/core_builders.py")
+_helper_module("editor.editor_builders", "editor/editor_builders.py")
+_helper_module("editor.template_builders", "editor/template_builders.py")
+_helper_module("main.main_builders", "main/main_builders.py")
+_helper_module("modules.modules_builders", "modules/modules_builders.py")
 
 # Local
 
@@ -133,7 +158,8 @@ opts.Add(BoolVariable("production",
 opts.Add(BoolVariable("use_lto", "Use link-time optimization", False))
 
 # Components
-opts.Add(BoolVariable("deprecated", "Enable compatibility code for deprecated and removed features", True))
+opts.Add(BoolVariable("deprecated",
+         "Enable compatibility code for deprecated and removed features", True))
 opts.Add(BoolVariable("minizip", "Enable ZIP archive support using minizip", True))
 opts.Add(BoolVariable("xaudio2", "Enable the XAudio2 audio driver", False))
 opts.Add(BoolVariable("vulkan", "Enable the vulkan video driver", True))
@@ -616,8 +642,15 @@ if selected_platform in platform_list:
 
     if env["target"] == "release":
         if env["tools"]:
+<< << << < HEAD
             print(
                 "Error: The editor can only be built with `target=debug` or `target=release_debug`.")
+== == == =
+            print(
+                "ERROR: The editor can only be built with `target=debug` or `target=release_debug`.")
+            print(
+                "       Use `tools=no target=release` to build a release export template.")
+>>>>>> > master
             Exit(255)
         suffix += "_opt"
         env.Append(CPPDEFINES=["NDEBUG"])
