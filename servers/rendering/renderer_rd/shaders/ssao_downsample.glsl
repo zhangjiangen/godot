@@ -59,6 +59,8 @@ vec4 screen_space_to_view_space_depth(vec4 p_depth) {
 	// depth_linearize_mul = ( cameraClipFar * cameraClipNear) / ( cameraClipFar - cameraClipNear );
 	// depth_linearize_add = cameraClipFar / ( cameraClipFar - cameraClipNear );
 
+
+
 	return depth_linearize_mul / (depth_linearize_add - p_depth);
 }
 
