@@ -3882,6 +3882,8 @@ void EditorNode::register_editor_types() {
 	GDREGISTER_CLASS(EditorResourcePicker);
 	GDREGISTER_CLASS(EditorScriptPicker);
 
+	GDREGISTER_CLASS(EditorSpinSlider);
+
 	GDREGISTER_VIRTUAL_CLASS(FileSystemDock);
 
 	// FIXME: Is this stuff obsolete, or should it be ported to new APIs?

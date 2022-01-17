@@ -1331,10 +1331,12 @@ void EditorInspectorSection::setup(const String &p_section, const String &p_labe
 
 	if (foldable) {
 		_test_unfold();
-		if (object->editor_is_section_unfolded(section)) {
-			vbox->show();
-		} else {
-			vbox->hide();
+		if (object) {
+			if (object->editor_is_section_unfolded(section)) {
+				vbox->show();
+			} else {
+				vbox->hide();
+			}
 		}
 	}
 }
@@ -1376,7 +1378,8 @@ void EditorInspectorSection::unfold() {
 
 	_test_unfold();
 
-	object->editor_set_section_unfold(section, true);
+	if (object != nullptr)
+		object->editor_set_section_unfold(section, true);
 	vbox->show();
 	update();
 }
@@ -1390,6 +1393,7 @@ void EditorInspectorSection::fold() {
 		return;
 	}
 
+	if (object != nullptr)
 	object->editor_set_section_unfold(section, false);
 	vbox->hide();
 	update();
@@ -2221,7 +2225,7 @@ String EditorInspector::get_selected_path() const {
 	return property_selected;
 }
 
-void EditorInspector::_parse_added_editors(VBoxContainer *current_vbox, Ref<EditorInspectorPlugin> ped) {
+void EditorInspector::_parse_added_editors(VBoxContainer * current_vbox, Ref<EditorInspectorPlugin> ped) {
 	for (const EditorInspectorPlugin::AddedEditor &F : ped->added_editors) {
 		EditorProperty *ep = Object::cast_to<EditorProperty>(F.property_editor);
 		current_vbox->add_child(F.property_editor);

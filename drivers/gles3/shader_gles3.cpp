@@ -29,6 +29,7 @@
 /*************************************************************************/
 
 #include "shader_gles3.h"
+#include <memory.h>
 #ifdef GLES3_ENABLED
 
 #include "core/io/compression.h"
@@ -238,7 +239,7 @@ void ShaderGLES3::_compile_specialization(Version::Specialization &spec, uint32_
 					iloglen = 4096; // buggy driver (Adreno 220+)
 				}
 
-				char *ilogmem = (char *)Memory::alloc_static(iloglen + 1);
+				char *ilogmem = (char *)alloca(iloglen + 1);
 				ilogmem[iloglen] = '\0';
 				glGetShaderInfoLog(spec.vert_id, iloglen, &iloglen, ilogmem);
 
@@ -248,7 +249,7 @@ void ShaderGLES3::_compile_specialization(Version::Specialization &spec, uint32_
 
 				_display_error_with_code(err_string, builder_string);
 
-				Memory::free_static(ilogmem);
+				//Memory::free_static(ilogmem);
 				glDeleteShader(spec.vert_id);
 				glDeleteProgram(spec.id);
 				spec.id = 0;
@@ -286,7 +287,7 @@ void ShaderGLES3::_compile_specialization(Version::Specialization &spec, uint32_
 					iloglen = 4096; // buggy driver (Adreno 220+)
 				}
 
-				char *ilogmem = (char *)Memory::alloc_static(iloglen + 1);
+				char *ilogmem = (char *)alloca(iloglen + 1);
 				ilogmem[iloglen] = '\0';
 				glGetShaderInfoLog(spec.frag_id, iloglen, &iloglen, ilogmem);
 
@@ -296,7 +297,7 @@ void ShaderGLES3::_compile_specialization(Version::Specialization &spec, uint32_
 
 				_display_error_with_code(err_string, builder_string);
 
-				Memory::free_static(ilogmem);
+				//Memory::free_static(ilogmem);
 				glDeleteShader(spec.frag_id);
 				glDeleteProgram(spec.id);
 				spec.id = 0;
@@ -334,7 +335,7 @@ void ShaderGLES3::_compile_specialization(Version::Specialization &spec, uint32_
 			iloglen = 4096; // buggy driver (Adreno 220+)
 		}
 
-		char *ilogmem = (char *)memalloc(iloglen + 1);
+		char *ilogmem = (char *)alloca(iloglen + 1);
 		ilogmem[iloglen] = '\0';
 		glGetProgramInfoLog(spec.id, iloglen, &iloglen, ilogmem);
 
@@ -344,7 +345,7 @@ void ShaderGLES3::_compile_specialization(Version::Specialization &spec, uint32_
 
 		_display_error_with_code(err_string, String());
 
-		Memory::free_static(ilogmem);
+		//Memory::free_static(ilogmem);
 		glDeleteShader(spec.frag_id);
 		glDeleteShader(spec.vert_id);
 		glDeleteProgram(spec.id);

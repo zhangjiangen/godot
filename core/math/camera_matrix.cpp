@@ -360,7 +360,7 @@ LocalVector<Plane> CameraMatrix::get_projection_planes(const Transform3D &p_tran
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.write[0] = p_transform.xform(new_plane);
+	planes[0] = p_transform.xform(new_plane);
 
 	///////--- Far Plane ---///////
 	new_plane = Plane(matrix[3] - matrix[2],
@@ -371,7 +371,7 @@ LocalVector<Plane> CameraMatrix::get_projection_planes(const Transform3D &p_tran
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.write[1] = p_transform.xform(new_plane);
+	planes[1] = p_transform.xform(new_plane);
 
 	///////--- Left Plane ---///////
 	new_plane = Plane(matrix[3] + matrix[0],
@@ -382,7 +382,7 @@ LocalVector<Plane> CameraMatrix::get_projection_planes(const Transform3D &p_tran
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.write[2] = p_transform.xform(new_plane);
+	planes[2] = p_transform.xform(new_plane);
 
 	///////--- Top Plane ---///////
 	new_plane = Plane(matrix[3] - matrix[1],
@@ -393,7 +393,7 @@ LocalVector<Plane> CameraMatrix::get_projection_planes(const Transform3D &p_tran
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.write[3] = p_transform.xform(new_plane);
+	planes[3] = p_transform.xform(new_plane);
 
 	///////--- Right Plane ---///////
 	new_plane = Plane(matrix[3] - matrix[0],
@@ -404,7 +404,7 @@ LocalVector<Plane> CameraMatrix::get_projection_planes(const Transform3D &p_tran
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.write[4] = p_transform.xform(new_plane);
+	planes[4] = p_transform.xform(new_plane);
 
 	///////--- Bottom Plane ---///////
 	new_plane = Plane(matrix[3] + matrix[1],
@@ -415,7 +415,7 @@ LocalVector<Plane> CameraMatrix::get_projection_planes(const Transform3D &p_tran
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.write[5] = p_transform.xform(new_plane);
+	planes[5] = p_transform.xform(new_plane);
 
 	return planes;
 }

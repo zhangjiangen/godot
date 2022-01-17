@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from types import ModuleType
 from importlib.util import spec_from_file_location, module_from_spec
 import gles3_builders
 import glsl_builders
@@ -16,15 +17,6 @@ EnsureSConsVersion(3, 0, 0)
 EnsurePythonVersion(3, 6)
 
 # System
-import atexit
-import glob
-import os
-import pickle
-import sys
-import time
-from types import ModuleType
-from collections import OrderedDict
-from importlib.util import spec_from_file_location, module_from_spec
 
 # Explicitly resolve the helper modules, this is done to avoid clash with
 # modules of the same name that might be randomly added (e.g. someone adding
@@ -666,15 +658,10 @@ if selected_platform in platform_list:
 
     if env["target"] == "release":
         if env["tools"]:
-<< << << < HEAD
-            print(
-                "Error: The editor can only be built with `target=debug` or `target=release_debug`.")
-== == == =
             print(
                 "ERROR: The editor can only be built with `target=debug` or `target=release_debug`.")
             print(
                 "       Use `tools=no target=release` to build a release export template.")
->>>>>> > master
             Exit(255)
         suffix += "_opt"
         env.Append(CPPDEFINES=["NDEBUG"])
