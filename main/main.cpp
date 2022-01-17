@@ -325,6 +325,7 @@ void Main::print_help(const char *p_binary) {
 	OS::get_singleton()->print("].\n");
 
 	OS::get_singleton()->print("  --rendering-driver <driver>                  Rendering driver (depends on display driver).\n");
+	OS::get_singleton()->print("  --gpu-index <device_index>                   Use a specific GPU (run with --verbose to get available device list).\n");
 
 	OS::get_singleton()->print("  --text-driver <driver>                       Text driver (Fonts, BiDi, shaping)\n");
 
@@ -793,6 +794,14 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 		} else if (I->get() == "-w" || I->get() == "--windowed") { // force windowed window
 
 			init_windowed = true;
+		} else if (I->get() == "--gpu-index") {
+			if (I->next()) {
+				Engine::singleton->gpu_idx = I->next()->get().to_int();
+				N = I->next()->next();
+			} else {
+				OS::get_singleton()->print("Missing gpu index argument, aborting.\n");
+				goto error;
+			}
 		} else if (I->get() == "--vk-layers") {
 			Engine::singleton->use_validation_layers = true;
 #ifdef DEBUG_ENABLED
@@ -1785,7 +1794,7 @@ Error Main::setup2(Thread::ID p_main_tid_override) {
 	GLOBAL_DEF("application/config/icon", String());
 	ProjectSettings::get_singleton()->set_custom_property_info("application/config/icon",
 			PropertyInfo(Variant::STRING, "application/config/icon",
-					PROPERTY_HINT_FILE, "*.png,*.webp,*.svg,*.svgz"));
+					PROPERTY_HINT_FILE, "*.png,*.webp,*.svg"));
 
 	GLOBAL_DEF("application/config/macos_native_icon", String());
 	ProjectSettings::get_singleton()->set_custom_property_info("application/config/macos_native_icon",
@@ -2540,13 +2549,6 @@ bool Main::start() {
 		}
 
 		if (project_manager || editor) {
-			if (DisplayServer::get_singleton()->has_feature(DisplayServer::FEATURE_CONSOLE_WINDOW)) {
-				// Hide console window if requested (Windows-only).
-				bool hide_console = EditorSettings::get_singleton()->get_setting(
-						"interface/editor/hide_console_window");
-				DisplayServer::get_singleton()->console_set_visible(!hide_console);
-			}
-
 			// Load SSL Certificates from Editor Settings (or builtin)
 			Crypto::load_default_certificates(
 					EditorSettings::get_singleton()->get_setting("network/ssl/editor_ssl_certificates").operator String());
