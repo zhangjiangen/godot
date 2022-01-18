@@ -957,9 +957,10 @@ void EditorNode::_fs_changed() {
 
 		if (!export_error.is_empty()) {
 			ERR_PRINT(export_error);
-			OS::get_singleton()->set_exit_code(EXIT_FAILURE);
+			_exit_editor(EXIT_FAILURE);
+		} else {
+			_exit_editor(EXIT_SUCCESS);
 		}
-		_exit_editor();
 	}
 }
 
@@ -1775,7 +1776,7 @@ void EditorNode::restart_editor() {
 		to_reopen = get_tree()->get_edited_scene_root()->get_scene_file_path();
 	}
 
-	_exit_editor();
+	_exit_editor(EXIT_SUCCESS);
 
 	List<String> args;
 	args.push_back("--path");
@@ -2593,13 +2594,21 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 						file->set_current_path(path.replacen("." + ext, "." + extensions.front()->get()));
 					}
 				}
-			} else {
-				String existing;
-				if (extensions.size()) {
-					String root_name(scene->get_name());
-					existing = root_name + "." + extensions.front()->get().to_lower();
+			} else if (extensions.size()) {
+				String root_name = scene->get_name();
+				// Very similar to node naming logic.
+				switch (ProjectSettings::get_singleton()->get("editor/scene/scene_naming").operator int()) {
+					case SCENE_NAME_CASING_AUTO:
+						// Use casing of the root node.
+						break;
+					case SCENE_NAME_CASING_PASCAL_CASE: {
+						root_name = root_name.capitalize().replace(" ", "");
+					} break;
+					case SCENE_NAME_CASING_SNAKE_CASE:
+						root_name = root_name.capitalize().replace(" ", "").replace("-", "_").camelcase_to_underscore();
+						break;
 				}
-				file->set_current_path(existing);
+				file->set_current_path(root_name + "." + extensions.front()->get().to_lower());
 			}
 			file->popup_file_dialog();
 			file->set_title(TTR("Save Scene As..."));
@@ -2992,7 +3001,7 @@ int EditorNode::_next_unsaved_scene(bool p_valid_filename, int p_start) {
 	return -1;
 }
 
-void EditorNode::_exit_editor() {
+void EditorNode::_exit_editor(int p_exit_code) {
 	exiting = true;
 	resource_preview->stop(); // stop early to avoid crashes
 	_save_docks();
@@ -3000,7 +3009,7 @@ void EditorNode::_exit_editor() {
 	// Dim the editor window while it's quitting to make it clearer that it's busy
 	dim_editor(true);
 
-	get_tree()->quit();
+	get_tree()->quit(p_exit_code);
 }
 
 void EditorNode::_discard_changes(const String &p_str) {
@@ -3050,12 +3059,12 @@ void EditorNode::_discard_changes(const String &p_str) {
 		} break;
 		case FILE_QUIT: {
 			_menu_option_confirm(RUN_STOP, true);
-			_exit_editor();
+			_exit_editor(EXIT_SUCCESS);
 
 		} break;
 		case RUN_PROJECT_MANAGER: {
 			_menu_option_confirm(RUN_STOP, true);
-			_exit_editor();
+			_exit_editor(EXIT_SUCCESS);
 			String exec = OS::get_singleton()->get_executable_path();
 
 			List<String> args;
@@ -5673,6 +5682,8 @@ void EditorNode::_feature_profile_changed() {
 }
 
 void EditorNode::_bind_methods() {
+	GLOBAL_DEF("editor/scene/scene_naming", SCENE_NAME_CASING_SNAKE_CASE);
+	ProjectSettings::get_singleton()->set_custom_property_info("editor/scene/scene_naming", PropertyInfo(Variant::INT, "editor/scene/scene_naming", PROPERTY_HINT_ENUM, "Auto,PascalCase,snake_case"));
 	ClassDB::bind_method("_editor_select", &EditorNode::_editor_select);
 	ClassDB::bind_method("_node_renamed", &EditorNode::_node_renamed);
 	ClassDB::bind_method("edit_node", &EditorNode::edit_node);
