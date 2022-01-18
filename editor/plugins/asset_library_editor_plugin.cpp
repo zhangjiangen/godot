@@ -193,7 +193,8 @@ void EditorAssetLibraryItemDescription::set_image(int p_type, int p_index, const
 
 void EditorAssetLibraryItemDescription::_notification(int p_what) {
 	switch (p_what) {
-		case NOTIFICATION_ENTER_TREE: {
+		case NOTIFICATION_ENTER_TREE:
+		case NOTIFICATION_THEME_CHANGED: {
 			previews_bg->add_theme_style_override("panel", previews->get_theme_stylebox(SNAME("normal"), SNAME("TextEdit")));
 		} break;
 	}
@@ -397,9 +398,9 @@ void EditorAssetLibraryItemDownload::configure(const String &p_title, int p_asse
 
 void EditorAssetLibraryItemDownload::_notification(int p_what) {
 	switch (p_what) {
-		// FIXME: The editor crashes if 'NOTICATION_THEME_CHANGED' is used.
-		case NOTIFICATION_ENTER_TREE: {
-			add_theme_style_override("panel", get_theme_stylebox(SNAME("panel"), SNAME("TabContainer")));
+		case NOTIFICATION_ENTER_TREE:
+		case NOTIFICATION_THEME_CHANGED: {
+			panel->add_theme_style_override("panel", get_theme_stylebox(SNAME("panel"), SNAME("TabContainer")));
 			dismiss->set_normal_texture(get_theme_icon(SNAME("Close"), SNAME("EditorIcons")));
 		} break;
 		case NOTIFICATION_PROCESS: {
@@ -492,8 +493,11 @@ void EditorAssetLibraryItemDownload::_bind_methods() {
 }
 
 EditorAssetLibraryItemDownload::EditorAssetLibraryItemDownload() {
+	panel = memnew(PanelContainer);
+	add_child(panel);
+
 	HBoxContainer *hb = memnew(HBoxContainer);
-	add_child(hb);
+	panel->add_child(hb);
 	icon = memnew(TextureRect);
 	hb->add_child(icon);
 
@@ -541,16 +545,16 @@ EditorAssetLibraryItemDownload::EditorAssetLibraryItemDownload() {
 	set_custom_minimum_size(Size2(310, 0) * EDSCALE);
 
 	download = memnew(HTTPRequest);
-	add_child(download);
+	panel->add_child(download);
 	download->connect("request_completed", callable_mp(this, &EditorAssetLibraryItemDownload::_http_download_completed));
 	setup_http_request(download);
 
 	download_error = memnew(AcceptDialog);
-	add_child(download_error);
+	panel->add_child(download_error);
 	download_error->set_title(TTR("Download Error"));
 
 	asset_installer = memnew(EditorAssetInstaller);
-	add_child(asset_installer);
+	panel->add_child(asset_installer);
 	asset_installer->connect("confirmed", callable_mp(this, &EditorAssetLibraryItemDownload::_close));
 
 	prev_status = -1;
@@ -562,11 +566,15 @@ EditorAssetLibraryItemDownload::EditorAssetLibraryItemDownload() {
 void EditorAssetLibrary::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_READY: {
+			error_label->raise();
+		} break;
+		case NOTIFICATION_ENTER_TREE:
+		case NOTIFICATION_THEME_CHANGED: {
 			error_tr->set_texture(get_theme_icon(SNAME("Error"), SNAME("EditorIcons")));
 			filter->set_right_icon(get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
-			filter->set_clear_button_enabled(true);
-
-			error_label->raise();
+			library_scroll_bg->add_theme_style_override("panel", get_theme_stylebox(SNAME("bg"), SNAME("Tree")));
+			downloads_scroll->add_theme_style_override("bg", get_theme_stylebox(SNAME("bg"), SNAME("Tree")));
+			error_label->add_theme_color_override("color", get_theme_color(SNAME("error_color"), SNAME("Editor")));
 		} break;
 		case NOTIFICATION_VISIBILITY_CHANGED: {
 			if (is_visible()) {
@@ -596,14 +604,6 @@ void EditorAssetLibrary::_notification(int p_what) {
 			}
 
 		} break;
-		case NOTIFICATION_THEME_CHANGED: {
-			library_scroll_bg->add_theme_style_override("panel", get_theme_stylebox(SNAME("bg"), SNAME("Tree")));
-			downloads_scroll->add_theme_style_override("bg", get_theme_stylebox(SNAME("bg"), SNAME("Tree")));
-			error_tr->set_texture(get_theme_icon(SNAME("Error"), SNAME("EditorIcons")));
-			filter->set_right_icon(get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
-			filter->set_clear_button_enabled(true);
-		} break;
-
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
 			_update_repository_options();
 		} break;
@@ -1354,6 +1354,7 @@ EditorAssetLibrary::EditorAssetLibrary(bool p_templates_only) {
 	} else {
 		filter->set_placeholder(TTR("Search assets (excluding templates, projects, and demos)"));
 	}
+	filter->set_clear_button_enabled(true);
 	search_hb->add_child(filter);
 	filter->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	filter->connect("text_changed", callable_mp(this, &EditorAssetLibrary::_search_text_changed));
@@ -1495,7 +1496,6 @@ EditorAssetLibrary::EditorAssetLibrary(bool p_templates_only) {
 	error_hb = memnew(HBoxContainer);
 	library_main->add_child(error_hb);
 	error_label = memnew(Label);
-	error_label->add_theme_color_override("color", get_theme_color(SNAME("error_color"), SNAME("Editor")));
 	error_hb->add_child(error_label);
 	error_tr = memnew(TextureRect);
 	error_tr->set_v_size_flags(Control::SIZE_SHRINK_CENTER);
