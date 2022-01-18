@@ -245,7 +245,7 @@ public:
 	virtual String get_os_name() const = 0;
 	virtual String get_name() const = 0;
 	virtual Ref<Texture2D> get_logo() const = 0;
-
+	String test_etc2() const;
 	Error export_project_files(const Ref<EditorExportPreset> &p_preset, EditorExportSaveFunction p_func, void *p_udata, EditorExportSaveSharedObject p_so_func = nullptr);
 
 	Error save_pack(const Ref<EditorExportPreset> &p_preset, const String &p_path, Vector<SharedObject> *p_so_files = nullptr, bool p_embed = false, int64_t *r_embedded_start = nullptr, int64_t *r_embedded_size = nullptr);

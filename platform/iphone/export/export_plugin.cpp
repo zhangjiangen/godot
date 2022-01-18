@@ -1752,23 +1752,8 @@ bool EditorExportPlatformIOS::can_export(const Ref<EditorExportPreset> &p_preset
 		valid = false;
 	}
 
-<<<<<<< HEAD
-	for (uint64_t i = 0; i < (sizeof(icon_infos) / sizeof(icon_infos[0])); ++i) {
-		IconInfo info = icon_infos[i];
-		String icon_path = p_preset->get(info.preset_key);
-		if (icon_path.length() == 0) {
-			if (info.is_required) {
-				err += TTR("Required icon is not specified in the preset.") + "\n";
-				valid = false;
-			}
-			break;
-		}
-	}
-
-	String etc_error = test_etc2_or_pvrtc_or_astc();
-=======
 	const String etc_error = test_etc2();
->>>>>>> master
+
 	if (!etc_error.is_empty()) {
 		valid = false;
 		err += etc_error;

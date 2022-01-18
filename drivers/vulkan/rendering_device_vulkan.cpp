@@ -123,10 +123,6 @@ static void LogVulkanInfo(VulkanContext &context) {
 			log += "RSC_TEXTURE_COMPRESSION_ETC2,";
 		}
 
-		vkGetPhysicalDeviceFormatProperties(context.get_physical_device(),
-				RenderingDeviceVulkan::vulkan_formats[RenderingDeviceVulkan::DATA_FORMAT_PVRTC2_2BPP_UNORM_BLOCK_IMG], &props);
-		if (props.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT)
-			log += "RSC_TEXTURE_COMPRESSION_PVRTC,";
 
 		vkGetPhysicalDeviceFormatProperties(
 				context.get_physical_device(),

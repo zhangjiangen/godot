@@ -1505,6 +1505,7 @@ String EditorExportPlatform::test_etc2() const {
 	if (!etc2_supported) {
 		return TTR("Target platform requires 'ETC2' texture compression. Enable 'Import Etc 2' in Project Settings.");
 	}
+    return String();
 }
 
 int EditorExport::get_export_preset_count() const {
