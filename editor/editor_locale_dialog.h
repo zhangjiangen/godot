@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  rasterizer_gles3.h                                                   */
+/*  editor_locale_dialog.h                                               */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,63 +28,66 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef RASTERIZER_OPENGL_H
-#define RASTERIZER_OPENGL_H
+#ifndef EDITOR_LOCALE_DIALOG_H
+#define EDITOR_LOCALE_DIALOG_H
 
-#ifdef GLES3_ENABLED
+#include "core/string/translation.h"
+#include "scene/gui/dialogs.h"
 
-#include "rasterizer_canvas_gles3.h"
-#include "rasterizer_scene_gles3.h"
-#include "rasterizer_storage_gles3.h"
-#include "servers/rendering/renderer_compositor.h"
+class Button;
+class HBoxContainer;
+class VBoxContainer;
+class LineEdit;
+class Tree;
+class OptionButton;
+class UndoRedo;
 
-class RasterizerGLES3 : public RendererCompositor {
-private:
-	uint64_t frame = 1;
-	float delta = 0;
+class EditorLocaleDialog : public ConfirmationDialog {
+	GDCLASS(EditorLocaleDialog, ConfirmationDialog);
 
-	double time_total = 0.0;
+	enum LocaleFilter {
+		SHOW_ALL_LOCALES,
+		SHOW_ONLY_SELECTED_LOCALES,
+	};
+
+	HBoxContainer *hb_locale = nullptr;
+	VBoxContainer *vb_script_list = nullptr;
+	OptionButton *filter_mode = nullptr;
+	Button *edit_filters = nullptr;
+	Button *advanced = nullptr;
+	LineEdit *lang_code = nullptr;
+	LineEdit *script_code = nullptr;
+	LineEdit *country_code = nullptr;
+	LineEdit *variant_code = nullptr;
+	Tree *lang_list = nullptr;
+	Tree *script_list = nullptr;
+	Tree *cnt_list = nullptr;
+
+	UndoRedo *undo_redo = nullptr;
+
+	bool locale_set = false;
+	bool updating_lists = false;
 
 protected:
-	RasterizerStorageGLES3 storage;
-	RasterizerCanvasGLES3 canvas;
-	RasterizerSceneGLES3 scene;
+	static void _bind_methods();
+	virtual void _post_popup() override;
+	virtual void ok_pressed() override;
 
-	void _blit_render_target_to_screen(RID p_render_target, DisplayServer::WindowID p_screen, const Rect2 &p_screen_rect);
+	void _item_selected();
+	void _filter_lang_option_changed();
+	void _filter_script_option_changed();
+	void _filter_cnt_option_changed();
+	void _filter_mode_changed(int p_mode);
+	void _edit_filters(bool p_checked);
+	void _toggle_advanced(bool p_checked);
+
+	void _update_tree();
 
 public:
-	RendererStorage *get_storage() { return &storage; }
-	RendererCanvasRender *get_canvas() { return &canvas; }
-	RendererSceneRender *get_scene() { return &scene; }
+	EditorLocaleDialog();
 
-	void set_boot_image(const Ref<Image> &p_image, const Color &p_color, RenderingServer::SplashStretchMode p_stretch_mode, bool p_use_filter = true);
-
-	void initialize();
-	void begin_frame(double frame_step);
-
-	void prepare_for_blitting_render_targets();
-	void blit_render_targets_to_screen(DisplayServer::WindowID p_screen, const BlitToScreen *p_render_targets, int p_amount);
-
-	void end_frame(bool p_swap_buffers);
-
-	void finalize() {}
-
-	static RendererCompositor *_create_current() {
-		return memnew(RasterizerGLES3);
-	}
-
-	static void make_current() {
-		_create_func = _create_current;
-	}
-
-	virtual bool is_low_end() const { return true; }
-	uint64_t get_frame_number() const { return frame; }
-	double get_frame_delta_time() const { return delta; }
-
-	RasterizerGLES3();
-	~RasterizerGLES3() {}
+	void set_locale(const String &p_locale);
+	void popup_locale_dialog();
 };
 
-#endif // GLES3_ENABLED
-
-#endif
+#endif // EDITOR_LOCALE_DIALOG_H

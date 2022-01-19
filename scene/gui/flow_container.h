@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  rasterizer_gles3.h                                                   */
+/*  flow_container.h                                                     */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,63 +28,49 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef RASTERIZER_OPENGL_H
-#define RASTERIZER_OPENGL_H
+#ifndef FLOW_CONTAINER_H
+#define FLOW_CONTAINER_H
 
-#ifdef GLES3_ENABLED
+class Container;
 
-#include "rasterizer_canvas_gles3.h"
-#include "rasterizer_scene_gles3.h"
-#include "rasterizer_storage_gles3.h"
-#include "servers/rendering/renderer_compositor.h"
+class FlowContainer : public Container {
+	GDCLASS(FlowContainer, Container);
 
-class RasterizerGLES3 : public RendererCompositor {
 private:
-	uint64_t frame = 1;
-	float delta = 0;
+	int cached_size = 0;
+	int cached_line_count = 0;
 
-	double time_total = 0.0;
+	bool vertical = false;
+
+	void _resort();
 
 protected:
-	RasterizerStorageGLES3 storage;
-	RasterizerCanvasGLES3 canvas;
-	RasterizerSceneGLES3 scene;
+	void _notification(int p_what);
 
-	void _blit_render_target_to_screen(RID p_render_target, DisplayServer::WindowID p_screen, const Rect2 &p_screen_rect);
+	static void _bind_methods();
 
 public:
-	RendererStorage *get_storage() { return &storage; }
-	RendererCanvasRender *get_canvas() { return &canvas; }
-	RendererSceneRender *get_scene() { return &scene; }
+	int get_line_count() const;
 
-	void set_boot_image(const Ref<Image> &p_image, const Color &p_color, RenderingServer::SplashStretchMode p_stretch_mode, bool p_use_filter = true);
+	virtual Size2 get_minimum_size() const override;
 
-	void initialize();
-	void begin_frame(double frame_step);
-
-	void prepare_for_blitting_render_targets();
-	void blit_render_targets_to_screen(DisplayServer::WindowID p_screen, const BlitToScreen *p_render_targets, int p_amount);
-
-	void end_frame(bool p_swap_buffers);
-
-	void finalize() {}
-
-	static RendererCompositor *_create_current() {
-		return memnew(RasterizerGLES3);
-	}
-
-	static void make_current() {
-		_create_func = _create_current;
-	}
-
-	virtual bool is_low_end() const { return true; }
-	uint64_t get_frame_number() const { return frame; }
-	double get_frame_delta_time() const { return delta; }
-
-	RasterizerGLES3();
-	~RasterizerGLES3() {}
+	FlowContainer(bool p_vertical = false);
 };
 
-#endif // GLES3_ENABLED
+class HFlowContainer : public FlowContainer {
+	GDCLASS(HFlowContainer, FlowContainer);
 
-#endif
+public:
+	HFlowContainer() :
+			FlowContainer(false) {}
+};
+
+class VFlowContainer : public FlowContainer {
+	GDCLASS(VFlowContainer, FlowContainer);
+
+public:
+	VFlowContainer() :
+			FlowContainer(true) {}
+};
+
+#endif // FLOW_CONTAINER_H
