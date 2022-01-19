@@ -2508,6 +2508,7 @@ void FileSystemDock::_file_and_folders_fill_popup(PopupMenu *p_popup, Vector<Str
 		String fpath = p_paths[0];
 		String item_text = fpath.ends_with("/") ? TTR("Open in File Manager") : TTR("Show in File Manager");
 		p_popup->add_icon_item(get_theme_icon(SNAME("Filesystem"), SNAME("EditorIcons")), item_text, FILE_SHOW_IN_EXPLORER);
+		path = fpath;
 	}
 }
 
@@ -2544,6 +2545,9 @@ void FileSystemDock::_tree_rmb_empty(const Vector2 &p_pos) {
 	tree_popup->add_icon_item(get_theme_icon(SNAME("Script"), SNAME("EditorIcons")), TTR("New Script..."), FILE_NEW_SCRIPT);
 	tree_popup->add_icon_item(get_theme_icon(SNAME("Object"), SNAME("EditorIcons")), TTR("New Resource..."), FILE_NEW_RESOURCE);
 	tree_popup->add_icon_item(get_theme_icon(SNAME("TextFile"), SNAME("EditorIcons")), TTR("New TextFile..."), FILE_NEW_TEXTFILE);
+	tree_popup->add_separator();
+	tree_popup->add_icon_item(get_theme_icon(SNAME("Filesystem"), SNAME("EditorIcons")), TTR("Open in File Manager"), FILE_SHOW_IN_EXPLORER);
+
 	tree_popup->set_position(tree->get_screen_position() + p_pos);
 	tree_popup->reset_size();
 	tree_popup->popup();
@@ -2582,6 +2586,8 @@ void FileSystemDock::_file_list_rmb_pressed(const Vector2 &p_pos) {
 	if (searched_string.length() > 0) {
 		return;
 	}
+
+	path = current_path->get_text();
 
 	file_list_popup->clear();
 	file_list_popup->reset_size();
