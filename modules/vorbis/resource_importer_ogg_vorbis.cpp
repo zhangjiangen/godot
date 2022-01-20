@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -93,10 +93,10 @@ Error ResourceImporterOGGVorbis::import(const String &p_source_file, const Strin
 	memdelete(f);
 
 	Ref<AudioStreamOGGVorbis> ogg_vorbis_stream;
-	ogg_vorbis_stream.instantiate();
+	New_instantiate(ogg_vorbis_stream);
 
 	Ref<OGGPacketSequence> ogg_packet_sequence;
-	ogg_packet_sequence.instantiate();
+	New_instantiate(ogg_packet_sequence);
 
 	ogg_stream_state stream_state;
 	ogg_sync_state sync_state;

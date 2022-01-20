@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -487,7 +487,7 @@ Vector<Vector<Vector2>> BitMap::clip_opaque_to_polygons(const Rect2 &p_rect, flo
 
 	Point2i from;
 	Ref<BitMap> fill;
-	fill.instantiate();
+	New_instantiate(fill);
 	fill->create(get_size());
 
 	Vector<Vector<Vector2>> polygons;
@@ -525,7 +525,7 @@ void BitMap::grow_mask(int p_pixels, const Rect2 &p_rect) {
 	Rect2i r = Rect2i(0, 0, width, height).intersection(p_rect);
 
 	Ref<BitMap> copy;
-	copy.instantiate();
+	New_instantiate(copy);
 	copy->create(get_size());
 	copy->bitmask = bitmask;
 
@@ -604,7 +604,7 @@ Array BitMap::_opaque_to_polygons_bind(const Rect2 &p_rect, float p_epsilon) con
 
 void BitMap::resize(const Size2 &p_new_size) {
 	Ref<BitMap> new_bitmap;
-	new_bitmap.instantiate();
+	New_instantiate(new_bitmap);
 	new_bitmap->create(p_new_size);
 	int lw = MIN(width, p_new_size.width);
 	int lh = MIN(height, p_new_size.height);
@@ -621,7 +621,7 @@ void BitMap::resize(const Size2 &p_new_size) {
 
 Ref<Image> BitMap::convert_to_image() const {
 	Ref<Image> image;
-	image.instantiate();
+	New_instantiate(image);
 	image->create(width, height, false, Image::FORMAT_L8);
 
 	for (int i = 0; i < width; i++) {

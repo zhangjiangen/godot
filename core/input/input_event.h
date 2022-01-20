@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -162,10 +162,10 @@ public:
 class InputEventKey : public InputEventWithModifiers {
 	GDCLASS(InputEventKey, InputEventWithModifiers);
 
-	bool pressed = false; /// otherwise release
-
 	Key keycode = Key::NONE; // Key enum, without modifier masks.
 	Key physical_keycode = Key::NONE;
+	bool pressed = false; /// otherwise release
+
 	uint32_t unicode = 0; ///unicode
 
 	bool echo = false; /// true if this is an echo key
@@ -271,7 +271,7 @@ class InputEventMouseMotion : public InputEventMouse {
 	Vector2 tilt;
 	float pressure = 0;
 	Vector2 relative;
-	Vector2 speed;
+	Vector2 velocity;
 
 protected:
 	static void _bind_methods();
@@ -286,8 +286,8 @@ public:
 	void set_relative(const Vector2 &p_relative);
 	Vector2 get_relative() const;
 
-	void set_speed(const Vector2 &p_speed);
-	Vector2 get_speed() const;
+	void set_velocity(const Vector2 &p_velocity);
+	Vector2 get_velocity() const;
 
 	virtual Ref<InputEvent> xformed_by(const Transform2D &p_xform, const Vector2 &p_local_ofs = Vector2()) const override;
 	virtual String as_text() const override;
@@ -388,7 +388,7 @@ class InputEventScreenDrag : public InputEventFromWindow {
 	int index = 0;
 	Vector2 pos;
 	Vector2 relative;
-	Vector2 speed;
+	Vector2 velocity;
 
 protected:
 	static void _bind_methods();
@@ -403,8 +403,8 @@ public:
 	void set_relative(const Vector2 &p_relative);
 	Vector2 get_relative() const;
 
-	void set_speed(const Vector2 &p_speed);
-	Vector2 get_speed() const;
+	void set_velocity(const Vector2 &p_velocity);
+	Vector2 get_velocity() const;
 
 	virtual Ref<InputEvent> xformed_by(const Transform2D &p_xform, const Vector2 &p_local_ofs = Vector2()) const override;
 	virtual String as_text() const override;

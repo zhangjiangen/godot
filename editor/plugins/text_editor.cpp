@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -600,11 +600,11 @@ TextEditor::TextEditor() {
 	highlighter_menu->connect("id_pressed", callable_mp(this, &TextEditor::_change_syntax_highlighter));
 
 	Ref<EditorPlainTextSyntaxHighlighter> plain_highlighter;
-	plain_highlighter.instantiate();
+	New_instantiate(plain_highlighter);
 	add_syntax_highlighter(plain_highlighter);
 
 	Ref<EditorStandardSyntaxHighlighter> highlighter;
-	highlighter.instantiate();
+	New_instantiate(highlighter);
 	add_syntax_highlighter(highlighter);
 	set_syntax_highlighter(plain_highlighter);
 

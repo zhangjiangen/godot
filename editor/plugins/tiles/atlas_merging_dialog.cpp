@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -40,12 +40,12 @@ void AtlasMergingDialog::_property_changed(const StringName &p_property, const V
 }
 
 void AtlasMergingDialog::_generate_merged(Vector<Ref<TileSetAtlasSource>> p_atlas_sources, int p_max_columns) {
-	merged.instantiate();
+	New_instantiate(merged);
 	merged_mapping.clear();
 
 	if (p_atlas_sources.size() >= 2) {
 		Ref<Image> output_image;
-		output_image.instantiate();
+		New_instantiate(output_image);
 		output_image->create(1, 1, false, Image::FORMAT_RGBA8);
 
 		// Compute the new texture region size.
@@ -115,7 +115,7 @@ void AtlasMergingDialog::_generate_merged(Vector<Ref<TileSetAtlasSource>> p_atla
 		}
 
 		Ref<ImageTexture> output_image_texture;
-		output_image_texture.instantiate();
+		New_instantiate(output_image_texture);
 		output_image_texture->create_from_image(output_image);
 
 		merged->set_name(p_atlas_sources[0]->get_name());
@@ -301,7 +301,7 @@ AtlasMergingDialog::AtlasMergingDialog() {
 	preview = memnew(TextureRect);
 	preview->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	preview->set_v_size_flags(Control::SIZE_EXPAND_FILL);
-	preview->set_expand(true);
+	preview->set_ignore_texture_size(true);
 	preview->hide();
 	preview->set_stretch_mode(TextureRect::STRETCH_KEEP_ASPECT_CENTERED);
 	atlas_merging_right_panel->add_child(preview);

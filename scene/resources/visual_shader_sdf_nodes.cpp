@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -238,42 +238,42 @@ String VisualShaderNodeSDFRaymarch::get_output_port_name(int p_port) const {
 }
 
 String VisualShaderNodeSDFRaymarch::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
-	String code;
+	StringBuilder code;
 
-	code += "		{\n";
+	code + "		{\n";
 
 	if (p_input_vars[0].is_empty()) {
-		code += "				vec2 __from_pos = vec2(0.0f);\n";
+		code + "				vec2 __from_pos = vec2(0.0f);\n";
 	} else {
-		code += "				vec2 __from_pos = " + p_input_vars[0] + ".xy;\n";
+		code + "				vec2 __from_pos = " + p_input_vars[0] + ".xy;\n";
 	}
 
 	if (p_input_vars[1].is_empty()) {
-		code += "				vec2 __to_pos = vec2(0.0f);\n";
+		code + "				vec2 __to_pos = vec2(0.0f);\n";
 	} else {
-		code += "				vec2 __to_pos = " + p_input_vars[1] + ".xy;\n";
+		code + "				vec2 __to_pos = " + p_input_vars[1] + ".xy;\n";
 	}
 
-	code += "\n				vec2 __at = __from_pos;\n";
-	code += "				float __max_dist = distance(__from_pos, __to_pos);\n";
-	code += "				vec2 __dir = normalize(__to_pos - __from_pos);\n\n";
+	code + "\n				vec2 __at = __from_pos;\n";
+	code + "				float __max_dist = distance(__from_pos, __to_pos);\n";
+	code + "				vec2 __dir = normalize(__to_pos - __from_pos);\n\n";
 
-	code += "				float __accum = 0.0f;\n";
-	code += "				while(__accum < __max_dist) {\n";
-	code += "						float __d = texture_sdf(__at);\n";
-	code += "						__accum += __d;\n";
-	code += "						if (__d < 0.01f) {\n";
-	code += "								break;\n";
-	code += "						}\n";
-	code += "						__at += __d * __dir;\n";
-	code += "				}\n";
+	code + "				float __accum = 0.0f;\n";
+	code + "				while(__accum < __max_dist) {\n";
+	code + "						float __d = texture_sdf(__at);\n";
+	code + "						__accum += __d;\n";
+	code + "						if (__d < 0.01f) {\n";
+	code + "								break;\n";
+	code + "						}\n";
+	code + "						__at += __d * __dir;\n";
+	code + "				}\n";
 
-	code += "				float __dist = min(__max_dist, __accum);\n";
-	code += "				" + p_output_vars[0] + " = __dist;\n";
-	code += "				" + p_output_vars[1] + " = __accum < __max_dist;\n";
-	code += "				" + p_output_vars[2] + " = vec3(__from_pos + __dir * __dist, 0.0f);\n";
+	code + "				float __dist = min(__max_dist, __accum);\n";
+	code + "				" + p_output_vars[0] + " = __dist;\n";
+	code + "				" + p_output_vars[1] + " = __accum < __max_dist;\n";
+	code + "				" + p_output_vars[2] + " = vec3(__from_pos + __dir * __dist, 0.0f);\n";
 
-	code += "		}\n";
+	code + "		}\n";
 
 	return code;
 }

@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -728,7 +728,42 @@ bool NativeScriptInstance::has_method(const StringName &p_method) const {
 	return script->has_method(p_method);
 }
 
-Variant NativeScriptInstance::call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+void NativeScriptInstance::call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	NativeScriptDesc *script_data = GET_SCRIPT_DESC();
+	ret.clear();
+	while (script_data) {
+		Map<StringName, NativeScriptDesc::Method>::Element *E = script_data->methods.find(p_method);
+		if (E) {
+			godot_variant result;
+
+#ifdef DEBUG_ENABLED
+			current_method_call = p_method;
+#endif
+
+			result = E->get().method.method((godot_object *)owner,
+					E->get().method.method_data,
+					userdata,
+					p_argcount,
+					(godot_variant **)p_args);
+
+#ifdef DEBUG_ENABLED
+			current_method_call = "";
+#endif
+
+			ret = *(Variant *)&result;
+			godot_variant_destroy(&result);
+			r_error.error = Callable::CallError::CALL_OK;
+			return;
+		}
+
+		script_data = script_data->base_data;
+	}
+
+	r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
+	return;
+}
+
+void NativeScriptInstance::call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
 	NativeScriptDesc *script_data = GET_SCRIPT_DESC();
 
 	while (script_data) {
@@ -750,17 +785,17 @@ Variant NativeScriptInstance::call(const StringName &p_method, const Variant **p
 			current_method_call = "";
 #endif
 
-			Variant res = *(Variant *)&result;
+			//Variant res = *(Variant *)&result;
 			godot_variant_destroy(&result);
 			r_error.error = Callable::CallError::CALL_OK;
-			return res;
+			return;
 		}
 
 		script_data = script_data->base_data;
 	}
 
 	r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
-	return Variant();
+	return;
 }
 
 void NativeScriptInstance::notification(int p_notification) {
@@ -1448,7 +1483,7 @@ void NativeScriptLanguage::init_library(const Ref<GDNativeLibrary> &lib) {
 
 	if (!E) {
 		Ref<GDNative> gdn;
-		gdn.instantiate();
+		New_instantiate(gdn);
 		gdn->set_library(lib);
 
 		// TODO check the return value?

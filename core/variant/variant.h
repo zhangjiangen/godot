@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -72,7 +72,7 @@ typedef Vector<Color> PackedColorArray;
 class Variant {
 public:
 	// If this changes the table in variant_op must be updated
-	enum Type {
+	enum Type : uint8_t {
 		NIL,
 
 		// atomic types
@@ -148,25 +148,6 @@ private:
 				return nullptr;
 			}
 		}
-		static _FORCE_INLINE_ PackedArrayRefBase *reference_from(PackedArrayRefBase *p_base, PackedArrayRefBase *p_from) {
-			if (p_base == p_from) {
-				return p_base; //same thing, do nothing
-			}
-
-			if (p_from->reference()) {
-				if (p_base->refcount.unref()) {
-					memdelete(p_base);
-				}
-				return p_from;
-			} else {
-				return p_base; //keep, could not reference new
-			}
-		}
-		static _FORCE_INLINE_ void destroy(PackedArrayRefBase *p_array) {
-			if (p_array->refcount.unref()) {
-				memdelete(p_array);
-			}
-		}
 		_FORCE_INLINE_ virtual ~PackedArrayRefBase() {} //needs virtual destructor, but make inline
 	};
 
@@ -174,10 +155,10 @@ private:
 	struct PackedArrayRef : public PackedArrayRefBase {
 		Vector<T> array;
 		static _FORCE_INLINE_ PackedArrayRef<T> *create() {
-			return memnew(PackedArrayRef<T>);
+			return memnew_allocator(PackedArrayRef<T>, DefaultAllocator);
 		}
 		static _FORCE_INLINE_ PackedArrayRef<T> *create(const Vector<T> &p_from) {
-			return memnew(PackedArrayRef<T>(p_from));
+			return memnew_allocator(PackedArrayRef<T>(p_from), DefaultAllocator);
 		}
 
 		static _FORCE_INLINE_ const Vector<T> &get_array(PackedArrayRefBase *p_base) {
@@ -193,6 +174,25 @@ private:
 		}
 		_FORCE_INLINE_ PackedArrayRef() {
 			refcount.init();
+		}
+		static _FORCE_INLINE_ PackedArrayRefBase *reference_from(PackedArrayRefBase *p_base, PackedArrayRefBase *p_from) {
+			if (p_base == p_from) {
+				return p_base; //same thing, do nothing
+			}
+
+			if (p_from->reference()) {
+				if (p_base->refcount.unref()) {
+					memdelete_allocator<PackedArrayRef<T>, DefaultAllocator>((PackedArrayRef<T>*)p_base);
+				}
+				return p_from;
+			} else {
+				return p_base; //keep, could not reference new
+			}
+		}
+		static _FORCE_INLINE_ void destroy(PackedArrayRef<T> *p_array) {
+			if (p_array->refcount.unref()) {
+                memdelete_allocator<PackedArrayRef<T>, DefaultAllocator>(p_array);
+			}
 		}
 	};
 
@@ -217,6 +217,7 @@ private:
 
 	void _clear_internal();
 
+public:
 	_FORCE_INLINE_ void clear() {
 		static const bool needs_deinit[Variant::VARIANT_MAX] = {
 			false, //NIL,
@@ -266,6 +267,7 @@ private:
 		type = NIL;
 	}
 
+private:
 	static void _register_variant_operators();
 	static void _unregister_variant_operators();
 	static void _register_variant_methods();
@@ -651,7 +653,7 @@ public:
 	static ValidatedUtilityFunction get_validated_utility_function(const StringName &p_name);
 	static PTRUtilityFunction get_ptr_utility_function(const StringName &p_name);
 
-	enum UtilityFunctionType {
+	enum UtilityFunctionType : uint8_t {
 		UTILITY_FUNC_TYPE_MATH,
 		UTILITY_FUNC_TYPE_RANDOM,
 		UTILITY_FUNC_TYPE_GENERAL,

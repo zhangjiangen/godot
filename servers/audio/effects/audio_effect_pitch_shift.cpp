@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -300,7 +300,7 @@ void AudioEffectPitchShiftInstance::process(const AudioFrame *p_src_frames, Audi
 
 Ref<AudioEffectInstance> AudioEffectPitchShift::instantiate() {
 	Ref<AudioEffectPitchShiftInstance> ins;
-	ins.instantiate();
+	New_instantiate(ins);
 	ins->base = Ref<AudioEffectPitchShift>(this);
 	static const int fft_sizes[FFT_SIZE_MAX] = { 256, 512, 1024, 2048, 4096 };
 	ins->fft_size = fft_sizes[fft_size];

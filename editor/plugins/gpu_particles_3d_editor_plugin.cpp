@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -361,7 +361,7 @@ void GPUParticles3DEditor::_generate_emission_points() {
 	Ref<Image> image = memnew(Image(w, h, false, Image::FORMAT_RGBF, point_img));
 
 	Ref<ImageTexture> tex;
-	tex.instantiate();
+	New_instantiate(tex);
 	tex->create_from_image(image);
 
 	Ref<ParticlesMaterial> material = node->get_process_material();
@@ -390,7 +390,7 @@ void GPUParticles3DEditor::_generate_emission_points() {
 		Ref<Image> image2 = memnew(Image(w, h, false, Image::FORMAT_RGBF, point_img2));
 
 		Ref<ImageTexture> tex2;
-		tex2.instantiate();
+		New_instantiate(tex2);
 		tex2->create_from_image(image2);
 
 		material->set_emission_normal_texture(tex2);

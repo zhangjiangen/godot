@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -163,7 +163,7 @@
 			uint8_t *w = img_data[0].ptrw();
 			memcpy(w, dataY, new_width * new_height);
 
-			img[0].instantiate();
+			New_instantiate(img[0]);
 			img[0]->create(new_width, new_height, 0, Image::FORMAT_R8, img_data[0]);
 		}
 
@@ -182,7 +182,7 @@
 			memcpy(w, dataCbCr, 2 * new_width * new_height);
 
 			///TODO OpenGL doesn't support FORMAT_RG8, need to do some form of conversion
-			img[1].instantiate();
+			New_instantiate(img[1]);
 			img[1]->create(new_width, new_height, 0, Image::FORMAT_RG8, img_data[1]);
 		}
 
@@ -231,7 +231,7 @@ void CameraFeedOSX::set_device(AVCaptureDevice *p_device) {
 
 	// get some info
 	NSString *device_name = p_device.localizedName;
-	name = device_name.UTF8String;
+	name = String::utf8(device_name.UTF8String);
 	position = CameraFeed::FEED_UNSPECIFIED;
 	if ([p_device position] == AVCaptureDevicePositionBack) {
 		position = CameraFeed::FEED_BACK;
@@ -357,7 +357,7 @@ void CameraOSX::update_feeds() {
 
 		if (!found) {
 			Ref<CameraFeedOSX> newfeed;
-			newfeed.instantiate();
+			New_instantiate(newfeed);
 			newfeed->set_device(device);
 
 			// assume display camera so inverse

@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -167,7 +167,7 @@ private:
 		RUN_PLAY_SCENE,
 		RUN_PLAY_CUSTOM_SCENE,
 		RUN_SETTINGS,
-		RUN_PROJECT_DATA_FOLDER,
+		RUN_USER_DATA_FOLDER,
 		RUN_RELOAD_CURRENT_PROJECT,
 		RUN_PROJECT_MANAGER,
 		RUN_VCS_METADATA,
@@ -188,7 +188,6 @@ private:
 		SETTINGS_MANAGE_FEATURE_PROFILES,
 		SETTINGS_INSTALL_ANDROID_BUILD_TEMPLATE,
 		SETTINGS_PICK_MAIN_SCENE,
-		SETTINGS_TOGGLE_CONSOLE,
 		SETTINGS_TOGGLE_FULLSCREEN,
 		SETTINGS_HELP,
 		SCENE_TAB_CLOSE,
@@ -215,6 +214,12 @@ private:
 		IMPORT_PLUGIN_BASE = 100,
 
 		TOOL_MENU_BASE = 1000
+	};
+
+	enum ScriptNameCasing {
+		SCENE_NAME_CASING_AUTO,
+		SCENE_NAME_CASING_PASCAL_CASE,
+		SCENE_NAME_CASING_SNAKE_CASE
 	};
 
 	SubViewport *scene_root; // root of the scene being edited
@@ -459,7 +464,7 @@ private:
 
 	void _dialog_action(String p_file);
 
-	void _edit_current();
+	void _edit_current(bool p_skip_foreign = false);
 	void _dialog_display_save_error(String p_file, Error p_error);
 	void _dialog_display_load_error(String p_file, Error p_error);
 
@@ -530,7 +535,7 @@ private:
 	void _add_dropped_files_recursive(const Vector<String> &p_files, String to_path);
 	String _recent_scene;
 
-	void _exit_editor();
+	void _exit_editor(int p_exit_code);
 
 	bool convert_old;
 
@@ -883,7 +888,6 @@ public:
 
 	void edit_current() { _edit_current(); };
 
-	void update_keying() const { inspector_dock->update_keying(); };
 	bool has_scenes_in_session();
 
 	int execute_and_show_output(const String &p_title, const String &p_path, const List<String> &p_arguments, bool p_close_on_ok = true, bool p_close_on_errors = false);

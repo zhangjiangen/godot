@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -65,7 +65,7 @@ EditorDebuggerNode::EditorDebuggerNode() {
 	add_child(tabs);
 
 	Ref<StyleBoxEmpty> empty;
-	empty.instantiate();
+	New_instantiate(empty);
 	tabs->add_theme_style_override("panel", empty);
 
 	auto_switch_remote_scene_tree = EDITOR_DEF("debugger/auto_switch_to_remote_scene_tree", false);
@@ -95,6 +95,7 @@ ScriptEditorDebugger *EditorDebuggerNode::_add_debugger() {
 	node->connect("stopped", callable_mp(this, &EditorDebuggerNode::_debugger_stopped), varray(id));
 	node->connect("stack_frame_selected", callable_mp(this, &EditorDebuggerNode::_stack_frame_selected), varray(id));
 	node->connect("error_selected", callable_mp(this, &EditorDebuggerNode::_error_selected), varray(id));
+	node->connect("breakpoint_selected", callable_mp(this, &EditorDebuggerNode::_error_selected), varray(id));
 	node->connect("clear_execution", callable_mp(this, &EditorDebuggerNode::_clear_execution));
 	node->connect("breaked", callable_mp(this, &EditorDebuggerNode::_breaked), varray(id));
 	node->connect("remote_tree_updated", callable_mp(this, &EditorDebuggerNode::_remote_tree_updated), varray(id));

@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -182,7 +182,7 @@ void EditorResourcePreview::_generate_preview(Ref<ImageTexture> &r_texture, Ref<
 			Ref<Image> small_image = r_texture->get_image();
 			small_image = small_image->duplicate();
 			small_image->resize(small_thumbnail_size, small_thumbnail_size, Image::INTERPOLATE_CUBIC);
-			r_small_texture.instantiate();
+			New_instantiate(r_small_texture);
 			r_small_texture->create_from_image(small_image);
 		}
 
@@ -295,21 +295,21 @@ void EditorResourcePreview::_iterate() {
 
 					if (cache_valid) {
 						Ref<Image> img;
-						img.instantiate();
+						New_instantiate(img);
 						Ref<Image> small_img;
-						small_img.instantiate();
+						New_instantiate(small_img);
 
 						if (img->load(cache_base + ".png") != OK) {
 							cache_valid = false;
 						} else {
-							texture.instantiate();
+							New_instantiate(texture);
 							texture->create_from_image(img);
 
 							if (has_small_texture) {
 								if (small_img->load(cache_base + "_small.png") != OK) {
 									cache_valid = false;
 								} else {
-									small_texture.instantiate();
+									New_instantiate(small_texture);
 									small_texture->create_from_image(small_img);
 								}
 							}

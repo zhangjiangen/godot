@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -89,7 +89,7 @@ void ImageTexture::reload_from_file() {
 	}
 
 	Ref<Image> img;
-	img.instantiate();
+	New_instantiate(img);
 
 	if (ImageLoader::load_image(path, img) == OK) {
 		create_from_image(img);
@@ -232,7 +232,7 @@ bool ImageTexture::is_pixel_opaque(int p_x, int p_y) const {
 				decom->decompress();
 				img = decom;
 			}
-			alpha_cache.instantiate();
+			New_instantiate(alpha_cache);
 			alpha_cache->create_from_image_alpha(img);
 		}
 	}
@@ -367,7 +367,7 @@ Ref<Image> StreamTexture2D::load_image_from_file(FileAccess *f, int p_size_limit
 		//print_line("mipmap read total: " + itos(mipmap_images.size()));
 
 		Ref<Image> image;
-		image.instantiate();
+		New_instantiate(image);
 
 		if (mipmap_images.size() == 1) {
 			//only one image (which will most likely be the case anyway for this format)
@@ -419,7 +419,7 @@ Ref<Image> StreamTexture2D::load_image_from_file(FileAccess *f, int p_size_limit
 			}
 
 			Ref<Image> image;
-			image.instantiate();
+			New_instantiate(image);
 
 			image->create(tw, th, mipmaps - i ? true : false, format, data);
 			// 保存astc的通道信息
@@ -535,7 +535,7 @@ Error StreamTexture2D::_load_data(const String &p_path, int &r_width, int &r_hei
 Error StreamTexture2D::load(const String &p_path) {
 	int lw, lh;
 	Ref<Image> image;
-	image.instantiate();
+	New_instantiate(image);
 
 	bool request_3d;
 	bool request_normal;
@@ -663,7 +663,7 @@ bool StreamTexture2D::is_pixel_opaque(int p_x, int p_y) const {
 				img = decom;
 			}
 
-			alpha_cache.instantiate();
+			New_instantiate(alpha_cache);
 			alpha_cache->create_from_image_alpha(img);
 		}
 	}
@@ -732,7 +732,7 @@ StreamTexture2D::~StreamTexture2D() {
 
 RES ResourceFormatLoaderStreamTexture2D::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
 	Ref<StreamTexture2D> st;
-	st.instantiate();
+	New_instantiate(st);
 	Error err = st->load(p_path);
 	if (r_error) {
 		*r_error = err;
@@ -1030,7 +1030,7 @@ StreamTexture3D::~StreamTexture3D() {
 
 RES ResourceFormatLoaderStreamTexture3D::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
 	Ref<StreamTexture3D> st;
-	st.instantiate();
+	New_instantiate(st);
 	Error err = st->load(p_path);
 	if (r_error) {
 		*r_error = err;
@@ -1177,7 +1177,7 @@ void AtlasTexture::draw(RID p_canvas_item, const Point2 &p_pos, const Color &p_m
 		rc.size.height = atlas->get_height();
 	}
 
-	RS::get_singleton()->canvas_item_add_texture_rect_region(p_canvas_item, Rect2(p_pos + margin.position, rc.size), atlas->get_rid(), rc, p_modulate, p_transpose, filter_clip);
+	atlas->draw_rect_region(p_canvas_item, Rect2(p_pos + margin.position, rc.size), rc, p_modulate, p_transpose, filter_clip);
 }
 
 void AtlasTexture::draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool p_tile, const Color &p_modulate, bool p_transpose) const {
@@ -1198,7 +1198,7 @@ void AtlasTexture::draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool p_tile
 	Vector2 scale = p_rect.size / (region.size + margin.size);
 	Rect2 dr(p_rect.position + margin.position * scale, rc.size * scale);
 
-	RS::get_singleton()->canvas_item_add_texture_rect_region(p_canvas_item, dr, atlas->get_rid(), rc, p_modulate, p_transpose, filter_clip);
+	atlas->draw_rect_region(p_canvas_item, dr, rc, p_modulate, p_transpose, filter_clip);
 }
 
 void AtlasTexture::draw_rect_region(RID p_canvas_item, const Rect2 &p_rect, const Rect2 &p_src_rect, const Color &p_modulate, bool p_transpose, bool p_clip_uv) const {
@@ -1211,7 +1211,7 @@ void AtlasTexture::draw_rect_region(RID p_canvas_item, const Rect2 &p_rect, cons
 	Rect2 src_c;
 	get_rect_region(p_rect, p_src_rect, dr, src_c);
 
-	RS::get_singleton()->canvas_item_add_texture_rect_region(p_canvas_item, dr, atlas->get_rid(), src_c, p_modulate, p_transpose, filter_clip);
+	atlas->draw_rect_region(p_canvas_item, dr, src_c, p_modulate, p_transpose, filter_clip);
 }
 
 bool AtlasTexture::get_rect_region(const Rect2 &p_rect, const Rect2 &p_src_rect, Rect2 &r_rect, Rect2 &r_src_rect) const {
@@ -1933,7 +1933,7 @@ void GradientTexture2D::_update() {
 		return;
 	}
 	Ref<Image> image;
-	image.instantiate();
+	New_instantiate(image);
 
 	if (gradient->get_points_count() <= 1) { // No need to interpolate.
 		image->create(width, height, false, (use_hdr) ? Image::FORMAT_RGBAF : Image::FORMAT_RGBA8);
@@ -2791,15 +2791,15 @@ RES ResourceFormatLoaderStreamTextureLayered::load(const String &p_path, const S
 	Ref<StreamTextureLayered> st;
 	if (p_path.get_extension().to_lower() == "stexarray") {
 		Ref<StreamTexture2DArray> s;
-		s.instantiate();
+		New_instantiate(s);
 		st = s;
 	} else if (p_path.get_extension().to_lower() == "scube") {
 		Ref<StreamCubemap> s;
-		s.instantiate();
+		New_instantiate(s);
 		st = s;
 	} else if (p_path.get_extension().to_lower() == "scubearray") {
 		Ref<StreamCubemapArray> s;
-		s.instantiate();
+		New_instantiate(s);
 		st = s;
 	} else {
 		if (r_error) {

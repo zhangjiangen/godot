@@ -102,7 +102,7 @@ dispatch_data;
 
 struct ProcessVoxel {
 	uint position; // xyz 7 bit packed, extra 11 bits for neighbors.
-	uint albedo; //rgb bits 0-15 albedo, bits 16-21 are normal bits (set if geometry exists toward that side), extra 11 bits for neibhbours
+	uint albedo; //rgb bits 0-15 albedo, bits 16-21 are normal bits (set if geometry exists toward that side), extra 11 bits for neighbours
 	uint light; //rgbe8985 encoded total saved light, extra 2 bits for neighbours
 	uint light_aniso; //55555 light anisotropy, extra 2 bits for neighbours
 	//total neighbours: 26
@@ -135,7 +135,7 @@ dispatch_data;
 
 struct ProcessVoxel {
 	uint position; // xyz 7 bit packed, extra 11 bits for neighbors.
-	uint albedo; //rgb bits 0-15 albedo, bits 16-21 are normal bits (set if geometry exists toward that side), extra 11 bits for neibhbours
+	uint albedo; //rgb bits 0-15 albedo, bits 16-21 are normal bits (set if geometry exists toward that side), extra 11 bits for neighbours
 	uint light; //rgbe8985 encoded total saved light, extra 2 bits for neighbours
 	uint light_aniso; //55555 light anisotropy, extra 2 bits for neighbours
 	//total neighbours: 26
@@ -187,16 +187,16 @@ void main() {
 	}
 
 	uint albedo = ((src_process_voxels.data[index].albedo & 0x7FFF) << 1) | 1; //add solid bit
-	imageStore(dst_albedo, write_pos, uvec4(albedo));
+	imageStore(dst_albedo, write_pos, uvec4(albedo, albedo, albedo, albedo));
 
 	uint facing = (src_process_voxels.data[index].albedo >> 15) & 0x3F; //6 anisotropic facing bits
-	imageStore(dst_facing, write_pos, uvec4(facing));
+	imageStore(dst_facing, write_pos, uvec4(facing, facing, facing, facing));
 
 	uint light = src_process_voxels.data[index].light & 0x3fffffff; //30 bits of RGBE8985
-	imageStore(dst_light, write_pos, uvec4(light));
+	imageStore(dst_light, write_pos, uvec4(light, light, light, light));
 
 	uint light_aniso = src_process_voxels.data[index].light_aniso & 0x3fffffff; //30 bits of 6 anisotropic 5 bits values
-	imageStore(dst_light_aniso, write_pos, uvec4(light_aniso));
+	imageStore(dst_light_aniso, write_pos, uvec4(light_aniso, light_aniso, light_aniso, light_aniso));
 
 #endif
 
@@ -220,11 +220,11 @@ void main() {
 
 	for (uint i = 0; i < 4; i++) {
 		float o = float((occlusion >> occlusion_shift[i]) & 0xFF) / 255.0;
-		imageStore(dst_occlusion[i], write_pos, vec4(o));
+		imageStore(dst_occlusion[i], write_pos, vec4(o, o, o, o));
 	}
 	for (uint i = 0; i < 4; i++) {
 		float o = float((occlusion >> occlusion_shift[i]) & 0xFF) / 255.0;
-		imageStore(dst_occlusion[i + 4], write_pos, vec4(o));
+		imageStore(dst_occlusion[i + 4], write_pos, vec4(o, o, o, o));
 	}
 #else
 	uint occlusion = imageLoad(src_occlusion, read_pos).r;
@@ -235,7 +235,7 @@ void main() {
 
 	for (uint i = 0; i < 8; i++) {
 		float o = float((occlusion >> occlusion_shift[i]) & 0xF) / 15.0;
-		imageStore(dst_occlusion[i], write_pos, vec4(o));
+		imageStore(dst_occlusion[i], write_pos, vec4(o, o, o, o));
 	}
 #endif
 
@@ -280,7 +280,7 @@ void main() {
 	}
 
 	if (closest_count == 0) {
-		imageStore(dst_positions, pos, uvec4(0));
+		imageStore(dst_positions, pos, uvec4(0, 0, 0, 0));
 	} else {
 		ivec3 indexv = (pos & ivec3(1, 1, 1)) * ivec3(1, 2, 4);
 		int index = (indexv.x | indexv.y | indexv.z) % closest_count;
@@ -664,7 +664,7 @@ void main() {
 						}
 					}
 
-					imageStore(dst_occlusion[params.occlusion_index], offset, vec4(occ));
+					imageStore(dst_occlusion[params.occlusion_index], offset, vec4(occ, occ, occ, occ));
 				}
 			}
 		}
@@ -801,7 +801,7 @@ void main() {
 					occ /= avg;
 				}
 
-				imageStore(dst_occlusion[params.occlusion_index], offset, vec4(occ));
+				imageStore(dst_occlusion[params.occlusion_index], offset, vec4(occ, occ, occ, occ));
 			}
 		}
 	}
@@ -931,7 +931,7 @@ void main() {
 				if (occlude_total > 0.0) {
 					float occ = imageLoad(dst_occlusion[params.occlusion_index], offset).r;
 					occ *= visible / occlude_total;
-					imageStore(dst_occlusion[params.occlusion_index], offset, vec4(occ));
+					imageStore(dst_occlusion[params.occlusion_index], offset, vec4(occ, occ, occ, occ));
 				}
 			}
 		}
@@ -974,7 +974,7 @@ void main() {
 
 	d /= 255.0;
 
-	imageStore(dst_sdf, pos, vec4(d));
+	imageStore(dst_sdf, pos, vec4(d, d, d, d));
 
 	// STORE OCCLUSION
 
@@ -993,9 +993,9 @@ void main() {
 	{
 		ivec3 occ_pos = pos;
 		occ_pos.z += params.cascade * params.grid_size;
-		imageStore(dst_occlusion, occ_pos, uvec4(occlusion));
+		imageStore(dst_occlusion, occ_pos, uvec4(occlusion, occlusion, occlusion, occlusion));
 		occ_pos.x += params.grid_size;
-		imageStore(dst_occlusion, occ_pos, uvec4(occlusion1));
+		imageStore(dst_occlusion, occ_pos, uvec4(occlusion1, occlusion1, occlusion1, occlusion1, occlusion1));
 	}
 #else
 	uint occlusion = 0;
@@ -1007,9 +1007,9 @@ void main() {
 	{
 		ivec3 occ_pos = pos;
 		occ_pos.z += params.cascade * params.grid_size;
-		imageStore(dst_occlusion, occ_pos, uvec4(occlusion & 0xFFFF));
+		imageStore(dst_occlusion, occ_pos, uvec4(occlusion & 0xFFFF, occlusion & 0xFFFF, occlusion & 0xFFFF, occlusion & 0xFFFF));
 		occ_pos.x += params.grid_size;
-		imageStore(dst_occlusion, occ_pos, uvec4(occlusion >> 16));
+		imageStore(dst_occlusion, occ_pos, uvec4(occlusion >> 16, occlusion >> 16, occlusion >> 16, occlusion >> 16));
 	}
 #endif
 

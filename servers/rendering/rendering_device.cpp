@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -108,10 +108,10 @@ RID RenderingDevice::_texture_create_shared(const Ref<RDTextureView> &p_view, RI
 	return texture_create_shared(p_view->base, p_with_texture, false);
 }
 
-RID RenderingDevice::_texture_create_shared_from_slice(const Ref<RDTextureView> &p_view, RID p_with_texture, uint32_t p_layer, uint32_t p_mipmap, TextureSliceType p_slice_type) {
+RID RenderingDevice::_texture_create_shared_from_slice(const Ref<RDTextureView> &p_view, RID p_with_texture, uint32_t p_layer, uint32_t p_mipmap, uint32_t p_mipmaps, TextureSliceType p_slice_type) {
 	ERR_FAIL_COND_V(p_view.is_null(), RID());
 
-	return texture_create_shared_from_slice(p_view->base, p_with_texture, p_layer, p_mipmap, p_slice_type);
+	return texture_create_shared_from_slice(p_view->base, p_with_texture, p_layer, p_mipmap, p_mipmaps, p_slice_type);
 }
 
 RenderingDevice::FramebufferFormatID RenderingDevice::_framebuffer_format_create(const TypedArray<RDAttachmentFormat> &p_attachments, uint32_t p_view_count) {
@@ -190,7 +190,7 @@ Ref<RDShaderSPIRV> RenderingDevice::_shader_compile_spirv_from_source(const Ref<
 	ERR_FAIL_COND_V(p_source.is_null(), Ref<RDShaderSPIRV>());
 
 	Ref<RDShaderSPIRV> bytecode;
-	bytecode.instantiate();
+	New_instantiate(bytecode);
 	for (int i = 0; i < RD::SHADER_STAGE_MAX; i++) {
 		String error;
 
@@ -381,7 +381,7 @@ void RenderingDevice::_compute_list_set_push_constant(ComputeListID p_list, cons
 void RenderingDevice::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("texture_create", "format", "view", "data"), &RenderingDevice::_texture_create, DEFVAL(Array()));
 	ClassDB::bind_method(D_METHOD("texture_create_shared", "view", "with_texture"), &RenderingDevice::_texture_create_shared);
-	ClassDB::bind_method(D_METHOD("texture_create_shared_from_slice", "view", "with_texture", "layer", "mipmap", "slice_type"), &RenderingDevice::_texture_create_shared_from_slice, DEFVAL(TEXTURE_SLICE_2D));
+	ClassDB::bind_method(D_METHOD("texture_create_shared_from_slice", "view", "with_texture", "layer", "mipmap", "mipmaps", "slice_type"), &RenderingDevice::_texture_create_shared_from_slice, DEFVAL(1), DEFVAL(TEXTURE_SLICE_2D));
 
 	ClassDB::bind_method(D_METHOD("texture_update", "texture", "layer", "data", "post_barrier"), &RenderingDevice::texture_update, DEFVAL(BARRIER_MASK_ALL));
 	ClassDB::bind_method(D_METHOD("texture_get_data", "texture", "layer"), &RenderingDevice::texture_get_data);
@@ -506,6 +506,13 @@ void RenderingDevice::_bind_methods() {
 	BIND_CONSTANT(BARRIER_MASK_TRANSFER);
 	BIND_CONSTANT(BARRIER_MASK_ALL);
 	BIND_CONSTANT(BARRIER_MASK_NO_BARRIER);
+
+	BIND_ENUM_CONSTANT(DEVICE_TYPE_OTHER);
+	BIND_ENUM_CONSTANT(DEVICE_TYPE_INTEGRATED_GPU);
+	BIND_ENUM_CONSTANT(DEVICE_TYPE_DISCRETE_GPU);
+	BIND_ENUM_CONSTANT(DEVICE_TYPE_VIRTUAL_GPU);
+	BIND_ENUM_CONSTANT(DEVICE_TYPE_CPU);
+	BIND_ENUM_CONSTANT(DEVICE_TYPE_MAX);
 
 	BIND_ENUM_CONSTANT(DRIVER_RESOURCE_VULKAN_DEVICE);
 	BIND_ENUM_CONSTANT(DRIVER_RESOURCE_VULKAN_PHYSICAL_DEVICE);
@@ -739,14 +746,6 @@ void RenderingDevice::_bind_methods() {
 	BIND_ENUM_CONSTANT(DATA_FORMAT_G16_B16_R16_3PLANE_422_UNORM);
 	BIND_ENUM_CONSTANT(DATA_FORMAT_G16_B16R16_2PLANE_422_UNORM);
 	BIND_ENUM_CONSTANT(DATA_FORMAT_G16_B16_R16_3PLANE_444_UNORM);
-	BIND_ENUM_CONSTANT(DATA_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG);
-	BIND_ENUM_CONSTANT(DATA_FORMAT_PVRTC1_4BPP_UNORM_BLOCK_IMG);
-	BIND_ENUM_CONSTANT(DATA_FORMAT_PVRTC2_2BPP_UNORM_BLOCK_IMG);
-	BIND_ENUM_CONSTANT(DATA_FORMAT_PVRTC2_4BPP_UNORM_BLOCK_IMG);
-	BIND_ENUM_CONSTANT(DATA_FORMAT_PVRTC1_2BPP_SRGB_BLOCK_IMG);
-	BIND_ENUM_CONSTANT(DATA_FORMAT_PVRTC1_4BPP_SRGB_BLOCK_IMG);
-	BIND_ENUM_CONSTANT(DATA_FORMAT_PVRTC2_2BPP_SRGB_BLOCK_IMG);
-	BIND_ENUM_CONSTANT(DATA_FORMAT_PVRTC2_4BPP_SRGB_BLOCK_IMG);
 	BIND_ENUM_CONSTANT(DATA_FORMAT_MAX);
 
 	BIND_ENUM_CONSTANT(TEXTURE_TYPE_1D);

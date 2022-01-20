@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -970,7 +970,7 @@ void TextEdit::_notification(int p_what) {
 									}
 
 									Ref<TextLine> tl;
-									tl.instantiate();
+									New_instantiate(tl);
 									tl->add_string(text, font, font_size);
 
 									int yofs = ofs_y + (row_height - tl->get_size().y) / 2;
@@ -1135,7 +1135,7 @@ void TextEdit::_notification(int p_what) {
 					int first_visible_char = TS->shaped_text_get_range(rid).y;
 					int last_visible_char = TS->shaped_text_get_range(rid).x;
 
-					int char_ofs = 0;
+					float char_ofs = 0;
 					if (outline_size > 0 && outline_color.a > 0) {
 						for (int j = 0; j < gl_size; j++) {
 							for (int k = 0; k < glyphs[j].repeat; k++) {
@@ -1170,7 +1170,7 @@ void TextEdit::_notification(int p_what) {
 							}
 						}
 
-						int char_pos = char_ofs + char_margin + ofs_x;
+						float char_pos = char_ofs + char_margin + ofs_x;
 						if (char_pos >= xmargin_beg) {
 							if (highlight_matching_braces_enabled) {
 								if ((brace_open_match_line == line && brace_open_match_column == glyphs[j].start) ||
@@ -1244,7 +1244,7 @@ void TextEdit::_notification(int p_what) {
 					}
 
 					// Carets.
-					int caret_width = Math::round(1 * get_theme_default_base_scale());
+					const int caret_width = get_theme_constant(SNAME("caret_width")) * get_theme_default_base_scale();
 
 					if (!clipped && caret.line == line && line_wrap_index == caret_wrap_index) {
 						caret.draw_pos.y = ofs_y + ldata->get_line_descent(line_wrap_index);
@@ -2812,6 +2812,17 @@ void TextEdit::clear() {
 }
 
 void TextEdit::_clear() {
+	if (editable && undo_enabled) {
+		_move_caret_document_start(false);
+		begin_complex_operation();
+
+		_remove_text(0, 0, MAX(0, get_line_count() - 1), MAX(get_line(MAX(get_line_count() - 1, 0)).size() - 1, 0));
+		insert_text_at_caret("");
+		text.clear();
+
+		end_complex_operation();
+		return;
+	}
 	clear_undo_history();
 	text.clear();
 	caret.column = 0;
@@ -5048,7 +5059,7 @@ void TextEdit::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_line_wrapped_text", "line"), &TextEdit::get_line_wrapped_text);
 
 	/* Viewport. */
-	// Scolling.
+	// Scrolling.
 	ClassDB::bind_method(D_METHOD("set_smooth_scroll_enable", "enable"), &TextEdit::set_smooth_scroll_enabled);
 	ClassDB::bind_method(D_METHOD("is_smooth_scroll_enabled"), &TextEdit::is_smooth_scroll_enabled);
 
@@ -5160,7 +5171,7 @@ void TextEdit::_bind_methods() {
 	/* Inspector */
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "text", PROPERTY_HINT_MULTILINE_TEXT), "set_text", "get_text");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "text_direction", PROPERTY_HINT_ENUM, "Auto,Left-to-Right,Right-to-Left,Inherited"), "set_text_direction", "get_text_direction");
-	ADD_PROPERTY(PropertyInfo(Variant::STRING, "language"), "set_language", "get_language");
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "language", PROPERTY_HINT_LOCALE_ID, ""), "set_language", "get_language");
 
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "editable"), "set_editable", "is_editable");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "context_menu_enabled"), "set_context_menu_enabled", "is_context_menu_enabled");
@@ -5228,7 +5239,7 @@ bool TextEdit::_set(const StringName &p_name, const Variant &p_value) {
 	if (str.begins_with("opentype_features/")) {
 		String name = str.get_slicec('/', 1);
 		int32_t tag = TS->name_to_tag(name);
-		double value = p_value;
+		int value = p_value;
 		if (value == -1) {
 			if (opentype_features.has(tag)) {
 				opentype_features.erase(tag);
@@ -5237,7 +5248,7 @@ bool TextEdit::_set(const StringName &p_name, const Variant &p_value) {
 				update();
 			}
 		} else {
-			if ((double)opentype_features[tag] != value) {
+			if (!opentype_features.has(tag) || (int)opentype_features[tag] != value) {
 				opentype_features[tag] = value;
 				text.set_font_features(opentype_features);
 				text.invalidate_all();
@@ -5270,7 +5281,7 @@ bool TextEdit::_get(const StringName &p_name, Variant &r_ret) const {
 void TextEdit::_get_property_list(List<PropertyInfo> *p_list) const {
 	for (const Variant *ftr = opentype_features.next(nullptr); ftr != nullptr; ftr = opentype_features.next(ftr)) {
 		String name = TS->tag_to_name(*ftr);
-		p_list->push_back(PropertyInfo(Variant::FLOAT, "opentype_features/" + name));
+		p_list->push_back(PropertyInfo(Variant::INT, "opentype_features/" + name));
 	}
 	p_list->push_back(PropertyInfo(Variant::NIL, "opentype_features/_new", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR));
 }
@@ -5410,7 +5421,7 @@ void TextEdit::_cut_internal() {
 		set_caret_line(get_caret_line() + 1);
 	}
 
-	// Correct the visualy perceived caret column taking care of identation level of the lines.
+	// Correct the visually perceived caret column taking care of indentation level of the lines.
 	int diff_indent = indent_level - get_indent_level(get_caret_line());
 	cc += diff_indent;
 	if (diff_indent != 0) {
@@ -5949,6 +5960,7 @@ void TextEdit::_update_scrollbars() {
 		caret.line_ofs = 0;
 		caret.wrap_ofs = 0;
 		v_scroll->set_value(0);
+		v_scroll->set_max(0);
 		v_scroll->hide();
 	}
 
@@ -5966,6 +5978,7 @@ void TextEdit::_update_scrollbars() {
 	} else {
 		caret.x_ofs = 0;
 		h_scroll->set_value(0);
+		h_scroll->set_max(0);
 		h_scroll->hide();
 	}
 

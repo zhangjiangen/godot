@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -925,14 +925,14 @@ void Voxelizer::_debug_mesh(int p_idx, int p_level, const AABB &p_aabb, Ref<Mult
 Ref<MultiMesh> Voxelizer::create_debug_multimesh() {
 	Ref<MultiMesh> mm;
 
-	mm.instantiate();
+	New_instantiate(mm);
 
 	mm->set_transform_format(MultiMesh::TRANSFORM_3D);
 	mm->set_use_colors(true);
 	mm->set_instance_count(leaf_voxel_count);
 
 	Ref<ArrayMesh> mesh;
-	mesh.instantiate();
+	New_instantiate(mesh);
 
 	{
 		Array arr;
@@ -979,7 +979,7 @@ Ref<MultiMesh> Voxelizer::create_debug_multimesh() {
 
 	{
 		Ref<StandardMaterial3D> fsm;
-		fsm.instantiate();
+		New_instantiate(fsm);
 		fsm->set_flag(StandardMaterial3D::FLAG_SRGB_VERTEX_COLOR, true);
 		fsm->set_flag(StandardMaterial3D::FLAG_ALBEDO_FROM_VERTEX_COLOR, true);
 		fsm->set_shading_mode(StandardMaterial3D::SHADING_MODE_UNSHADED);

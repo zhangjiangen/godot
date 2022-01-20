@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -299,12 +299,12 @@ void EditorVisualProfiler::_update_plot() {
 	}
 
 	Ref<Image> img;
-	img.instantiate();
+	New_instantiate(img);
 	img->create(w, h, false, Image::FORMAT_RGBA8, graph_image);
 
 	if (reset_texture) {
 		if (graph_texture.is_null()) {
-			graph_texture.instantiate();
+			New_instantiate(graph_texture);
 		}
 		graph_texture->create_from_image(img);
 	}
@@ -786,7 +786,7 @@ EditorVisualProfiler::EditorVisualProfiler() {
 	variables->connect("cell_selected", callable_mp(this, &EditorVisualProfiler::_item_selected));
 
 	graph = memnew(TextureRect);
-	graph->set_expand(true);
+	graph->set_ignore_texture_size(true);
 	graph->set_mouse_filter(MOUSE_FILTER_STOP);
 	//graph->set_ignore_mouse(false);
 	graph->connect("draw", callable_mp(this, &EditorVisualProfiler::_graph_tex_draw));

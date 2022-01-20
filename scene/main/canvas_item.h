@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -47,7 +47,7 @@ class CanvasItem : public Node {
 	GDCLASS(CanvasItem, Node);
 
 public:
-	enum TextureFilter {
+	enum TextureFilter : uint8_t {
 		TEXTURE_FILTER_PARENT_NODE,
 		TEXTURE_FILTER_NEAREST,
 		TEXTURE_FILTER_LINEAR,
@@ -58,7 +58,7 @@ public:
 		TEXTURE_FILTER_MAX
 	};
 
-	enum TextureRepeat {
+	enum TextureRepeat : uint8_t {
 		TEXTURE_REPEAT_PARENT_NODE,
 		TEXTURE_REPEAT_DISABLED,
 		TEXTURE_REPEAT_ENABLED,
@@ -67,12 +67,12 @@ public:
 	};
 
 private:
+	CanvasLayer *canvas_layer = nullptr;
+	Window *window = nullptr;
 	mutable SelfList<Node> xform_change;
 
 	RID canvas_item;
 	StringName group;
-
-	CanvasLayer *canvas_layer = nullptr;
 
 	Color modulate = Color(1, 1, 1, 1);
 	Color self_modulate = Color(1, 1, 1, 1);
@@ -80,30 +80,26 @@ private:
 	List<CanvasItem *> children_items;
 	List<CanvasItem *>::Element *C = nullptr;
 
+	Ref<Material> material;
+
+	mutable Transform2D global_transform;
 	int light_mask = 1;
-
-	Window *window = nullptr;
-	bool first_draw = false;
-	bool visible = true;
-	bool clip_children = false;
-	bool pending_update = false;
-	bool top_level = false;
-	bool drawing = false;
-	bool block_transform_notify = false;
-	bool behind = false;
-	bool use_parent_material = false;
-	bool notify_local_transform = false;
-	bool notify_transform = false;
-
 	RS::CanvasItemTextureFilter texture_filter_cache = RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR;
 	RS::CanvasItemTextureRepeat texture_repeat_cache = RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED;
 	TextureFilter texture_filter = TEXTURE_FILTER_PARENT_NODE;
 	TextureRepeat texture_repeat = TEXTURE_REPEAT_PARENT_NODE;
-
-	Ref<Material> material;
-
-	mutable Transform2D global_transform;
-	mutable bool global_invalid = true;
+	bool first_draw : 2;
+	bool visible : 2;
+	bool clip_children : 2;
+	bool pending_update : 2;
+	bool top_level : 2;
+	bool drawing : 2;
+	bool block_transform_notify : 2;
+	bool behind : 2;
+	bool use_parent_material : 2;
+	bool notify_local_transform : 2;
+	bool notify_transform : 2;
+	mutable bool global_invalid : 2;
 
 	void _top_level_raise_self();
 

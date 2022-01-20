@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -266,7 +266,7 @@ void CustomPropertyEditor::_menu_option(int p_which) {
 					ERR_BREAK(!res);
 					if (owner && hint == PROPERTY_HINT_RESOURCE_TYPE && hint_text == "Script") {
 						//make visual script the right type
-						res->call("set_instance_base_type", owner->get_class());
+						res->call_void("set_instance_base_type", owner->get_class());
 					}
 
 					v = obj;
@@ -506,12 +506,16 @@ bool CustomPropertyEditor::edit(Object *p_owner, const String &p_name, Variant::
 
 		} break;
 		case Variant::STRING: {
-			if (hint == PROPERTY_HINT_FILE || hint == PROPERTY_HINT_GLOBAL_FILE) {
+			if (hint == PROPERTY_HINT_LOCALE_ID) {
+				List<String> names;
+				names.push_back(TTR("Locale..."));
+				names.push_back(TTR("Clear"));
+				config_action_buttons(names);
+			} else if (hint == PROPERTY_HINT_FILE || hint == PROPERTY_HINT_GLOBAL_FILE) {
 				List<String> names;
 				names.push_back(TTR("File..."));
 				names.push_back(TTR("Clear"));
 				config_action_buttons(names);
-
 			} else if (hint == PROPERTY_HINT_DIR || hint == PROPERTY_HINT_GLOBAL_DIR) {
 				List<String> names;
 				names.push_back(TTR("Dir..."));
@@ -810,7 +814,7 @@ bool CustomPropertyEditor::edit(Object *p_owner, const String &p_name, Variant::
 				//late init for performance
 				color_picker = memnew(ColorPicker);
 				color_picker->set_deferred_mode(true);
-				add_child(color_picker);
+				value_vbox->add_child(color_picker);
 				color_picker->hide();
 				color_picker->connect("color_changed", callable_mp(this, &CustomPropertyEditor::_color_changed));
 
@@ -1034,6 +1038,14 @@ void CustomPropertyEditor::_file_selected(String p_file) {
 	}
 }
 
+void CustomPropertyEditor::_locale_selected(String p_locale) {
+	if (type == Variant::STRING && hint == PROPERTY_HINT_LOCALE_ID) {
+		v = p_locale;
+		emit_signal(SNAME("variant_changed"));
+		hide();
+	}
+}
+
 void CustomPropertyEditor::_type_create_selected(int p_idx) {
 	if (type == Variant::INT || type == Variant::FLOAT) {
 		float newval = 0;
@@ -1100,7 +1112,7 @@ void CustomPropertyEditor::_node_path_selected(NodePath p_path) {
 		}
 
 		Ref<ViewportTexture> vt;
-		vt.instantiate();
+		New_instantiate(vt);
 		vt->set_viewport_path_in_scene(get_tree()->get_edited_scene_root()->get_path_to(to_node));
 		vt->setup_local_to_scene();
 		v = vt;
@@ -1177,7 +1189,8 @@ void CustomPropertyEditor::_action_pressed(int p_which) {
 		case Variant::STRING: {
 			if (hint == PROPERTY_HINT_MULTILINE_TEXT) {
 				hide();
-
+			} else if (hint == PROPERTY_HINT_LOCALE_ID) {
+				locale->popup_locale_dialog();
 			} else if (hint == PROPERTY_HINT_FILE || hint == PROPERTY_HINT_GLOBAL_FILE) {
 				if (p_which == 0) {
 					if (hint == PROPERTY_HINT_FILE) {
@@ -1440,7 +1453,7 @@ void CustomPropertyEditor::_modified(String p_string) {
 		case Variant::INT: {
 			String text = TS->parse_number(value_editor[0]->get_text());
 			Ref<Expression> expr;
-			expr.instantiate();
+			New_instantiate(expr);
 			Error err = expr->parse(text);
 			if (err != OK) {
 				v = value_editor[0]->get_text().to_int();
@@ -1616,7 +1629,7 @@ void CustomPropertyEditor::_modified(String p_string) {
 
 real_t CustomPropertyEditor::_parse_real_expression(String text) {
 	Ref<Expression> expr;
-	expr.instantiate();
+	New_instantiate(expr);
 	Error err = expr->parse(text);
 	real_t out;
 	if (err != OK) {
@@ -1820,6 +1833,12 @@ CustomPropertyEditor::CustomPropertyEditor() {
 
 	file->connect("file_selected", callable_mp(this, &CustomPropertyEditor::_file_selected));
 	file->connect("dir_selected", callable_mp(this, &CustomPropertyEditor::_file_selected));
+
+	locale = memnew(EditorLocaleDialog);
+	value_vbox->add_child(locale);
+	locale->hide();
+
+	locale->connect("locale_selected", callable_mp(this, &CustomPropertyEditor::_locale_selected));
 
 	error = memnew(ConfirmationDialog);
 	error->set_title(TTR("Error!"));

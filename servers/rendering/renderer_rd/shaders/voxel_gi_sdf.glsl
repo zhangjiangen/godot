@@ -6,10 +6,9 @@
 
 layout(local_size_x = 4, local_size_y = 4, local_size_z = 4) in;
 
-#define MAX_DISTANCE 100000
+#define MAX_DISTANCE 100000.0
 
 #define NO_CHILDREN 0xFFFFFFFF
-#define GREY_VEC vec3(0.33333, 0.33333, 0.33333)
 
 struct CellChildren {
 	uint children[8];
@@ -44,7 +43,7 @@ params;
 
 void main() {
 	vec3 pos = vec3(gl_GlobalInvocationID);
-	float closest_dist = 100000.0;
+	float closest_dist = MAX_DISTANCE;
 
 	for (uint i = params.offset; i < params.end; i++) {
 		vec3 posu = vec3(uvec3(cell_data.data[i].position & 0x7FF, (cell_data.data[i].position >> 11) & 0x3FF, cell_data.data[i].position >> 21));
@@ -62,7 +61,7 @@ void main() {
 		dist_8 = clamp(uint(closest_dist), 0, 254) + 1; //conservative, 0 is 1, so <1 is considered solid
 	}
 
-	imageStore(sdf_tex, ivec3(gl_GlobalInvocationID), uvec4(dist_8));
+	imageStore(sdf_tex, ivec3(gl_GlobalInvocationID), uvec4(dist_8, dist_8, dist_8, dist_8));
 	//imageStore(sdf_tex,pos,uvec4(pos*2,0));
 }
 
@@ -176,6 +175,6 @@ void main() {
 		dist_8 = clamp(uint(closest_distance), 0, 254) + 1; //conservative, 0 is 1, so <1 is considered solid
 	}
 
-	imageStore(sdf_tex, pos, uvec4(dist_8));
+	imageStore(sdf_tex, pos, uvec4(dist_8,dist_8,dist_8,dist_8));
 }
 #endif

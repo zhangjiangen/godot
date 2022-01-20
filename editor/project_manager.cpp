@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -204,7 +204,7 @@ private:
 						char fname[16384];
 						ret = unzGetCurrentFileInfo(pkg, &info, fname, 16384, nullptr, 0, nullptr, 0);
 
-						if (String(fname).ends_with("project.godot")) {
+						if (String::utf8(fname).ends_with("project.godot")) {
 							break;
 						}
 
@@ -525,7 +525,7 @@ private:
 						char fname[16384];
 						unzGetCurrentFileInfo(pkg, &info, fname, 16384, nullptr, 0, nullptr, 0);
 
-						String name = fname;
+						String name = String::utf8(fname);
 						if (name.ends_with("project.godot")) {
 							zip_root = name.substr(0, name.rfind("project.godot"));
 							break;
@@ -545,7 +545,7 @@ private:
 						char fname[16384];
 						ret = unzGetCurrentFileInfo(pkg, &info, fname, 16384, nullptr, 0, nullptr, 0);
 
-						String path = fname;
+						String path = String::utf8(fname);
 
 						if (path.is_empty() || path == zip_root || !zip_root.is_subsequence_of(path)) {
 							//
@@ -862,7 +862,7 @@ public:
 		rasterizer_container->add_child(l);
 		Container *rshb = memnew(HBoxContainer);
 		rasterizer_container->add_child(rshb);
-		rasterizer_button_group.instantiate();
+		New_instantiate(rasterizer_button_group);
 
 		Container *rvb = memnew(VBoxContainer);
 		rvb->set_h_size_flags(Control::SIZE_EXPAND_FILL);
@@ -1161,7 +1161,7 @@ void ProjectList::load_project_icon(int p_index) {
 	Ref<Texture2D> icon;
 	if (!item.icon.is_empty()) {
 		Ref<Image> img;
-		img.instantiate();
+		New_instantiate(img);
 		Error err = img->load(item.icon.replace_first("res://", item.path + "/"));
 		if (err == OK) {
 			img->resize(default_icon->get_width(), default_icon->get_height(), Image::INTERPOLATE_LANCZOS);
@@ -1766,8 +1766,8 @@ void ProjectList::erase_selected_projects(bool p_delete_project_contents) {
 void ProjectList::_panel_draw(Node *p_hb) {
 	Control *hb = Object::cast_to<Control>(p_hb);
 
-	if (is_layout_rtl() && get_v_scrollbar()->is_visible_in_tree()) {
-		hb->draw_line(Point2(get_v_scrollbar()->get_minimum_size().x, hb->get_size().y + 1), Point2(hb->get_size().x, hb->get_size().y + 1), get_theme_color(SNAME("guide_color"), SNAME("Tree")));
+	if (is_layout_rtl() && get_v_scroll_bar()->is_visible_in_tree()) {
+		hb->draw_line(Point2(get_v_scroll_bar()->get_minimum_size().x, hb->get_size().y + 1), Point2(hb->get_size().x, hb->get_size().y + 1), get_theme_color(SNAME("guide_color"), SNAME("Tree")));
 	} else {
 		hb->draw_line(Point2(0, hb->get_size().y + 1), Point2(hb->get_size().x, hb->get_size().y + 1), get_theme_color(SNAME("guide_color"), SNAME("Tree")));
 	}

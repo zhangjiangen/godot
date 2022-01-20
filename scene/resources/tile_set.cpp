@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -1594,7 +1594,7 @@ void TileSet::draw_terrains(CanvasItem *p_canvas_item, Transform2D p_transform, 
 					}
 
 					Ref<ArrayMesh> mesh;
-					mesh.instantiate();
+					New_instantiate(mesh);
 					Vector<Vector2> uvs;
 					uvs.resize(polygon.size());
 					Vector<Color> colors;
@@ -1705,7 +1705,7 @@ Vector<Vector<Ref<Texture2D>>> TileSet::generate_terrains_icons(Size2i p_size) {
 	for (int terrain_set = 0; terrain_set < get_terrain_sets_count(); terrain_set++) {
 		for (int terrain = 0; terrain < get_terrains_count(terrain_set); terrain++) {
 			Ref<Image> image;
-			image.instantiate();
+			New_instantiate(image);
 			if (counts[terrain_set][terrain].count > 0) {
 				// Get the best tile.
 				Ref<Texture2D> texture = counts[terrain_set][terrain].texture;
@@ -1718,7 +1718,7 @@ Vector<Vector<Ref<Texture2D>>> TileSet::generate_terrains_icons(Size2i p_size) {
 				image->set_pixel(0, 0, get_terrain_color(terrain_set, terrain));
 			}
 			Ref<ImageTexture> icon;
-			icon.instantiate();
+			New_instantiate(icon);
 			icon->create_from_image(image);
 			icon->set_size_override(p_size);
 
@@ -1765,11 +1765,14 @@ Vector<Point2> TileSet::_get_square_corner_or_side_terrain_bit_polygon(Vector2i 
 			break;
 	}
 	bit_rect.position *= Vector2(p_size) / 6.0;
-	Vector<Vector2> polygon;
-	polygon.push_back(bit_rect.position);
-	polygon.push_back(Vector2(bit_rect.get_end().x, bit_rect.position.y));
-	polygon.push_back(bit_rect.get_end());
-	polygon.push_back(Vector2(bit_rect.position.x, bit_rect.get_end().y));
+
+	Vector<Vector2> polygon = {
+		bit_rect.position,
+		Vector2(bit_rect.get_end().x, bit_rect.position.y),
+		bit_rect.get_end(),
+		Vector2(bit_rect.position.x, bit_rect.get_end().y)
+	};
+
 	return polygon;
 }
 
@@ -1984,25 +1987,26 @@ Vector<Point2> TileSet::_get_isometric_side_terrain_bit_polygon(Vector2i p_size,
 }
 
 Vector<Point2> TileSet::_get_half_offset_corner_or_side_terrain_bit_polygon(Vector2i p_size, TileSet::CellNeighbor p_bit, float p_overlap, TileSet::TileOffsetAxis p_offset_axis) {
-	Vector<Vector2> point_list;
-	point_list.push_back(Vector2(3, (3.0 * (1.0 - p_overlap * 2.0)) / 2.0));
-	point_list.push_back(Vector2(3, 3.0 * (1.0 - p_overlap * 2.0)));
-	point_list.push_back(Vector2(2, 3.0 * (1.0 - (p_overlap * 2.0) * 2.0 / 3.0)));
-	point_list.push_back(Vector2(1, 3.0 - p_overlap * 2.0));
-	point_list.push_back(Vector2(0, 3));
-	point_list.push_back(Vector2(-1, 3.0 - p_overlap * 2.0));
-	point_list.push_back(Vector2(-2, 3.0 * (1.0 - (p_overlap * 2.0) * 2.0 / 3.0)));
-	point_list.push_back(Vector2(-3, 3.0 * (1.0 - p_overlap * 2.0)));
-	point_list.push_back(Vector2(-3, (3.0 * (1.0 - p_overlap * 2.0)) / 2.0));
-	point_list.push_back(Vector2(-3, -(3.0 * (1.0 - p_overlap * 2.0)) / 2.0));
-	point_list.push_back(Vector2(-3, -3.0 * (1.0 - p_overlap * 2.0)));
-	point_list.push_back(Vector2(-2, -3.0 * (1.0 - (p_overlap * 2.0) * 2.0 / 3.0)));
-	point_list.push_back(Vector2(-1, -(3.0 - p_overlap * 2.0)));
-	point_list.push_back(Vector2(0, -3));
-	point_list.push_back(Vector2(1, -(3.0 - p_overlap * 2.0)));
-	point_list.push_back(Vector2(2, -3.0 * (1.0 - (p_overlap * 2.0) * 2.0 / 3.0)));
-	point_list.push_back(Vector2(3, -3.0 * (1.0 - p_overlap * 2.0)));
-	point_list.push_back(Vector2(3, -(3.0 * (1.0 - p_overlap * 2.0)) / 2.0));
+	Vector<Vector2> point_list = {
+		Vector2(3, (3.0 * (1.0 - p_overlap * 2.0)) / 2.0),
+		Vector2(3, 3.0 * (1.0 - p_overlap * 2.0)),
+		Vector2(2, 3.0 * (1.0 - (p_overlap * 2.0) * 2.0 / 3.0)),
+		Vector2(1, 3.0 - p_overlap * 2.0),
+		Vector2(0, 3),
+		Vector2(-1, 3.0 - p_overlap * 2.0),
+		Vector2(-2, 3.0 * (1.0 - (p_overlap * 2.0) * 2.0 / 3.0)),
+		Vector2(-3, 3.0 * (1.0 - p_overlap * 2.0)),
+		Vector2(-3, (3.0 * (1.0 - p_overlap * 2.0)) / 2.0),
+		Vector2(-3, -(3.0 * (1.0 - p_overlap * 2.0)) / 2.0),
+		Vector2(-3, -3.0 * (1.0 - p_overlap * 2.0)),
+		Vector2(-2, -3.0 * (1.0 - (p_overlap * 2.0) * 2.0 / 3.0)),
+		Vector2(-1, -(3.0 - p_overlap * 2.0)),
+		Vector2(0, -3),
+		Vector2(1, -(3.0 - p_overlap * 2.0)),
+		Vector2(2, -3.0 * (1.0 - (p_overlap * 2.0) * 2.0 / 3.0)),
+		Vector2(3, -3.0 * (1.0 - p_overlap * 2.0)),
+		Vector2(3, -(3.0 * (1.0 - p_overlap * 2.0)) / 2.0)
+	};
 
 	Vector2 unit = Vector2(p_size) / 6.0;
 	for (int i = 0; i < point_list.size(); i++) {
@@ -2144,19 +2148,20 @@ Vector<Point2> TileSet::_get_half_offset_corner_or_side_terrain_bit_polygon(Vect
 }
 
 Vector<Point2> TileSet::_get_half_offset_corner_terrain_bit_polygon(Vector2i p_size, TileSet::CellNeighbor p_bit, float p_overlap, TileSet::TileOffsetAxis p_offset_axis) {
-	Vector<Vector2> point_list;
-	point_list.push_back(Vector2(3, 0));
-	point_list.push_back(Vector2(3, 3.0 * (1.0 - p_overlap * 2.0)));
-	point_list.push_back(Vector2(1.5, (3.0 * (1.0 - p_overlap * 2.0) + 3.0) / 2.0));
-	point_list.push_back(Vector2(0, 3));
-	point_list.push_back(Vector2(-1.5, (3.0 * (1.0 - p_overlap * 2.0) + 3.0) / 2.0));
-	point_list.push_back(Vector2(-3, 3.0 * (1.0 - p_overlap * 2.0)));
-	point_list.push_back(Vector2(-3, 0));
-	point_list.push_back(Vector2(-3, -3.0 * (1.0 - p_overlap * 2.0)));
-	point_list.push_back(Vector2(-1.5, -(3.0 * (1.0 - p_overlap * 2.0) + 3.0) / 2.0));
-	point_list.push_back(Vector2(0, -3));
-	point_list.push_back(Vector2(1.5, -(3.0 * (1.0 - p_overlap * 2.0) + 3.0) / 2.0));
-	point_list.push_back(Vector2(3, -3.0 * (1.0 - p_overlap * 2.0)));
+	Vector<Vector2> point_list = {
+		Vector2(3, 0),
+		Vector2(3, 3.0 * (1.0 - p_overlap * 2.0)),
+		Vector2(1.5, (3.0 * (1.0 - p_overlap * 2.0) + 3.0) / 2.0),
+		Vector2(0, 3),
+		Vector2(-1.5, (3.0 * (1.0 - p_overlap * 2.0) + 3.0) / 2.0),
+		Vector2(-3, 3.0 * (1.0 - p_overlap * 2.0)),
+		Vector2(-3, 0),
+		Vector2(-3, -3.0 * (1.0 - p_overlap * 2.0)),
+		Vector2(-1.5, -(3.0 * (1.0 - p_overlap * 2.0) + 3.0) / 2.0),
+		Vector2(0, -3),
+		Vector2(1.5, -(3.0 * (1.0 - p_overlap * 2.0) + 3.0) / 2.0),
+		Vector2(3, -3.0 * (1.0 - p_overlap * 2.0))
+	};
 
 	Vector2 unit = Vector2(p_size) / 6.0;
 	for (int i = 0; i < point_list.size(); i++) {
@@ -2250,13 +2255,14 @@ Vector<Point2> TileSet::_get_half_offset_corner_terrain_bit_polygon(Vector2i p_s
 }
 
 Vector<Point2> TileSet::_get_half_offset_side_terrain_bit_polygon(Vector2i p_size, TileSet::CellNeighbor p_bit, float p_overlap, TileSet::TileOffsetAxis p_offset_axis) {
-	Vector<Vector2> point_list;
-	point_list.push_back(Vector2(3, 3.0 * (1.0 - p_overlap * 2.0)));
-	point_list.push_back(Vector2(0, 3));
-	point_list.push_back(Vector2(-3, 3.0 * (1.0 - p_overlap * 2.0)));
-	point_list.push_back(Vector2(-3, -3.0 * (1.0 - p_overlap * 2.0)));
-	point_list.push_back(Vector2(0, -3));
-	point_list.push_back(Vector2(3, -3.0 * (1.0 - p_overlap * 2.0)));
+	Vector<Vector2> point_list = {
+		Vector2(3, 3.0 * (1.0 - p_overlap * 2.0)),
+		Vector2(0, 3),
+		Vector2(-3, 3.0 * (1.0 - p_overlap * 2.0)),
+		Vector2(-3, -3.0 * (1.0 - p_overlap * 2.0)),
+		Vector2(0, -3),
+		Vector2(3, -3.0 * (1.0 - p_overlap * 2.0))
+	};
 
 	Vector2 unit = Vector2(p_size) / 6.0;
 	for (int i = 0; i < point_list.size(); i++) {
@@ -3313,8 +3319,8 @@ void TileSet::_bind_methods() {
 
 TileSet::TileSet() {
 	// Instantiate the tile meshes.
-	tile_lines_mesh.instantiate();
-	tile_filled_mesh.instantiate();
+	New_instantiate(tile_lines_mesh);
+	New_instantiate(tile_filled_mesh);
 }
 
 TileSet::~TileSet() {
@@ -4430,7 +4436,7 @@ void TileSetAtlasSource::_update_padded_texture() {
 	Ref<Image> src = texture->get_image();
 
 	Ref<Image> image;
-	image.instantiate();
+	New_instantiate(image);
 	image->create(size.x, size.y, false, Image::FORMAT_RGBA8);
 
 	for (KeyValue<Vector2i, TileAlternativesData> kv : tiles) {
@@ -4462,7 +4468,7 @@ void TileSetAtlasSource::_update_padded_texture() {
 	}
 
 	if (!padded_texture.is_valid()) {
-		padded_texture.instantiate();
+		New_instantiate(padded_texture);
 	}
 	padded_texture->create_from_image(image);
 	emit_changed();
@@ -5038,7 +5044,7 @@ void TileData::set_collision_polygon_points(int p_layer_id, int p_polygon_index,
 		physics.write[p_layer_id].polygons.write[p_polygon_index].shapes.resize(decomp.size());
 		for (int i = 0; i < decomp.size(); i++) {
 			Ref<ConvexPolygonShape2D> shape;
-			shape.instantiate();
+			New_instantiate(shape);
 			shape->set_points(decomp[i]);
 			physics.write[p_layer_id].polygons.write[p_polygon_index].shapes[i] = shape;
 		}

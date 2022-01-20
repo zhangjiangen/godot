@@ -318,22 +318,22 @@ void main() {
 		ivec3 prev_pos = ivec3(pos.x, pos.y * SH_SIZE + i, int(params.history_index));
 		ivec2 average_pos = prev_pos.xy;
 
-		vec4 value = vec4(sh_accum[probe_index].c[i * 3 + 0], sh_accum[probe_index].c[i * 3 + 1], sh_accum[probe_index].c[i * 3 + 2], 1.0) * 4.0 / float(params.ray_count);
+		float value = (sh_accum[probe_index].c[i * 3 + 0], sh_accum[probe_index].c[i * 3 + 1], sh_accum[probe_index].c[i * 3 + 2], 1.0) * 4.0 / float(params.ray_count);
 
-		ivec4 ivalue = clamp(ivec4(value * float(1 << HISTORY_BITS)), -32768, 32767); //clamp to 16 bits, so higher values don't break average
+		int ivalue = int(clamp(value * float(1 << HISTORY_BITS), -32768.0, 32767.0)); //clamp to 16 bits, so higher values don't break average
 
-		ivec4 prev_value = imageLoad(lightprobe_history_texture, prev_pos);
-		ivec4 average = imageLoad(lightprobe_average_texture, average_pos);
+		int prev_value = imageLoad(lightprobe_history_texture, prev_pos).r;
+		int average = imageLoad(lightprobe_average_texture, average_pos).r;
 
 		average -= prev_value;
 		average += ivalue;
 
-		imageStore(lightprobe_history_texture, prev_pos, ivalue);
-		imageStore(lightprobe_average_texture, average_pos, average);
+		imageStore(lightprobe_history_texture, prev_pos, ivec4(ivalue, ivalue, ivalue, ivalue));
+		imageStore(lightprobe_average_texture, average_pos, ivec4(average, average, average, average));
 
 		if (params.store_ambient_texture && i == 0) {
 			ivec3 ambient_pos = ivec3(pos, int(params.cascade));
-			vec4 ambient_light = (vec4(average) / float(params.history_size)) / float(1 << HISTORY_BITS);
+			vec4 ambient_light = (vec4(average, average, average, average) / float(params.history_size)) / float(1 << HISTORY_BITS);
 			ambient_light *= 0.88622; // SHL0
 			imageStore(lightprobe_ambient_texture, ambient_pos, ambient_light);
 		}
@@ -408,9 +408,9 @@ void main() {
 	for (uint i = 0; i < SH_SIZE; i++) {
 		// store in history texture
 		ivec2 average_pos = sh_pos + ivec2(0, i);
-		ivec4 average = imageLoad(lightprobe_average_texture, average_pos);
+		float average = imageLoad(lightprobe_average_texture, average_pos).r;
 
-		vec4 sh = (vec4(average) / float(params.history_size)) / float(1 << HISTORY_BITS);
+		vec4 sh = (vec4(average, average, average, average) / float(params.history_size)) / float(1 << HISTORY_BITS);
 
 		vec3 m = sh.rgb * c[i] * 4.0;
 
@@ -459,8 +459,8 @@ void main() {
 		if (copy_to[i] == ivec3(-2, -2, -2)) {
 			continue;
 		}
-		imageStore(lightprobe_texture_data, copy_to[i], uvec4(irradiance_rgbe));
-		imageStore(lightprobe_texture_data, copy_to[i] + ivec3(0, 0, int(params.max_cascades)), uvec4(radiance_rgbe));
+		imageStore(lightprobe_texture_data, copy_to[i], uvec4(irradiance_rgbe, irradiance_rgbe, irradiance_rgbe, irradiance_rgbe));
+		imageStore(lightprobe_texture_data, copy_to[i] + ivec3(0, 0, int(params.max_cascades)), uvec4(radiance_rgbe, radiance_rgbe, radiance_rgbe, radiance_rgbe));
 	}
 
 #endif
@@ -486,8 +486,8 @@ void main() {
 				// copy from history texture
 				ivec3 src_pos = ivec3(tex_pos.x, tex_pos.y * SH_SIZE + i, int(j));
 				ivec3 dst_pos = ivec3(pos.x, pos.y * SH_SIZE + i, int(j));
-				ivec4 value = imageLoad(lightprobe_history_texture, src_pos);
-				imageStore(lightprobe_history_scroll_texture, dst_pos, value);
+				int value = imageLoad(lightprobe_history_texture, src_pos).r;
+				imageStore(lightprobe_history_scroll_texture, dst_pos, ivec4(value, value, value, value));
 			}
 		}
 
@@ -495,8 +495,8 @@ void main() {
 			// copy from average texture
 			ivec2 src_pos = ivec2(tex_pos.x, tex_pos.y * SH_SIZE + i);
 			ivec2 dst_pos = ivec2(pos.x, pos.y * SH_SIZE + i);
-			ivec4 value = imageLoad(lightprobe_average_texture, src_pos);
-			imageStore(lightprobe_average_scroll_texture, dst_pos, value);
+			int value = imageLoad(lightprobe_average_texture, src_pos).r;
+			imageStore(lightprobe_average_scroll_texture, dst_pos, ivec4(value, value, value, value));
 		}
 	} else if (params.cascade < params.max_cascades - 1) {
 		//can't scroll, must look for position in parent cascade
@@ -515,10 +515,10 @@ void main() {
 		ivec3 probe_posi = ivec3(probe_pos);
 		//add up all light, no need to use occlusion here, since occlusion will do its work afterwards
 
-		vec4 average_light[SH_SIZE] = vec4[](vec4(0), vec4(0), vec4(0), vec4(0), vec4(0), vec4(0), vec4(0), vec4(0), vec4(0)
+		float average_light[SH_SIZE] = float[]((0), (0), (0), (0), (0), (0), (0), (0), (0)
 #if (SH_SIZE == 16)
-																															 ,
-				vec4(0), vec4(0), vec4(0), vec4(0), vec4(0), vec4(0), vec4(0)
+																							   ,
+				(0), (0), (0), (0), (0), (0), (0)
 #endif
 		);
 		float total_weight = 0.0;
@@ -536,8 +536,8 @@ void main() {
 			for (int j = 0; j < SH_SIZE; j++) {
 				// copy from history texture
 				ivec2 src_pos = ivec2(tex_pos.x, tex_pos.y * SH_SIZE + j);
-				ivec4 average = imageLoad(lightprobe_average_parent_texture, src_pos);
-				vec4 value = (vec4(average) / float(params.history_size)) / float(1 << HISTORY_BITS);
+				float average = imageLoad(lightprobe_average_parent_texture, src_pos).r;
+				float value = ((average) / float(params.history_size)) / float(1 << HISTORY_BITS);
 				average_light[j] += value * weight;
 			}
 
@@ -550,16 +550,16 @@ void main() {
 		//store the averaged values everywhere
 
 		for (int i = 0; i < SH_SIZE; i++) {
-			ivec4 ivalue = clamp(ivec4(average_light[i] * total_weight * float(1 << HISTORY_BITS)), ivec4(-32768), ivec4(32767)); //clamp to 16 bits, so higher values don't break average
+			int ivalue = int(clamp(average_light[i] * total_weight * float(1 << HISTORY_BITS), -32768.0, 32767.0)); //clamp to 16 bits, so higher values don't break average
 			// copy from history texture
 			ivec3 dst_pos = ivec3(pos.x, pos.y * SH_SIZE + i, 0);
 			for (uint j = 0; j < params.history_size; j++) {
 				dst_pos.z = int(j);
-				imageStore(lightprobe_history_scroll_texture, dst_pos, ivalue);
+				imageStore(lightprobe_history_scroll_texture, dst_pos, ivec4(ivalue, ivalue, ivalue, ivalue));
 			}
 
 			ivalue *= int(params.history_size); //average needs to have all history added up
-			imageStore(lightprobe_average_scroll_texture, dst_pos.xy, ivalue);
+			imageStore(lightprobe_average_scroll_texture, dst_pos.xy, ivec4(ivalue, ivalue, ivalue, ivalue));
 		}
 
 	} else {
@@ -575,16 +575,16 @@ void main() {
 				// copy from history texture
 				ivec3 src_pos = ivec3(tex_pos.x, tex_pos.y * SH_SIZE + i, int(j));
 				ivec3 dst_pos = ivec3(pos.x, pos.y * SH_SIZE + i, int(j));
-				ivec4 value = imageLoad(lightprobe_history_texture, dst_pos);
-				imageStore(lightprobe_history_scroll_texture, dst_pos, value);
+				int value = imageLoad(lightprobe_history_texture, dst_pos).r;
+				imageStore(lightprobe_history_scroll_texture, dst_pos, ivec4(value, value, value, value));
 			}
 		}
 
 		for (int i = 0; i < SH_SIZE; i++) {
 			// copy from average texture
 			ivec2 spos = ivec2(pos.x, pos.y * SH_SIZE + i);
-			ivec4 average = imageLoad(lightprobe_average_texture, spos);
-			imageStore(lightprobe_average_scroll_texture, spos, average);
+			int average = imageLoad(lightprobe_average_texture, spos).r;
+			imageStore(lightprobe_average_scroll_texture, spos, ivec4(average, average, average, average));
 		}
 	}
 
@@ -598,16 +598,16 @@ void main() {
 		for (int i = 0; i < SH_SIZE; i++) {
 			// copy from history texture
 			ivec3 spos = ivec3(pos.x, pos.y * SH_SIZE + i, int(j));
-			ivec4 value = imageLoad(lightprobe_history_scroll_texture, spos);
-			imageStore(lightprobe_history_texture, spos, value);
+			int value = imageLoad(lightprobe_history_scroll_texture, spos).r;
+			imageStore(lightprobe_history_texture, spos, ivec4(value, value, value, value));
 		}
 	}
 
 	for (int i = 0; i < SH_SIZE; i++) {
 		// copy from average texture
 		ivec2 spos = ivec2(pos.x, pos.y * SH_SIZE + i);
-		ivec4 average = imageLoad(lightprobe_average_scroll_texture, spos);
-		imageStore(lightprobe_average_texture, spos, average);
+		int average = imageLoad(lightprobe_average_scroll_texture, spos).r;
+		imageStore(lightprobe_average_texture, spos, ivec4(average, average, average, average));
 	}
 
 #endif

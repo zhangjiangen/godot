@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -121,7 +121,7 @@ void Input::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_accelerometer", "value"), &Input::set_accelerometer);
 	ClassDB::bind_method(D_METHOD("set_magnetometer", "value"), &Input::set_magnetometer);
 	ClassDB::bind_method(D_METHOD("set_gyroscope", "value"), &Input::set_gyroscope);
-	ClassDB::bind_method(D_METHOD("get_last_mouse_speed"), &Input::get_last_mouse_speed);
+	ClassDB::bind_method(D_METHOD("get_last_mouse_velocity"), &Input::get_last_mouse_velocity);
 	ClassDB::bind_method(D_METHOD("get_mouse_button_mask"), &Input::get_mouse_button_mask);
 	ClassDB::bind_method(D_METHOD("set_mouse_mode", "mode"), &Input::set_mouse_mode);
 	ClassDB::bind_method(D_METHOD("get_mouse_mode"), &Input::get_mouse_mode);
@@ -183,7 +183,7 @@ void Input::get_argument_options(const StringName &p_function, int p_idx, List<S
 	}
 }
 
-void Input::SpeedTrack::update(const Vector2 &p_delta_p) {
+void Input::VelocityTrack::update(const Vector2 &p_delta_p) {
 	uint64_t tick = OS::get_singleton()->get_ticks_usec();
 	uint32_t tdiff = tick - last_tick;
 	float delta_t = tdiff / 1000000.0;
@@ -202,17 +202,17 @@ void Input::SpeedTrack::update(const Vector2 &p_delta_p) {
 		accum = accum - slice;
 		accum_t -= min_ref_frame;
 
-		speed = (slice / min_ref_frame).lerp(speed, min_ref_frame / max_ref_frame);
+		velocity = (slice / min_ref_frame).lerp(velocity, min_ref_frame / max_ref_frame);
 	}
 }
 
-void Input::SpeedTrack::reset() {
+void Input::VelocityTrack::reset() {
 	last_tick = OS::get_singleton()->get_ticks_usec();
-	speed = Vector2();
+	velocity = Vector2();
 	accum_t = 0;
 }
 
-Input::SpeedTrack::SpeedTrack() {
+Input::VelocityTrack::VelocityTrack() {
 	min_ref_frame = 0.1;
 	max_ref_frame = 0.3;
 	reset();
@@ -494,7 +494,7 @@ void Input::_parse_input_event_impl(const Ref<InputEvent> &p_event, bool p_is_em
 
 		if (event_dispatch_function && emulate_touch_from_mouse && !p_is_emulated && mb->get_button_index() == MouseButton::LEFT) {
 			Ref<InputEventScreenTouch> touch_event;
-			touch_event.instantiate();
+			New_instantiate(touch_event);
 			touch_event->set_pressed(mb->is_pressed());
 			touch_event->set_position(mb->get_position());
 			event_dispatch_function(touch_event);
@@ -511,11 +511,11 @@ void Input::_parse_input_event_impl(const Ref<InputEvent> &p_event, bool p_is_em
 
 		if (event_dispatch_function && emulate_touch_from_mouse && !p_is_emulated && (mm->get_button_mask() & MouseButton::LEFT) != MouseButton::NONE) {
 			Ref<InputEventScreenDrag> drag_event;
-			drag_event.instantiate();
+			New_instantiate(drag_event);
 
 			drag_event->set_position(mm->get_position());
 			drag_event->set_relative(mm->get_relative());
-			drag_event->set_speed(mm->get_speed());
+			drag_event->set_velocity(mm->get_velocity());
 
 			event_dispatch_function(drag_event);
 		}
@@ -525,12 +525,12 @@ void Input::_parse_input_event_impl(const Ref<InputEvent> &p_event, bool p_is_em
 
 	if (st.is_valid()) {
 		if (st->is_pressed()) {
-			SpeedTrack &track = touch_speed_track[st->get_index()];
+			VelocityTrack &track = touch_velocity_track[st->get_index()];
 			track.reset();
 		} else {
 			// Since a pointer index may not occur again (OSs may or may not reuse them),
 			// imperatively remove it from the map to keep no fossil entries in it
-			touch_speed_track.erase(st->get_index());
+			touch_velocity_track.erase(st->get_index());
 		}
 
 		if (emulate_mouse_from_touch) {
@@ -549,7 +549,7 @@ void Input::_parse_input_event_impl(const Ref<InputEvent> &p_event, bool p_is_em
 
 			if (translate) {
 				Ref<InputEventMouseButton> button_event;
-				button_event.instantiate();
+				New_instantiate(button_event);
 
 				button_event->set_device(InputEvent::DEVICE_ID_TOUCH_MOUSE);
 				button_event->set_position(st->get_position());
@@ -570,19 +570,19 @@ void Input::_parse_input_event_impl(const Ref<InputEvent> &p_event, bool p_is_em
 	Ref<InputEventScreenDrag> sd = p_event;
 
 	if (sd.is_valid()) {
-		SpeedTrack &track = touch_speed_track[sd->get_index()];
+		VelocityTrack &track = touch_velocity_track[sd->get_index()];
 		track.update(sd->get_relative());
-		sd->set_speed(track.speed);
+		sd->set_velocity(track.velocity);
 
 		if (emulate_mouse_from_touch && sd->get_index() == mouse_from_touch_index) {
 			Ref<InputEventMouseMotion> motion_event;
-			motion_event.instantiate();
+			New_instantiate(motion_event);
 
 			motion_event->set_device(InputEvent::DEVICE_ID_TOUCH_MOUSE);
 			motion_event->set_position(sd->get_position());
 			motion_event->set_global_position(sd->get_position());
 			motion_event->set_relative(sd->get_relative());
-			motion_event->set_speed(sd->get_speed());
+			motion_event->set_velocity(sd->get_velocity());
 			motion_event->set_button_mask(mouse_button_mask);
 
 			_parse_input_event_impl(motion_event, true);
@@ -696,7 +696,7 @@ void Input::set_gyroscope(const Vector3 &p_gyroscope) {
 }
 
 void Input::set_mouse_position(const Point2 &p_posf) {
-	mouse_speed_track.update(p_posf - mouse_pos);
+	mouse_velocity_track.update(p_posf - mouse_pos);
 	mouse_pos = p_posf;
 }
 
@@ -704,8 +704,8 @@ Point2 Input::get_mouse_position() const {
 	return mouse_pos;
 }
 
-Point2 Input::get_last_mouse_speed() const {
-	return mouse_speed_track.speed;
+Point2 Input::get_last_mouse_velocity() const {
+	return mouse_velocity_track.velocity;
 }
 
 MouseButton Input::get_mouse_button_mask() const {
@@ -781,7 +781,7 @@ void Input::ensure_touch_mouse_raised() {
 		mouse_from_touch_index = -1;
 
 		Ref<InputEventMouseButton> button_event;
-		button_event.instantiate();
+		New_instantiate(button_event);
 
 		button_event->set_device(InputEvent::DEVICE_ID_TOUCH_MOUSE);
 		button_event->set_position(mouse_pos);
@@ -815,7 +815,7 @@ void Input::set_default_cursor_shape(CursorShape p_shape) {
 	// The default shape is set in Viewport::_gui_input_event. To instantly
 	// see the shape in the viewport we need to trigger a mouse motion event.
 	Ref<InputEventMouseMotion> mm;
-	mm.instantiate();
+	New_instantiate(mm);
 	mm->set_position(mouse_pos);
 	mm->set_global_position(mouse_pos);
 	parse_input_event(mm);
@@ -892,7 +892,8 @@ void Input::set_event_dispatch_function(EventDispatchFunc p_function) {
 void Input::joy_button(int p_device, JoyButton p_button, bool p_pressed) {
 	_THREAD_SAFE_METHOD_;
 	Joypad &joy = joy_names[p_device];
-	//printf("got button %i, mapping is %i\n", p_button, joy.mapping);
+	ERR_FAIL_INDEX((int)p_button, (int)JoyButton::MAX);
+
 	if (joy.last_buttons[(size_t)p_button] == p_pressed) {
 		return;
 	}
@@ -915,43 +916,25 @@ void Input::joy_button(int p_device, JoyButton p_button, bool p_pressed) {
 	// no event?
 }
 
-void Input::joy_axis(int p_device, JoyAxis p_axis, const JoyAxisValue &p_value) {
+void Input::joy_axis(int p_device, JoyAxis p_axis, float p_value) {
 	_THREAD_SAFE_METHOD_;
 
 	ERR_FAIL_INDEX((int)p_axis, (int)JoyAxis::MAX);
 
 	Joypad &joy = joy_names[p_device];
 
-	// Make sure that we don't generate events for up to 5% jitter
-	// This is needed for Nintendo Switch Pro controllers, which jitter at rest
-	const float MIN_AXIS_CHANGE = 0.05f;
-	if (fabs(joy.last_axis[(size_t)p_axis] - p_value.value) < MIN_AXIS_CHANGE) {
+	if (joy.last_axis[(size_t)p_axis] == p_value) {
 		return;
 	}
 
-	//when changing direction quickly, insert fake event to release pending inputmap actions
-	float last = joy.last_axis[(size_t)p_axis];
-	if (p_value.min == 0 && (last < 0.25 || last > 0.75) && (last - 0.5) * (p_value.value - 0.5) < 0) {
-		JoyAxisValue jx;
-		jx.min = p_value.min;
-		jx.value = p_value.value < 0.5 ? 0.6 : 0.4;
-		joy_axis(p_device, p_axis, jx);
-	} else if (ABS(last) > 0.5 && last * p_value.value <= 0) {
-		JoyAxisValue jx;
-		jx.min = p_value.min;
-		jx.value = last > 0 ? 0.1 : -0.1;
-		joy_axis(p_device, p_axis, jx);
-	}
-
-	joy.last_axis[(size_t)p_axis] = p_value.value;
-	float val = p_value.min == 0 ? -1.0f + 2.0f * p_value.value : p_value.value;
+	joy.last_axis[(size_t)p_axis] = p_value;
 
 	if (joy.mapping == -1) {
-		_axis_event(p_device, p_axis, val);
+		_axis_event(p_device, p_axis, p_value);
 		return;
 	}
 
-	JoyEvent map = _get_mapped_axis_event(map_db[joy.mapping], p_axis, val);
+	JoyEvent map = _get_mapped_axis_event(map_db[joy.mapping], p_axis, p_value);
 
 	if (map.type == TYPE_BUTTON) {
 		bool pressed = map.value > 0.5;
@@ -991,10 +974,15 @@ void Input::joy_axis(int p_device, JoyAxis p_axis, const JoyAxisValue &p_value) 
 	}
 
 	if (map.type == TYPE_AXIS) {
-		_axis_event(p_device, (JoyAxis)map.index, map.value);
+		JoyAxis axis = JoyAxis(map.index);
+		float value = map.value;
+		if (axis == JoyAxis::TRIGGER_LEFT || axis == JoyAxis::TRIGGER_RIGHT) {
+			// Convert to a value between 0.0f and 1.0f.
+			value = 0.5f + value / 2.0f;
+		}
+		_axis_event(p_device, axis, value);
 		return;
 	}
-	//printf("invalid mapping\n");
 }
 
 void Input::joy_hat(int p_device, HatMask p_val) {
@@ -1041,7 +1029,7 @@ void Input::joy_hat(int p_device, HatMask p_val) {
 
 void Input::_button_event(int p_device, JoyButton p_index, bool p_pressed) {
 	Ref<InputEventJoypadButton> ievent;
-	ievent.instantiate();
+	New_instantiate(ievent);
 	ievent->set_device(p_device);
 	ievent->set_button_index(p_index);
 	ievent->set_pressed(p_pressed);
@@ -1051,7 +1039,7 @@ void Input::_button_event(int p_device, JoyButton p_index, bool p_pressed) {
 
 void Input::_axis_event(int p_device, JoyAxis p_axis, float p_value) {
 	Ref<InputEventJoypadMotion> ievent;
-	ievent.instantiate();
+	New_instantiate(ievent);
 	ievent->set_device(p_device);
 	ievent->set_axis(p_axis);
 	ievent->set_axis_value(p_value);

@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -101,7 +101,7 @@ void SceneImportSettings::_fill_material(Tree *p_tree, const Ref<Material> &p_ma
 
 	if (!material_map.has(import_id)) {
 		MaterialDataPtr md;
-		md.instantiate();
+		New_instantiate(md);
 		md->has_import_id = has_import_id;
 		md->material = p_material;
 
@@ -158,7 +158,7 @@ void SceneImportSettings::_fill_mesh(Tree *p_tree, const Ref<Mesh> &p_mesh, Tree
 
 	if (!mesh_map.has(import_id)) {
 		MeshDataPtr md;
-		md.instantiate();
+		New_instantiate(md);
 		md->has_import_id = has_import_id;
 		md->mesh = p_mesh;
 
@@ -210,7 +210,7 @@ void SceneImportSettings::_fill_mesh(Tree *p_tree, const Ref<Mesh> &p_mesh, Tree
 void SceneImportSettings::_fill_animation(Tree *p_tree, const Ref<Animation> &p_anim, const String &p_name, TreeItem *p_parent) {
 	if (!animation_map.has(p_name)) {
 		AnimationDataPtr ad;
-		ad.instantiate();
+		New_instantiate(ad);
 		ad->animation = p_anim;
 
 		_load_default_subresource_settings(ad->settings, "animations", p_name, ResourceImporterScene::INTERNAL_IMPORT_CATEGORY_ANIMATION);
@@ -289,7 +289,7 @@ void SceneImportSettings::_fill_scene(Node *p_node, TreeItem *p_parent_item) {
 
 	if (!node_map.has(import_id)) {
 		NodeDataPtr nd;
-		nd.instantiate();
+		New_instantiate(nd);
 		if (p_node != scene) {
 			ResourceImporterScene::InternalImportCategory category;
 			if (src_mesh_node) {
@@ -387,7 +387,7 @@ void SceneImportSettings::_update_view_gizmos() {
 			const Transform3D transform = ResourceImporterScene::get_collision_shapes_transform(*e.value->settings);
 
 			Ref<ArrayMesh> collider_view_mesh;
-			collider_view_mesh.instantiate();
+			New_instantiate(collider_view_mesh);
 			for (Ref<Shape3D> shape : shapes) {
 				Ref<ArrayMesh> debug_shape_mesh;
 				if (shape.is_valid()) {
@@ -504,8 +504,8 @@ void SceneImportSettings::open_settings(const String &p_path) {
 		base_subresource_settings.clear();
 
 		Ref<ConfigFile> config;
-		config.instantiate();
-		defaults.instantiate();
+		New_instantiate(config);
+		New_instantiate(defaults);
 		Error err = config->load(p_path + ".import");
 		if (err == OK) {
 			List<String> keys;
@@ -1178,12 +1178,12 @@ SceneImportSettings::SceneImportSettings() {
 
 	{
 		Ref<StandardMaterial3D> selection_mat;
-		selection_mat.instantiate();
+		New_instantiate(selection_mat);
 		selection_mat->set_shading_mode(StandardMaterial3D::SHADING_MODE_UNSHADED);
 		selection_mat->set_albedo(Color(1, 0.8, 1.0));
 
 		Ref<SurfaceTool> st;
-		st.instantiate();
+		New_instantiate(st);
 		st->begin(Mesh::PRIMITIVE_LINES);
 
 		AABB base_aabb;
@@ -1199,7 +1199,7 @@ SceneImportSettings::SceneImportSettings() {
 			st->add_vertex(b.lerp(a, 0.2));
 		}
 
-		selection_mesh.instantiate();
+		New_instantiate(selection_mesh);
 		st->commit(selection_mesh);
 		selection_mesh->surface_set_material(0, selection_mat);
 
@@ -1214,11 +1214,11 @@ SceneImportSettings::SceneImportSettings() {
 		base_viewport->add_child(mesh_preview);
 		mesh_preview->hide();
 
-		material_preview.instantiate();
+		New_instantiate(material_preview);
 	}
 
 	{
-		collider_mat.instantiate();
+		New_instantiate(collider_mat);
 		collider_mat->set_shading_mode(StandardMaterial3D::SHADING_MODE_UNSHADED);
 		collider_mat->set_albedo(Color(0.5, 0.5, 1.0));
 	}

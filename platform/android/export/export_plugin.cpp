@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -1496,7 +1496,7 @@ String EditorExportPlatformAndroid::load_splash_refs(Ref<Image> &splash_image, R
 	String project_splash_path = ProjectSettings::get_singleton()->get("application/boot_splash/image");
 
 	if (!project_splash_path.is_empty()) {
-		splash_image.instantiate();
+		New_instantiate(splash_image);
 		print_verbose("Loading splash image: " + project_splash_path);
 		const Error err = ImageLoader::load_image(project_splash_path, splash_image);
 		if (err) {
@@ -1514,7 +1514,7 @@ String EditorExportPlatformAndroid::load_splash_refs(Ref<Image> &splash_image, R
 	}
 
 	if (scale_splash) {
-		Size2 screen_size = Size2(ProjectSettings::get_singleton()->get("display/window/size/width"), ProjectSettings::get_singleton()->get("display/window/size/height"));
+		Size2 screen_size = Size2(ProjectSettings::get_singleton()->get("display/window/size/viewport_width"), ProjectSettings::get_singleton()->get("display/window/size/viewport_height"));
 		int width, height;
 		if (screen_size.width > screen_size.height) {
 			// scale horizontally
@@ -1536,7 +1536,7 @@ String EditorExportPlatformAndroid::load_splash_refs(Ref<Image> &splash_image, R
 	}
 
 	print_verbose("Creating splash background color image.");
-	splash_bg_color_image.instantiate();
+	New_instantiate(splash_bg_color_image);
 	splash_bg_color_image->create(splash_image->get_width(), splash_image->get_height(), false, splash_image->get_format());
 	splash_bg_color_image->fill(bg_color);
 
@@ -1547,9 +1547,9 @@ String EditorExportPlatformAndroid::load_splash_refs(Ref<Image> &splash_image, R
 void EditorExportPlatformAndroid::load_icon_refs(const Ref<EditorExportPreset> &p_preset, Ref<Image> &icon, Ref<Image> &foreground, Ref<Image> &background) {
 	String project_icon_path = ProjectSettings::get_singleton()->get("application/config/icon");
 
-	icon.instantiate();
-	foreground.instantiate();
-	background.instantiate();
+	New_instantiate(icon);
+	New_instantiate(foreground);
+	New_instantiate(background);
 
 	// Regular icon: user selection -> project icon -> default.
 	String path = static_cast<String>(p_preset->get(launcher_icon_option)).strip_edges();
@@ -2666,6 +2666,13 @@ Error EditorExportPlatformAndroid::export_project_helper(const Ref<EditorExportP
 					debug_password = EditorSettings::get_singleton()->get("export/android/debug_keystore_pass");
 					debug_user = EditorSettings::get_singleton()->get("export/android/debug_keystore_user");
 				}
+				if (debug_keystore.is_relative_path()) {
+					debug_keystore = OS::get_singleton()->get_resource_dir().plus_file(debug_keystore).simplify_path();
+				}
+				if (!FileAccess::exists(debug_keystore)) {
+					EditorNode::add_io_error(TTR("Could not find keystore, unable to export."));
+					return ERR_FILE_CANT_OPEN;
+				}
 
 				cmdline.push_back("-Pdebug_keystore_file=" + debug_keystore); // argument to specify the debug keystore file.
 				cmdline.push_back("-Pdebug_keystore_alias=" + debug_user); // argument to specify the debug keystore alias.
@@ -2675,6 +2682,9 @@ Error EditorExportPlatformAndroid::export_project_helper(const Ref<EditorExportP
 				String release_keystore = p_preset->get("keystore/release");
 				String release_username = p_preset->get("keystore/release_user");
 				String release_password = p_preset->get("keystore/release_password");
+				if (release_keystore.is_relative_path()) {
+					release_keystore = OS::get_singleton()->get_resource_dir().plus_file(release_keystore).simplify_path();
+				}
 				if (!FileAccess::exists(release_keystore)) {
 					EditorNode::add_io_error(TTR("Could not find keystore, unable to export."));
 					return ERR_FILE_CANT_OPEN;
@@ -2794,7 +2804,7 @@ Error EditorExportPlatformAndroid::export_project_helper(const Ref<EditorExportP
 
 		bool skip = false;
 
-		String file = fname;
+		String file = String::utf8(fname);
 
 		Vector<uint8_t> data;
 		data.resize(info.uncompressed_size);
@@ -2976,7 +2986,7 @@ Error EditorExportPlatformAndroid::export_project_helper(const Ref<EditorExportP
 		char extra[16384];
 		ret = unzGetCurrentFileInfo(tmp_unaligned, &info, fname, 16384, extra, 16384 - ZIP_ALIGNMENT, nullptr, 0);
 
-		String file = fname;
+		String file = String::utf8(fname);
 
 		Vector<uint8_t> data;
 		data.resize(info.compressed_size);
@@ -3043,11 +3053,11 @@ void EditorExportPlatformAndroid::resolve_platform_feature_priorities(const Ref<
 
 EditorExportPlatformAndroid::EditorExportPlatformAndroid() {
 	Ref<Image> img = memnew(Image(_android_logo));
-	logo.instantiate();
+	New_instantiate(logo);
 	logo->create_from_image(img);
 
 	img = Ref<Image>(memnew(Image(_android_run_icon)));
-	run_icon.instantiate();
+	New_instantiate(run_icon);
 	run_icon->create_from_image(img);
 
 	devices_changed.set();

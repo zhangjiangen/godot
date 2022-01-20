@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -39,6 +39,34 @@
 #include "core/string/ustring.h"
 #include "core/templates/rid.h"
 #include "core/typedefs.h"
+struct MemoryDebugInfo {
+	union {
+		const char *file_name;
+		uint32_t addres;
+	};
+
+	uint32_t line;
+	uint32_t hash() const {
+		return addres & line;
+	}
+	MemoryDebugInfo() {
+		file_name = nullptr;
+		line = 0;
+	}
+	bool operator==(const MemoryDebugInfo &p_info) const {
+		if (p_info.file_name != file_name || p_info.line != line) {
+			return false;
+		}
+		return true;
+	}
+	bool operator!=(const MemoryDebugInfo &p_info) const {
+		return !operator==(p_info);
+	}
+	void operator=(const MemoryDebugInfo &p_info) {
+		file_name = p_info.file_name;
+		line = p_info.line;
+	}
+};
 /**
  * Hashing functions
  */
@@ -177,6 +205,8 @@ struct HashMapHasherDefault {
 
 	static _FORCE_INLINE_ uint32_t hash(const StringName &p_string_name) { return p_string_name.hash(); }
 	static _FORCE_INLINE_ uint32_t hash(const NodePath &p_path) { return p_path.hash(); }
+	static _FORCE_INLINE_ uint32_t hash(const MemoryDebugInfo &p_info) { return p_info.hash(); }
+	static _FORCE_INLINE_ uint32_t hash(void *p_info) { return hash_one_uint64((uint64_t)p_info); }
 
 	//static _FORCE_INLINE_ uint32_t hash(const void* p_ptr)  { return uint32_t(uint64_t(p_ptr))*(0x9e3779b1L); }
 };

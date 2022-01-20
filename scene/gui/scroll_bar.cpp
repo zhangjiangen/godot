@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -628,6 +628,17 @@ void ScrollBar::_bind_methods() {
 }
 
 ScrollBar::ScrollBar(Orientation p_orientation) {
+    highlight = HIGHLIGHT_NONE ;
+
+	incr_active = false;
+	decr_active = false;
+	drag_node_enabled = true;
+	drag_node_touching = false;
+	drag_node_touching_deaccel = false;
+	click_handled = false;
+
+	scrolling = false;
+	smooth_scroll_enabled = false;
 	orientation = p_orientation;
 
 	if (focus_by_default) {

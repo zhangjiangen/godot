@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -31,6 +31,8 @@
 #include "visual_shader_particle_nodes.h"
 
 #include "core/core_string_names.h"
+
+#include "core/string/string_builder.h"
 
 // VisualShaderNodeParticleEmitter
 
@@ -112,26 +114,26 @@ String VisualShaderNodeParticleSphereEmitter::get_input_port_name(int p_port) co
 }
 
 String VisualShaderNodeParticleSphereEmitter::generate_global_per_node(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const {
-	String code;
+	StringBuilder code;
 
-	code += "vec2 __get_random_point_in_circle(inout uint seed, float radius, float inner_radius) {\n";
-	code += "	return __get_random_unit_vec2(seed) * __randf_range(seed, inner_radius, radius);\n";
-	code += "}\n\n";
+	code + "vec2 __get_random_point_in_circle(inout uint seed, float radius, float inner_radius) {\n";
+	code + "	return __get_random_unit_vec2(seed) * __randf_range(seed, inner_radius, radius);\n";
+	code + "}\n\n";
 
-	code += "vec3 __get_random_point_in_sphere(inout uint seed, float radius, float inner_radius) {\n";
-	code += "	return __get_random_unit_vec3(seed) * __randf_range(seed, inner_radius, radius);\n";
-	code += "}\n\n";
+	code + "vec3 __get_random_point_in_sphere(inout uint seed, float radius, float inner_radius) {\n";
+	code + "	return __get_random_unit_vec3(seed) * __randf_range(seed, inner_radius, radius);\n";
+	code + "}\n\n";
 
 	return code;
 }
 
 String VisualShaderNodeParticleSphereEmitter::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
-	String code;
+	StringBuilder code;
 
 	if (mode_2d) {
-		code += "	" + p_output_vars[0] + " = vec3(__get_random_point_in_circle(__seed, " + (p_input_vars[0].is_empty() ? (String)get_input_port_default_value(0) : p_input_vars[0]) + ", " + (p_input_vars[1].is_empty() ? (String)get_input_port_default_value(1) : p_input_vars[1]) + "), 0.0);\n";
+		code + "	" + p_output_vars[0] + " = vec3(__get_random_point_in_circle(__seed, " + (p_input_vars[0].is_empty() ? (String)get_input_port_default_value(0) : p_input_vars[0]) + ", " + (p_input_vars[1].is_empty() ? (String)get_input_port_default_value(1) : p_input_vars[1]) + "), 0.0);\n";
 	} else {
-		code += "	" + p_output_vars[0] + " = __get_random_point_in_sphere(__seed, " + (p_input_vars[0].is_empty() ? (String)get_input_port_default_value(0) : p_input_vars[0]) + ", " + (p_input_vars[1].is_empty() ? (String)get_input_port_default_value(1) : p_input_vars[1]) + ");\n";
+		code + "	" + p_output_vars[0] + " = __get_random_point_in_sphere(__seed, " + (p_input_vars[0].is_empty() ? (String)get_input_port_default_value(0) : p_input_vars[0]) + ", " + (p_input_vars[1].is_empty() ? (String)get_input_port_default_value(1) : p_input_vars[1]) + ");\n";
 	}
 
 	return code;
@@ -167,27 +169,27 @@ String VisualShaderNodeParticleBoxEmitter::get_input_port_name(int p_port) const
 }
 
 String VisualShaderNodeParticleBoxEmitter::generate_global_per_node(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const {
-	String code;
+	StringBuilder code;
 
-	code += "vec2 __get_random_point_in_box2d(inout uint seed, vec2 extents) {\n";
-	code += "	vec2 half_extents = extents / 2.0;\n";
-	code += "	return vec2(__randf_range(seed, -half_extents.x, half_extents.x), __randf_range(seed, -half_extents.y, half_extents.y));\n";
-	code += "}\n\n";
+	code + "vec2 __get_random_point_in_box2d(inout uint seed, vec2 extents) {\n";
+	code + "	vec2 half_extents = extents / 2.0;\n";
+	code + "	return vec2(__randf_range(seed, -half_extents.x, half_extents.x), __randf_range(seed, -half_extents.y, half_extents.y));\n";
+	code + "}\n\n";
 
-	code += "vec3 __get_random_point_in_box3d(inout uint seed, vec3 extents) {\n";
-	code += "	vec3 half_extents = extents / 2.0;\n";
-	code += "	return vec3(__randf_range(seed, -half_extents.x, half_extents.x), __randf_range(seed, -half_extents.y, half_extents.y), __randf_range(seed, -half_extents.z, half_extents.z));\n";
-	code += "}\n\n";
+	code + "vec3 __get_random_point_in_box3d(inout uint seed, vec3 extents) {\n";
+	code + "	vec3 half_extents = extents / 2.0;\n";
+	code + "	return vec3(__randf_range(seed, -half_extents.x, half_extents.x), __randf_range(seed, -half_extents.y, half_extents.y), __randf_range(seed, -half_extents.z, half_extents.z));\n";
+	code + "}\n\n";
 
 	return code;
 }
 
 String VisualShaderNodeParticleBoxEmitter::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
-	String code;
+	StringBuilder code;
 	if (mode_2d) {
-		code += "	" + p_output_vars[0] + " = vec3(__get_random_point_in_box2d(__seed, " + (p_input_vars[0].is_empty() ? (String)get_input_port_default_value(0) : p_input_vars[0]) + ".xy), 0.0);\n";
+		code + "	" + p_output_vars[0] + " = vec3(__get_random_point_in_box2d(__seed, " + (p_input_vars[0].is_empty() ? (String)get_input_port_default_value(0) : p_input_vars[0]) + ".xy), 0.0);\n";
 	} else {
-		code += "	" + p_output_vars[0] + " = __get_random_point_in_box3d(__seed, " + (p_input_vars[0].is_empty() ? (String)get_input_port_default_value(0) : p_input_vars[0]) + ");\n";
+		code + "	" + p_output_vars[0] + " = __get_random_point_in_box3d(__seed, " + (p_input_vars[0].is_empty() ? (String)get_input_port_default_value(0) : p_input_vars[0]) + ");\n";
 	}
 	return code;
 }
@@ -222,25 +224,25 @@ String VisualShaderNodeParticleRingEmitter::get_input_port_name(int p_port) cons
 }
 
 String VisualShaderNodeParticleRingEmitter::generate_global_per_node(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const {
-	String code;
+	StringBuilder code;
 
-	code += "vec2 __get_random_point_on_ring2d(inout uint seed, float radius, float inner_radius) {\n";
-	code += "	float angle = __rand_from_seed(seed) * TAU;\n";
-	code += "	vec2 ring = vec2(sin(angle), cos(angle)) * __randf_range(seed, inner_radius, radius);\n";
-	code += "	return vec2(ring.x, ring.y);\n";
-	code += "}\n\n";
+	code + "vec2 __get_random_point_on_ring2d(inout uint seed, float radius, float inner_radius) {\n";
+	code + "	float angle = __rand_from_seed(seed) * TAU;\n";
+	code + "	vec2 ring = vec2(sin(angle), cos(angle)) * __randf_range(seed, inner_radius, radius);\n";
+	code + "	return vec2(ring.x, ring.y);\n";
+	code + "}\n\n";
 
-	code += "vec3 __get_random_point_on_ring3d(inout uint seed, float radius, float inner_radius, float height) {\n";
-	code += "	float angle = __rand_from_seed(seed) * TAU;\n";
-	code += "	vec2 ring = vec2(sin(angle), cos(angle)) * __randf_range(seed, inner_radius, radius);\n";
-	code += "	return vec3(ring.x, __randf_range(seed, min(0.0, height), max(0.0, height)), ring.y);\n";
-	code += "}\n\n";
+	code + "vec3 __get_random_point_on_ring3d(inout uint seed, float radius, float inner_radius, float height) {\n";
+	code + "	float angle = __rand_from_seed(seed) * TAU;\n";
+	code + "	vec2 ring = vec2(sin(angle), cos(angle)) * __randf_range(seed, inner_radius, radius);\n";
+	code + "	return vec3(ring.x, __randf_range(seed, min(0.0, height), max(0.0, height)), ring.y);\n";
+	code + "}\n\n";
 
 	return code;
 }
 
 String VisualShaderNodeParticleRingEmitter::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
-	String code;
+	StringBuilder code;
 
 	if (mode_2d) {
 		code = "	" + p_output_vars[0] + " = vec3(__get_random_point_on_ring2d(__seed, " + (p_input_vars[0].is_empty() ? (String)get_input_port_default_value(0) : p_input_vars[0]) + ", " + (p_input_vars[1].is_empty() ? (String)get_input_port_default_value(1) : p_input_vars[1]) + "), 0.0);\n";
@@ -316,68 +318,68 @@ String VisualShaderNodeParticleMeshEmitter::get_input_port_name(int p_port) cons
 }
 
 String VisualShaderNodeParticleMeshEmitter::generate_global(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const {
-	String code;
+	StringBuilder code;
 
 	if (is_output_port_connected(0)) { // position
-		code += "uniform sampler2D " + make_unique_id(p_type, p_id, "mesh_vx") + ";\n";
+		code + "uniform sampler2D " + make_unique_id(p_type, p_id, "mesh_vx") + ";\n";
 	}
 
 	if (is_output_port_connected(1)) { // normal
-		code += "uniform sampler2D " + make_unique_id(p_type, p_id, "mesh_nm") + ";\n";
+		code + "uniform sampler2D " + make_unique_id(p_type, p_id, "mesh_nm") + ";\n";
 	}
 
 	if (is_output_port_connected(2) || is_output_port_connected(3)) { // color & alpha
-		code += "uniform sampler2D " + make_unique_id(p_type, p_id, "mesh_col") + ";\n";
+		code + "uniform sampler2D " + make_unique_id(p_type, p_id, "mesh_col") + ";\n";
 	}
 
 	if (is_output_port_connected(4)) { // uv
-		code += "uniform sampler2D " + make_unique_id(p_type, p_id, "mesh_uv") + ";\n";
+		code + "uniform sampler2D " + make_unique_id(p_type, p_id, "mesh_uv") + ";\n";
 	}
 
 	if (is_output_port_connected(5)) { // uv2
-		code += "uniform sampler2D " + make_unique_id(p_type, p_id, "mesh_uv2") + ";\n";
+		code + "uniform sampler2D " + make_unique_id(p_type, p_id, "mesh_uv2") + ";\n";
 	}
 
 	return code;
 }
 
 String VisualShaderNodeParticleMeshEmitter::_generate_code(VisualShader::Type p_type, int p_id, const String *p_output_vars, int p_index, const String &p_texture_name, bool p_ignore_mode2d) const {
-	String code;
+	StringBuilder code;
 	if (is_output_port_connected(p_index)) {
 		if (mode_2d && !p_ignore_mode2d) {
-			code += "	" + p_output_vars[p_index] + " = vec3(";
-			code += "texelFetch(";
+			code + "	" + p_output_vars[p_index] + " = vec3(";
+			code + "texelFetch(";
 			code += make_unique_id(p_type, p_id, p_texture_name) + ", ";
-			code += "ivec2(__scalar_ibuff, 0), 0).xy, 0.0);\n";
+			code + "ivec2(__scalar_ibuff, 0), 0).xy, 0.0);\n";
 		} else {
-			code += "	" + p_output_vars[p_index] + " = texelFetch(";
+			code + "	" + p_output_vars[p_index] + " = texelFetch(";
 			code += make_unique_id(p_type, p_id, p_texture_name) + ", ";
-			code += "ivec2(__scalar_ibuff, 0), 0).xyz;\n";
+			code + "ivec2(__scalar_ibuff, 0), 0).xyz;\n";
 		}
 	}
 	return code;
 }
 
 String VisualShaderNodeParticleMeshEmitter::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
-	String code;
-	code += "	__scalar_ibuff = int(__rand_from_seed(__seed) * 65535.0) % " + itos(position_texture->get_width()) + ";\n";
+	StringBuilder code;
+	code + "	__scalar_ibuff = int(__rand_from_seed(__seed) * 65535.0) % " + itos(position_texture->get_width()) + ";\n";
 
 	code += _generate_code(p_type, p_id, p_output_vars, 0, "mesh_vx");
 	code += _generate_code(p_type, p_id, p_output_vars, 1, "mesh_nm");
 
 	if (is_output_port_connected(2) || is_output_port_connected(3)) {
-		code += "	__vec4_buff = texelFetch(";
+		code + "	__vec4_buff = texelFetch(";
 		code += make_unique_id(p_type, p_id, "mesh_col") + ", ";
-		code += "ivec2(__scalar_ibuff, 0), 0);\n";
+		code + "ivec2(__scalar_ibuff, 0), 0);\n";
 		if (is_output_port_connected(2)) {
-			code += "	" + p_output_vars[2] + " = __vec4_buff.rgb;\n";
+			code + "	" + p_output_vars[2] + " = __vec4_buff.rgb;\n";
 		} else {
-			code += "	" + p_output_vars[2] + " = vec3(0.0);\n";
+			code + "	" + p_output_vars[2] + " = vec3(0.0);\n";
 		}
 		if (is_output_port_connected(3)) {
-			code += "	" + p_output_vars[3] + " = __vec4_buff.a;\n";
+			code + "	" + p_output_vars[3] + " = __vec4_buff.a;\n";
 		} else {
-			code += "	" + p_output_vars[3] + " = 0.0;\n";
+			code + "	" + p_output_vars[3] + " = 0.0;\n";
 		}
 	}
 
@@ -430,7 +432,7 @@ Vector<VisualShader::DefaultTextureParam> VisualShaderNodeParticleMeshEmitter::g
 
 void VisualShaderNodeParticleMeshEmitter::_update_texture(const Vector<Vector2> &p_array, Ref<ImageTexture> &r_texture) {
 	Ref<Image> image;
-	image.instantiate();
+	New_instantiate(image);
 
 	if (p_array.size() == 0) {
 		image->create(1, 1, false, Image::Format::FORMAT_RGBF);
@@ -451,7 +453,7 @@ void VisualShaderNodeParticleMeshEmitter::_update_texture(const Vector<Vector2> 
 
 void VisualShaderNodeParticleMeshEmitter::_update_texture(const Vector<Vector3> &p_array, Ref<ImageTexture> &r_texture) {
 	Ref<Image> image;
-	image.instantiate();
+	New_instantiate(image);
 
 	if (p_array.size() == 0) {
 		image->create(1, 1, false, Image::Format::FORMAT_RGBF);
@@ -472,7 +474,7 @@ void VisualShaderNodeParticleMeshEmitter::_update_texture(const Vector<Vector3> 
 
 void VisualShaderNodeParticleMeshEmitter::_update_texture(const Vector<Color> &p_array, Ref<ImageTexture> &r_texture) {
 	Ref<Image> image;
-	image.instantiate();
+	New_instantiate(image);
 
 	if (p_array.size() == 0) {
 		image->create(1, 1, false, Image::Format::FORMAT_RGBA8);
@@ -705,11 +707,11 @@ void VisualShaderNodeParticleMeshEmitter::_bind_methods() {
 VisualShaderNodeParticleMeshEmitter::VisualShaderNodeParticleMeshEmitter() {
 	connect(CoreStringNames::get_singleton()->changed, callable_mp(this, &VisualShaderNodeParticleMeshEmitter::_update_textures));
 
-	position_texture.instantiate();
-	normal_texture.instantiate();
-	color_texture.instantiate();
-	uv_texture.instantiate();
-	uv2_texture.instantiate();
+	New_instantiate(position_texture);
+	New_instantiate(normal_texture);
+	New_instantiate(color_texture);
+	New_instantiate(uv_texture);
+	New_instantiate(uv2_texture);
 }
 
 // VisualShaderNodeParticleMultiplyByAxisAngle
@@ -770,11 +772,11 @@ String VisualShaderNodeParticleMultiplyByAxisAngle::get_output_port_name(int p_p
 }
 
 String VisualShaderNodeParticleMultiplyByAxisAngle::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
-	String code;
+	StringBuilder code;
 	if (degrees_mode) {
-		code += "	" + p_output_vars[0] + " = __build_rotation_mat3(" + (p_input_vars[1].is_empty() ? ("vec3" + (String)get_input_port_default_value(1)) : p_input_vars[1]) + ", radians(" + (p_input_vars[2].is_empty() ? (String)get_input_port_default_value(2) : p_input_vars[2]) + ")) * " + (p_input_vars[0].is_empty() ? "vec3(0.0)" : p_input_vars[0]) + ";\n";
+		code + "	" + p_output_vars[0] + " = __build_rotation_mat3(" + (p_input_vars[1].is_empty() ? ("vec3" + (String)get_input_port_default_value(1)) : p_input_vars[1]) + ", radians(" + (p_input_vars[2].is_empty() ? (String)get_input_port_default_value(2) : p_input_vars[2]) + ")) * " + (p_input_vars[0].is_empty() ? "vec3(0.0)" : p_input_vars[0]) + ";\n";
 	} else {
-		code += "	" + p_output_vars[0] + " = __build_rotation_mat3(" + (p_input_vars[1].is_empty() ? ("vec3" + (String)get_input_port_default_value(1)) : p_input_vars[1]) + ", " + (p_input_vars[2].is_empty() ? (String)get_input_port_default_value(2) : p_input_vars[2]) + ") * " + (p_input_vars[0].is_empty() ? "vec3(0.0)" : p_input_vars[0]) + ";\n";
+		code + "	" + p_output_vars[0] + " = __build_rotation_mat3(" + (p_input_vars[1].is_empty() ? ("vec3" + (String)get_input_port_default_value(1)) : p_input_vars[1]) + ", " + (p_input_vars[2].is_empty() ? (String)get_input_port_default_value(2) : p_input_vars[2]) + ") * " + (p_input_vars[0].is_empty() ? "vec3(0.0)" : p_input_vars[0]) + ";\n";
 	}
 	return code;
 }
@@ -851,17 +853,17 @@ bool VisualShaderNodeParticleConeVelocity::has_output_port_preview(int p_port) c
 }
 
 String VisualShaderNodeParticleConeVelocity::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
-	String code;
-	code += "	__radians = radians(" + (p_input_vars[1].is_empty() ? (String)get_input_port_default_value(1) : p_input_vars[1]) + ");\n";
-	code += "	__scalar_buff1 = __rand_from_seed_m1_p1(__seed) * __radians;\n";
-	code += "	__scalar_buff2 = __rand_from_seed_m1_p1(__seed) * __radians;\n";
-	code += "	__vec3_buff1 = " + (p_input_vars[0].is_empty() ? "vec3" + (String)get_input_port_default_value(0) : p_input_vars[0]) + ";\n";
-	code += "	__scalar_buff1 += __vec3_buff1.z != 0.0 ? atan(__vec3_buff1.x, __vec3_buff1.z) : sign(__vec3_buff1.x) * (PI / 2.0);\n";
-	code += "	__scalar_buff2 += __vec3_buff1.z != 0.0 ? atan(__vec3_buff1.y, abs(__vec3_buff1.z)) : (__vec3_buff1.x != 0.0 ? atan(__vec3_buff1.y, abs(__vec3_buff1.x)) : sign(__vec3_buff1.y) * (PI / 2.0));\n";
-	code += "	__vec3_buff1 = vec3(sin(__scalar_buff1), 0.0, cos(__scalar_buff1));\n";
-	code += "	__vec3_buff2 = vec3(0.0, sin(__scalar_buff2), cos(__scalar_buff2));\n";
-	code += "	__vec3_buff2.z = __vec3_buff2.z / max(0.0001, sqrt(abs(__vec3_buff2.z)));\n";
-	code += "	" + p_output_vars[0] + " = normalize(vec3(__vec3_buff1.x * __vec3_buff2.z, __vec3_buff2.y, __vec3_buff1.z * __vec3_buff2.z));\n";
+	StringBuilder code;
+	code + "	__radians = radians(" + (p_input_vars[1].is_empty() ? (String)get_input_port_default_value(1) : p_input_vars[1]) + ");\n";
+	code + "	__scalar_buff1 = __rand_from_seed_m1_p1(__seed) * __radians;\n";
+	code + "	__scalar_buff2 = __rand_from_seed_m1_p1(__seed) * __radians;\n";
+	code + "	__vec3_buff1 = " + (p_input_vars[0].is_empty() ? "vec3" + (String)get_input_port_default_value(0) : p_input_vars[0]) + ";\n";
+	code + "	__scalar_buff1 += __vec3_buff1.z != 0.0 ? atan(__vec3_buff1.x, __vec3_buff1.z) : sign(__vec3_buff1.x) * (PI / 2.0);\n";
+	code + "	__scalar_buff2 += __vec3_buff1.z != 0.0 ? atan(__vec3_buff1.y, abs(__vec3_buff1.z)) : (__vec3_buff1.x != 0.0 ? atan(__vec3_buff1.y, abs(__vec3_buff1.x)) : sign(__vec3_buff1.y) * (PI / 2.0));\n";
+	code + "	__vec3_buff1 = vec3(sin(__scalar_buff1), 0.0, cos(__scalar_buff1));\n";
+	code + "	__vec3_buff2 = vec3(0.0, sin(__scalar_buff2), cos(__scalar_buff2));\n";
+	code + "	__vec3_buff2.z = __vec3_buff2.z / max(0.0001, sqrt(abs(__vec3_buff2.z)));\n";
+	code + "	" + p_output_vars[0] + " = normalize(vec3(__vec3_buff1.x * __vec3_buff2.z, __vec3_buff2.y, __vec3_buff1.z * __vec3_buff2.z));\n";
 	return code;
 }
 
@@ -929,7 +931,7 @@ String VisualShaderNodeParticleRandomness::get_input_port_name(int p_port) const
 }
 
 String VisualShaderNodeParticleRandomness::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
-	String code;
+	StringBuilder code;
 	if (op_type == OP_TYPE_SCALAR) {
 		code += vformat("	%s = __randf_range(__seed, %s, %s);\n", p_output_vars[0], p_input_vars[0].is_empty() ? (String)get_input_port_default_value(0) : p_input_vars[0], p_input_vars[1].is_empty() ? (String)get_input_port_default_value(1) : p_input_vars[1]);
 	} else if (op_type == OP_TYPE_VECTOR) {
@@ -1030,17 +1032,17 @@ String VisualShaderNodeParticleAccelerator::get_input_port_name(int p_port) cons
 }
 
 String VisualShaderNodeParticleAccelerator::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
-	String code;
+	StringBuilder code;
 	switch (mode) {
 		case MODE_LINEAR:
-			code += "	" + p_output_vars[0] + " = length(VELOCITY) > 0.0 ? " + "normalize(VELOCITY) * " + (p_input_vars[0].is_empty() ? "vec3" + (String)get_input_port_default_value(0) : p_input_vars[0]) + " * mix(1.0, __rand_from_seed(__seed), " + (p_input_vars[1].is_empty() ? (String)get_input_port_default_value(1) : p_input_vars[1]) + ") : vec3(0.0);\n";
+			code + "	" + p_output_vars[0] + " = length(VELOCITY) > 0.0 ? " + "normalize(VELOCITY) * " + (p_input_vars[0].is_empty() ? "vec3" + (String)get_input_port_default_value(0) : p_input_vars[0]) + " * mix(1.0, __rand_from_seed(__seed), " + (p_input_vars[1].is_empty() ? (String)get_input_port_default_value(1) : p_input_vars[1]) + ") : vec3(0.0);\n";
 			break;
 		case MODE_RADIAL:
-			code += "	" + p_output_vars[0] + " = length(__diff) > 0.0 ? __ndiff * " + (p_input_vars[0].is_empty() ? "vec3" + (String)get_input_port_default_value(0) : p_input_vars[0]) + " * mix(1.0, __rand_from_seed(__seed), " + (p_input_vars[1].is_empty() ? (String)get_input_port_default_value(1) : p_input_vars[1]) + ") : vec3(0.0);\n";
+			code + "	" + p_output_vars[0] + " = length(__diff) > 0.0 ? __ndiff * " + (p_input_vars[0].is_empty() ? "vec3" + (String)get_input_port_default_value(0) : p_input_vars[0]) + " * mix(1.0, __rand_from_seed(__seed), " + (p_input_vars[1].is_empty() ? (String)get_input_port_default_value(1) : p_input_vars[1]) + ") : vec3(0.0);\n";
 			break;
 		case MODE_TANGENTIAL:
-			code += "	__vec3_buff1 = cross(__ndiff, normalize(" + (p_input_vars[2].is_empty() ? "vec3" + (String)get_input_port_default_value(2) : p_input_vars[2]) + "));\n";
-			code += "	" + p_output_vars[0] + " = length(__vec3_buff1) > 0.0 ? normalize(__vec3_buff1) * (" + (p_input_vars[0].is_empty() ? "vec3" + (String)get_input_port_default_value(0) : p_input_vars[0]) + " * mix(1.0, __rand_from_seed(__seed), " + (p_input_vars[1].is_empty() ? (String)get_input_port_default_value(1) : p_input_vars[1]) + ")) : vec3(0.0);\n";
+			code + "	__vec3_buff1 = cross(__ndiff, normalize(" + (p_input_vars[2].is_empty() ? "vec3" + (String)get_input_port_default_value(2) : p_input_vars[2]) + "));\n";
+			code + "	" + p_output_vars[0] + " = length(__vec3_buff1) > 0.0 ? normalize(__vec3_buff1) * (" + (p_input_vars[0].is_empty() ? "vec3" + (String)get_input_port_default_value(0) : p_input_vars[0]) + " * mix(1.0, __rand_from_seed(__seed), " + (p_input_vars[1].is_empty() ? (String)get_input_port_default_value(1) : p_input_vars[1]) + ")) : vec3(0.0);\n";
 			break;
 		default:
 			break;
@@ -1240,7 +1242,7 @@ bool VisualShaderNodeParticleOutput::is_port_separator(int p_index) const {
 }
 
 String VisualShaderNodeParticleOutput::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
-	String code;
+	StringBuilder code;
 	String tab = "	";
 
 	if (shader_type == VisualShader::TYPE_START_CUSTOM || shader_type == VisualShader::TYPE_PROCESS_CUSTOM) {
@@ -1327,7 +1329,7 @@ String VisualShaderNodeParticleOutput::generate_code(Shader::Mode p_mode, Visual
 			}
 		}
 		if (!p_input_vars[0].is_empty()) { // active (end)
-			code += "	}\n";
+			code + "	}\n";
 		}
 	}
 	return code;
@@ -1467,7 +1469,7 @@ String VisualShaderNodeParticleEmit::get_input_port_default_hint(int p_port) con
 }
 
 String VisualShaderNodeParticleEmit::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
-	String code;
+	StringBuilder code;
 	String tab;
 	bool default_condition = false;
 
@@ -1556,13 +1558,13 @@ String VisualShaderNodeParticleEmit::generate_code(Shader::Mode p_mode, VisualSh
 	}
 
 	if (!default_condition) {
-		code += "	if (" + p_input_vars[0] + ") {\n";
+		code + "	if (" + p_input_vars[0] + ") {\n";
 	}
 
 	code += tab + "emit_subparticle(" + transform + ", " + velocity + ", vec4(" + color + ", " + alpha + "), vec4(" + custom + ", " + custom_alpha + "), " + flags + ");\n";
 
 	if (!default_condition) {
-		code += "	}\n";
+		code + "	}\n";
 	}
 
 	return code;

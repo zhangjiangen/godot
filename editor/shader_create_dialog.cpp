@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -135,7 +135,7 @@ void ShaderCreateDialog::_create_new() {
 
 	if (language_menu->get_selected() == int(SHADER_TYPE_TEXT)) {
 		Ref<Shader> text_shader;
-		text_shader.instantiate();
+		New_instantiate(text_shader);
 		shader = text_shader;
 
 		StringBuilder code;
@@ -178,7 +178,7 @@ void ShaderCreateDialog::_create_new() {
 		text_shader->set_code(code.as_string());
 	} else {
 		Ref<VisualShader> visual_shader;
-		visual_shader.instantiate();
+		New_instantiate(visual_shader);
 		shader = visual_shader;
 		visual_shader->set_engine_version(Engine::get_singleton()->get_version_info());
 		visual_shader->set_mode(Shader::Mode(current_mode));

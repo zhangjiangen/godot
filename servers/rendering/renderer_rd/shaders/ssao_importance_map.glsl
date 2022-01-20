@@ -26,7 +26,7 @@
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
 #ifdef GENERATE_MAP
-layout(set = 0, binding = 0) uniform sampler2DArray source_ssao;
+layout(set = 0, binding = 0) uniform sampler2DArray source_texture;
 #else
 layout(set = 0, binding = 0) uniform sampler2D source_importance;
 #endif
@@ -56,11 +56,10 @@ void main() {
 
 	vec2 base_uv = (vec2(base_position) + vec2(0.5f, 0.5f)) * params.half_screen_pixel_size;
 
-	float avg = 0.0;
 	float minV = 1.0;
 	float maxV = 0.0;
 	for (int i = 0; i < 4; i++) {
-		vec4 vals = textureGather(source_ssao, vec3(base_uv, i));
+		vec4 vals = textureGather(source_texture, vec3(base_uv, i));
 
 		// apply the same modifications that would have been applied in the main shader
 		vals = params.intensity * vals;
@@ -69,15 +68,13 @@ void main() {
 
 		vals = pow(clamp(vals, 0.0, 1.0), vec4(params.power));
 
-		avg += dot(vec4(vals.x, vals.y, vals.z, vals.w), vec4(1.0 / 16.0, 1.0 / 16.0, 1.0 / 16.0, 1.0 / 16.0));
-
 		maxV = max(maxV, max(max(vals.x, vals.y), max(vals.z, vals.w)));
 		minV = min(minV, min(min(vals.x, vals.y), min(vals.z, vals.w)));
 	}
 
 	float min_max_diff = maxV - minV;
-
-	imageStore(dest_image, ssC, vec4(pow(clamp(min_max_diff * 2.0, 0.0, 1.0), 0.8)));
+	float diff_result = pow(clamp(min_max_diff * 2.0, 0.0, 1.0), 0.8);
+	imageStore(dest_image, ssC, vec4(diff_result, diff_result, diff_result, diff_result));
 #endif
 
 #ifdef PROCESS_MAPA
@@ -95,7 +92,7 @@ void main() {
 
 	float avg = dot(vals, vec4(0.25, 0.25, 0.25, 0.25));
 
-	imageStore(dest_image, ssC, vec4(avg));
+	imageStore(dest_image, ssC, vec4(avg, avg, avg, avg));
 #endif
 
 #ifdef PROCESS_MAPB
@@ -113,7 +110,7 @@ void main() {
 
 	float avg = dot(vals, vec4(0.25, 0.25, 0.25, 0.25));
 
-	imageStore(dest_image, ssC, vec4(avg));
+	imageStore(dest_image, ssC, vec4(avg, avg, avg, avg));
 
 	// sum the average; to avoid overflowing we assume max AO resolution is not bigger than 16384x16384; so quarter res (used here) will be 4096x4096, which leaves us with 8 bits per pixel
 	uint sum = uint(clamp(avg, 0.0, 1.0) * 255.0 + 0.5);

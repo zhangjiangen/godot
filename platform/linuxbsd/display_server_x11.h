@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -30,8 +30,6 @@
 
 #ifndef DISPLAY_SERVER_X11_H
 #define DISPLAY_SERVER_X11_H
-
-#include "drivers/gles3/rasterizer_platforms.h"
 
 #ifdef X11_ENABLED
 
@@ -291,7 +289,6 @@ public:
 
 	virtual void mouse_warp_to_position(const Point2i &p_to) override;
 	virtual Point2i mouse_get_position() const override;
-	virtual Point2i mouse_get_absolute_position() const override;
 	virtual MouseButton mouse_get_button_state() const override;
 
 	virtual void clipboard_set(const String &p_text) override;

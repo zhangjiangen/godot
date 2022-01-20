@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -94,7 +94,7 @@ Error ResourceImporterImageFont::import(const String &p_source_file, const Strin
 	Vector<String> ranges = p_options["character_ranges"];
 
 	Ref<FontData> font;
-	font.instantiate();
+	New_instantiate(font);
 	font->set_antialiased(false);
 	font->set_multichannel_signed_distance_field(false);
 	font->set_fixed_size(base_size);
@@ -103,7 +103,7 @@ Error ResourceImporterImageFont::import(const String &p_source_file, const Strin
 	font->set_oversampling(1.0f);
 
 	Ref<Image> img;
-	img.instantiate();
+	New_instantiate(img);
 	Error err = ImageLoader::load_image(p_source_file, img);
 	ERR_FAIL_COND_V_MSG(err != OK, ERR_FILE_CANT_READ, TTR("Can't load font texture: ") + "\"" + p_source_file + "\".");
 	font->set_texture_image(0, Vector2i(base_size, 0), 0, img);

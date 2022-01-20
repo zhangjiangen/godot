@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -123,18 +123,18 @@ void register_core_types() {
 
 	CoreStringNames::create();
 
-	resource_format_po.instantiate();
+	New_instantiate(resource_format_po);
 	ResourceLoader::add_resource_format_loader(resource_format_po);
 
-	resource_saver_binary.instantiate();
+	New_instantiate(resource_saver_binary);
 	ResourceSaver::add_resource_format_saver(resource_saver_binary);
-	resource_loader_binary.instantiate();
+	New_instantiate(resource_loader_binary);
 	ResourceLoader::add_resource_format_loader(resource_loader_binary);
 
-	resource_format_importer.instantiate();
+	New_instantiate(resource_format_importer);
 	ResourceLoader::add_resource_format_loader(resource_format_importer);
 
-	resource_format_image.instantiate();
+	New_instantiate(resource_format_image);
 	ResourceLoader::add_resource_format_loader(resource_format_image);
 
 	GDREGISTER_CLASS(Object);
@@ -193,9 +193,9 @@ void register_core_types() {
 	ClassDB::register_custom_instance_class<PacketPeerDTLS>();
 	ClassDB::register_custom_instance_class<DTLSServer>();
 
-	resource_format_saver_crypto.instantiate();
+	New_instantiate(resource_format_saver_crypto);
 	ResourceSaver::add_resource_format_saver(resource_format_saver_crypto);
-	resource_format_loader_crypto.instantiate();
+	New_instantiate(resource_format_loader_crypto);
 	ResourceLoader::add_resource_format_loader(resource_format_loader_crypto);
 
 	GDREGISTER_VIRTUAL_CLASS(MultiplayerPeer);
@@ -243,7 +243,7 @@ void register_core_types() {
 
 	native_extension_manager = memnew(NativeExtensionManager);
 
-	resource_loader_native_extension.instantiate();
+	New_instantiate(resource_loader_native_extension);
 	ResourceLoader::add_resource_format_loader(resource_loader_native_extension);
 
 	ip = IP::create();

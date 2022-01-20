@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -235,7 +235,7 @@ void EditorCommandPalette::register_shortcuts_as_command() {
 		String command_name = unregistered_shortcuts[*key].first;
 		Ref<Shortcut> shortcut = unregistered_shortcuts[*key].second;
 		Ref<InputEventShortcut> ev;
-		ev.instantiate();
+		New_instantiate(ev);
 		ev->set_shortcut(shortcut);
 		String shortcut_text = String(shortcut->get_as_text());
 		add_command(command_name, *key, callable_mp(EditorNode::get_singleton()->get_viewport(), &Viewport::push_unhandled_input), varray(ev, false), shortcut_text);
@@ -257,7 +257,7 @@ void EditorCommandPalette::register_shortcuts_as_command() {
 Ref<Shortcut> EditorCommandPalette::add_shortcut_command(const String &p_command, const String &p_key, Ref<Shortcut> p_shortcut) {
 	if (is_inside_tree()) {
 		Ref<InputEventShortcut> ev;
-		ev.instantiate();
+		New_instantiate(ev);
 		ev->set_shortcut(p_shortcut);
 		String shortcut_text = String(p_shortcut->get_as_text());
 		add_command(p_command, p_key, callable_mp(EditorNode::get_singleton()->get_viewport(), &Viewport::push_unhandled_input), varray(ev, false), shortcut_text);

@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -1028,6 +1028,13 @@ void GridMapEditor::_draw_grids(const Vector3 &cell_size) {
 	}
 }
 
+void GridMapEditor::_update_theme() {
+	options->set_icon(get_theme_icon(SNAME("GridMap"), SNAME("EditorIcons")));
+	search_box->set_right_icon(get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
+	mode_thumbnail->set_icon(get_theme_icon(SNAME("FileThumbnail"), SNAME("EditorIcons")));
+	mode_list->set_icon(get_theme_icon(SNAME("FileList"), SNAME("EditorIcons")));
+}
+
 void GridMapEditor::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
@@ -1048,6 +1055,7 @@ void GridMapEditor::_notification(int p_what) {
 
 			_update_selection_transform();
 			_update_paste_indicator();
+			_update_theme();
 		} break;
 
 		case NOTIFICATION_EXIT_TREE: {
@@ -1088,15 +1096,14 @@ void GridMapEditor::_notification(int p_what) {
 		} break;
 
 		case NOTIFICATION_THEME_CHANGED: {
-			options->set_icon(get_theme_icon(SNAME("GridMap"), SNAME("EditorIcons")));
-			search_box->set_right_icon(get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
+			_update_theme();
 		} break;
 
 		case NOTIFICATION_APPLICATION_FOCUS_OUT: {
 			if (input_action == INPUT_PAINT) {
 				// Simulate mouse released event to stop drawing when editor focus exists.
 				Ref<InputEventMouseButton> release;
-				release.instantiate();
+				New_instantiate(release);
 				release->set_button_index(MouseButton::LEFT);
 				forward_spatial_input_event(nullptr, release);
 			}
@@ -1250,7 +1257,6 @@ GridMapEditor::GridMapEditor(EditorNode *p_editor) {
 	mode_thumbnail->set_flat(true);
 	mode_thumbnail->set_toggle_mode(true);
 	mode_thumbnail->set_pressed(true);
-	mode_thumbnail->set_icon(p_editor->get_gui_base()->get_theme_icon(SNAME("FileThumbnail"), SNAME("EditorIcons")));
 	hb->add_child(mode_thumbnail);
 	mode_thumbnail->connect("pressed", callable_mp(this, &GridMapEditor::_set_display_mode), varray(DISPLAY_THUMBNAIL));
 
@@ -1258,7 +1264,6 @@ GridMapEditor::GridMapEditor(EditorNode *p_editor) {
 	mode_list->set_flat(true);
 	mode_list->set_toggle_mode(true);
 	mode_list->set_pressed(false);
-	mode_list->set_icon(p_editor->get_gui_base()->get_theme_icon(SNAME("FileList"), SNAME("EditorIcons")));
 	hb->add_child(mode_list);
 	mode_list->connect("pressed", callable_mp(this, &GridMapEditor::_set_display_mode), varray(DISPLAY_LIST));
 
@@ -1367,7 +1372,7 @@ GridMapEditor::GridMapEditor(EditorNode *p_editor) {
 		Array d;
 		d.resize(RS::ARRAY_MAX);
 
-		inner_mat.instantiate();
+		New_instantiate(inner_mat);
 		inner_mat->set_albedo(Color(0.7, 0.7, 1.0, 0.2));
 		inner_mat->set_shading_mode(StandardMaterial3D::SHADING_MODE_UNSHADED);
 		inner_mat->set_transparency(StandardMaterial3D::TRANSPARENCY_ALPHA);
@@ -1376,14 +1381,14 @@ GridMapEditor::GridMapEditor(EditorNode *p_editor) {
 		RenderingServer::get_singleton()->mesh_add_surface_from_arrays(selection_mesh, RS::PRIMITIVE_TRIANGLES, d);
 		RenderingServer::get_singleton()->mesh_surface_set_material(selection_mesh, 0, inner_mat->get_rid());
 
-		outer_mat.instantiate();
+		New_instantiate(outer_mat);
 		outer_mat->set_albedo(Color(0.7, 0.7, 1.0, 0.8));
 		outer_mat->set_on_top_of_alpha();
 
 		outer_mat->set_shading_mode(StandardMaterial3D::SHADING_MODE_UNSHADED);
 		outer_mat->set_transparency(StandardMaterial3D::TRANSPARENCY_ALPHA);
 
-		selection_floor_mat.instantiate();
+		New_instantiate(selection_floor_mat);
 		selection_floor_mat->set_albedo(Color(0.80, 0.80, 1.0, 1));
 		selection_floor_mat->set_on_top_of_alpha();
 		selection_floor_mat->set_shading_mode(StandardMaterial3D::SHADING_MODE_UNSHADED);
@@ -1410,7 +1415,7 @@ GridMapEditor::GridMapEditor(EditorNode *p_editor) {
 
 	_set_selection(false);
 
-	indicator_mat.instantiate();
+	New_instantiate(indicator_mat);
 	indicator_mat->set_shading_mode(StandardMaterial3D::SHADING_MODE_UNSHADED);
 	indicator_mat->set_transparency(StandardMaterial3D::TRANSPARENCY_ALPHA);
 	indicator_mat->set_flag(StandardMaterial3D::FLAG_SRGB_VERTEX_COLOR, true);
@@ -1454,10 +1459,10 @@ void GridMapEditorPlugin::_notification(int p_what) {
 	if (p_what == EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED) {
 		switch ((int)EditorSettings::get_singleton()->get("editors/grid_map/editor_side")) {
 			case 0: { // Left.
-				Node3DEditor::get_singleton()->get_palette_split()->move_child(grid_map_editor, 0);
+				Node3DEditor::get_singleton()->move_control_to_left_panel(grid_map_editor);
 			} break;
 			case 1: { // Right.
-				Node3DEditor::get_singleton()->get_palette_split()->move_child(grid_map_editor, 1);
+				Node3DEditor::get_singleton()->move_control_to_right_panel(grid_map_editor);
 			} break;
 		}
 	}
@@ -1493,10 +1498,10 @@ GridMapEditorPlugin::GridMapEditorPlugin(EditorNode *p_node) {
 	grid_map_editor = memnew(GridMapEditor(editor));
 	switch ((int)EditorSettings::get_singleton()->get("editors/grid_map/editor_side")) {
 		case 0: { // Left.
-			add_control_to_container(CONTAINER_SPATIAL_EDITOR_SIDE_LEFT, grid_map_editor);
+			Node3DEditor::get_singleton()->add_control_to_left_panel(grid_map_editor);
 		} break;
 		case 1: { // Right.
-			add_control_to_container(CONTAINER_SPATIAL_EDITOR_SIDE_RIGHT, grid_map_editor);
+			Node3DEditor::get_singleton()->add_control_to_right_panel(grid_map_editor);
 		} break;
 	}
 	grid_map_editor->hide();

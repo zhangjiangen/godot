@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -113,7 +113,7 @@ void TilesEditorPlugin::_thread() {
 				tile_map->set_scale(scale);
 				tile_map->set_position(-(scale * encompassing_rect.get_center()) + thumbnail_size2 / 2);
 
-				// Add the viewport at the lasst moment to avoid rendering too early.
+				// Add the viewport at the last moment to avoid rendering too early.
 				EditorNode::get_singleton()->add_child(viewport);
 
 				RS::get_singleton()->connect(SNAME("frame_pre_draw"), callable_mp(const_cast<TilesEditorPlugin *>(this), &TilesEditorPlugin::_preview_frame_started), Vector<Variant>(), Object::CONNECT_ONESHOT);
@@ -122,7 +122,7 @@ void TilesEditorPlugin::_thread() {
 
 				Ref<Image> image = viewport->get_texture()->get_image();
 				Ref<ImageTexture> image_texture;
-				image_texture.instantiate();
+				New_instantiate(image_texture);
 				image_texture->create_from_image(image);
 
 				// Find the index for the given pattern. TODO: optimize.
@@ -157,6 +157,17 @@ void TilesEditorPlugin::_update_editors() {
 
 	// Update the viewport.
 	CanvasItemEditor::get_singleton()->update_viewport();
+
+	// Update visibility of bottom panel buttons.
+	if (tileset_editor_button->is_pressed() && !tile_set.is_valid()) {
+		if (tile_map) {
+			editor_node->make_bottom_panel_item_visible(tilemap_editor);
+		} else {
+			editor_node->hide_bottom_panel();
+		}
+	}
+	tileset_editor_button->set_visible(tile_set.is_valid());
+	tilemap_editor_button->set_visible(tile_map);
 }
 
 void TilesEditorPlugin::_notification(int p_what) {

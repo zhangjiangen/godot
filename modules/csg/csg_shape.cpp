@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -44,7 +44,7 @@ void CSGShape3D::set_use_collision(bool p_enable) {
 	}
 
 	if (use_collision) {
-		root_collision_shape.instantiate();
+		New_instantiate(root_collision_shape);
 		root_collision_instance = PhysicsServer3D::get_singleton()->body_create();
 		PhysicsServer3D::get_singleton()->body_set_mode(root_collision_instance, PhysicsServer3D::BODY_MODE_STATIC);
 		PhysicsServer3D::get_singleton()->body_set_state(root_collision_instance, PhysicsServer3D::BODY_STATE_TRANSFORM, get_global_transform());
@@ -415,7 +415,7 @@ void CSGShape3D::_update_shape() {
 		}
 	}
 
-	root_mesh.instantiate();
+	New_instantiate(root_mesh);
 	//create surfaces
 
 	for (int i = 0; i < surfaces.size(); i++) {
@@ -502,7 +502,7 @@ void CSGShape3D::_notification(int p_what) {
 		}
 
 		if (use_collision && is_root_shape()) {
-			root_collision_shape.instantiate();
+			New_instantiate(root_collision_shape);
 			root_collision_instance = PhysicsServer3D::get_singleton()->body_create();
 			PhysicsServer3D::get_singleton()->body_set_mode(root_collision_instance, PhysicsServer3D::BODY_MODE_STATIC);
 			PhysicsServer3D::get_singleton()->body_set_state(root_collision_instance, PhysicsServer3D::BODY_STATE_TRANSFORM, get_global_transform());
@@ -1760,7 +1760,7 @@ CSGBrush *CSGPolygon3D::_build_brush() {
 	}
 	int face_count = extrusions * extrusion_face_count + end_count * shape_face_count;
 
-	// Intialize variables used to create the mesh.
+	// Initialize variables used to create the mesh.
 	Ref<Material> material = get_material();
 
 	Vector<Vector3> faces;

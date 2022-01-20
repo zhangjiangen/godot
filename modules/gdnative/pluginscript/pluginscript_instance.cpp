@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -79,14 +79,20 @@ bool PluginScriptInstance::has_method(const StringName &p_method) const {
 	return _script->has_method(p_method);
 }
 
-Variant PluginScriptInstance::call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+void PluginScriptInstance::call_r(Variant &var_ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
 	// TODO: optimize when calling a Godot method from Godot to avoid param conversion ?
 	godot_variant ret = _desc->call_method(
 			_data, (godot_string_name *)&p_method, (const godot_variant **)p_args,
 			p_argcount, (godot_variant_call_error *)&r_error);
-	Variant var_ret = *(Variant *)&ret;
+	var_ret = *(Variant *)&ret;
 	godot_variant_destroy(&ret);
-	return var_ret;
+}
+void PluginScriptInstance::call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	// TODO: optimize when calling a Godot method from Godot to avoid param conversion ?
+	godot_variant ret = _desc->call_method(
+			_data, (godot_string_name *)&p_method, (const godot_variant **)p_args,
+			p_argcount, (godot_variant_call_error *)&r_error);
+	godot_variant_destroy(&ret);
 }
 
 void PluginScriptInstance::notification(int p_notification) {

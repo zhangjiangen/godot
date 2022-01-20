@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -343,6 +343,64 @@ EditorPropertyTextEnum::EditorPropertyTextEnum() {
 	add_focusable(cancel_button);
 }
 
+//////////////////// LOCALE ////////////////////////
+
+void EditorPropertyLocale::_locale_selected(const String &p_locale) {
+	emit_changed(get_edited_property(), p_locale);
+	update_property();
+}
+
+void EditorPropertyLocale::_locale_pressed() {
+	if (!dialog) {
+		dialog = memnew(EditorLocaleDialog);
+		dialog->connect("locale_selected", callable_mp(this, &EditorPropertyLocale::_locale_selected));
+		add_child(dialog);
+	}
+
+	String locale_code = get_edited_object()->get(get_edited_property());
+	dialog->set_locale(locale_code);
+	dialog->popup_locale_dialog();
+}
+
+void EditorPropertyLocale::update_property() {
+	String locale_code = get_edited_object()->get(get_edited_property());
+	locale->set_text(locale_code);
+	locale->set_tooltip(locale_code);
+}
+
+void EditorPropertyLocale::setup(const String &p_hint_text) {
+}
+
+void EditorPropertyLocale::_notification(int p_what) {
+	if (p_what == NOTIFICATION_ENTER_TREE || p_what == NOTIFICATION_THEME_CHANGED) {
+		locale_edit->set_icon(get_theme_icon(SNAME("Translation"), SNAME("EditorIcons")));
+	}
+}
+
+void EditorPropertyLocale::_locale_focus_exited() {
+	_locale_selected(locale->get_text());
+}
+
+void EditorPropertyLocale::_bind_methods() {
+}
+
+EditorPropertyLocale::EditorPropertyLocale() {
+	HBoxContainer *locale_hb = memnew(HBoxContainer);
+	add_child(locale_hb);
+	locale = memnew(LineEdit);
+	locale_hb->add_child(locale);
+	locale->connect("text_submitted", callable_mp(this, &EditorPropertyLocale::_locale_selected));
+	locale->connect("focus_exited", callable_mp(this, &EditorPropertyLocale::_locale_focus_exited));
+	locale->set_h_size_flags(SIZE_EXPAND_FILL);
+
+	locale_edit = memnew(Button);
+	locale_edit->set_clip_text(true);
+	locale_hb->add_child(locale_edit);
+	add_focusable(locale);
+	dialog = nullptr;
+	locale_edit->connect("pressed", callable_mp(this, &EditorPropertyLocale::_locale_pressed));
+}
+
 ///////////////////// PATH /////////////////////////
 
 void EditorPropertyPath::_set_read_only(bool p_read_only) {
@@ -594,7 +652,7 @@ void EditorPropertyButton::_button_pressed() {
 void EditorPropertyButton::_bind_methods() {
 }
 void EditorPropertyButton::update_property() {
-	bool c = get_edited_object()->get(get_edited_property());
+	get_edited_object()->get(get_edited_property());
 	button->set_visible(true);
 }
 void EditorPropertyButton::set_button_name(const String &name) {
@@ -2751,6 +2809,29 @@ void EditorPropertyNodePath::_node_clear() {
 	update_property();
 }
 
+bool EditorPropertyNodePath::can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const {
+	return !is_read_only() && is_drop_valid(p_data);
+}
+
+void EditorPropertyNodePath::drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) {
+	ERR_FAIL_COND(!is_drop_valid(p_data));
+	Dictionary data = p_data;
+	Array nodes = data["nodes"];
+	Node *node = get_tree()->get_edited_scene_root()->get_node(nodes[0]);
+
+	if (node) {
+		_node_selected(node->get_path());
+	}
+}
+
+bool EditorPropertyNodePath::is_drop_valid(const Dictionary &p_drag_data) const {
+	if (p_drag_data["type"] != "nodes") {
+		return false;
+	}
+	Array nodes = p_drag_data["nodes"];
+	return nodes.size() == 1;
+}
+
 void EditorPropertyNodePath::update_property() {
 	NodePath p = get_edited_object()->get(get_edited_property());
 
@@ -2805,6 +2886,8 @@ void EditorPropertyNodePath::_notification(int p_what) {
 }
 
 void EditorPropertyNodePath::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("_can_drop_data_fw", "position", "data", "from"), &EditorPropertyNodePath::can_drop_data_fw);
+	ClassDB::bind_method(D_METHOD("_drop_data_fw", "position", "data", "from"), &EditorPropertyNodePath::drop_data_fw);
 }
 
 EditorPropertyNodePath::EditorPropertyNodePath() {
@@ -2815,6 +2898,7 @@ EditorPropertyNodePath::EditorPropertyNodePath() {
 	assign->set_h_size_flags(SIZE_EXPAND_FILL);
 	assign->set_clip_text(true);
 	assign->connect("pressed", callable_mp(this, &EditorPropertyNodePath::_node_assign));
+	assign->set_drag_forwarding(this);
 	hbc->add_child(assign);
 
 	clear = memnew(Button);
@@ -2863,7 +2947,7 @@ void EditorPropertyResource::_resource_changed(const RES &p_resource) {
 	// Make visual script the correct type.
 	Ref<Script> s = p_resource;
 	if (get_edited_object() && s.is_valid()) {
-		s->call("set_instance_base_type", get_edited_object()->get_class());
+		s->call_void("set_instance_base_type", get_edited_object()->get_class());
 	}
 
 	// Prevent the creation of invalid ViewportTextures when possible.
@@ -2907,8 +2991,11 @@ void EditorPropertyResource::_resource_changed(const RES &p_resource) {
 	}
 }
 
-void EditorPropertyResource::_sub_inspector_property_keyed(const String &p_property, const Variant &p_value, bool) {
-	emit_signal(SNAME("property_keyed_with_value"), String(get_edited_property()) + ":" + p_property, p_value, false);
+void EditorPropertyResource::_sub_inspector_property_keyed(const String &p_property, const Variant &p_value, bool p_advance) {
+	// The second parameter could be null, causing the event to fire with less arguments, so use the pointer call which preserves it.
+	const Variant args[3] = { String(get_edited_property()) + ":" + p_property, p_value, p_advance };
+	const Variant *argp[3] = { &args[0], &args[1], &args[2] };
+	emit_signal(SNAME("property_keyed_with_value"), argp, 3);
 }
 
 void EditorPropertyResource::_sub_inspector_resource_selected(const RES &p_resource, const String &p_property) {
@@ -3034,7 +3121,7 @@ void EditorPropertyResource::_viewport_selected(const NodePath &p_path) {
 	}
 
 	Ref<ViewportTexture> vt;
-	vt.instantiate();
+	New_instantiate(vt);
 	vt->set_viewport_path_in_scene(get_tree()->get_edited_scene_root()->get_path_to(to_node));
 	vt->setup_local_to_scene();
 
@@ -3380,6 +3467,10 @@ EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_
 			} else if (p_hint == PROPERTY_HINT_TYPE_STRING) {
 				EditorPropertyClassName *editor = memnew(EditorPropertyClassName);
 				editor->setup("Object", p_hint_text);
+				return editor;
+			} else if (p_hint == PROPERTY_HINT_LOCALE_ID) {
+				EditorPropertyLocale *editor = memnew(EditorPropertyLocale);
+				editor->setup(p_hint_text);
 				return editor;
 			} else if (p_hint == PROPERTY_HINT_DIR || p_hint == PROPERTY_HINT_FILE || p_hint == PROPERTY_HINT_SAVE_FILE || p_hint == PROPERTY_HINT_GLOBAL_DIR || p_hint == PROPERTY_HINT_GLOBAL_FILE) {
 				Vector<String> extensions = p_hint_text.split(",");

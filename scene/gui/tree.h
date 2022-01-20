@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -114,7 +114,12 @@ private:
 		int custom_font_size = -1;
 
 		Cell() {
-			text_buf.instantiate();
+			New_instantiate(text_buf);
+		}
+		~Cell() {
+			text_buf.unref();
+			icon.unref();
+			buttons.clear();
 		}
 
 		Size2 get_icon_size() const;
@@ -423,7 +428,7 @@ private:
 		String language;
 		Control::TextDirection text_direction = Control::TEXT_DIRECTION_INHERITED;
 		ColumnInfo() {
-			text_buf.instantiate();
+			New_instantiate(text_buf);
 		}
 	};
 

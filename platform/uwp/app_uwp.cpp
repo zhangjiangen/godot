@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -243,7 +243,7 @@ void App::pointer_event(Windows::UI::Core::CoreWindow ^ sender, Windows::UI::Cor
 	MouseButton but = _get_button(point);
 	if (_is_touch(point)) {
 		Ref<InputEventScreenTouch> screen_touch;
-		screen_touch.instantiate();
+		New_instantiate(screen_touch);
 		screen_touch->set_device(0);
 		screen_touch->set_pressed(p_pressed);
 		screen_touch->set_position(Vector2(pos.X, pos.Y));
@@ -255,7 +255,7 @@ void App::pointer_event(Windows::UI::Core::CoreWindow ^ sender, Windows::UI::Cor
 		os->input_event(screen_touch);
 	} else {
 		Ref<InputEventMouseButton> mouse_button;
-		mouse_button.instantiate();
+		New_instantiate(mouse_button);
 		mouse_button->set_device(0);
 		mouse_button->set_pressed(p_pressed);
 		mouse_button->set_button_index(but);
@@ -323,7 +323,7 @@ void App::OnPointerMoved(Windows::UI::Core::CoreWindow ^ sender, Windows::UI::Co
 
 	if (_is_touch(point)) {
 		Ref<InputEventScreenDrag> screen_drag;
-		screen_drag.instantiate();
+		New_instantiate(screen_drag);
 		screen_drag->set_device(0);
 		screen_drag->set_position(Vector2(pos.X, pos.Y));
 		screen_drag->set_index(_get_finger(point->PointerId));
@@ -337,7 +337,7 @@ void App::OnPointerMoved(Windows::UI::Core::CoreWindow ^ sender, Windows::UI::Co
 		}
 
 		Ref<InputEventMouseMotion> mouse_motion;
-		mouse_motion.instantiate();
+		New_instantiate(mouse_motion);
 		mouse_motion->set_device(0);
 		mouse_motion->set_position(Vector2(pos.X, pos.Y));
 		mouse_motion->set_global_position(Vector2(pos.X, pos.Y));
@@ -360,7 +360,7 @@ void App::OnMouseMoved(MouseDevice ^ mouse_device, MouseEventArgs ^ args) {
 	pos.Y = last_mouse_pos.Y + args->MouseDelta.Y;
 
 	Ref<InputEventMouseMotion> mouse_motion;
-	mouse_motion.instantiate();
+	New_instantiate(mouse_motion);
 	mouse_motion->set_device(0);
 	mouse_motion->set_position(Vector2(pos.X, pos.Y));
 	mouse_motion->set_global_position(Vector2(pos.X, pos.Y));

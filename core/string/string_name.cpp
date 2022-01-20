@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -94,7 +94,7 @@ void StringName::cleanup() {
 			}
 
 			_table[i] = _table[i]->next;
-			memdelete(d);
+			memdelete_allocator<_Data, DefaultAllocator>(d);
 		}
 	}
 	if (lost_strings) {
@@ -128,7 +128,7 @@ void StringName::unref() {
 		if (_data->next) {
 			_data->next->prev = _data->prev;
 		}
-		memdelete(_data);
+		memdelete_allocator<_Data, DefaultAllocator>(_data);
 	}
 
 	_data = nullptr;
@@ -223,7 +223,7 @@ StringName::StringName(const char *p_name, bool p_static) {
 		return;
 	}
 
-	_data = memnew(_Data);
+	_data = memnew_allocator(_Data, DefaultAllocator);
 	_data->name = p_name;
 	_data->refcount.init();
 	_data->static_count.set(p_static ? 1 : 0);
@@ -283,7 +283,7 @@ StringName::StringName(const StaticCString &p_static_string, bool p_static) {
 		}
 	}
 
-	_data = memnew(_Data);
+	_data = memnew_allocator(_Data, DefaultAllocator);
 
 	_data->refcount.init();
 	_data->static_count.set(p_static ? 1 : 0);
@@ -343,7 +343,7 @@ StringName::StringName(const String &p_name, bool p_static) {
 		}
 	}
 
-	_data = memnew(_Data);
+	_data = memnew_allocator(_Data, DefaultAllocator);
 	_data->name = p_name;
 	_data->refcount.init();
 	_data->static_count.set(p_static ? 1 : 0);

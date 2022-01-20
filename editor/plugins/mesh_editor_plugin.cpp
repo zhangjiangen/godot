@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -106,7 +106,7 @@ void MeshEditor::_button_pressed(Node *p_button) {
 MeshEditor::MeshEditor() {
 	viewport = memnew(SubViewport);
 	Ref<World3D> world_3d;
-	world_3d.instantiate();
+	New_instantiate(world_3d);
 	viewport->set_world_3d(world_3d); //use own world
 	add_child(viewport);
 	viewport->set_disable_input(true);
@@ -178,6 +178,6 @@ void EditorInspectorPluginMesh::parse_begin(Object *p_object) {
 
 MeshEditorPlugin::MeshEditorPlugin(EditorNode *p_node) {
 	Ref<EditorInspectorPluginMesh> plugin;
-	plugin.instantiate();
+	New_instantiate(plugin);
 	add_inspector_plugin(plugin);
 }

@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -222,7 +222,7 @@ static void editor_init_callback() {
 	ProjectSettingsEditor::get_singleton()->get_tabs()->add_child(library_editor);
 
 	Ref<GDNativeExportPlugin> export_plugin;
-	export_plugin.instantiate();
+	New_instantiate(export_plugin);
 
 	EditorExport::get_singleton()->add_export_plugin(export_plugin);
 
@@ -254,10 +254,10 @@ void register_gdnative_types() {
 	GDREGISTER_CLASS(GDNativeLibrary);
 	GDREGISTER_CLASS(GDNative);
 
-	resource_loader_gdnlib.instantiate();
+	New_instantiate(resource_loader_gdnlib);
 	ResourceLoader::add_resource_format_loader(resource_loader_gdnlib);
 
-	resource_saver_gdnlib.instantiate();
+	New_instantiate(resource_saver_gdnlib);
 	ResourceSaver::add_resource_format_saver(resource_saver_gdnlib);
 
 	GDNativeCallRegistry::singleton = memnew(GDNativeCallRegistry);
@@ -288,7 +288,7 @@ void register_gdnative_types() {
 
 		Ref<GDNativeLibrary> lib = ResourceLoader::load(path);
 		Ref<GDNative> singleton;
-		singleton.instantiate();
+		New_instantiate(singleton);
 		singleton->set_library(lib);
 
 		if (!singleton->initialize()) {

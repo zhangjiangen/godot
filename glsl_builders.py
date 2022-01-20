@@ -162,10 +162,20 @@ def build_rd_header(filename):
 
     if len(header_data.compute_lines):
 
+        curr_line = 0
+        curr_index = 0
         fd.write("\t\tstatic const char _compute_code[] = {\n")
         for x in header_data.compute_lines:
+            curr_line += 1
+            curr_index = 0
             for c in x:
-                fd.write(str(ord(c)) + ",")
+                curr_index += 1
+                code = ord(c)
+                # 检查是否存在错误编码
+                if code > 255:
+                    print("shader error : compute shader :" + filename + ":(" +
+                          str(curr_line) + ") index:" + str(curr_index) + " code error， code :" + str(code) + "  char :" + c + "line:" + x)
+                fd.write(str(code) + ",")
             fd.write(str(ord("\n")) + ",")
         fd.write("\t\t0};\n\n")
 
@@ -176,8 +186,18 @@ def build_rd_header(filename):
     else:
 
         fd.write("\t\tstatic const char _vertex_code[] = {\n")
+        curr_line = 0
+        curr_index = 0
         for x in header_data.vertex_lines:
+            curr_line += 1
+            curr_index = 0
             for c in x:
+                curr_index += 1
+                code = ord(c)
+                # 检查是否存在错误编码
+                if code > 255:
+                    print("shader error : vertex shader :" + filename + ":(" +
+                          str(curr_line) + ") index:" + str(curr_index) + " code error， code :" + str(code) + "  char :" + c + "line:" + x)
                 fd.write(str(ord(c)) + ",")
             fd.write(str(ord("\n")) + ",")
         fd.write("\t\t0};\n\n")
@@ -192,18 +212,39 @@ def build_rd_header(filename):
         use_tesc = 0
         use_tese = 0
         if len(header_data.tesc_lines):
+            curr_line = 0
+            curr_index = 0
             fd.write("\t\tstatic const char _tesc_code[] = {\n")
             for x in header_data.tesc_lines:
+                curr_line += 1
+                curr_index = 0
                 for c in x:
-                    fd.write(str(ord(c)) + ",")
+                    curr_index += 1
+                    code = ord(c)
+                    # 检查是否存在错误编码
+                    if code > 255:
+                        print("shader error : tesc shader :" + filename + ":(" +
+                              str(curr_line) + ") index:" + str(curr_index) + " code error， code :" + str(code) + "  char :" + c + "line:" + x)
+                    fd.write(str(code) + ",")
                 fd.write(str(ord("\n")) + ",")
             fd.write("\t\t0};\n\n")
 
         if len(header_data.tese_lines):
             fd.write("\t\tstatic const char _tese_code[] = {\n")
+            curr_line = 0
+            curr_index = 0
             for x in header_data.tese_lines:
+                curr_line += 1
+                curr_index = 0
                 for c in x:
-                    fd.write(str(ord(c)) + ",")
+                    curr_index += 1
+                    code = ord(c)
+                    # 检查是否存在错误编码
+                    if code > 255:
+                        print("shader error : tese shader :" + filename + ":(" +
+                              str(curr_line) + ") index:" + str(curr_index) + " code error， code :" + str(code) + "  char :" + c + "line:" + x)
+
+                    fd.write(str(code) + ",")
                 fd.write(str(ord("\n")) + ",")
             fd.write("\t\t0};\n\n")
         if use_tesc and use_tese:

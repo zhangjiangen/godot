@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -54,11 +54,11 @@ public:
 
 	// Skys need less info from Directional Lights than the normal shaders
 	struct SkyDirectionalLightData {
-		float direction[3];
-		float energy;
-		float color[3];
-		float size;
-		uint32_t enabled;
+		float direction[3] = { 0, 0, 1 };
+		float energy = 1;
+		float color[3] = { 1, 1, 1 };
+		float size = 0;
+		uint32_t enabled = 0;
 		uint32_t pad[3];
 	};
 
@@ -111,7 +111,7 @@ private:
 
 		PipelineCacheRD pipelines[SKY_VERSION_MAX];
 		Map<StringName, ShaderLanguage::ShaderNode::Uniform> uniforms;
-		Vector<ShaderCompilerRD::GeneratedCode::Texture> texture_uniforms;
+		Vector<ShaderCompiler::GeneratedCode::Texture> texture_uniforms;
 
 		Vector<uint32_t> ubo_offsets;
 		uint32_t ubo_size;
@@ -220,7 +220,7 @@ public:
 
 	struct SkyShader {
 		SkyShaderRD shader;
-		ShaderCompilerRD compiler;
+		ShaderCompiler compiler;
 
 		RID default_shader;
 		RID default_material;
@@ -228,7 +228,6 @@ public:
 	} sky_shader;
 
 	struct SkyMaterialData : public RendererStorageRD::MaterialData {
-		uint64_t last_frame;
 		SkyShaderData *shader_data;
 		RID uniform_set;
 		bool uniform_set_updated;

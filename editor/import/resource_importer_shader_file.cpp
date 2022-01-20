@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -99,7 +99,7 @@ Error ResourceImporterShaderFile::import(const String &p_source_file, const Stri
 
 	String file_txt = file->get_as_utf8_string();
 	Ref<RDShaderFile> shader_file;
-	shader_file.instantiate();
+	New_instantiate(shader_file);
 	String base_path = p_source_file.get_base_dir();
 	err = shader_file->parse_versions_from_text(file_txt, "", _include_function, &base_path);
 

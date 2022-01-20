@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -43,10 +43,17 @@ class StringBuilder {
 	// -1 means it's a Godot String
 	// a natural number means C string.
 	Vector<int32_t> appended_strings;
+	mutable String final_string;
 
 public:
 	StringBuilder &append(const String &p_string);
 	StringBuilder &append(const char *p_cstring);
+	void clear() {
+		final_string.clear();
+		strings.clear();
+		string_length = 0;
+		c_strings.clear();
+	}
 
 	_FORCE_INLINE_ StringBuilder &operator+(const String &p_string) {
 		return append(p_string);
@@ -61,6 +68,16 @@ public:
 	}
 
 	_FORCE_INLINE_ void operator+=(const char *p_cstring) {
+		append(p_cstring);
+	}
+
+	_FORCE_INLINE_ void operator=(const String &p_string) {
+		clear();
+		append(p_string);
+	}
+
+	_FORCE_INLINE_ void operator=(const char *p_cstring) {
+		clear();
 		append(p_cstring);
 	}
 

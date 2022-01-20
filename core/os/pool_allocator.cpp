@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -574,7 +574,7 @@ PoolAllocator::PoolAllocator(void *p_mem, int p_size, int p_align, bool p_needs_
 
 PoolAllocator::PoolAllocator(int p_align, int p_size, bool p_needs_locking, int p_max_entries) {
 	ERR_FAIL_COND(p_align < 1);
-	mem_ptr = Memory::alloc_static(p_size + p_align, true);
+	mem_ptr = memalloc(p_size + p_align);
 	uint8_t *mem8 = (uint8_t *)mem_ptr;
 	uint64_t ofs = (uint64_t)mem8;
 	if (ofs % p_align) {

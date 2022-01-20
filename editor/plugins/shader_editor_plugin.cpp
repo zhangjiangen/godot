@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -145,8 +145,18 @@ void ShaderTextEditor::_load_theme_settings() {
 			}
 		}
 
-		for (int i = 0; i < ShaderTypes::get_singleton()->get_modes(RenderingServer::ShaderMode(shader->get_mode())).size(); i++) {
-			built_ins.push_back(ShaderTypes::get_singleton()->get_modes(RenderingServer::ShaderMode(shader->get_mode()))[i]);
+		const Vector<ShaderLanguage::ModeInfo> &modes = ShaderTypes::get_singleton()->get_modes(RenderingServer::ShaderMode(shader->get_mode()));
+
+		for (int i = 0; i < modes.size(); i++) {
+			const ShaderLanguage::ModeInfo &info = modes[i];
+
+			if (!info.options.is_empty()) {
+				for (int j = 0; j < info.options.size(); j++) {
+					built_ins.push_back(String(info.name) + "_" + String(info.options[j]));
+				}
+			} else {
+				built_ins.push_back(String(info.name));
+			}
 		}
 	}
 
@@ -205,7 +215,7 @@ void ShaderTextEditor::_check_shader_mode() {
 
 static ShaderLanguage::DataType _get_global_variable_type(const StringName &p_variable) {
 	RS::GlobalVariableType gvt = RS::get_singleton()->global_variable_get_type(p_variable);
-	return RS::global_variable_type_get_shader_datatype(gvt);
+	return (ShaderLanguage::DataType)RS::global_variable_type_get_shader_datatype(gvt);
 }
 
 void ShaderTextEditor::_code_complete_script(const String &p_code, List<ScriptCodeCompletionOption> *r_options) {
@@ -293,15 +303,20 @@ void ShaderTextEditor::_update_warning_panel() {
 		}
 
 		warning_count++;
+		int line = w.get_line();
 
 		// First cell.
 		warnings_panel->push_cell();
-		warnings_panel->push_meta(w.get_line() - 1);
 		warnings_panel->push_color(warnings_panel->get_theme_color(SNAME("warning_color"), SNAME("Editor")));
-		warnings_panel->add_text(TTR("Line") + " " + itos(w.get_line()));
-		warnings_panel->add_text(" (" + w.get_name() + "):");
+		if (line != -1) {
+			warnings_panel->push_meta(line - 1);
+			warnings_panel->add_text(TTR("Line") + " " + itos(line));
+			warnings_panel->add_text(" (" + w.get_name() + "):");
+			warnings_panel->pop(); // Meta goto.
+		} else {
+			warnings_panel->add_text(w.get_name() + ":");
+		}
 		warnings_panel->pop(); // Color.
-		warnings_panel->pop(); // Meta goto.
 		warnings_panel->pop(); // Cell.
 
 		// Second cell.
@@ -318,7 +333,7 @@ void ShaderTextEditor::_bind_methods() {
 }
 
 ShaderTextEditor::ShaderTextEditor() {
-	syntax_highlighter.instantiate();
+	New_instantiate(syntax_highlighter);
 	get_text_editor()->set_syntax_highlighter(syntax_highlighter);
 }
 

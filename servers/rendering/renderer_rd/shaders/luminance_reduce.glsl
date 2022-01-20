@@ -77,6 +77,6 @@ void main() {
 		float prev_lum = texelFetch(prev_luminance, ivec2(0, 0), 0).r; //1 pixel previous exposure
 		avg = clamp(prev_lum + (avg - prev_lum) * params.exposure_adjust, params.min_luminance, params.max_luminance);
 #endif
-		imageStore(dest_luminance, pos, vec4(avg));
+		imageStore(dest_luminance, pos, vec4(avg, avg, avg, avg));
 	}
 }

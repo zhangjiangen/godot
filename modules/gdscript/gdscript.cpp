@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -47,6 +47,10 @@
 
 #ifdef TESTS_ENABLED
 #include "tests/gdscript_test_runner.h"
+#endif
+
+#ifdef TOOLS_ENABLED
+#include "editor/editor_settings.h"
 #endif
 
 ///////////////////////////
@@ -108,7 +112,8 @@ void GDScript::_super_implicit_constructor(GDScript *p_script, GDScriptInstance 
 			return;
 		}
 	}
-	p_script->implicit_initializer->call(p_instance, nullptr, 0, r_error);
+	Variant ret;
+	p_script->implicit_initializer->call_r(ret, p_instance, nullptr, 0, r_error);
 }
 
 GDScriptInstance *GDScript::_create_instance(const Variant **p_args, int p_argcount, Object *p_owner, bool p_is_ref_counted, Callable::CallError &r_error) {
@@ -151,7 +156,8 @@ GDScriptInstance *GDScript::_create_instance(const Variant **p_args, int p_argco
 
 	initializer = _super_constructor(this);
 	if (initializer != nullptr) {
-		initializer->call(instance, p_args, p_argcount, r_error);
+		Variant ret;
+		initializer->call_r(ret, instance, p_args, p_argcount, r_error);
 		if (r_error.error != Callable::CallError::CALL_OK) {
 			instance->script = Ref<GDScript>();
 			instance->owner->set_script_instance(nullptr);
@@ -817,10 +823,16 @@ Error GDScript::reload(bool p_keep_state) {
 		basedir = basedir.get_base_dir();
 	}
 
-	if (source.find("%BASE%") != -1) {
-		//loading a template, don't parse
+// Loading a template, don't parse.
+#ifdef TOOLS_ENABLED
+	if (basedir.begins_with(EditorSettings::get_singleton()->get_project_script_templates_dir())) {
 		return OK;
 	}
+#else
+	if (source.find("_BASE_") != -1) {
+		return OK;
+	}
+#endif
 
 	{
 		String source_path = path;
@@ -927,21 +939,40 @@ const Vector<Multiplayer::RPCConfig> GDScript::get_rpc_methods() const {
 	return rpc_functions;
 }
 
-Variant GDScript::call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+void GDScript::call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
 	GDScript *top = this;
 	while (top) {
 		Map<StringName, GDScriptFunction *>::Element *E = top->member_functions.find(p_method);
 		if (E) {
-			ERR_FAIL_COND_V_MSG(!E->get()->is_static(), Variant(), "Can't call non-static function '" + String(p_method) + "' in script.");
+			ERR_FAIL_COND_MSG(!E->get()->is_static(), "Can't call non-static function '" + String(p_method) + "' in script.");
 
-			return E->get()->call(nullptr, p_args, p_argcount, r_error);
+			E->get()->call_r(ret, nullptr, p_args, p_argcount, r_error);
+			return;
 		}
 		top = top->_base;
 	}
 
 	//none found, regular
+	Script::call_r(ret, p_method, p_args, p_argcount, r_error);
+	ret.clear();
+	return;
+}
+void GDScript::call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	GDScript *top = this;
+	while (top) {
+		Map<StringName, GDScriptFunction *>::Element *E = top->member_functions.find(p_method);
+		if (E) {
+			ERR_FAIL_COND_MSG(!E->get()->is_static(), "Can't call non-static function '" + String(p_method) + "' in script.");
+			Variant ret;
+			E->get()->call_r(ret, nullptr, p_args, p_argcount, r_error);
+			return;
+		}
+		top = top->_base;
+	}
 
-	return Script::call(p_method, p_args, p_argcount, r_error);
+	//none found, regular
+	Script::call_r(p_method, p_args, p_argcount, r_error);
+	return;
 }
 
 bool GDScript::_get(const StringName &p_name, Variant &r_ret) const {
@@ -1305,7 +1336,9 @@ bool GDScriptInstance::set(const StringName &p_name, const Variant &p_value) {
 			const Variant *args[2] = { &name, &p_value };
 
 			Callable::CallError err;
-			Variant ret = E->get()->call(this, (const Variant **)args, 2, err);
+			Variant ret;
+
+			E->get()->call_r(ret, this, (const Variant **)args, 2, err);
 			if (err.error == Callable::CallError::CALL_OK && ret.get_type() == Variant::BOOL && ret.operator bool()) {
 				return true;
 			}
@@ -1324,7 +1357,7 @@ bool GDScriptInstance::get(const StringName &p_name, Variant &r_ret) const {
 			if (E) {
 				if (E->get().getter) {
 					Callable::CallError err;
-					r_ret = const_cast<GDScriptInstance *>(this)->call(E->get().getter, nullptr, 0, err);
+					const_cast<GDScriptInstance *>(this)->call_r(r_ret, E->get().getter, nullptr, 0, err);
 					if (err.error == Callable::CallError::CALL_OK) {
 						return true;
 					}
@@ -1379,7 +1412,9 @@ bool GDScriptInstance::get(const StringName &p_name, Variant &r_ret) const {
 				const Variant *args[1] = { &name };
 
 				Callable::CallError err;
-				Variant ret = const_cast<GDScriptFunction *>(E->get())->call(const_cast<GDScriptInstance *>(this), (const Variant **)args, 1, err);
+				Variant ret;
+
+				const_cast<GDScriptFunction *>(E->get())->call_r(ret, const_cast<GDScriptInstance *>(this), (const Variant **)args, 1, err);
 				if (err.error == Callable::CallError::CALL_OK && ret.get_type() != Variant::NIL) {
 					r_ret = ret;
 					return true;
@@ -1420,7 +1455,9 @@ void GDScriptInstance::get_property_list(List<PropertyInfo> *p_properties) const
 		const Map<StringName, GDScriptFunction *>::Element *E = sptr->member_functions.find(GDScriptLanguage::get_singleton()->strings._get_property_list);
 		if (E) {
 			Callable::CallError err;
-			Variant ret = const_cast<GDScriptFunction *>(E->get())->call(const_cast<GDScriptInstance *>(this), nullptr, 0, err);
+			Variant ret;
+
+			const_cast<GDScriptFunction *>(E->get())->call_r(ret, const_cast<GDScriptInstance *>(this), nullptr, 0, err);
 			if (err.error == Callable::CallError::CALL_OK) {
 				ERR_FAIL_COND_MSG(ret.get_type() != Variant::ARRAY, "Wrong type for _get_property_list, must be an array of dictionaries.");
 
@@ -1503,19 +1540,35 @@ bool GDScriptInstance::has_method(const StringName &p_method) const {
 	return false;
 }
 
-Variant GDScriptInstance::call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+void GDScriptInstance::call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
 	GDScript *sptr = script.ptr();
 	while (sptr) {
 		Map<StringName, GDScriptFunction *>::Element *E = sptr->member_functions.find(p_method);
 		if (E) {
-			return E->get()->call(this, p_args, p_argcount, r_error);
+			Variant ret;
+			E->get()->call_r(ret, this, p_args, p_argcount, r_error);
+			return;
 		}
 		sptr = sptr->_base;
 	}
 	r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
-	return Variant();
+	return;
 }
 
+void GDScriptInstance::call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	GDScript *sptr = script.ptr();
+	while (sptr) {
+		Map<StringName, GDScriptFunction *>::Element *E = sptr->member_functions.find(p_method);
+		if (E) {
+			E->get()->call_r(ret, this, p_args, p_argcount, r_error);
+			return;
+		}
+		sptr = sptr->_base;
+	}
+	r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
+	ret.clear();
+	return;
+}
 void GDScriptInstance::notification(int p_notification) {
 	//notification is not virtual, it gets called at ALL levels just like in C.
 	Variant value = p_notification;
@@ -1526,7 +1579,7 @@ void GDScriptInstance::notification(int p_notification) {
 		Map<StringName, GDScriptFunction *>::Element *E = sptr->member_functions.find(GDScriptLanguage::get_singleton()->strings._notification);
 		if (E) {
 			Callable::CallError err;
-			E->get()->call(this, args, 1, err);
+			E->get()->call_r(this, args, 1, err);
 			if (err.error != Callable::CallError::CALL_OK) {
 				//print error about notification call
 			}
@@ -1925,9 +1978,9 @@ void GDScriptLanguage::reload_tool_script(const Ref<Script> &p_script, bool p_so
 			}
 			obj->set_script(scr);
 
-            // 跳过按钮和不存档的属性
-            List<PropertyInfo> p_list;
-            obj->get_property_list(&p_list,true);
+			// 跳过按钮和不存档的属性
+			List<PropertyInfo> p_list;
+			obj->get_property_list(&p_list, true);
 			ScriptInstance *script_instance = obj->get_script_instance();
 
 			if (!script_instance) {
@@ -1945,25 +1998,19 @@ void GDScriptLanguage::reload_tool_script(const Ref<Script> &p_script, bool p_so
 				}
 			} else {
 				for (List<Pair<StringName, Variant>>::Element *G = saved_state.front(); G; G = G->next()) {
-                    
-                    bool is_skip = false;
-                    for(int p = 0; p < p_list.size(); ++p)
-                    {
-                        if(p_list[p].name == G->get().first)
-                        {
-                            if(p_list[p].hint == PROPERTY_HINT_BUTTON
-                             || (p_list[p].usage & PROPERTY_USAGE_STORAGE) == 0)
-                            {
-                                is_skip = true;
-                            }
-                            break;
-                        }
-                    }
-                    // 跳过按钮和不用存档的属性
-                    if(is_skip == false)
-                    {
-                        script_instance->set(G->get().first, G->get().second);
-                    }
+					bool is_skip = false;
+					for (int p = 0; p < p_list.size(); ++p) {
+						if (p_list[p].name == G->get().first) {
+							if (p_list[p].hint == PROPERTY_HINT_BUTTON || (p_list[p].usage & PROPERTY_USAGE_STORAGE) == 0) {
+								is_skip = true;
+							}
+							break;
+						}
+					}
+					// 跳过按钮和不用存档的属性
+					if (is_skip == false) {
+						script_instance->set(G->get().first, G->get().second);
+					}
 				}
 			}
 
@@ -2291,7 +2338,7 @@ RES ResourceFormatLoaderGDScript::load(const String &p_path, const String &p_ori
 
 	if (script.is_null()) {
 		// Don't fail loading because of parsing error.
-		script.instantiate();
+		New_instantiate(script);
 	}
 
 	if (r_error) {

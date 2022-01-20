@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -150,7 +150,6 @@ RID ShaderRD::version_create() {
 	version.valid = false;
 	version.initialize_needed = true;
 	version.variants = nullptr;
-	version.shader_info = nullptr;
 	return version_owner.make_rid(version);
 }
 
@@ -168,10 +167,6 @@ void ShaderRD::_clear_version(Version *p_version) {
 			memdelete_arr(p_version->variant_data);
 		}
 		p_version->variants = nullptr;
-		if (p_version->shader_info) {
-			memdelete(p_version->shader_info);
-		}
-		p_version->shader_info = nullptr;
 	}
 }
 
@@ -335,9 +330,9 @@ void ShaderRD::_compile_variant(uint32_t p_variant, Version *p_version) {
 		ERR_PRINT("Error compiling " + String(current_stage == RD::SHADER_STAGE_COMPUTE ? "Compute " : (current_stage == RD::SHADER_STAGE_VERTEX ? "Vertex" : "Fragment")) + " shader, variant #" + itos(p_variant) + " (" + variant_defines[p_variant].get_data() + ").");
 		ERR_PRINT(error);
 
-#ifdef DEBUG_ENABLED
+		//#ifdef DEBUG_ENABLED
 		ERR_PRINT("code:\n" + current_source.get_with_code_lines());
-#endif
+		//#endif
 		return;
 	}
 	RD::ShaderInfo p_shader_info;
@@ -350,7 +345,6 @@ void ShaderRD::_compile_variant(uint32_t p_variant, Version *p_version) {
 		MutexLock lock(variant_set_mutex);
 		p_version->variants[p_variant] = shader;
 		p_version->variant_data[p_variant] = shader_data;
-		p_version->shader_info[p_variant] = p_shader_info;
 	}
 }
 
@@ -562,7 +556,6 @@ void ShaderRD::_compile_version(Version *p_version) {
 	p_version->variants = memnew_arr(RID, variant_defines.size());
 	typedef Vector<uint8_t> ShaderStageData;
 	p_version->variant_data = memnew_arr(ShaderStageData, variant_defines.size());
-	p_version->shader_info = memnew_arr(RD::ShaderInfo, variant_defines.size());
 
 	if (shader_cache_dir_valid) {
 		if (_load_from_cache(p_version)) {
@@ -582,7 +575,7 @@ void ShaderRD::_compile_version(Version *p_version) {
 	bool all_valid = true;
 	for (int i = 0; i < variant_defines.size(); i++) {
 		if (!variants_enabled[i]) {
-			LOG_INFO_PRINT(String("shader disable variants :") + String(variant_defines[i].ptr()));
+			//LOG_INFO_PRINT(String("shader disable variants :") + String(variant_defines[i].ptr()));
 			continue; //disabled
 		}
 		if (p_version->variants[i].is_null()) {
@@ -605,9 +598,6 @@ void ShaderRD::_compile_version(Version *p_version) {
 		memdelete_arr(p_version->variants);
 		if (p_version->variant_data) {
 			memdelete_arr(p_version->variant_data);
-		}
-		if (p_version->shader_info) {
-			memdelete(p_version->shader_info);
 		}
 		p_version->variants = nullptr;
 		p_version->variant_data = nullptr;
@@ -778,6 +768,7 @@ void ShaderRD::initialize(const Vector<String> &p_variant_defines, const String 
 
 void ShaderRD::set_shader_cache_dir(const String &p_dir) {
 	shader_cache_dir = p_dir;
+	printf(p_dir.utf8());
 }
 
 void ShaderRD::set_shader_cache_save_compressed(bool p_enable) {

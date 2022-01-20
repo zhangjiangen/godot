@@ -142,13 +142,13 @@ void main() {
 		accum /= divisor;
 		accum_radius /= divisor;
 	} else {
-		accum = vec4(0.0);
+		accum = vec4(0.0, 0.0, 0.0, 0.0);
 		accum_radius = 0.0;
 	}
 
 	imageStore(dest_ssr, ssC, accum);
 
 #ifndef VERTICAL_PASS
-	imageStore(dest_radius, ssC, vec4(accum_radius));
+	imageStore(dest_radius, ssC, vec4(accum_radius, accum_radius, accum_radius, accum_radius));
 #endif
 }

@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -35,6 +35,8 @@
 #include "visual_shader_nodes.h"
 #include "visual_shader_particle_nodes.h"
 #include "visual_shader_sdf_nodes.h"
+
+#include "core/string/string_builder.h"
 
 String make_unique_id(VisualShader::Type p_type, int p_id, const String &p_name) {
 	static const char *typepf[VisualShader::TYPE_MAX] = { "vtx", "frg", "lgt", "start", "process", "collide", "start_custom", "process_custom", "sky", "fog" };
@@ -352,11 +354,11 @@ String VisualShaderNodeCustom::get_output_port_name(int p_port) const {
 
 String VisualShaderNodeCustom::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
 	ERR_FAIL_COND_V(!GDVIRTUAL_IS_OVERRIDDEN(_get_code), "");
-	Vector<String> input_vars;
+	TypedArray<String> input_vars;
 	for (int i = 0; i < get_input_port_count(); i++) {
 		input_vars.push_back(p_input_vars[i]);
 	}
-	Array output_vars;
+	TypedArray<String> output_vars;
 	for (int i = 0; i < get_output_port_count(); i++) {
 		output_vars.push_back(p_output_vars[i]);
 	}
@@ -935,6 +937,8 @@ String VisualShader::generate_preview_shader(Type p_type, int p_node, int p_port
 	//make it faster to go around through shader
 	VMap<ConnectionKey, const List<Connection>::Element *> input_connections;
 	VMap<ConnectionKey, const List<Connection>::Element *> output_connections;
+	DEBUG_USING_INFO(input_connections);
+	DEBUG_USING_INFO(output_connections);
 
 	for (const List<Connection>::Element *E = graph[p_type].connections.front(); E; E = E->next()) {
 		ConnectionKey from_key;
@@ -1087,16 +1091,6 @@ String VisualShader::validate_uniform_name(const String &p_name, const Ref<Visua
 
 	return name;
 }
-
-VisualShader::RenderModeEnums VisualShader::render_mode_enums[] = {
-	{ Shader::MODE_SPATIAL, "blend" },
-	{ Shader::MODE_SPATIAL, "depth_draw" },
-	{ Shader::MODE_SPATIAL, "cull" },
-	{ Shader::MODE_SPATIAL, "diffuse" },
-	{ Shader::MODE_SPATIAL, "specular" },
-	{ Shader::MODE_CANVAS_ITEM, "blend" },
-	{ Shader::MODE_CANVAS_ITEM, nullptr }
-};
 
 static const char *type_string[VisualShader::TYPE_MAX] = {
 	"vertex",
@@ -1264,27 +1258,25 @@ void VisualShader::_get_property_list(List<PropertyInfo> *p_list) const {
 	Map<String, String> blend_mode_enums;
 	Set<String> toggles;
 
-	for (int i = 0; i < ShaderTypes::get_singleton()->get_modes(RenderingServer::ShaderMode(shader_mode)).size(); i++) {
-		String mode = ShaderTypes::get_singleton()->get_modes(RenderingServer::ShaderMode(shader_mode))[i];
-		int idx = 0;
-		bool in_enum = false;
-		while (render_mode_enums[idx].string) {
-			if (mode.begins_with(render_mode_enums[idx].string)) {
-				String begin = render_mode_enums[idx].string;
-				String option = mode.replace_first(begin + "_", "");
+	const Vector<ShaderLanguage::ModeInfo> &rmodes = ShaderTypes::get_singleton()->get_modes(RenderingServer::ShaderMode(shader_mode));
+
+	for (int i = 0; i < rmodes.size(); i++) {
+		const ShaderLanguage::ModeInfo &info = rmodes[i];
+
+		if (!info.options.is_empty()) {
+			const String begin = String(info.name);
+
+			for (int j = 0; j < info.options.size(); j++) {
+				const String option = String(info.options[j]);
+
 				if (!blend_mode_enums.has(begin)) {
 					blend_mode_enums[begin] = option;
 				} else {
 					blend_mode_enums[begin] += "," + option;
 				}
-				in_enum = true;
-				break;
 			}
-			idx++;
-		}
-
-		if (!in_enum) {
-			toggles.insert(mode);
+		} else {
+			toggles.insert(String(info.name));
 		}
 	}
 
@@ -1674,40 +1666,32 @@ void VisualShader::_update_shader() const {
 	String render_mode;
 
 	{
-		//fill render mode enums
-		int idx = 0;
-		while (render_mode_enums[idx].string) {
-			if (shader_mode == render_mode_enums[idx].mode) {
-				if (modes.has(render_mode_enums[idx].string)) {
-					int which = modes[render_mode_enums[idx].string];
-					int count = 0;
-					for (int i = 0; i < ShaderTypes::get_singleton()->get_modes(RenderingServer::ShaderMode(shader_mode)).size(); i++) {
-						String mode = ShaderTypes::get_singleton()->get_modes(RenderingServer::ShaderMode(shader_mode))[i];
-						if (mode.begins_with(render_mode_enums[idx].string)) {
-							if (count == which) {
-								if (!render_mode.is_empty()) {
-									render_mode += ", ";
-								}
-								render_mode += mode;
-								break;
-							}
-							count++;
-						}
+		const Vector<ShaderLanguage::ModeInfo> &rmodes = ShaderTypes::get_singleton()->get_modes(RenderingServer::ShaderMode(shader_mode));
+		Vector<String> flag_names;
+
+		// Add enum modes first.
+		for (int i = 0; i < rmodes.size(); i++) {
+			const ShaderLanguage::ModeInfo &info = rmodes[i];
+			const String temp = String(info.name);
+
+			if (!info.options.is_empty()) {
+				if (modes.has(temp) && modes[temp] < info.options.size()) {
+					if (!render_mode.is_empty()) {
+						render_mode += ", ";
 					}
+					render_mode += temp + "_" + info.options[modes[temp]];
 				}
+			} else if (flags.has(temp)) {
+				flag_names.push_back(temp);
 			}
-			idx++;
 		}
 
-		//fill render mode flags
-		for (int i = 0; i < ShaderTypes::get_singleton()->get_modes(RenderingServer::ShaderMode(shader_mode)).size(); i++) {
-			String mode = ShaderTypes::get_singleton()->get_modes(RenderingServer::ShaderMode(shader_mode))[i];
-			if (flags.has(mode)) {
-				if (!render_mode.is_empty()) {
-					render_mode += ", ";
-				}
-				render_mode += mode;
+		// Add flags afterward.
+		for (int i = 0; i < flag_names.size(); i++) {
+			if (!render_mode.is_empty()) {
+				render_mode += ", ";
 			}
+			render_mode += flag_names[i];
 		}
 	}
 
@@ -1782,6 +1766,8 @@ void VisualShader::_update_shader() const {
 		//make it faster to go around through shader
 		VMap<ConnectionKey, const List<Connection>::Element *> input_connections;
 		VMap<ConnectionKey, const List<Connection>::Element *> output_connections;
+		DEBUG_USING_INFO(input_connections);
+		DEBUG_USING_INFO(output_connections);
 
 		StringBuilder func_code;
 
@@ -2056,7 +2042,7 @@ void VisualShader::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_update_shader"), &VisualShader::_update_shader);
 
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "graph_offset", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), "set_graph_offset", "get_graph_offset");
-	ADD_PROPERTY(PropertyInfo(Variant::STRING, "engine_version", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), "set_engine_version", "get_engine_version");
+	ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "engine_version", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), "set_engine_version", "get_engine_version");
 
 	ADD_PROPERTY_DEFAULT("code", ""); // Inherited from Shader, prevents showing default code as override in docs.
 
@@ -2081,13 +2067,13 @@ VisualShader::VisualShader() {
 	for (int i = 0; i < TYPE_MAX; i++) {
 		if (i > (int)TYPE_LIGHT && i < (int)TYPE_SKY) {
 			Ref<VisualShaderNodeParticleOutput> output;
-			output.instantiate();
+			New_instantiate(output);
 			output->shader_type = Type(i);
 			output->shader_mode = shader_mode;
 			graph[i].nodes[NODE_ID_OUTPUT].node = output;
 		} else {
 			Ref<VisualShaderNodeOutput> output;
-			output.instantiate();
+			New_instantiate(output);
 			output->shader_type = Type(i);
 			output->shader_mode = shader_mode;
 			graph[i].nodes[NODE_ID_OUTPUT].node = output;

@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -52,7 +52,12 @@ class JNISingleton : public Object {
 #endif
 
 public:
-	virtual Variant call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override {
+	virtual void call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override {
+		Variant ret;
+		call_r(ret, p_method, p_args, p_argcount, r_error);
+	}
+	virtual void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override {
+		ret.clear();
 #ifdef ANDROID_ENABLED
 		Map<StringName, MethodData>::Element *E = method_map.find(p_method);
 
@@ -70,10 +75,11 @@ public:
 
 		if (call_error) {
 			// The method is not in this map, defaulting to the regular instance calls.
-			return Object::call(p_method, p_args, p_argcount, r_error);
+			Object::call_r(ret, p_method, p_args, p_argcount, r_error);
+			return;
 		}
 
-		ERR_FAIL_COND_V(!instance, Variant());
+		ERR_FAIL_COND(!instance);
 
 		r_error.error = Callable::CallError::CALL_OK;
 
@@ -87,7 +93,7 @@ public:
 
 		int res = env->PushLocalFrame(16);
 
-		ERR_FAIL_COND_V(res != 0, Variant());
+		ERR_FAIL_COND(res != 0);
 
 		List<jobject> to_erase;
 		for (int i = 0; i < p_argcount; i++) {
@@ -96,8 +102,6 @@ public:
 			if (vr.obj)
 				to_erase.push_back(vr.obj);
 		}
-
-		Variant ret;
 
 		switch (E->get().ret_type) {
 			case Variant::NIL: {
@@ -160,7 +164,7 @@ public:
 			} break;
 			default: {
 				env->PopLocalFrame(nullptr);
-				ERR_FAIL_V(Variant());
+				ERR_FAIL();
 			} break;
 		}
 
@@ -171,11 +175,11 @@ public:
 
 		env->PopLocalFrame(nullptr);
 
-		return ret;
+		return;
 #else // ANDROID_ENABLED
 
 		// Defaulting to the regular instance calls.
-		return Object::call(p_method, p_args, p_argcount, r_error);
+		Object::call_r(ret, p_method, p_args, p_argcount, r_error);
 #endif
 	}
 

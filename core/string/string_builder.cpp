@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -58,10 +58,11 @@ StringBuilder &StringBuilder::append(const char *p_cstring) {
 
 String StringBuilder::as_string() const {
 	if (string_length == 0) {
-		return "";
+		return final_string;
 	}
-
-	char32_t *buffer = memnew_arr(char32_t, string_length);
+	final_string.resize(string_length + 1);
+	char32_t *buffer = final_string.ptrw();
+	buffer[string_length] = 0;
 
 	int current_position = 0;
 
@@ -90,10 +91,6 @@ String StringBuilder::as_string() const {
 			c_string_elem++;
 		}
 	}
-
-	String final_string = String(buffer, string_length);
-
-	memdelete_arr(buffer);
 
 	return final_string;
 }

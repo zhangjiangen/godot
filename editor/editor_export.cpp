@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -431,7 +431,7 @@ bool EditorExportPlatform::exists_export_template(String template_file_name, Str
 
 Ref<EditorExportPreset> EditorExportPlatform::create_preset() {
 	Ref<EditorExportPreset> preset;
-	preset.instantiate();
+	New_instantiate(preset);
 	preset->platform = Ref<EditorExportPlatform>(this);
 
 	List<ExportOption> options;
@@ -620,6 +620,14 @@ String EditorExportPlugin::get_ios_cpp_code() const {
 	return ios_cpp_code;
 }
 
+void EditorExportPlugin::add_osx_plugin_file(const String &p_path) {
+	osx_plugin_files.push_back(p_path);
+}
+
+const Vector<String> &EditorExportPlugin::get_osx_plugin_files() const {
+	return osx_plugin_files;
+}
+
 void EditorExportPlugin::add_ios_project_static_lib(const String &p_path) {
 	ios_project_static_libs.push_back(p_path);
 }
@@ -660,6 +668,7 @@ void EditorExportPlugin::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("add_ios_linker_flags", "flags"), &EditorExportPlugin::add_ios_linker_flags);
 	ClassDB::bind_method(D_METHOD("add_ios_bundle_file", "path"), &EditorExportPlugin::add_ios_bundle_file);
 	ClassDB::bind_method(D_METHOD("add_ios_cpp_code", "code"), &EditorExportPlugin::add_ios_cpp_code);
+	ClassDB::bind_method(D_METHOD("add_osx_plugin_file", "path"), &EditorExportPlugin::add_osx_plugin_file);
 	ClassDB::bind_method(D_METHOD("skip"), &EditorExportPlugin::skip);
 
 	GDVIRTUAL_BIND(_export_file, "path", "type", "features");
@@ -870,7 +879,7 @@ Error EditorExportPlatform::export_project_files(const Ref<EditorExportPreset> &
 		if (FileAccess::exists(path + ".import")) {
 			//file is imported, replace by what it imports
 			Ref<ConfigFile> config;
-			config.instantiate();
+			New_instantiate(config);
 			err = config->load(path + ".import");
 			if (err != OK) {
 				ERR_PRINT("Could not parse: '" + path + "', not exported.");
@@ -1405,7 +1414,7 @@ EditorExport *EditorExport::singleton = nullptr;
 
 void EditorExport::_save() {
 	Ref<ConfigFile> config;
-	config.instantiate();
+	New_instantiate(config);
 	for (int i = 0; i < export_presets.size(); i++) {
 		Ref<EditorExportPreset> preset = export_presets[i];
 		String section = "preset." + itos(i);
@@ -1492,38 +1501,11 @@ void EditorExport::add_export_preset(const Ref<EditorExportPreset> &p_preset, in
 }
 
 String EditorExportPlatform::test_etc2() const {
-	//	String driver = ProjectSettings::get_singleton()->get("rendering/driver/driver_name");
-	//	bool etc_supported = ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_etc");
-	//	bool etc2_supported = ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_etc2");
-	String driver = ProjectSettings::get_singleton()->get("rendering/driver/driver_name");
-	bool etc_supported = ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_etc");
-	bool etc2_supported = ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_etc2");
-
-	if (driver == "opengl3" && !etc_supported) {
-		return TTR("Target platform requires 'ETC' texture compression for OpenGL. Enable 'Import Etc' in Project Settings.");
-	} else if (driver == "vulkan" && !etc2_supported) {
-		// FIXME: Review if this is true for Vulkan.
-		return TTR("Target platform requires 'ETC2' texture compression for Vulkan. Enable 'Import Etc 2' in Project Settings.");
+	const bool etc2_supported = ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_etc2");
+	if (!etc2_supported) {
+		return TTR("Target platform requires 'ETC2' texture compression. Enable 'Import Etc 2' in Project Settings.");
 	}
-	return String();
-}
-
-String EditorExportPlatform::test_etc2_or_pvrtc_or_astc() const {
-	String driver = ProjectSettings::get_singleton()->get("rendering/driver/driver_name");
-	bool etc2_supported = ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_etc2");
-	bool pvrtc_supported = ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_pvrtc");
-
-	//	String driver = ProjectSettings::get_singleton()->get("rendering/driver/driver_name");
-	//	bool etc2_supported = ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_etc2");
-	//	bool pvrtc_supported = ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_pvrtc");
-
-	if (driver == "opengl3" && !pvrtc_supported) {
-		return TTR("Target platform requires 'PVRTC' texture compression for OpenGL. Enable 'Import Pvrtc' in Project Settings.");
-	} else if (driver == "vulkan" && !etc2_supported && !pvrtc_supported) {
-		// FIXME: Review if this is true for Vulkan.
-		return TTR("Target platform requires 'ETC2' or 'PVRTC' or ASTC texture compression for Vulkan. Enable 'Import Etc 2' or 'Import Pvrtc' or Import Astc in Project Settings.");
-	}
-	return String();
+    return String();
 }
 
 int EditorExport::get_export_preset_count() const {
@@ -1567,7 +1549,7 @@ void EditorExport::_notification(int p_what) {
 
 void EditorExport::load_config() {
 	Ref<ConfigFile> config;
-	config.instantiate();
+	New_instantiate(config);
 	Error err = config->load("res://export_presets.cfg");
 	if (err != OK) {
 		return;

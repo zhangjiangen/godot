@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -225,7 +225,7 @@ bool DisplayServerX11::_refresh_device_info() {
 				if (class_info->number == VALUATOR_ABSX && class_info->mode == XIModeAbsolute) {
 					resolution_x = class_info->resolution;
 					abs_x_min = class_info->min;
-					abs_y_max = class_info->max;
+					abs_x_max = class_info->max;
 					absolute_mode = true;
 				} else if (class_info->number == VALUATOR_ABSY && class_info->mode == XIModeAbsolute) {
 					resolution_y = class_info->resolution;
@@ -239,8 +239,8 @@ bool DisplayServerX11::_refresh_device_info() {
 					tilt_x_min = class_info->min;
 					tilt_x_max = class_info->max;
 				} else if (class_info->number == VALUATOR_TILTY && class_info->mode == XIModeAbsolute) {
-					tilt_x_min = class_info->min;
-					tilt_x_max = class_info->max;
+					tilt_y_min = class_info->min;
+					tilt_y_max = class_info->max;
 				}
 			}
 		}
@@ -365,21 +365,6 @@ void DisplayServerX11::mouse_warp_to_position(const Point2i &p_to) {
 }
 
 Point2i DisplayServerX11::mouse_get_position() const {
-	int root_x, root_y;
-	int win_x, win_y;
-	unsigned int mask_return;
-	Window window_returned;
-
-	Bool result = XQueryPointer(x11_display, RootWindow(x11_display, DefaultScreen(x11_display)), &window_returned,
-			&window_returned, &root_x, &root_y, &win_x, &win_y,
-			&mask_return);
-	if (result == True) {
-		return Point2i(root_x, root_y);
-	}
-	return Point2i();
-}
-
-Point2i DisplayServerX11::mouse_get_absolute_position() const {
 	int number_of_screens = XScreenCount(x11_display);
 	for (int i = 0; i < number_of_screens; i++) {
 		Window root, child;
@@ -1150,7 +1135,7 @@ void DisplayServerX11::delete_sub_window(WindowID p_id) {
 	}
 
 #ifdef VULKAN_ENABLED
-	if (rendering_driver == "vulkan") {
+	if (context_vulkan) {
 		context_vulkan->window_destroy(p_id);
 	}
 #endif
@@ -2575,7 +2560,7 @@ void DisplayServerX11::_handle_key_event(WindowID p_window, XKeyEvent *p_event, 
 			tmp.parse_utf8(utf8string, utf8bytes);
 			for (int i = 0; i < tmp.length(); i++) {
 				Ref<InputEventKey> k;
-				k.instantiate();
+				New_instantiate(k);
 				if (physical_keycode == Key::NONE && keycode == Key::NONE && tmp[i] == 0) {
 					continue;
 				}
@@ -2666,7 +2651,7 @@ void DisplayServerX11::_handle_key_event(WindowID p_window, XKeyEvent *p_event, 
 	//print_verbose("mod1: "+itos(xkeyevent->state&Mod1Mask)+" mod 5: "+itos(xkeyevent->state&Mod5Mask));
 
 	Ref<InputEventKey> k;
-	k.instantiate();
+	New_instantiate(k);
 	k->set_window_id(p_window);
 
 	_get_key_modifier_state(xkeyevent->state, k);
@@ -2927,7 +2912,7 @@ void DisplayServerX11::_window_changed(XEvent *event) {
 	wd.size = new_rect.size;
 
 #if defined(VULKAN_ENABLED)
-	if (rendering_driver == "vulkan") {
+	if (context_vulkan) {
 		context_vulkan->window_resize(window_id, wd.size.width, wd.size.height);
 	}
 #endif
@@ -3189,8 +3174,10 @@ void DisplayServerX11::process_events() {
 							Map<int, Vector2>::Element *pen_tilt_x = xi.pen_tilt_x_range.find(device_id);
 							if (pen_tilt_x) {
 								Vector2 pen_tilt_x_range = pen_tilt_x->value();
-								if (pen_tilt_x_range != Vector2()) {
-									xi.tilt.x = ((*values - pen_tilt_x_range[0]) / (pen_tilt_x_range[1] - pen_tilt_x_range[0])) * 2 - 1;
+								if (pen_tilt_x_range[0] != 0 && *values < 0) {
+									xi.tilt.x = *values / -pen_tilt_x_range[0];
+								} else if (pen_tilt_x_range[1] != 0) {
+									xi.tilt.x = *values / pen_tilt_x_range[1];
 								}
 							}
 
@@ -3201,8 +3188,10 @@ void DisplayServerX11::process_events() {
 							Map<int, Vector2>::Element *pen_tilt_y = xi.pen_tilt_y_range.find(device_id);
 							if (pen_tilt_y) {
 								Vector2 pen_tilt_y_range = pen_tilt_y->value();
-								if (pen_tilt_y_range != Vector2()) {
-									xi.tilt.y = ((*values - pen_tilt_y_range[0]) / (pen_tilt_y_range[1] - pen_tilt_y_range[0])) * 2 - 1;
+								if (pen_tilt_y_range[0] != 0 && *values < 0) {
+									xi.tilt.y = *values / -pen_tilt_y_range[0];
+								} else if (pen_tilt_y_range[1] != 0) {
+									xi.tilt.y = *values / pen_tilt_y_range[1];
 								}
 							}
 
@@ -3242,7 +3231,7 @@ void DisplayServerX11::process_events() {
 						bool is_begin = event_data->evtype == XI_TouchBegin;
 
 						Ref<InputEventScreenTouch> st;
-						st.instantiate();
+						New_instantiate(st);
 						st->set_window_id(window_id);
 						st->set_index(index);
 						st->set_position(pos);
@@ -3276,7 +3265,7 @@ void DisplayServerX11::process_events() {
 
 						if (curr_pos_elem->value() != pos) {
 							Ref<InputEventScreenDrag> sd;
-							sd.instantiate();
+							New_instantiate(sd);
 							sd->set_window_id(window_id);
 							sd->set_index(index);
 							sd->set_position(pos);
@@ -3412,7 +3401,7 @@ void DisplayServerX11::process_events() {
 
 				if (mouse_mode_grab) {
 					for (const KeyValue<WindowID, WindowData> &E : windows) {
-						//dear X11, I try, I really try, but you never work, you do whathever you want.
+						//dear X11, I try, I really try, but you never work, you do whatever you want.
 						if (mouse_mode == MOUSE_MODE_CAPTURED) {
 							// Show the cursor if we're in captured mode so it doesn't look weird.
 							XUndefineCursor(x11_display, E.value.x11_window);
@@ -3429,7 +3418,7 @@ void DisplayServerX11::process_events() {
 				// Release every pointer to avoid sticky points
 				for (const KeyValue<int, Vector2> &E : xi.state) {
 					Ref<InputEventScreenTouch> st;
-					st.instantiate();
+					New_instantiate(st);
 					st->set_index(E.key);
 					st->set_window_id(window_id);
 					st->set_position(E.value);
@@ -3464,7 +3453,7 @@ void DisplayServerX11::process_events() {
 				}
 
 				Ref<InputEventMouseButton> mb;
-				mb.instantiate();
+				New_instantiate(mb);
 
 				mb->set_window_id(window_id);
 				_get_key_modifier_state(event.xbutton.state, mb);
@@ -3629,7 +3618,7 @@ void DisplayServerX11::process_events() {
 				}
 
 				Ref<InputEventMouseMotion> mm;
-				mm.instantiate();
+				New_instantiate(mm);
 
 				mm->set_window_id(window_id);
 				if (xi.pressure_supported) {
@@ -3644,7 +3633,7 @@ void DisplayServerX11::process_events() {
 				mm->set_position(pos);
 				mm->set_global_position(pos);
 				Input::get_singleton()->set_mouse_position(pos);
-				mm->set_speed(Input::get_singleton()->get_last_mouse_speed());
+				mm->set_velocity(Input::get_singleton()->get_last_mouse_velocity());
 
 				mm->set_relative(rel);
 
@@ -3674,7 +3663,7 @@ void DisplayServerX11::process_events() {
 							mm->set_window_id(E.key);
 							mm->set_position(pos_focused);
 							mm->set_global_position(pos_focused);
-							mm->set_speed(Input::get_singleton()->get_last_mouse_speed());
+							mm->set_velocity(Input::get_singleton()->get_last_mouse_velocity());
 							Input::get_singleton()->parse_input_event(mm);
 
 							break;
@@ -4672,12 +4661,12 @@ DisplayServerX11::~DisplayServerX11() {
 	//destroy all windows
 	for (KeyValue<WindowID, WindowData> &E : windows) {
 #ifdef VULKAN_ENABLED
-		if (rendering_driver == "vulkan") {
+		if (context_vulkan) {
 			context_vulkan->window_destroy(E.key);
 		}
 #endif
 #ifdef GLES3_ENABLED
-		if (rendering_driver == "opengl3") {
+		if (gl_manager) {
 			gl_manager->window_destroy(E.key);
 		}
 #endif
@@ -4693,15 +4682,15 @@ DisplayServerX11::~DisplayServerX11() {
 
 	//destroy drivers
 #if defined(VULKAN_ENABLED)
-	if (rendering_driver == "vulkan") {
-		if (rendering_device_vulkan) {
-			rendering_device_vulkan->finalize();
-			memdelete(rendering_device_vulkan);
-		}
+	if (rendering_device_vulkan) {
+		rendering_device_vulkan->finalize();
+		memdelete(rendering_device_vulkan);
+		rendering_device_vulkan = nullptr;
+	}
 
-		if (context_vulkan) {
-			memdelete(context_vulkan);
-		}
+	if (context_vulkan) {
+		memdelete(context_vulkan);
+		context_vulkan = nullptr;
 	}
 #endif
 

@@ -13,7 +13,6 @@ layout(local_size_x = 64, local_size_y = 1, local_size_z = 1) in;
 #ifndef MODE_DYNAMIC
 
 #define NO_CHILDREN 0xFFFFFFFF
-#define GREY_VEC vec3(0.33333, 0.33333, 0.33333)
 
 struct CellChildren {
 	uint children[8];
@@ -516,7 +515,7 @@ void main() {
 		accum += imageLoad(emission, uv_xy).xyz;
 
 		imageStore(emission, uv_xy, vec4(accum, albedo.a));
-		imageStore(depth, uv_xy, vec4(z));
+		imageStore(depth, uv_xy, vec4(z, z, z, z));
 	}
 
 #endif // MODE DYNAMIC LIGHTING
@@ -565,8 +564,8 @@ void main() {
 
 #ifdef MODE_DYNAMIC_SHRINK_WRITE
 
-		imageStore(light, uv_xy, accum);
-		imageStore(depth, uv_xy, vec4(accum_z));
+		imageStore(light, uv_xy, vec4(accum));
+		imageStore(depth, uv_xy, vec4(accum_z, accum_z, accum_z, accum_z));
 #endif
 
 #ifdef MODE_DYNAMIC_SHRINK_PLOT

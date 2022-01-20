@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -36,17 +36,17 @@
 #include "node_3d_editor_plugin.h"
 #include "scene/resources/curve.h"
 
-String Path3DGizmo::get_handle_name(int p_id) const {
+String Path3DGizmo::get_handle_name(int p_id, bool p_secondary) const {
 	Ref<Curve3D> c = path->get_curve();
 	if (c.is_null()) {
 		return "";
 	}
 
-	if (p_id < c->get_point_count()) {
+	if (!p_secondary) {
 		return TTR("Curve Point #") + itos(p_id);
 	}
 
-	p_id = p_id - c->get_point_count() + 1;
+	p_id += 1; // Account for the first point only having an "out" handle
 
 	int idx = p_id / 2;
 	int t = p_id % 2;
@@ -60,18 +60,18 @@ String Path3DGizmo::get_handle_name(int p_id) const {
 	return n;
 }
 
-Variant Path3DGizmo::get_handle_value(int p_id) const {
+Variant Path3DGizmo::get_handle_value(int p_id, bool p_secondary) const {
 	Ref<Curve3D> c = path->get_curve();
 	if (c.is_null()) {
 		return Variant();
 	}
 
-	if (p_id < c->get_point_count()) {
+	if (!p_secondary) {
 		original = c->get_point_position(p_id);
 		return original;
 	}
 
-	p_id = p_id - c->get_point_count() + 1;
+	p_id += 1; // Account for the first point only having an "out" handle
 
 	int idx = p_id / 2;
 	int t = p_id % 2;
@@ -88,7 +88,7 @@ Variant Path3DGizmo::get_handle_value(int p_id) const {
 	return ofs;
 }
 
-void Path3DGizmo::set_handle(int p_id, Camera3D *p_camera, const Point2 &p_point) {
+void Path3DGizmo::set_handle(int p_id, bool p_secondary, Camera3D *p_camera, const Point2 &p_point) {
 	Ref<Curve3D> c = path->get_curve();
 	if (c.is_null()) {
 		return;
@@ -100,7 +100,7 @@ void Path3DGizmo::set_handle(int p_id, Camera3D *p_camera, const Point2 &p_point
 	Vector3 ray_dir = p_camera->project_ray_normal(p_point);
 
 	// Setting curve point positions
-	if (p_id < c->get_point_count()) {
+	if (!p_secondary) {
 		const Plane p = Plane(p_camera->get_transform().basis.get_axis(2), gt.xform(original));
 
 		Vector3 inters;
@@ -118,7 +118,7 @@ void Path3DGizmo::set_handle(int p_id, Camera3D *p_camera, const Point2 &p_point
 		return;
 	}
 
-	p_id = p_id - c->get_point_count() + 1;
+	p_id += 1; // Account for the first point only having an "out" handle
 
 	int idx = p_id / 2;
 	int t = p_id % 2;
@@ -157,7 +157,7 @@ void Path3DGizmo::set_handle(int p_id, Camera3D *p_camera, const Point2 &p_point
 	}
 }
 
-void Path3DGizmo::commit_handle(int p_id, const Variant &p_restore, bool p_cancel) {
+void Path3DGizmo::commit_handle(int p_id, bool p_secondary, const Variant &p_restore, bool p_cancel) {
 	Ref<Curve3D> c = path->get_curve();
 	if (c.is_null()) {
 		return;
@@ -165,7 +165,7 @@ void Path3DGizmo::commit_handle(int p_id, const Variant &p_restore, bool p_cance
 
 	UndoRedo *ur = Node3DEditor::get_singleton()->get_undo_redo();
 
-	if (p_id < c->get_point_count()) {
+	if (!p_secondary) {
 		if (p_cancel) {
 			c->set_point_position(p_id, p_restore);
 			return;
@@ -178,7 +178,7 @@ void Path3DGizmo::commit_handle(int p_id, const Variant &p_restore, bool p_cance
 		return;
 	}
 
-	p_id = p_id - c->get_point_count() + 1;
+	p_id += 1; // Account for the first point only having an "out" handle
 
 	int idx = p_id / 2;
 	int t = p_id % 2;
@@ -561,7 +561,7 @@ Path3DEditorPlugin::Path3DEditorPlugin(EditorNode *p_node) {
 	mirror_handle_length = true;
 
 	Ref<Path3DGizmoPlugin> gizmo_plugin;
-	gizmo_plugin.instantiate();
+	New_instantiate(gizmo_plugin);
 	Node3DEditor::get_singleton()->add_gizmo_plugin(gizmo_plugin);
 
 	sep = memnew(VSeparator);

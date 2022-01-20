@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -36,31 +36,31 @@
 #include "gdscript.h"
 
 static String _get_variant_string(const Variant &p_variant) {
-	String txt;
+	StringBuilder txt;
 	if (p_variant.get_type() == Variant::STRING) {
-		txt = "\"" + String(p_variant) + "\"";
+		txt + "\"" + String(p_variant) + "\"";
 	} else if (p_variant.get_type() == Variant::STRING_NAME) {
-		txt = "&\"" + String(p_variant) + "\"";
+		txt + "&\"" + String(p_variant) + "\"";
 	} else if (p_variant.get_type() == Variant::NODE_PATH) {
-		txt = "^\"" + String(p_variant) + "\"";
+		txt + "^\"" + String(p_variant) + "\"";
 	} else if (p_variant.get_type() == Variant::OBJECT) {
 		Object *obj = p_variant;
 		if (!obj) {
-			txt = "null";
+			txt + "null";
 		} else {
 			GDScriptNativeClass *cls = Object::cast_to<GDScriptNativeClass>(obj);
 			if (cls) {
 				txt += cls->get_name();
 				txt += " (class)";
 			} else {
-				txt = obj->get_class();
+				txt + obj->get_class();
 				if (obj->get_script_instance()) {
-					txt += "(" + obj->get_script_instance()->get_script()->get_path() + ")";
+					txt + "(" + obj->get_script_instance()->get_script()->get_path() + ")";
 				}
 			}
 		}
 	} else {
-		txt = p_variant;
+		txt + (String)p_variant;
 	}
 	return txt;
 }

@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -738,7 +738,7 @@ bool CanvasItemEditor::_select_click_on_item(CanvasItem *item, Point2 p_click_po
 			// Reselect
 			if (Engine::get_singleton()->is_editor_hint()) {
 				selected_from_canvas = true;
-				editor->call("edit_node", item);
+				editor->call_void("edit_node", item);
 			}
 		}
 	}
@@ -1920,7 +1920,7 @@ bool CanvasItemEditor::_gui_input_scale(const Ref<InputEvent> &p_event) {
 				}
 			}
 
-			canvas_item->call("set_scale", scale);
+			canvas_item->call_void("set_scale", scale);
 			return true;
 		}
 
@@ -2097,8 +2097,16 @@ bool CanvasItemEditor::_gui_input_move(const Ref<InputEvent> &p_event) {
 	if (k.is_valid() && k->is_pressed() && (tool == TOOL_SELECT || tool == TOOL_MOVE) &&
 			(k->get_keycode() == Key::UP || k->get_keycode() == Key::DOWN || k->get_keycode() == Key::LEFT || k->get_keycode() == Key::RIGHT)) {
 		if (!k->is_echo()) {
-			// Start moving the canvas items with the keyboard
-			drag_selection = _get_edited_canvas_items();
+			// Start moving the canvas items with the keyboard, if they are movable
+			List<CanvasItem *> selection = _get_edited_canvas_items();
+
+			drag_selection.clear();
+			for (CanvasItem *item : selection) {
+				if (_is_node_movable(item, true)) {
+					drag_selection.push_back(item);
+				}
+			}
+
 			drag_type = DRAG_KEY_MOVE;
 			drag_from = Vector2();
 			drag_to = Vector2();
@@ -3373,10 +3381,11 @@ void CanvasItemEditor::_draw_selection() {
 					Size2 move_factor = Size2(MOVE_HANDLE_DISTANCE, MOVE_HANDLE_DISTANCE);
 					viewport->draw_set_transform_matrix(simple_xform);
 
-					Vector<Point2> points;
-					points.push_back(Vector2(move_factor.x * EDSCALE, 5 * EDSCALE));
-					points.push_back(Vector2(move_factor.x * EDSCALE, -5 * EDSCALE));
-					points.push_back(Vector2((move_factor.x + 10) * EDSCALE, 0));
+					Vector<Point2> points = {
+						Vector2(move_factor.x * EDSCALE, 5 * EDSCALE),
+						Vector2(move_factor.x * EDSCALE, -5 * EDSCALE),
+						Vector2((move_factor.x + 10) * EDSCALE, 0)
+					};
 
 					viewport->draw_colored_polygon(points, get_theme_color(SNAME("axis_x_color"), SNAME("Editor")));
 					viewport->draw_line(Point2(), Point2(move_factor.x * EDSCALE, 0), get_theme_color(SNAME("axis_x_color"), SNAME("Editor")), Math::round(EDSCALE));
@@ -3508,7 +3517,7 @@ void CanvasItemEditor::_draw_axis() {
 
 		Color area_axis_color = EditorSettings::get_singleton()->get("editors/2d/viewport_border_color");
 
-		Size2 screen_size = Size2(ProjectSettings::get_singleton()->get("display/window/size/width"), ProjectSettings::get_singleton()->get("display/window/size/height"));
+		Size2 screen_size = Size2(ProjectSettings::get_singleton()->get("display/window/size/viewport_width"), ProjectSettings::get_singleton()->get("display/window/size/viewport_height"));
 
 		Vector2 screen_endpoints[4] = {
 			transform.xform(Vector2(0, 0)),
@@ -4001,7 +4010,7 @@ void CanvasItemEditor::_update_scrollbars() {
 	Size2 vmin = v_scroll->get_minimum_size();
 
 	// Get the visible frame.
-	Size2 screen_rect = Size2(ProjectSettings::get_singleton()->get("display/window/size/width"), ProjectSettings::get_singleton()->get("display/window/size/height"));
+	Size2 screen_rect = Size2(ProjectSettings::get_singleton()->get("display/window/size/viewport_width"), ProjectSettings::get_singleton()->get("display/window/size/viewport_height"));
 	Rect2 local_rect = Rect2(Point2(), viewport->get_size() - Size2(vmin.width, hmin.height));
 
 	// Calculate scrollable area.
@@ -5120,8 +5129,22 @@ void CanvasItemEditor::remove_control_from_menu_panel(Control *p_control) {
 	hbc_context_menu->remove_child(p_control);
 }
 
-HSplitContainer *CanvasItemEditor::get_palette_split() {
-	return palette_split;
+void CanvasItemEditor::add_control_to_left_panel(Control *p_control) {
+	left_panel_split->add_child(p_control);
+	left_panel_split->move_child(p_control, 0);
+}
+
+void CanvasItemEditor::add_control_to_right_panel(Control *p_control) {
+	right_panel_split->add_child(p_control);
+	right_panel_split->move_child(p_control, 1);
+}
+
+void CanvasItemEditor::remove_control_from_left_panel(Control *p_control) {
+	left_panel_split->remove_child(p_control);
+}
+
+void CanvasItemEditor::remove_control_from_right_panel(Control *p_control) {
+	right_panel_split->remove_child(p_control);
 }
 
 VSplitContainer *CanvasItemEditor::get_bottom_split() {
@@ -5212,12 +5235,16 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 	add_child(bottom_split);
 	bottom_split->set_v_size_flags(Control::SIZE_EXPAND_FILL);
 
-	palette_split = memnew(HSplitContainer);
-	bottom_split->add_child(palette_split);
-	palette_split->set_v_size_flags(Control::SIZE_EXPAND_FILL);
+	left_panel_split = memnew(HSplitContainer);
+	bottom_split->add_child(left_panel_split);
+	left_panel_split->set_v_size_flags(Control::SIZE_EXPAND_FILL);
+
+	right_panel_split = memnew(HSplitContainer);
+	left_panel_split->add_child(right_panel_split);
+	right_panel_split->set_v_size_flags(Control::SIZE_EXPAND_FILL);
 
 	viewport_scrollable = memnew(Control);
-	palette_split->add_child(viewport_scrollable);
+	right_panel_split->add_child(viewport_scrollable);
 	viewport_scrollable->set_mouse_filter(MOUSE_FILTER_PASS);
 	viewport_scrollable->set_clip_contents(true);
 	viewport_scrollable->set_v_size_flags(Control::SIZE_EXPAND_FILL);
@@ -5815,11 +5842,12 @@ void CanvasItemEditorViewport::_create_nodes(Node *parent, Node *child, String &
 		editor_data->get_undo_redo().add_do_property(child, "rect_size", texture_size);
 	} else if (node_class == "Polygon2D") {
 		Size2 texture_size = texture->get_size();
-		Vector<Vector2> list;
-		list.push_back(Vector2(0, 0));
-		list.push_back(Vector2(texture_size.width, 0));
-		list.push_back(Vector2(texture_size.width, texture_size.height));
-		list.push_back(Vector2(0, texture_size.height));
+		Vector<Vector2> list = {
+			Vector2(0, 0),
+			Vector2(texture_size.width, 0),
+			Vector2(texture_size.width, texture_size.height),
+			Vector2(0, texture_size.height)
+		};
 		editor_data->get_undo_redo().add_do_property(child, "polygon", list);
 	}
 
@@ -5852,7 +5880,7 @@ bool CanvasItemEditorViewport::_create_instance(Node *parent, String &path, cons
 
 	instantiated_scene->set_scene_file_path(ProjectSettings::get_singleton()->localize_path(path));
 
-	editor_data->get_undo_redo().add_do_method(parent, "add_child", instantiated_scene);
+	editor_data->get_undo_redo().add_do_method(parent, "add_child", instantiated_scene, true);
 	editor_data->get_undo_redo().add_do_method(instantiated_scene, "set_owner", editor->get_edited_scene());
 	editor_data->get_undo_redo().add_do_reference(instantiated_scene);
 	editor_data->get_undo_redo().add_undo_method(parent, "remove_child", instantiated_scene);
@@ -6125,7 +6153,7 @@ CanvasItemEditorViewport::CanvasItemEditorViewport(EditorNode *p_node, CanvasIte
 	vbc->add_child(btn_group);
 	btn_group->set_h_size_flags(0);
 
-	button_group.instantiate();
+	New_instantiate(button_group);
 	for (int i = 0; i < texture_node_types.size(); i++) {
 		CheckBox *check = memnew(CheckBox);
 		btn_group->add_child(check);

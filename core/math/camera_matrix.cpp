@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -316,7 +316,7 @@ Vector2 CameraMatrix::get_far_plane_half_extents() const {
 }
 
 bool CameraMatrix::get_endpoints(const Transform3D &p_transform, Vector3 *p_8points) const {
-	Vector<Plane> planes = get_projection_planes(Transform3D());
+	LocalVector<Plane> planes = get_projection_planes(Transform3D());
 	const Planes intersections[8][3] = {
 		{ PLANE_FAR, PLANE_LEFT, PLANE_TOP },
 		{ PLANE_FAR, PLANE_LEFT, PLANE_BOTTOM },
@@ -338,14 +338,14 @@ bool CameraMatrix::get_endpoints(const Transform3D &p_transform, Vector3 *p_8poi
 	return true;
 }
 
-Vector<Plane> CameraMatrix::get_projection_planes(const Transform3D &p_transform) const {
+LocalVector<Plane> CameraMatrix::get_projection_planes(const Transform3D &p_transform) const {
 	/** Fast Plane Extraction from combined modelview/projection matrices.
 	 * References:
 	 * https://web.archive.org/web/20011221205252/https://www.markmorley.com/opengl/frustumculling.html
 	 * https://web.archive.org/web/20061020020112/https://www2.ravensoft.com/users/ggribb/plane%20extraction.pdf
 	 */
 
-	Vector<Plane> planes;
+	planes.resize(6);
 
 	const real_t *matrix = (const real_t *)this->matrix;
 
@@ -360,7 +360,7 @@ Vector<Plane> CameraMatrix::get_projection_planes(const Transform3D &p_transform
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.push_back(p_transform.xform(new_plane));
+	planes[0] = p_transform.xform(new_plane);
 
 	///////--- Far Plane ---///////
 	new_plane = Plane(matrix[3] - matrix[2],
@@ -371,7 +371,7 @@ Vector<Plane> CameraMatrix::get_projection_planes(const Transform3D &p_transform
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.push_back(p_transform.xform(new_plane));
+	planes[1] = p_transform.xform(new_plane);
 
 	///////--- Left Plane ---///////
 	new_plane = Plane(matrix[3] + matrix[0],
@@ -382,7 +382,7 @@ Vector<Plane> CameraMatrix::get_projection_planes(const Transform3D &p_transform
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.push_back(p_transform.xform(new_plane));
+	planes[2] = p_transform.xform(new_plane);
 
 	///////--- Top Plane ---///////
 	new_plane = Plane(matrix[3] - matrix[1],
@@ -393,7 +393,7 @@ Vector<Plane> CameraMatrix::get_projection_planes(const Transform3D &p_transform
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.push_back(p_transform.xform(new_plane));
+	planes[3] = p_transform.xform(new_plane);
 
 	///////--- Right Plane ---///////
 	new_plane = Plane(matrix[3] - matrix[0],
@@ -404,7 +404,7 @@ Vector<Plane> CameraMatrix::get_projection_planes(const Transform3D &p_transform
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.push_back(p_transform.xform(new_plane));
+	planes[4] = p_transform.xform(new_plane);
 
 	///////--- Bottom Plane ---///////
 	new_plane = Plane(matrix[3] + matrix[1],
@@ -415,7 +415,7 @@ Vector<Plane> CameraMatrix::get_projection_planes(const Transform3D &p_transform
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.push_back(p_transform.xform(new_plane));
+	planes[5] = p_transform.xform(new_plane);
 
 	return planes;
 }

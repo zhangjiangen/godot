@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -53,7 +53,7 @@
 #ifdef TOOLS_ENABLED
 static void _editor_init() {
 	Ref<EditorSceneFormatImporterGLTF> import_gltf;
-	import_gltf.instantiate();
+	New_instantiate(import_gltf);
 	ResourceImporterScene::get_singleton()->add_importer(import_gltf);
 }
 #endif

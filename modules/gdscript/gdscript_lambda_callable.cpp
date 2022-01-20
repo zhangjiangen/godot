@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -79,10 +79,10 @@ void GDScriptLambdaCallable::call(const Variant **p_arguments, int p_argcount, V
 			args.write[i + captures_amount] = p_arguments[i];
 		}
 
-		r_return_value = function->call(nullptr, args.ptrw(), args.size(), r_call_error);
+		function->call_r(r_return_value, nullptr, args.ptrw(), args.size(), r_call_error);
 		r_call_error.argument -= captures_amount;
 	} else {
-		r_return_value = function->call(nullptr, p_arguments, p_argcount, r_call_error);
+		function->call_r(r_return_value, nullptr, p_arguments, p_argcount, r_call_error);
 	}
 }
 

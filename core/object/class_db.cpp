@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -1168,6 +1168,7 @@ bool ClassDB::set_property(Object *p_object, const StringName &p_property, const
 
 	ClassInfo *type = classes.getptr(p_object->get_class_name());
 	ClassInfo *check = type;
+
 	while (check) {
 		const PropertySetGet *psg = check->property_setget.getptr(p_property);
 		if (psg) {
@@ -1187,7 +1188,7 @@ bool ClassDB::set_property(Object *p_object, const StringName &p_property, const
 				if (psg->_setptr) {
 					psg->_setptr->call(p_object, arg, 2, ce);
 				} else {
-					p_object->call(psg->setter, arg, 2, ce);
+					p_object->call_r(psg->setter, arg, 2, ce);
 				}
 
 			} else {
@@ -1195,7 +1196,7 @@ bool ClassDB::set_property(Object *p_object, const StringName &p_property, const
 				if (psg->_setptr) {
 					psg->_setptr->call(p_object, arg, 1, ce);
 				} else {
-					p_object->call(psg->setter, arg, 1, ce);
+					p_object->call_r(psg->setter, arg, 1, ce);
 				}
 			}
 
@@ -1228,14 +1229,14 @@ bool ClassDB::get_property(Object *p_object, const StringName &p_property, Varia
 				Variant index = psg->index;
 				const Variant *arg[1] = { &index };
 				Callable::CallError ce;
-				r_value = p_object->call(psg->getter, arg, 1, ce);
+				p_object->call_r(r_value, psg->getter, arg, 1, ce);
 
 			} else {
 				Callable::CallError ce;
 				if (psg->_getptr) {
 					r_value = psg->_getptr->call(p_object, nullptr, 0, ce);
 				} else {
-					r_value = p_object->call(psg->getter, nullptr, 0, ce);
+					p_object->call_r(r_value, psg->getter, nullptr, 0, ce);
 				}
 			}
 			return true;

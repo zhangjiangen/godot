@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -102,7 +102,7 @@ Ref<KinematicCollision3D> PhysicsBody3D::_move(const Vector3 &p_linear_velocity,
 	if (move_and_collide(parameters, result, p_test_only)) {
 		// Create a new instance when the cached reference is invalid or still in use in script.
 		if (motion_cache.is_null() || motion_cache->reference_get_count() > 1) {
-			motion_cache.instantiate();
+			New_instantiate(motion_cache);
 			motion_cache->owner = this;
 		}
 
@@ -1811,7 +1811,7 @@ Ref<KinematicCollision3D> CharacterBody3D::_get_slide_collision(int p_bounce) {
 
 	// Create a new instance when the cached reference is invalid or still in use in script.
 	if (slide_colliders[p_bounce].is_null() || slide_colliders[p_bounce]->reference_get_count() > 1) {
-		slide_colliders.write[p_bounce].instantiate();
+		New_instantiate(slide_colliders.write[p_bounce]);
 		slide_colliders.write[p_bounce]->owner = this;
 	}
 

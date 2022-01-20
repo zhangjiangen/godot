@@ -68,19 +68,15 @@ sdfgi;
 #define MAX_VOXEL_GI_INSTANCES 8
 
 struct VoxelGIData {
-	mat4 xform;
-	vec3 bounds;
-	float dynamic_range;
+	mat4 xform; // 64 - 64
 
-	float bias;
-	float normal_bias;
-	bool blend_ambient;
-	uint texture_slot;
+	vec3 bounds; // 12 - 76
+	float dynamic_range; // 4 - 80
 
-	uint pad0;
-	uint pad1;
-	uint pad2;
-	uint mipmaps;
+	float bias; // 4 - 84
+	float normal_bias; // 4 - 88
+	bool blend_ambient; // 4 - 92
+	uint mipmaps; // 4 - 96
 };
 
 layout(set = 0, binding = 16, std140) uniform VoxelGIs {
@@ -392,7 +388,7 @@ void sdfgi_process(vec3 vertex, vec3 normal, vec3 reflection, float roughness, o
 
 						float fdistance2 = textureLod(sampler3D(sdf_cascades[next_i], linear_sampler), pos, 0.0).r * 255.0 - 1.1;
 
-						vec4 hit_light2 = vec4(0.0);
+						vec4 hit_light2 = vec4(0.0,0.0,0.0,0.0);
 						if (fdistance2 < softness) {
 							hit_light2.rgb = textureLod(sampler3D(light_cascades[next_i], linear_sampler), pos, 0.0).rgb;
 							hit_light2.rgb *= 0.5; //approximation given value read is actually meant for anisotropy

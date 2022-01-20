@@ -66,5 +66,5 @@ void main() {
 		limit = 0.0;
 	}
 
-	imageStore(dest_roughness, pos, vec4(limit));
+	imageStore(dest_roughness, pos, vec4(limit, limit, limit, limit));
 }

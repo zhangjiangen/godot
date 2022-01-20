@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -48,7 +48,7 @@ Error ENetMultiplayerPeer::create_server(int p_port, int p_max_clients, int p_ma
 	ERR_FAIL_COND_V_MSG(_is_active(), ERR_ALREADY_IN_USE, "The multiplayer instance is already active.");
 	set_refuse_new_connections(false);
 	Ref<ENetConnection> host;
-	host.instantiate();
+	New_instantiate(host);
 	Error err = host->create_host_bound(bind_ip, p_port, p_max_clients, 0, p_max_channels > 0 ? p_max_channels + SYSCH_MAX : 0, p_out_bandwidth);
 	if (err != OK) {
 		return err;
@@ -65,7 +65,7 @@ Error ENetMultiplayerPeer::create_client(const String &p_address, int p_port, in
 	ERR_FAIL_COND_V_MSG(_is_active(), ERR_ALREADY_IN_USE, "The multiplayer instance is already active.");
 	set_refuse_new_connections(false);
 	Ref<ENetConnection> host;
-	host.instantiate();
+	New_instantiate(host);
 	Error err;
 	if (p_local_port) {
 		err = host->create_host_bound(bind_ip, p_local_port, 1, 0, p_in_bandwidth, p_out_bandwidth);
@@ -107,7 +107,7 @@ Error ENetMultiplayerPeer::add_mesh_peer(int p_id, Ref<ENetConnection> p_host) {
 	ERR_FAIL_COND_V_MSG(active_mode != MODE_MESH, ERR_UNCONFIGURED, "The multiplayer instance is not configured as a mesh. Call 'create_mesh' first.");
 	List<Ref<ENetPacketPeer>> host_peers;
 	p_host->get_peers(host_peers);
-	ERR_FAIL_COND_V_MSG(host_peers.size() != 1 || host_peers[0]->get_state() != ENetPacketPeer::STATE_CONNECTED, ERR_INVALID_PARAMETER, "The provided host must have excatly one peer in the connected state.");
+	ERR_FAIL_COND_V_MSG(host_peers.size() != 1 || host_peers[0]->get_state() != ENetPacketPeer::STATE_CONNECTED, ERR_INVALID_PARAMETER, "The provided host must have exactly one peer in the connected state.");
 	hosts[p_id] = p_host;
 	peers[p_id] = host_peers[0];
 	emit_signal(SNAME("peer_connected"), p_id);

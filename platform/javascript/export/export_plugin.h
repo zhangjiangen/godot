@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -84,7 +84,7 @@ class EditorExportPlatformJavaScript : public EditorExportPlatform {
 
 	Ref<Image> _get_project_icon() const {
 		Ref<Image> icon;
-		icon.instantiate();
+		New_instantiate(icon);
 		const String icon_path = String(GLOBAL_GET("application/config/icon")).strip_edges();
 		if (icon_path.is_empty() || ImageLoader::load_image(icon_path, icon) != OK) {
 			return EditorNode::get_singleton()->get_editor_theme()->get_icon("DefaultProjectIcon", "EditorIcons")->get_image();
@@ -94,7 +94,7 @@ class EditorExportPlatformJavaScript : public EditorExportPlatform {
 
 	Ref<Image> _get_project_splash() const {
 		Ref<Image> splash;
-		splash.instantiate();
+		New_instantiate(splash);
 		const String splash_path = String(GLOBAL_GET("application/boot_splash/image")).strip_edges();
 		if (splash_path.is_empty() || ImageLoader::load_image(splash_path, splash) != OK) {
 			return Ref<Image>(memnew(Image(boot_splash_png)));

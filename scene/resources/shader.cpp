@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -178,7 +178,7 @@ RES ResourceFormatLoaderShader::load(const String &p_path, const String &p_origi
 	}
 
 	Ref<Shader> shader;
-	shader.instantiate();
+	New_instantiate(shader);
 
 	Vector<uint8_t> buffer = FileAccess::get_file_as_array(p_path);
 

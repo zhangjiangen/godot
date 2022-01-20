@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -577,7 +577,7 @@ void LiveEditor::_node_call_func(int p_id, const StringName &p_method, VARIANT_A
 		}
 		Node *n2 = n->get_node(np);
 
-		n2->call(p_method, VARIANT_ARG_PASS);
+		n2->call_void(p_method, VARIANT_ARG_PASS);
 	}
 }
 
@@ -624,7 +624,7 @@ void LiveEditor::_res_call_func(int p_id, const StringName &p_method, VARIANT_AR
 		return;
 	}
 
-	r->call(p_method, VARIANT_ARG_PASS);
+	r->call_void(p_method, VARIANT_ARG_PASS);
 }
 
 void LiveEditor::_root_func(const NodePath &p_scene_path, const String &p_scene_from) {

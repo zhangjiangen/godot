@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -328,7 +328,7 @@ void InputEventConfigurationDialog::_update_input_list() {
 		MouseButton mouse_buttons[9] = { MouseButton::LEFT, MouseButton::RIGHT, MouseButton::MIDDLE, MouseButton::WHEEL_UP, MouseButton::WHEEL_DOWN, MouseButton::WHEEL_LEFT, MouseButton::WHEEL_RIGHT, MouseButton::MB_XBUTTON1, MouseButton::MB_XBUTTON2 };
 		for (int i = 0; i < 9; i++) {
 			Ref<InputEventMouseButton> mb;
-			mb.instantiate();
+			New_instantiate(mb);
 			mb->set_button_index(mouse_buttons[i]);
 			String desc = get_event_text(mb);
 
@@ -351,7 +351,7 @@ void InputEventConfigurationDialog::_update_input_list() {
 
 		for (int i = 0; i < (int)JoyButton::MAX; i++) {
 			Ref<InputEventJoypadButton> joyb;
-			joyb.instantiate();
+			New_instantiate(joyb);
 			joyb->set_button_index((JoyButton)i);
 			String desc = get_event_text(joyb);
 
@@ -376,7 +376,7 @@ void InputEventConfigurationDialog::_update_input_list() {
 			int axis = i / 2;
 			int direction = (i & 1) ? 1 : -1;
 			Ref<InputEventJoypadMotion> joym;
-			joym.instantiate();
+			New_instantiate(joym);
 			joym->set_axis((JoyAxis)axis);
 			joym->set_axis_value(direction);
 			String desc = get_event_text(joym);
@@ -476,7 +476,7 @@ void InputEventConfigurationDialog::_input_list_item_selected() {
 		case InputEventConfigurationDialog::INPUT_KEY: {
 			Key keycode = (Key)(int)selected->get_meta("__keycode");
 			Ref<InputEventKey> k;
-			k.instantiate();
+			New_instantiate(k);
 
 			if (physical_key_checkbox->is_pressed()) {
 				k->set_physical_keycode(keycode);
@@ -499,7 +499,7 @@ void InputEventConfigurationDialog::_input_list_item_selected() {
 		case InputEventConfigurationDialog::INPUT_MOUSE_BUTTON: {
 			MouseButton idx = (MouseButton)(int)selected->get_meta("__index");
 			Ref<InputEventMouseButton> mb;
-			mb.instantiate();
+			New_instantiate(mb);
 			mb->set_button_index(idx);
 			// Maintain modifier state from checkboxes
 			mb->set_alt_pressed(mod_checkboxes[MOD_ALT]->is_pressed());
@@ -521,7 +521,7 @@ void InputEventConfigurationDialog::_input_list_item_selected() {
 			int value = selected->get_meta("__value");
 
 			Ref<InputEventJoypadMotion> jm;
-			jm.instantiate();
+			New_instantiate(jm);
 			jm->set_axis(axis);
 			jm->set_axis_value(value);
 			_set_event(jm);
@@ -742,7 +742,7 @@ void ActionMapEditor::_event_config_confirmed() {
 	Ref<InputEvent> ev = event_config_dialog->get_event();
 
 	Dictionary new_action = current_action.duplicate();
-	Array events = new_action["events"];
+	Array events = new_action["events"].duplicate();
 
 	if (current_action_event_index == -1) {
 		// Add new event
@@ -760,9 +760,23 @@ void ActionMapEditor::_add_action_pressed() {
 	_add_action(add_edit->get_text());
 }
 
+bool ActionMapEditor::_has_action(const String &p_name) const {
+	for (const ActionInfo &action_info : actions_cache) {
+		if (p_name == action_info.name) {
+			return true;
+		}
+	}
+	return false;
+}
+
 void ActionMapEditor::_add_action(const String &p_name) {
 	if (p_name.is_empty() || !_is_action_name_valid(p_name)) {
 		show_message(TTR("Invalid action name. It cannot be empty nor contain '/', ':', '=', '\\' or '\"'"));
+		return;
+	}
+
+	if (_has_action(p_name)) {
+		show_message(vformat(TTR("An action with the name '%s' already exists."), p_name));
 		return;
 	}
 
@@ -788,6 +802,12 @@ void ActionMapEditor::_action_edited() {
 		if (new_name.is_empty() || !_is_action_name_valid(new_name)) {
 			ti->set_text(0, old_name);
 			show_message(TTR("Invalid action name. It cannot be empty nor contain '/', ':', '=', '\\' or '\"'"));
+			return;
+		}
+
+		if (_has_action(new_name)) {
+			ti->set_text(0, old_name);
+			show_message(vformat(TTR("An action with the name '%s' already exists."), new_name));
 			return;
 		}
 
@@ -819,7 +839,6 @@ void ActionMapEditor::_tree_button_pressed(Object *p_item, int p_column, int p_i
 			current_action_event_index = -1;
 
 			event_config_dialog->popup_and_configure();
-
 		} break;
 		case ActionMapEditor::BUTTON_EDIT_EVENT: {
 			// Action and Action name is located on the parent of the event.
@@ -832,7 +851,6 @@ void ActionMapEditor::_tree_button_pressed(Object *p_item, int p_column, int p_i
 			if (ie.is_valid()) {
 				event_config_dialog->popup_and_configure(ie);
 			}
-
 		} break;
 		case ActionMapEditor::BUTTON_REMOVE_ACTION: {
 			// Send removed action name
@@ -841,12 +859,12 @@ void ActionMapEditor::_tree_button_pressed(Object *p_item, int p_column, int p_i
 		} break;
 		case ActionMapEditor::BUTTON_REMOVE_EVENT: {
 			// Remove event and send updated action
-			Dictionary action = item->get_parent()->get_meta("__action");
+			Dictionary action = item->get_parent()->get_meta("__action").duplicate();
 			String action_name = item->get_parent()->get_meta("__name");
 
 			int event_index = item->get_meta("__index");
 
-			Array events = action["events"];
+			Array events = action["events"].duplicate();
 			events.remove_at(event_index);
 			action["events"] = events;
 

@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -311,7 +311,7 @@ void EditorFeatureProfileManager::_notification(int p_what) {
 	if (p_what == NOTIFICATION_READY) {
 		current_profile = EDITOR_GET("_default_feature_profile");
 		if (!current_profile.is_empty()) {
-			current.instantiate();
+			New_instantiate(current);
 			Error err = current->load_from_file(EditorSettings::get_singleton()->get_feature_profiles_dir().plus_file(current_profile + ".profile"));
 			if (err != OK) {
 				ERR_PRINT("Error loading default feature profile: " + current_profile);
@@ -473,7 +473,7 @@ void EditorFeatureProfileManager::_create_new_profile() {
 	}
 
 	Ref<EditorFeatureProfile> new_profile;
-	new_profile.instantiate();
+	New_instantiate(new_profile);
 	new_profile->save_to_file(file);
 
 	_update_profile_list(name);
@@ -729,7 +729,7 @@ void EditorFeatureProfileManager::_update_selected_profile() {
 		ERR_FAIL_COND(current.is_null()); //nothing selected, current should never be null
 	} else {
 		//reload edited, if different from current
-		edited.instantiate();
+		New_instantiate(edited);
 		Error err = edited->load_from_file(EditorSettings::get_singleton()->get_feature_profiles_dir().plus_file(profile + ".profile"));
 		ERR_FAIL_COND_MSG(err != OK, "Error when loading EditorSettings from file '" + EditorSettings::get_singleton()->get_feature_profiles_dir().plus_file(profile + ".profile") + "'.");
 	}
@@ -778,7 +778,7 @@ void EditorFeatureProfileManager::_import_profiles(const Vector<String> &p_paths
 	//test it first
 	for (int i = 0; i < p_paths.size(); i++) {
 		Ref<EditorFeatureProfile> profile;
-		profile.instantiate();
+		New_instantiate(profile);
 		Error err = profile->load_from_file(p_paths[i]);
 		String basefile = p_paths[i].get_file();
 		if (err != OK) {
@@ -797,7 +797,7 @@ void EditorFeatureProfileManager::_import_profiles(const Vector<String> &p_paths
 	//do it second
 	for (int i = 0; i < p_paths.size(); i++) {
 		Ref<EditorFeatureProfile> profile;
-		profile.instantiate();
+		New_instantiate(profile);
 		Error err = profile->load_from_file(p_paths[i]);
 		ERR_CONTINUE(err != OK);
 		String basefile = p_paths[i].get_file();

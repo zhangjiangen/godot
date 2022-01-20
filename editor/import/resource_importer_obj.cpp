@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -57,7 +57,7 @@ static Error _parse_material_library(const String &p_path, Map<String, Ref<Stand
 			//vertex
 
 			current_name = l.replace("newmtl", "").strip_edges();
-			current.instantiate();
+			New_instantiate(current);
 			current->set_name(current_name);
 			material_map[current_name] = current;
 		} else if (l.begins_with("Ka ")) {
@@ -207,7 +207,7 @@ static Error _parse_obj(const String &p_path, List<Ref<Mesh>> &r_meshes, bool p_
 	ERR_FAIL_COND_V_MSG(!f, ERR_CANT_OPEN, vformat("Couldn't open OBJ file '%s', it may not exist or not be readable.", p_path));
 
 	Ref<ArrayMesh> mesh;
-	mesh.instantiate();
+	New_instantiate(mesh);
 
 	bool generate_tangents = p_generate_tangents;
 	Vector3 scale_mesh = p_scale_mesh;
@@ -378,7 +378,7 @@ static Error _parse_obj(const String &p_path, List<Ref<Mesh>> &r_meshes, bool p_
 				if (!p_single_mesh) {
 					mesh->set_name(name);
 					r_meshes.push_back(mesh);
-					mesh.instantiate();
+					New_instantiate(mesh);
 					current_group = "";
 					current_material = "";
 				}
@@ -424,7 +424,7 @@ static Error _parse_obj(const String &p_path, List<Ref<Mesh>> &r_meshes, bool p_
 	return OK;
 }
 
-Node *EditorOBJImporter::import_scene(const String &p_path, uint32_t p_flags, int p_bake_fps, List<String> *r_missing_deps, Error *r_err) {
+Node *EditorOBJImporter::import_scene(const String &p_path, uint32_t p_flags, const Map<StringName, Variant> &p_options, int p_bake_fps, List<String> *r_missing_deps, Error *r_err) {
 	List<Ref<Mesh>> meshes;
 
 	Error err = _parse_obj(p_path, meshes, false, p_flags & IMPORT_GENERATE_TANGENT_ARRAYS, false, Vector3(1, 1, 1), Vector3(0, 0, 0), r_missing_deps);
@@ -440,7 +440,7 @@ Node *EditorOBJImporter::import_scene(const String &p_path, uint32_t p_flags, in
 
 	for (const Ref<Mesh> &m : meshes) {
 		Ref<ImporterMesh> mesh;
-		mesh.instantiate();
+		New_instantiate(mesh);
 		for (int i = 0; i < m->get_surface_count(); i++) {
 			mesh->add_surface(m->surface_get_primitive_type(i), m->surface_get_arrays(i), Array(), Dictionary(), m->surface_get_material(i));
 		}
@@ -459,7 +459,7 @@ Node *EditorOBJImporter::import_scene(const String &p_path, uint32_t p_flags, in
 	return scene;
 }
 
-Ref<Animation> EditorOBJImporter::import_animation(const String &p_path, uint32_t p_flags, int p_bake_fps) {
+Ref<Animation> EditorOBJImporter::import_animation(const String &p_path, uint32_t p_flags, const Map<StringName, Variant> &p_options, int p_bake_fps) {
 	return Ref<Animation>();
 }
 

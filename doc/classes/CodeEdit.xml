@@ -234,7 +234,7 @@
 		<method name="get_folded_lines" qualifiers="const">
 			<return type="int[]" />
 			<description>
-				Return all lines that are current folded.
+				Returns all lines that are current folded.
 			</description>
 		</method>
 		<method name="get_text_for_code_completion" qualifiers="const">
@@ -288,7 +288,7 @@
 			<argument index="0" name="line" type="int" />
 			<argument index="1" name="column" type="int" default="-1" />
 			<description>
-				Return delimiter index if [code]line[/code] [code]column[/code] is in a comment. If [code]column[/code] is not provided, will return delimiter index if the entire [code]line[/code] is a comment. Otherwise [code]-1[/code].
+				Returns delimiter index if [code]line[/code] [code]column[/code] is in a comment. If [code]column[/code] is not provided, will return delimiter index if the entire [code]line[/code] is a comment. Otherwise [code]-1[/code].
 			</description>
 		</method>
 		<method name="is_in_string" qualifiers="const">
@@ -296,7 +296,7 @@
 			<argument index="0" name="line" type="int" />
 			<argument index="1" name="column" type="int" default="-1" />
 			<description>
-				Return the delimiter index if [code]line[/code] [code]column[/code] is in a string. If [code]column[/code] is not provided, will return the delimiter index if the entire [code]line[/code] is a string. Otherwise [code]-1[/code].
+				Returns the delimiter index if [code]line[/code] [code]column[/code] is in a string. If [code]column[/code] is not provided, will return the delimiter index if the entire [code]line[/code] is a string. Otherwise [code]-1[/code].
 			</description>
 		</method>
 		<method name="is_line_bookmarked" qualifiers="const">
@@ -442,7 +442,7 @@
 		<member name="auto_brace_completion_highlight_matching" type="bool" setter="set_highlight_matching_braces_enabled" getter="is_highlight_matching_braces_enabled" default="false">
 			Highlight mismatching brace pairs.
 		</member>
-		<member name="auto_brace_completion_pairs" type="Dictionary" setter="set_auto_brace_completion_pairs" getter="get_auto_brace_completion_pairs" default="{&quot;\&quot;&quot;: &quot;\&quot;&quot;,&quot;&apos;&quot;: &quot;&apos;&quot;,&quot;(&quot;: &quot;)&quot;,&quot;[&quot;: &quot;]&quot;,&quot;{&quot;: &quot;}&quot;}">
+		<member name="auto_brace_completion_pairs" type="Dictionary" setter="set_auto_brace_completion_pairs" getter="get_auto_brace_completion_pairs" default="{ &quot;\&quot;&quot;: &quot;\&quot;&quot;, &quot;&apos;&quot;: &quot;&apos;&quot;, &quot;(&quot;: &quot;)&quot;, &quot;[&quot;: &quot;]&quot;, &quot;{&quot;: &quot;}&quot; }">
 			Sets the brace pairs to be autocompleted.
 		</member>
 		<member name="code_completion_enabled" type="bool" setter="set_code_completion_enabled" getter="is_code_completion_enabled" default="false">

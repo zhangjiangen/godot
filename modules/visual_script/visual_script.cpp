@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -1710,13 +1710,13 @@ Variant VisualScriptInstance::_call_internal(const StringName &p_method, void *p
 	return return_value;
 }
 
-Variant VisualScriptInstance::call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+void VisualScriptInstance::call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
 	r_error.error = Callable::CallError::CALL_OK; //ok by default
-
+	ret.clear();
 	Map<StringName, Function>::Element *F = functions.find(p_method);
 	if (!F) {
 		r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
-		return Variant();
+		return;
 	}
 
 	VSDEBUG("CALLING: " + String(p_method));
@@ -1759,7 +1759,7 @@ Variant VisualScriptInstance::call(const StringName &p_method, const Variant **p
 	if (!E) {
 		r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
 
-		ERR_FAIL_V_MSG(Variant(), "No VisualScriptFunction node in function.");
+		ERR_FAIL_MSG("No VisualScriptFunction node in function.");
 	}
 
 	VisualScriptNodeInstance *node = E->get();
@@ -1774,14 +1774,14 @@ Variant VisualScriptInstance::call(const StringName &p_method, const Variant **p
 		r_error.error = Callable::CallError::CALL_ERROR_TOO_FEW_ARGUMENTS;
 		r_error.argument = node->get_input_port_count();
 
-		return Variant();
+		return;
 	}
 
 	if (p_argcount > f->argument_count) {
 		r_error.error = Callable::CallError::CALL_ERROR_TOO_MANY_ARGUMENTS;
 		r_error.argument = node->get_input_port_count();
 
-		return Variant();
+		return;
 	}
 
 	// Allocate variant stack.
@@ -1794,7 +1794,94 @@ Variant VisualScriptInstance::call(const StringName &p_method, const Variant **p
 		variant_stack[i] = *p_args[i];
 	}
 
-	return _call_internal(p_method, stack, total_stack_size, node, 0, 0, false, r_error);
+	ret = _call_internal(p_method, stack, total_stack_size, node, 0, 0, false, r_error);
+}
+
+void VisualScriptInstance::call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	r_error.error = Callable::CallError::CALL_OK; //ok by default
+
+	Map<StringName, Function>::Element *F = functions.find(p_method);
+	if (!F) {
+		r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
+		return;
+	}
+
+	VSDEBUG("CALLING: " + String(p_method));
+
+	Function *f = &F->get();
+
+	int total_stack_size = 0;
+
+	total_stack_size += f->max_stack * sizeof(Variant); //variants
+	total_stack_size += f->node_count * sizeof(bool);
+	total_stack_size += (max_input_args + max_output_args) * sizeof(Variant *); //arguments
+	total_stack_size += f->flow_stack_size * sizeof(int); //flow
+	total_stack_size += f->pass_stack_size * sizeof(int);
+
+	VSDEBUG("STACK SIZE: " + itos(total_stack_size));
+	VSDEBUG("STACK VARIANTS: : " + itos(f->max_stack));
+	VSDEBUG("SEQBITS: : " + itos(f->node_count));
+	VSDEBUG("MAX INPUT: " + itos(max_input_args));
+	VSDEBUG("MAX OUTPUT: " + itos(max_output_args));
+	VSDEBUG("FLOW STACK SIZE: " + itos(f->flow_stack_size));
+	VSDEBUG("PASS STACK SIZE: " + itos(f->pass_stack_size));
+
+	void *stack = alloca(total_stack_size);
+
+	Variant *variant_stack = (Variant *)stack;
+	bool *sequence_bits = (bool *)(variant_stack + f->max_stack);
+	const Variant **input_args = (const Variant **)(sequence_bits + f->node_count);
+	Variant **output_args = (Variant **)(input_args + max_input_args);
+	int flow_max = f->flow_stack_size;
+	int *flow_stack = flow_max ? (int *)(output_args + max_output_args) : (int *)nullptr;
+	int *pass_stack = flow_stack ? (int *)(flow_stack + flow_max) : (int *)nullptr;
+
+	for (int i = 0; i < f->node_count; i++) {
+		sequence_bits[i] = false; // All starts as false.
+	}
+
+	memset(pass_stack, 0, f->pass_stack_size * sizeof(int));
+
+	Map<int, VisualScriptNodeInstance *>::Element *E = instances.find(f->node);
+	if (!E) {
+		r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
+
+		ERR_FAIL_MSG("No VisualScriptFunction node in function.");
+	}
+
+	VisualScriptNodeInstance *node = E->get();
+
+	if (flow_stack) {
+		flow_stack[0] = node->get_id();
+	}
+
+	VSDEBUG("ARGUMENTS: " + itos(f->argument_count) = " RECEIVED: " + itos(p_argcount));
+
+	if (p_argcount < f->argument_count) {
+		r_error.error = Callable::CallError::CALL_ERROR_TOO_FEW_ARGUMENTS;
+		r_error.argument = node->get_input_port_count();
+
+		return;
+	}
+
+	if (p_argcount > f->argument_count) {
+		r_error.error = Callable::CallError::CALL_ERROR_TOO_MANY_ARGUMENTS;
+		r_error.argument = node->get_input_port_count();
+
+		return;
+	}
+
+	// Allocate variant stack.
+	for (int i = 0; i < f->max_stack; i++) {
+		memnew_placement(&variant_stack[i], Variant);
+	}
+
+	// Allocate function arguments (must be copied for yield to work properly).
+	for (int i = 0; i < p_argcount; i++) {
+		variant_stack[i] = *p_args[i];
+	}
+
+	_call_internal(p_method, stack, total_stack_size, node, 0, 0, false, r_error);
 }
 
 void VisualScriptInstance::notification(int p_notification) {
@@ -2241,20 +2328,15 @@ void VisualScriptLanguage::get_comment_delimiters(List<String> *p_delimiters) co
 void VisualScriptLanguage::get_string_delimiters(List<String> *p_delimiters) const {
 }
 
-Ref<Script> VisualScriptLanguage::get_template(const String &p_class_name, const String &p_base_class_name) const {
+bool VisualScriptLanguage::is_using_templates() {
+	return false;
+}
+
+Ref<Script> VisualScriptLanguage::make_template(const String &p_template, const String &p_class_name, const String &p_base_class_name) const {
 	Ref<VisualScript> script;
-	script.instantiate();
+	New_instantiate(script);
 	script->set_instance_base_type(p_base_class_name);
 	return script;
-}
-
-bool VisualScriptLanguage::is_using_templates() {
-	return true;
-}
-
-void VisualScriptLanguage::make_template(const String &p_class_name, const String &p_base_class_name, Ref<Script> &p_script) {
-	Ref<VisualScript> script = p_script;
-	script->set_instance_base_type(p_base_class_name);
 }
 
 bool VisualScriptLanguage::validate(const String &p_script, const String &p_path, List<String> *r_functions, List<ScriptLanguage::ScriptError> *r_errors, List<ScriptLanguage::Warning> *r_warnings, Set<int> *r_safe_lines) const {

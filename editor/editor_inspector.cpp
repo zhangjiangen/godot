@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -1331,10 +1331,12 @@ void EditorInspectorSection::setup(const String &p_section, const String &p_labe
 
 	if (foldable) {
 		_test_unfold();
-		if (object->editor_is_section_unfolded(section)) {
-			vbox->show();
-		} else {
-			vbox->hide();
+		if (object) {
+			if (object->editor_is_section_unfolded(section)) {
+				vbox->show();
+			} else {
+				vbox->hide();
+			}
 		}
 	}
 }
@@ -1376,7 +1378,8 @@ void EditorInspectorSection::unfold() {
 
 	_test_unfold();
 
-	object->editor_set_section_unfold(section, true);
+	if (object != nullptr)
+		object->editor_set_section_unfold(section, true);
 	vbox->show();
 	update();
 }
@@ -1390,6 +1393,7 @@ void EditorInspectorSection::fold() {
 		return;
 	}
 
+	if (object != nullptr)
 	object->editor_set_section_unfold(section, false);
 	vbox->hide();
 	update();
@@ -1799,7 +1803,7 @@ Array EditorInspectorArray::_extract_properties_as_array(const List<PropertyInfo
 					dict[format_string] = object->get(pi.name);
 					output[array_index] = dict;
 				} else {
-					WARN_PRINT(vformat("Array element %s has an index too high. Array allocaiton failed.", pi.name));
+					WARN_PRINT(vformat("Array element %s has an index too high. Array allocation failed.", pi.name));
 				}
 			}
 		}
@@ -2067,8 +2071,8 @@ VBoxContainer *EditorInspectorArray::get_vbox(int p_index) {
 EditorInspectorArray::EditorInspectorArray() {
 	set_mouse_filter(Control::MOUSE_FILTER_STOP);
 
-	odd_style.instantiate();
-	even_style.instantiate();
+	New_instantiate(odd_style);
+	New_instantiate(even_style);
 
 	rmb_popup = memnew(PopupMenu);
 	rmb_popup->add_item(TTR("Move Up"), OPTION_MOVE_UP);
@@ -2221,7 +2225,7 @@ String EditorInspector::get_selected_path() const {
 	return property_selected;
 }
 
-void EditorInspector::_parse_added_editors(VBoxContainer *current_vbox, Ref<EditorInspectorPlugin> ped) {
+void EditorInspector::_parse_added_editors(VBoxContainer * current_vbox, Ref<EditorInspectorPlugin> ped) {
 	for (const EditorInspectorPlugin::AddedEditor &F : ped->added_editors) {
 		EditorProperty *ep = Object::cast_to<EditorProperty>(F.property_editor);
 		current_vbox->add_child(F.property_editor);
@@ -2766,7 +2770,7 @@ void EditorInspector::update_tree() {
 			doc_hint = descr;
 		}
 
-		// Seach for the inspector plugin that will handle the properties. Then add the correct property editor to it.
+		// Search for the inspector plugin that will handle the properties. Then add the correct property editor to it.
 		for (Ref<EditorInspectorPlugin> &ped : valid_plugins) {
 			bool exclusive = ped->parse_property(object, p.type, p.name, p.hint, p.hint_string, p.usage, wide_editors);
 
@@ -2905,6 +2909,7 @@ void EditorInspector::edit(Object *p_object) {
 		object->connect("property_list_changed", callable_mp(this, &EditorInspector::_changed_callback));
 		update_tree();
 	}
+	emit_signal("edited_object_changed");
 }
 
 void EditorInspector::set_keying(bool p_active) {
@@ -3205,7 +3210,10 @@ void EditorInspector::_property_keyed(const String &p_path, bool p_advance) {
 		return;
 	}
 
-	emit_signal(SNAME("property_keyed"), p_path, object->get(p_path), p_advance); //second param is deprecated
+	// The second parameter could be null, causing the event to fire with less arguments, so use the pointer call which preserves it.
+	const Variant args[3] = { p_path, object->get(p_path), p_advance };
+	const Variant *argp[3] = { &args[0], &args[1], &args[2] };
+	emit_signal(SNAME("property_keyed"), argp, 3);
 }
 
 void EditorInspector::_property_deleted(const String &p_path) {
@@ -3213,7 +3221,7 @@ void EditorInspector::_property_deleted(const String &p_path) {
 		return;
 	}
 
-	emit_signal(SNAME("property_deleted"), p_path); //second param is deprecated
+	emit_signal(SNAME("property_deleted"), p_path);
 }
 
 void EditorInspector::_property_keyed_with_value(const String &p_path, const Variant &p_value, bool p_advance) {
@@ -3221,7 +3229,10 @@ void EditorInspector::_property_keyed_with_value(const String &p_path, const Var
 		return;
 	}
 
-	emit_signal(SNAME("property_keyed"), p_path, p_value, p_advance); //second param is deprecated
+	// The second parameter could be null, causing the event to fire with less arguments, so use the pointer call which preserves it.
+	const Variant args[3] = { p_path, p_value, p_advance };
+	const Variant *argp[3] = { &args[0], &args[1], &args[2] };
+	emit_signal(SNAME("property_keyed"), argp, 3);
 }
 
 void EditorInspector::_property_checked(const String &p_path, bool p_checked) {
@@ -3349,7 +3360,7 @@ void EditorInspector::_notification(int p_what) {
 
 	if (p_what == NOTIFICATION_PROCESS) {
 		if (update_scroll_request >= 0) {
-			get_v_scrollbar()->call_deferred(SNAME("set_value"), update_scroll_request);
+			get_v_scroll_bar()->call_deferred(SNAME("set_value"), update_scroll_request);
 			update_scroll_request = -1;
 		}
 		if (refresh_countdown > 0) {
@@ -3531,12 +3542,13 @@ void EditorInspector::_bind_methods() {
 	ClassDB::bind_method("_edit_request_change", &EditorInspector::_edit_request_change);
 
 	ADD_SIGNAL(MethodInfo("property_selected", PropertyInfo(Variant::STRING, "property")));
-	ADD_SIGNAL(MethodInfo("property_keyed", PropertyInfo(Variant::STRING, "property")));
+	ADD_SIGNAL(MethodInfo("property_keyed", PropertyInfo(Variant::STRING, "property"), PropertyInfo(Variant::NIL, "value", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NIL_IS_VARIANT), PropertyInfo(Variant::BOOL, "advance")));
 	ADD_SIGNAL(MethodInfo("property_deleted", PropertyInfo(Variant::STRING, "property")));
 	ADD_SIGNAL(MethodInfo("resource_selected", PropertyInfo(Variant::OBJECT, "res"), PropertyInfo(Variant::STRING, "prop")));
 	ADD_SIGNAL(MethodInfo("object_id_selected", PropertyInfo(Variant::INT, "id")));
 	ADD_SIGNAL(MethodInfo("property_edited", PropertyInfo(Variant::STRING, "property")));
 	ADD_SIGNAL(MethodInfo("property_toggled", PropertyInfo(Variant::STRING, "property"), PropertyInfo(Variant::BOOL, "checked")));
+	ADD_SIGNAL(MethodInfo("edited_object_changed"));
 	ADD_SIGNAL(MethodInfo("restart_requested"));
 }
 
@@ -3570,7 +3582,7 @@ EditorInspector::EditorInspector() {
 	deletable_properties = false;
 	property_clipboard = Variant();
 
-	get_v_scrollbar()->connect("value_changed", callable_mp(this, &EditorInspector::_vscroll_changed));
+	get_v_scroll_bar()->connect("value_changed", callable_mp(this, &EditorInspector::_vscroll_changed));
 	update_scroll_request = -1;
 	if (EditorSettings::get_singleton()) {
 		refresh_countdown = float(EditorSettings::get_singleton()->get("docks/property_editor/auto_refresh_interval"));

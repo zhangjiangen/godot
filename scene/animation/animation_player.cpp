@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -625,7 +625,7 @@ void AnimationPlayer::_animation_process_animation(AnimationData *p_anim, double
 								pa->object->set_indexed(pa->subpath, value, &valid); //you are not speshul
 #ifdef DEBUG_ENABLED
 								if (!valid) {
-									ERR_PRINT("Failed setting track value '" + String(pa->owner->path) + "'. Check if property exists or the type of key is valid. Animation '" + a->get_name() + "' at node '" + get_path() + "'.");
+									ERR_PRINT("Failed setting track value '" + String(pa->owner->path) + "'. Check if the property exists or the type of key is valid. Animation '" + a->get_name() + "' at node '" + get_path() + "'.");
 								}
 #endif
 
@@ -704,7 +704,7 @@ void AnimationPlayer::_animation_process_animation(AnimationData *p_anim, double
 									s >= 7 ? params[6] : Variant(),
 									s >= 8 ? params[7] : Variant());
 						} else {
-							nc->node->call(
+							nc->node->call_void(
 									method,
 									s >= 1 ? params[0] : Variant(),
 									s >= 2 ? params[1] : Variant(),
@@ -757,7 +757,7 @@ void AnimationPlayer::_animation_process_animation(AnimationData *p_anim, double
 
 					Ref<AudioStream> stream = a->audio_track_get_key_stream(i, idx);
 					if (!stream.is_valid()) {
-						nc->node->call("stop");
+						nc->node->call_void("stop");
 						nc->audio_playing = false;
 						playing_caches.erase(nc);
 					} else {
@@ -767,14 +767,14 @@ void AnimationPlayer::_animation_process_animation(AnimationData *p_anim, double
 						float len = stream->get_length();
 
 						if (start_ofs > len - end_ofs) {
-							nc->node->call("stop");
+							nc->node->call_void("stop");
 							nc->audio_playing = false;
 							playing_caches.erase(nc);
 							continue;
 						}
 
-						nc->node->call("set_stream", stream);
-						nc->node->call("play", start_ofs);
+						nc->node->call_void("set_stream", stream);
+						nc->node->call_void("play", start_ofs);
 
 						nc->audio_playing = true;
 						playing_caches.insert(nc);
@@ -796,7 +796,7 @@ void AnimationPlayer::_animation_process_animation(AnimationData *p_anim, double
 
 						Ref<AudioStream> stream = a->audio_track_get_key_stream(i, idx);
 						if (!stream.is_valid()) {
-							nc->node->call("stop");
+							nc->node->call_void("stop");
 							nc->audio_playing = false;
 							playing_caches.erase(nc);
 						} else {
@@ -804,8 +804,8 @@ void AnimationPlayer::_animation_process_animation(AnimationData *p_anim, double
 							float end_ofs = a->audio_track_get_key_end_offset(i, idx);
 							float len = stream->get_length();
 
-							nc->node->call("set_stream", stream);
-							nc->node->call("play", start_ofs);
+							nc->node->call_void("set_stream", stream);
+							nc->node->call_void("play", start_ofs);
 
 							nc->audio_playing = true;
 							playing_caches.insert(nc);
@@ -836,7 +836,7 @@ void AnimationPlayer::_animation_process_animation(AnimationData *p_anim, double
 
 						if (stop) {
 							//time to stop
-							nc->node->call("stop");
+							nc->node->call_void("stop");
 							nc->audio_playing = false;
 							playing_caches.erase(nc);
 						}
@@ -1070,8 +1070,24 @@ void AnimationPlayer::_animation_update_transforms() {
 				bool valid;
 				pa->object->set_indexed(pa->subpath, pa->value_accum, &valid); //you are not speshul
 #ifdef DEBUG_ENABLED
+
 				if (!valid) {
-					ERR_PRINT("Failed setting key at time " + rtos(playback.current.pos) + " in Animation '" + get_current_animation() + "' at Node '" + get_path() + "', Track '" + String(pa->owner->path) + "'. Check if property exists or the type of key is right for the property");
+					// Get subpath as string for printing the error
+					// Cannot use `String::join(Vector<String>)` because this is a vector of StringName
+					String key_debug;
+					if (pa->subpath.size() > 0) {
+						key_debug = pa->subpath[0];
+						for (int subpath_index = 1; subpath_index < pa->subpath.size(); ++subpath_index) {
+							key_debug += ".";
+							key_debug += pa->subpath[subpath_index];
+						}
+					}
+					ERR_PRINT("Failed setting key '" + key_debug +
+							"' at time " + rtos(playback.current.pos) +
+							" in Animation '" + get_current_animation() +
+							"' at Node '" + get_path() +
+							"', Track '" + String(pa->owner->path) +
+							"'. Check if the property exists or the type of key is right for the property.");
 				}
 #endif
 
@@ -1531,7 +1547,7 @@ void AnimationPlayer::_animation_changed() {
 void AnimationPlayer::_stop_playing_caches() {
 	for (Set<TrackNodeCache *>::Element *E = playing_caches.front(); E; E = E->next()) {
 		if (E->get()->node && E->get()->audio_playing) {
-			E->get()->node->call("stop");
+			E->get()->node->call_void("stop");
 		}
 		if (E->get()->node && E->get()->animation_playing) {
 			AnimationPlayer *player = Object::cast_to<AnimationPlayer>(E->get()->node);
@@ -1702,7 +1718,7 @@ Ref<AnimatedValuesBackup> AnimationPlayer::backup_animated_values(Node *p_root_o
 
 	_ensure_node_caches(playback.current.from, p_root_override);
 
-	backup.instantiate();
+	New_instantiate(backup);
 	for (int i = 0; i < playback.current.from->node_cache.size(); i++) {
 		TrackNodeCache *nc = playback.current.from->node_cache[i];
 		if (!nc) {

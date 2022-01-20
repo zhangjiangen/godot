@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -207,14 +207,14 @@ void RotatedFileLogger::logv(const char *p_format, va_list p_list, bool p_err) {
 		va_copy(list_copy, p_list);
 		int len = vsnprintf(buf, static_buf_size, p_format, p_list);
 		if (len >= static_buf_size) {
-			buf = (char *)Memory::alloc_static(len + 1);
+			buf = (char *)memalloc(len + 1);
 			vsnprintf(buf, len + 1, p_format, list_copy);
 		}
 		va_end(list_copy);
 		file->store_buffer((uint8_t *)buf, len);
 
 		if (len >= static_buf_size) {
-			Memory::free_static(buf);
+			memfree(buf);
 		}
 
 		if (p_err || _flush_stdout_on_print) {

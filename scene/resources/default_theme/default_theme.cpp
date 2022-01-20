@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -407,6 +407,7 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 
 	theme->set_constant("minimum_character_width", "LineEdit", 4);
 	theme->set_constant("outline_size", "LineEdit", 0);
+	theme->set_constant("caret_width", "LineEdit", 1);
 
 	theme->set_icon("clear", "LineEdit", make_icon(line_edit_clear_png));
 
@@ -451,6 +452,7 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 
 	theme->set_constant("line_spacing", "TextEdit", 4 * scale);
 	theme->set_constant("outline_size", "TextEdit", 0);
+	theme->set_constant("caret_width", "TextEdit", 1);
 
 	// CodeEdit
 
@@ -563,7 +565,7 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	// ScrollContainer
 
 	Ref<StyleBoxEmpty> empty;
-	empty.instantiate();
+	New_instantiate(empty);
 	theme->set_stylebox("bg", "ScrollContainer", empty);
 
 	// Window
@@ -770,8 +772,8 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	tc_sb->set_default_margin(SIDE_TOP, 8 * scale);
 
 	theme->set_stylebox("tab_selected", "TabContainer", sb_expand(make_stylebox(tab_current_png, 4, 4, 4, 1, 16, 4, 16, 4), 2, 2, 2, 2));
-	theme->set_stylebox("tab_unselected", "TabContainer", sb_expand(make_stylebox(tab_behind_png, 5, 5, 5, 1, 16, 6, 16, 4), 3, 0, 3, 3));
-	theme->set_stylebox("tab_disabled", "TabContainer", sb_expand(make_stylebox(tab_disabled_png, 5, 5, 5, 1, 16, 6, 16, 4), 3, 0, 3, 3));
+	theme->set_stylebox("tab_unselected", "TabContainer", sb_expand(make_stylebox(tab_behind_png, 5, 5, 5, 1, 16, 6, 16, 4), 3, 0, 3, 0));
+	theme->set_stylebox("tab_disabled", "TabContainer", sb_expand(make_stylebox(tab_disabled_png, 5, 5, 5, 1, 16, 6, 16, 4), 3, 0, 3, 0));
 	theme->set_stylebox("panel", "TabContainer", tc_sb);
 
 	theme->set_icon("increment", "TabContainer", make_icon(scroll_button_right_png));
@@ -795,9 +797,9 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 
 	// TabBar
 
-	theme->set_stylebox("tab_selected", "TabBar", sb_expand(make_stylebox(tab_current_png, 4, 3, 4, 1, 16, 3, 16, 2), 2, 2, 2, 2));
-	theme->set_stylebox("tab_unselected", "TabBar", sb_expand(make_stylebox(tab_behind_png, 5, 4, 5, 1, 16, 5, 16, 2), 3, 3, 3, 3));
-	theme->set_stylebox("tab_disabled", "TabBar", sb_expand(make_stylebox(tab_disabled_png, 5, 5, 5, 1, 16, 6, 16, 4), 3, 0, 3, 3));
+	theme->set_stylebox("tab_selected", "TabBar", sb_expand(make_stylebox(tab_current_png, 4, 4, 4, 1, 16, 4, 16, 4), 2, 2, 2, 2));
+	theme->set_stylebox("tab_unselected", "TabBar", sb_expand(make_stylebox(tab_behind_png, 5, 5, 5, 1, 16, 6, 16, 4), 3, 0, 3, 0));
+	theme->set_stylebox("tab_disabled", "TabBar", sb_expand(make_stylebox(tab_disabled_png, 5, 5, 5, 1, 16, 6, 16, 4), 3, 0, 3, 0));
 	theme->set_stylebox("close_bg_pressed", "TabBar", make_stylebox(button_pressed_png, 4, 4, 4, 4));
 	theme->set_stylebox("close_bg_highlight", "TabBar", make_stylebox(button_normal_png, 4, 4, 4, 4));
 
@@ -972,6 +974,10 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	theme->set_constant("separation", "VSplitContainer", 12 * scale);
 	theme->set_constant("autohide", "HSplitContainer", 1 * scale);
 	theme->set_constant("autohide", "VSplitContainer", 1 * scale);
+	theme->set_constant("hseparation", "HFlowContainer", 4 * scale);
+	theme->set_constant("vseparation", "HFlowContainer", 4 * scale);
+	theme->set_constant("hseparation", "VFlowContainer", 4 * scale);
+	theme->set_constant("vseparation", "VFlowContainer", 4 * scale);
 
 	Ref<StyleBoxTexture> sb_pc = make_stylebox(tab_container_bg_png, 4, 4, 4, 4, 7, 7, 7, 7);
 	theme->set_stylebox("panel", "PanelContainer", sb_pc);
@@ -994,7 +1000,7 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	// Visual Node Ports
 
 	theme->set_constant("port_grab_distance_horizontal", "GraphEdit", 24 * scale);
-	theme->set_constant("port_grab_distance_vertical", "GraphEdit", 6 * scale);
+	theme->set_constant("port_grab_distance_vertical", "GraphEdit", 26 * scale);
 
 	theme->set_stylebox("bg", "GraphEditMinimap", make_flat_stylebox(Color(0.24, 0.24, 0.24), 0, 0, 0, 0));
 	Ref<StyleBoxFlat> style_minimap_camera = make_flat_stylebox(Color(0.65, 0.65, 0.65, 0.2), 0, 0, 0, 0);
@@ -1019,7 +1025,7 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 
 void make_default_theme(bool p_hidpi, Ref<Font> p_font) {
 	Ref<Theme> t;
-	t.instantiate();
+	New_instantiate(t);
 
 	Ref<StyleBox> default_style;
 	Ref<Texture2D> default_icon;
@@ -1033,10 +1039,10 @@ void make_default_theme(bool p_hidpi, Ref<Font> p_font) {
 		// The default DynamicFont is chosen to have a small file size since it's
 		// embedded in both editor and export template binaries.
 		Ref<Font> dynamic_font;
-		dynamic_font.instantiate();
+		New_instantiate(dynamic_font);
 
 		Ref<FontData> dynamic_font_data;
-		dynamic_font_data.instantiate();
+		New_instantiate(dynamic_font_data);
 		dynamic_font_data->set_data_ptr(_font_OpenSans_SemiBold, _font_OpenSans_SemiBold_size);
 		dynamic_font->add_data(dynamic_font_data);
 
@@ -1053,17 +1059,17 @@ void make_default_theme(bool p_hidpi, Ref<Font> p_font) {
 	fill_default_theme(t, default_font, large_font, default_icon, default_style, default_scale);
 
 	Theme::set_default(t);
-	Theme::set_default_base_scale(default_scale);
-	Theme::set_default_icon(default_icon);
-	Theme::set_default_style(default_style);
-	Theme::set_default_font(default_font);
-	Theme::set_default_font_size(default_font_size);
+	Theme::set_fallback_base_scale(default_scale);
+	Theme::set_fallback_icon(default_icon);
+	Theme::set_fallback_style(default_style);
+	Theme::set_fallback_font(default_font);
+	Theme::set_fallback_font_size(default_font_size);
 }
 
 void clear_default_theme() {
 	Theme::set_project_default(nullptr);
 	Theme::set_default(nullptr);
-	Theme::set_default_icon(nullptr);
-	Theme::set_default_style(nullptr);
-	Theme::set_default_font(nullptr);
+	Theme::set_fallback_icon(nullptr);
+	Theme::set_fallback_style(nullptr);
+	Theme::set_fallback_font(nullptr);
 }

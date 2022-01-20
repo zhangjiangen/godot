@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -2405,7 +2405,7 @@ TileSetAtlasSourceEditor::TileSetAtlasSourceEditor() {
 	add_child(confirm_auto_create_tiles);
 
 	// -- Toolbox --
-	tools_button_group.instantiate();
+	New_instantiate(tools_button_group);
 	tools_button_group->connect("pressed", callable_mp(this, &TileSetAtlasSourceEditor::_update_fix_selected_and_hovered_tiles).unbind(1));
 	tools_button_group->connect("pressed", callable_mp(this, &TileSetAtlasSourceEditor::_update_tile_id_label).unbind(1));
 	tools_button_group->connect("pressed", callable_mp(this, &TileSetAtlasSourceEditor::_update_atlas_source_inspector).unbind(1));
@@ -2538,7 +2538,7 @@ TileSetAtlasSourceEditor::TileSetAtlasSourceEditor() {
 
 	// Inspector plugin.
 	Ref<EditorInspectorPluginTileData> tile_data_inspector_plugin;
-	tile_data_inspector_plugin.instantiate();
+	New_instantiate(tile_data_inspector_plugin);
 	EditorInspector::add_inspector_plugin(tile_data_inspector_plugin);
 }
 
@@ -2565,14 +2565,14 @@ void EditorPropertyTilePolygon::_polygons_changed() {
 			// Single OccluderPolygon2D.
 			Ref<OccluderPolygon2D> occluder;
 			if (generic_tile_polygon_editor->get_polygon_count() >= 1) {
-				occluder.instantiate();
+				New_instantiate(occluder);
 				occluder->set_polygon(generic_tile_polygon_editor->get_polygon(0));
 			}
 			emit_changed(get_edited_property(), occluder);
 		} else if (base_type == "NavigationPolygon") {
 			Ref<NavigationPolygon> navigation_polygon;
 			if (generic_tile_polygon_editor->get_polygon_count() >= 1) {
-				navigation_polygon.instantiate();
+				New_instantiate(navigation_polygon);
 				for (int i = 0; i < generic_tile_polygon_editor->get_polygon_count(); i++) {
 					Vector<Vector2> polygon = generic_tile_polygon_editor->get_polygon(i);
 					navigation_polygon->add_outline(polygon);

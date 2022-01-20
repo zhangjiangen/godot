@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -365,16 +365,16 @@ void GDScriptTest::error_handler(void *p_this, const char *p_function, const cha
 	}
 
 	builder.append("\n>> on function: ");
-	builder.append(p_function);
+	builder.append(String::utf8(p_function));
 	builder.append("()\n>> ");
-	builder.append(String(p_file).trim_prefix(self->base_dir));
+	builder.append(String::utf8(p_file).trim_prefix(self->base_dir));
 	builder.append("\n>> ");
 	builder.append(itos(p_line));
 	builder.append("\n>> ");
-	builder.append(p_error);
+	builder.append(String::utf8(p_error));
 	if (strlen(p_explanation) > 0) {
 		builder.append("\n>> ");
-		builder.append(p_explanation);
+		builder.append(String::utf8(p_explanation));
 	}
 	builder.append("\n");
 
@@ -423,7 +423,7 @@ GDScriptTest::TestResult GDScriptTest::execute_test_code(bool p_is_generating) {
 
 	// Create script.
 	Ref<GDScript> script;
-	script.instantiate();
+	New_instantiate(script);
 	script->set_path(source_file);
 	script->set_script_path(source_file);
 	err = script->load_source_code(source_file);

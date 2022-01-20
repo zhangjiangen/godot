@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -324,7 +324,7 @@ float EditorAudioBus::_normalized_volume_to_scaled_db(float normalized) {
 	/* There are three different formulas for the conversion from normalized
 	 * values to relative decibal values.
 	 * One formula is an exponential graph which intends to counteract
-	 * the logorithmic nature of human hearing. This is an approximation
+	 * the logarithmic nature of human hearing. This is an approximation
 	 * of the behaviour of a 'logarithmic potentiometer' found on most
 	 * musical instruments and also emulated in popular software.
 	 * The other two equations are hand-tuned linear tapers that intend to
@@ -1062,12 +1062,12 @@ void EditorAudioBuses::_update_bus(int p_index) {
 		return;
 	}
 
-	bus_hb->get_child(p_index)->call("update_bus");
+	bus_hb->get_child(p_index)->call_void("update_bus");
 }
 
 void EditorAudioBuses::_update_sends() {
 	for (int i = 0; i < bus_hb->get_child_count(); i++) {
-		bus_hb->get_child(i)->call("update_send");
+		bus_hb->get_child(i)->call_void("update_send");
 	}
 }
 
@@ -1225,7 +1225,7 @@ void EditorAudioBuses::_file_dialog_callback(const String &p_string) {
 	} else if (file_dialog->get_file_mode() == EditorFileDialog::FILE_MODE_SAVE_FILE) {
 		if (new_layout) {
 			Ref<AudioBusLayout> empty_state;
-			empty_state.instantiate();
+			New_instantiate(empty_state);
 			AudioServer::get_singleton()->set_bus_layout(empty_state);
 		}
 

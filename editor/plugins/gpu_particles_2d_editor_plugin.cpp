@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -170,7 +170,7 @@ void GPUParticles2DEditorPlugin::_generate_emission_mask() {
 	}
 
 	Ref<Image> img;
-	img.instantiate();
+	New_instantiate(img);
 	Error err = ImageLoader::load_image(source_emission_file, img);
 	ERR_FAIL_COND_MSG(err != OK, "Error loading image '" + source_emission_file + "'.");
 
@@ -294,11 +294,11 @@ void GPUParticles2DEditorPlugin::_generate_emission_mask() {
 		}
 	}
 
-	img.instantiate();
+	New_instantiate(img);
 	img->create(w, h, false, Image::FORMAT_RGF, texdata);
 
 	Ref<ImageTexture> imgt;
-	imgt.instantiate();
+	New_instantiate(imgt);
 	imgt->create_from_image(img);
 
 	pm->set_emission_point_texture(imgt);
@@ -315,10 +315,10 @@ void GPUParticles2DEditorPlugin::_generate_emission_mask() {
 			}
 		}
 
-		img.instantiate();
+		New_instantiate(img);
 		img->create(w, h, false, Image::FORMAT_RGBA8, colordata);
 
-		imgt.instantiate();
+		New_instantiate(imgt);
 		imgt->create_from_image(img);
 		pm->set_emission_color_texture(imgt);
 	}
@@ -338,10 +338,10 @@ void GPUParticles2DEditorPlugin::_generate_emission_mask() {
 			}
 		}
 
-		img.instantiate();
+		New_instantiate(img);
 		img->create(w, h, false, Image::FORMAT_RGF, normdata);
 
-		imgt.instantiate();
+		New_instantiate(imgt);
 		imgt->create_from_image(img);
 		pm->set_emission_normal_texture(imgt);
 

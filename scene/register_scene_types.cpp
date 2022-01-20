@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -91,6 +91,7 @@
 #include "scene/gui/control.h"
 #include "scene/gui/dialogs.h"
 #include "scene/gui/file_dialog.h"
+#include "scene/gui/flow_container.h"
 #include "scene/gui/graph_edit.h"
 #include "scene/gui/graph_node.h"
 #include "scene/gui/grid_container.h"
@@ -268,25 +269,25 @@ void register_scene_types() {
 
 	Node::init_node_hrcr();
 
-	resource_loader_stream_texture.instantiate();
+	New_instantiate(resource_loader_stream_texture);
 	ResourceLoader::add_resource_format_loader(resource_loader_stream_texture);
 
-	resource_loader_texture_layered.instantiate();
+	New_instantiate(resource_loader_texture_layered);
 	ResourceLoader::add_resource_format_loader(resource_loader_texture_layered);
 
-	resource_loader_texture_3d.instantiate();
+	New_instantiate(resource_loader_texture_3d);
 	ResourceLoader::add_resource_format_loader(resource_loader_texture_3d);
 
-	resource_saver_text.instantiate();
+	New_instantiate(resource_saver_text);
 	ResourceSaver::add_resource_format_saver(resource_saver_text, true);
 
-	resource_loader_text.instantiate();
+	New_instantiate(resource_loader_text);
 	ResourceLoader::add_resource_format_loader(resource_loader_text, true);
 
-	resource_saver_shader.instantiate();
+	New_instantiate(resource_saver_shader);
 	ResourceSaver::add_resource_format_saver(resource_saver_shader, true);
 
-	resource_loader_shader.instantiate();
+	New_instantiate(resource_loader_shader);
 	ResourceLoader::add_resource_format_loader(resource_loader_shader, true);
 
 	OS::get_singleton()->yield(); // may take time to init
@@ -353,6 +354,9 @@ void register_scene_types() {
 	GDREGISTER_CLASS(CenterContainer);
 	GDREGISTER_CLASS(ScrollContainer);
 	GDREGISTER_CLASS(PanelContainer);
+	GDREGISTER_VIRTUAL_CLASS(FlowContainer);
+	GDREGISTER_CLASS(HFlowContainer);
+	GDREGISTER_CLASS(VFlowContainer);
 
 	OS::get_singleton()->yield(); // may take time to init
 
@@ -390,6 +394,7 @@ void register_scene_types() {
 	GDREGISTER_VIRTUAL_CLASS(SplitContainer);
 	GDREGISTER_CLASS(HSplitContainer);
 	GDREGISTER_CLASS(VSplitContainer);
+
 	GDREGISTER_CLASS(GraphNode);
 	GDREGISTER_CLASS(GraphEdit);
 
@@ -1079,7 +1084,7 @@ void initialize_theme() {
 		if (theme.is_valid()) {
 			Theme::set_project_default(theme);
 			if (font.is_valid()) {
-				Theme::set_default_font(font);
+				Theme::set_fallback_font(font);
 			}
 		} else {
 			ERR_PRINT("Error loading custom theme '" + theme_path + "'");

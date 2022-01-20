@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -54,7 +54,7 @@ void VoxelGIData::_set_data(const Dictionary &p_data) {
 	} else if (p_data.has("octree_df_png")) {
 		Vector<uint8_t> octree_df_png = p_data["octree_df_png"];
 		Ref<Image> img;
-		img.instantiate();
+		New_instantiate(img);
 		Error err = img->load_png_from_buffer(octree_df_png);
 		ERR_FAIL_COND(err != OK);
 		ERR_FAIL_COND(img->get_format() != Image::FORMAT_L8);
@@ -75,7 +75,7 @@ Dictionary VoxelGIData::_get_data() const {
 	d["octree_data"] = get_data_cells();
 	if (otsize != Vector3i()) {
 		Ref<Image> img;
-		img.instantiate();
+		New_instantiate(img);
 		img->create(otsize.x * otsize.y, otsize.z, false, Image::FORMAT_L8, get_distance_field());
 		Vector<uint8_t> df_png = img->save_png_to_buffer();
 		ERR_FAIL_COND_V(df_png.size() == 0, Dictionary());
@@ -227,7 +227,7 @@ void VoxelGIData::_bind_methods() {
 
 	ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "_data", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL), "_set_data", "_get_data");
 
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "dynamic_range", PROPERTY_HINT_RANGE, "0,8,0.01"), "set_dynamic_range", "get_dynamic_range");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "dynamic_range", PROPERTY_HINT_RANGE, "1,8,0.01"), "set_dynamic_range", "get_dynamic_range");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "energy", PROPERTY_HINT_RANGE, "0,64,0.01"), "set_energy", "get_energy");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "bias", PROPERTY_HINT_RANGE, "0,8,0.01"), "set_bias", "get_bias");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "normal_bias", PROPERTY_HINT_RANGE, "0,8,0.01"), "set_normal_bias", "get_normal_bias");
@@ -418,7 +418,7 @@ void VoxelGI::bake(Node *p_from_node, bool p_create_visual_debug) {
 		Ref<VoxelGIData> probe_data = get_probe_data();
 
 		if (probe_data.is_null()) {
-			probe_data.instantiate();
+			New_instantiate(probe_data);
 		}
 
 		if (bake_step_function) {

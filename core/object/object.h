@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -51,10 +51,6 @@
 #define VARIANT_ARGPTRS const Variant *argptr[8] = { &p_arg1, &p_arg2, &p_arg3, &p_arg4, &p_arg5, &p_arg6, &p_arg7, &p_arg8 };
 #define VARIANT_ARGPTRS_PASS *argptr[0], *argptr[1], *argptr[2], *argptr[3], *argptr[4], *argptr[5], *argptr[6]], *argptr[7]
 #define VARIANT_ARGS_FROM_ARRAY(m_arr) m_arr[0], m_arr[1], m_arr[2], m_arr[3], m_arr[4], m_arr[5], m_arr[6], m_arr[7]
-
-/**
-@author Juan Linietsky <reduzio@gmail.com>
-*/
 
 enum PropertyHint {
 	PROPERTY_HINT_NONE, ///< no hint provided.
@@ -101,6 +97,7 @@ enum PropertyHint {
 	PROPERTY_HINT_INT_IS_OBJECTID,
 	PROPERTY_HINT_ARRAY_TYPE,
 	PROPERTY_HINT_INT_IS_POINTER,
+	PROPERTY_HINT_LOCALE_ID,
 	PROPERTY_HINT_MAX,
 	// When updating PropertyHint, also sync the hardcoded list in VisualScriptEditorVariableEdit
 };
@@ -254,17 +251,16 @@ enum PropertyUsageFlags {
 #define ADD_ARRAY(m_array_path, m_prefix) ClassDB::add_property_array(get_class_static(), m_array_path, m_prefix)
 
 struct PropertyInfo {
-	Variant::Type type = Variant::NIL;
-	String name;
 	StringName class_name; // For classes
 	StringName update_read_state; // For classes
-	PropertyHint hint = PROPERTY_HINT_NONE;
+	String name;
 	String hint_string;
-	uint32_t usage = PROPERTY_USAGE_DEFAULT;
-
 #ifdef TOOLS_ENABLED
 	Vector<String> linked_properties;
 #endif
+	PropertyHint hint = PROPERTY_HINT_NONE;
+	Variant::Type type = Variant::NIL;
+	uint32_t usage = PROPERTY_USAGE_DEFAULT;
 
 	_FORCE_INLINE_ PropertyInfo added_usage(uint32_t p_fl) const {
 		PropertyInfo pi = *this;
@@ -279,10 +275,10 @@ struct PropertyInfo {
 	PropertyInfo() {}
 
 	PropertyInfo(const Variant::Type p_type, const String p_name, const PropertyHint p_hint = PROPERTY_HINT_NONE, const String &p_hint_string = "", const uint32_t p_usage = PROPERTY_USAGE_DEFAULT, const StringName &p_class_name = StringName(), const StringName &read_only_state = StringName()) :
-			type(p_type),
 			name(p_name),
-			hint(p_hint),
 			hint_string(p_hint_string),
+			hint(p_hint),
+			type(p_type),
 			usage(p_usage) {
 		if (hint == PROPERTY_HINT_RESOURCE_TYPE) {
 			class_name = hint_string;
@@ -293,8 +289,8 @@ struct PropertyInfo {
 	}
 
 	PropertyInfo(const StringName &p_class_name) :
-			type(Variant::OBJECT),
-			class_name(p_class_name) {}
+			class_name(p_class_name),
+			type(Variant::OBJECT) {}
 
 	bool operator==(const PropertyInfo &p_info) const {
 		return ((type == p_info.type) &&
@@ -313,12 +309,12 @@ struct PropertyInfo {
 Array convert_property_list(const List<PropertyInfo> *p_list);
 
 struct MethodInfo {
+	List<PropertyInfo> arguments;
+	Vector<Variant> default_arguments;
 	String name;
 	PropertyInfo return_val;
 	uint32_t flags; // NOLINT - prevent clang-tidy to assign method_bind.h constant here, it should stay in .cpp.
 	int id = 0;
-	List<PropertyInfo> arguments;
-	Vector<Variant> default_arguments;
 
 	inline bool operator==(const MethodInfo &p_method) const { return id == p_method.id; }
 	inline bool operator<(const MethodInfo &p_method) const { return id == p_method.id ? (name < p_method.name) : (id < p_method.id); }
@@ -463,9 +459,6 @@ public:                                                                         
 		}                                                                                                                                        \
 		return category;                                                                                                                         \
 	}                                                                                                                                            \
-	static String inherits_static() {                                                                                                            \
-		return String(#m_inherits);                                                                                                              \
-	}                                                                                                                                            \
 	virtual bool is_class(const String &p_class) const override {                                                                                \
 		if (_get_extension() && _get_extension()->is_class(p_class)) {                                                                           \
 			return true;                                                                                                                         \
@@ -589,11 +582,11 @@ public:
 	};
 
 	struct Connection {
+		Vector<Variant> binds;
 		::Signal signal;
 		Callable callable;
 
 		uint32_t flags = 0;
-		Vector<Variant> binds;
 		bool operator<(const Connection &p_conn) const;
 
 		operator Variant() const;
@@ -621,6 +614,9 @@ private:
 
 		MethodInfo user;
 		VMap<Callable, Slot> slot_map;
+		SignalData() {
+			DEBUG_USING_INFO(slot_map);
+		}
 	};
 
 	HashMap<StringName, SignalData> signal_map;
@@ -628,15 +624,16 @@ private:
 #ifdef DEBUG_ENABLED
 	SafeRefCount _lock_index;
 #endif
-	bool _block_signals = false;
 	int _predelete_ok = 0;
 	ObjectID _instance_id;
 	bool _predelete();
 	void _postinitialize();
-	bool _can_translate = true;
-	bool _emitting = false;
+	bool _block_signals : 2;
+	bool _can_translate : 2;
+	bool _emitting : 2;
+	bool type_is_reference : 2;
 #ifdef TOOLS_ENABLED
-	bool _edited = false;
+	bool _edited : 2;
 	uint32_t _edited_version = 0;
 	Set<String> editor_section_folding;
 #endif
@@ -660,7 +657,6 @@ private:
 	_FORCE_INLINE_ void _construct_object(bool p_reference);
 
 	friend class RefCounted;
-	bool type_is_reference = false;
 
 	std::mutex _instance_binding_mutex;
 	struct InstanceBinding {
@@ -760,6 +756,10 @@ public:
 		return &ptr;
 	}
 
+	virtual String _get_script_class() const;
+	String get_script_class() const {
+		return _get_script_class();
+	}
 	bool _is_gpl_reversed() const { return false; }
 
 	_FORCE_INLINE_ ObjectID get_instance_id() const { return _instance_id; }
@@ -848,8 +848,12 @@ public:
 	bool has_method(const StringName &p_method) const;
 	void get_method_list(List<MethodInfo> *p_list) const;
 	Variant callv(const StringName &p_method, const Array &p_args);
-	virtual Variant call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
+	Variant call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
 	Variant call(const StringName &p_name, VARIANT_ARG_LIST); // C++ helper
+	void call_void(const StringName &p_name, VARIANT_ARG_LIST); // C++ helper
+	virtual void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
+	virtual void call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
+	void call_r(Variant &ret, const StringName &p_name, VARIANT_ARG_LIST); // C++ helper
 
 	void notification(int p_notification, bool p_reversed = false);
 	virtual String to_string();

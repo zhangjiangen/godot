@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -70,7 +70,7 @@ public:
 		GUTTER_TYPE_CUSTOM
 	};
 
-	/* Contex Menu. */
+	/* Context Menu. */
 	enum MenuItems {
 		MENU_CUT,
 		MENU_COPY,
@@ -148,7 +148,7 @@ private:
 			int width = 0;
 
 			Line() {
-				data_buf.instantiate();
+				New_instantiate(data_buf);
 			}
 		};
 
@@ -374,7 +374,7 @@ private:
 
 	bool move_caret_on_right_click = true;
 
-	bool caret_mid_grapheme_enabled = false;
+	bool caret_mid_grapheme_enabled = true;
 
 	bool drag_action = false;
 	bool drag_caret_force_displayed = false;

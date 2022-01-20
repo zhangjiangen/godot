@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -153,10 +153,10 @@ MonoObject *godot_icall_Object_weakref(Object *p_ptr) {
 			return nullptr;
 		}
 
-		wref.instantiate();
+		New_instantiate(wref);
 		wref->set_ref(r);
 	} else {
-		wref.instantiate();
+		New_instantiate(wref);
 		wref->set_obj(p_ptr);
 	}
 
@@ -199,7 +199,9 @@ MonoBoolean godot_icall_DynamicGodotObject_InvokeMember(Object *p_ptr, MonoStrin
 	}
 
 	Callable::CallError error;
-	Variant result = p_ptr->call(StringName(name), args.ptr(), argc, error);
+	Variant result;
+
+	p_ptr->call_r(result, StringName(name), args.ptr(), argc, error);
 
 	*r_result = GDMonoMarshal::variant_to_mono_object(result);
 

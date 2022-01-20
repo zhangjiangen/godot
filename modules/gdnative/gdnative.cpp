@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -52,7 +52,7 @@ extern const godot_gdnative_core_api_struct api_struct;
 Map<String, Vector<Ref<GDNative>>> GDNativeLibrary::loaded_libraries;
 
 GDNativeLibrary::GDNativeLibrary() {
-	config_file.instantiate();
+	New_instantiate(config_file);
 
 	symbol_prefix = default_symbol_prefix;
 	load_once = default_load_once;
@@ -112,7 +112,7 @@ bool GDNativeLibrary::_get(const StringName &p_name, Variant &r_property) const 
 }
 
 void GDNativeLibrary::reset_state() {
-	config_file.instantiate();
+	New_instantiate(config_file);
 	current_library_path = "";
 	current_dependencies.clear();
 	symbol_prefix = default_symbol_prefix;
@@ -524,7 +524,7 @@ Error GDNative::get_symbol(StringName p_procedure_name, void *&r_handle, bool p_
 
 RES GDNativeLibraryResourceLoader::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
 	Ref<GDNativeLibrary> lib;
-	lib.instantiate();
+	New_instantiate(lib);
 
 	Ref<ConfigFile> config = lib->get_config_file();
 

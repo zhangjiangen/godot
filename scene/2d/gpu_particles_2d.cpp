@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -427,26 +427,23 @@ void GPUParticles2D::_notification(int p_what) {
 
 		} else {
 			RS::get_singleton()->mesh_clear(mesh);
-			Vector<Vector2> points;
-			points.resize(4);
-			points.write[0] = Vector2(-size.x / 2.0, -size.y / 2.0);
-			points.write[1] = Vector2(size.x / 2.0, -size.y / 2.0);
-			points.write[2] = Vector2(size.x / 2.0, size.y / 2.0);
-			points.write[3] = Vector2(-size.x / 2.0, size.y / 2.0);
-			Vector<Vector2> uvs;
-			uvs.resize(4);
-			uvs.write[0] = Vector2(0, 0);
-			uvs.write[1] = Vector2(1, 0);
-			uvs.write[2] = Vector2(1, 1);
-			uvs.write[3] = Vector2(0, 1);
-			Vector<int> indices;
-			indices.resize(6);
-			indices.write[0] = 0;
-			indices.write[1] = 1;
-			indices.write[2] = 2;
-			indices.write[3] = 0;
-			indices.write[4] = 2;
-			indices.write[5] = 3;
+
+			Vector<Vector2> points = {
+				Vector2(-size.x / 2.0, -size.y / 2.0),
+				Vector2(size.x / 2.0, -size.y / 2.0),
+				Vector2(size.x / 2.0, size.y / 2.0),
+				Vector2(-size.x / 2.0, size.y / 2.0)
+			};
+
+			Vector<Vector2> uvs = {
+				Vector2(0, 0),
+				Vector2(1, 0),
+				Vector2(1, 1),
+				Vector2(0, 1)
+			};
+
+			Vector<int> indices = { 0, 1, 2, 0, 2, 3 };
+
 			Array arr;
 			arr.resize(RS::ARRAY_MAX);
 			arr[RS::ARRAY_VERTEX] = points;

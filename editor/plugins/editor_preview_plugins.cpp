@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -174,7 +174,7 @@ Ref<Texture2D> EditorImagePreviewPlugin::generate(const RES &p_from, const Size2
 	post_process_preview(img);
 
 	Ref<ImageTexture> ptex;
-	ptex.instantiate();
+	New_instantiate(ptex);
 
 	ptex->create_from_image(img);
 	return ptex;
@@ -219,7 +219,7 @@ Ref<Texture2D> EditorBitmapPreviewPlugin::generate(const RES &p_from, const Size
 	}
 
 	Ref<Image> img;
-	img.instantiate();
+	New_instantiate(img);
 	img->create(bm->get_size().width, bm->get_size().height, false, Image::FORMAT_L8, data);
 
 	if (img->is_compressed()) {
@@ -278,7 +278,7 @@ Ref<Texture2D> EditorPackedScenePreviewPlugin::generate_from_path(const String &
 	}
 
 	Ref<Image> img;
-	img.instantiate();
+	New_instantiate(img);
 	Error err = img->load(path);
 	if (err == OK) {
 		Ref<ImageTexture> ptex = Ref<ImageTexture>(memnew(ImageTexture));
@@ -498,7 +498,7 @@ Ref<Texture2D> EditorScriptPreviewPlugin::generate(const RES &p_from, const Size
 	int line = 0;
 	int col = 0;
 	Ref<Image> img;
-	img.instantiate();
+	New_instantiate(img);
 	int thumbnail_size = MAX(p_size.x, p_size.y);
 	img->create(thumbnail_size, thumbnail_size, false, Image::FORMAT_RGBA8);
 
@@ -514,11 +514,7 @@ Ref<Texture2D> EditorScriptPreviewPlugin::generate(const RES &p_from, const Size
 	}
 	bg_color.a = MAX(bg_color.a, 0.2); // some background
 
-	for (int i = 0; i < thumbnail_size; i++) {
-		for (int j = 0; j < thumbnail_size; j++) {
-			img->set_pixel(i, j, bg_color);
-		}
-	}
+	img->fill(bg_color);
 
 	const int x0 = thumbnail_size / 8;
 	const int y0 = thumbnail_size / 8;
@@ -685,7 +681,7 @@ Ref<Texture2D> EditorAudioStreamPreviewPlugin::generate(const RES &p_from, const
 
 	Ref<ImageTexture> ptex = Ref<ImageTexture>(memnew(ImageTexture));
 	Ref<Image> image;
-	image.instantiate();
+	New_instantiate(image);
 	image->create(w, h, false, Image::FORMAT_RGB8, img);
 	ptex->create_from_image(image);
 	return ptex;
@@ -824,11 +820,12 @@ bool EditorFontPreviewPlugin::handles(const String &p_type) const {
 
 Ref<Texture2D> EditorFontPreviewPlugin::generate_from_path(const String &p_path, const Size2 &p_size) const {
 	RES res = ResourceLoader::load(p_path);
+	ERR_FAIL_COND_V(res.is_null(), Ref<Texture2D>());
 	Ref<Font> sampled_font;
 	if (res->is_class("Font")) {
 		sampled_font = res->duplicate();
 	} else if (res->is_class("FontData")) {
-		sampled_font.instantiate();
+		New_instantiate(sampled_font);
 		sampled_font->add_data(res->duplicate());
 	}
 
@@ -851,7 +848,9 @@ Ref<Texture2D> EditorFontPreviewPlugin::generate_from_path(const String &p_path,
 
 	Ref<Font> font = sampled_font;
 
-	font->draw_string(canvas_item, pos, sample, HORIZONTAL_ALIGNMENT_LEFT, -1.f, 50, Color(1, 1, 1));
+	const Color c = GLOBAL_GET("rendering/environment/defaults/default_clear_color");
+	const float fg = c.get_luminance() < 0.5 ? 1.0 : 0.0;
+	font->draw_string(canvas_item, pos, sample, HORIZONTAL_ALIGNMENT_LEFT, -1.f, 50, Color(fg, fg, fg));
 
 	RS::get_singleton()->connect(SNAME("frame_pre_draw"), callable_mp(const_cast<EditorFontPreviewPlugin *>(this), &EditorFontPreviewPlugin::_generate_frame_started), Vector<Variant>(), Object::CONNECT_ONESHOT);
 

@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -673,7 +673,7 @@ void EditorPropertyArray::_bind_methods() {
 }
 
 EditorPropertyArray::EditorPropertyArray() {
-	object.instantiate();
+	New_instantiate(object);
 	page_length = int(EDITOR_GET("interface/inspector/max_array_dictionary_items_per_page"));
 	edit = memnew(Button);
 	edit->set_h_size_flags(SIZE_EXPAND_FILL);
@@ -1073,7 +1073,7 @@ void EditorPropertyDictionary::update_property() {
 				PanelContainer *pc = memnew(PanelContainer);
 				vbox->add_child(pc);
 				Ref<StyleBoxFlat> flat;
-				flat.instantiate();
+				New_instantiate(flat);
 				for (int j = 0; j < 4; j++) {
 					flat->set_default_margin(Side(j), 2 * EDSCALE);
 				}
@@ -1168,7 +1168,7 @@ void EditorPropertyDictionary::_bind_methods() {
 }
 
 EditorPropertyDictionary::EditorPropertyDictionary() {
-	object.instantiate();
+	New_instantiate(object);
 	page_length = int(EDITOR_GET("interface/inspector/max_array_dictionary_items_per_page"));
 	edit = memnew(Button);
 	edit->set_h_size_flags(SIZE_EXPAND_FILL);

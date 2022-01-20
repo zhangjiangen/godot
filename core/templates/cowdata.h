@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -54,6 +54,8 @@ SAFE_NUMERIC_TYPE_PUN_GUARANTEES(uint32_t)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wplacement-new"
 #endif
+// 设置调试信息
+#define DEBUG_USING_INFO(v) v.set_debug_file_info(__FILE__, __LINE__)
 
 template <class T>
 class CowData {
@@ -94,21 +96,37 @@ private:
 	}
 
 	_FORCE_INLINE_ size_t _get_alloc_size(size_t p_elements) const {
-		return next_power_of_2(p_elements * sizeof(T));
+		if (p_elements < 8)
+			return next_power_of_2(p_elements * sizeof(T));
+		else if (p_elements < 64) {
+			size_t count = (p_elements / 16 + 1) * 16;
+			return count * sizeof(T);
+		} else if (p_elements < 128) {
+			size_t count = (p_elements / 32 + 1) * 32;
+			return count * sizeof(T);
+
+		} else if (p_elements < 512) {
+			size_t count = (p_elements / 64 + 1) * 64;
+			return count * sizeof(T);
+
+		} else {
+			size_t count = (p_elements / 128 + 1) * 128;
+			return count * sizeof(T);
+		}
 	}
 
 	_FORCE_INLINE_ bool _get_alloc_size_checked(size_t p_elements, size_t *out) const {
 #if defined(__GNUC__)
-		size_t o;
-		size_t p;
-		if (__builtin_mul_overflow(p_elements, sizeof(T), &o)) {
-			*out = 0;
-			return false;
-		}
-		*out = next_power_of_2(o);
-		if (__builtin_add_overflow(o, static_cast<size_t>(32), &p)) {
-			return false; // No longer allocated here.
-		}
+		//		size_t o;
+		//		size_t p;
+		//		if (__builtin_mul_overflow(p_elements, sizeof(T), &o)) {
+		//			*out = 0;
+		//			return false;
+		//		}
+		*out = _get_alloc_size(p_elements);
+		//		if (__builtin_add_overflow(o, static_cast<size_t>(32), &p)) {
+		//			return false; // No longer allocated here.
+		//		}
 		return true;
 #else
 		// Speed is more important than correctness here, do the operations unchecked
@@ -124,7 +142,9 @@ private:
 	uint32_t _copy_on_write();
 
 public:
-	void operator=(const CowData<T> &p_from) { _ref(p_from); }
+	void set_debug_file_info(const char *file_name, int line) {
+	}
+	_FORCE_INLINE_ void operator=(const CowData<T> &p_from) { _ref(p_from); }
 
 	_FORCE_INLINE_ T *ptrw() {
 		_copy_on_write();
@@ -170,12 +190,12 @@ public:
 	_FORCE_INLINE_ void remove_at(int p_index) {
 		ERR_FAIL_INDEX(p_index, size());
 		T *p = ptrw();
-		int len = size();
-		for (int i = p_index; i < len - 1; i++) {
+		int len = size() - 1;
+		for (int i = p_index; i < len; i++) {
 			p[i] = p[i + 1];
 		}
 
-		resize(len - 1);
+		resize(len);
 	}
 
 	Error insert(int p_pos, const T &p_val) {
@@ -192,7 +212,9 @@ public:
 	int find(const T &p_val, int p_from = 0) const;
 
 	_FORCE_INLINE_ CowData() {}
-	_FORCE_INLINE_ ~CowData();
+	_FORCE_INLINE_ ~CowData() {
+		_unref(_ptr);
+	}
 	_FORCE_INLINE_ CowData(CowData<T> &p_from) { _ref(p_from); };
 };
 
@@ -210,17 +232,18 @@ void CowData<T>::_unref(void *p_data) {
 	// clean up
 
 	if (!__has_trivial_destructor(T)) {
-		uint32_t *count = _get_size();
-		T *data = (T *)(count + 1);
+		uint32_t count = *_get_size();
 
-		for (uint32_t i = 0; i < *count; ++i) {
+		for (uint32_t i = 0; i < count; ++i) {
 			// call destructors
-			data[i].~T();
+			_ptr[i].~T();
 		}
 	}
 
 	// free mem
-	Memory::free_static((uint8_t *)p_data, true);
+	uint32_t *mem = (uint32_t *)p_data;
+	mem -= 2;
+	memfree(mem);
 }
 
 template <class T>
@@ -236,16 +259,17 @@ uint32_t CowData<T>::_copy_on_write() {
 		/* in use by more than me */
 		uint32_t current_size = *_get_size();
 
-		uint32_t *mem_new = (uint32_t *)Memory::alloc_static(_get_alloc_size(current_size), true);
+		uint32_t *mem_new = (uint32_t *)memalloc(_get_alloc_size(current_size) + sizeof(uint32_t) * 2);
 
-		new (mem_new - 2) SafeNumeric<uint32_t>(1); //refcount
-		*(mem_new - 1) = current_size; //size
-
+		new (mem_new) SafeNumeric<uint32_t>(1); //refcount
+		mem_new += 1;
+		*mem_new = current_size; //size
+		mem_new += 1;
 		T *_data = (T *)(mem_new);
 
 		// initialize new elements
 		if (__has_trivial_copy(T)) {
-			memcpy(mem_new, _ptr, current_size * sizeof(T));
+			memcpy(_data, _ptr, current_size * sizeof(T));
 
 		} else {
 			for (uint32_t i = 0; i < current_size; i++) {
@@ -289,18 +313,21 @@ Error CowData<T>::resize(int p_size) {
 		if (alloc_size != current_alloc_size) {
 			if (current_size == 0) {
 				// alloc from scratch
-				uint32_t *ptr = (uint32_t *)Memory::alloc_static(alloc_size, true);
+				uint32_t *ptr = (uint32_t *)memalloc(alloc_size + sizeof(uint32_t) * 2);
 				ERR_FAIL_COND_V(!ptr, ERR_OUT_OF_MEMORY);
-				*(ptr - 1) = 0; //size, currently none
-				new (ptr - 2) SafeNumeric<uint32_t>(1); //refcount
-
-				_ptr = (T *)ptr;
+				new (ptr) SafeNumeric<uint32_t>(1); //refcount
+				ptr += 1;
+				*ptr = 0; //size, currently none
+				ptr += 1;
+				_ptr = (T *)(ptr);
 
 			} else {
-				uint32_t *_ptrnew = (uint32_t *)Memory::realloc_static(_ptr, alloc_size, true);
+				uint32_t *p = (uint32_t *)_ptr;
+				p -= 2;
+				uint32_t *_ptrnew = (uint32_t *)memrealloc(p, alloc_size + sizeof(uint32_t) * 2);
 				ERR_FAIL_COND_V(!_ptrnew, ERR_OUT_OF_MEMORY);
-				new (_ptrnew - 2) SafeNumeric<uint32_t>(rc); //refcount
-
+				new (_ptrnew) SafeNumeric<uint32_t>(rc); //refcount
+				_ptrnew += 2;
 				_ptr = (T *)(_ptrnew);
 			}
 		}
@@ -320,17 +347,20 @@ Error CowData<T>::resize(int p_size) {
 	} else if (p_size < current_size) {
 		if (!__has_trivial_destructor(T)) {
 			// deinitialize no longer needed elements
-			for (uint32_t i = p_size; i < *_get_size(); i++) {
+			uint32_t curr_size = *_get_size();
+			for (uint32_t i = p_size; i < curr_size; i++) {
 				T *t = &_get_data()[i];
 				t->~T();
 			}
 		}
 
 		if (alloc_size != current_alloc_size) {
-			uint32_t *_ptrnew = (uint32_t *)Memory::realloc_static(_ptr, alloc_size, true);
+			uint32_t *p = (uint32_t *)_ptr;
+			p -= 2;
+			uint32_t *_ptrnew = (uint32_t *)memrealloc(p, alloc_size + sizeof(uint32_t) * 2);
 			ERR_FAIL_COND_V(!_ptrnew, ERR_OUT_OF_MEMORY);
-			new (_ptrnew - 2) SafeNumeric<uint32_t>(rc); //refcount
-
+			new (_ptrnew) SafeNumeric<uint32_t>(rc); //refcount
+			_ptrnew += 2;
 			_ptr = (T *)(_ptrnew);
 		}
 
@@ -343,12 +373,12 @@ Error CowData<T>::resize(int p_size) {
 template <class T>
 int CowData<T>::find(const T &p_val, int p_from) const {
 	int ret = -1;
-
-	if (p_from < 0 || size() == 0) {
+	uint32_t s = size();
+	if (p_from < 0 || s == 0) {
 		return ret;
 	}
 
-	for (int i = p_from; i < size(); i++) {
+	for (int i = p_from; i < s; i++) {
 		if (get(i) == p_val) {
 			ret = i;
 			break;
@@ -379,11 +409,6 @@ void CowData<T>::_ref(const CowData &p_from) {
 	if (p_from._get_refcount()->conditional_increment() > 0) { // could reference
 		_ptr = p_from._ptr;
 	}
-}
-
-template <class T>
-CowData<T>::~CowData() {
-	_unref(_ptr);
 }
 
 #if defined(__GNUC__) && !defined(__clang__)

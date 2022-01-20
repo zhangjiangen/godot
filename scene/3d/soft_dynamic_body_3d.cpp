@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -479,7 +479,7 @@ void SoftDynamicBody3D::_become_mesh_owner() {
 	surface_format |= Mesh::ARRAY_FLAG_USE_DYNAMIC_UPDATE;
 
 	Ref<ArrayMesh> soft_mesh;
-	soft_mesh.instantiate();
+	New_instantiate(soft_mesh);
 	soft_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, surface_arrays, surface_blend_arrays, surface_lods, surface_format);
 	soft_mesh->surface_set_material(0, mesh->surface_get_material(0));
 

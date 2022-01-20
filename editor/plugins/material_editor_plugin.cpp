@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -143,7 +143,7 @@ MaterialEditor::MaterialEditor() {
 	vc->set_anchors_and_offsets_preset(PRESET_WIDE);
 	viewport = memnew(SubViewport);
 	Ref<World3D> world_3d;
-	world_3d.instantiate();
+	New_instantiate(world_3d);
 	viewport->set_world_3d(world_3d); //use own world
 	vc->add_child(viewport);
 	viewport->set_disable_input(true);
@@ -178,9 +178,9 @@ MaterialEditor::MaterialEditor() {
 	box_xform.origin.y = 0.2;
 	box_instance->set_transform(box_xform);
 
-	sphere_mesh.instantiate();
+	New_instantiate(sphere_mesh);
 	sphere_instance->set_mesh(sphere_mesh);
-	box_mesh.instantiate();
+	New_instantiate(box_mesh);
 	box_instance->set_mesh(box_mesh);
 
 	set_custom_minimum_size(Size2(1, 150) * EDSCALE);
@@ -254,18 +254,57 @@ void EditorInspectorPluginMaterial::parse_begin(Object *p_object) {
 	add_custom_control(editor);
 }
 
+void EditorInspectorPluginMaterial::_undo_redo_inspector_callback(Object *p_undo_redo, Object *p_edited, String p_property, Variant p_new_value) {
+	UndoRedo *undo_redo = Object::cast_to<UndoRedo>(p_undo_redo);
+	if (!undo_redo) {
+		return;
+	}
+
+	// For BaseMaterial3D, if a roughness or metallic textures is being assigned to an empty slot,
+	// set the respective metallic or roughness factor to 1.0 as a convenience feature
+	BaseMaterial3D *base_material = Object::cast_to<StandardMaterial3D>(p_edited);
+	if (base_material) {
+		Texture2D *texture = Object::cast_to<Texture2D>(p_new_value);
+		if (texture) {
+			if (p_property == "roughness_texture") {
+				if (base_material->get_texture(StandardMaterial3D::TEXTURE_ROUGHNESS).is_null() && texture) {
+					undo_redo->add_do_property(p_edited, "roughness", 1.0);
+
+					bool valid = false;
+					Variant value = p_edited->get("roughness", &valid);
+					if (valid) {
+						undo_redo->add_undo_property(p_edited, "roughness", value);
+					}
+				}
+			} else if (p_property == "metallic_texture") {
+				if (base_material->get_texture(StandardMaterial3D::TEXTURE_METALLIC).is_null() && texture) {
+					undo_redo->add_do_property(p_edited, "metallic", 1.0);
+
+					bool valid = false;
+					Variant value = p_edited->get("metallic", &valid);
+					if (valid) {
+						undo_redo->add_undo_property(p_edited, "metallic", value);
+					}
+				}
+			}
+		}
+	}
+}
+
 EditorInspectorPluginMaterial::EditorInspectorPluginMaterial() {
-	env.instantiate();
+	New_instantiate(env);
 	Ref<Sky> sky = memnew(Sky());
 	env->set_sky(sky);
 	env->set_background(Environment::BG_COLOR);
 	env->set_ambient_source(Environment::AMBIENT_SOURCE_SKY);
 	env->set_reflection_source(Environment::REFLECTION_SOURCE_SKY);
+
+	EditorNode::get_singleton()->get_editor_data().add_undo_redo_inspector_hook_callback(callable_mp(this, &EditorInspectorPluginMaterial::_undo_redo_inspector_callback));
 }
 
 MaterialEditorPlugin::MaterialEditorPlugin(EditorNode *p_node) {
 	Ref<EditorInspectorPluginMaterial> plugin;
-	plugin.instantiate();
+	New_instantiate(plugin);
 	add_inspector_plugin(plugin);
 }
 
@@ -283,10 +322,10 @@ Ref<Resource> StandardMaterial3DConversionPlugin::convert(const Ref<Resource> &p
 	ERR_FAIL_COND_V(!mat.is_valid(), Ref<Resource>());
 
 	Ref<ShaderMaterial> smat;
-	smat.instantiate();
+	New_instantiate(smat);
 
 	Ref<Shader> shader;
-	shader.instantiate();
+	New_instantiate(shader);
 
 	String code = RS::get_singleton()->shader_get_code(mat->get_shader_rid());
 
@@ -329,10 +368,10 @@ Ref<Resource> ORMMaterial3DConversionPlugin::convert(const Ref<Resource> &p_reso
 	ERR_FAIL_COND_V(!mat.is_valid(), Ref<Resource>());
 
 	Ref<ShaderMaterial> smat;
-	smat.instantiate();
+	New_instantiate(smat);
 
 	Ref<Shader> shader;
-	shader.instantiate();
+	New_instantiate(shader);
 
 	String code = RS::get_singleton()->shader_get_code(mat->get_shader_rid());
 
@@ -375,10 +414,10 @@ Ref<Resource> ParticlesMaterialConversionPlugin::convert(const Ref<Resource> &p_
 	ERR_FAIL_COND_V(!mat.is_valid(), Ref<Resource>());
 
 	Ref<ShaderMaterial> smat;
-	smat.instantiate();
+	New_instantiate(smat);
 
 	Ref<Shader> shader;
-	shader.instantiate();
+	New_instantiate(shader);
 
 	String code = RS::get_singleton()->shader_get_code(mat->get_shader_rid());
 
@@ -414,10 +453,10 @@ Ref<Resource> CanvasItemMaterialConversionPlugin::convert(const Ref<Resource> &p
 	ERR_FAIL_COND_V(!mat.is_valid(), Ref<Resource>());
 
 	Ref<ShaderMaterial> smat;
-	smat.instantiate();
+	New_instantiate(smat);
 
 	Ref<Shader> shader;
-	shader.instantiate();
+	New_instantiate(shader);
 
 	String code = RS::get_singleton()->shader_get_code(mat->get_shader_rid());
 
@@ -453,10 +492,10 @@ Ref<Resource> ProceduralSkyMaterialConversionPlugin::convert(const Ref<Resource>
 	ERR_FAIL_COND_V(!mat.is_valid(), Ref<Resource>());
 
 	Ref<ShaderMaterial> smat;
-	smat.instantiate();
+	New_instantiate(smat);
 
 	Ref<Shader> shader;
-	shader.instantiate();
+	New_instantiate(shader);
 
 	String code = RS::get_singleton()->shader_get_code(mat->get_shader_rid());
 
@@ -492,10 +531,10 @@ Ref<Resource> PanoramaSkyMaterialConversionPlugin::convert(const Ref<Resource> &
 	ERR_FAIL_COND_V(!mat.is_valid(), Ref<Resource>());
 
 	Ref<ShaderMaterial> smat;
-	smat.instantiate();
+	New_instantiate(smat);
 
 	Ref<Shader> shader;
-	shader.instantiate();
+	New_instantiate(shader);
 
 	String code = RS::get_singleton()->shader_get_code(mat->get_shader_rid());
 
@@ -531,10 +570,10 @@ Ref<Resource> PhysicalSkyMaterialConversionPlugin::convert(const Ref<Resource> &
 	ERR_FAIL_COND_V(!mat.is_valid(), Ref<Resource>());
 
 	Ref<ShaderMaterial> smat;
-	smat.instantiate();
+	New_instantiate(smat);
 
 	Ref<Shader> shader;
-	shader.instantiate();
+	New_instantiate(shader);
 
 	String code = RS::get_singleton()->shader_get_code(mat->get_shader_rid());
 
@@ -570,10 +609,10 @@ Ref<Resource> FogMaterialConversionPlugin::convert(const Ref<Resource> &p_resour
 	ERR_FAIL_COND_V(!mat.is_valid(), Ref<Resource>());
 
 	Ref<ShaderMaterial> smat;
-	smat.instantiate();
+	New_instantiate(smat);
 
 	Ref<Shader> shader;
-	shader.instantiate();
+	New_instantiate(shader);
 
 	String code = RS::get_singleton()->shader_get_code(mat->get_shader_rid());
 

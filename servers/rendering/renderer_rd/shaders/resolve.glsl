@@ -46,7 +46,7 @@ void main() {
 		depth_avg += texelFetch(source_depth, pos, i).r;
 	}
 	depth_avg /= float(params.sample_count);
-	imageStore(dest_depth, pos, vec4(depth_avg));
+	imageStore(dest_depth, pos, vec4(depth_avg, depth_avg, depth_avg, depth_avg));
 
 #endif
 
@@ -226,7 +226,7 @@ void main() {
 
 #endif
 
-	imageStore(dest_depth, pos, vec4(best_depth));
+	imageStore(dest_depth, pos, vec4(best_depth, best_depth, best_depth, best_depth));
 	imageStore(dest_normal_roughness, pos, vec4(best_normal_roughness));
 #ifdef VOXEL_GI_RESOLVE
 	imageStore(dest_voxel_gi, pos, uvec4(best_voxel_gi, 0, 0));

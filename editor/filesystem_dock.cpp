@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -531,7 +531,7 @@ void FileSystemDock::_navigate_to_path(const String &p_path, bool p_select_in_fa
 	_update_tree(_compute_uncollapsed_paths(), false, p_select_in_favorites, true);
 	if (display_mode == DISPLAY_MODE_SPLIT) {
 		_update_file_list(false);
-		files->get_v_scroll()->set_value(0);
+		files->get_v_scroll_bar()->set_value(0);
 	}
 
 	String file_name = p_path.get_file();
@@ -949,7 +949,7 @@ void FileSystemDock::_select_file(const String &p_path, bool p_select_in_favorit
 	} else if (fpath != "Favorites") {
 		if (FileAccess::exists(fpath + ".import")) {
 			Ref<ConfigFile> config;
-			config.instantiate();
+			New_instantiate(config);
 			Error err = config->load(fpath + ".import");
 			if (err == OK) {
 				if (config->has_section_key("remap", "importer")) {
@@ -1474,12 +1474,18 @@ void FileSystemDock::_folder_removed(String p_folder) {
 
 void FileSystemDock::_rename_operation_confirm() {
 	String new_name = rename_dialog_text->get_text().strip_edges();
+	String old_name = tree->get_selected()->get_text(0);
 	if (new_name.length() == 0) {
 		EditorNode::get_singleton()->show_warning(TTR("No name provided."));
 		return;
 	} else if (new_name.find("/") != -1 || new_name.find("\\") != -1 || new_name.find(":") != -1) {
 		EditorNode::get_singleton()->show_warning(TTR("Name contains invalid characters."));
 		return;
+	} else if (to_rename.is_file && old_name.get_extension() != new_name.get_extension()) {
+		if (!EditorFileSystem::get_singleton()->get_valid_extensions().find(new_name.get_extension())) {
+			EditorNode::get_singleton()->show_warning(TTR("This file extension is not recognized by the editor.\nIf you want to rename it anyway, use your operating system's file manager.\nAfter renaming to an unknown extension, the file won't be shown in the editor anymore."));
+			return;
+		}
 	}
 
 	String old_path = to_rename.path.ends_with("/") ? to_rename.path.substr(0, to_rename.path.length() - 1) : to_rename.path;
@@ -2502,6 +2508,7 @@ void FileSystemDock::_file_and_folders_fill_popup(PopupMenu *p_popup, Vector<Str
 		String fpath = p_paths[0];
 		String item_text = fpath.ends_with("/") ? TTR("Open in File Manager") : TTR("Show in File Manager");
 		p_popup->add_icon_item(get_theme_icon(SNAME("Filesystem"), SNAME("EditorIcons")), item_text, FILE_SHOW_IN_EXPLORER);
+		path = fpath;
 	}
 }
 
@@ -2538,6 +2545,9 @@ void FileSystemDock::_tree_rmb_empty(const Vector2 &p_pos) {
 	tree_popup->add_icon_item(get_theme_icon(SNAME("Script"), SNAME("EditorIcons")), TTR("New Script..."), FILE_NEW_SCRIPT);
 	tree_popup->add_icon_item(get_theme_icon(SNAME("Object"), SNAME("EditorIcons")), TTR("New Resource..."), FILE_NEW_RESOURCE);
 	tree_popup->add_icon_item(get_theme_icon(SNAME("TextFile"), SNAME("EditorIcons")), TTR("New TextFile..."), FILE_NEW_TEXTFILE);
+	tree_popup->add_separator();
+	tree_popup->add_icon_item(get_theme_icon(SNAME("Filesystem"), SNAME("EditorIcons")), TTR("Open in File Manager"), FILE_SHOW_IN_EXPLORER);
+
 	tree_popup->set_position(tree->get_screen_position() + p_pos);
 	tree_popup->reset_size();
 	tree_popup->popup();
@@ -2576,6 +2586,8 @@ void FileSystemDock::_file_list_rmb_pressed(const Vector2 &p_pos) {
 	if (searched_string.length() > 0) {
 		return;
 	}
+
+	path = current_path->get_text();
 
 	file_list_popup->clear();
 	file_list_popup->reset_size();
@@ -2711,7 +2723,7 @@ void FileSystemDock::_update_import_dock() {
 	for (int i = 0; i < efiles.size(); i++) {
 		String fpath = efiles[i];
 		Ref<ConfigFile> cf;
-		cf.instantiate();
+		New_instantiate(cf);
 		Error err = cf->load(fpath + ".import");
 		if (err != OK) {
 			imports.clear();

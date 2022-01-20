@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -775,7 +775,7 @@ void EditorInspectorPluginCurve::parse_begin(Object *p_object) {
 
 CurveEditorPlugin::CurveEditorPlugin(EditorNode *p_node) {
 	Ref<EditorInspectorPluginCurve> curve_plugin;
-	curve_plugin.instantiate();
+	New_instantiate(curve_plugin);
 	EditorInspector::add_inspector_plugin(curve_plugin);
 
 	get_editor_interface()->get_resource_previewer()->add_preview_generator(memnew(CurvePreviewGenerator));
@@ -797,17 +797,14 @@ Ref<Texture2D> CurvePreviewGenerator::generate(const Ref<Resource> &p_from, cons
 	int thumbnail_size = EditorSettings::get_singleton()->get("filesystem/file_dialog/thumbnail_size");
 	thumbnail_size *= EDSCALE;
 	Ref<Image> img_ref;
-	img_ref.instantiate();
+	New_instantiate(img_ref);
 	Image &im = **img_ref;
 
 	im.create(thumbnail_size, thumbnail_size / 2, false, Image::FORMAT_RGBA8);
 
 	Color bg_color(0.1, 0.1, 0.1, 1.0);
-	for (int i = 0; i < thumbnail_size; i++) {
-		for (int j = 0; j < thumbnail_size / 2; j++) {
-			im.set_pixel(i, j, bg_color);
-		}
-	}
+
+	im.fill(bg_color);
 
 	Color line_color(0.8, 0.8, 0.8, 1.0);
 	float range_y = curve.get_max_value() - curve.get_min_value();

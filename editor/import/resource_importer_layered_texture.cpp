@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -186,7 +186,7 @@ void ResourceImporterLayeredTexture::_save_tex(Vector<Ref<Image>> p_images, cons
 
 				for (int i = 0; i < mm_d; i++) {
 					Ref<Image> mm;
-					mm.instantiate();
+					New_instantiate(mm);
 					mm->create(mm_w, mm_h, false, p_images[0]->get_format());
 					Vector3 pos;
 					pos.z = float(i) * float(d) / float(mm_d) + 0.5;
@@ -314,7 +314,7 @@ void ResourceImporterLayeredTexture::_save_astc_tex(Vector<Ref<Image>> p_images,
 
 				for (int i = 0; i < mm_d; i++) {
 					Ref<Image> mm;
-					mm.instantiate();
+					New_instantiate(mm);
 					mm->create(mm_w, mm_h, false, p_images[0]->get_format());
 					Vector3 pos;
 					pos.z = float(i) * float(d) / float(mm_d) + 0.5;
@@ -456,7 +456,7 @@ Error ResourceImporterLayeredTexture::import(const String &p_source_file, const 
 	}
 
 	Ref<Image> image;
-	image.instantiate();
+	New_instantiate(image);
 	Error err = ImageLoader::load_image(p_source_file, image, nullptr, false, 1.0);
 	if (err != OK) {
 		return err;
@@ -521,7 +521,7 @@ Error ResourceImporterLayeredTexture::import(const String &p_source_file, const 
 		bool can_astc = ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_astc");
 
 		if (can_bptc) {
-			formats_imported.push_back("bptc"); //needs to be aded anyway
+			formats_imported.push_back("bptc"); // Needs to be added anyway.
 		}
 		bool can_compress_hdr = hdr_compression > 0;
 
@@ -579,11 +579,6 @@ Error ResourceImporterLayeredTexture::import(const String &p_source_file, const 
 			formats_imported.push_back("etc2");
 		}
 
-		if (ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_pvrtc")) {
-			_save_tex(slices, p_save_path + ".pvrtc." + extension, compress_mode, lossy, Image::COMPRESS_PVRTC1_4, csource, used_channels, mipmaps, true);
-			r_platform_variants->push_back("pvrtc");
-			formats_imported.push_back("pvrtc");
-		}
 		if (can_astc) {
 			int level = p_options["compress/astc_level"];
 			level += Image::COMPRESS_ASTC_4x4;
@@ -618,7 +613,6 @@ const char *ResourceImporterLayeredTexture::compression_formats[] = {
 	"s3tc",
 	"etc",
 	"etc2",
-	"pvrtc",
 	"astc",
 	nullptr
 };

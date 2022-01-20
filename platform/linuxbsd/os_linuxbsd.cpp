@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -431,7 +431,7 @@ Error OS_LinuxBSD::move_to_trash(const String &p_path) {
 	if (trash_path.is_empty()) {
 		char *dhome = getenv("XDG_DATA_HOME");
 		if (dhome) {
-			trash_path = String(dhome) + "/Trash";
+			trash_path = String::utf8(dhome) + "/Trash";
 		}
 	}
 
@@ -439,7 +439,7 @@ Error OS_LinuxBSD::move_to_trash(const String &p_path) {
 	if (trash_path.is_empty()) {
 		char *home = getenv("HOME");
 		if (home) {
-			trash_path = String(home) + "/.local/share/Trash";
+			trash_path = String::utf8(home) + "/.local/share/Trash";
 		}
 	}
 

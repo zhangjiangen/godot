@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -39,8 +39,8 @@ GradientEdit::GradientEdit() {
 	picker = memnew(ColorPicker);
 	popup->add_child(picker);
 
-	gradient_cache.instantiate();
-	preview_texture.instantiate();
+	New_instantiate(gradient_cache);
+	New_instantiate(preview_texture);
 
 	preview_texture->set_width(1024);
 	add_child(popup, false, INTERNAL_MODE_FRONT);
@@ -430,6 +430,10 @@ void GradientEdit::set_interpolation_mode(Gradient::InterpolationMode p_interp_m
 
 Gradient::InterpolationMode GradientEdit::get_interpolation_mode() {
 	return interpolation_mode;
+}
+
+ColorPicker *GradientEdit::get_picker() {
+	return picker;
 }
 
 void GradientEdit::_bind_methods() {

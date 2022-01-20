@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -164,7 +164,7 @@ Ref<StandardMaterial3D> FBXMaterial::import_material(ImportState &state) {
 	const String p_fbx_current_directory = state.path;
 
 	Ref<StandardMaterial3D> spatial_material;
-	spatial_material.instantiate();
+	New_instantiate(spatial_material);
 
 	// read the material file
 	// is material two sided
@@ -260,7 +260,7 @@ Ref<StandardMaterial3D> FBXMaterial::import_material(ImportState &state) {
 				}
 
 				Ref<ImageTexture> image_texture;
-				image_texture.instantiate();
+				New_instantiate(image_texture);
 				image_texture->create_from_image(image);
 
 				texture = image_texture;
@@ -328,7 +328,7 @@ Ref<StandardMaterial3D> FBXMaterial::import_material(ImportState &state) {
 
 		if (spatial_material.is_null()) {
 			// Done here so if no data no material is created.
-			spatial_material.instantiate();
+			New_instantiate(spatial_material);
 		}
 
 		const FBXDocParser::TypedProperty<real_t> *real_value = dynamic_cast<const FBXDocParser::TypedProperty<real_t> *>(prop);

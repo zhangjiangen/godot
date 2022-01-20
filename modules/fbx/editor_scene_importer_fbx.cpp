@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -83,7 +83,7 @@ uint32_t EditorSceneFormatImporterFBX::get_import_flags() const {
 	return IMPORT_SCENE;
 }
 
-Node3D *EditorSceneFormatImporterFBX::import_scene(const String &p_path, uint32_t p_flags, int p_bake_fps,
+Node3D *EditorSceneFormatImporterFBX::import_scene(const String &p_path, uint32_t p_flags, const Map<StringName, Variant> &p_options, int p_bake_fps,
 		List<String> *r_missing_deps, Error *r_err) {
 	// done for performance when re-importing lots of files when testing importer in verbose only!
 	if (OS::get_singleton()->is_stdout_verbose()) {
@@ -373,7 +373,7 @@ Node3D *EditorSceneFormatImporterFBX::_generate_scene(
 	scene_root->add_child(state.root);
 	state.root->set_owner(scene_root);
 
-	state.fbx_root_node.instantiate();
+	New_instantiate(state.fbx_root_node);
 	state.fbx_root_node->godot_node = state.root;
 
 	// Size relative to cm.
@@ -389,11 +389,11 @@ Node3D *EditorSceneFormatImporterFBX::_generate_scene(
 	// Enabled by default.
 	state.enable_animation_import = true;
 	Ref<FBXNode> root_node;
-	root_node.instantiate();
+	New_instantiate(root_node);
 
 	// make sure fake noFBXDocParser::PropertyPtr ptrde always has a transform too ;)
 	Ref<PivotTransform> pivot_transform;
-	pivot_transform.instantiate();
+	New_instantiate(pivot_transform);
 	root_node->pivot_transform = pivot_transform;
 	root_node->node_name = "root node";
 	root_node->current_node_id = 0;
@@ -479,7 +479,7 @@ Node3D *EditorSceneFormatImporterFBX::_generate_scene(
 			if (state.renderer_mesh_data.has(mesh_id)) {
 				mesh_vertex_data = state.renderer_mesh_data[mesh_id];
 			} else {
-				mesh_vertex_data.instantiate();
+				New_instantiate(mesh_vertex_data);
 				state.renderer_mesh_data.insert(mesh_id, mesh_vertex_data);
 			}
 
@@ -535,7 +535,7 @@ Node3D *EditorSceneFormatImporterFBX::_generate_scene(
 			ERR_CONTINUE_MSG(!mat, "Could not convert fbx material by id: " + itos(material_id));
 
 			Ref<FBXMaterial> material;
-			material.instantiate();
+			New_instantiate(material);
 			material->set_imported_material(mat);
 
 			Ref<StandardMaterial3D> godot_material = material->import_material(state);
@@ -575,7 +575,7 @@ Node3D *EditorSceneFormatImporterFBX::_generate_scene(
 			if (state.skeleton_map.has(armature_id)) {
 				fbx_skeleton_inst = state.skeleton_map[armature_id];
 			} else {
-				fbx_skeleton_inst.instantiate();
+				New_instantiate(fbx_skeleton_inst);
 				state.skeleton_map.insert(armature_id, fbx_skeleton_inst);
 			}
 
@@ -650,7 +650,7 @@ Node3D *EditorSceneFormatImporterFBX::_generate_scene(
 						if (state.renderer_mesh_data.has(mesh_id)) {
 							mesh_data_precached = state.renderer_mesh_data[mesh_id];
 						} else {
-							mesh_data_precached.instantiate();
+							New_instantiate(mesh_data_precached);
 							state.renderer_mesh_data.insert(mesh_id, mesh_data_precached);
 						}
 
@@ -735,7 +735,7 @@ Node3D *EditorSceneFormatImporterFBX::_generate_scene(
 		Ref<Skin> skin;
 		if (!state.MeshSkins.has(mesh_id)) {
 			print_verbose("Created new skin");
-			skin.instantiate();
+			New_instantiate(skin);
 			state.MeshSkins.insert(mesh_id, skin);
 		} else {
 			print_verbose("Grabbed skin");
@@ -848,7 +848,7 @@ Node3D *EditorSceneFormatImporterFBX::_generate_scene(
 				}
 
 				Ref<Animation> animation;
-				animation.instantiate();
+				New_instantiate(animation);
 				animation->set_name(animation_name);
 				animation->set_length(duration);
 
@@ -1339,7 +1339,7 @@ void EditorSceneFormatImporterFBX::BuildDocumentBones(Ref<FBXBone> p_parent_bone
 				ERR_FAIL_COND_MSG(state.fbx_bone_map.has(limb_node->ID()), "[serious] duplicate LimbNode detected");
 
 				bool parent_is_bone = state.fbx_bone_map.find(p_id);
-				bone_element.instantiate();
+				New_instantiate(bone_element);
 
 				// used to build the bone hierarchy in the skeleton
 				bone_element->parent_bone_id = parent_is_bone ? p_id : 0;
@@ -1419,12 +1419,12 @@ void EditorSceneFormatImporterFBX::BuildDocumentNodes(
 			uint64_t current_node_id = model->ID();
 
 			Ref<FBXNode> new_node;
-			new_node.instantiate();
+			New_instantiate(new_node);
 			new_node->current_node_id = current_node_id;
 			new_node->node_name = ImportUtils::FBXNodeToName(model->Name());
 
 			Ref<PivotTransform> fbx_transform;
-			fbx_transform.instantiate();
+			New_instantiate(fbx_transform);
 			fbx_transform->set_parent(parent_transform);
 			fbx_transform->set_model(model);
 			fbx_transform->debug_pivot_xform("name: " + new_node->node_name);
@@ -1467,4 +1467,9 @@ void EditorSceneFormatImporterFBX::BuildDocumentNodes(
 			BuildDocumentNodes(new_node->pivot_transform, state, p_doc, current_node_id, new_node);
 		}
 	}
+}
+Ref<Animation> EditorSceneFormatImporterFBX::import_animation(const String &p_path,
+		uint32_t p_flags, const Map<StringName, Variant> &p_options,
+		int p_bake_fps) {
+	return Ref<Animation>();
 }

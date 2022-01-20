@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -58,8 +58,8 @@ private:
 	Vector<uint8_t> chunk;
 	int chunk_left = 0;
 	bool chunk_trailer_part = false;
-	int body_size = -1;
-	int body_left = 0;
+	int64_t body_size = -1;
+	int64_t body_left = 0;
 	bool read_until_eof = false;
 
 	Ref<StreamPeerTCP> tcp_connection;

@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -33,13 +33,17 @@
 
 #include "core/error/error_macros.h"
 #include "core/templates/safe_refcount.h"
+#include <stdexcept>
 
 #include <stddef.h>
 #include <new>
 
 #ifndef PAD_ALIGN
-#define PAD_ALIGN 16 //must always be greater than this at much
+#define PAD_ALIGN sizeof(uint64_t) //must always be greater than this at much
 #endif
+#define MEMORY_TAG_MALLOC 0xFBFBFBFB
+#define MEMORY_TAG_NEW 0xBFBFBFBF
+#define MEMORY_TAG_NEW_ARRAY 0xACACACAC
 
 class Memory {
 #ifdef DEBUG_ENABLED
@@ -48,25 +52,60 @@ class Memory {
 #endif
 
 	static SafeNumeric<uint64_t> alloc_count;
+	friend class DefaultAllocator;
 
-public:
-	static void *alloc_static(size_t p_bytes, bool p_pad_align = false);
-	static void *realloc_static(void *p_memory, size_t p_bytes, bool p_pad_align = false);
+	static void *alloc_static(size_t p_bytes, const char *p_description, int line, bool p_pad_align = false);
+	static void *realloc_static(void *p_memory, size_t p_bytes, const char *p_description, int line, bool p_pad_align = false);
 	static void free_static(void *p_ptr, bool p_pad_align = false);
 
+public:
 	static uint64_t get_mem_available();
 	static uint64_t get_mem_usage();
 	static uint64_t get_mem_max_usage();
 };
 
+// 这个类目前不能操作脚本创建出来的类Array，Variant，Dictctionary，
+// 因为内存来源目前没有完全管理，下一步会整体应用内存管理 需要记录一下内存的大小
 class DefaultAllocator {
+	static void *alloc_manager(size_t p_memory);
+	static void free_manager(void *ptr, size_t count);
+	static void record_memory_alloc(void *p_ptr, size_t p_memory, const char *file_name, int file_lne);
+	static void record_memory_free(void *p_ptr, size_t size);
+	friend class MallocAllocator;
+
 public:
-	_FORCE_INLINE_ static void *alloc(size_t p_memory) { return Memory::alloc_static(p_memory, false); }
-	_FORCE_INLINE_ static void free(void *p_ptr) { Memory::free_static(p_ptr, false); }
+	// 是否管理
+	_FORCE_INLINE_ static bool is_manager(size_t count) {
+		return count <= 1024;
+	}
+	_FORCE_INLINE_ static void *alloc(size_t p_memory, const char *file_name, int file_lne) {
+		if (is_manager(p_memory)) {
+			void *ptr = alloc_manager(p_memory);
+			record_memory_alloc(ptr, p_memory, file_name, file_lne);
+			return ptr;
+		}
+		void *ptr = Memory::alloc_static(p_memory, file_name, file_lne, false);
+		record_memory_alloc(ptr, p_memory, file_name, file_lne);
+		return ptr;
+	}
+	_FORCE_INLINE_ static void free(void *p_ptr, size_t p_memory) {
+		record_memory_free(p_ptr, p_memory);
+		if (is_manager(p_memory)) {
+			return free_manager(p_ptr, p_memory);
+		}
+		Memory::free_static(p_ptr, false);
+	}
+	static void log_memory_info();
+};
+class MallocAllocator {
+public:
+	static void *alloc_memory(size_t p_memory, const char *file_name, int file_lne);
+	static void free_memory(void *p_ptr);
+	static void *realloc_memory(void *p_ptr, size_t p_size, const char *file_name, int file_lne);
 };
 
-void *operator new(size_t p_size, const char *p_description); ///< operator new that takes a description and uses MemoryStaticPool
-void *operator new(size_t p_size, void *(*p_allocfunc)(size_t p_size)); ///< operator new that takes a description and uses MemoryStaticPool
+void *operator new(size_t p_size, const char *p_description, size_t line); ///< operator new that takes a description and uses MemoryStaticPool
+void *operator new(size_t p_size, void *(*p_allocfunc)(size_t p_size, const char *file_name, int file_lne), const char *p_description, size_t line); ///< operator new that takes a description and uses MemoryStaticPool
 
 void *operator new(size_t p_size, void *p_pointer, size_t check, const char *p_description); ///< operator new that takes a description and uses a pointer to the preallocated memory
 
@@ -78,9 +117,9 @@ void operator delete(void *p_mem, void *(*p_allocfunc)(size_t p_size));
 void operator delete(void *p_mem, void *p_pointer, size_t check, const char *p_description);
 #endif
 
-#define memalloc(m_size) Memory::alloc_static(m_size)
-#define memrealloc(m_mem, m_size) Memory::realloc_static(m_mem, m_size)
-#define memfree(m_mem) Memory::free_static(m_mem)
+#define memalloc(m_size) MallocAllocator::alloc_memory(m_size, __FILE__, __LINE__)
+#define memrealloc(m_mem, m_size) MallocAllocator::realloc_memory(m_mem, m_size, __FILE__, __LINE__)
+#define memfree(m_mem) MallocAllocator::free_memory(m_mem)
 
 _ALWAYS_INLINE_ void postinitialize_handler(void *) {}
 
@@ -90,9 +129,9 @@ _ALWAYS_INLINE_ T *_post_initialize(T *p_obj) {
 	return p_obj;
 }
 
-#define memnew(m_class) _post_initialize(new ("") m_class)
+#define memnew(m_class) _post_initialize(new (__FILE__, __LINE__) m_class)
 
-#define memnew_allocator(m_class, m_allocator) _post_initialize(new (m_allocator::alloc) m_class)
+#define memnew_allocator(m_class, m_allocator) _post_initialize(new (m_allocator::alloc, __FILE__, __LINE__) m_class)
 #define memnew_placement(m_placement, m_class) _post_initialize(new (m_placement) m_class)
 
 _ALWAYS_INLINE_ bool predelete_handler(void *) {
@@ -107,8 +146,22 @@ void memdelete(T *p_class) {
 	if (!__has_trivial_destructor(T)) {
 		p_class->~T();
 	}
+	// 偏移到内存起始地址
+	uint32_t *base = (uint32_t *)p_class;
+	base -= 2;
+	uint32_t tag = *base;
+	uint32_t size = *(base + 1);
+	if (tag != MEMORY_TAG_NEW) {
+		throw std::runtime_error("memory delete tag error!");
+	}
+	// 检测数据大小是否相等,类型不相等有可能内存大小不一致
+	//    uint32_t type_size = sizeof(T);
+	//	if (size != type_size) {
+	//		throw std::runtime_error("memory delete type size error!");
+	//	}
 
-	Memory::free_static(p_class, false);
+	DefaultAllocator::free(base, size + sizeof(uint64_t));
+	//Memory::free_static(p_class, false);
 }
 
 template <class T, class A>
@@ -120,7 +173,7 @@ void memdelete_allocator(T *p_class) {
 		p_class->~T();
 	}
 
-	A::free(p_class);
+	A::free(p_class, sizeof(T));
 }
 
 #define memdelete_notnull(m_v) \
@@ -130,10 +183,10 @@ void memdelete_allocator(T *p_class) {
 		}                      \
 	}
 
-#define memnew_arr(m_class, m_count) memnew_arr_template<m_class>(m_count)
+#define memnew_arr(m_class, m_count) memnew_arr_template<m_class>(m_count, __FILE__, __LINE__)
 
 template <typename T>
-T *memnew_arr_template(size_t p_elements) {
+T *memnew_arr_template(size_t p_elements, const char *p_description, size_t line) {
 	if (p_elements == 0) {
 		return nullptr;
 	}
@@ -141,10 +194,14 @@ T *memnew_arr_template(size_t p_elements) {
 	same strategy used by std::vector, and the Vector class, so it should be safe.*/
 
 	size_t len = sizeof(T) * p_elements;
-	uint64_t *mem = (uint64_t *)Memory::alloc_static(len, true);
+	uint32_t *mem = (uint32_t *)DefaultAllocator::alloc(len + sizeof(uint64_t), p_description, line);
 	T *failptr = nullptr; //get rid of a warning
 	ERR_FAIL_COND_V(!mem, failptr);
-	*(mem - 1) = p_elements;
+	// 标记为数组和记录内存大小
+	*mem = MEMORY_TAG_NEW_ARRAY;
+	++mem;
+	*mem = len;
+	++mem;
 
 	if (!__has_trivial_constructor(T)) {
 		T *elems = (T *)mem;
@@ -165,23 +222,46 @@ T *memnew_arr_template(size_t p_elements) {
 
 template <typename T>
 size_t memarr_len(const T *p_class) {
-	uint64_t *ptr = (uint64_t *)p_class;
-	return *(ptr - 1);
+	uint32_t *ptr = (uint32_t *)p_class;
+	ptr -= 2;
+	uint32_t tag = *ptr;
+	uint32_t size = *(ptr + 1);
+	if (tag != MEMORY_TAG_NEW_ARRAY) {
+		throw std::runtime_error("memory array len tag error!");
+	}
+	int count = size / sizeof(T);
+	if (count * sizeof(T) != size) {
+		throw std::runtime_error("memory array len type error!");
+	}
+
+	return count;
 }
 
 template <typename T>
 void memdelete_arr(T *p_class) {
-	uint64_t *ptr = (uint64_t *)p_class;
+	uint32_t *ptr = (uint32_t *)p_class;
 
 	if (!__has_trivial_destructor(T)) {
-		uint64_t elem_count = *(ptr - 1);
+		ptr -= 2;
+		uint32_t tag = *ptr;
+		uint32_t size = *(ptr + 1);
+		// 错误验证
+		if (tag != MEMORY_TAG_NEW_ARRAY) {
+			throw std::runtime_error("memory array len tag error!");
+		}
+		int count = size / sizeof(T);
+		if (count * sizeof(T) != size) {
+			throw std::runtime_error("memory array len type error!");
+		}
 
-		for (uint64_t i = 0; i < elem_count; i++) {
+		for (uint64_t i = 0; i < count; i++) {
 			p_class[i].~T();
 		}
+		// 删除内存
+		DefaultAllocator::free(ptr, size + sizeof(uint64_t));
 	}
 
-	Memory::free_static(ptr, true);
+	//Memory::free_static(ptr, true);
 }
 
 struct _GlobalNil {

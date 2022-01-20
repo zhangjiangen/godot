@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -39,14 +39,14 @@ class RichTextLabel : public Control {
 	GDCLASS(RichTextLabel, Control);
 
 public:
-	enum ListType {
+	enum ListType : uint8_t {
 		LIST_NUMBERS,
 		LIST_LETTERS,
 		LIST_ROMAN,
 		LIST_DOTS
 	};
 
-	enum ItemType {
+	enum ItemType : uint8_t {
 		ITEM_FRAME,
 		ITEM_TEXT,
 		ITEM_IMAGE,
@@ -75,6 +75,14 @@ public:
 		ITEM_CUSTOMFX
 	};
 
+	enum VisibleCharactersBehavior : uint8_t {
+		VC_CHARS_BEFORE_SHAPING,
+		VC_CHARS_AFTER_SHAPING,
+		VC_GLYPHS_AUTO,
+		VC_GLYPHS_LTR,
+		VC_GLYPHS_RTL,
+	};
+
 protected:
 	void _notification(int p_what);
 	static void _bind_methods();
@@ -87,24 +95,24 @@ private:
 
 		Ref<TextParagraph> text_buf;
 		Color dc_color;
-		int dc_ol_size = 0;
 		Color dc_ol_color;
-
 		Vector2 offset;
+		int dc_ol_size = 0;
+
 		int char_offset = 0;
 		int char_count = 0;
 
-		Line() { text_buf.instantiate(); }
+		Line() { New_instantiate(text_buf); }
 	};
 
 	struct Item {
-		int index = 0;
-		int char_ofs = 0;
 		Item *parent = nullptr;
-		ItemType type = ITEM_FRAME;
 		List<Item *> subitems;
 		List<Item *>::Element *E = nullptr;
+		int index = 0;
+		int char_ofs = 0;
 		int line = 0;
+		ItemType type = ITEM_FRAME;
 
 		void _clear_children() {
 			while (subitems.size()) {
@@ -143,11 +151,11 @@ private:
 	struct ItemDropcap : public Item {
 		String text;
 		Ref<Font> font;
-		int font_size = 0;
 		Color color;
-		int ol_size = 0;
-		Color ol_color;
 		Rect2 dropcap_margins;
+		Color ol_color;
+		int ol_size = 0;
+		int font_size = 0;
 		ItemDropcap() { type = ITEM_DROPCAP; }
 	};
 
@@ -216,9 +224,9 @@ private:
 	};
 
 	struct ItemList : public Item {
+		int level = 0;
 		ListType list_type = LIST_DOTS;
 		bool capitalize = false;
-		int level = 0;
 		ItemList() { type = ITEM_LIST; }
 	};
 
@@ -256,11 +264,11 @@ private:
 	};
 
 	struct ItemShake : public ItemFX {
-		int strength = 0;
-		float rate = 0.0f;
 		uint64_t _current_rng = 0;
 		uint64_t _previous_rng = 0;
 		Vector2 prev_off;
+		int strength = 0;
+		float rate = 0.0f;
 
 		ItemShake() { type = ITEM_SHAKE; }
 
@@ -320,7 +328,7 @@ private:
 
 		ItemCustomFX() {
 			type = ITEM_CUSTOMFX;
-			char_fx_transform.instantiate();
+			New_instantiate(char_fx_transform);
 		}
 
 		virtual ~ItemCustomFX() {
@@ -396,6 +404,7 @@ private:
 
 	int visible_characters = -1;
 	float percent_visible = 1.0;
+	VisibleCharactersBehavior visible_chars_behavior = VC_CHARS_BEFORE_SHAPING;
 
 	void _find_click(ItemFrame *p_frame, const Point2i &p_click, ItemFrame **r_click_frame = nullptr, int *r_click_line = nullptr, Item **r_click_item = nullptr, int *r_click_char = nullptr, bool *r_outside = nullptr);
 
@@ -405,7 +414,7 @@ private:
 
 	void _shape_line(ItemFrame *p_frame, int p_line, const Ref<Font> &p_base_font, int p_base_font_size, int p_width, int *r_char_offset);
 	void _resize_line(ItemFrame *p_frame, int p_line, const Ref<Font> &p_base_font, int p_base_font_size, int p_width);
-	int _draw_line(ItemFrame *p_frame, int p_line, const Vector2 &p_ofs, int p_width, const Color &p_base_color, int p_outline_size, const Color &p_outline_color, const Color &p_font_shadow_color, int p_shadow_outline_size, const Point2 &p_shadow_ofs);
+	int _draw_line(ItemFrame *p_frame, int p_line, const Vector2 &p_ofs, int p_width, const Color &p_base_color, int p_outline_size, const Color &p_outline_color, const Color &p_font_shadow_color, int p_shadow_outline_size, const Point2 &p_shadow_ofs, int &r_processed_glyphs);
 	float _find_click_in_line(ItemFrame *p_frame, int p_line, const Vector2 &p_ofs, int p_width, const Point2i &p_click, ItemFrame **r_click_frame = nullptr, int *r_click_line = nullptr, Item **r_click_item = nullptr, int *r_click_char = nullptr);
 
 	String _roman(int p_num, bool p_capitalize) const;
@@ -535,7 +544,7 @@ public:
 
 	int get_content_height() const;
 
-	VScrollBar *get_v_scroll() { return vscroll; }
+	VScrollBar *get_v_scroll_bar() { return vscroll; }
 
 	virtual CursorShape get_cursor_shape(const Point2 &p_pos) const override;
 
@@ -572,9 +581,13 @@ public:
 	void set_visible_characters(int p_visible);
 	int get_visible_characters() const;
 	int get_total_character_count() const;
+	int get_total_glyph_count() const;
 
 	void set_percent_visible(float p_percent);
 	float get_percent_visible() const;
+
+	VisibleCharactersBehavior get_visible_characters_behavior() const;
+	void set_visible_characters_behavior(VisibleCharactersBehavior p_behavior);
 
 	void set_effects(Array p_effects);
 	Array get_effects();
@@ -590,5 +603,6 @@ public:
 
 VARIANT_ENUM_CAST(RichTextLabel::ListType);
 VARIANT_ENUM_CAST(RichTextLabel::ItemType);
+VARIANT_ENUM_CAST(RichTextLabel::VisibleCharactersBehavior);
 
 #endif // RICH_TEXT_LABEL_H

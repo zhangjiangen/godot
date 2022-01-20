@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -48,6 +48,7 @@
 #include "scene/gui/label.h"
 #include "scene/gui/popup.h"
 #include "scene/gui/popup_menu.h"
+#include "scene/gui/subviewport_container.h"
 #include "scene/main/canvas_layer.h"
 #include "scene/main/window.h"
 #include "scene/resources/mesh.h"
@@ -371,8 +372,6 @@ void Viewport::_sub_window_remove(Window *p_window) {
 void Viewport::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
-			gui.embedding_subwindows = gui.embed_subwindows_hint;
-
 			if (get_parent()) {
 				parent = get_parent()->get_viewport();
 				RenderingServer::get_singleton()->viewport_set_parent_viewport(viewport, parent->get_viewport_rid());
@@ -540,7 +539,7 @@ void Viewport::_process_picking() {
 
 		if (!has_mouse_event) {
 			Ref<InputEventMouseMotion> mm;
-			mm.instantiate();
+			New_instantiate(mm);
 
 			mm->set_device(InputEvent::DEVICE_ID_INTERNAL);
 			mm->set_global_position(physics_last_mousepos);
@@ -1700,13 +1699,13 @@ void Viewport::_gui_input_event(Ref<InputEvent> p_event) {
 		if (over) {
 			Transform2D localizer = over->get_global_transform_with_canvas().affine_inverse();
 			Size2 pos = localizer.xform(mpos);
-			Vector2 speed = localizer.basis_xform(mm->get_speed());
+			Vector2 velocity = localizer.basis_xform(mm->get_velocity());
 			Vector2 rel = localizer.basis_xform(mm->get_relative());
 
 			mm = mm->xformed_by(Transform2D()); // Make a copy.
 
 			mm->set_global_position(mpos);
-			mm->set_speed(speed);
+			mm->set_velocity(velocity);
 			mm->set_relative(rel);
 
 			if (mm->get_button_mask() == MouseButton::NONE) {
@@ -1956,12 +1955,12 @@ void Viewport::_gui_input_event(Ref<InputEvent> p_event) {
 			if (over->can_process()) {
 				Transform2D localizer = over->get_global_transform_with_canvas().affine_inverse();
 				Size2 pos = localizer.xform(drag_event->get_position());
-				Vector2 speed = localizer.basis_xform(drag_event->get_speed());
+				Vector2 velocity = localizer.basis_xform(drag_event->get_velocity());
 				Vector2 rel = localizer.basis_xform(drag_event->get_relative());
 
 				drag_event = drag_event->xformed_by(Transform2D()); // Make a copy.
 
-				drag_event->set_speed(speed);
+				drag_event->set_velocity(velocity);
 				drag_event->set_relative(rel);
 				drag_event->set_position(pos);
 
@@ -2191,7 +2190,7 @@ void Viewport::_drop_mouse_focus() {
 	for (int i = 0; i < 3; i++) {
 		if ((int)mask & (1 << i)) {
 			Ref<InputEventMouseButton> mb;
-			mb.instantiate();
+			New_instantiate(mb);
 			mb->set_position(c->get_local_mouse_position());
 			mb->set_global_position(c->get_local_mouse_position());
 			mb->set_button_index(MouseButton(i + 1));
@@ -2304,7 +2303,7 @@ void Viewport::_post_gui_grab_click_focus() {
 		for (int i = 0; i < 3; i++) {
 			if ((int)mask & (1 << i)) {
 				Ref<InputEventMouseButton> mb;
-				mb.instantiate();
+				New_instantiate(mb);
 
 				// Send unclick.
 
@@ -2322,7 +2321,7 @@ void Viewport::_post_gui_grab_click_focus() {
 		for (int i = 0; i < 3; i++) {
 			if ((int)mask & (1 << i)) {
 				Ref<InputEventMouseButton> mb;
-				mb.instantiate();
+				New_instantiate(mb);
 
 				// Send click.
 
@@ -2344,12 +2343,12 @@ void Viewport::push_text_input(const String &p_text) {
 	}
 
 	if (gui.key_focus) {
-		gui.key_focus->call("set_text", p_text);
+		gui.key_focus->call_void("set_text", p_text);
 	}
 }
 
 Viewport::SubWindowResize Viewport::_sub_window_get_resize_margin(Window *p_subwindow, const Point2 &p_point) {
-	if (p_subwindow->get_flag(Window::FLAG_BORDERLESS)) {
+	if (p_subwindow->get_flag(Window::FLAG_BORDERLESS) || p_subwindow->get_flag(Window::FLAG_RESIZE_DISABLED)) {
 		return SUB_WINDOW_RESIZE_DISABLED;
 	}
 
@@ -2545,7 +2544,7 @@ bool Viewport::_sub_windows_forward_input(const Ref<InputEvent> &p_event) {
 	if (mb.is_valid() && mb->is_pressed() && mb->get_button_index() == MouseButton::LEFT) {
 		bool click_on_window = false;
 		for (int i = gui.sub_windows.size() - 1; i >= 0; i--) {
-			SubWindow &sw = gui.sub_windows.write[i];
+			SubWindow sw = gui.sub_windows.write[i];
 
 			// Clicked inside window?
 
@@ -2833,13 +2832,13 @@ bool Viewport::is_using_debanding() const {
 	return use_debanding;
 }
 
-void Viewport::set_lod_threshold(float p_pixels) {
-	lod_threshold = p_pixels;
-	RS::get_singleton()->viewport_set_lod_threshold(viewport, lod_threshold);
+void Viewport::set_mesh_lod_threshold(float p_pixels) {
+	mesh_lod_threshold = p_pixels;
+	RS::get_singleton()->viewport_set_mesh_lod_threshold(viewport, mesh_lod_threshold);
 }
 
-float Viewport::get_lod_threshold() const {
-	return lod_threshold;
+float Viewport::get_mesh_lod_threshold() const {
+	return mesh_lod_threshold;
 }
 
 void Viewport::set_use_occlusion_culling(bool p_use_occlusion_culling) {
@@ -3634,8 +3633,8 @@ void Viewport::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_sdf_scale", "scale"), &Viewport::set_sdf_scale);
 	ClassDB::bind_method(D_METHOD("get_sdf_scale"), &Viewport::get_sdf_scale);
 
-	ClassDB::bind_method(D_METHOD("set_lod_threshold", "pixels"), &Viewport::set_lod_threshold);
-	ClassDB::bind_method(D_METHOD("get_lod_threshold"), &Viewport::get_lod_threshold);
+	ClassDB::bind_method(D_METHOD("set_mesh_lod_threshold", "pixels"), &Viewport::set_mesh_lod_threshold);
+	ClassDB::bind_method(D_METHOD("get_mesh_lod_threshold"), &Viewport::get_mesh_lod_threshold);
 
 	ClassDB::bind_method(D_METHOD("_process_picking"), &Viewport::_process_picking);
 
@@ -3685,7 +3684,7 @@ void Viewport::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "screen_space_aa", PROPERTY_HINT_ENUM, "Disabled (Fastest),FXAA (Fast)"), "set_screen_space_aa", "get_screen_space_aa");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "use_debanding"), "set_use_debanding", "is_using_debanding");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "use_occlusion_culling"), "set_use_occlusion_culling", "is_using_occlusion_culling");
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "lod_threshold", PROPERTY_HINT_RANGE, "0,1024,0.1"), "set_lod_threshold", "get_lod_threshold");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "mesh_lod_threshold", PROPERTY_HINT_RANGE, "0,1024,0.1"), "set_mesh_lod_threshold", "get_mesh_lod_threshold");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "debug_draw", PROPERTY_HINT_ENUM, "Disabled,Unshaded,Overdraw,Wireframe"), "set_debug_draw", "get_debug_draw");
 #ifndef _3D_DISABLED
 	ADD_GROUP("Scaling 3D", "");
@@ -3766,6 +3765,7 @@ void Viewport::_bind_methods() {
 	BIND_ENUM_CONSTANT(DEBUG_DRAW_DIRECTIONAL_SHADOW_ATLAS);
 	BIND_ENUM_CONSTANT(DEBUG_DRAW_SCENE_LUMINANCE);
 	BIND_ENUM_CONSTANT(DEBUG_DRAW_SSAO);
+	BIND_ENUM_CONSTANT(DEBUG_DRAW_SSIL);
 	BIND_ENUM_CONSTANT(DEBUG_DRAW_PSSM_SPLITS);
 	BIND_ENUM_CONSTANT(DEBUG_DRAW_DECAL_ATLAS);
 	BIND_ENUM_CONSTANT(DEBUG_DRAW_SDFGI);
@@ -3807,7 +3807,7 @@ Viewport::Viewport() {
 	viewport = RenderingServer::get_singleton()->viewport_create();
 	texture_rid = RenderingServer::get_singleton()->viewport_get_texture(viewport);
 
-	default_texture.instantiate();
+	New_instantiate(default_texture);
 	default_texture->vp = const_cast<Viewport *>(this);
 	viewport_textures.insert(default_texture.ptr());
 	default_texture->proxy = RS::get_singleton()->texture_proxy_create(texture_rid);
@@ -3824,7 +3824,7 @@ Viewport::Viewport() {
 	set_shadow_atlas_quadrant_subdiv(2, SHADOW_ATLAS_QUADRANT_SUBDIV_16);
 	set_shadow_atlas_quadrant_subdiv(3, SHADOW_ATLAS_QUADRANT_SUBDIV_64);
 
-	set_lod_threshold(lod_threshold);
+	set_mesh_lod_threshold(mesh_lod_threshold);
 
 	String id = itos(get_instance_id());
 	input_group = "_vp_input" + id;
@@ -3864,6 +3864,11 @@ Viewport::~Viewport() {
 
 void SubViewport::set_size(const Size2i &p_size) {
 	_set_size(p_size, _get_size_2d_override(), Rect2i(), _stretch_transform(), true);
+
+	SubViewportContainer *c = Object::cast_to<SubViewportContainer>(get_parent());
+	if (c) {
+		c->update_minimum_size();
+	}
 }
 
 Size2i SubViewport::get_size() const {
@@ -3891,12 +3896,12 @@ bool SubViewport::is_size_2d_override_stretch_enabled() const {
 	return size_2d_override_stretch;
 }
 
-void SubViewport::set_update_mode(UpdateMode p_mode) {
-	update_mode = p_mode;
+void SubViewport::set_update_mode(int p_mode) {
+	update_mode = (UpdateMode)p_mode;
 	RS::get_singleton()->viewport_set_update_mode(get_viewport_rid(), RS::ViewportUpdateMode(p_mode));
 }
 
-SubViewport::UpdateMode SubViewport::get_update_mode() const {
+int SubViewport::get_update_mode() const {
 	return update_mode;
 }
 
@@ -3949,8 +3954,8 @@ void SubViewport::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_clear_mode", "mode"), &SubViewport::set_clear_mode);
 	ClassDB::bind_method(D_METHOD("get_clear_mode"), &SubViewport::get_clear_mode);
 
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "size"), "set_size", "get_size");
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "size_2d_override"), "set_size_2d_override", "get_size_2d_override");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2I, "size"), "set_size", "get_size");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2I, "size_2d_override"), "set_size_2d_override", "get_size_2d_override");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "size_2d_override_stretch"), "set_size_2d_override_stretch", "is_size_2d_override_stretch_enabled");
 	ADD_GROUP("Render Target", "render_target_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "render_target_clear_mode", PROPERTY_HINT_ENUM, "Always,Never,Next Frame"), "set_clear_mode", "get_clear_mode");

@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -47,17 +47,11 @@ class ScrollBar : public Range {
 
 	Orientation orientation;
 	Size2 size;
-	float custom_step = -1.0;
-
-	HighlightStatus highlight = HIGHLIGHT_NONE;
-
-	bool incr_active = false;
-	bool decr_active = false;
 
 	struct Drag {
-		bool active = false;
 		float pos_at_click = 0.0;
 		float value_at_click = 0.0;
+		bool active = false;
 	} drag;
 
 	double get_grabber_size() const;
@@ -70,21 +64,27 @@ class ScrollBar : public Range {
 
 	Node *drag_node = nullptr;
 	NodePath drag_node_path;
-	bool drag_node_enabled = true;
 
 	Vector2 drag_node_speed = Vector2();
 	Vector2 drag_node_accum;
 	Vector2 drag_node_from;
 	Vector2 last_drag_node_accum;
+	double target_scroll = 0.0;
 	float last_drag_node_time = 0.0;
 	float time_since_motion = 0.0;
-	bool drag_node_touching = false;
-	bool drag_node_touching_deaccel = false;
-	bool click_handled = false;
+	float custom_step = -1.0;
 
-	bool scrolling = false;
-	double target_scroll = 0.0;
-	bool smooth_scroll_enabled = false;
+	HighlightStatus highlight : 4;
+
+	bool incr_active : 2;
+	bool decr_active : 2;
+	bool drag_node_enabled : 2;
+	bool drag_node_touching : 2;
+	bool drag_node_touching_deaccel : 2;
+	bool click_handled : 2;
+
+	bool scrolling : 2;
+	bool smooth_scroll_enabled : 2;
 
 	void _drag_node_exit();
 	void _drag_node_input(const Ref<InputEvent> &p_input);

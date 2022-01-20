@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -762,6 +762,21 @@ Variant Object::callv(const StringName &p_method, const Array &p_args) {
 	return ret;
 }
 
+void Object::call_void(const StringName &p_name, VARIANT_ARG_DECLARE) // C++ helper
+{
+	VARIANT_ARGPTRS;
+	int argc = 0;
+	for (int i = 0; i < VARIANT_ARG_MAX; i++) {
+		if (argptr[i]->get_type() == Variant::NIL) {
+			break;
+		}
+		argc++;
+	}
+
+	Callable::CallError error;
+
+	call_r(p_name, argptr, argc, error);
+}
 Variant Object::call(const StringName &p_name, VARIANT_ARG_DECLARE) {
 	VARIANT_ARGPTRS;
 
@@ -775,55 +790,61 @@ Variant Object::call(const StringName &p_name, VARIANT_ARG_DECLARE) {
 
 	Callable::CallError error;
 
-	Variant ret = call(p_name, argptr, argc, error);
+	Variant ret;
+
+	call_r(ret, p_name, argptr, argc, error);
 	return ret;
 }
-
 Variant Object::call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
-	r_error.error = Callable::CallError::CALL_OK;
+	Variant ret;
 
+	call_r(ret, p_method, p_args, p_argcount, r_error);
+	return ret;
+}
+void Object::call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	r_error.error = Callable::CallError::CALL_OK;
+	ret.clear();
 	if (p_method == CoreStringNames::get_singleton()->_free) {
 //free must be here, before anything, always ready
 #ifdef DEBUG_ENABLED
 		if (p_argcount != 0) {
 			r_error.argument = 0;
 			r_error.error = Callable::CallError::CALL_ERROR_TOO_MANY_ARGUMENTS;
-			return Variant();
+			return;
 		}
 		if (Object::cast_to<RefCounted>(this)) {
 			r_error.argument = 0;
 			r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
-			ERR_FAIL_V_MSG(Variant(), "Can't 'free' a reference.");
+			ERR_FAIL_V_MSG(, "Can't 'free' a reference.");
 		}
 
 		if (_lock_index.get() > 1) {
 			r_error.argument = 0;
 			r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
-			ERR_FAIL_V_MSG(Variant(), "Object is locked and can't be freed.");
+			ERR_FAIL_V_MSG(, "Object is locked and can't be freed.");
 		}
 
 #endif
 		//must be here, must be before everything,
 		memdelete(this);
 		r_error.error = Callable::CallError::CALL_OK;
-		return Variant();
+		return;
 	}
 
-	Variant ret;
 	OBJ_DEBUG_LOCK
 
 	if (script_instance) {
-		ret = script_instance->call(p_method, p_args, p_argcount, r_error);
+		script_instance->call_r(ret, p_method, p_args, p_argcount, r_error);
 		//force jumptable
 		switch (r_error.error) {
 			case Callable::CallError::CALL_OK:
-				return ret;
+				return;
 			case Callable::CallError::CALL_ERROR_INVALID_METHOD:
 				break;
 			case Callable::CallError::CALL_ERROR_INVALID_ARGUMENT:
 			case Callable::CallError::CALL_ERROR_TOO_MANY_ARGUMENTS:
 			case Callable::CallError::CALL_ERROR_TOO_FEW_ARGUMENTS:
-				return ret;
+				return;
 			case Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL: {
 			}
 		}
@@ -839,9 +860,88 @@ Variant Object::call(const StringName &p_method, const Variant **p_args, int p_a
 		r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
 	}
 
-	return ret;
+	return;
 }
+void Object::call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	r_error.error = Callable::CallError::CALL_OK;
 
+	if (p_method == CoreStringNames::get_singleton()->_free) {
+//free must be here, before anything, always ready
+#ifdef DEBUG_ENABLED
+		if (p_argcount != 0) {
+			r_error.argument = 0;
+			r_error.error = Callable::CallError::CALL_ERROR_TOO_MANY_ARGUMENTS;
+			return;
+		}
+		if (Object::cast_to<RefCounted>(this)) {
+			r_error.argument = 0;
+			r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
+			ERR_FAIL_V_MSG(, "Can't 'free' a reference.");
+		}
+
+		if (_lock_index.get() > 1) {
+			r_error.argument = 0;
+			r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
+			ERR_FAIL_V_MSG(, "Object is locked and can't be freed.");
+		}
+
+#endif
+		//must be here, must be before everything,
+		memdelete(this);
+		r_error.error = Callable::CallError::CALL_OK;
+		return;
+	}
+
+	Variant ret;
+	OBJ_DEBUG_LOCK
+
+	if (script_instance) {
+		script_instance->call_r(ret, p_method, p_args, p_argcount, r_error);
+		//force jumptable
+		switch (r_error.error) {
+			case Callable::CallError::CALL_OK:
+				return;
+			case Callable::CallError::CALL_ERROR_INVALID_METHOD:
+				break;
+			case Callable::CallError::CALL_ERROR_INVALID_ARGUMENT:
+			case Callable::CallError::CALL_ERROR_TOO_MANY_ARGUMENTS:
+			case Callable::CallError::CALL_ERROR_TOO_FEW_ARGUMENTS:
+				return;
+			case Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL: {
+			}
+		}
+	}
+
+	//extension does not need this, because all methods are registered in MethodBind
+
+	MethodBind *method = ClassDB::get_method(get_class_name(), p_method);
+
+	if (method) {
+		method->call(this, p_args, p_argcount, r_error);
+	} else {
+		r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
+	}
+
+	return;
+}
+void Object::call_r(Variant &ret, const StringName &p_name, VARIANT_ARG_DECLARE) // C++ helper
+{
+	ret.clear();
+	VARIANT_ARGPTRS;
+
+	int argc = 0;
+	for (int i = 0; i < VARIANT_ARG_MAX; i++) {
+		if (argptr[i]->get_type() == Variant::NIL) {
+			break;
+		}
+		argc++;
+	}
+
+	Callable::CallError error;
+
+	call_r(ret, p_name, argptr, argc, error);
+	return;
+}
 void Object::notification(int p_notification, bool p_reversed) {
 	_notificationv(p_notification, p_reversed);
 
@@ -1544,8 +1644,16 @@ void Object::notify_property_list_changed() {
 	emit_signal(CoreStringNames::get_singleton()->property_list_changed);
 }
 
+String Object::_get_script_class() const {
+	Ref<Script> s = script;
+	if (s.is_valid()) {
+		return s->get_script_class_name();
+	}
+	return get_class_name();
+}
 void Object::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_class"), &Object::get_class);
+	ClassDB::bind_method(D_METHOD("get_script_class"), &Object::get_script_class);
 	ClassDB::bind_method(D_METHOD("is_class", "class"), &Object::is_class);
 	ClassDB::bind_method(D_METHOD("set", "property", "value"), &Object::_set_bind);
 	ClassDB::bind_method(D_METHOD("get", "property"), &Object::_get_bind);
@@ -1835,6 +1943,14 @@ bool Object::has_instance_binding(void *p_token) {
 }
 
 void Object::_construct_object(bool p_reference) {
+	_block_signals = false;
+	_can_translate = true;
+	_emitting = false;
+	type_is_reference = false;
+#ifdef TOOLS_ENABLED
+	_edited = false;
+#endif
+
 	type_is_reference = p_reference;
 	_instance_id = ObjectDB::add_instance(this);
 

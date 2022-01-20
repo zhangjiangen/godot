@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -210,7 +210,7 @@ void AudioStream::_bind_methods() {
 
 Ref<AudioStreamPlayback> AudioStreamMicrophone::instance_playback() {
 	Ref<AudioStreamPlaybackMicrophone> playback;
-	playback.instantiate();
+	New_instantiate(playback);
 
 	playbacks.insert(playback.ptr());
 
@@ -377,7 +377,7 @@ float AudioStreamRandomPitch::get_random_pitch() const {
 
 Ref<AudioStreamPlayback> AudioStreamRandomPitch::instance_playback() {
 	Ref<AudioStreamPlaybackRandomPitch> playback;
-	playback.instantiate();
+	New_instantiate(playback);
 	if (audio_stream.is_valid()) {
 		playback->playback = audio_stream->instance_playback();
 	}

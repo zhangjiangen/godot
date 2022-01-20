@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -1548,7 +1548,9 @@ void CodeTextEditor::set_error_pos(int p_line, int p_column) {
 
 void CodeTextEditor::goto_error() {
 	if (!error->get_text().is_empty()) {
-		text_editor->unfold_line(error_line);
+		if (text_editor->get_line_count() != error_line) {
+			text_editor->unfold_line(error_line);
+		}
 		text_editor->set_caret_line(error_line);
 		text_editor->set_caret_column(error_column);
 		text_editor->center_viewport_to_caret();

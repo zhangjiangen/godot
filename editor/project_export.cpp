@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -265,10 +265,25 @@ void ProjectExportDialog::_edit_preset(int p_index) {
 			export_templates_error->hide();
 		}
 
+		export_warning->hide();
 		export_button->set_disabled(true);
 		get_ok_button()->set_disabled(true);
-
 	} else {
+		if (error != String()) {
+			Vector<String> items = error.split("\n", false);
+			error = "";
+			for (int i = 0; i < items.size(); i++) {
+				if (i > 0) {
+					error += "\n";
+				}
+				error += " - " + items[i];
+			}
+			export_warning->set_text(error);
+			export_warning->show();
+		} else {
+			export_warning->hide();
+		}
+
 		export_error->hide();
 		export_templates_error->hide();
 		export_button->set_disabled(false);
@@ -1246,6 +1261,11 @@ ProjectExportDialog::ProjectExportDialog() {
 	main_vb->add_child(export_error);
 	export_error->hide();
 	export_error->add_theme_color_override("font_color", EditorNode::get_singleton()->get_gui_base()->get_theme_color(SNAME("error_color"), SNAME("Editor")));
+
+	export_warning = memnew(Label);
+	main_vb->add_child(export_warning);
+	export_warning->hide();
+	export_warning->add_theme_color_override("font_color", EditorNode::get_singleton()->get_gui_base()->get_theme_color(SNAME("warning_color"), SNAME("Editor")));
 
 	export_templates_error = memnew(HBoxContainer);
 	main_vb->add_child(export_templates_error);

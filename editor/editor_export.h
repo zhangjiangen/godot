@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -245,7 +245,7 @@ public:
 	virtual String get_os_name() const = 0;
 	virtual String get_name() const = 0;
 	virtual Ref<Texture2D> get_logo() const = 0;
-
+	String test_etc2() const;
 	Error export_project_files(const Ref<EditorExportPreset> &p_preset, EditorExportSaveFunction p_func, void *p_udata, EditorExportSaveSharedObject p_so_func = nullptr);
 
 	Error save_pack(const Ref<EditorExportPreset> &p_preset, const String &p_path, Vector<SharedObject> *p_so_files = nullptr, bool p_embed = false, int64_t *r_embedded_start = nullptr, int64_t *r_embedded_size = nullptr);
@@ -269,8 +269,6 @@ public:
 	virtual Error run(const Ref<EditorExportPreset> &p_preset, int p_device, int p_debug_flags) { return OK; }
 	virtual Ref<Texture2D> get_run_icon() const { return get_logo(); }
 
-	String test_etc2() const; //generic test for etc2 since most platforms use it
-	String test_etc2_or_pvrtc_or_astc() const; // test for etc2 or pvrtc or astc support for iOS
 	virtual bool can_export(const Ref<EditorExportPreset> &p_preset, String &r_error, bool &r_missing_templates) const = 0;
 
 	virtual List<String> get_binary_extensions(const Ref<EditorExportPreset> &p_preset) const = 0;
@@ -308,6 +306,8 @@ class EditorExportPlugin : public RefCounted {
 	Vector<String> ios_bundle_files;
 	String ios_cpp_code;
 
+	Vector<String> osx_plugin_files;
+
 	_FORCE_INLINE_ void _clear() {
 		shared_objects.clear();
 		extra_files.clear();
@@ -321,6 +321,7 @@ class EditorExportPlugin : public RefCounted {
 		ios_plist_content = "";
 		ios_linker_flags = "";
 		ios_cpp_code = "";
+		osx_plugin_files.clear();
 	}
 
 	void _export_file_script(const String &p_path, const String &p_type, const Vector<String> &p_features);
@@ -341,6 +342,7 @@ protected:
 	void add_ios_linker_flags(const String &p_flags);
 	void add_ios_bundle_file(const String &p_path);
 	void add_ios_cpp_code(const String &p_code);
+	void add_osx_plugin_file(const String &p_path);
 
 	void skip();
 
@@ -361,6 +363,7 @@ public:
 	String get_ios_linker_flags() const;
 	Vector<String> get_ios_bundle_files() const;
 	String get_ios_cpp_code() const;
+	const Vector<String> &get_osx_plugin_files() const;
 
 	EditorExportPlugin();
 };

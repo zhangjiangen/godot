@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -331,7 +331,7 @@ void CryptoMbedTLS::load_default_certificates(String p_path) {
 
 Ref<CryptoKey> CryptoMbedTLS::generate_rsa(int p_bytes) {
 	Ref<CryptoKeyMbedTLS> out;
-	out.instantiate();
+	New_instantiate(out);
 	int ret = mbedtls_pk_setup(&(out->pkey), mbedtls_pk_info_from_type(MBEDTLS_PK_RSA));
 	ERR_FAIL_COND_V(ret != 0, nullptr);
 	ret = mbedtls_rsa_gen_key(mbedtls_pk_rsa(out->pkey), mbedtls_ctr_drbg_random, &ctr_drbg, p_bytes, 65537);
@@ -373,7 +373,7 @@ Ref<X509Certificate> CryptoMbedTLS::generate_self_signed_certificate(Ref<CryptoK
 	buf[4095] = '\0'; // Make sure strlen can't fail.
 
 	Ref<X509CertificateMbedTLS> out;
-	out.instantiate();
+	New_instantiate(out);
 	out->load_from_memory(buf, strlen((char *)buf) + 1); // Use strlen to find correct output size.
 	return out;
 }

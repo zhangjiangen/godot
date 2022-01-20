@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -114,7 +114,7 @@ Ref<ArrayMesh> Occluder3D::get_debug_mesh() const {
 	arrays[Mesh::ARRAY_VERTEX] = vertices;
 	arrays[Mesh::ARRAY_INDEX] = indices;
 
-	debug_mesh.instantiate();
+	New_instantiate(debug_mesh);
 	debug_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
 	return debug_mesh;
 }
@@ -310,7 +310,7 @@ OccluderInstance3D::BakeError OccluderInstance3D::bake(Node *p_from_node, String
 	if (get_occluder().is_valid()) {
 		occ = get_occluder();
 	} else {
-		occ.instantiate();
+		New_instantiate(occ);
 		occ->set_path(p_occluder_path);
 	}
 

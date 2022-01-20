@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -70,6 +70,7 @@ struct _IP_ResolverPrivate {
 		return IP::RESOLVER_INVALID_ID;
 	}
 
+	HashMap<String, List<IPAddress>> cache;
 	Mutex mutex;
 	Semaphore sem;
 
@@ -111,8 +112,6 @@ struct _IP_ResolverPrivate {
 			ipr->resolve_queues();
 		}
 	}
-
-	HashMap<String, List<IPAddress>> cache;
 
 	static String get_cache_key(String p_hostname, IP::Type p_type) {
 		return itos(p_type) + p_hostname;

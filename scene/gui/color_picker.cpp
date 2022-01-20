@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -105,7 +105,7 @@ Ref<Shader> ColorPicker::wheel_shader;
 Ref<Shader> ColorPicker::circle_shader;
 
 void ColorPicker::init_shaders() {
-	wheel_shader.instantiate();
+	New_instantiate(wheel_shader);
 	wheel_shader->set_code(R"(
 // ColorPicker wheel shader.
 
@@ -129,7 +129,7 @@ void fragment() {
 }
 )");
 
-	circle_shader.instantiate();
+	New_instantiate(circle_shader);
 	circle_shader->set_code(R"(
 // ColorPicker circle shader.
 
@@ -1240,9 +1240,9 @@ ColorPicker::ColorPicker() :
 	wheel_edit->set_v_size_flags(SIZE_EXPAND_FILL);
 	hb_edit->add_child(wheel_edit);
 
-	wheel_mat.instantiate();
+	New_instantiate(wheel_mat);
 	wheel_mat->set_shader(wheel_shader);
-	circle_mat.instantiate();
+	New_instantiate(circle_mat);
 	circle_mat->set_shader(circle_shader);
 
 	wheel_margin->add_theme_constant_override("margin_bottom", 8);

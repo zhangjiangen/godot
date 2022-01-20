@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -156,7 +156,7 @@ Error RDShaderFile::parse_versions_from_text(const String &p_text, const String 
 	}
 
 	Ref<RDShaderFile> shader_file;
-	shader_file.instantiate();
+	New_instantiate(shader_file);
 
 	if (base_error.is_empty()) {
 		if (stage_found[RD::SHADER_STAGE_COMPUTE] && stages_found > 1) {
@@ -173,7 +173,7 @@ Error RDShaderFile::parse_versions_from_text(const String &p_text, const String 
 
 		for (const KeyValue<StringName, String> &E : version_texts) {
 			Ref<RDShaderSPIRV> bytecode;
-			bytecode.instantiate();
+			New_instantiate(bytecode);
 
 			for (int i = 0; i < RD::SHADER_STAGE_MAX; i++) {
 				String code = stage_code[i];

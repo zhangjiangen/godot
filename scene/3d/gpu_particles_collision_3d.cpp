@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -489,7 +489,7 @@ Ref<Image> GPUParticlesCollisionSDF3D::bake() {
 	_compute_sdf(&params);
 
 	Ref<Image> ret;
-	ret.instantiate();
+	New_instantiate(ret);
 	ret->create(sdf_size.x, sdf_size.y * sdf_size.z, false, Image::FORMAT_RF, data);
 	ret->convert(Image::FORMAT_RH); //convert to half, save space
 	ret->set_meta("depth", sdf_size.z); //hack, make sure to add to the docs of this function

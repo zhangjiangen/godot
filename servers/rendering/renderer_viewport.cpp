@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -167,8 +167,8 @@ void RendererViewport::_draw_3d(Viewport *p_viewport) {
 		}
 	}
 
-	float screen_lod_threshold = p_viewport->lod_threshold / float(p_viewport->size.width);
-	RSG::scene->render_camera(p_viewport->render_buffers, p_viewport->camera, p_viewport->scenario, p_viewport->self, p_viewport->internal_size, screen_lod_threshold, p_viewport->shadow_atlas, xr_interface, &p_viewport->render_info);
+	float screen_mesh_lod_threshold = p_viewport->mesh_lod_threshold / float(p_viewport->size.width);
+	RSG::scene->render_camera(p_viewport->render_buffers, p_viewport->camera, p_viewport->scenario, p_viewport->self, p_viewport->internal_size, screen_mesh_lod_threshold, p_viewport->shadow_atlas, xr_interface, &p_viewport->render_info);
 
 	RENDER_TIMESTAMP("<End Rendering 3D Scene");
 }
@@ -582,6 +582,21 @@ void RendererViewport::draw_viewports() {
 
 		bool visible = vp->viewport_to_screen_rect != Rect2();
 
+		if (vp->use_xr && xr_interface.is_valid()) {
+			visible = true; // XR viewport is always visible regardless of update mode, output is sent to HMD.
+
+			// Override our size, make sure it matches our required size and is created as a stereo target
+			Size2 xr_size = xr_interface->get_render_target_size();
+
+			// Would have been nice if we could call viewport_set_size here,
+			// but alas that takes our RID and we now have our pointer,
+			// also we only check if view_count changes in render_target_set_size so we need to call that for this to reliably change
+			vp->occlusion_buffer_dirty = vp->occlusion_buffer_dirty || (vp->size != xr_size);
+			vp->size = xr_size;
+			uint32_t view_count = xr_interface->get_view_count();
+			RSG::storage->render_target_set_size(vp->render_target, vp->size.x, vp->size.y, view_count);
+		}
+
 		if (vp->update_mode == RS::VIEWPORT_UPDATE_ALWAYS || vp->update_mode == RS::VIEWPORT_UPDATE_ONCE) {
 			visible = true;
 		}
@@ -619,11 +634,6 @@ void RendererViewport::draw_viewports() {
 
 		RSG::storage->render_target_set_as_unused(vp->render_target);
 		if (vp->use_xr && xr_interface.is_valid()) {
-			// override our size, make sure it matches our required size and is created as a stereo target
-			vp->size = xr_interface->get_render_target_size();
-			uint32_t view_count = xr_interface->get_view_count();
-			RSG::storage->render_target_set_size(vp->render_target, vp->internal_size.x, vp->internal_size.y, view_count);
-
 			// check for an external texture destination (disabled for now, not yet supported)
 			// RSG::storage->render_target_set_external_texture(vp->render_target, xr_interface->get_external_texture_for_eye(leftOrMono));
 			RSG::storage->render_target_set_external_texture(vp->render_target, 0);
@@ -843,7 +853,7 @@ void RendererViewport::viewport_attach_to_screen(RID p_viewport, const Rect2 &p_
 		// if render_direct_to_screen was used, reset size and position
 		if (RSG::rasterizer->is_low_end() && viewport->viewport_render_direct_to_screen) {
 			RSG::storage->render_target_set_position(viewport->render_target, 0, 0);
-			RSG::storage->render_target_set_size(viewport->render_target, viewport->internal_size.x, viewport->internal_size.y, viewport->get_view_count());
+			RSG::storage->render_target_set_size(viewport->render_target, viewport->size.x, viewport->size.y, viewport->get_view_count());
 		}
 
 		viewport->viewport_to_screen_rect = Rect2();
@@ -1084,11 +1094,11 @@ void RendererViewport::viewport_set_occlusion_culling_build_quality(RS::Viewport
 	RendererSceneOcclusionCull::get_singleton()->set_build_quality(p_quality);
 }
 
-void RendererViewport::viewport_set_lod_threshold(RID p_viewport, float p_pixels) {
+void RendererViewport::viewport_set_mesh_lod_threshold(RID p_viewport, float p_pixels) {
 	Viewport *viewport = viewport_owner.get_or_null(p_viewport);
 	ERR_FAIL_COND(!viewport);
 
-	viewport->lod_threshold = p_pixels;
+	viewport->mesh_lod_threshold = p_pixels;
 }
 
 int RendererViewport::viewport_get_render_info(RID p_viewport, RS::ViewportRenderInfoType p_type, RS::ViewportRenderInfo p_info) {

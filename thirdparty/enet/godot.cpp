@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -173,7 +173,7 @@ public:
 		verify = p_verify;
 		for_hostname = p_for_hostname;
 		cert = p_cert;
-		udp.instantiate();
+		New_instantiate(udp);
 		dtls = Ref<PacketPeerDTLS>(PacketPeerDTLS::create());
 		if (p_base->bound) {
 			uint16_t port;
@@ -265,7 +265,7 @@ class ENetDTLSServer : public ENetGodotSocket {
 
 public:
 	ENetDTLSServer(ENetUDP *p_base, Ref<CryptoKey> p_key, Ref<X509Certificate> p_cert) {
-		udp_server.instantiate();
+		New_instantiate(udp_server);
 		if (p_base->bound) {
 			uint16_t port;
 			p_base->get_socket_address(&local_address, &port);
@@ -543,7 +543,7 @@ int enet_socket_receive(ENetSocket socket, ENetAddress *address, ENetBuffer *buf
 	return read;
 }
 
-int enet_socket_get_address (ENetSocket socket, ENetAddress * address) {
+int enet_socket_get_address(ENetSocket socket, ENetAddress *address) {
 	IPAddress ip;
 	uint16_t port;
 	ENetGodotSocket *sock = (ENetGodotSocket *)socket;

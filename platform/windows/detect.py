@@ -64,12 +64,9 @@ def get_opts():
         # XP support dropped after EOL due to missing API for IPv6 and other issues
         # Vista support dropped after EOL due to GH-10243
         ("target_win_version", "Targeted Windows version, >= 0x0601 (Windows 7)", "0x0601"),
-        BoolVariable(
-            "debug_symbols", "Add debugging symbols to release/release_debug builds", True),
-        EnumVariable("windows_subsystem", "Windows subsystem",
-                     "default", ("default", "console", "gui")),
-        BoolVariable("separate_debug_symbols",
-                     "Create a separate file containing debugging symbols", False),
+        BoolVariable("debug_symbols", "Add debugging symbols to release/release_debug builds", True),
+        EnumVariable("windows_subsystem", "Windows subsystem", "gui", ("gui", "console")),
+        BoolVariable("separate_debug_symbols", "Create a separate file containing debugging symbols", False),
         ("msvc_version", "MSVC version to use. Ignored if VCINSTALLDIR is set in shell env.", None),
         BoolVariable(
             "use_mingw", "Use the Mingw compiler, even if MSVC is installed.", False),
@@ -187,15 +184,6 @@ def configure_msvc(env, manual_msvc_config):
     """Configure env to work with MSVC"""
 
     # Build type
-
-    if env["tests"]:
-        env["windows_subsystem"] = "console"
-    elif env["windows_subsystem"] == "default":
-        # Default means we use console for debug, gui for release.
-        if "debug" in env["target"]:
-            env["windows_subsystem"] = "console"
-        else:
-            env["windows_subsystem"] = "gui"
 
     if env["target"] == "release":
         if env["optimize"] == "speed":  # optimize for speed (default)
@@ -336,15 +324,6 @@ def configure_mingw(env):
     env.use_windows_spawn_fix()
 
     # Build type
-
-    if env["tests"]:
-        env["windows_subsystem"] = "console"
-    elif env["windows_subsystem"] == "default":
-        # Default means we use console for debug, gui for release.
-        if "debug" in env["target"]:
-            env["windows_subsystem"] = "console"
-        else:
-            env["windows_subsystem"] = "gui"
 
     if env["target"] == "release":
         env.Append(CCFLAGS=["-msse2"])

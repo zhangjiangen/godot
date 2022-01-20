@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -205,19 +205,19 @@ public:
 	}
 
 	_FORCE_INLINE_ static void init_transform2d(Variant *v) {
-		v->_data._transform2d = memnew(Transform2D);
+		v->_data._transform2d = memnew_allocator(Transform2D, DefaultAllocator);
 		v->type = Variant::TRANSFORM2D;
 	}
 	_FORCE_INLINE_ static void init_aabb(Variant *v) {
-		v->_data._aabb = memnew(AABB);
+		v->_data._aabb = memnew_allocator(AABB, DefaultAllocator);
 		v->type = Variant::AABB;
 	}
 	_FORCE_INLINE_ static void init_basis(Variant *v) {
-		v->_data._basis = memnew(Basis);
+		v->_data._basis = memnew_allocator(Basis, DefaultAllocator);
 		v->type = Variant::BASIS;
 	}
 	_FORCE_INLINE_ static void init_transform(Variant *v) {
-		v->_data._transform3d = memnew(Transform3D);
+		v->_data._transform3d = memnew_allocator(Transform3D, DefaultAllocator);
 		v->type = Variant::TRANSFORM3D;
 	}
 	_FORCE_INLINE_ static void init_string_name(Variant *v) {

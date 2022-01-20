@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -73,7 +73,7 @@ Array EditorSyntaxHighlighter::_get_supported_languages() const {
 
 Ref<EditorSyntaxHighlighter> EditorSyntaxHighlighter::_create() const {
 	Ref<EditorSyntaxHighlighter> syntax_highlighter;
-	syntax_highlighter.instantiate();
+	New_instantiate(syntax_highlighter);
 	if (get_script_instance()) {
 		syntax_highlighter->set_script(get_script_instance()->get_script());
 	}
@@ -196,7 +196,7 @@ void EditorStandardSyntaxHighlighter::_update_cache() {
 
 Ref<EditorSyntaxHighlighter> EditorStandardSyntaxHighlighter::_create() const {
 	Ref<EditorStandardSyntaxHighlighter> syntax_highlighter;
-	syntax_highlighter.instantiate();
+	New_instantiate(syntax_highlighter);
 	return syntax_highlighter;
 }
 
@@ -204,7 +204,7 @@ Ref<EditorSyntaxHighlighter> EditorStandardSyntaxHighlighter::_create() const {
 
 Ref<EditorSyntaxHighlighter> EditorPlainTextSyntaxHighlighter::_create() const {
 	Ref<EditorPlainTextSyntaxHighlighter> syntax_highlighter;
-	syntax_highlighter.instantiate();
+	New_instantiate(syntax_highlighter);
 	return syntax_highlighter;
 }
 
@@ -1771,6 +1771,7 @@ struct _ScriptEditorItemData {
 	String name;
 	String sort_key;
 	Ref<Texture2D> icon;
+	bool tool = false;
 	int index = 0;
 	String tooltip;
 	bool used = false;
@@ -1894,6 +1895,7 @@ void ScriptEditor::_update_script_colors() {
 
 	int hist_size = EditorSettings::get_singleton()->get("text_editor/script_list/script_temperature_history_size");
 	Color hot_color = get_theme_color(SNAME("accent_color"), SNAME("Editor"));
+	hot_color.set_s(hot_color.get_s() * 0.9);
 	Color cold_color = get_theme_color(SNAME("font_color"), SNAME("Editor"));
 
 	for (int i = 0; i < script_list->get_item_count(); i++) {
@@ -1953,6 +1955,7 @@ void ScriptEditor::_update_script_names() {
 				se->set_meta("_edit_res_path", path);
 			}
 			String name = se->get_name();
+			Ref<Script> scr = se->get_edited_resource();
 
 			_ScriptEditorItemData sd;
 			sd.icon = icon;
@@ -1962,6 +1965,9 @@ void ScriptEditor::_update_script_names() {
 			sd.used = used.has(se->get_edited_resource());
 			sd.category = 0;
 			sd.ref = se;
+			if (scr.is_valid()) {
+				sd.tool = scr->is_tool();
+			}
 
 			switch (sort_by) {
 				case SORT_BY_NAME: {
@@ -2081,8 +2087,14 @@ void ScriptEditor::_update_script_names() {
 		}
 	}
 
+	Color tool_color = get_theme_color(SNAME("accent_color"), SNAME("Editor"));
+	tool_color.set_s(tool_color.get_s() * 1.5);
 	for (int i = 0; i < sedata_filtered.size(); i++) {
 		script_list->add_item(sedata_filtered[i].name, sedata_filtered[i].icon);
+		if (sedata_filtered[i].tool) {
+			script_list->set_item_icon_modulate(script_list->get_item_count() - 1, tool_color);
+		}
+
 		int index = script_list->get_item_count() - 1;
 		script_list->set_item_tooltip(index, sedata_filtered[i].tooltip);
 		script_list->set_item_metadata(index, sedata_filtered[i].index); /* Saving as metadata the script's index in the tab container and not the filtered one */
@@ -3564,7 +3576,7 @@ void ScriptEditor::_bind_methods() {
 ScriptEditor::ScriptEditor(EditorNode *p_editor) {
 	current_theme = "";
 
-	script_editor_cache.instantiate();
+	New_instantiate(script_editor_cache);
 	script_editor_cache->load(EditorSettings::get_singleton()->get_project_settings_dir().plus_file("script_editor_cache.cfg"));
 
 	completion_cache = memnew(EditorScriptCodeCompletionCache);

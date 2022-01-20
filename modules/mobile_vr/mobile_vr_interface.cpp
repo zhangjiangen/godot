@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -332,7 +332,7 @@ bool MobileVRInterface::initialize() {
 		head_transform.origin = Vector3(0.0, eye_height, 0.0);
 
 		// we must create a tracker for our head
-		head.instantiate();
+		New_instantiate(head);
 		head->set_tracker_type(XRServer::TRACKER_HEAD);
 		head->set_tracker_name("head");
 		head->set_tracker_desc("Players head");

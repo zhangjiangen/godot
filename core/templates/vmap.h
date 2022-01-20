@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -114,6 +114,13 @@ private:
 	}
 
 public:
+	const char *owenr_source_file = "vmap.h";
+	int owenr_file_line = 200;
+	void set_debug_file_info(const char *file_name, int line) {
+		owenr_source_file = file_name;
+		owenr_file_line = line;
+		_cowdata.set_debug_file_info(file_name, line);
+	}
 	int insert(const T &p_key, const V &p_val) {
 		bool exact;
 		int pos = _find(p_key, exact);
@@ -190,8 +197,13 @@ public:
 		return _cowdata.get_m(pos).value;
 	}
 
-	_FORCE_INLINE_ VMap() {}
-	_FORCE_INLINE_ VMap(const VMap &p_from) { _cowdata._ref(p_from._cowdata); }
+	_FORCE_INLINE_ VMap() {
+		_cowdata.set_debug_file_info(owenr_source_file, owenr_file_line);
+	}
+	_FORCE_INLINE_ VMap(const VMap &p_from) {
+		_cowdata.set_debug_file_info(owenr_source_file, owenr_file_line);
+		_cowdata._ref(p_from._cowdata);
+	}
 
 	inline void operator=(const VMap &p_from) {
 		_cowdata._ref(p_from._cowdata);

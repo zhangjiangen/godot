@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -192,7 +192,7 @@ private:
 	// These are temporary buffers on CPU memory that hold
 	// the information until the CPU fetches it and places it
 	// either on GPU buffers, or images (textures). It ensures
-	// updates are properly synchronized with whathever the
+	// updates are properly synchronized with whatever the
 	// GPU is doing.
 	//
 	// The logic here is as follows, only 3 of these
@@ -659,6 +659,8 @@ private:
 		Vector<SpecializationConstant> specialization_constants;
 		VkPipelineLayout pipeline_layout = VK_NULL_HANDLE;
 		String name; //used for debug
+		// 临时变量
+		LocalVector<VkWriteDescriptorSet> writes;
 	};
 
 	String _shader_uniform_debug(RID p_shader, int p_set = -1);
@@ -759,7 +761,7 @@ private:
 			RID texture;
 		};
 
-		LocalVector<AttachableTexture> attachable_textures; //used for validation
+		Vector<AttachableTexture> attachable_textures; //used for validation
 		Vector<Texture *> mutable_sampled_textures; //used for layout change
 		Vector<Texture *> mutable_storage_textures; //used for layout change
 		UniformSetInvalidatedCallback invalidated_callback = nullptr;
@@ -1056,7 +1058,7 @@ public:
 	virtual RID texture_create(const TextureFormat &p_format, const TextureView &p_view, const Vector<Vector<uint8_t>> &p_data = Vector<Vector<uint8_t>>());
 	virtual RID texture_create_shared(const TextureView &p_view, RID p_with_texture, bool p_is_only_sample);
 
-	virtual RID texture_create_shared_from_slice(const TextureView &p_view, RID p_with_texture, uint32_t p_layer, uint32_t p_mipmap, TextureSliceType p_slice_type = TEXTURE_SLICE_2D);
+	virtual RID texture_create_shared_from_slice(const TextureView &p_view, RID p_with_texture, uint32_t p_layer, uint32_t p_mipmap, uint32_t p_mipmaps = 1, TextureSliceType p_slice_type = TEXTURE_SLICE_2D);
 	virtual Error texture_update(RID p_texture, uint32_t p_layer, const Vector<uint8_t> &p_data, uint32_t p_post_barrier = BARRIER_MASK_ALL);
 	virtual Vector<uint8_t> texture_get_data(RID p_texture, uint32_t p_layer);
 
@@ -1245,6 +1247,7 @@ public:
 
 	virtual String get_device_vendor_name() const;
 	virtual String get_device_name() const;
+	virtual RenderingDevice::DeviceType get_device_type() const;
 	virtual String get_device_pipeline_cache_uuid() const;
 
 	virtual uint64_t get_driver_resource(DriverResource p_resource, RID p_rid = RID(), uint64_t p_index = 0);

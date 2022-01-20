@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -238,10 +238,6 @@ void ScriptTextEditor::_show_warnings_panel(bool p_show) {
 void ScriptTextEditor::_warning_clicked(Variant p_line) {
 	if (p_line.get_type() == Variant::INT) {
 		goto_line_centered(p_line.operator int64_t());
-	} else if (p_line.get_type() == Variant::DICTIONARY) {
-		Dictionary meta = p_line.operator Dictionary();
-		code_editor->get_text_editor()->insert_line_at(meta["line"].operator int64_t() - 1, "# warning-ignore:" + meta["code"].operator String());
-		_validate_script();
 	}
 }
 
@@ -396,8 +392,17 @@ String ScriptTextEditor::get_name() {
 }
 
 Ref<Texture2D> ScriptTextEditor::get_theme_icon() {
-	if (get_parent_control() && get_parent_control()->has_theme_icon(script->get_class(), "EditorIcons")) {
-		return get_parent_control()->get_theme_icon(script->get_class(), "EditorIcons");
+	if (get_parent_control()) {
+		String icon_name = script->get_class();
+		if (script->is_built_in()) {
+			icon_name += "Internal";
+		}
+
+		if (get_parent_control()->has_theme_icon(icon_name, "EditorIcons")) {
+			return get_parent_control()->get_theme_icon(icon_name, "EditorIcons");
+		} else if (get_parent_control()->has_theme_icon(script->get_class(), "EditorIcons")) {
+			return get_parent_control()->get_theme_icon(script->get_class(), "EditorIcons");
+		}
 	}
 
 	return Ref<Texture2D>();
@@ -468,20 +473,8 @@ void ScriptTextEditor::_validate_script() {
 	}
 
 	// Add script warnings.
-	warnings_panel->push_table(3);
+	warnings_panel->push_table(2);
 	for (const ScriptLanguage::Warning &w : warnings) {
-		Dictionary ignore_meta;
-		ignore_meta["line"] = w.start_line;
-		ignore_meta["code"] = w.string_code.to_lower();
-		warnings_panel->push_cell();
-		warnings_panel->push_meta(ignore_meta);
-		warnings_panel->push_color(
-				warnings_panel->get_theme_color(SNAME("accent_color"), SNAME("Editor")).lerp(warnings_panel->get_theme_color(SNAME("mono_color"), SNAME("Editor")), 0.5));
-		warnings_panel->add_text(TTR("[Ignore]"));
-		warnings_panel->pop(); // Color.
-		warnings_panel->pop(); // Meta ignore.
-		warnings_panel->pop(); // Cell.
-
 		warnings_panel->push_cell();
 		warnings_panel->push_meta(w.start_line - 1);
 		warnings_panel->push_color(warnings_panel->get_theme_color(SNAME("warning_color"), SNAME("Editor")));
@@ -1647,8 +1640,8 @@ void ScriptTextEditor::_prepare_edit_menu() {
 
 void ScriptTextEditor::_make_context_menu(bool p_selection, bool p_color, bool p_foldable, bool p_open_docs, bool p_goto_definition, Vector2 p_pos) {
 	context_menu->clear();
-    // 增加自动完成上下文菜单
-    context_menu->add_shortcut(ED_GET_SHORTCUT("ui_text_completion_query"), EDIT_COMPLETE);
+	// 增加自动完成上下文菜单
+	context_menu->add_shortcut(ED_GET_SHORTCUT("ui_text_completion_query"), EDIT_COMPLETE);
 	context_menu->add_shortcut(ED_GET_SHORTCUT("ui_undo"), EDIT_UNDO);
 	context_menu->add_shortcut(ED_GET_SHORTCUT("ui_redo"), EDIT_REDO);
 
@@ -1897,11 +1890,11 @@ ScriptTextEditor::ScriptTextEditor() {
 	highlighter_menu->set_name("highlighter_menu");
 
 	Ref<EditorPlainTextSyntaxHighlighter> plain_highlighter;
-	plain_highlighter.instantiate();
+	New_instantiate(plain_highlighter);
 	add_syntax_highlighter(plain_highlighter);
 
 	Ref<EditorStandardSyntaxHighlighter> highlighter;
-	highlighter.instantiate();
+	New_instantiate(highlighter);
 	add_syntax_highlighter(highlighter);
 	set_syntax_highlighter(highlighter);
 

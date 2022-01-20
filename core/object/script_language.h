@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -160,6 +160,7 @@ public:
 	virtual bool is_placeholder_fallback_enabled() const { return false; }
 
 	virtual const Vector<Multiplayer::RPCConfig> get_rpc_methods() const = 0;
+	virtual String get_script_class_name() const = 0;
 
 	Script() {}
 };
@@ -176,8 +177,11 @@ public:
 
 	virtual void get_method_list(List<MethodInfo> *p_list) const = 0;
 	virtual bool has_method(const StringName &p_method) const = 0;
-	virtual Variant call(const StringName &p_method, VARIANT_ARG_LIST);
-	virtual Variant call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) = 0;
+	Variant call(const StringName &p_method, VARIANT_ARG_LIST);
+	Variant call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
+	virtual void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) = 0;
+	virtual void call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) = 0;
+
 	virtual void notification(int p_notification) = 0;
 	virtual String to_string(bool *r_valid) {
 		if (r_valid) {
@@ -227,6 +231,7 @@ struct ScriptCodeCompletionOption {
 	Color font_color;
 	RES icon;
 	Variant default_value;
+	Vector<Pair<int, int>> matches;
 
 	ScriptCodeCompletionOption() {}
 
@@ -274,13 +279,32 @@ public:
 		String message;
 	};
 
+	enum TemplateLocation {
+		TEMPLATE_BUILT_IN,
+		TEMPLATE_EDITOR,
+		TEMPLATE_PROJECT
+	};
+
+	struct ScriptTemplate {
+		String inherit = "Object";
+		String name;
+		String description;
+		String content;
+		int id = 0;
+		TemplateLocation origin = TemplateLocation::TEMPLATE_BUILT_IN;
+
+		String get_hash() const {
+			return itos(origin) + inherit + name;
+		}
+	};
+
 	void get_core_type_words(List<String> *p_core_type_words) const;
 	virtual void get_reserved_words(List<String> *p_words) const = 0;
 	virtual bool is_control_flow_keyword(String p_string) const = 0;
 	virtual void get_comment_delimiters(List<String> *p_delimiters) const = 0;
 	virtual void get_string_delimiters(List<String> *p_delimiters) const = 0;
-	virtual Ref<Script> get_template(const String &p_class_name, const String &p_base_class_name) const = 0;
-	virtual void make_template(const String &p_class_name, const String &p_base_class_name, Ref<Script> &p_script) {}
+	virtual Ref<Script> make_template(const String &p_template, const String &p_class_name, const String &p_base_class_name) const { return Ref<Script>(); }
+	virtual Vector<ScriptTemplate> get_built_in_templates(StringName p_object) { return Vector<ScriptTemplate>(); }
 	virtual bool is_using_templates() { return false; }
 	virtual bool validate(const String &p_script, const String &p_path = "", List<String> *r_functions = nullptr, List<ScriptError> *r_errors = nullptr, List<Warning> *r_warnings = nullptr, Set<int> *r_safe_lines = nullptr) const = 0;
 	virtual String validate_path(const String &p_path) const { return ""; }
@@ -399,11 +423,15 @@ public:
 
 	virtual void get_method_list(List<MethodInfo> *p_list) const;
 	virtual bool has_method(const StringName &p_method) const;
-	virtual Variant call(const StringName &p_method, VARIANT_ARG_LIST) { return Variant(); }
-	virtual Variant call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+
+	virtual void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
 		r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
-		return Variant();
+		ret.clear();
 	}
+	virtual void call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+		r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
+	}
+
 	virtual void notification(int p_notification) {}
 
 	virtual Ref<Script> get_script() const { return script; }

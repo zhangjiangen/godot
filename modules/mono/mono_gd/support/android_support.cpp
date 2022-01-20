@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -404,7 +404,7 @@ GD_PINVOKE_EXPORT int32_t _monodroid_get_android_api_level() {
 }
 
 GD_PINVOKE_EXPORT void monodroid_free(void *ptr) {
-	free(ptr);
+	memfree(ptr);
 }
 
 GD_PINVOKE_EXPORT int32_t monodroid_get_system_property(const char *p_name, char **r_value) {
@@ -414,7 +414,7 @@ GD_PINVOKE_EXPORT int32_t monodroid_get_system_property(const char *p_name, char
 
 	if (r_value) {
 		if (len >= 0) {
-			*r_value = (char *)malloc(len + 1);
+			*r_value = (char *)memalloc(len + 1);
 			ERR_FAIL_NULL_V_MSG(*r_value, -1, "Out of memory.");
 			memcpy(*r_value, prop_value_str, len);
 			(*r_value)[len] = '\0';
@@ -625,7 +625,7 @@ GD_PINVOKE_EXPORT int32_t _monodroid_get_dns_servers(void **r_dns_servers_array)
 			if (len > 0) {
 				dns_servers[dns_servers_count] = strndup(prop_value, (size_t)len); // freed by the BCL
 				dns_servers_count++;
-				free(prop_value);
+				memfree(prop_value);
 			}
 		}
 	} else {
@@ -635,7 +635,7 @@ GD_PINVOKE_EXPORT int32_t _monodroid_get_dns_servers(void **r_dns_servers_array)
 
 	if (dns_servers_count > 0) {
 		size_t ret_size = sizeof(char *) * (size_t)dns_servers_count;
-		*r_dns_servers_array = malloc(ret_size); // freed by the BCL
+		*r_dns_servers_array = memmalloc(ret_size); // freed by the BCL
 		ERR_FAIL_NULL_V_MSG(*r_dns_servers_array, -1, "Out of memory.");
 		memcpy(*r_dns_servers_array, dns_servers, ret_size);
 	}

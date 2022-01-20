@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -50,7 +50,7 @@ Size2 PopupMenu::_get_contents_minimum_size() const {
 	int hseparation = get_theme_constant(SNAME("hseparation"));
 
 	Size2 minsize = get_theme_stylebox(SNAME("panel"))->get_minimum_size(); // Accounts for margin in the margin container
-	minsize.x += scroll_container->get_v_scrollbar()->get_size().width * 2; // Adds a buffer so that the scrollbar does not render over the top of content
+	minsize.x += scroll_container->get_v_scroll_bar()->get_size().width * 2; // Adds a buffer so that the scrollbar does not render over the top of content
 
 	float max_w = 0.0;
 	float icon_w = 0.0;
@@ -343,11 +343,11 @@ void PopupMenu::gui_input(const Ref<InputEvent> &p_event) {
 
 	// Make an area which does not include v scrollbar, so that items are not activated when dragging scrollbar.
 	Rect2 item_clickable_area = scroll_container->get_rect();
-	if (scroll_container->get_v_scrollbar()->is_visible_in_tree()) {
+	if (scroll_container->get_v_scroll_bar()->is_visible_in_tree()) {
 		if (is_layout_rtl()) {
-			item_clickable_area.position.x += scroll_container->get_v_scrollbar()->get_size().width;
+			item_clickable_area.position.x += scroll_container->get_v_scroll_bar()->get_size().width;
 		} else {
-			item_clickable_area.size.width -= scroll_container->get_v_scrollbar()->get_size().width;
+			item_clickable_area.size.width -= scroll_container->get_v_scroll_bar()->get_size().width;
 		}
 	}
 
@@ -508,7 +508,7 @@ void PopupMenu::_draw_items() {
 	Color font_hover_color = get_theme_color(SNAME("font_hover_color"));
 	Color font_separator_color = get_theme_color(SNAME("font_separator_color"));
 
-	float scroll_width = scroll_container->get_v_scrollbar()->is_visible_in_tree() ? scroll_container->get_v_scrollbar()->get_size().width : 0;
+	float scroll_width = scroll_container->get_v_scroll_bar()->is_visible_in_tree() ? scroll_container->get_v_scroll_bar()->get_size().width : 0;
 	float display_width = control->get_size().width - scroll_width;
 
 	// Find the widest icon and whether any items have a checkbox, and store the offsets for each.
@@ -1269,13 +1269,28 @@ bool PopupMenu::is_item_shortcut_disabled(int p_idx) const {
 	return items[p_idx].shortcut_is_disabled;
 }
 
+void PopupMenu::set_current_index(int p_idx) {
+	ERR_FAIL_INDEX(p_idx, items.size());
+	mouse_over = p_idx;
+	_scroll_to_item(mouse_over);
+	control->update();
+}
+
 int PopupMenu::get_current_index() const {
 	return mouse_over;
 }
 
 void PopupMenu::set_item_count(int p_count) {
 	ERR_FAIL_COND(p_count < 0);
+	int prev_size = items.size();
 	items.resize(p_count);
+
+	if (prev_size < p_count) {
+		for (int i = prev_size; i < p_count; i++) {
+			items.write[i].id = i;
+		}
+	}
+
 	control->update();
 	child_controls_changed();
 	notify_property_list_changed();
@@ -1658,7 +1673,7 @@ void PopupMenu::_get_property_list(List<PropertyInfo> *p_list) const {
 		pi.usage &= ~(!is_item_checked(i) ? PROPERTY_USAGE_STORAGE : 0);
 		p_list->push_back(pi);
 
-		pi = PropertyInfo(Variant::INT, vformat("item_%d/id", i), PROPERTY_HINT_RANGE, "1,10,1,or_greater");
+		pi = PropertyInfo(Variant::INT, vformat("item_%d/id", i), PROPERTY_HINT_RANGE, "0,10,1,or_greater");
 		p_list->push_back(pi);
 
 		pi = PropertyInfo(Variant::BOOL, vformat("item_%d/disabled", i));

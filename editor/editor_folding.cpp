@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -50,7 +50,7 @@ Vector<String> EditorFolding::_get_unfolds(const Object *p_object) {
 
 void EditorFolding::save_resource_folding(const RES &p_resource, const String &p_path) {
 	Ref<ConfigFile> config;
-	config.instantiate();
+	New_instantiate(config);
 	Vector<String> unfolds = _get_unfolds(p_resource.ptr());
 	config->set_value("folding", "sections_unfolded", unfolds);
 
@@ -70,7 +70,7 @@ void EditorFolding::_set_unfolds(Object *p_object, const Vector<String> &p_unfol
 
 void EditorFolding::load_resource_folding(RES p_resource, const String &p_path) {
 	Ref<ConfigFile> config;
-	config.instantiate();
+	New_instantiate(config);
 
 	String file = p_path.get_file() + "-folding-" + p_path.md5_text() + ".cfg";
 	file = EditorSettings::get_singleton()->get_project_settings_dir().plus_file(file);
@@ -137,7 +137,7 @@ void EditorFolding::save_scene_folding(const Node *p_scene, const String &p_path
 	}
 
 	Ref<ConfigFile> config;
-	config.instantiate();
+	New_instantiate(config);
 
 	Array unfolds, res_unfolds;
 	Set<RES> resources;
@@ -155,7 +155,7 @@ void EditorFolding::save_scene_folding(const Node *p_scene, const String &p_path
 
 void EditorFolding::load_scene_folding(Node *p_scene, const String &p_path) {
 	Ref<ConfigFile> config;
-	config.instantiate();
+	New_instantiate(config);
 
 	String path = EditorSettings::get_singleton()->get_project_settings_dir();
 	String file = p_path.get_file() + "-folding-" + p_path.md5_text() + ".cfg";

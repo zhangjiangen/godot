@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -88,6 +88,7 @@ void EditorLog::_update_theme() {
 	copy_button->set_icon(get_theme_icon(SNAME("ActionCopy"), SNAME("EditorIcons")));
 	collapse_button->set_icon(get_theme_icon(SNAME("CombineLines"), SNAME("EditorIcons")));
 	show_search_button->set_icon(get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
+	search_box->set_right_icon(get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
 }
 
 void EditorLog::_notification(int p_what) {
@@ -119,7 +120,7 @@ void EditorLog::_start_state_save_timer() {
 
 void EditorLog::_save_state() {
 	Ref<ConfigFile> config;
-	config.instantiate();
+	New_instantiate(config);
 	// Load and amend existing config if it exists.
 	config->load(EditorSettings::get_singleton()->get_project_settings_dir().plus_file("editor_layout.cfg"));
 
@@ -138,7 +139,7 @@ void EditorLog::_load_state() {
 	is_loading_state = true;
 
 	Ref<ConfigFile> config;
-	config.instantiate();
+	New_instantiate(config);
 	config->load(EditorSettings::get_singleton()->get_project_settings_dir().plus_file("editor_layout.cfg"));
 
 	// Run the below code even if config->load returns an error, since we want the defaults to be set even if the file does not exist yet.
@@ -352,7 +353,6 @@ EditorLog::EditorLog() {
 	search_box = memnew(LineEdit);
 	search_box->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	search_box->set_placeholder(TTR("Filter messages"));
-	search_box->set_right_icon(get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
 	search_box->set_clear_button_enabled(true);
 	search_box->set_visible(true);
 	search_box->connect("text_changed", callable_mp(this, &EditorLog::_search_changed));
@@ -433,7 +433,7 @@ EditorLog::EditorLog() {
 	vb_right->add_child(editor_filter->toggle_button);
 	type_filter_map.insert(MSG_TYPE_EDITOR, editor_filter);
 
-	add_message(VERSION_FULL_NAME " (c) 2007-2021 Juan Linietsky, Ariel Manzur & Godot Contributors.");
+	add_message(VERSION_FULL_NAME " (c) 2007-2022 Juan Linietsky, Ariel Manzur & Godot Contributors.");
 
 	eh.errfunc = _error_handler;
 	eh.userdata = this;

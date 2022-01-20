@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -49,7 +49,7 @@ class Node : public Object {
 	OBJ_CATEGORY("Nodes");
 
 public:
-	enum ProcessMode {
+	enum ProcessMode : uint8_t {
 		PROCESS_MODE_INHERIT, // same as parent node
 		PROCESS_MODE_PAUSABLE, // process only if not paused
 		PROCESS_MODE_WHEN_PAUSED, // process only if paused
@@ -57,7 +57,7 @@ public:
 		PROCESS_MODE_DISABLED, // never process
 	};
 
-	enum DuplicateFlags {
+	enum DuplicateFlags : uint8_t {
 		DUPLICATE_SIGNALS = 1,
 		DUPLICATE_GROUPS = 2,
 		DUPLICATE_SCRIPTS = 4,
@@ -67,13 +67,13 @@ public:
 #endif
 	};
 
-	enum NameCasing {
+	enum NameCasing : uint8_t {
 		NAME_CASING_PASCAL_CASE,
 		NAME_CASING_CAMEL_CASE,
 		NAME_CASING_SNAKE_CASE
 	};
 
-	enum InternalMode {
+	enum InternalMode : uint8_t {
 		INTERNAL_MODE_DISABLED,
 		INTERNAL_MODE_FRONT,
 		INTERNAL_MODE_BACK,
@@ -103,18 +103,8 @@ private:
 		Node *parent = nullptr;
 		Node *owner = nullptr;
 		Vector<Node *> children;
-		int internal_children_front = 0;
-		int internal_children_back = 0;
-		int pos = -1;
-		int depth = -1;
-		int blocked = 0; // Safeguard that throws an error when attempting to modify the tree in a harmful way while being traversed.
-		// 排序权重
-		int sort_weight = 0;
 		StringName name;
 		SceneTree *tree = nullptr;
-		bool inside_tree = false;
-		bool ready_notified = false; // This is a small hack, so if a node is added during _ready() to the tree, it correctly gets the _ready() notification.
-		bool ready_first = true;
 #ifdef TOOLS_ENABLED
 		NodePath import_path; // Path used when imported, used by scene editors to keep tracking.
 #endif
@@ -123,36 +113,47 @@ private:
 		Viewport *viewport = nullptr;
 
 		Map<StringName, GroupData> grouped;
+		Vector<Multiplayer::RPCConfig> rpc_methods;
 		List<Node *>::Element *OW = nullptr; // Owned element.
 		List<Node *> owned;
 
-		ProcessMode process_mode = PROCESS_MODE_INHERIT;
 		Node *process_owner = nullptr;
+		int internal_children_front = 0;
+		int internal_children_back = 0;
+		int pos = -1;
+		int depth = -1;
+		int blocked = 0; // Safeguard that throws an error when attempting to modify the tree in a harmful way while being traversed.
+		// 排序权重
+		int sort_weight = 0;
 
 		int multiplayer_authority = 1; // Server by default.
-		Vector<Multiplayer::RPCConfig> rpc_methods;
-
-		// Variables used to properly sort the node when processing, ignored otherwise.
-		// TODO: Should move all the stuff below to bits.
-		bool physics_process = false;
-		bool process = false;
 		int process_priority = 0;
 
-		bool physics_process_internal = false;
-		bool process_internal = false;
-
-		bool input = false;
-		bool unhandled_input = false;
-		bool unhandled_key_input = false;
-
-		bool parent_owned = false;
-		bool in_constructor = true;
-		bool use_placeholder = false;
-
-		bool display_folded = false;
-		bool editable_instance = false;
-
 		mutable NodePath *path_cache = nullptr;
+
+		ProcessMode process_mode : 4;
+		bool inside_tree : 2;
+		bool ready_notified : 2; // This is a small hack, so if a node is added during _ready() to the tree, it correctly gets the _ready() notification.
+		bool ready_first : 2;
+		// Variables used to properly sort the node when processing, ignored otherwise.
+		// TODO: Should move all the stuff below to bits.
+		bool physics_process : 2;
+		bool process : 2;
+
+		bool physics_process_internal : 2;
+		bool process_internal : 2;
+
+		bool input : 2;
+		bool unhandled_input : 2;
+		bool unhandled_key_input : 2;
+
+		bool parent_owned : 2;
+		bool in_constructor : 2;
+		bool use_placeholder : 2;
+
+		bool display_folded : 2;
+		bool editable_instance : 2;
+		Data();
 
 	} data;
 
@@ -174,7 +175,6 @@ private:
 	void _propagate_ready();
 	void _propagate_exit_tree();
 	void _propagate_after_exit_tree();
-	void _propagate_validate_owner();
 	void _print_stray_nodes();
 	void _propagate_process_owner(Node *p_owner, int p_pause_notification, int p_enabled_notification);
 	Array _get_node_and_resource(const NodePath &p_path);
