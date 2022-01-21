@@ -5012,7 +5012,7 @@ struct _AnimMoveRestore {
 void AnimationTrackEditor::_clear_key_edit() {
 	if (key_edit) {
 		// If key edit is the object being inspected, remove it first.
-		if (EditorNode::get_singleton()->get_inspector()->get_edited_object() == key_edit) {
+		if (InspectorDock::get_inspector_singleton()->get_edited_object() == key_edit) {
 			EditorNode::get_singleton()->push_item(nullptr);
 		}
 
@@ -5022,7 +5022,7 @@ void AnimationTrackEditor::_clear_key_edit() {
 	}
 
 	if (multi_key_edit) {
-		if (EditorNode::get_singleton()->get_inspector()->get_edited_object() == multi_key_edit) {
+		if (InspectorDock::get_inspector_singleton()->get_edited_object() == multi_key_edit) {
 			EditorNode::get_singleton()->push_item(nullptr);
 		}
 
@@ -5700,16 +5700,16 @@ void AnimationTrackEditor::_edit_menu_pressed(int p_option) {
 				to_restore.push_back(amr);
 			}
 
-#define _NEW_POS(m_ofs) (((s > 0) ? m_ofs : from_t + (len - (m_ofs - from_t))) - pivot) * ABS(s) + from_t
+#define NEW_POS(m_ofs) (((s > 0) ? m_ofs : from_t + (len - (m_ofs - from_t))) - pivot) * ABS(s) + from_t
 			// 3 - Move the keys (re insert them).
 			for (Map<SelectedKey, KeyInfo>::Element *E = selection.back(); E; E = E->prev()) {
-				float newpos = _NEW_POS(E->get().pos);
+				float newpos = NEW_POS(E->get().pos);
 				undo_redo->add_do_method(animation.ptr(), "track_insert_key", E->key().track, newpos, animation->track_get_key_value(E->key().track, E->key().key), animation->track_get_key_transition(E->key().track, E->key().key));
 			}
 
 			// 4 - (Undo) Remove inserted keys.
 			for (Map<SelectedKey, KeyInfo>::Element *E = selection.back(); E; E = E->prev()) {
-				float newpos = _NEW_POS(E->get().pos);
+				float newpos = NEW_POS(E->get().pos);
 				undo_redo->add_undo_method(animation.ptr(), "track_remove_key_at_time", E->key().track, newpos);
 			}
 
@@ -5729,13 +5729,13 @@ void AnimationTrackEditor::_edit_menu_pressed(int p_option) {
 			// 7-reselect.
 			for (Map<SelectedKey, KeyInfo>::Element *E = selection.back(); E; E = E->prev()) {
 				float oldpos = E->get().pos;
-				float newpos = _NEW_POS(oldpos);
+				float newpos = NEW_POS(oldpos);
 				if (newpos >= 0) {
 					undo_redo->add_do_method(this, "_select_at_anim", animation, E->key().track, newpos);
 				}
 				undo_redo->add_undo_method(this, "_select_at_anim", animation, E->key().track, oldpos);
 			}
-#undef _NEW_POS
+#undef NEW_POS
 			undo_redo->commit_action();
 		} break;
 		case EDIT_DUPLICATE_SELECTION: {

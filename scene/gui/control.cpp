@@ -240,7 +240,7 @@ bool Control::_set(const StringName &p_name, const Variant &p_value) {
 		return false;
 	}
 
-	if (p_value.get_type() == Variant::NIL) {
+	if (p_value.get_type() == Variant::NIL || (p_value.get_type() == Variant::OBJECT && (Object *)p_value == nullptr)) {
 		if (name.begins_with("theme_override_icons/") || name.begins_with("custom_icons/")) {
 			String dname = name.get_slicec('/', 1);
 			if (data.icon_override.has(dname)) {
@@ -733,8 +733,10 @@ void Control::_notification(int p_notification) {
 		} break;
 		case NOTIFICATION_TRANSLATION_CHANGED:
 		case NOTIFICATION_LAYOUT_DIRECTION_CHANGED: {
-			data.is_rtl_dirty = true;
-			_size_changed();
+			if (is_inside_tree()) {
+				data.is_rtl_dirty = true;
+				_size_changed();
+			}
 		} break;
 	}
 }

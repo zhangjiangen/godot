@@ -1043,7 +1043,7 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 				if (node) {
 					node->set_scene_inherited_state(Ref<SceneState>());
 					scene_tree->update_tree();
-					EditorNode::get_singleton()->get_inspector()->update_tree();
+					InspectorDock::get_inspector_singleton()->update_tree();
 				}
 			}
 		} break;
@@ -2067,7 +2067,7 @@ void SceneTreeDock::_delete_confirm(bool p_cut) {
 	// Fixes the EditorHistory from still offering deleted notes
 	EditorHistory *editor_history = EditorNode::get_singleton()->get_editor_history();
 	editor_history->cleanup_history();
-	EditorNode::get_singleton()->get_inspector_dock()->call_void("_prepare_history");
+	InspectorDock::get_singleton()->call("_prepare_history");
 }
 
 void SceneTreeDock::_update_script_button() {
@@ -2809,15 +2809,9 @@ void SceneTreeDock::_tree_rmb(const Vector2 &p_menu_pos) {
 	menu->popup();
 }
 
-void SceneTreeDock::_open_tree_menu() {
-	menu->clear();
-
-	menu->add_check_item(TTR("Auto Expand to Selected"), TOOL_AUTO_EXPAND);
-	menu->set_item_checked(menu->get_item_idx_from_text(TTR("Auto Expand to Selected")), EditorSettings::get_singleton()->get("docks/scene_tree/auto_expand_to_selected"));
-
-	menu->reset_size();
-	menu->set_position(get_screen_position() + get_local_mouse_position());
-	menu->popup();
+void SceneTreeDock::_update_tree_menu() {
+	PopupMenu *tree_menu = button_tree_menu->get_popup();
+	tree_menu->set_item_checked(tree_menu->get_item_idx_from_text(TTR("Auto Expand to Selected")), EditorSettings::get_singleton()->get("docks/scene_tree/auto_expand_to_selected"));
 }
 
 void SceneTreeDock::_filter_changed(const String &p_filter) {
@@ -3220,7 +3214,7 @@ void SceneTreeDock::_create_remap_for_node(Node *p_node, Map<RES, RES> &r_remap)
 		}
 
 		Variant v = p_node->get(E.name);
-		if (v.is_ref()) {
+		if (v.is_ref_counted()) {
 			RES res = v;
 			if (res.is_valid()) {
 				if (!states_stack_ready) {
@@ -3258,7 +3252,7 @@ void SceneTreeDock::_create_remap_for_resource(RES p_resource, Map<RES, RES> &r_
 		}
 
 		Variant v = p_resource->get(E.name);
-		if (v.is_ref()) {
+		if (v.is_ref_counted()) {
 			RES res = v;
 			if (res.is_valid()) {
 				if (res->is_built_in() && !r_remap.has(res)) {
@@ -3370,10 +3364,14 @@ SceneTreeDock::SceneTreeDock(EditorNode *p_editor, Node *p_scene_root, EditorSel
 	filter_hbc->add_child(button_detach_script);
 	button_detach_script->hide();
 
-	button_tree_menu = memnew(Button);
+	button_tree_menu = memnew(MenuButton);
 	button_tree_menu->set_flat(true);
-	button_tree_menu->connect("pressed", callable_mp(this, &SceneTreeDock::_open_tree_menu));
+	button_tree_menu->connect("about_to_popup", callable_mp(this, &SceneTreeDock::_update_tree_menu));
 	filter_hbc->add_child(button_tree_menu);
+
+	PopupMenu *tree_menu = button_tree_menu->get_popup();
+	tree_menu->add_check_item(TTR("Auto Expand to Selected"), TOOL_AUTO_EXPAND);
+	tree_menu->connect("id_pressed", callable_mp(this, &SceneTreeDock::_tool_selected), make_binds(false));
 
 	button_hb = memnew(HBoxContainer);
 	vbc->add_child(button_hb);
