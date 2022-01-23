@@ -47,7 +47,7 @@ T collect_first(const Vector<VertexData<T>> *p_data, T p_fall_back) {
 }
 
 template <class T>
-HashMap<int, T> collect_all(const Vector<VertexData<T>> *p_data, HashMap<int, T> p_fall_back) {
+HashMap<int, T> collect_all(const Vector<VertexData<T>> *p_data, const HashMap<int, T>& p_fall_back) {
 	if (p_data->is_empty()) {
 		return p_fall_back;
 	}

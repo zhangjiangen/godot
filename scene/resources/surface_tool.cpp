@@ -633,7 +633,7 @@ void SurfaceTool::index() {
 		return; //already indexed
 	}
 
-	HashMap<Vertex, int, VertexHasher> indices;
+	HashMap<Vertex, int, VertexHasher> indices(__FILE__, __LINE__);
 	LocalVector<Vertex> old_vertex_array = vertex_array;
 	vertex_array.clear();
 
@@ -1062,7 +1062,7 @@ void SurfaceTool::generate_normals(bool p_flip) {
 
 	ERR_FAIL_COND((vertex_array.size() % 3) != 0);
 
-	HashMap<Vertex, Vector3, VertexHasher> vertex_hash;
+	HashMap<Vertex, Vector3, VertexHasher> vertex_hash(__FILE__, __LINE__);
 
 	for (uint32_t vi = 0; vi < vertex_array.size(); vi += 3) {
 		Vertex *v = &vertex_array[vi];

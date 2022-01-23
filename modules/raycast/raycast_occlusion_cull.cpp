@@ -589,6 +589,8 @@ void RaycastOcclusionCull::_init_embree() {
 }
 
 RaycastOcclusionCull::RaycastOcclusionCull() {
+	scenarios.set_debug_info(__FILE__, __LINE__);
+	buffers.set_debug_info(__FILE__, __LINE__);
 	raycast_singleton = this;
 	int default_quality = GLOBAL_GET("rendering/occlusion_culling/bvh_build_quality");
 	build_quality = RS::ViewportOcclusionCullingBuildQuality(default_quality);

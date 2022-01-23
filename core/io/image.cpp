@@ -2242,6 +2242,7 @@ void Image::create(const char **p_xpm) {
 	int line = 0;
 
 	HashMap<String, Color> colormap;
+	colormap.set_debug_info(__FILE__, __LINE__);
 	int colormap_size = 0;
 	uint32_t pixel_size = 0;
 	uint8_t *data_write = nullptr;

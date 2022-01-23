@@ -1374,6 +1374,7 @@ void CSharpLanguage::release_script_gchandle(MonoObject *p_expected_obj, MonoGCH
 }
 
 CSharpLanguage::CSharpLanguage() {
+	dotnet_script_lookup_map.set_debug_info(__FILE__, __LINE__);
 	ERR_FAIL_COND_MSG(singleton, "C# singleton already exist.");
 	singleton = this;
 }

@@ -105,13 +105,18 @@ private:
 	uint32_t hash_table_size = 0;
 	uint8_t hash_table_power = 0;
 	uint32_t elements = 0;
+	const char *file_name = nullptr;
+	int file_line = 0;
 
 	void make_hash_table() {
 		ERR_FAIL_COND(hash_table);
 
 		hash_table_power = MIN_HASH_TABLE_POWER;
 		hash_table_size = (uint32_t)1 << hash_table_power;
-		hash_table = memnew_arr(Element *, (size_t)hash_table_size);
+		if (file_name == nullptr)
+			hash_table = memnew_arr(Element *, ((uint64_t)hash_table_size));
+		else
+			hash_table = memnew_arr_template<Element *>((uint64_t)hash_table_size, file_name, file_line);
 
 		elements = 0;
 		for (int i = 0; i < (1 << MIN_HASH_TABLE_POWER); i++) {
@@ -156,7 +161,11 @@ private:
 			return;
 		}
 
-		Element **new_hash_table = memnew_arr(Element *, ((uint64_t)1 << new_hash_table_power));
+		Element **new_hash_table = nullptr;
+		if (file_name == nullptr)
+			new_hash_table = memnew_arr(Element *, ((uint64_t)1 << new_hash_table_power));
+		else
+			new_hash_table = memnew_arr_template<Element *>((uint64_t)1 << new_hash_table_power, file_name, file_line);
 		ERR_FAIL_COND_MSG(!new_hash_table, "Out of memory.");
 
 		for (int i = 0; i < (1 << new_hash_table_power); i++) {
@@ -277,7 +286,7 @@ public:
 	}
 
 	bool has(const TKey &p_key) const {
-		return getptr(p_key) != nullptr;
+		return get_element(p_key) != nullptr;
 	}
 
 	/**
@@ -554,11 +563,20 @@ public:
 			}
 		}
 	}
+	void set_debug_info(const char *fn, int line) {
+		file_name = fn;
+		file_line = line;
+	}
 
-	HashMap() {}
+	HashMap(const char *path = nullptr, int line = 0) {
+		file_name = path;
+		file_line = line;
+	}
 
 	HashMap(const HashMap &p_table) {
 		copy_from(p_table);
+		file_name = p_table.file_name;
+		file_line = p_table.file_line;
 	}
 
 	~HashMap() {

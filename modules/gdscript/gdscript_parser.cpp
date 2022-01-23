@@ -46,7 +46,7 @@
 #include "editor/editor_settings.h"
 #endif // TOOLS_ENABLED
 
-static HashMap<StringName, Variant::Type> builtin_types;
+static HashMap<StringName, Variant::Type> builtin_types(__FILE__, __LINE__);
 Variant::Type GDScriptParser::get_builtin_type(const StringName &p_type) {
 	if (builtin_types.is_empty()) {
 		builtin_types["bool"] = Variant::BOOL;
@@ -108,6 +108,7 @@ void GDScriptParser::get_annotation_list(List<MethodInfo> *r_annotations) const 
 }
 
 GDScriptParser::GDScriptParser() {
+	valid_annotations.set_debug_info(__FILE__, __LINE__);
 	// Register valid annotations.
 	// TODO: Should this be static?
 	register_annotation(MethodInfo("@tool"), AnnotationInfo::SCRIPT, &GDScriptParser::tool_annotation);
@@ -1178,7 +1179,7 @@ GDScriptParser::EnumNode *GDScriptParser::parse_enum() {
 	push_multiline(true);
 	consume(GDScriptTokenizer::Token::BRACE_OPEN, vformat(R"(Expected "{" after %s.)", named ? "enum name" : R"("enum")"));
 
-	HashMap<StringName, int> elements;
+	HashMap<StringName, int> elements(__FILE__, __LINE__);
 
 #ifdef DEBUG_ENABLED
 	List<MethodInfo> gdscript_funcs;

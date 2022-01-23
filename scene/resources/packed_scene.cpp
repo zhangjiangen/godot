@@ -272,26 +272,21 @@ Node *SceneState::instantiate(GenEditState p_edit_state) const {
 							value = value.duplicate(true); // Duplicate arrays and dictionaries for the editor
 						}
 						bool is_skip = false;
-                        // 跳过按钮和不存档的属性
-                        List<PropertyInfo> p_list;
-                        node->get_property_list(&p_list,true);
-                        String pro_name,dest_name;
-                        dest_name = snames[nprops[j].name];
-						for(int p = 0; p < p_list.size(); ++p)
-						{
-                            pro_name = p_list[p].name;
-							if(pro_name == dest_name)
-							{
-								if(p_list[p].hint == PROPERTY_HINT_BUTTON
-								 || (p_list[p].usage & PROPERTY_USAGE_STORAGE) == 0)
-								{
+						// 跳过按钮和不存档的属性
+						List<PropertyInfo> p_list;
+						node->get_property_list(&p_list, true);
+						String pro_name, dest_name;
+						dest_name = snames[nprops[j].name];
+						for (int p = 0; p < p_list.size(); ++p) {
+							pro_name = p_list[p].name;
+							if (pro_name == dest_name) {
+								if (p_list[p].hint == PROPERTY_HINT_BUTTON || (p_list[p].usage & PROPERTY_USAGE_STORAGE) == 0) {
 									is_skip = true;
 								}
 								break;
 							}
 						}
-						if(is_skip == false)
-						{
+						if (is_skip == false) {
 							node->set(dest_name, value, &valid);
 						}
 					}
@@ -854,7 +849,7 @@ Error SceneState::pack(Node *p_scene) {
 	Node *scene = p_scene;
 
 	Map<StringName, int> name_map;
-	HashMap<Variant, int, VariantHasher, VariantComparator> variant_map;
+	HashMap<Variant, int, VariantHasher, VariantComparator> variant_map(__FILE__, __LINE__);
 	Map<Node *, int> node_map;
 	Map<Node *, int> nodepath_map;
 
@@ -1616,6 +1611,7 @@ void SceneState::_bind_methods() {
 }
 
 SceneState::SceneState() {
+	node_path_cache.set_debug_info(__FILE__, __LINE__);
 }
 
 ////////////////

@@ -295,6 +295,8 @@ EditorCommandPalette *EditorCommandPalette::get_singleton() {
 }
 
 EditorCommandPalette::EditorCommandPalette() {
+	commands.set_debug_info(__FILE__, __LINE__);
+	unregistered_shortcuts.set_debug_info(__FILE__, __LINE__);
 	set_hide_on_ok(false);
 	connect("confirmed", callable_mp(this, &EditorCommandPalette::_confirmed));
 

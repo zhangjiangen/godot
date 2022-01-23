@@ -129,6 +129,7 @@ public:
 	void poll();
 
 	MultiplayerReplicator(MultiplayerAPI *p_multiplayer) {
+		tracked_objects.set_debug_info(__FILE__, __LINE__);
 		multiplayer = p_multiplayer;
 	}
 };

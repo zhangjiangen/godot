@@ -1178,6 +1178,9 @@ void VisualScript::_bind_methods() {
 }
 
 VisualScript::VisualScript() {
+	nodes.set_debug_info(__FILE__, __LINE__);
+	functions.set_debug_info(__FILE__, __LINE__);
+	variables.set_debug_info(__FILE__, __LINE__);
 	base_type = "Object";
 	is_tool_script = false;
 }
@@ -1995,7 +1998,7 @@ void VisualScriptInstance::create(const Ref<VisualScript> &p_script, Object *p_o
 					}
 					nd_queue.pop_front();
 				}
-				HashMap<int, HashMap<int, Pair<int, int>>> dc_lut; // :: to -> to_port -> (from, from_port)
+				HashMap<int, HashMap<int, Pair<int, int>>> dc_lut(__FILE__, __LINE__); // :: to -> to_port -> (from, from_port)
 				for (const Set<VisualScript::DataConnection>::Element *F = script->data_connections.front(); F; F = F->next()) {
 					dc_lut[F->get().to_node][F->get().to_port] = Pair<int, int>(F->get().from_node, F->get().from_port);
 				}

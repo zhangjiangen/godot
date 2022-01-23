@@ -3969,7 +3969,7 @@ bool TextServerAdvanced::shaped_text_update_breaks(RID p_shaped) {
 
 	const UChar *data = sd->utf16.ptr();
 
-	HashMap<int, bool> breaks;
+	HashMap<int, bool> breaks(__FILE__, __LINE__);
 	UErrorCode err = U_ZERO_ERROR;
 	int i = 0;
 	while (i < sd->spans.size()) {

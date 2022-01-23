@@ -119,6 +119,9 @@ class TextServerFallback : public TextServer {
 		FT_Face face = nullptr;
 		FT_StreamRec stream;
 #endif
+		FontDataForSizeFallback() {
+			glyph_map.set_debug_info(__FILE__, __LINE__);
+		}
 
 		~FontDataForSizeFallback() {
 #ifdef MODULE_FREETYPE_ENABLED

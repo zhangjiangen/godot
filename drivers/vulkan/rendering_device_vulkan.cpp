@@ -123,7 +123,6 @@ static void LogVulkanInfo(VulkanContext &context) {
 			log += "RSC_TEXTURE_COMPRESSION_ETC2,";
 		}
 
-
 		vkGetPhysicalDeviceFormatProperties(
 				context.get_physical_device(),
 				RenderingDeviceVulkan::vulkan_formats[RenderingDeviceVulkan::DATA_FORMAT_ASTC_4x4_SRGB_BLOCK], &props);
@@ -9481,6 +9480,7 @@ RenderingDevice *RenderingDeviceVulkan::create_local_device() {
 }
 
 RenderingDeviceVulkan::RenderingDeviceVulkan() {
+	vertex_format_cache.set_debug_info(__FILE__, __LINE__);
 	device_capabilities.device_family = DEVICE_VULKAN;
 }
 

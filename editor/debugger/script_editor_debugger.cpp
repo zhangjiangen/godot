@@ -1661,6 +1661,7 @@ bool ScriptEditorDebugger::has_capture(const StringName &p_name) {
 }
 
 ScriptEditorDebugger::ScriptEditorDebugger(EditorNode *p_editor) {
+	node_path_cache.set_debug_info(__FILE__, __LINE__);
 	editor = p_editor;
 
 	tabs = memnew(TabContainer);

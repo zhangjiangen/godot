@@ -494,5 +494,7 @@ void GeometryInstance3D::_bind_methods() {
 }
 
 GeometryInstance3D::GeometryInstance3D() {
+	instance_uniforms.set_debug_info(__FILE__, __LINE__);
+	instance_uniform_property_remap.set_debug_info(__FILE__, __LINE__);
 	//RS::get_singleton()->instance_geometry_set_baked_light_texture_index(get_instance(),0);
 }

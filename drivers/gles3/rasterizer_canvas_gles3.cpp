@@ -1450,6 +1450,7 @@ void fragment() {
 }
 
 RasterizerCanvasGLES3::RasterizerCanvasGLES3() {
+	polygon_buffers.polygons.set_debug_info(__FILE__, __LINE__);
 }
 RasterizerCanvasGLES3::~RasterizerCanvasGLES3() {
 	state.canvas_shader.version_free(state.canvas_shader_default_version);

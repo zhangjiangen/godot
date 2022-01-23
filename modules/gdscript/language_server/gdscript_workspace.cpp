@@ -786,6 +786,7 @@ Error GDScriptWorkspace::resolve_signature(const lsp::TextDocumentPositionParams
 }
 
 GDScriptWorkspace::GDScriptWorkspace() {
+	native_members.set_debug_info(__FILE__, __LINE__);
 	ProjectSettings::get_singleton()->get_resource_path();
 }
 

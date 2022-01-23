@@ -2063,6 +2063,7 @@ void VisualShader::_bind_methods() {
 }
 
 VisualShader::VisualShader() {
+	modes.set_debug_info(__FILE__, __LINE__);
 	dirty.set();
 	for (int i = 0; i < TYPE_MAX; i++) {
 		if (i > (int)TYPE_LIGHT && i < (int)TYPE_SKY) {

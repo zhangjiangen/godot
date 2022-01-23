@@ -126,7 +126,7 @@ bool MultiNodeEdit::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void MultiNodeEdit::_get_property_list(List<PropertyInfo> *p_list) const {
-	HashMap<String, PLData> usage;
+	HashMap<String, PLData> usage(__FILE__, __LINE__);
 
 	Node *es = EditorNode::get_singleton()->get_edited_scene();
 	if (!es) {

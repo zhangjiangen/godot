@@ -721,7 +721,7 @@ bool OrphanResourcesDialog::_fill_owners(EditorFileSystemDirectory *efsd, HashMa
 }
 
 void OrphanResourcesDialog::refresh() {
-	HashMap<String, int> refs;
+	HashMap<String, int> refs(__FILE__, __LINE__);
 	_fill_owners(EditorFileSystem::get_singleton()->get_filesystem(), refs, nullptr);
 	files->clear();
 	TreeItem *root = files->create_item();

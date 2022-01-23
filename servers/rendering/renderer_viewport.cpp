@@ -1246,5 +1246,6 @@ int RendererViewport::get_total_draw_calls_used() const {
 }
 
 RendererViewport::RendererViewport() {
+	timestamp_vp_map.set_debug_info(__FILE__, __LINE__);
 	occlusion_rays_per_thread = GLOBAL_GET("rendering/occlusion_culling/occlusion_rays_per_thread");
 }

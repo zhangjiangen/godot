@@ -444,9 +444,9 @@ Resource::~Resource() {
 	}
 }
 
-HashMap<String, Resource *> ResourceCache::resources;
+HashMap<String, Resource *> ResourceCache::resources(__FILE__, __LINE__);
 #ifdef TOOLS_ENABLED
-HashMap<String, HashMap<String, String>> ResourceCache::resource_path_cache;
+HashMap<String, HashMap<String, String>> ResourceCache::resource_path_cache(__FILE__, __LINE__);
 #endif
 
 RWLock ResourceCache::lock;

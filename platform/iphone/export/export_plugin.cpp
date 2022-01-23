@@ -1147,7 +1147,7 @@ Error EditorExportPlatformIOS::_export_ios_plugins(const Ref<EditorExportPreset>
 
 	Vector<String> added_linked_dependenciy_names;
 	Vector<String> added_embedded_dependenciy_names;
-	HashMap<String, String> plist_values;
+	HashMap<String, String> plist_values(__FILE__, __LINE__);
 
 	Set<String> plugin_linker_flags;
 

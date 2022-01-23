@@ -1594,6 +1594,8 @@ void EditorSettings::_bind_methods() {
 }
 
 EditorSettings::EditorSettings() {
+	hints.set_debug_info(__FILE__, __LINE__);
+	props.set_debug_info(__FILE__, __LINE__);
 	last_order = 0;
 	optimize_save = true;
 	save_changed_setting = true;

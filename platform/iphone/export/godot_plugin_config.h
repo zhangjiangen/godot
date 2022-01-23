@@ -111,6 +111,9 @@ struct PluginConfigIOS {
 	// Currently supports `string`, `boolean`, `integer`, `raw`, `string_input` types
 	// <name>:<type> = <value>
 	HashMap<String, PlistItem> plist;
+	PluginConfigIOS() {
+		plist.set_debug_info(__FILE__, __LINE__);
+	}
 
 	static String resolve_local_dependency_path(String plugin_config_dir, String dependency_path);
 

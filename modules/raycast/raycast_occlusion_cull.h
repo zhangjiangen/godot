@@ -114,6 +114,9 @@ private:
 	};
 
 	struct Scenario {
+		Scenario() {
+			instances.set_debug_info(__FILE__, __LINE__);
+		}
 		struct RaycastThreadData {
 			CameraRayTile *rays;
 			const uint32_t *masks;

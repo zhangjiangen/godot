@@ -1204,6 +1204,7 @@ void EditorNode3DGizmoPlugin::unregister_gizmo(EditorNode3DGizmo *p_gizmo) {
 }
 
 EditorNode3DGizmoPlugin::EditorNode3DGizmoPlugin() {
+	materials.set_debug_info(__FILE__, __LINE__);
 	current_state = VISIBLE;
 }
 

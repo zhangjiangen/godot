@@ -1964,6 +1964,7 @@ Object::Object(bool p_reference) {
 }
 
 Object::Object() {
+	signal_map.set_debug_info(__FILE__, __LINE__);
 	_construct_object(false);
 }
 

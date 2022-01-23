@@ -155,7 +155,9 @@ class TextServerAdvanced : public TextServer {
 		FT_Face face = nullptr;
 		FT_StreamRec stream;
 #endif
-
+		FontDataForSizeAdvanced(){
+			glyph_map.set_debug_info(__FILE__, __LINE__);
+		}
 		~FontDataForSizeAdvanced() {
 			if (hb_handle != nullptr) {
 				hb_font_destroy(hb_handle);

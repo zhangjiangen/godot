@@ -97,6 +97,9 @@ public:
 	Dictionary generate_api() const;
 
 	Error parse(const String &p_code, const String &p_path);
+	ExtendGDScriptParser() {
+		inner_classes.set_debug_info(__FILE__, __LINE__);
+	}
 };
 
 #endif

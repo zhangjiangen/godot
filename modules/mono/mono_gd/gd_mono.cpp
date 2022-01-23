@@ -1234,6 +1234,7 @@ void GDMono::unhandled_exception_hook(MonoObject *p_exc, void *) {
 }
 
 GDMono::GDMono() {
+	assemblies.set_debug_info(__FILE__, __LINE__);
 	singleton = this;
 
 	gdmono_log = memnew(GDMonoLog);

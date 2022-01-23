@@ -449,6 +449,7 @@ void AnimationNode::_bind_methods() {
 }
 
 AnimationNode::AnimationNode() {
+	filter.set_debug_info(__FILE__, __LINE__);
 }
 
 ////////////////////
@@ -1840,6 +1841,11 @@ void AnimationTree::_bind_methods() {
 }
 
 AnimationTree::AnimationTree() {
+	track_cache.set_debug_info(__FILE__, __LINE__);
+	property_parent_map.set_debug_info(__FILE__, __LINE__);
+	property_map.set_debug_info(__FILE__, __LINE__);
+	input_activity_map.set_debug_info(__FILE__, __LINE__);
+	input_activity_map_get.set_debug_info(__FILE__, __LINE__);
 }
 
 AnimationTree::~AnimationTree() {

@@ -1598,7 +1598,7 @@ void VisualScriptEditor::_remove_output_port(int p_id, int p_port) {
 	List<VisualScript::DataConnection> data_connections;
 	script->get_data_connection_list(&data_connections);
 
-	HashMap<int, Set<int>> conn_map;
+	HashMap<int, Set<int>> conn_map(__FILE__, __LINE__);
 	for (const VisualScript::DataConnection &E : data_connections) {
 		if (E.from_node == p_id && E.from_port == p_port) {
 			// Push into the connections map.
@@ -1898,7 +1898,7 @@ void VisualScriptEditor::_on_nodes_duplicate() {
 	int idc = script->get_available_id() + 1;
 
 	Set<int> to_select;
-	HashMap<int, int> remap;
+	HashMap<int, int> remap(__FILE__, __LINE__);
 
 	for (Set<int>::Element *F = to_duplicate.front(); F; F = F->next()) {
 		// Duplicate from the specific function but place it into the default func as it would lack the connections.
@@ -4493,6 +4493,7 @@ void VisualScriptEditor::_bind_methods() {
 }
 
 VisualScriptEditor::VisualScriptEditor() {
+	node_styles.set_debug_info(__FILE__, __LINE__);
 	if (!clipboard) {
 		clipboard = memnew(Clipboard);
 	}

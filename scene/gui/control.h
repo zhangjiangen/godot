@@ -229,6 +229,11 @@ private:
 
 		bool bulk_theme_override : 2;
 		Data() {
+			icon_override.set_debug_info(__FILE__, __LINE__);
+			style_override.set_debug_info(__FILE__, __LINE__);
+			font_override.set_debug_info(__FILE__, __LINE__);
+			color_override.set_debug_info(__FILE__, __LINE__);
+			constant_override.set_debug_info(__FILE__, __LINE__);
 			mouse_filter = MOUSE_FILTER_STOP;
 			h_size_flags = SIZE_FILL;
 			v_size_flags = SIZE_FILL;

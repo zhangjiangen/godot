@@ -522,10 +522,10 @@ String &String::operator+=(const String &p_str) {
 	char32_t *dst = ptrw();
 
 	set(length(), 0);
-
-	for (int i = 0; i < p_str.length(); i++) {
-		dst[from + i] = src[i];
-	}
+	memcpy(dst + from, src, p_str.length() * sizeof(char32_t));
+	// for (int i = 0; i < p_str.length(); i++) {
+	// 	dst[from + i] = src[i];
+	// }
 
 	return *this;
 }
@@ -594,14 +594,13 @@ bool String::operator==(const char *p_str) const {
 		len++;
 	}
 
+	int l = length();
 	if (length() != len) {
 		return false;
 	}
 	if (is_empty()) {
 		return true;
 	}
-
-	int l = length();
 
 	const char32_t *dst = get_data();
 
@@ -633,48 +632,32 @@ bool String::operator==(const char32_t *p_str) const {
 		len++;
 	}
 
-	if (length() != len) {
+	int l = length();
+	if (l != len) {
 		return false;
 	}
 	if (is_empty()) {
 		return true;
 	}
-
-	int l = length();
 
 	const char32_t *dst = get_data();
 
-	/* Compare char by char */
-	for (int i = 0; i < l; i++) {
-		if (p_str[i] != dst[i]) {
-			return false;
-		}
-	}
-
-	return true;
+	return memcmp(p_str, dst),sizeof(char32_t) * len) == 0;
 }
 
 bool String::operator==(const String &p_str) const {
-	if (length() != p_str.length()) {
+	int l = length();
+	int last_l = p_str.length();
+	if (l != last_l) {
 		return false;
 	}
 	if (is_empty()) {
 		return true;
 	}
 
-	int l = length();
-
 	const char32_t *src = get_data();
 	const char32_t *dst = p_str.get_data();
-
-	/* Compare char by char */
-	for (int i = 0; i < l; i++) {
-		if (src[i] != dst[i]) {
-			return false;
-		}
-	}
-
-	return true;
+	return memcmp(src, dst),sizeof(char32_t) * l) == 0;
 }
 
 bool String::operator==(const StrRange &p_str_range) const {
@@ -691,13 +674,8 @@ bool String::operator==(const StrRange &p_str_range) const {
 	const char32_t *dst = &operator[](0);
 
 	/* Compare char by char */
-	for (int i = 0; i < len; i++) {
-		if (c_str[i] != dst[i]) {
-			return false;
-		}
-	}
 
-	return true;
+	return memcmp(src, dst),sizeof(char32_t) * len) == 0;
 }
 
 bool operator==(const char *p_chr, const String &p_str) {

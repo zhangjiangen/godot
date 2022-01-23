@@ -558,7 +558,6 @@ GDScriptParser::DataType GDScriptAnalyzer::resolve_datatype(GDScriptParser::Type
 		}
 	}
 	if (!result.is_set()) {
-		
 		push_error(vformat(R"("%s" was not found in the current scope.)", first), p_type);
 		result.kind = GDScriptParser::DataType::VARIANT; // Leave Variant anyway so future type check don't use an unresolved type.
 		return result;
@@ -2509,7 +2508,7 @@ void GDScriptAnalyzer::reduce_cast(GDScriptParser::CastNode *p_cast) {
 }
 
 void GDScriptAnalyzer::reduce_dictionary(GDScriptParser::DictionaryNode *p_dictionary) {
-	HashMap<Variant, GDScriptParser::ExpressionNode *, VariantHasher, VariantComparator> elements;
+	HashMap<Variant, GDScriptParser::ExpressionNode *, VariantHasher, VariantComparator> elements(__FILE__, __LINE__);
 
 	for (int i = 0; i < p_dictionary->elements.size(); i++) {
 		const GDScriptParser::DictionaryNode::Pair &element = p_dictionary->elements[i];
@@ -4052,5 +4051,6 @@ Error GDScriptAnalyzer::analyze() {
 }
 
 GDScriptAnalyzer::GDScriptAnalyzer(GDScriptParser *p_parser) {
+	depended_parsers.set_debug_info(__FILE__, __LINE__);
 	parser = p_parser;
 }

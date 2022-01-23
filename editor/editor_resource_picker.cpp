@@ -36,7 +36,7 @@
 #include "editor_settings.h"
 #include "filesystem_dock.h"
 
-HashMap<StringName, List<StringName>> EditorResourcePicker::allowed_types_cache;
+HashMap<StringName, List<StringName>> EditorResourcePicker::allowed_types_cache(__FILE__, __LINE__);
 
 void EditorResourcePicker::clear_caches() {
 	allowed_types_cache.clear();
@@ -50,7 +50,7 @@ void EditorResourcePicker::_update_resource() {
 		search_button->set_visible(false);
 	}
 	bool save_button_visble = false;
-	FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+	FileSystemDock *file_system_dock = FileSystemDock::get_singleton();
 	String file_path = file_system_dock->get_current_path();
 	if (edited_resource.is_valid() && !file_path.is_empty()) {
 		save_button_visble = true;
@@ -492,7 +492,7 @@ void EditorResourcePicker::_button_input(const Ref<InputEvent> &p_event) {
 }
 void EditorResourcePicker::_button_search() {
 	if (edited_resource.is_valid()) {
-		FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+		FileSystemDock *file_system_dock = FileSystemDock::get_singleton();
 		file_system_dock->navigate_to_path(edited_resource->get_path());
 	}
 }
@@ -951,7 +951,7 @@ EditorResourcePicker::EditorResourcePicker() {
 	add_child(set_resource_button);
 	set_resource_button->connect("pressed", callable_mp(this, &EditorResourcePicker::_button_set_resource));
 	if (EditorNode::get_singleton()) {
-		FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+		FileSystemDock *file_system_dock = FileSystemDock::get_singleton();
 		if (file_system_dock) {
 			file_system_dock->connect("on_select_file", callable_mp(this, &EditorScriptPicker::on_file_system_select_file));
 		}
@@ -959,7 +959,7 @@ EditorResourcePicker::EditorResourcePicker() {
 }
 
 void EditorResourcePicker::_button_save_resource() {
-	FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+	FileSystemDock *file_system_dock = FileSystemDock::get_singleton();
 	String file_path = file_system_dock->get_selected_path();
 	if (file_path.is_empty()) {
 		return;
@@ -974,7 +974,7 @@ void EditorResourcePicker::_button_save_resource() {
 	ResourceSaver::save(path, edited_resource, ResourceSaver::FLAG_CHANGE_PATH);
 }
 void EditorResourcePicker::_button_set_resource() {
-	FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+	FileSystemDock *file_system_dock = FileSystemDock::get_singleton();
 	String file_path = file_system_dock->get_current_path();
 	String file_type = EditorFileSystem::get_singleton()->get_file_type(file_path);
 
@@ -1025,7 +1025,7 @@ void EditorResourcePicker::_button_set_resource() {
 }
 
 void EditorResourcePicker::update_set_resource_button() {
-	FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+	FileSystemDock *file_system_dock = FileSystemDock::get_singleton();
 	if (file_system_dock) {
 		on_file_system_select_file(file_system_dock->get_current_path());
 	}
@@ -1037,7 +1037,7 @@ void EditorResourcePicker::on_file_system_select_file(const String file_path) {
 
 	bool is_visible = false;
 	bool save_button_visble = false;
-	FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+	FileSystemDock *file_system_dock = FileSystemDock::get_singleton();
 	const String curr_file_path = file_system_dock->get_current_path();
 	if (edited_resource.is_valid() && curr_file_path != "res://") {
 		save_button_visble = true;

@@ -720,6 +720,9 @@ void CreateDialog::_bind_methods() {
 }
 
 CreateDialog::CreateDialog() {
+	search_options_types.set_debug_info(__FILE__, __LINE__);
+	custom_type_parents.set_debug_info(__FILE__, __LINE__);
+	custom_type_indices.set_debug_info(__FILE__, __LINE__);
 	base_type = "Object";
 	preferred_search_result_type = "";
 
@@ -744,9 +747,9 @@ CreateDialog::CreateDialog() {
 	favorites->connect("cell_selected", callable_mp(this, &CreateDialog::_favorite_selected));
 	favorites->connect("item_activated", callable_mp(this, &CreateDialog::_favorite_activated));
 	favorites->add_theme_constant_override("draw_guides", 1);
-// #ifndef _MSC_VER
-// #warning cannot forward drag data to a non control, must be fixed
-// #endif
+	// #ifndef _MSC_VER
+	// #warning cannot forward drag data to a non control, must be fixed
+	// #endif
 	//favorites->set_drag_forwarding(this);
 	fav_vb->add_margin_child(TTR("Favorites:"), favorites, true);
 

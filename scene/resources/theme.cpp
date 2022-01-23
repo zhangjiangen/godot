@@ -398,7 +398,7 @@ void Theme::add_icon_type(const StringName &p_theme_type) {
 	if (icon_map.has(p_theme_type)) {
 		return;
 	}
-	icon_map[p_theme_type] = HashMap<StringName, Ref<Texture2D>>();
+	icon_map[p_theme_type] = HashMap<StringName, Ref<Texture2D>>(__FILE__, __LINE__);
 }
 
 void Theme::get_icon_type_list(List<StringName> *p_list) const {
@@ -485,7 +485,7 @@ void Theme::add_stylebox_type(const StringName &p_theme_type) {
 	if (style_map.has(p_theme_type)) {
 		return;
 	}
-	style_map[p_theme_type] = HashMap<StringName, Ref<StyleBox>>();
+	style_map[p_theme_type] = HashMap<StringName, Ref<StyleBox>>(__FILE__, __LINE__);
 }
 
 void Theme::get_stylebox_type_list(List<StringName> *p_list) const {
@@ -574,7 +574,7 @@ void Theme::add_font_type(const StringName &p_theme_type) {
 	if (font_map.has(p_theme_type)) {
 		return;
 	}
-	font_map[p_theme_type] = HashMap<StringName, Ref<Font>>();
+	font_map[p_theme_type] = HashMap<StringName, Ref<Font>>(__FILE__, __LINE__);
 }
 
 void Theme::get_font_type_list(List<StringName> *p_list) const {
@@ -650,7 +650,7 @@ void Theme::add_font_size_type(const StringName &p_theme_type) {
 	if (font_size_map.has(p_theme_type)) {
 		return;
 	}
-	font_size_map[p_theme_type] = HashMap<StringName, int>();
+	font_size_map[p_theme_type] = HashMap<StringName, int>(__FILE__, __LINE__);
 }
 
 void Theme::get_font_size_type_list(List<StringName> *p_list) const {
@@ -724,7 +724,7 @@ void Theme::add_color_type(const StringName &p_theme_type) {
 	if (color_map.has(p_theme_type)) {
 		return;
 	}
-	color_map[p_theme_type] = HashMap<StringName, Color>();
+	color_map[p_theme_type] = HashMap<StringName, Color>(__FILE__, __LINE__);
 }
 
 void Theme::get_color_type_list(List<StringName> *p_list) const {
@@ -798,7 +798,7 @@ void Theme::add_constant_type(const StringName &p_theme_type) {
 	if (constant_map.has(p_theme_type)) {
 		return;
 	}
-	constant_map[p_theme_type] = HashMap<StringName, int>();
+	constant_map[p_theme_type] = HashMap<StringName, int>(__FILE__, __LINE__);
 }
 
 void Theme::get_constant_type_list(List<StringName> *p_list) const {
@@ -1687,6 +1687,13 @@ void Theme::_bind_methods() {
 }
 
 Theme::Theme() {
+	icon_map.set_debug_info(__FILE__, __LINE__);
+	style_map.set_debug_info(__FILE__, __LINE__);
+	font_map.set_debug_info(__FILE__, __LINE__);
+	font_size_map.set_debug_info(__FILE__, __LINE__);
+	color_map.set_debug_info(__FILE__, __LINE__);
+	constant_map.set_debug_info(__FILE__, __LINE__);
+	variation_map.set_debug_info(__FILE__, __LINE__);
 }
 
 Theme::~Theme() {

@@ -1440,7 +1440,7 @@ bool NativeScriptLanguage::refcount_decremented_instance_binding(Object *p_objec
 
 void NativeScriptLanguage::set_global_type_tag(int p_idx, StringName p_class_name, const void *p_type_tag) {
 	if (!global_type_tags.has(p_idx)) {
-		global_type_tags.insert(p_idx, HashMap<StringName, const void *>());
+		global_type_tags.insert(p_idx, HashMap<StringName, const void *>(__FILE__, __LINE__));
 	}
 
 	HashMap<StringName, const void *> &tags = global_type_tags[p_idx];

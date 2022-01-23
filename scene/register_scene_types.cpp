@@ -218,6 +218,7 @@
 #include "scene/3d/fog_volume.h"
 #include "scene/3d/gpu_particles_3d.h"
 #include "scene/3d/gpu_particles_collision_3d.h"
+#include "scene/3d/image_utils.h"
 #include "scene/3d/importer_mesh_instance_3d.h"
 #include "scene/3d/joint_3d.h"
 #include "scene/3d/light_3d.h"
@@ -233,6 +234,7 @@
 #include "scene/3d/path_3d.h"
 #include "scene/3d/physics_body_3d.h"
 #include "scene/3d/position_3d.h"
+#include "scene/3d/quad_tree_lod.h"
 #include "scene/3d/ray_cast_3d.h"
 #include "scene/3d/reflection_probe.h"
 #include "scene/3d/remote_transform_3d.h"
@@ -540,6 +542,9 @@ void register_scene_types() {
 	GDREGISTER_CLASS(NavigationRegion3D);
 	GDREGISTER_CLASS(NavigationAgent3D);
 	GDREGISTER_CLASS(NavigationObstacle3D);
+
+	GDREGISTER_CLASS(ImageUtils);
+	GDREGISTER_CLASS(QuadTreeLod);
 
 	OS::get_singleton()->yield(); // may take time to init
 #endif

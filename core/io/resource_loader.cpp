@@ -1046,6 +1046,9 @@ void ResourceLoader::remove_custom_loaders() {
 }
 
 void ResourceLoader::initialize() {
+	thread_load_tasks.set_debug_info(__FILE__, __LINE__);
+	path_remaps.set_debug_info(__FILE__, __LINE__);
+	translation_remaps.set_debug_info(__FILE__, __LINE__);
 	thread_load_mutex = memnew(Mutex);
 	thread_load_max = OS::get_singleton()->get_processor_count();
 	thread_loading_count = 0;

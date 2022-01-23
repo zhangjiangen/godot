@@ -234,9 +234,9 @@ ClassDB::APIType ClassDB::get_current_api() {
 	return current_api;
 }
 
-HashMap<StringName, ClassDB::ClassInfo> ClassDB::classes;
-HashMap<StringName, StringName> ClassDB::resource_base_extensions;
-HashMap<StringName, StringName> ClassDB::compat_classes;
+HashMap<StringName, ClassDB::ClassInfo> ClassDB::classes(__FILE__, __LINE__);
+HashMap<StringName, StringName> ClassDB::resource_base_extensions(__FILE__, __LINE__);
+HashMap<StringName, StringName> ClassDB::compat_classes(__FILE__, __LINE__);
 
 bool ClassDB::_is_parent_class(const StringName &p_class, const StringName &p_inherits) {
 	if (!classes.has(p_class)) {
@@ -1569,13 +1569,13 @@ void ClassDB::get_extensions_for_type(const StringName &p_class, List<String> *p
 	}
 }
 
-HashMap<StringName, HashMap<StringName, Variant>> ClassDB::default_values;
+HashMap<StringName, HashMap<StringName, Variant>> ClassDB::default_values(__FILE__, __LINE__);
 Set<StringName> ClassDB::default_values_cached;
 
 Variant ClassDB::class_get_default_property_value(const StringName &p_class, const StringName &p_property, bool *r_valid) {
 	if (!default_values_cached.has(p_class)) {
 		if (!default_values.has(p_class)) {
-			default_values[p_class] = HashMap<StringName, Variant>();
+			default_values[p_class] = HashMap<StringName, Variant>(__FILE__, __LINE__);
 		}
 
 		Object *c = nullptr;

@@ -656,6 +656,7 @@ void MultiplayerAPI::_bind_methods() {
 }
 
 MultiplayerAPI::MultiplayerAPI() {
+	path_send_cache.set_debug_info(__FILE__, __LINE__);
 	replicator = memnew(MultiplayerReplicator(this));
 	rpc_manager = memnew(RPCManager(this));
 	clear();

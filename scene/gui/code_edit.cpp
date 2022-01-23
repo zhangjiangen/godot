@@ -3050,6 +3050,7 @@ void CodeEdit::_text_changed() {
 }
 
 CodeEdit::CodeEdit() {
+	breakpointed_lines.set_debug_info(__FILE__, __LINE__);
 	/* Indent management */
 	auto_indent_prefixes.insert(':');
 	auto_indent_prefixes.insert('{');

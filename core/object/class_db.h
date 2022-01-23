@@ -120,7 +120,14 @@ public:
 		bool exposed = false;
 		Object *(*creation_func)() = nullptr;
 
-		ClassInfo() {}
+		ClassInfo() {
+			method_map.set_debug_info(__FILE__, __LINE__);
+			constant_map.set_debug_info(__FILE__, __LINE__);
+			enum_map.set_debug_info(__FILE__, __LINE__);
+			signal_map.set_debug_info(__FILE__, __LINE__);
+			property_map.set_debug_info(__FILE__, __LINE__);
+			property_setget.set_debug_info(__FILE__, __LINE__);
+		}
 		~ClassInfo() {}
 	};
 

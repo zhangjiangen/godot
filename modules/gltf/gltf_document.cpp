@@ -6132,7 +6132,7 @@ void GLTFDocument::_convert_mesh_instances(Ref<GLTFState> state) {
 				gltf_skin->skeleton = skeleton_gltf_i;
 				gltf_skin->skin_root = root_gltf_i;
 				//gltf_state->godot_to_gltf_node[skel_node]
-				HashMap<StringName, int> bone_name_to_idx;
+				HashMap<StringName, int> bone_name_to_idx(__FILE__, __LINE__);
 				for (int bone_i = 0; bone_i < bone_cnt; bone_i++) {
 					bone_name_to_idx[skeleton->get_bone_name(bone_i)] = bone_i;
 				}

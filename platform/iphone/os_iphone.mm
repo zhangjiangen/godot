@@ -63,7 +63,7 @@ typedef void (*init_callback)();
 static init_callback *ios_init_callbacks = nullptr;
 static int ios_init_callbacks_count = 0;
 static int ios_init_callbacks_capacity = 0;
-HashMap<String, void *> OSIPhone::dynamic_symbol_lookup_table;
+HashMap<String, void *> OSIPhone::dynamic_symbol_lookup_table(__FILE__, __LINE__);
 
 void add_ios_init_callback(init_callback cb) {
 	if (ios_init_callbacks_count == ios_init_callbacks_capacity) {

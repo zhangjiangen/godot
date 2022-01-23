@@ -296,6 +296,7 @@ const char *FindInFilesDialog::SIGNAL_FIND_REQUESTED = "find_requested";
 const char *FindInFilesDialog::SIGNAL_REPLACE_REQUESTED = "replace_requested";
 
 FindInFilesDialog::FindInFilesDialog() {
+	_filters_preferences.set_debug_info(__FILE__, __LINE__);
 	set_min_size(Size2(500 * EDSCALE, 0));
 	set_title(TTR("Find in Files"));
 

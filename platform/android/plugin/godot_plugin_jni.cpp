@@ -37,7 +37,7 @@
 #include <platform/android/jni_utils.h>
 #include <platform/android/string_android.h>
 
-static HashMap<String, JNISingleton *> jni_singletons;
+static HashMap<String, JNISingleton *> jni_singletons(__FILE__, __LINE__);
 
 extern "C" {
 

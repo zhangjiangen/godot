@@ -310,6 +310,7 @@ bool GDScriptLanguageProtocol::is_goto_native_symbols_enabled() const {
 }
 
 GDScriptLanguageProtocol::GDScriptLanguageProtocol() {
+	clients.set_debug_info(__FILE__, __LINE__);
 	New_instantiate(server);
 	singleton = this;
 	New_instantiate(workspace);

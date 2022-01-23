@@ -78,6 +78,9 @@ public:
 		AnimationTree *tree = nullptr;
 		String invalid_reasons;
 		uint64_t last_pass = 0;
+		State() {
+			track_map.set_debug_info(__FILE__, __LINE__);
+		}
 	};
 
 	Vector<real_t> blends;

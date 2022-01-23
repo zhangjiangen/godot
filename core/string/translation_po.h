@@ -86,7 +86,7 @@ public:
 	void print_translation_map();
 #endif
 
-	TranslationPO() {}
+	TranslationPO() { translation_map.set_debug_info(__FILE__, __LINE__); }
 };
 
 #endif // TRANSLATION_PO_H

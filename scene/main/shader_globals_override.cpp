@@ -283,4 +283,7 @@ void ShaderGlobalsOverride::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_activate"), &ShaderGlobalsOverride::_activate);
 }
 
-ShaderGlobalsOverride::ShaderGlobalsOverride() {}
+ShaderGlobalsOverride::ShaderGlobalsOverride() {
+	overrides.set_debug_info(__FILE__, __LINE__);
+	param_remaps.set_debug_info(__FILE__, __LINE__);
+}

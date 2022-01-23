@@ -69,6 +69,9 @@ struct _IP_ResolverPrivate {
 		}
 		return IP::RESOLVER_INVALID_ID;
 	}
+	_IP_ResolverPrivate() {
+		cache.set_debug_info(__FILE__, __LINE__);
+	}
 
 	HashMap<String, List<IPAddress>> cache;
 	Mutex mutex;

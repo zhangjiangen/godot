@@ -1720,7 +1720,7 @@ int GraphEdit::_set_operations(SET_OPERATIONS p_operation, Set<StringName> &r_u,
 }
 
 HashMap<int, Vector<StringName>> GraphEdit::_layering(const Set<StringName> &r_selected_nodes, const HashMap<StringName, Set<StringName>> &r_upper_neighbours) {
-	HashMap<int, Vector<StringName>> l;
+	HashMap<int, Vector<StringName>> l(__FILE__, __LINE__);
 
 	Set<StringName> p = r_selected_nodes, q = r_selected_nodes, u, z;
 	int current_layer = 0;
@@ -1829,7 +1829,7 @@ void GraphEdit::_crossing_minimisation(HashMap<int, Vector<StringName>> &r_layer
 	for (unsigned int i = 1; i < r_layers.size(); i++) {
 		Vector<StringName> upper_layer = r_layers[i - 1];
 		Vector<StringName> lower_layer = r_layers[i];
-		HashMap<StringName, Dictionary> c;
+		HashMap<StringName, Dictionary> c(__FILE__, __LINE__);
 
 		for (int j = 0; j < lower_layer.size(); j++) {
 			StringName p = lower_layer[j];
@@ -2043,8 +2043,8 @@ void GraphEdit::arrange_nodes() {
 		node_names[gn->get_name()] = gn;
 	}
 
-	HashMap<StringName, Set<StringName>> upper_neighbours;
-	HashMap<StringName, Pair<int, int>> port_info;
+	HashMap<StringName, Set<StringName>> upper_neighbours(__FILE__, __LINE__);
+	HashMap<StringName, Pair<int, int>> port_info(__FILE__, __LINE__);
 	Vector2 origin(FLT_MAX, FLT_MAX);
 
 	float gap_v = 100.0f;
@@ -2092,7 +2092,7 @@ void GraphEdit::arrange_nodes() {
 	Dictionary root, align, sink, shift;
 	_horizontal_alignment(root, align, layers, upper_neighbours, selected_nodes);
 
-	HashMap<StringName, Vector2> new_positions;
+	HashMap<StringName, Vector2> new_positions(__FILE__, __LINE__);
 	Vector2 default_position(FLT_MAX, FLT_MAX);
 	Dictionary inner_shift;
 	Set<StringName> block_heads;
@@ -2294,6 +2294,7 @@ void GraphEdit::_bind_methods() {
 }
 
 GraphEdit::GraphEdit() {
+	comment_enclosed_nodes.set_debug_info(__FILE__, __LINE__);
 	set_focus_mode(FOCUS_ALL);
 
 	// Allow dezooming 8 times from the default zoom level.

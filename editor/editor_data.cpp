@@ -1031,6 +1031,8 @@ void EditorData::script_class_load_icon_paths() {
 }
 
 EditorData::EditorData() {
+	_script_class_icon_paths.set_debug_info(__FILE__, __LINE__);
+	_script_class_file_to_path.set_debug_info(__FILE__, __LINE__);
 	current_edited_scene = -1;
 
 	//load_imported_scenes_from_globals();

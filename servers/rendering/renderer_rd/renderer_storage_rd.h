@@ -364,6 +364,9 @@ private:
 		Vector<MipMap> texture_mipmaps;
 
 		Size2i size;
+		DecalAtlas() {
+			textures.set_debug_info(__FILE__, __LINE__);
+		}
 
 	} decal_atlas;
 
@@ -1264,8 +1267,8 @@ private:
 			RS::GlobalVariableType type;
 			Variant value;
 			Variant override;
-			int32_t buffer_index; //for vectors
-			int32_t buffer_elements; //for vectors
+			int32_t buffer_index = 0; //for vectors
+			int32_t buffer_elements = 0; //for vectors
 		};
 
 		HashMap<StringName, Variable> variables;
@@ -1299,17 +1302,21 @@ private:
 		List<RID> materials_using_texture;
 
 		RID buffer;
-		Value *buffer_values;
-		ValueUsage *buffer_usage;
-		bool *buffer_dirty_regions;
+		Value *buffer_values = nullptr;
+		ValueUsage *buffer_usage = nullptr;
+		bool *buffer_dirty_regions = nullptr;
 		uint32_t buffer_dirty_region_count = 0;
 
-		uint32_t buffer_size;
+		uint32_t buffer_size = 0;
 
 		bool must_update_texture_materials = false;
 		bool must_update_buffer_materials = false;
 
 		HashMap<RID, int32_t> instance_buffer_pos;
+		GlobalVariables() {
+			variables.set_debug_info(__FILE__, __LINE__);
+			instance_buffer_pos.set_debug_info(__FILE__, __LINE__);
+		}
 
 	} global_variables;
 

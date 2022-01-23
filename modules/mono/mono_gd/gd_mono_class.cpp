@@ -511,6 +511,7 @@ const Vector<GDMonoMethod *> &GDMonoClass::get_all_methods() {
 }
 
 GDMonoClass::GDMonoClass(const StringName &p_namespace, const StringName &p_name, MonoClass *p_class, GDMonoAssembly *p_assembly) {
+	methods.set_debug_info(__FILE__, __LINE__);
 	namespace_name = p_namespace;
 	class_name = p_name;
 	mono_class = p_class;

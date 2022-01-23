@@ -672,6 +672,7 @@ public:
 		}
 
 		ClassNode() {
+			members_indices.set_debug_info(__FILE__, __LINE__);
 			type = CLASS;
 		}
 	};
@@ -746,6 +747,7 @@ public:
 		bool resolved_body = false;
 
 		FunctionNode() {
+			parameters.set_debug_file_info(__FILE__, __LINE__);
 			type = FUNCTION;
 		}
 	};
@@ -891,6 +893,7 @@ public:
 		IdentifierNode *get_bind(const StringName &p_name);
 
 		PatternNode() {
+			binds.set_debug_info(__FILE__, __LINE__);
 			type = PATTERN;
 		}
 	};
@@ -929,6 +932,7 @@ public:
 #endif // TOOLS_ENABLED
 
 		SignalNode() {
+			parameters_indices.set_debug_info(__FILE__, __LINE__);
 			type = SIGNAL;
 		}
 	};
@@ -1055,6 +1059,7 @@ public:
 		}
 
 		SuiteNode() {
+			locals_indices.set_debug_info(__FILE__, __LINE__);
 			type = SUITE;
 		}
 	};

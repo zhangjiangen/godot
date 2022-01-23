@@ -1394,7 +1394,7 @@ void EditorInspectorSection::fold() {
 	}
 
 	if (object != nullptr)
-	object->editor_set_section_unfold(section, false);
+		object->editor_set_section_unfold(section, false);
 	vbox->hide();
 	update();
 }
@@ -2225,7 +2225,7 @@ String EditorInspector::get_selected_path() const {
 	return property_selected;
 }
 
-void EditorInspector::_parse_added_editors(VBoxContainer * current_vbox, Ref<EditorInspectorPlugin> ped) {
+void EditorInspector::_parse_added_editors(VBoxContainer *current_vbox, Ref<EditorInspectorPlugin> ped) {
 	for (const EditorInspectorPlugin::AddedEditor &F : ped->added_editors) {
 		EditorProperty *ep = Object::cast_to<EditorProperty>(F.property_editor);
 		current_vbox->add_child(F.property_editor);
@@ -2614,7 +2614,7 @@ void EditorInspector::update_tree() {
 		}
 
 		if (!vbox_per_path.has(root_vbox)) {
-			vbox_per_path[root_vbox] = HashMap<String, VBoxContainer *>();
+			vbox_per_path[root_vbox] = HashMap<String, VBoxContainer *>(__FILE__, __LINE__);
 			vbox_per_path[root_vbox][""] = root_vbox;
 		}
 

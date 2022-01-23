@@ -240,6 +240,10 @@ Error GDScriptCache::finish_compiling(const String &p_owner) {
 }
 
 GDScriptCache::GDScriptCache() {
+	parser_map.set_debug_info(__FILE__, __LINE__);
+	shallow_gdscript_cache.set_debug_info(__FILE__, __LINE__);
+	full_gdscript_cache.set_debug_info(__FILE__, __LINE__);
+	dependencies.set_debug_info(__FILE__, __LINE__);
 	singleton = this;
 }
 
