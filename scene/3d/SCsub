@@ -3,3 +3,16 @@
 Import("env")
 
 env.add_source_files(env.scene_sources, "*.cpp")
+env.add_source_files(env.scene_sources, "mtree/mesh/*.cpp")
+env.add_source_files(env.scene_sources, "mtree/meshers/base_types/*.cpp")
+env.add_source_files(env.scene_sources,
+                     "mtree/meshers/manifold_mesher/*.cpp")
+env.add_source_files(env.scene_sources, "mtree/meshers/splines_mesher/*.cpp")
+env.add_source_files(env.scene_sources, "mtree/tree/*.cpp")
+env.add_source_files(env.scene_sources, "mtree/tree_function/*.cpp")
+env.add_source_files(env.scene_sources,
+                     "mtree/tree_function/base_types/*.cpp")
+env.add_source_files(env.scene_sources, "mtree/utilities/*.cpp")
+env.add_source_files(env.scene_sources, "mtree/tree_functions/*.cpp")
+env.add_source_files(
+    env.scene_sources, "mtree/tree_functions/base_types/*.cpp")

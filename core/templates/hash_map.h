@@ -286,7 +286,7 @@ public:
 	}
 
 	bool has(const TKey &p_key) const {
-		return get_element(p_key) != nullptr;
+		return hash_table != nullptr && get_element(p_key) != nullptr;
 	}
 
 	/**

@@ -642,7 +642,7 @@ bool String::operator==(const char32_t *p_str) const {
 
 	const char32_t *dst = get_data();
 
-	return memcmp(p_str, dst),sizeof(char32_t) * len) == 0;
+	return memcmp(p_str, dst,sizeof(char32_t) * len) == 0;
 }
 
 bool String::operator==(const String &p_str) const {
@@ -657,7 +657,7 @@ bool String::operator==(const String &p_str) const {
 
 	const char32_t *src = get_data();
 	const char32_t *dst = p_str.get_data();
-	return memcmp(src, dst),sizeof(char32_t) * l) == 0;
+	return memcmp(src, dst,sizeof(char32_t) * l) == 0;
 }
 
 bool String::operator==(const StrRange &p_str_range) const {
@@ -675,7 +675,7 @@ bool String::operator==(const StrRange &p_str_range) const {
 
 	/* Compare char by char */
 
-	return memcmp(src, dst),sizeof(char32_t) * len) == 0;
+	return memcmp(c_str, dst,sizeof(char32_t) * len) == 0;
 }
 
 bool operator==(const char *p_chr, const String &p_str) {
