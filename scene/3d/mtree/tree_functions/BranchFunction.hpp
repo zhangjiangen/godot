@@ -27,6 +27,8 @@ public:
 	PropertyWrapper start_angle{ ConstantProperty(45) }; // -180 < x < 180
 	float split_angle = 45.0f;
 	float split_proba = .5f; // 0 < x
+	// 是否允许生长树叶
+	bool can_spawn_leafs = true;
 
 	void execute(std::vector<Stem> &stems, int id, int parent_id) override;
 
@@ -41,7 +43,7 @@ public:
 		bool inactive = false;
 		Vector3 position;
 		BranchGrowthInfo(float desired_length, float origin_radius, Vector3 position, float current_length = 0, float deviation = 0) :
-				desired_length(desired_length),current_length(current_length), origin_radius(origin_radius),  deviation_from_rest_pose(deviation), position(position){};
+				desired_length(desired_length), current_length(current_length), origin_radius(origin_radius), deviation_from_rest_pose(deviation), position(position){};
 	};
 
 private:

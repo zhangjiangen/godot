@@ -70,7 +70,7 @@ void GrowthFunction::simulate_growth_rec(Node &node, int id) {
 		child_direction.normalize();
 		float child_radius = node.radius;
 		float child_length = branch_length * (info.vigor + .1f);
-		NodeChild child = NodeChild{ Node{ child_direction, node.tangent, branch_length, child_radius, id }, 1 };
+		NodeChild child = NodeChild{ Node{ child_direction, node.tangent, branch_length, child_radius, node.can_spawn_leaf, id }, 1 };
 		float child_angle = split ? info.philotaxis_angle + philotaxis_angle : info.philotaxis_angle;
 		child.node.growthInfo = std::make_unique<BioNodeInfo>(BioNodeInfo::NodeType::Meristem, 0, child_angle);
 		node.children.push_back(std::make_shared<NodeChild>(std::move(child)));
@@ -84,7 +84,7 @@ void GrowthFunction::simulate_growth_rec(Node &node, int id) {
 		child_direction.normalize();
 		float child_radius = node.radius;
 		float child_length = branch_length * (info.vigor + .1f);
-		NodeChild child = NodeChild{ Node{ child_direction, node.tangent, branch_length, child_radius, id }, 1 };
+		NodeChild child = NodeChild{ Node{ child_direction, node.tangent, branch_length, child_radius, node.can_spawn_leaf, id }, 1 };
 		child.node.growthInfo = std::make_unique<BioNodeInfo>(BioNodeInfo::NodeType::Meristem);
 		node.children.push_back(std::make_shared<NodeChild>(std::move(child)));
 		info.type = BioNodeInfo::NodeType::Branch;

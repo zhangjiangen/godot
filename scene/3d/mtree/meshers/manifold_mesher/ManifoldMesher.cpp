@@ -247,7 +247,7 @@ void mesh_node_rec(const Node &node, const Vector3 &node_position, const CircleD
 		auto child_circle = add_circle(node_position, node, 1, base.radial_n, mesh, uv_y + uv_growth);
 		bridge_circles(base, child_circle, base.radial_n, mesh);
 		Vector3 child_pos = NodeUtilities::get_position_in_node(node_position, node, 1);
-
+		// 如果非叶子结点，添加这个圆环
 		if (!node.is_leaf()) {
 			mesh_node_rec(node.children[0]->node, child_pos, child_circle, mesh, uv_y + uv_growth);
 		}

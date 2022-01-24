@@ -130,7 +130,7 @@ void BranchFunction::grow_node_once(Node &node, const int id, std::queue<std::re
 		return;
 	}
 
-	NodeChild child{ Node{ child_direction, node.tangent, child_length, child_radius, id }, 1 };
+	NodeChild child{ Node{ child_direction, node.tangent, child_length, child_radius, can_spawn_leafs, id }, 1 };
 	node.children.push_back(std::make_shared<NodeChild>(std::move(child)));
 	auto &child_node = node.children.back()->node;
 
@@ -147,7 +147,7 @@ void BranchFunction::grow_node_once(Node &node, const int id, std::queue<std::re
 		Vector3 split_child_direction = get_split_direction(node, info.position, up_attraction, flatness, resolution, split_angle);
 		float split_child_radius = node.radius * split_radius;
 
-		NodeChild child{ Node{ split_child_direction, node.tangent, child_length, split_child_radius, id }, rand_gen.get_0_1() };
+		NodeChild child{ Node{ split_child_direction, node.tangent, child_length, split_child_radius, can_spawn_leafs, id }, rand_gen.get_0_1() };
 		node.children.push_back(std::make_shared<NodeChild>(std::move(child)));
 		auto &child_node = node.children.back()->node;
 
@@ -240,7 +240,7 @@ std::vector<std::reference_wrapper<Node>> BranchFunction::get_origins(std::vecto
 					float child_radius = node.radius * start_radius.execute(factor);
 					float branch_length = length.execute(factor);
 					float node_length = std::min(branch_length, 1 / (resolution + 0.001f));
-					NodeChild child{ Node{ child_direction, node.tangent, node_length, child_radius, id }, position_in_parent };
+					NodeChild child{ Node{ child_direction, node.tangent, node_length, child_radius,can_spawn_leafs, id }, position_in_parent };
 					node.children.push_back(std::make_shared<NodeChild>(std::move(child)));
 					auto &child_node = node.children.back()->node;
 					Vector3 child_position = node_position + node.direction * node.length * position_in_parent;

@@ -6,7 +6,7 @@ void TrunkFunction::execute(std::vector<Stem> &stems, int id, int parent_id) {
 
 	float segment_length = 1 / (resolution + .001);
 	Vector3 stem_direction = Vector3{ 0, 0, 1 };
-	Node firstNode{ stem_direction, Geometry::get_orthogonal_vector(stem_direction), segment_length, start_radius, id };
+	Node firstNode{ stem_direction, Geometry::get_orthogonal_vector(stem_direction), segment_length, start_radius, false, id };
 	Node *current_node = &firstNode;
 	int node_count = resolution * length;
 	for (size_t i = 0; i < node_count; i++) {
@@ -19,7 +19,7 @@ void TrunkFunction::execute(std::vector<Stem> &stems, int id, int parent_id) {
 		direction += Vector3(0, 0, up_attraction / (resolution + .001f));
 		direction.normalize();
 		float position_in_parent = 1;
-		NodeChild child{ Node{ direction, firstNode.tangent, segment_length, radius, id }, position_in_parent };
+		NodeChild child{ Node{ direction, firstNode.tangent, segment_length, radius, false, id }, position_in_parent };
 		current_node->children.push_back(std::make_shared<NodeChild>(std::move(child)));
 		current_node = &current_node->children.back()->node;
 	}

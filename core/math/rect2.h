@@ -49,6 +49,34 @@ struct _NO_DISCARD_ Rect2 {
 	real_t get_top() const { return position.y + size.y; }
 
 	_FORCE_INLINE_ Vector2 get_center() const { return position + (size * 0.5); }
+	real_t &operator[](int index) {
+		switch (index) {
+			case 0:
+				return position.x;
+			case 1:
+				return position.y;
+
+			case 2:
+				return size.x;
+			case 3:
+				return size.y;
+		}
+		return size.y;
+	}
+	const real_t &operator[](int index) const {
+		switch (index) {
+			case 0:
+				return position.x;
+			case 1:
+				return position.y;
+
+			case 2:
+				return size.x;
+			case 3:
+				return size.y;
+		}
+		return size.y;
+	}
 
 	inline bool intersects(const Rect2 &p_rect, const bool p_include_borders = false) const {
 #ifdef MATH_CHECKS
@@ -433,6 +461,34 @@ struct _NO_DISCARD_ Rect2i {
 		new_rect.size.y = MIN(p_rect_end.y, end.y) - new_rect.position.y;
 
 		return new_rect;
+	}
+	int &operator[](int index) {
+		switch (index) {
+			case 0:
+				return position.x;
+			case 1:
+				return position.y;
+
+			case 2:
+				return size.x;
+			case 3:
+				return size.y;
+		}
+		return size.y;
+	}
+	const int &operator[](int index) const {
+		switch (index) {
+			case 0:
+				return position.x;
+			case 1:
+				return position.y;
+
+			case 2:
+				return size.x;
+			case 3:
+				return size.y;
+		}
+		return size.y;
 	}
 
 	inline Rect2i merge(const Rect2i &p_rect) const { ///< return a merged rect
