@@ -5208,9 +5208,15 @@ ShaderLanguage::Node *ShaderLanguage::_parse_expression(BlockNode *p_block, cons
 #ifdef DEBUG_ENABLED
 				if (check_warnings) {
 					StringName func_name;
+					BlockNode *b = p_block;
 
-					if (p_block && p_block->parent_function) {
-						func_name = p_block->parent_function->name;
+					while (b) {
+						if (b->parent_function) {
+							func_name = b->parent_function->name;
+							break;
+						} else {
+							b = b->parent_block;
+						}
 					}
 
 					_parse_used_identifier(identifier, ident_type, func_name);
@@ -7793,7 +7799,7 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 				}
 
 				if (uniform) {
-					if (uniform_scope == ShaderNode::Uniform::SCOPE_GLOBAL) {
+					if (uniform_scope == ShaderNode::Uniform::SCOPE_GLOBAL && Engine::get_singleton()->is_editor_hint()) { // Type checking for global uniforms is not allowed outside the editor.
 						//validate global uniform
 						DataType gvtype = global_var_get_type_func(name);
 						if (gvtype == TYPE_MAX) {
@@ -9054,6 +9060,19 @@ Error ShaderLanguage::complete(const String &p_code, const ShaderCompileInfo &p_
 		} break;
 		case COMPLETION_MAIN_FUNCTION: {
 			for (const KeyValue<StringName, FunctionInfo> &E : p_info.functions) {
+				if (!E.value.main_function) {
+					continue;
+				}
+				bool found = false;
+				for (int i = 0; i < shader->functions.size(); i++) {
+					if (shader->functions[i].name == E.key) {
+						found = true;
+						break;
+					}
+				}
+				if (found) {
+					continue;
+				}
 				ScriptCodeCompletionOption option(E.key, ScriptCodeCompletionOption::KIND_FUNCTION);
 				r_options->push_back(option);
 			}
