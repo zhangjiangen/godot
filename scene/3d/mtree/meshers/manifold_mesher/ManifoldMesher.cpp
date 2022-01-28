@@ -5,9 +5,6 @@
 #include <algorithm>
 #include <iostream>
 
-using namespace Mtree;
-using namespace Mtree::NodeUtilities;
-
 using AttributeNames = ManifoldMesher::AttributeNames;
 
 namespace {
@@ -25,13 +22,13 @@ float get_smooth_amount(const float radius, const float node_length) {
 	return std::min(1.f, radius / node_length);
 }
 
-CircleDesignator add_circle(const Vector3 &node_position, const Node &node, float factor, const int radial_n_points, Mesh &mesh, const float uv_y) {
+CircleDesignator add_circle(const Vector3 &node_position, const Tree3DNode &node, float factor, const int radial_n_points, Tree3DMesh &mesh, const float uv_y) {
 	const Vector3 &right = node.tangent;
 	int vertex_index = mesh.vertices.size();
 	int uv_index = mesh.uvs.size();
 	Vector3 up = node.tangent.cross(node.direction);
 	Vector3 circle_position = node_position + node.length * factor * node.direction;
-	float radius = node.is_leaf() ? node.radius : Geometry::lerp(node.radius, node.children[0]->node.radius, factor);
+	float radius = node.is_leaf() ? node.radius : Tree3DGeometry::lerp(node.radius, node.children[0]->node.radius, factor);
 	auto &smooth_attr = *static_cast<Attribute<float> *>(mesh.attributes[AttributeNames::smooth_amount].get());
 	auto &radius_attr = *static_cast<Attribute<float> *>(mesh.attributes[AttributeNames::radius].get());
 	float smooth_amount = get_smooth_amount(radius, node.length);
@@ -66,7 +63,7 @@ bool is_index_in_branch_mask(const std::vector<IndexRange> &mask, const int inde
 	return false;
 }
 
-void bridge_circles(const CircleDesignator &first_circle, const CircleDesignator &second_circle, const int radial_n_points, Mesh &mesh, std::vector<IndexRange> *mask = nullptr) {
+void bridge_circles(const CircleDesignator &first_circle, const CircleDesignator &second_circle, const int radial_n_points, Tree3DMesh &mesh, std::vector<IndexRange> *mask = nullptr) {
 	for (int i = 0; i < radial_n_points; i++) {
 		if (mask != nullptr && is_index_in_branch_mask(*mask, i, radial_n_points)) {
 			continue;
@@ -87,8 +84,8 @@ void bridge_circles(const CircleDesignator &first_circle, const CircleDesignator
 	}
 }
 
-float get_branch_angle_around_parent(const Node &parent, const Node &branch) {
-	Vector3 projected_branch_dir = Geometry::projected_on_plane(branch.direction, parent.direction).normalized();
+float get_branch_angle_around_parent(const Tree3DNode &parent, const Tree3DNode &branch) {
+	Vector3 projected_branch_dir = Tree3DGeometry::projected_on_plane(branch.direction, parent.direction).normalized();
 	auto &right = parent.tangent;
 	Vector3 up = right.cross(parent.direction);
 	float cos_angle = projected_branch_dir.dot(right);
@@ -104,7 +101,7 @@ IndexRange get_branch_indices_on_circle(const int radial_n_points, const float c
 	return IndexRange{ min_index, max_index };
 }
 
-std::vector<IndexRange> get_children_ranges(const Node &node, const int radial_n_points) {
+std::vector<IndexRange> get_children_ranges(const Tree3DNode &node, const int radial_n_points) {
 	std::vector<IndexRange> ranges;
 	for (size_t i = 1; i < node.children.size(); i++) {
 		auto &child = node.children[i];
@@ -116,7 +113,7 @@ std::vector<IndexRange> get_children_ranges(const Node &node, const int radial_n
 	return ranges;
 }
 
-std::vector<int> get_child_index_order(const CircleDesignator &parent_base, const int child_radial_n, const IndexRange child_range, const NodeChild &child, const Node &parent, const Mesh &mesh) {
+std::vector<int> get_child_index_order(const CircleDesignator &parent_base, const int child_radial_n, const IndexRange child_range, const Tree3DNodeChild &child, const Tree3DNode &parent, const Tree3DMesh &mesh) {
 	int start = child_range.min_index + parent_base.vertex_index;
 	std::vector<int> child_base_indices;
 	child_base_indices.resize((size_t)child_radial_n);
@@ -132,7 +129,7 @@ std::vector<int> get_child_index_order(const CircleDesignator &parent_base, cons
 	return child_base_indices;
 }
 
-void add_child_base_geometry(const std::vector<int> &child_base_indices, const CircleDesignator &child_base, const float child_radius, const Vector3 &child_pos, const int offset, const float smooth_amount, Mesh &mesh) {
+void add_child_base_geometry(const std::vector<int> &child_base_indices, const CircleDesignator &child_base, const float child_radius, const Vector3 &child_pos, const int offset, const float smooth_amount, Tree3DMesh &mesh) {
 	auto &smooth_attr = *static_cast<Attribute<float> *>(mesh.attributes[ManifoldMesher::AttributeNames::smooth_amount].get());
 	auto &radius_attr = *static_cast<Attribute<float> *>(mesh.attributes[ManifoldMesher::AttributeNames::radius].get());
 	auto &direction_attr = *static_cast<Attribute<Vector3> *>(mesh.attributes[ManifoldMesher::AttributeNames::direction].get());
@@ -170,8 +167,8 @@ void add_child_base_geometry(const std::vector<int> &child_base_indices, const C
 	}
 }
 
-float get_child_twist(const Node &child, const Node &parent) {
-	Vector3 projected_parent_dir = Geometry::projected_on_plane(parent.direction, child.direction).normalized();
+float get_child_twist(const Tree3DNode &child, const Tree3DNode &parent) {
+	Vector3 projected_parent_dir = Tree3DGeometry::projected_on_plane(parent.direction, child.direction).normalized();
 	auto &right = projected_parent_dir;
 	Vector3 up = right.cross(child.direction);
 	float cos_angle = child.tangent.dot(right);
@@ -179,7 +176,7 @@ float get_child_twist(const Node &child, const Node &parent) {
 	return std::fmod(std::atan2(sin_angle, cos_angle) + 2 * M_PI, 2 * M_PI);
 }
 
-int add_child_base_uvs(float parent_uv_y, const Node &parent, const NodeChild &child, const IndexRange child_range, const int child_radial_n, const int parent_radial_n, Mesh &mesh) {
+int add_child_base_uvs(float parent_uv_y, const Tree3DNode &parent, const Tree3DNodeChild &child, const IndexRange child_range, const int child_radial_n, const int parent_radial_n, Tree3DMesh &mesh) {
 	float uv_growth = parent.length / (parent.radius + .001f) / (2 * M_PI);
 	for (size_t i = 0; i < 2; i++) // recreating outer uvs (but without continuous (no looping back to x=0)
 	{
@@ -210,7 +207,7 @@ int add_child_base_uvs(float parent_uv_y, const Node &parent, const NodeChild &c
 	return circle_uv_start_index;
 }
 
-CircleDesignator add_child_circle(const Node &parent, const NodeChild &child, const Vector3 &child_pos, const Vector3 &parent_pos, const CircleDesignator &parent_base, const IndexRange child_range, const float uv_y, Mesh &mesh) {
+CircleDesignator add_child_circle(const Tree3DNode &parent, const Tree3DNodeChild &child, const Vector3 &child_pos, const Vector3 &parent_pos, const CircleDesignator &parent_base, const IndexRange child_range, const float uv_y, Tree3DMesh &mesh) {
 	float smooth_amount = get_smooth_amount(child.node.radius, parent.length);
 
 	int child_radial_n = 2 * ((child_range.max_index - child_range.min_index + parent_base.radial_n) % parent_base.radial_n + 1); // number of vertices in child circle
@@ -225,12 +222,12 @@ CircleDesignator add_child_circle(const Node &parent, const NodeChild &child, co
 	return child_base;
 }
 
-Vector3 get_side_child_position(const Node &parent, const NodeChild &child, const Vector3 &node_position) {
-	Vector3 tangent = Geometry::projected_on_plane(child.node.direction, parent.direction).normalized();
+Vector3 get_side_child_position(const Tree3DNode &parent, const Tree3DNodeChild &child, const Vector3 &node_position) {
+	Vector3 tangent = Tree3DGeometry::projected_on_plane(child.node.direction, parent.direction).normalized();
 	return node_position + parent.direction * parent.length * child.position_in_parent + tangent * parent.radius;
 }
 
-bool has_side_branches(const Node &node) {
+bool has_side_branches(const Tree3DNode &node) {
 	if (node.children.size() < 2)
 		return false;
 
@@ -241,12 +238,12 @@ bool has_side_branches(const Node &node) {
 	return false;
 }
 
-void mesh_node_rec(const Node &node, const Vector3 &node_position, const CircleDesignator &base, Mesh &mesh, const float uv_y) {
+void mesh_node_rec(const Tree3DNode &node, const Vector3 &node_position, const CircleDesignator &base, Tree3DMesh &mesh, const float uv_y) {
 	if (node.children.size() < 2) {
 		float uv_growth = node.length / (node.radius + .001f) / (2 * M_PI);
 		auto child_circle = add_circle(node_position, node, 1, base.radial_n, mesh, uv_y + uv_growth);
 		bridge_circles(base, child_circle, base.radial_n, mesh);
-		Vector3 child_pos = NodeUtilities::get_position_in_node(node_position, node, 1);
+		Vector3 child_pos = get_position_in_node(node_position, node, 1);
 		// 如果非叶子结点，添加这个圆环
 		if (!node.is_leaf()) {
 			mesh_node_rec(node.children[0]->node, child_pos, child_circle, mesh, uv_y + uv_growth);
@@ -259,7 +256,7 @@ void mesh_node_rec(const Node &node, const Vector3 &node_position, const CircleD
 		for (int i = 0; i < node.children.size(); i++) {
 			if (i == 0) // first child is the continuity of the branch
 			{
-				Vector3 child_pos = NodeUtilities::get_position_in_node(node_position, node, 1);
+				Vector3 child_pos = get_position_in_node(node_position, node, 1);
 				if (node.children.size() > 0) {
 					mesh_node_rec(node.children[0]->node, child_pos, end_circle, mesh, uv_y + uv_growth);
 				}
@@ -275,10 +272,8 @@ void mesh_node_rec(const Node &node, const Vector3 &node_position, const CircleD
 }
 } //namespace
 
-namespace Mtree {
-
-Mesh ManifoldMesher::mesh_tree(Tree &tree) {
-	Mesh mesh;
+Tree3DMesh ManifoldMesher::mesh_tree(Tree3D &tree) {
+    Tree3DMesh mesh;
 	auto &smooth_attr = mesh.add_attribute<float>(AttributeNames::smooth_amount);
 	auto &radius_attr = mesh.add_attribute<float>(AttributeNames::radius);
 	auto &direction_attr = mesh.add_attribute<Vector3>(AttributeNames::direction);
@@ -295,5 +290,3 @@ Mesh ManifoldMesher::mesh_tree(Tree &tree) {
 		MeshProcessing::Smoothing::smooth_mesh(mesh, smooth_iterations, 1, &smooth_attr.data);
 	return mesh;
 }
-
-} //namespace Mtree

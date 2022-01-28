@@ -1,29 +1,21 @@
 #pragma once
-#include <vector>
 #include <array>
 #include <iostream>
+#include <vector>
 
+struct AbstractAttribute {
+	virtual void add_data() = 0;
+};
 
-namespace Mtree
-{
+template <typename T>
+struct Attribute : AbstractAttribute {
+	std::string name;
+	std::vector<T> data;
 
-    struct AbstractAttribute
-    {
-        virtual void add_data() = 0;
-    };
+	Attribute(std::string name) :
+			name{ name } {};
 
-
-    template <typename T>
-    struct Attribute : AbstractAttribute
-    {
-        std::string name;
-        std::vector<T> data;
-
-        Attribute(std::string name) : name{ name } {};
-
-        virtual void add_data()
-        {
-            data.emplace_back();
-        };
-    };
-}
+	virtual void add_data() {
+		data.emplace_back();
+	};
+};

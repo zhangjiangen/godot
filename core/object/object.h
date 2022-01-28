@@ -98,6 +98,7 @@ enum PropertyHint {
 	PROPERTY_HINT_ARRAY_TYPE,
 	PROPERTY_HINT_INT_IS_POINTER,
 	PROPERTY_HINT_LOCALE_ID,
+	PROPERTY_HINT_RANGE_MINMAX,
 	PROPERTY_HINT_MAX,
 	// When updating PropertyHint, also sync the hardcoded list in VisualScriptEditorVariableEdit
 };
@@ -139,6 +140,7 @@ enum PropertyUsageFlags {
 	PROPERTY_USAGE_DEFAULT_INTL = PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_NETWORK | PROPERTY_USAGE_INTERNATIONALIZED,
 	PROPERTY_USAGE_NO_EDITOR = PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_NETWORK,
 };
+
 // 字符串转换
 #define CODE_TO_STRING(arg) #arg
 #define CODE_TO_STRING_2(arg1, arg2) CODE_TO_STRING(arg1##arg2)
@@ -154,60 +156,82 @@ enum PropertyUsageFlags {
 #define ADD_SUBGROUP(m_name, m_prefix) ::ClassDB::add_property_subgroup(get_class_static(), m_name, m_prefix)
 #define ADD_LINKED_PROPERTY(m_property, m_linked_property) ::ClassDB::add_linked_property(get_class_static(), m_property, m_linked_property)
 
-#define DECL_PROPERTY(type, name)                                    \
-	type _get_##name() { return name; }                              \
-	void _set_##name(type p_value_##name) { name = p_value_##name; } \
+#define DECL_PROPERTY(type, name, ...)                                                                                           \
+	type _get_##name() { return name; }                                                                                          \
+	void _set_##name(type p_value_##name) { name = p_value_##name; }                                                             \
+	static PropertyInfo &_get_pro_##name##_property_info() {                                                                     \
+		Variant::Type t_##name##_variant_type = Variant::get_type<type>();                                                       \
+		static PropertyInfo info = PropertyInfo(t_##name##_variant_type, #name, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT); \
+		info.modify(__VA_ARGS__);                                                                                                \
+		return info;                                                                                                             \
+	}                                                                                                                            \
 	type name
 // 修改属性调用一个回调
-#define DECL_PROPERTY_CB(type, name, cb_func) \
-	type _get_##name() { return name; }       \
-	void _set_##name(type p_value_##name) {   \
-		name = p_value_##name;                \
-		cb_func();                            \
-	}                                         \
+#define DECL_PROPERTY_CB(type, name, cb_func, ...)                                                                               \
+	type _get_##name() { return name; }                                                                                          \
+	void _set_##name(type p_value_##name) {                                                                                      \
+		name = p_value_##name;                                                                                                   \
+		cb_func();                                                                                                               \
+	}                                                                                                                            \
+	static PropertyInfo &_get_pro_##name##_property_info() {                                                                     \
+		Variant::Type t_##name##_variant_type = Variant::get_type<type>();                                                       \
+		static PropertyInfo info = PropertyInfo(t_##name##_variant_type, #name, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT); \
+		info.modify(__VA_ARGS__);                                                                                                \
+		return info;                                                                                                             \
+	}                                                                                                                            \
 	type name
 // 修改属性调用一个回调
-#define DECL_PROPERTY_CK(type, name, ck_func) \
-	type _get_##name() {                      \
-		ck_func();                            \
-		return name;                          \
-	}                                         \
-	void _set_##name(type p_value_##name) {   \
-		name = p_value_##name;                \
-	}                                         \
+#define DECL_PROPERTY_CK(type, name, ck_func, ...)                                                                               \
+	type _get_##name() {                                                                                                         \
+		ck_func();                                                                                                               \
+		return name;                                                                                                             \
+	}                                                                                                                            \
+	void _set_##name(type p_value_##name) {                                                                                      \
+		name = p_value_##name;                                                                                                   \
+	}                                                                                                                            \
+	static PropertyInfo &_get_pro_##name##_property_info() {                                                                     \
+		Variant::Type t_##name##_variant_type = Variant::get_type<type>();                                                       \
+		static PropertyInfo info = PropertyInfo(t_##name##_variant_type, #name, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT); \
+		info.modify(__VA_ARGS__);                                                                                                \
+		return info;                                                                                                             \
+	}                                                                                                                            \
 	type name
 // 定义一个按钮
-#define DECL_PROPERTY_BUTTON(state_name, call_function)                    \
-	bool _get_##state_name() { return state_name; }                        \
-	void _set_##state_name(bool p_value_##state_name) { call_function(); } \
+#define DECL_PROPERTY_BUTTON(state_name, call_function, ...)                                                                                 \
+	bool _get_##state_name() { return state_name; }                                                                                          \
+	void _set_##state_name(bool p_value_##state_name) { call_function(); }                                                                   \
+	static PropertyInfo &_get_pro_##state_name##_property_info() {                                                                           \
+		Variant::Type t_##state_name##_variant_type = Variant::get_type<bool>();                                                             \
+		static PropertyInfo info = PropertyInfo(t_##state_name##_variant_type, #state_name, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT); \
+		info.modify(__VA_ARGS__);                                                                                                            \
+		return info;                                                                                                                         \
+	}                                                                                                                                        \
 	bool state_name = true
 #define IMP_PROPERTY(class_name, type, name)                                                                 \
 	const char *c_get_##name##_func_name = CODE_TO_STRING_2(_get_, name);                                    \
 	const char *c_set_##name##_func_name = CODE_TO_STRING_2(_set_, name);                                    \
 	const char *c_##name##_arg_name = CODE_TO_STRING_2(p_, name);                                            \
-	Variant::Type t_##name##_variant_type = Variant::get_type<type>();                                       \
+                                                                                                             \
 	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set_##name); \
 	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                      \
-	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), c_set_##name##_func_name, c_get_##name##_func_name);
+	ADD_PROPERTY(class_name::_get_pro_##name##_property_info(), c_set_##name##_func_name, c_get_##name##_func_name);
 #define IMP_PROPERTY_USAGE(class_name, type, name, usage)                                                    \
 	const char *c_get_##name##_func_name = CODE_TO_STRING_2(_get_, name);                                    \
 	const char *c_set_##name##_func_name = CODE_TO_STRING_2(_set_, name);                                    \
 	const char *c_##name##_arg_name = CODE_TO_STRING_2(p_, name);                                            \
-	Variant::Type t_##name##_variant_type = Variant::get_type<type>();                                       \
+                                                                                                             \
 	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set_##name); \
 	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                      \
-	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, PROPERTY_HINT_NONE, "", usage), c_set_##name##_func_name, c_get_##name##_func_name);
-
+	ADD_PROPERTY(class_name::_get_pro_##name##_property_info(), c_set_##name##_func_name, c_get_##name##_func_name);
 // 动态属性，不可编辑，不存档，用来保存临时状态
 #define IMP_PROPERTY_Temp(class_name, type, name)                                                            \
 	const char *c_get_##name##_func_name = CODE_TO_STRING_2(_get_, name);                                    \
 	const char *c_set_##name##_func_name = CODE_TO_STRING_2(_set_, name);                                    \
 	const char *c_##name##_arg_name = CODE_TO_STRING_2(p_, name);                                            \
-	Variant::Type t_##name##_variant_type = Variant::get_type<bool>();                                       \
+                                                                                                             \
 	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set_##name); \
 	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                      \
-	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), c_set_##name##_func_name, c_get_##name##_func_name);
-
+	ADD_PROPERTY(class_name::_get_pro_##name##_property_info(), c_set_##name##_func_name, c_get_##name##_func_name);
 // 枚举类型
 #define IMP_PROPERTY_D(class_name, type, name, pro_hit, hint_string)                                         \
 	const char *c_get_##name##_func_name = CODE_TO_STRING_2(_get_, name);                                    \
@@ -216,45 +240,52 @@ enum PropertyUsageFlags {
 	Variant::Type t_##name##_variant_type = Variant::get_type<type>();                                       \
 	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set_##name); \
 	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                      \
-	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, pro_hit, hint_string, PROPERTY_USAGE_DEFAULT), c_set_##name##_func_name, c_get_##name##_func_name);
+	ADD_PROPERTY(class_name::_get_pro_##name##_property_info(), c_set_##name##_func_name, c_get_##name##_func_name);
 // 按钮类型
 #define IMP_PROPERTY_D_BUTTON(class_name, name, button_name)                                                 \
 	const char *c_get_##name##_func_name = CODE_TO_STRING_2(_get_, name);                                    \
 	const char *c_set_##name##_func_name = CODE_TO_STRING_2(_set_, name);                                    \
 	const char *c_##name##_arg_name = CODE_TO_STRING_2(p_, name);                                            \
-	Variant::Type t_##name##_variant_type = Variant::get_type<bool>();                                       \
+                                                                                                             \
 	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set_##name); \
 	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                      \
-	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, PROPERTY_HINT_BUTTON, button_name, PROPERTY_USAGE_DEFAULT), c_set_##name##_func_name, c_get_##name##_func_name);
+	ADD_PROPERTY(class_name::_get_pro_##name##_property_info(), c_set_##name##_func_name, c_get_##name##_func_name);
 
 // 资源类型
 #define IMP_PROPERTY_D_RES(class_name, type, name, res_class_name)                                           \
 	const char *c_get_##name##_func_name = CODE_TO_STRING_2(_get_, name);                                    \
 	const char *c_set_##name##_func_name = CODE_TO_STRING_2(_set_, name);                                    \
 	const char *c_##name##_arg_name = CODE_TO_STRING_2(p_, name);                                            \
-	Variant::Type t_##name##_variant_type = Variant::get_type<type>();                                       \
+                                                                                                             \
 	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set_##name); \
 	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                      \
-	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, PROPERTY_HINT_RESOURCE_TYPE, "", PROPERTY_USAGE_DEFAULT, #res_class_name), c_set_##name##_func_name, c_get_##name##_func_name);
+	ADD_PROPERTY(class_name::_get_pro_##name##_property_info(), c_set_##name##_func_name, c_get_##name##_func_name);
 // 动态修改可编辑状态，需要设置一个bool类型的属性名称，获取这个属性是否可以编辑
 #define IMP_PROPERTY_D_DYN_EDITOR(class_name, type, name, pro_hit, hint_string, editor_state_get_bool_pro)   \
 	const char *c_get_##name##_func_name = CODE_TO_STRING_2(_get_, name);                                    \
 	const char *c_set_##name##_func_name = CODE_TO_STRING_2(_set_, name);                                    \
 	const char *c_##name##_arg_name = CODE_TO_STRING_2(p_, name);                                            \
-	Variant::Type t_##name##_variant_type = Variant::get_type<type>();                                       \
+                                                                                                             \
 	ClassDB::bind_method(D_METHOD(c_set_##name##_func_name, c_##name##_arg_name), &class_name::_set_##name); \
 	ClassDB::bind_method(D_METHOD(c_get_##name##_func_name), &class_name::_get_##name);                      \
-	ADD_PROPERTY(PropertyInfo(t_##name##_variant_type, #name, pro_hit, hint_string, PROPERTY_USAGE_DEFAULT, StringName(), editor_state_get), c_set_##name##_func_name, c_get_##name##_func_name);
+	ADD_PROPERTY(class_name::_get_pro_##name##_property_info(), c_set_##name##_func_name, c_get_##name##_func_name);
 
 #define ADD_ARRAY_COUNT(m_label, m_count_property, m_count_property_setter, m_count_property_getter, m_prefix) ClassDB::add_property_array_count(get_class_static(), m_label, m_count_property, _scs_create(m_count_property_setter), _scs_create(m_count_property_getter), m_prefix)
 #define ADD_ARRAY_COUNT_WITH_USAGE_FLAGS(m_label, m_count_property, m_count_property_setter, m_count_property_getter, m_prefix, m_property_usage_flags) ClassDB::add_property_array_count(get_class_static(), m_label, m_count_property, _scs_create(m_count_property_setter), _scs_create(m_count_property_getter), m_prefix, m_property_usage_flags)
 #define ADD_ARRAY(m_array_path, m_prefix) ClassDB::add_property_array(get_class_static(), m_array_path, m_prefix)
 
+struct PropertyAttBase {
+	virtual void on_modify_property_info(struct PropertyInfo *info) const {}
+	virtual ~PropertyAttBase() {}
+};
 struct PropertyInfo {
 	StringName class_name; // For classes
 	StringName update_read_state; // For classes
 	String name;
 	String hint_string;
+	// enum State{ S_Hide = 1, S_Disable = 2}
+	// int get_state_function_name()
+	String get_state_function_name;
 #ifdef TOOLS_ENABLED
 	Vector<String> linked_properties;
 #endif
@@ -304,8 +335,180 @@ struct PropertyInfo {
 	bool operator<(const PropertyInfo &p_info) const {
 		return name < p_info.name;
 	}
+	void modify(const PropertyAttBase &_v0,
+			const PropertyAttBase &_v1,
+			const PropertyAttBase &_v2,
+			const PropertyAttBase &_v3,
+			const PropertyAttBase &_v4,
+			const PropertyAttBase &_v5,
+			const PropertyAttBase &_v6,
+			const PropertyAttBase &_v7,
+			const PropertyAttBase &_v8,
+			const PropertyAttBase &_v9
+
+	) {
+		_v0.on_modify_property_info(this);
+		_v1.on_modify_property_info(this);
+		_v2.on_modify_property_info(this);
+		_v3.on_modify_property_info(this);
+		_v4.on_modify_property_info(this);
+		_v5.on_modify_property_info(this);
+		_v6.on_modify_property_info(this);
+		_v7.on_modify_property_info(this);
+		_v8.on_modify_property_info(this);
+		_v9.on_modify_property_info(this);
+	}
+	void modify(const PropertyAttBase &_v0,
+			const PropertyAttBase &_v1,
+			const PropertyAttBase &_v2,
+			const PropertyAttBase &_v3,
+			const PropertyAttBase &_v4,
+			const PropertyAttBase &_v5,
+			const PropertyAttBase &_v6,
+			const PropertyAttBase &_v7,
+			const PropertyAttBase &_v8
+
+	) {
+		_v0.on_modify_property_info(this);
+		_v1.on_modify_property_info(this);
+		_v2.on_modify_property_info(this);
+		_v3.on_modify_property_info(this);
+		_v4.on_modify_property_info(this);
+		_v5.on_modify_property_info(this);
+		_v6.on_modify_property_info(this);
+		_v7.on_modify_property_info(this);
+		_v8.on_modify_property_info(this);
+	}
+	void modify(const PropertyAttBase &_v0,
+			const PropertyAttBase &_v1,
+			const PropertyAttBase &_v2,
+			const PropertyAttBase &_v3,
+			const PropertyAttBase &_v4,
+			const PropertyAttBase &_v5,
+			const PropertyAttBase &_v6,
+			const PropertyAttBase &_v7
+
+	) {
+		_v0.on_modify_property_info(this);
+		_v1.on_modify_property_info(this);
+		_v2.on_modify_property_info(this);
+		_v3.on_modify_property_info(this);
+		_v4.on_modify_property_info(this);
+		_v5.on_modify_property_info(this);
+		_v6.on_modify_property_info(this);
+		_v7.on_modify_property_info(this);
+	}
+	void modify(const PropertyAttBase &_v0,
+			const PropertyAttBase &_v1,
+			const PropertyAttBase &_v2,
+			const PropertyAttBase &_v3,
+			const PropertyAttBase &_v4,
+			const PropertyAttBase &_v5,
+			const PropertyAttBase &_v6
+
+	) {
+		_v0.on_modify_property_info(this);
+		_v1.on_modify_property_info(this);
+		_v2.on_modify_property_info(this);
+		_v3.on_modify_property_info(this);
+		_v4.on_modify_property_info(this);
+		_v5.on_modify_property_info(this);
+		_v6.on_modify_property_info(this);
+	}
+	void modify(const PropertyAttBase &_v0,
+			const PropertyAttBase &_v1,
+			const PropertyAttBase &_v2,
+			const PropertyAttBase &_v3,
+			const PropertyAttBase &_v4,
+			const PropertyAttBase &_v5
+
+	) {
+		_v0.on_modify_property_info(this);
+		_v1.on_modify_property_info(this);
+		_v2.on_modify_property_info(this);
+		_v3.on_modify_property_info(this);
+		_v4.on_modify_property_info(this);
+		_v5.on_modify_property_info(this);
+	}
+	void modify(const PropertyAttBase &_v0,
+			const PropertyAttBase &_v1,
+			const PropertyAttBase &_v2,
+			const PropertyAttBase &_v3,
+			const PropertyAttBase &_v4
+
+	) {
+		_v0.on_modify_property_info(this);
+		_v1.on_modify_property_info(this);
+		_v2.on_modify_property_info(this);
+		_v3.on_modify_property_info(this);
+		_v4.on_modify_property_info(this);
+	}
+	void modify(const PropertyAttBase &_v0,
+			const PropertyAttBase &_v1,
+			const PropertyAttBase &_v2,
+			const PropertyAttBase &_v3
+
+	) {
+		_v0.on_modify_property_info(this);
+		_v1.on_modify_property_info(this);
+		_v2.on_modify_property_info(this);
+		_v3.on_modify_property_info(this);
+	}
+	void modify(const PropertyAttBase &_v0,
+			const PropertyAttBase &_v1,
+			const PropertyAttBase &_v2
+
+	) {
+		_v0.on_modify_property_info(this);
+		_v1.on_modify_property_info(this);
+		_v2.on_modify_property_info(this);
+	}
+	void modify(const PropertyAttBase &_v0,
+			const PropertyAttBase &_v1
+
+	) {
+		_v0.on_modify_property_info(this);
+		_v1.on_modify_property_info(this);
+	}
+	void modify(const PropertyAttBase &_v0
+
+	) {
+		_v0.on_modify_property_info(this);
+	}
+	void modify() {
+	}
 };
 
+// 区间范围类型，只支持int和float类型属性
+
+struct PA_Range : public PropertyAttBase {
+	PA_Range(float min, float max, float step = 0.001f) {
+		minV = min;
+		maxV = max;
+		stepV = step;
+		if (maxV < minV) {
+			maxV = min;
+			minV = max;
+		}
+	}
+	void on_modify_property_info(PropertyInfo *info) const override {
+		if (info->type == Variant::FLOAT || info->type == Variant::INT) {
+			info->hint = PROPERTY_HINT_RANGE;
+			if (info->type == Variant::INT)
+				info->hint_string = String::form_format("%0.5f,%0.5f,%0.5f", minV, maxV, stepV);
+			else {
+				float s = stepV;
+				if (s < 1.0f) {
+					s = 1;
+				}
+				info->hint_string = String::form_format("%0.5f,%0.5f,%0.5f", minV, maxV, s);
+			}
+		}
+	}
+	float minV = 0;
+	float maxV = 1;
+	float stepV = 0.001f;
+};
 Array convert_property_list(const List<PropertyInfo> *p_list);
 
 struct MethodInfo {

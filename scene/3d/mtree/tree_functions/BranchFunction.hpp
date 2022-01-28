@@ -6,10 +6,9 @@
 #include <queue>
 #include <vector>
 
-namespace Mtree {
-class BranchFunction : public TreeFunction {
+class Tree3DBranchFunction : public Tree3DFunction {
 public:
-	float start = .1;
+	DECL_PROPERTY(float,start,PA_Range(0.0,1.0)) = .1;
 	float end = 1;
 	float branches_density = 2; // 0 < x
 	PropertyWrapper length{ ConstantProperty(9) }; // x > 0
@@ -30,7 +29,7 @@ public:
 	// 是否允许生长树叶
 	bool can_spawn_leafs = true;
 
-	void execute(std::vector<Stem> &stems, int id, int parent_id) override;
+	void execute(std::vector<Tree3DStem> &stems, int id, int parent_id) override;
 
 	class BranchGrowthInfo : public GrowthInfo {
 	public:
@@ -47,17 +46,15 @@ public:
 	};
 
 private:
-	std::vector<std::reference_wrapper<Node>> get_origins(std::vector<Stem> &stems, const int id, const int parent_id);
+	std::vector<std::reference_wrapper<Tree3DNode>> get_origins(std::vector<Tree3DStem> &stems, const int id, const int parent_id);
 
-	void grow_origins(std::vector<std::reference_wrapper<Node>> &, const int id);
+	void grow_origins(std::vector<std::reference_wrapper<Tree3DNode>> &, const int id);
 
-	void grow_node_once(Node &node, const int id, std::queue<std::reference_wrapper<Node>> &results);
+	void grow_node_once(Tree3DNode &node, const int id, std::queue<std::reference_wrapper<Tree3DNode>> &results);
 
-	void apply_gravity_to_branch(Node &node);
+	void apply_gravity_to_branch(Tree3DNode &node);
 
-	void apply_gravity_rec(Node &node, Quaternion previous_rotations);
+	void apply_gravity_rec(Tree3DNode &node, Quaternion previous_rotations);
 
-	void update_weight_rec(Node &node);
+	void update_weight_rec(Tree3DNode &node);
 };
-
-} //namespace Mtree

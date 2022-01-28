@@ -3,8 +3,6 @@
 #include "scene/3d/mtree/utilities/RandomGenerator.hpp"
 #include <vector>
 
-namespace Mtree {
-
 struct Property {
 	virtual float execute(float x) = 0;
 };
@@ -29,7 +27,7 @@ struct RandomProperty : Property {
 			min_value(min), max_value(max){};
 
 	float execute(float x) override {
-		return Geometry::lerp(min_value, max_value, rand_gen.get_0_1());
+		return Tree3DGeometry::lerp(min_value, max_value, rand_gen.get_0_1());
 	}
 };
 
@@ -48,7 +46,7 @@ struct SimpleCurveProperty : Property {
 		if (power > 0 && power != 1) {
 			factor = std::pow(factor, power);
 		}
-		return Geometry::lerp(y_min, y_max, factor);
+		return Tree3DGeometry::lerp(y_min, y_max, factor);
 	}
 };
 
@@ -76,4 +74,3 @@ struct PropertyWrapper {
 		return property->execute(x);
 	};
 };
-} //namespace Mtree

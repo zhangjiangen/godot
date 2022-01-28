@@ -2,15 +2,14 @@
 #include "scene/3d/mtree/tree_functions/base_types/TreeFunction.hpp"
 #include <vector>
 
-namespace Mtree {
-class GrowthFunction : public TreeFunction {
+class Tree3DGrowthFunction : public Tree3DFunction {
 private:
-	float update_vigor_ratio_rec(Node &node);
-	void update_vigor_rec(Node &node, float vigor);
-	void simulate_growth_rec(Node &node, int id);
-	void get_weight_rec(Node &node);
-	void apply_gravity_rec(Node &node, Basis curent_rotation);
-	void update_absolute_position_rec(Node &node, const Vector3 &node_position);
+	float update_vigor_ratio_rec(Tree3DNode &node);
+	void update_vigor_rec(Tree3DNode &node, float vigor);
+	void simulate_growth_rec(Tree3DNode &node, int id);
+	void get_weight_rec(Tree3DNode &node);
+	void apply_gravity_rec(Tree3DNode &node, Basis curent_rotation);
+	void update_absolute_position_rec(Tree3DNode &node, const Vector3 &node_position);
 
 public:
 	int iterations = 5;
@@ -36,7 +35,7 @@ public:
 
 	float root_flux = 5;
 
-	void execute(std::vector<Stem> &stems, int id, int parent_id) override;
+	void execute(std::vector<Tree3DStem> &stems, int id, int parent_id) override;
 };
 
 class BioNodeInfo : public GrowthInfo {
@@ -59,5 +58,3 @@ public:
 		this->philotaxis_angle = philotaxis_angle;
 	};
 };
-
-} //namespace Mtree

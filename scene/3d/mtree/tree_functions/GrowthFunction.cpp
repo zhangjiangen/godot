@@ -6,8 +6,7 @@
 #include <iostream>
 #include <vector>
 
-namespace Mtree {
-void setup_growth_information_rec(Node &node) {
+void setup_growth_information_rec(Tree3DNode &node) {
 	node.growthInfo = std::make_unique<BioNodeInfo>(node.children.size() == 0 ? BioNodeInfo::NodeType::Meristem : BioNodeInfo::NodeType::Ignored);
 	for (auto &child : node.children)
 		setup_growth_information_rec(child->node);
@@ -15,7 +14,7 @@ void setup_growth_information_rec(Node &node) {
 
 // get total amount of energy from the node and its descendance, and assign for each node the realtive amount of energy it receive
 // 从节点及其后代获取总能量，并为每个节点分配它接收到的实际能量
-float GrowthFunction::update_vigor_ratio_rec(Node &node) {
+float Tree3DGrowthFunction::update_vigor_ratio_rec(Tree3DNode &node) {
 	BioNodeInfo &info = static_cast<BioNodeInfo &>(*node.growthInfo);
 	if (info.type == BioNodeInfo::NodeType::Meristem) {
 		return 1;
@@ -39,7 +38,7 @@ float GrowthFunction::update_vigor_ratio_rec(Node &node) {
 
 // update the amount of energy available to a node
 // 更新节点可用的能量
-void GrowthFunction::update_vigor_rec(Node &node, float vigor) {
+void Tree3DGrowthFunction::update_vigor_rec(Tree3DNode &node, float vigor) {
 	BioNodeInfo &info = static_cast<BioNodeInfo &>(*node.growthInfo);
 	info.vigor = vigor;
 	for (auto &child : node.children) {
@@ -50,7 +49,7 @@ void GrowthFunction::update_vigor_rec(Node &node, float vigor) {
 
 // apply rules on the node based on the energy available to it
 // 根据节点可用的能量在节点上应用规则
-void GrowthFunction::simulate_growth_rec(Node &node, int id) {
+void Tree3DGrowthFunction::simulate_growth_rec(Tree3DNode &node, int id) {
 	BioNodeInfo &info = static_cast<BioNodeInfo &>(*node.growthInfo);
 	bool primary_growth = info.type == BioNodeInfo::NodeType::Meristem && info.vigor > grow_threshold;
 	bool secondary_growth = info.vigor > grow_threshold && info.type != BioNodeInfo::NodeType::Ignored; // Todo : should be another parameter
@@ -66,27 +65,27 @@ void GrowthFunction::simulate_growth_rec(Node &node, int id) {
 		node.radius = (1 - std::exp(-info.age * .01f) + .01f) * .5;
 	}
 	if (primary_growth) {
-		Vector3 child_direction = node.direction + Vector3{ 0, 0, 1 } * gravitropism + Geometry::random_vec() * randomness;
+		Vector3 child_direction = node.direction + Vector3{ 0, 0, 1 } * gravitropism + Tree3DGeometry::random_vec() * randomness;
 		child_direction.normalize();
 		float child_radius = node.radius;
 		float child_length = branch_length * (info.vigor + .1f);
-		NodeChild child = NodeChild{ Node{ child_direction, node.tangent, branch_length, child_radius, node.can_spawn_leaf, id }, 1 };
+		Tree3DNodeChild child = Tree3DNodeChild{ Tree3DNode{ child_direction, node.tangent, branch_length, child_radius, node.can_spawn_leaf, id }, 1 };
 		float child_angle = split ? info.philotaxis_angle + philotaxis_angle : info.philotaxis_angle;
 		child.node.growthInfo = std::make_unique<BioNodeInfo>(BioNodeInfo::NodeType::Meristem, 0, child_angle);
-		node.children.push_back(std::make_shared<NodeChild>(std::move(child)));
+		node.children.push_back(std::make_shared<Tree3DNodeChild>(std::move(child)));
 		info.type = BioNodeInfo::NodeType::Branch;
 	}
 	if (split) {
 		info.philotaxis_angle += philotaxis_angle;
 		Vector3 tangent{ std::cos(info.philotaxis_angle), std::sin(info.philotaxis_angle), 0 };
-		tangent = Geometry::get_look_at_rot(node.direction).xform(tangent);
-		Vector3 child_direction = Geometry::lerp(node.direction, tangent, split_angle / 90);
+		tangent = Tree3DGeometry::get_look_at_rot(node.direction).xform(tangent);
+		Vector3 child_direction = Tree3DGeometry::lerp(node.direction, tangent, split_angle / 90);
 		child_direction.normalize();
 		float child_radius = node.radius;
 		float child_length = branch_length * (info.vigor + .1f);
-		NodeChild child = NodeChild{ Node{ child_direction, node.tangent, branch_length, child_radius, node.can_spawn_leaf, id }, 1 };
+		Tree3DNodeChild child = Tree3DNodeChild{ Tree3DNode{ child_direction, node.tangent, branch_length, child_radius, node.can_spawn_leaf, id }, 1 };
 		child.node.growthInfo = std::make_unique<BioNodeInfo>(BioNodeInfo::NodeType::Meristem);
-		node.children.push_back(std::make_shared<NodeChild>(std::move(child)));
+		node.children.push_back(std::make_shared<Tree3DNodeChild>(std::move(child)));
 		info.type = BioNodeInfo::NodeType::Branch;
 	}
 	for (size_t i = 0; i < child_count; i++) {
@@ -94,7 +93,7 @@ void GrowthFunction::simulate_growth_rec(Node &node, int id) {
 	}
 }
 
-void GrowthFunction::get_weight_rec(Node &node) {
+void Tree3DGrowthFunction::get_weight_rec(Tree3DNode &node) {
 	BioNodeInfo &info = static_cast<BioNodeInfo &>(*node.growthInfo);
 	for (auto &child : node.children) {
 		get_weight_rec(child->node);
@@ -112,7 +111,7 @@ void GrowthFunction::get_weight_rec(Node &node) {
 	info.branch_weight = total_weight;
 }
 
-void GrowthFunction::apply_gravity_rec(Node &node, Basis curent_rotation) {
+void Tree3DGrowthFunction::apply_gravity_rec(Tree3DNode &node, Basis curent_rotation) {
 	BioNodeInfo &info = static_cast<BioNodeInfo &>(*node.growthInfo);
 	Vector3 offset = (info.center_of_mass - info.absolute_position);
 	offset[2] = 0;
@@ -132,7 +131,7 @@ void GrowthFunction::apply_gravity_rec(Node &node, Basis curent_rotation) {
 	}
 }
 
-void GrowthFunction::update_absolute_position_rec(Node &node, const Vector3 &node_position) {
+void Tree3DGrowthFunction::update_absolute_position_rec(Tree3DNode &node, const Vector3 &node_position) {
 	static_cast<BioNodeInfo *>(node.growthInfo.get())->absolute_position = node_position;
 	for (auto &child : node.children) {
 		Vector3 child_position = node_position + node.direction * child->position_in_parent * node.length;
@@ -140,10 +139,10 @@ void GrowthFunction::update_absolute_position_rec(Node &node, const Vector3 &nod
 	}
 }
 
-void GrowthFunction::execute(std::vector<Stem> &stems, int id, int parent_id) {
+void Tree3DGrowthFunction::execute(std::vector<Tree3DStem> &stems, int id, int parent_id) {
 	rand_gen.set_seed(seed);
 
-	for (Stem &stem : stems) {
+	for (Tree3DStem &stem : stems) {
 		setup_growth_information_rec(stem.node);
 	}
 
@@ -151,7 +150,7 @@ void GrowthFunction::execute(std::vector<Stem> &stems, int id, int parent_id) {
 	for (size_t i = 0; i < iterations; i++) // an iteration can be seen as a year of growth
 	{
 		// 茎之间不共享能量
-		for (Stem &stem : stems) // the energy is not shared between stems
+		for (Tree3DStem &stem : stems) // the energy is not shared between stems
 		{
 			float target_light_flux = 1 + std::pow((float)i, 1.5);
 			float light_flux = update_vigor_ratio_rec(stem.node); // get total available energy
@@ -173,4 +172,3 @@ void GrowthFunction::execute(std::vector<Stem> &stems, int id, int parent_id) {
 		}
 	}
 }
-} //namespace Mtree

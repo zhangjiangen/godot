@@ -5,11 +5,9 @@
 #include "scene/3d/mtree/utilities/GeometryUtilities.hpp"
 #include "scene/3d/mtree/utilities/NodeUtilities.hpp"
 
-using namespace Mtree;
-
 namespace {
-void update_positions_rec(Node &node, const Vector3 &position) {
-	auto &info = static_cast<BranchFunction::BranchGrowthInfo &>(*node.growthInfo);
+void update_positions_rec(Tree3DNode &node, const Vector3 &position) {
+	auto &info = static_cast<Tree3DBranchFunction::BranchGrowthInfo &>(*node.growthInfo);
 	info.position = position;
 
 	for (auto &child : node.children) {
@@ -26,32 +24,32 @@ bool avoid_floor(const Vector3 &node_position, Vector3 &node_direction, float pa
 	return (node_position + node_direction).z * parent_length * 4 < 0; // is node heading to floor too fast
 }
 
-Vector3 get_main_child_direction(Node &parent, const Vector3 &parent_position, const float up_attraction, const float flatness, const float randomness, const float resolution, bool &should_terminate) {
-	Vector3 random_dir = Geometry::random_vec(flatness).normalized() + Vector3{ 0, 0, 1 } * up_attraction;
+Vector3 get_main_child_direction(Tree3DNode &parent, const Vector3 &parent_position, const float up_attraction, const float flatness, const float randomness, const float resolution, bool &should_terminate) {
+	Vector3 random_dir = Tree3DGeometry::random_vec(flatness).normalized() + Vector3{ 0, 0, 1 } * up_attraction;
 	Vector3 child_direction = parent.direction + random_dir * randomness / resolution;
 	should_terminate = avoid_floor(parent_position, child_direction, parent.length);
 	child_direction.normalize();
 	return child_direction;
 }
 
-Vector3 get_split_direction(const Node &parent, const Vector3 &parent_position, const float up_attraction, const float flatness, const float resolution, const float angle) {
-	Vector3 child_direction = Geometry::random_vec();
+Vector3 get_split_direction(const Tree3DNode &parent, const Vector3 &parent_position, const float up_attraction, const float flatness, const float resolution, const float angle) {
+	Vector3 child_direction = Tree3DGeometry::random_vec();
 	child_direction = child_direction.cross(parent.direction) + Vector3{ 0, 0, 1 } * up_attraction * flatness;
 	Vector3 flat_normal = Vector3{ 0, 0, 1 }.cross(parent.direction).cross(parent.direction).normalized();
 	child_direction -= child_direction.dot(flat_normal) * flatness * flat_normal;
 	avoid_floor(parent_position, child_direction, parent.length);
-	child_direction = Geometry::lerp(parent.direction, child_direction, angle / 90); // TODO use slerp for correct angle
+	child_direction = Tree3DGeometry::lerp(parent.direction, child_direction, angle / 90); // TODO use slerp for correct angle
 	child_direction.normalize();
 	return child_direction;
 }
 
-void mark_inactive(Node &node) {
-	auto &info = static_cast<BranchFunction::BranchGrowthInfo &>(*node.growthInfo);
+void mark_inactive(Tree3DNode &node) {
+	auto &info = static_cast<Tree3DBranchFunction::BranchGrowthInfo &>(*node.growthInfo);
 	info.inactive = true;
 }
 
-bool propagate_inactive_rec(Node &node) {
-	auto *info = dynamic_cast<BranchFunction::BranchGrowthInfo *>(node.growthInfo.get());
+bool propagate_inactive_rec(Tree3DNode &node) {
+	auto *info = dynamic_cast<Tree3DBranchFunction::BranchGrowthInfo *>(node.growthInfo.get());
 
 	if (node.children.size() == 0 || info->inactive)
 		return info->inactive;
@@ -66,8 +64,7 @@ bool propagate_inactive_rec(Node &node) {
 }
 } //namespace
 
-namespace Mtree {
-void BranchFunction::apply_gravity_to_branch(Node &branch_origin) {
+void Tree3DBranchFunction::apply_gravity_to_branch(Tree3DNode &branch_origin) {
 	propagate_inactive_rec(branch_origin);
 	update_weight_rec(branch_origin);
 	apply_gravity_rec(branch_origin, Quaternion());
@@ -75,7 +72,7 @@ void BranchFunction::apply_gravity_to_branch(Node &branch_origin) {
 	update_positions_rec(branch_origin, info.position);
 }
 
-void BranchFunction::apply_gravity_rec(Node &node, Quaternion curent_rotation) {
+void Tree3DBranchFunction::apply_gravity_rec(Tree3DNode &node, Quaternion curent_rotation) {
 	BranchGrowthInfo &info = static_cast<BranchGrowthInfo &>(*node.growthInfo);
 	if (!info.inactive || true) {
 		float horizontality = 1 - abs(node.direction.z);
@@ -96,7 +93,7 @@ void BranchFunction::apply_gravity_rec(Node &node, Quaternion curent_rotation) {
 	}
 }
 
-void BranchFunction::update_weight_rec(Node &node) {
+void Tree3DBranchFunction::update_weight_rec(Tree3DNode &node) {
 	float node_weight = node.length;
 	for (auto &child : node.children) {
 		update_weight_rec(child->node);
@@ -110,7 +107,7 @@ void BranchFunction::update_weight_rec(Node &node) {
 
 // grow extremity by one level (add one or more children)
 // 将 extremity 增长一级（添加一个或多个子级）
-void BranchFunction::grow_node_once(Node &node, const int id, std::queue<std::reference_wrapper<Node>> &results) {
+void Tree3DBranchFunction::grow_node_once(Tree3DNode &node, const int id, std::queue<std::reference_wrapper<Tree3DNode>> &results) {
 	bool break_branch = rand_gen.get_0_1() * resolution < break_chance;
 	if (break_branch) {
 		mark_inactive(node);
@@ -120,7 +117,7 @@ void BranchFunction::grow_node_once(Node &node, const int id, std::queue<std::re
 	BranchGrowthInfo &info = static_cast<BranchGrowthInfo &>(*node.growthInfo);
 	float factor_in_branch = info.current_length / info.desired_length;
 
-	float child_radius = Geometry::lerp(info.origin_radius, info.origin_radius * end_radius, factor_in_branch);
+	float child_radius = Tree3DGeometry::lerp(info.origin_radius, info.origin_radius * end_radius, factor_in_branch);
 	float child_length = std::min(1 / resolution, info.desired_length - info.current_length);
 	bool should_terminate;
 	Vector3 child_direction = get_main_child_direction(node, info.position, up_attraction, flatness, randomness.execute(factor_in_branch), resolution, should_terminate);
@@ -130,8 +127,8 @@ void BranchFunction::grow_node_once(Node &node, const int id, std::queue<std::re
 		return;
 	}
 
-	NodeChild child{ Node{ child_direction, node.tangent, child_length, child_radius, can_spawn_leafs, id }, 1 };
-	node.children.push_back(std::make_shared<NodeChild>(std::move(child)));
+	Tree3DNodeChild child{ Tree3DNode{ child_direction, node.tangent, child_length, child_radius, can_spawn_leafs, id }, 1 };
+	node.children.push_back(std::make_shared<Tree3DNodeChild>(std::move(child)));
 	auto &child_node = node.children.back()->node;
 
 	float current_length = info.current_length + child_length;
@@ -139,7 +136,7 @@ void BranchFunction::grow_node_once(Node &node, const int id, std::queue<std::re
 	BranchGrowthInfo child_info{ info.desired_length, info.origin_radius, child_position, current_length };
 	child_node.growthInfo = std::make_unique<BranchGrowthInfo>(child_info);
 	if (current_length < info.desired_length) {
-		results.push(std::ref<Node>(child_node));
+		results.push(std::ref<Tree3DNode>(child_node));
 	}
 
 	bool split = rand_gen.get_0_1() * resolution < split_proba; // should the node split into two children
@@ -147,21 +144,21 @@ void BranchFunction::grow_node_once(Node &node, const int id, std::queue<std::re
 		Vector3 split_child_direction = get_split_direction(node, info.position, up_attraction, flatness, resolution, split_angle);
 		float split_child_radius = node.radius * split_radius;
 
-		NodeChild child{ Node{ split_child_direction, node.tangent, child_length, split_child_radius, can_spawn_leafs, id }, rand_gen.get_0_1() };
-		node.children.push_back(std::make_shared<NodeChild>(std::move(child)));
+		Tree3DNodeChild child{ Tree3DNode{ split_child_direction, node.tangent, child_length, split_child_radius, can_spawn_leafs, id }, rand_gen.get_0_1() };
+		node.children.push_back(std::make_shared<Tree3DNodeChild>(std::move(child)));
 		auto &child_node = node.children.back()->node;
 
 		Vector3 split_child_position = info.position + split_child_direction * child_length;
 		BranchGrowthInfo child_info{ info.desired_length, info.origin_radius * split_radius, split_child_position, current_length };
 		child_node.growthInfo = std::make_unique<BranchGrowthInfo>(child_info);
 		if (current_length < info.desired_length) {
-			results.push(std::ref<Node>(child_node));
+			results.push(std::ref<Tree3DNode>(child_node));
 		}
 	}
 }
 
-void BranchFunction::grow_origins(std::vector<std::reference_wrapper<Node>> &origins, const int id) {
-	std::queue<std::reference_wrapper<Node>> extremities;
+void Tree3DBranchFunction::grow_origins(std::vector<std::reference_wrapper<Tree3DNode>> &origins, const int id) {
+	std::queue<std::reference_wrapper<Tree3DNode>> extremities;
 	for (auto &node_ref : origins) {
 		extremities.push(node_ref);
 	}
@@ -181,14 +178,14 @@ void BranchFunction::grow_origins(std::vector<std::reference_wrapper<Node>> &ori
 }
 
 // get the origins of the branches that will be created.
-// origins are created from the nodes made by the parent TreeFunction
+// origins are created from the nodes made by the parent Tree3DFunction
 // 获取将要创建的分支的来源。
-// 起源是从父 TreeFunction 创建的节点创建的
-std::vector<std::reference_wrapper<Node>> BranchFunction::get_origins(std::vector<Stem> &stems, const int id, const int parent_id) {
-	// get all nodes created by the parent TreeFunction, organised by branch
+// 起源是从父 Tree3DFunction 创建的节点创建的
+std::vector<std::reference_wrapper<Tree3DNode>> Tree3DBranchFunction::get_origins(std::vector<Tree3DStem> &stems, const int id, const int parent_id) {
+	// get all nodes created by the parent Tree3DFunction, organised by branch
 	// 获取父TreeFunction创建的所有节点，按分支组织
-	NodeUtilities::BranchSelection selection = NodeUtilities::select_from_tree(stems, parent_id);
-	std::vector<std::reference_wrapper<Node>> origins;
+	BranchSelection selection = select_from_tree(stems, parent_id);
+	std::vector<std::reference_wrapper<Tree3DNode>> origins;
 
 	// 两个连续原点之间的距离
 	float origins_dist = 1 / (branches_density + .001); // distance between two consecutive origins
@@ -199,14 +196,14 @@ std::vector<std::reference_wrapper<Node>> BranchFunction::get_origins(std::vecto
 			continue;
 		}
 
-		float branch_length = NodeUtilities::get_branch_length(*branch[0].node);
+		float branch_length = get_branch_length(*branch[0].node);
 		// 我们可以开始添加新分支起点的长度
 		float absolute_start = start * branch_length; // the length at which we can start adding new branch origins
 		// 我们停止添加新分支起点的长度
 		float absolute_end = end * branch_length; // the length at which we stop adding new branch origins
 		float current_length = 0;
 		float dist_to_next_origin = absolute_start;
-		Vector3 tangent = Geometry::get_orthogonal_vector(branch[0].node->direction);
+		Vector3 tangent = Tree3DGeometry::get_orthogonal_vector(branch[0].node->direction);
 
 		for (size_t node_index = 0; node_index < branch.size(); node_index++) {
 			auto &node = *branch[node_index].node;
@@ -233,15 +230,15 @@ std::vector<std::reference_wrapper<Node>> BranchFunction::get_origins(std::vecto
 					}
 					float factor = (current_length - absolute_start) / std::max(0.001f, absolute_end - absolute_start);
 					tangent = rot.xform(tangent);
-					Geometry::project_on_plane(tangent, node.direction);
+					Tree3DGeometry::project_on_plane(tangent, node.direction);
 					tangent.normalize();
-					Vector3 child_direction = Geometry::lerp(node.direction, tangent, start_angle.execute(factor) / 90);
+					Vector3 child_direction = Tree3DGeometry::lerp(node.direction, tangent, start_angle.execute(factor) / 90);
 					child_direction.normalize();
 					float child_radius = node.radius * start_radius.execute(factor);
 					float branch_length = length.execute(factor);
 					float node_length = std::min(branch_length, 1 / (resolution + 0.001f));
-					NodeChild child{ Node{ child_direction, node.tangent, node_length, child_radius,can_spawn_leafs, id }, position_in_parent };
-					node.children.push_back(std::make_shared<NodeChild>(std::move(child)));
+					Tree3DNodeChild child{ Tree3DNode{ child_direction, node.tangent, node_length, child_radius, can_spawn_leafs, id }, position_in_parent };
+					node.children.push_back(std::make_shared<Tree3DNodeChild>(std::move(child)));
 					auto &child_node = node.children.back()->node;
 					Vector3 child_position = node_position + node.direction * node.length * position_in_parent;
 					child_node.growthInfo = std::make_unique<BranchGrowthInfo>(branch_length - node_length, child_radius, child_position, child_node.length, 0);
@@ -261,10 +258,9 @@ std::vector<std::reference_wrapper<Node>> BranchFunction::get_origins(std::vecto
 	return origins;
 }
 
-void BranchFunction::execute(std::vector<Stem> &stems, int id, int parent_id) {
+void Tree3DBranchFunction::execute(std::vector<Tree3DStem> &stems, int id, int parent_id) {
 	rand_gen.set_seed(seed);
 	auto origins = get_origins(stems, id, parent_id);
 	grow_origins(origins, id);
 	execute_children(stems, id);
 }
-} //namespace Mtree

@@ -6,16 +6,13 @@
 // #include "scene/3d/mtree/utilities/GeometryUtilities.hpp"
 #include "scene/3d/mtree/tree_functions/base_types/Property.hpp"
 
-namespace Mtree {
-class PipeRadiusFunction : public TreeFunction {
+class Tree3DPipeRadiusFunction : public Tree3DFunction {
 private:
-	void update_radius_rec(Node &node);
+	void update_radius_rec(Tree3DNode &node);
 
 public:
 	float power = 2.f;
 	float end_radius = .01f;
 	float constant_growth = .01f;
-	void execute(std::vector<Stem> &stems, int id, int parent_id) override;
+	void execute(std::vector<Tree3DStem> &stems, int id, int parent_id) override;
 };
-
-} //namespace Mtree

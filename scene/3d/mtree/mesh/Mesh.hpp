@@ -10,11 +10,9 @@
 // #include<pybind11/pybind11.h>
 // #include<pybind11/numpy.h>
 
-namespace Mtree {
-
 // namespace py = pybind11;
 
-class Mesh {
+class Tree3DMesh {
 public:
 	std::vector<Vector3> vertices;
 	std::vector<Vector3> normals;
@@ -24,8 +22,8 @@ public:
 	std::vector<std::array<int, 4>> uv_loops;
 	std::map<std::string, std::shared_ptr<AbstractAttribute>> attributes;
 
-	Mesh(){};
-	Mesh(std::vector<Vector3> &&vertices) { this->vertices = std::move(vertices); }
+	Tree3DMesh(){};
+	Tree3DMesh(std::vector<Vector3> &&vertices) { this->vertices = std::move(vertices); }
 	std::vector<std::vector<float>> get_vertices();
 	std::vector<std::array<int, 4>> get_polygons() { return this->polygons; };
 	int add_vertex(const Vector3 &position);
@@ -52,4 +50,3 @@ public:
 		return *attribute;
 	};
 };
-} //namespace Mtree

@@ -4,8 +4,7 @@
 #include <cmath>
 #include <iostream>
 
-namespace Mtree {
-namespace Geometry {
+namespace Tree3DGeometry {
 
 void add_circle(std::vector<Vector3> &points, Vector3 position, Vector3 direction, float radius, int n_points) {
 	Basis rot;
@@ -27,7 +26,7 @@ Basis get_look_at_rot(Vector3 direction) {
 }
 
 Vector3 random_vec_on_unit_sphere() {
-    auto vec = Vector3(Math::randf(), Math::randf(), Math::randf());
+	auto vec = Vector3(Math::randf(), Math::randf(), Math::randf());
 	vec.normalize();
 	return vec;
 }
@@ -67,5 +66,4 @@ Vector3 projected_on_plane(const Vector3 &v, const Vector3 &plane_normal) {
 	project_on_plane(result, plane_normal);
 	return result;
 }
-} //namespace Geometry
-} //namespace Mtree
+} //namespace Tree3DGeometry

@@ -1,7 +1,6 @@
 #include "PipeRadiusFunction.hpp"
 #include "scene/3d/mtree/utilities/GeometryUtilities.hpp"
-namespace Mtree {
-void PipeRadiusFunction::update_radius_rec(Node &node) {
+void Tree3DPipeRadiusFunction::update_radius_rec(Tree3DNode &node) {
 	if (node.children.size() == 0) {
 		node.radius = end_radius;
 		return;
@@ -14,7 +13,7 @@ void PipeRadiusFunction::update_radius_rec(Node &node) {
 	}
 	node.radius = pow(total_children_radius, 1 / power) + constant_growth * node.length / 100;
 }
-void PipeRadiusFunction::execute(std::vector<Stem> &stems, int id, int parent_id) {
+void Tree3DPipeRadiusFunction::execute(std::vector<Tree3DStem> &stems, int id, int parent_id) {
 	rand_gen.set_seed(seed);
 
 	for (auto &stem : stems) {
@@ -22,5 +21,3 @@ void PipeRadiusFunction::execute(std::vector<Stem> &stems, int id, int parent_id
 	}
 	execute_children(stems, id);
 }
-
-} //namespace Mtree

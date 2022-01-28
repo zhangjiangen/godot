@@ -396,6 +396,71 @@ public:
 	static void cleanup();
 };
 
+// 资源类型，类型必须是Object类型
+struct PA_Resource : public PropertyAttBase {
+	PA_Resource(const String &resouece_class_name) {
+		if (::ClassDB::is_parent_class(resouece_class_name, "RefCounted")) {
+			name = resouece_class_name;
+		}
+	}
+	void on_modify_property_info(PropertyInfo *info) const override {
+		if (info->type == Variant::OBJECT && !name.is_empty()) {
+			info->hint = PROPERTY_HINT_RESOURCE_TYPE;
+			info->hint_string = name;
+		}
+	}
+	String name;
+};
+// 只读属性
+struct PA_ReadOnly : public PropertyAttBase {
+	void on_modify_property_info(PropertyInfo *info) const override {
+		info->usage |= PROPERTY_USAGE_READ_ONLY;
+	}
+};
+// 不存储
+struct PA_NoSave : public PropertyAttBase {
+	void on_modify_property_info(PropertyInfo *info) const override {
+		info->usage &= ~PROPERTY_USAGE_STORAGE;
+	}
+};
+// bit 位运算
+struct PA_Flag : public PropertyAttBase {
+	PA_Flag(Vector<String> &list) {
+		for (int i = 0; i < list.size(); ++i) {
+			if (i != 0) {
+				_list += ",";
+			}
+			_list += list[i];
+		}
+	}
+	void on_modify_property_info(PropertyInfo *info) const override {
+		if (info->type == Variant::INT) {
+			info->hint = PROPERTY_HINT_FLAGS;
+		}
+	}
+	String _list;
+};
+struct PA_Enum : public PropertyAttBase {
+    PA_Enum( Vector<String> &list) {
+		for (int i = 0; i < list.size(); ++i) {
+			if (i != 0) {
+				_list += ",";
+			}
+			_list += list[i];
+		}
+	}
+	void on_modify_property_info(PropertyInfo *info) const override {
+		if (info->type == Variant::INT) {
+			info->hint = PROPERTY_HINT_ENUM;
+			info->hint_string = _list;
+		} else if (info->type == Variant::STRING) {
+			info->hint = PROPERTY_HINT_ENUM_SUGGESTION;
+			info->hint_string = _list;
+		}
+	}
+	String _list;
+};
+
 #ifdef DEBUG_METHODS_ENABLED
 
 #define BIND_CONSTANT(m_constant) \

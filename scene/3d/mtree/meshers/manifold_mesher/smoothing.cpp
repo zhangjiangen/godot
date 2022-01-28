@@ -1,7 +1,7 @@
 #include "smoothing.hpp"
 #include "scene/3d/mtree/utilities/GeometryUtilities.hpp"
 
-namespace Mtree::MeshProcessing::Smoothing {
+namespace MeshProcessing::Smoothing {
 void add_index_no_duplicates(std::vector<int> &indices, const int index) {
 	for (auto i : indices) {
 		if (index == i) {
@@ -11,7 +11,7 @@ void add_index_no_duplicates(std::vector<int> &indices, const int index) {
 	indices.push_back(index);
 }
 
-std::vector<std::vector<int>> get_neighbourhoods(Mtree::Mesh &mesh) {
+std::vector<std::vector<int>> get_neighbourhoods(Tree3DMesh &mesh) {
 	std::vector<std::vector<int>> vertex_neighbourhood;
 	vertex_neighbourhood.resize(mesh.vertices.size());
 	for (auto &polygon : mesh.polygons) {
@@ -39,11 +39,11 @@ void smooth_mesh_once(std::vector<Vector3> *result, const std::vector<Vector3> *
 		if (weights != nullptr) {
 			true_factor *= (*weights)[i];
 		}
-		result->at(i) = Geometry::lerp(previous_iteration->at(i), barycenter, true_factor);
+		result->at(i) = Tree3DGeometry::lerp(previous_iteration->at(i), barycenter, true_factor);
 	}
 }
 
-void smooth_mesh(Mesh &mesh, const int iterations, const float factor, std::vector<float> *weights) {
+void smooth_mesh(Tree3DMesh &mesh, const int iterations, const float factor, std::vector<float> *weights) {
 	auto neighbourhoods = get_neighbourhoods(mesh);
 	std::vector<Vector3> *previous_iteration = &mesh.vertices;
 	std::vector<Vector3> buffer = mesh.vertices;
@@ -59,4 +59,4 @@ void smooth_mesh(Mesh &mesh, const int iterations, const float factor, std::vect
 		mesh.vertices = std::move(buffer);
 	}
 }
-} //namespace Mtree::MeshProcessing::Smoothing
+} //namespace MeshProcessing::Smoothing
