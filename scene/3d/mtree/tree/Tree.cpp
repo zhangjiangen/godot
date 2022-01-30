@@ -1,5 +1,5 @@
+#include "Tree.hpp"
 #include "Node.hpp"
-#include "Tree3D.hpp"
 #include <iostream>
 #include <vector>
 

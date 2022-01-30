@@ -789,7 +789,6 @@ void *MallocAllocator::alloc_memory(size_t p_memory, const char *file_name, int 
 	uint32_t *p = (uint32_t *)DefaultAllocator::alloc(size, file_name, file_lne);
 
 	*p = MEMORY_TAG_MALLOC;
-	uint32_t tag = *p;
 	++p;
 	*p = p_memory;
 	++p;

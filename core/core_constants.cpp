@@ -42,16 +42,18 @@ struct _CoreConstant {
 #endif
 	const char *name;
 	int value = 0;
+#ifdef DEBUG_METHODS_ENABLED
 	bool ignore_value_in_docs = false;
+#endif
 
 	_CoreConstant() {}
 
 #ifdef DEBUG_METHODS_ENABLED
 	_CoreConstant(const StringName &p_enum_name, const char *p_name, int p_value, bool p_ignore_value_in_docs = false) :
 			enum_name(p_enum_name),
-			ignore_value_in_docs(p_ignore_value_in_docs),
-			name(p_name),
-			value(p_value) {
+            name(p_name),
+            value(p_value),
+			ignore_value_in_docs(p_ignore_value_in_docs){
 	}
 #else
 	_CoreConstant(const char *p_name, int p_value) :

@@ -1,6 +1,6 @@
 #pragma once
 #include "Node.hpp"
-#include "scene/3d/mtree/tree_functions/base_types/Tree3DFunction.hpp"
+#include "scene/3d/mtree/tree_functions/base_types/TreeFunction.hpp"
 #include <vector>
 
 class Tree3D {

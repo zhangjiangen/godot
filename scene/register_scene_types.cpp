@@ -326,6 +326,7 @@ void register_scene_types() {
 	GDREGISTER_VIRTUAL_CLASS(Slider);
 	GDREGISTER_CLASS(HSlider);
 	GDREGISTER_CLASS(VSlider);
+	GDREGISTER_CLASS(MinMaxSlider);
 	GDREGISTER_CLASS(Popup);
 	GDREGISTER_CLASS(PopupPanel);
 	GDREGISTER_CLASS(MenuButton);

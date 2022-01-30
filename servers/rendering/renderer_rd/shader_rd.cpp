@@ -768,7 +768,6 @@ void ShaderRD::initialize(const Vector<String> &p_variant_defines, const String 
 
 void ShaderRD::set_shader_cache_dir(const String &p_dir) {
 	shader_cache_dir = p_dir;
-	printf(p_dir.utf8());
 }
 
 void ShaderRD::set_shader_cache_save_compressed(bool p_enable) {

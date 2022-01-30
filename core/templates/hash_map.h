@@ -574,9 +574,9 @@ public:
 	}
 
 	HashMap(const HashMap &p_table) {
-		copy_from(p_table);
 		file_name = p_table.file_name;
 		file_line = p_table.file_line;
+		copy_from(p_table);
 	}
 
 	~HashMap() {
