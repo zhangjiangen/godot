@@ -1154,6 +1154,24 @@ void DisplayServerX11::delete_sub_window(WindowID p_id) {
 	windows.erase(p_id);
 }
 
+int64_t DisplayServerX11::window_get_native_handle(HandleType p_handle_type, WindowID p_window) const {
+	ERR_FAIL_COND_V(!windows.has(p_window), 0);
+	switch (p_handle_type) {
+		case DISPLAY_HANDLE: {
+			return (int64_t)x11_display;
+		}
+		case WINDOW_HANDLE: {
+			return (int64_t)windows[p_window].x11_window;
+		}
+		case WINDOW_VIEW: {
+			return 0; // Not supported.
+		}
+		default: {
+			return 0;
+		}
+	}
+}
+
 void DisplayServerX11::window_attach_instance_id(ObjectID p_instance, WindowID p_window) {
 	ERR_FAIL_COND(!windows.has(p_window));
 	WindowData &wd = windows[p_window];
@@ -1314,8 +1332,9 @@ int DisplayServerX11::window_get_current_screen(WindowID p_window) const {
 
 void DisplayServerX11::gl_window_make_current(DisplayServer::WindowID p_window_id) {
 #if defined(GLES3_ENABLED)
-	if (gl_manager)
+	if (gl_manager) {
 		gl_manager->window_make_current(p_window_id);
+	}
 #endif
 }
 
