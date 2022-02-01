@@ -597,7 +597,7 @@ public:
 private:
 	mutable RID _texture;
 	Ref<Curve> _curve;
-	int _width = 2048;
+	int _width = 256;
 	int _current_width = 0;
 	TextureMode texture_mode = TEXTURE_MODE_RGB;
 	TextureMode _current_texture_mode = TEXTURE_MODE_RGB;
@@ -639,7 +639,7 @@ private:
 	Ref<Curve> _curve_x;
 	Ref<Curve> _curve_y;
 	Ref<Curve> _curve_z;
-	int _width = 2048;
+	int _width = 256;
 	int _current_width = 0;
 
 	void _update();
@@ -687,7 +687,7 @@ private:
 	Ref<Gradient> gradient;
 	bool update_pending = false;
 	RID texture;
-	int width = 2048;
+	int width = 256;
 	bool use_hdr = false;
 
 	void _queue_update();
