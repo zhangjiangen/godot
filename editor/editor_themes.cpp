@@ -427,6 +427,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	const Color font_focus_color = mono_color.lerp(base_color, 0.125);
 	const Color font_disabled_color = Color(mono_color.r, mono_color.g, mono_color.b, 0.3);
 	const Color font_readonly_color = Color(mono_color.r, mono_color.g, mono_color.b, 0.65);
+	const Color font_placeholder_color = Color(mono_color.r, mono_color.g, mono_color.b, 0.6);
 	const Color selection_color = accent_color * Color(1, 1, 1, 0.4);
 	const Color disabled_color = mono_color.inverted().lerp(base_color, 0.7);
 	const Color disabled_bg_color = mono_color.inverted().lerp(base_color, 0.9);
@@ -1016,8 +1017,8 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	theme->set_stylebox("SceneTabFG", "EditorStyles", style_tab_selected);
 	theme->set_stylebox("SceneTabBG", "EditorStyles", style_tab_unselected);
 	theme->set_icon("close", "TabBar", theme->get_icon("GuiClose", "EditorIcons"));
-	theme->set_stylebox("close_bg_pressed", "TabBar", style_menu);
-	theme->set_stylebox("close_bg_highlight", "TabBar", style_menu);
+	theme->set_stylebox("button_pressed", "TabBar", style_menu);
+	theme->set_stylebox("button_highlight", "TabBar", style_menu);
 	theme->set_icon("increment", "TabContainer", theme->get_icon("GuiScrollArrowRight", "EditorIcons"));
 	theme->set_icon("decrement", "TabContainer", theme->get_icon("GuiScrollArrowLeft", "EditorIcons"));
 	theme->set_icon("increment", "TabBar", theme->get_icon("GuiScrollArrowRight", "EditorIcons"));
@@ -1109,6 +1110,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	theme->set_color("font_color", "LineEdit", font_color);
 	theme->set_color("font_selected_color", "LineEdit", mono_color);
 	theme->set_color("font_uneditable_color", "LineEdit", font_readonly_color);
+	theme->set_color("font_placeholder_color", "LineEdit", font_placeholder_color);
 	theme->set_color("caret_color", "LineEdit", font_color);
 	theme->set_color("selection_color", "LineEdit", selection_color);
 	theme->set_color("clear_button_color", "LineEdit", font_color);
@@ -1123,6 +1125,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	theme->set_icon("space", "TextEdit", theme->get_icon("GuiSpace", "EditorIcons"));
 	theme->set_color("font_color", "TextEdit", font_color);
 	theme->set_color("font_readonly_color", "TextEdit", font_readonly_color);
+	theme->set_color("font_placeholder_color", "TextEdit", font_placeholder_color);
 	theme->set_color("caret_color", "TextEdit", font_color);
 	theme->set_color("selection_color", "TextEdit", selection_color);
 	theme->set_constant("line_spacing", "TextEdit", 4 * EDSCALE);
