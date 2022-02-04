@@ -31,6 +31,7 @@
 #include "gdnative/rect2.h"
 
 #include "core/math/rect2.h"
+#include "core/math/rect2i.h"
 
 static_assert(sizeof(godot_rect2) == sizeof(Rect2), "Rect2 size mismatch");
 static_assert(sizeof(godot_rect2i) == sizeof(Rect2i), "Rect2i size mismatch");

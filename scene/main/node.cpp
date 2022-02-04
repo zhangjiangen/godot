@@ -211,6 +211,12 @@ void Node::_propagate_enter_tree() {
 
 	data.tree->node_added(this);
 
+	if (data.parent) {
+		Variant c = this;
+		const Variant *cptr = &c;
+		data.parent->emit_signal(SNAME("child_entered_tree"), &cptr, 1);
+	}
+
 	data.blocked++;
 	//block while adding children
 
@@ -279,6 +285,12 @@ void Node::_propagate_exit_tree() {
 	notification(NOTIFICATION_EXIT_TREE, true);
 	if (data.tree) {
 		data.tree->node_removed(this);
+	}
+
+	if (data.parent) {
+		Variant c = this;
+		const Variant *cptr = &c;
+		data.parent->emit_signal(SNAME("child_exited_tree"), &cptr, 1);
 	}
 
 	// exit groups
@@ -1049,7 +1061,7 @@ void Node::_generate_serial_child_name(const Node *p_child, StringName &name) co
 	String nums;
 	for (int i = name_string.length() - 1; i >= 0; i--) {
 		char32_t n = name_string[i];
-		if (n >= '0' && n <= '9') {
+		if (is_digit(n)) {
 			nums = String::chr(name_string[i]) + nums;
 		} else {
 			break;
@@ -2865,6 +2877,8 @@ void Node::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("tree_entered"));
 	ADD_SIGNAL(MethodInfo("tree_exiting"));
 	ADD_SIGNAL(MethodInfo("tree_exited"));
+	ADD_SIGNAL(MethodInfo("child_entered_tree", PropertyInfo(Variant::OBJECT, "node", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT, "Node")));
+	ADD_SIGNAL(MethodInfo("child_exited_tree", PropertyInfo(Variant::OBJECT, "node", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT, "Node")));
 
 	ADD_PROPERTY(PropertyInfo(Variant::STRING_NAME, "name", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "set_name", "get_name");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "scene_file_path", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "set_scene_file_path", "get_scene_file_path");
