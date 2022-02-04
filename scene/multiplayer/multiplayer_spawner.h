@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  triangulate.h                                                        */
+/*  multiplayer_spawner.h                                                */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,35 +28,74 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef TRIANGULATE_H
-#define TRIANGULATE_H
+#ifndef MULTIPLAYER_SPAWNER_H
+#define MULTIPLAYER_SPAWNER_H
 
-#include "core/math/vector2.h"
-#include "core/templates/vector.h"
+#include "scene/main/node.h"
 
-/*
-https://www.flipcode.com/archives/Efficient_Polygon_Triangulation.shtml
-*/
+#include "core/variant/typed_array.h"
+#include "scene/resources/packed_scene.h"
+#include "scene/resources/scene_replication_config.h"
 
-class Triangulate {
+class MultiplayerSpawner : public Node {
+	GDCLASS(MultiplayerSpawner, Node);
+
 public:
-	// triangulate a contour/polygon, places results in STL vector
-	// as series of triangles.
-	static bool triangulate(const Vector<Vector2> &contour, Vector<int> &result);
-
-	// compute area of a contour/polygon
-	static real_t get_area(const Vector<Vector2> &contour);
-
-	// decide if point Px/Py is inside triangle defined by
-	// (Ax,Ay) (Bx,By) (Cx,Cy)
-	static bool is_inside_triangle(real_t Ax, real_t Ay,
-			real_t Bx, real_t By,
-			real_t Cx, real_t Cy,
-			real_t Px, real_t Py,
-			bool include_edges);
+	enum {
+		INVALID_ID = 0xFF,
+	};
 
 private:
-	static bool snip(const Vector<Vector2> &p_contour, int u, int v, int w, int n, const Vector<int> &V, bool relaxed);
+	TypedArray<PackedScene> spawnable_scenes;
+	Set<ResourceUID::ID> spawnable_ids;
+	NodePath spawn_path;
+
+	struct SpawnInfo {
+		Variant args;
+		int id = INVALID_ID;
+		SpawnInfo(Variant p_args, int p_id) {
+			id = p_id;
+			args = p_args;
+		}
+		SpawnInfo() {}
+	};
+
+	ObjectID spawn_node;
+	HashMap<ObjectID, SpawnInfo> tracked_nodes;
+	bool auto_spawn = false;
+	uint32_t spawn_limit = 0;
+
+	void _update_spawn_node();
+	void _track(Node *p_node, const Variant &p_argument, int p_scene_id = INVALID_ID);
+	void _node_added(Node *p_node);
+	void _node_exit(ObjectID p_id);
+	void _node_ready(ObjectID p_id);
+
+protected:
+	static void _bind_methods();
+	void _notification(int p_what);
+
+public:
+	Node *get_spawn_node() const { return spawn_node.is_valid() ? Object::cast_to<Node>(ObjectDB::get_instance(spawn_node)) : nullptr; }
+	TypedArray<PackedScene> get_spawnable_scenes();
+	void set_spawnable_scenes(TypedArray<PackedScene> p_scenes);
+	NodePath get_spawn_path() const;
+	void set_spawn_path(const NodePath &p_path);
+	uint32_t get_spawn_limit() const { return spawn_limit; }
+	void set_spawn_limit(uint32_t p_limit) { spawn_limit = p_limit; }
+	bool is_auto_spawning() const;
+	void set_auto_spawning(bool p_enabled);
+
+	const Variant get_spawn_argument(const ObjectID &p_id) const;
+	int get_spawn_id(const ObjectID &p_id) const;
+	int get_scene_id(const String &p_path) const;
+	Node *spawn(const Variant &p_data = Variant());
+	Node *instantiate_custom(const Variant &p_data);
+	Node *instantiate_scene(int p_idx);
+
+	GDVIRTUAL1R(Object *, _spawn_custom, const Variant &);
+
+	MultiplayerSpawner() {}
 };
 
-#endif // TRIANGULATE_H
+#endif // MULTIPLAYER_SPAWNER_H

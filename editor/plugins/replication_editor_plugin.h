@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  editor_atlas_packer.h                                                */
+/*  replication_editor_plugin.h                                          */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,49 +28,81 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef EDITOR_ATLAS_PACKER_H
-#define EDITOR_ATLAS_PACKER_H
+#ifndef REPLICATION_EDITOR_PLUGIN_H
+#define REPLICATION_EDITOR_PLUGIN_H
 
-#include "core/templates/vector.h"
-#include "scene/resources/bit_map.h"
+#include "editor/editor_node.h"
+#include "editor/editor_plugin.h"
+#include "scene/resources/scene_replication_config.h"
 
-struct Vector2;
-struct Vector2i;
+class ConfirmationDialog;
+class MultiplayerSynchronizer;
+class Tree;
 
-class EditorAtlasPacker {
-public:
-	struct Chart {
-		Vector<Vector2> vertices;
-		struct Face {
-			int vertex[3] = { 0 };
-		};
-		Vector<Face> faces;
-		bool can_transpose = false;
-
-		Vector2 final_offset;
-		bool transposed = false;
-	};
+class ReplicationEditor : public VBoxContainer {
+	GDCLASS(ReplicationEditor, VBoxContainer);
 
 private:
-	struct PlottedBitmap {
-		int chart_index = 0;
-		Vector2i offset;
-		int area = 0;
-		Vector<int> top_heights;
-		Vector<int> bottom_heights;
-		bool transposed = false;
+	EditorNode *editor;
+	MultiplayerSynchronizer *current = nullptr;
 
-		Vector2 final_pos;
+	AcceptDialog *error_dialog = nullptr;
+	ConfirmationDialog *delete_dialog = nullptr;
+	Button *add_button = nullptr;
+	LineEdit *np_line_edit = nullptr;
 
-		bool operator<(const PlottedBitmap &p_bm) const {
-			return area > p_bm.area;
-		}
-	};
+	Ref<SceneReplicationConfig> config;
+	NodePath deleting;
+	Tree *tree;
+	bool keying = false;
 
-	static void _plot_triangle(Ref<BitMap> p_bitmap, Vector2i *vertices);
+	Ref<Texture2D> _get_class_icon(const Node *p_node);
+
+	void _add_pressed();
+	void _tree_item_edited();
+	void _tree_button_pressed(Object *p_item, int p_column, int p_id);
+	void _update_checked(const NodePath &p_prop, int p_column, bool p_checked);
+	void _update_config();
+	void _dialog_closed(bool p_confirmed);
+	void _add_property(const NodePath &p_property, bool p_spawn = true, bool p_sync = true);
+
+protected:
+	static void _bind_methods();
+
+	void _notification(int p_what);
 
 public:
-	static void chart_pack(Vector<Chart> &charts, int &r_width, int &r_height, int p_atlas_max_size = 2048, int p_cell_resolution = 4);
+	void update_keying();
+	void edit(MultiplayerSynchronizer *p_object);
+	bool has_keying() const { return keying; }
+	MultiplayerSynchronizer *get_current() const { return current; }
+	void property_keyed(const String &p_property);
+
+	ReplicationEditor(EditorNode *p_node);
+	~ReplicationEditor() {}
 };
 
-#endif // EDITOR_ATLAS_PACKER_H
+class ReplicationEditorPlugin : public EditorPlugin {
+	GDCLASS(ReplicationEditorPlugin, EditorPlugin);
+
+private:
+	EditorNode *editor;
+	ReplicationEditor *repl_editor;
+
+	void _node_removed(Node *p_node);
+	void _keying_changed();
+	void _property_keyed(const String &p_keyed, const Variant &p_value, bool p_advance);
+
+protected:
+	void _notification(int p_what);
+
+public:
+	virtual void edit(Object *p_object) override;
+	virtual bool handles(Object *p_object) const override;
+	virtual void make_visible(bool p_visible) override;
+
+	ReplicationEditorPlugin(EditorNode *p_node);
+	~ReplicationEditorPlugin();
+};
+
+#endif // REPLICATION_EDITOR_PLUGIN_H

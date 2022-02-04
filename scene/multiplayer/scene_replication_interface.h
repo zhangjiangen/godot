@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  triangulate.h                                                        */
+/*  scene_replication_interface.h                                        */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,35 +28,57 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef TRIANGULATE_H
-#define TRIANGULATE_H
+#ifndef SCENE_TREE_REPLICATOR_INTERFACE_H
+#define SCENE_TREE_REPLICATOR_INTERFACE_H
 
-#include "core/math/vector2.h"
-#include "core/templates/vector.h"
+#include "core/multiplayer/multiplayer_api.h"
 
-/*
-https://www.flipcode.com/archives/Efficient_Polygon_Triangulation.shtml
-*/
+#include "scene/multiplayer/scene_replication_state.h"
 
-class Triangulate {
-public:
-	// triangulate a contour/polygon, places results in STL vector
-	// as series of triangles.
-	static bool triangulate(const Vector<Vector2> &contour, Vector<int> &result);
-
-	// compute area of a contour/polygon
-	static real_t get_area(const Vector<Vector2> &contour);
-
-	// decide if point Px/Py is inside triangle defined by
-	// (Ax,Ay) (Bx,By) (Cx,Cy)
-	static bool is_inside_triangle(real_t Ax, real_t Ay,
-			real_t Bx, real_t By,
-			real_t Cx, real_t Cy,
-			real_t Px, real_t Py,
-			bool include_edges);
+class SceneReplicationInterface : public MultiplayerReplicationInterface {
+	GDCLASS(SceneReplicationInterface, MultiplayerReplicationInterface);
 
 private:
-	static bool snip(const Vector<Vector2> &p_contour, int u, int v, int w, int n, const Vector<int> &V, bool relaxed);
+	void _send_sync(int p_peer, uint64_t p_msec);
+	Error _send_spawn(Node *p_node, MultiplayerSpawner *p_spawner, int p_peer);
+	Error _send_despawn(Node *p_node, int p_peer);
+	Error _send_raw(const uint8_t *p_buffer, int p_size, int p_peer, bool p_reliable);
+
+	void _free_remotes(int p_peer);
+
+	Ref<SceneReplicationState> rep_state;
+	MultiplayerAPI *multiplayer;
+	PackedByteArray packet_cache;
+	int sync_mtu = 1350; // Highly dependent on underlying protocol.
+
+	// An hack to apply the initial state before ready.
+	ObjectID pending_spawn;
+	const uint8_t *pending_buffer = nullptr;
+	int pending_buffer_size = 0;
+
+protected:
+	static MultiplayerReplicationInterface *_create(MultiplayerAPI *p_multiplayer);
+
+public:
+	static void make_default();
+
+	virtual void on_reset() override;
+	virtual void on_peer_change(int p_id, bool p_connected) override;
+
+	virtual Error on_spawn(Object *p_obj, Variant p_config) override;
+	virtual Error on_despawn(Object *p_obj, Variant p_config) override;
+	virtual Error on_replication_start(Object *p_obj, Variant p_config) override;
+	virtual Error on_replication_stop(Object *p_obj, Variant p_config) override;
+	virtual void on_network_process() override;
+
+	virtual Error on_spawn_receive(int p_from, const uint8_t *p_buffer, int p_buffer_len) override;
+	virtual Error on_despawn_receive(int p_from, const uint8_t *p_buffer, int p_buffer_len) override;
+	virtual Error on_sync_receive(int p_from, const uint8_t *p_buffer, int p_buffer_len) override;
+
+	SceneReplicationInterface(MultiplayerAPI *p_multiplayer) {
+		rep_state.instantiate();
+		multiplayer = p_multiplayer;
+	}
 };
 
-#endif // TRIANGULATE_H
+#endif // SCENE_TREE_REPLICATOR_INTERFACE_H

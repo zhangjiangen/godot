@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  triangulate.h                                                        */
+/*  multiplayer_synchronizer.h                                           */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,35 +28,45 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef TRIANGULATE_H
-#define TRIANGULATE_H
+#ifndef MULTIPLAYER_SYNCHRONIZER_H
+#define MULTIPLAYER_SYNCHRONIZER_H
 
-#include "core/math/vector2.h"
-#include "core/templates/vector.h"
+#include "scene/main/node.h"
 
-/*
-https://www.flipcode.com/archives/Efficient_Polygon_Triangulation.shtml
-*/
+#include "scene/resources/scene_replication_config.h"
 
-class Triangulate {
-public:
-	// triangulate a contour/polygon, places results in STL vector
-	// as series of triangles.
-	static bool triangulate(const Vector<Vector2> &contour, Vector<int> &result);
-
-	// compute area of a contour/polygon
-	static real_t get_area(const Vector<Vector2> &contour);
-
-	// decide if point Px/Py is inside triangle defined by
-	// (Ax,Ay) (Bx,By) (Cx,Cy)
-	static bool is_inside_triangle(real_t Ax, real_t Ay,
-			real_t Bx, real_t By,
-			real_t Cx, real_t Cy,
-			real_t Px, real_t Py,
-			bool include_edges);
+class MultiplayerSynchronizer : public Node {
+	GDCLASS(MultiplayerSynchronizer, Node);
 
 private:
-	static bool snip(const Vector<Vector2> &p_contour, int u, int v, int w, int n, const Vector<int> &V, bool relaxed);
+	Ref<SceneReplicationConfig> replication_config;
+	NodePath root_path;
+	uint64_t interval_msec = 0;
+
+	static Object *_get_prop_target(Object *p_obj, const NodePath &p_prop);
+	void _start();
+	void _stop();
+
+protected:
+	static void _bind_methods();
+	void _notification(int p_what);
+
+public:
+	static Error get_state(const List<NodePath> &p_properties, Object *p_obj, Vector<Variant> &r_variant, Vector<const Variant *> &r_variant_ptrs);
+	static Error set_state(const List<NodePath> &p_properties, Object *p_obj, const Vector<Variant> &p_state);
+
+	void set_replication_interval(double p_interval);
+	double get_replication_interval() const;
+	uint64_t get_replication_interval_msec() const;
+
+	void set_replication_config(Ref<SceneReplicationConfig> p_config);
+	Ref<SceneReplicationConfig> get_replication_config();
+
+	void set_root_path(const NodePath &p_path);
+	NodePath get_root_path() const;
+	virtual void set_multiplayer_authority(int p_peer_id, bool p_recursive = true) override;
+
+	MultiplayerSynchronizer() {}
 };
 
-#endif // TRIANGULATE_H
+#endif // MULTIPLAYER_SYNCHRONIZER_H
