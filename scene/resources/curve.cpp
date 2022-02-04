@@ -670,8 +670,8 @@ void Curve2D::_bake() const {
 	baked_cache_dirty = false;
 
 	if (points.size() == 0) {
-		baked_point_cache.resize(0);
-		baked_dist_cache.resize(0);
+		baked_point_cache.clear();
+		baked_dist_cache.clear();
 		return;
 	}
 
@@ -1173,10 +1173,10 @@ void Curve3D::_bake() const {
 	baked_cache_dirty = false;
 
 	if (points.size() == 0) {
-		baked_point_cache.resize(0);
-		baked_tilt_cache.resize(0);
-		baked_up_vector_cache.resize(0);
-		baked_dist_cache.resize(0);
+		baked_point_cache.clear();
+		baked_tilt_cache.clear();
+		baked_up_vector_cache.clear();
+		baked_dist_cache.clear();
 		return;
 	}
 
@@ -1192,7 +1192,7 @@ void Curve3D::_bake() const {
 			baked_up_vector_cache.resize(1);
 			baked_up_vector_cache.set(0, Vector3(0, 1, 0));
 		} else {
-			baked_up_vector_cache.resize(0);
+			baked_up_vector_cache.clear();
 		}
 
 		return;

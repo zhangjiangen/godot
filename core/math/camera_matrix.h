@@ -31,9 +31,17 @@
 #ifndef CAMERA_MATRIX_H
 #define CAMERA_MATRIX_H
 
+#include "core/math/math_defs.h"
 #include "core/math/rect2.h"
 #include "core/math/transform_3d.h"
+#include "core/math/vector3.h"
 #include "core/templates/local_vector.h"
+
+class AABB;
+class Plane;
+class Transform3D;
+struct Rect2;
+struct Vector2;
 
 struct CameraMatrix {
 	enum Planes {
