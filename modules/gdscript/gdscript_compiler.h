@@ -111,6 +111,12 @@ class GDScriptCompiler {
 			locals_stack.pop_back();
 			generator->end_block();
 		}
+		~CodeGen() {
+			if (generator) {
+				memdelete(generator);
+				generator = nullptr;
+			}
+		}
 	};
 
 	bool _is_class_member_property(CodeGen &codegen, const StringName &p_name);
@@ -147,6 +153,7 @@ public:
 	int get_error_column() const;
 
 	GDScriptCompiler();
+	~GDScriptCompiler();
 };
 
 #endif // GDSCRIPT_COMPILER_H

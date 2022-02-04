@@ -2116,6 +2116,7 @@ GDScriptFunction *GDScriptCompiler::_parse_function(Error &r_error, GDScript *p_
 	}
 
 	memdelete(codegen.generator);
+	codegen.generator = nullptr;
 
 	return gd_function;
 }
@@ -2629,4 +2630,6 @@ int GDScriptCompiler::get_error_column() const {
 }
 
 GDScriptCompiler::GDScriptCompiler() {
+}
+GDScriptCompiler::~GDScriptCompiler() {
 }
