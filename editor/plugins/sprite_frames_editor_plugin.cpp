@@ -285,7 +285,7 @@ void SpriteFramesEditor::_sheet_spin_changed(double) {
 }
 
 void SpriteFramesEditor::_prepare_sprite_sheet(const String &p_file) {
-	Ref<Resource> texture = ResourceLoader::load(p_file);
+	Ref<Texture2D> texture = ResourceLoader::load(p_file);
 	if (!texture.is_valid()) {
 		EditorNode::get_singleton()->show_warning(TTR("Unable to load images"));
 		ERR_FAIL_COND(!texture.is_valid());
@@ -328,10 +328,10 @@ void SpriteFramesEditor::_notification(int p_what) {
 			[[fallthrough]];
 		}
 		case NOTIFICATION_THEME_CHANGED: {
-			split_sheet_scroll->add_theme_style_override("bg", get_theme_stylebox(SNAME("bg"), SNAME("Tree")));
+			split_sheet_scroll->add_theme_style_override(SNAME("bg"), get_theme_stylebox(SNAME("bg"), SNAME("Tree")));
 		} break;
 		case NOTIFICATION_READY: {
-			add_theme_constant_override("autohide", 1); // Fixes the dragger always showing up.
+			add_theme_constant_override(SNAME("autohide"), 1); // Fixes the dragger always showing up.
 		} break;
 	}
 }
@@ -1247,8 +1247,8 @@ SpriteFramesEditor::SpriteFramesEditor() {
 	split_sheet_panel->add_child(split_sheet_zoom_margin);
 	split_sheet_zoom_margin->set_h_size_flags(0);
 	split_sheet_zoom_margin->set_v_size_flags(0);
-	split_sheet_zoom_margin->add_theme_constant_override("margin_top", 5);
-	split_sheet_zoom_margin->add_theme_constant_override("margin_left", 5);
+	split_sheet_zoom_margin->add_theme_constant_override(SNAME("margin_top"), 5);
+	split_sheet_zoom_margin->add_theme_constant_override(SNAME("margin_left"), 5);
 	HBoxContainer *split_sheet_zoom_hb = memnew(HBoxContainer);
 	split_sheet_zoom_margin->add_child(split_sheet_zoom_hb);
 

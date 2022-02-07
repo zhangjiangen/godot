@@ -202,7 +202,7 @@ void TreeItem::propagate_check(int p_column, bool p_emit_signal) {
 	bool ch = cells[p_column].checked;
 
 	if (p_emit_signal) {
-		tree->emit_signal("check_propagated_to_item", this, p_column);
+		tree->emit_signal(SNAME("check_propagated_to_item"), this, p_column);
 	}
 	_propagate_check_through_children(p_column, ch, p_emit_signal);
 	_propagate_check_through_parents(p_column, p_emit_signal);
@@ -213,7 +213,7 @@ void TreeItem::_propagate_check_through_children(int p_column, bool p_checked, b
 	while (current) {
 		current->set_checked(p_column, p_checked);
 		if (p_emit_signal) {
-			current->tree->emit_signal("check_propagated_to_item", current, p_column);
+			current->tree->emit_signal(SNAME("check_propagated_to_item"), current, p_column);
 		}
 		current->_propagate_check_through_children(p_column, p_checked, p_emit_signal);
 		current = current->get_next();
@@ -252,7 +252,7 @@ void TreeItem::_propagate_check_through_parents(int p_column, bool p_emit_signal
 	}
 
 	if (p_emit_signal) {
-		current->tree->emit_signal("check_propagated_to_item", current, p_column);
+		current->tree->emit_signal(SNAME("check_propagated_to_item"), current, p_column);
 	}
 	current->_propagate_check_through_parents(p_column, p_emit_signal);
 }
@@ -2490,7 +2490,7 @@ int Tree::propagate_mouse_event(const Point2i &p_pos, int x_ofs, int y_ofs, int 
 			/* process selection */
 
 			if (p_double_click && (!c.editable || c.mode == TreeItem::CELL_MODE_CUSTOM || c.mode == TreeItem::CELL_MODE_ICON /*|| c.mode==TreeItem::CELL_MODE_CHECK*/)) { //it's confusing for check
-
+				// Emits the "item_activated" signal.
 				propagate_mouse_activated = true;
 
 				incr_search.clear();
@@ -4941,7 +4941,7 @@ Tree::Tree() {
 	add_child(popup_editor, false, INTERNAL_MODE_FRONT);
 	popup_editor_vb = memnew(VBoxContainer);
 	popup_editor->add_child(popup_editor_vb);
-	popup_editor_vb->add_theme_constant_override("separation", 0);
+	popup_editor_vb->add_theme_constant_override(SNAME("separation"), 0);
 	popup_editor_vb->set_anchors_and_offsets_preset(PRESET_WIDE);
 	text_editor = memnew(LineEdit);
 	popup_editor_vb->add_child(text_editor);

@@ -3847,7 +3847,7 @@ void CanvasItemEditor::_notification(int p_what) {
 		// the icon will be dark, so we need to lighten it before blending it
 		// with the red color.
 		const Color key_auto_color = EditorSettings::get_singleton()->is_dark_theme() ? Color(1, 1, 1) : Color(4.25, 4.25, 4.25);
-		key_auto_insert_button->add_theme_color_override("icon_pressed_color", key_auto_color.lerp(Color(1, 0, 0), 0.55));
+		key_auto_insert_button->add_theme_color_override(SNAME("icon_pressed_color"), key_auto_color.lerp(Color(1, 0, 0), 0.55));
 		animation_menu->set_icon(get_theme_icon(SNAME("GuiTabMenuHl"), SNAME("EditorIcons")));
 
 		_update_context_menu_stylebox();
@@ -3967,7 +3967,7 @@ void CanvasItemEditor::_update_context_menu_stylebox() {
 	context_menu_stylebox->set_border_color(accent_color);
 	context_menu_stylebox->set_border_width(SIDE_BOTTOM, Math::round(2 * EDSCALE));
 	context_menu_stylebox->set_default_margin(SIDE_BOTTOM, 0);
-	context_menu_container->add_theme_style_override("panel", context_menu_stylebox);
+	context_menu_container->add_theme_style_override(SNAME("panel"), context_menu_stylebox);
 }
 
 void CanvasItemEditor::_update_scrollbars() {
@@ -5797,22 +5797,17 @@ void CanvasItemEditorViewport::_create_nodes(Node *parent, Node *child, String &
 		editor_data->get_undo_redo().add_undo_method(ed, "live_debug_remove_node", NodePath(String(editor->get_edited_scene()->get_path_to(parent)) + "/" + new_name));
 	}
 
-	String node_class = child->get_class();
-	if (node_class == "Polygon2D") {
-		editor_data->get_undo_redo().add_do_property(child, "texture/texture", texture);
-	} else if (node_class == "TouchScreenButton") {
-		editor_data->get_undo_redo().add_do_property(child, "normal", texture);
-	} else if (node_class == "TextureButton") {
-		editor_data->get_undo_redo().add_do_property(child, "texture_button", texture);
+	if (Object::cast_to<TouchScreenButton>(child) || Object::cast_to<TextureButton>(child)) {
+		editor_data->get_undo_redo().add_do_property(child, "texture_normal", texture);
 	} else {
 		editor_data->get_undo_redo().add_do_property(child, "texture", texture);
 	}
 
 	// make visible for certain node type
-	if (ClassDB::is_parent_class(node_class, "Control")) {
+	if (ClassDB::is_parent_class(child->get_class(), "Control")) {
 		Size2 texture_size = texture->get_size();
 		editor_data->get_undo_redo().add_do_property(child, "rect_size", texture_size);
-	} else if (node_class == "Polygon2D") {
+	} else if (Object::cast_to<Polygon2D>(child)) {
 		Size2 texture_size = texture->get_size();
 		Vector<Vector2> list = {
 			Vector2(0, 0),
@@ -6069,10 +6064,21 @@ Node *CanvasItemEditorViewport::_make_texture_node_type(String texture_node_type
 }
 
 void CanvasItemEditorViewport::_notification(int p_what) {
+	if (p_what == NOTIFICATION_ENTER_TREE || p_what == NOTIFICATION_THEME_CHANGED) {
+		List<BaseButton *> btn_list;
+		button_group->get_buttons(&btn_list);
+
+		for (int i = 0; i < btn_list.size(); i++) {
+			CheckBox *check = Object::cast_to<CheckBox>(btn_list[i]);
+			check->set_icon(get_theme_icon(check->get_text(), SNAME("EditorIcons")));
+		}
+
+		label->add_theme_color_override(SNAME("font_color"), get_theme_color(SNAME("warning_color"), SNAME("Editor")));
+	}
+
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			connect("mouse_exited", callable_mp(this, &CanvasItemEditorViewport::_on_mouse_exit));
-			label->add_theme_color_override("font_color", get_theme_color(SNAME("warning_color"), SNAME("Editor")));
 		} break;
 		case NOTIFICATION_EXIT_TREE: {
 			disconnect("mouse_exited", callable_mp(this, &CanvasItemEditorViewport::_on_mouse_exit));
@@ -6123,7 +6129,7 @@ CanvasItemEditorViewport::CanvasItemEditorViewport(EditorNode *p_node, CanvasIte
 
 	btn_group = memnew(VBoxContainer);
 	vbc->add_child(btn_group);
-	btn_group->set_h_size_flags(0);
+	btn_group->set_h_size_flags(SIZE_EXPAND_FILL);
 
 	button_group.instantiate();
 	for (int i = 0; i < texture_node_types.size(); i++) {
@@ -6135,16 +6141,16 @@ CanvasItemEditorViewport::CanvasItemEditorViewport(EditorNode *p_node, CanvasIte
 	}
 
 	label = memnew(Label);
-	label->add_theme_color_override("font_shadow_color", Color(0, 0, 0, 1));
-	label->add_theme_constant_override("shadow_outline_size", 1 * EDSCALE);
+	label->add_theme_color_override(SNAME("font_shadow_color"), Color(0, 0, 0, 1));
+	label->add_theme_constant_override(SNAME("shadow_outline_size"), 1 * EDSCALE);
 	label->hide();
 	canvas_item_editor->get_controls_container()->add_child(label);
 
 	label_desc = memnew(Label);
-	label_desc->add_theme_color_override("font_color", Color(0.6f, 0.6f, 0.6f, 1));
-	label_desc->add_theme_color_override("font_shadow_color", Color(0.2f, 0.2f, 0.2f, 1));
-	label_desc->add_theme_constant_override("shadow_outline_size", 1 * EDSCALE);
-	label_desc->add_theme_constant_override("line_spacing", 0);
+	label_desc->add_theme_color_override(SNAME("font_color"), Color(0.6f, 0.6f, 0.6f, 1));
+	label_desc->add_theme_color_override(SNAME("font_shadow_color"), Color(0.2f, 0.2f, 0.2f, 1));
+	label_desc->add_theme_constant_override(SNAME("shadow_outline_size"), 1 * EDSCALE);
+	label_desc->add_theme_constant_override(SNAME("line_spacing"), 0);
 	label_desc->hide();
 	canvas_item_editor->get_controls_container()->add_child(label_desc);
 

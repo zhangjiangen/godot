@@ -38,7 +38,7 @@
 void EditorHelpSearch::_update_icons() {
 	search_box->set_right_icon(results_tree->get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
 	search_box->set_clear_button_enabled(true);
-	search_box->add_theme_icon_override("right_icon", results_tree->get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
+	search_box->add_theme_icon_override(SNAME("right_icon"), results_tree->get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
 	case_sensitive_button->set_icon(results_tree->get_theme_icon(SNAME("MatchCase"), SNAME("EditorIcons")));
 	hierarchy_button->set_icon(results_tree->get_theme_icon(SNAME("ClassList"), SNAME("EditorIcons")));
 
@@ -529,8 +529,8 @@ TreeItem *EditorHelpSearch::Runner::_create_class_hierarchy(const ClassMatch &p_
 
 TreeItem *EditorHelpSearch::Runner::_create_class_item(TreeItem *p_parent, const DocData::ClassDoc *p_doc, bool p_gray) {
 	Ref<Texture2D> icon = empty_icon;
-	if (ui_service->has_theme_icon(p_doc->name, "EditorIcons")) {
-		icon = ui_service->get_theme_icon(p_doc->name, "EditorIcons");
+	if (ui_service->has_theme_icon(p_doc->name, SNAME("EditorIcons"))) {
+		icon = ui_service->get_theme_icon(p_doc->name, SNAME("EditorIcons"));
 	} else if (ClassDB::class_exists(p_doc->name) && ClassDB::is_parent_class(p_doc->name, "Object")) {
 		icon = ui_service->get_theme_icon(SNAME("Object"), SNAME("EditorIcons"));
 	}
