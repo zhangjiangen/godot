@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  panel.h                                                              */
+/*  gdscript_rpc_callable.h                                              */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,19 +28,34 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef PANEL_H
-#define PANEL_H
+#ifndef GDSCRIPT_RPC_CALLABLE
+#define GDSCRIPT_RPC_CALLABLE
 
-#include "scene/gui/control.h"
+#include "core/variant/callable.h"
+#include "core/variant/variant.h"
 
-class Panel : public Control {
-	GDCLASS(Panel, Control);
+class Node;
 
-protected:
-	void _notification(int p_what);
+class GDScriptRPCCallable : public CallableCustom {
+	Object *object = nullptr;
+	Node *node = nullptr;
+	StringName method;
+	uint32_t h = 0;
+
+	static bool compare_equal(const CallableCustom *p_a, const CallableCustom *p_b);
+	static bool compare_less(const CallableCustom *p_a, const CallableCustom *p_b);
 
 public:
-	Panel();
+	uint32_t hash() const override;
+	String get_as_text() const override;
+	CompareEqualFunc get_compare_equal_func() const override;
+	CompareLessFunc get_compare_less_func() const override;
+	ObjectID get_object() const override;
+	void call(const Variant **p_arguments, int p_argcount, Variant &r_return_value, Callable::CallError &r_call_error) const override;
+	void rpc(int p_peer_id, const Variant **p_arguments, int p_argcount, Callable::CallError &r_call_error) const override;
+
+	GDScriptRPCCallable(Object *p_object, const StringName &p_method);
+	virtual ~GDScriptRPCCallable() = default;
 };
 
-#endif // PANEL_H
+#endif // GDSCRIPT_RPC_CALLABLE
