@@ -3151,9 +3151,9 @@ int VisualShaderNodeUniformRef::get_output_port_count() const {
 			return 1;
 		case UniformType::UNIFORM_TYPE_BOOLEAN:
 			return 1;
-		case UniformType::UNIFORM_TYPE_VECTOR2:
+		case UniformType::UNIFORM_TYPE_VECTOR_2D:
 			return 1;
-		case UniformType::UNIFORM_TYPE_VECTOR3:
+		case UniformType::UNIFORM_TYPE_VECTOR_3D:
 			return 1;
 		case UniformType::UNIFORM_TYPE_TRANSFORM:
 			return 1;
@@ -3175,9 +3175,9 @@ VisualShaderNodeUniformRef::PortType VisualShaderNodeUniformRef::get_output_port
 			return PortType::PORT_TYPE_SCALAR_INT;
 		case UniformType::UNIFORM_TYPE_BOOLEAN:
 			return PortType::PORT_TYPE_BOOLEAN;
-		case UniformType::UNIFORM_TYPE_VECTOR2:
+		case UniformType::UNIFORM_TYPE_VECTOR_2D:
 			return PortType::PORT_TYPE_VECTOR_2D;
-		case UniformType::UNIFORM_TYPE_VECTOR3:
+		case UniformType::UNIFORM_TYPE_VECTOR_3D:
 			return PortType::PORT_TYPE_VECTOR_3D;
 		case UniformType::UNIFORM_TYPE_TRANSFORM:
 			return PortType::PORT_TYPE_TRANSFORM;
@@ -3204,9 +3204,9 @@ String VisualShaderNodeUniformRef::get_output_port_name(int p_port) const {
 			return "";
 		case UniformType::UNIFORM_TYPE_BOOLEAN:
 			return "";
-		case UniformType::UNIFORM_TYPE_VECTOR2:
+		case UniformType::UNIFORM_TYPE_VECTOR_2D:
 			return "";
-		case UniformType::UNIFORM_TYPE_VECTOR3:
+		case UniformType::UNIFORM_TYPE_VECTOR_3D:
 			return "";
 		case UniformType::UNIFORM_TYPE_TRANSFORM:
 			return "";
@@ -3276,15 +3276,17 @@ VisualShaderNodeUniformRef::PortType VisualShaderNodeUniformRef::get_port_type_b
 				return PORT_TYPE_SCALAR_INT;
 			case UniformType::UNIFORM_TYPE_SAMPLER:
 				return PORT_TYPE_SAMPLER;
-			case UniformType::UNIFORM_TYPE_VECTOR2:
+			case UniformType::UNIFORM_TYPE_VECTOR_2D:
 				return PORT_TYPE_VECTOR_2D;
-			case UniformType::UNIFORM_TYPE_VECTOR3:
+			case UniformType::UNIFORM_TYPE_VECTOR_3D:
 				return PORT_TYPE_VECTOR_3D;
-			case UniformType::UNIFORM_TYPE_VECTOR4:
+			case UniformType::UNIFORM_TYPE_VECTOR_4D:
 				return PORT_TYPE_VECTOR_4D;
-			case UniformType::PORT_TYPE_IVECTOR_3D:
+            case UniformType::UNIFORM_TYPE_IVECTOR_2D:
+                return PORT_TYPE_IVECTOR_2D;
+			case UniformType::UNIFORM_TYPE_IVECTOR_3D:
 				return PORT_TYPE_IVECTOR_3D;
-			case UniformType::UNIFORM_TYPE_IVECTOR4:
+			case UniformType::UNIFORM_TYPE_IVECTOR_4D:
 				return PORT_TYPE_IVECTOR_4D;
 			case UniformType::UNIFORM_TYPE_TRANSFORM:
 				return PORT_TYPE_TRANSFORM;

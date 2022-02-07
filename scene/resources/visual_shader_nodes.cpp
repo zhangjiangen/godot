@@ -7533,12 +7533,16 @@ VisualShaderNodeMultiplyAdd::PortType VisualShaderNodeMultiplyAdd::get_output_po
 			return PORT_TYPE_VECTOR_3D;
 		case OP_TYPE_VECTOR_4D:
 			return PORT_TYPE_VECTOR_4D;
+        case OP_TYPE_IVECTOR_2D:
 			return PORT_TYPE_IVECTOR_2D;
 		case OP_TYPE_IVECTOR_3D:
 			return PORT_TYPE_IVECTOR_3D;
 		case OP_TYPE_IVECTOR_4D:
 			return PORT_TYPE_IVECTOR_4D;
 		default:
+            return PORT_TYPE_VECTOR_3D;
+        }
+        return PORT_TYPE_VECTOR_3D;
 	}
 
 	String VisualShaderNodeMultiplyAdd::get_output_port_name(int p_port) const {

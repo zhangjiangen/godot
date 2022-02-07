@@ -622,22 +622,10 @@ private:
 	_FORCE_INLINE_ void _multimesh_re_create_aabb(MultiMesh *multimesh, const float *p_data, int p_instances);
 	void _update_dirty_multimeshes();
 	virtual void _multmesh_pre_render(const Transform3D &p_camera_transform, const CameraMatrix &p_camera_mat) override {
-		temp_mesh_list.clear();
-		multimesh_owner.get_owned_array(&temp_mesh_list);
-		for (int i = 0; i < temp_mesh_list.size(); ++i) {
-			MultiMesh *multimesh = multimesh_owner.get_or_null(temp_mesh_list[i]);
-			if (multimesh->UserDate.is_valid())
-				multimesh->UserDate->PreRender(&p_camera_transform, &p_camera_mat, 1);
-		}
+
 	}
 	virtual void _multmesh_post_render() override {
-		temp_mesh_list.clear();
-		multimesh_owner.get_owned_array(&temp_mesh_list);
-		for (int i = 0; i < temp_mesh_list.size(); ++i) {
-			MultiMesh *multimesh = multimesh_owner.get_or_null(temp_mesh_list[i]);
-			if (multimesh->UserDate.is_valid())
-				multimesh->UserDate->EndRender();
-		}
+
 	}
 
 	/* PARTICLES */

@@ -601,6 +601,7 @@ Error ResourceImporterTexture::import(const String &p_source_file, const String 
 		bool is_ldr = (image->get_format() >= Image::FORMAT_L8 && image->get_format() <= Image::FORMAT_RGB565);
 		const bool can_bptc = ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_bptc");
 		const bool can_s3tc = ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_s3tc");
+        const bool can_astc = ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_astc");
 
 		if (can_bptc) {
 			//add to the list anyway

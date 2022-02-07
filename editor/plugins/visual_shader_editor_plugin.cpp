@@ -609,16 +609,16 @@ void VisualShaderGraphPlugin::add_node(VisualShader::Type p_type, int p_id) {
 				case VisualShaderNode::PORT_TYPE_VECTOR_3D: {
 					output_port_count += 3;
 				} break;
-				case VisualShaderNode::PORT_TYPE_VECTOR4: {
+				case VisualShaderNode::PORT_TYPE_VECTOR_4D: {
 					output_port_count += 4;
 				} break;
-				case VisualShaderNode::PORT_TYPE_IVECTOR2: {
+				case VisualShaderNode::PORT_TYPE_IVECTOR_2D: {
 					output_port_count += 2;
 				} break;
-				case VisualShaderNode::PORT_TYPE_IVECTOR: {
+				case VisualShaderNode::PORT_TYPE_IVECTOR_3D: {
 					output_port_count += 3;
 				} break;
-				case VisualShaderNode::PORT_TYPE_IVECTOR4: {
+				case VisualShaderNode::PORT_TYPE_IVECTOR_4D: {
 					output_port_count += 4;
 				} break;
 				default:
@@ -647,28 +647,28 @@ void VisualShaderGraphPlugin::add_node(VisualShader::Type p_type, int p_id) {
 					i -= 3;
 				}
 			} break;
-			case VisualShaderNode::PORT_TYPE_VECTOR4: {
+			case VisualShaderNode::PORT_TYPE_VECTOR_4D: {
 				if (expanded_port_counter >= 4) {
 					expanded_type = VisualShaderNode::PORT_TYPE_SCALAR;
 					expanded_port_counter = 0;
 					i -= 4;
 				}
 			} break;
-			case VisualShaderNode::PORT_TYPE_IVECTOR2: {
+			case VisualShaderNode::PORT_TYPE_IVECTOR_2D: {
 				if (expanded_port_counter >= 2) {
 					expanded_type = VisualShaderNode::PORT_TYPE_SCALAR;
 					expanded_port_counter = 0;
 					i -= 2;
 				}
 			} break;
-			case VisualShaderNode::PORT_TYPE_IVECTOR: {
+			case VisualShaderNode::PORT_TYPE_IVECTOR_3D: {
 				if (expanded_port_counter >= 3) {
 					expanded_type = VisualShaderNode::PORT_TYPE_SCALAR;
 					expanded_port_counter = 0;
 					i -= 3;
 				}
 			} break;
-			case VisualShaderNode::PORT_TYPE_IVECTOR4: {
+			case VisualShaderNode::PORT_TYPE_IVECTOR_4D: {
 				if (expanded_port_counter >= 4) {
 					expanded_type = VisualShaderNode::PORT_TYPE_SCALAR;
 					expanded_port_counter = 0;
@@ -919,7 +919,7 @@ void VisualShaderGraphPlugin::add_node(VisualShader::Type p_type, int p_id) {
 
 					expanded_type = VisualShaderNode::PORT_TYPE_VECTOR_3D;
 				} break;
-				case VisualShaderNode::PORT_TYPE_VECTOR4: {
+				case VisualShaderNode::PORT_TYPE_VECTOR_4D: {
 					port_offset++;
 					valid_left = (i + 1) < vsnode->get_input_port_count();
 					port_left = VisualShaderNode::PORT_TYPE_SCALAR;
@@ -953,10 +953,10 @@ void VisualShaderGraphPlugin::add_node(VisualShader::Type p_type, int p_id) {
 					}
 					node->set_slot(i + port_offset, valid_left, port_left, type_color[port_left], true, VisualShaderNode::PORT_TYPE_SCALAR, vector_expanded_color[2]);
 
-					expanded_type = VisualShaderNode::PORT_TYPE_VECTOR4;
+					expanded_type = VisualShaderNode::PORT_TYPE_VECTOR_4D;
 				} break;
 
-				case VisualShaderNode::PORT_TYPE_IVECTOR2: {
+				case VisualShaderNode::PORT_TYPE_IVECTOR_2D: {
 					port_offset++;
 					valid_left = (i + 1) < vsnode->get_input_port_count();
 					port_left = VisualShaderNode::PORT_TYPE_SCALAR_INT;
@@ -973,9 +973,9 @@ void VisualShaderGraphPlugin::add_node(VisualShader::Type p_type, int p_id) {
 					}
 					node->set_slot(i + port_offset, valid_left, port_left, type_color[port_left], true, VisualShaderNode::PORT_TYPE_SCALAR, vector_expanded_color[1]);
 
-					expanded_type = VisualShaderNode::PORT_TYPE_IVECTOR2;
+					expanded_type = VisualShaderNode::PORT_TYPE_IVECTOR_2D;
 				} break;
-				case VisualShaderNode::PORT_TYPE_IVECTOR: {
+				case VisualShaderNode::PORT_TYPE_IVECTOR_3D: {
 					port_offset++;
 					valid_left = (i + 1) < vsnode->get_input_port_count();
 					port_left = VisualShaderNode::PORT_TYPE_SCALAR_INT;
@@ -1000,9 +1000,9 @@ void VisualShaderGraphPlugin::add_node(VisualShader::Type p_type, int p_id) {
 					}
 					node->set_slot(i + port_offset, valid_left, port_left, type_color[port_left], true, VisualShaderNode::PORT_TYPE_SCALAR, vector_expanded_color[2]);
 
-					expanded_type = VisualShaderNode::PORT_TYPE_IVECTOR;
+					expanded_type = VisualShaderNode::PORT_TYPE_IVECTOR_3D;
 				} break;
-				case VisualShaderNode::PORT_TYPE_IVECTOR4: {
+				case VisualShaderNode::PORT_TYPE_IVECTOR_4D: {
 					port_offset++;
 					valid_left = (i + 1) < vsnode->get_input_port_count();
 					port_left = VisualShaderNode::PORT_TYPE_SCALAR_INT;
@@ -1036,7 +1036,7 @@ void VisualShaderGraphPlugin::add_node(VisualShader::Type p_type, int p_id) {
 					}
 					node->set_slot(i + port_offset, valid_left, port_left, type_color[port_left], true, VisualShaderNode::PORT_TYPE_SCALAR, vector_expanded_color[2]);
 
-					expanded_type = VisualShaderNode::PORT_TYPE_IVECTOR4;
+					expanded_type = VisualShaderNode::PORT_TYPE_IVECTOR_4D;
 				} break;
 				default:
 					break;
@@ -1594,16 +1594,16 @@ void VisualShaderEditor::_update_options_menu() {
 			case VisualShaderNode::PORT_TYPE_VECTOR_3D:
 				item->set_icon(0, EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector3"), SNAME("EditorIcons")));
 				break;
-			case VisualShaderNode::PORT_TYPE_VECTOR4:
+			case VisualShaderNode::PORT_TYPE_VECTOR_4D:
 				item->set_icon(0, EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector3"), SNAME("EditorIcons")));
 				break;
-			case VisualShaderNode::PORT_TYPE_IVECTOR2:
+			case VisualShaderNode::PORT_TYPE_IVECTOR_2D:
 				item->set_icon(0, EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector2"), SNAME("EditorIcons")));
 				break;
-			case VisualShaderNode::PORT_TYPE_IVECTOR:
+			case VisualShaderNode::PORT_TYPE_IVECTOR_3D:
 				item->set_icon(0, EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector3"), SNAME("EditorIcons")));
 				break;
-			case VisualShaderNode::PORT_TYPE_IVECTOR4:
+			case VisualShaderNode::PORT_TYPE_IVECTOR_4D:
 				item->set_icon(0, EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector4"), SNAME("EditorIcons")));
 				break;
 			case VisualShaderNode::PORT_TYPE_BOOLEAN:
@@ -1721,9 +1721,9 @@ void VisualShaderEditor::_update_uniforms(bool p_update_refs) {
 				} else if (bool_uniform.is_valid()) {
 					uniform_type = VisualShaderNodeUniformRef::UniformType::UNIFORM_TYPE_BOOLEAN;
 				} else if (vec2_uniform.is_valid()) {
-					uniform_type = VisualShaderNodeUniformRef::UniformType::UNIFORM_TYPE_VECTOR2;
+					uniform_type = VisualShaderNodeUniformRef::UniformType::UNIFORM_TYPE_VECTOR_2D;
 				} else if (vec3_uniform.is_valid()) {
-					uniform_type = VisualShaderNodeUniformRef::UniformType::UNIFORM_TYPE_VECTOR3;
+					uniform_type = VisualShaderNodeUniformRef::UniformType::UNIFORM_TYPE_VECTOR_3D;
 				} else if (transform_uniform.is_valid()) {
 					uniform_type = VisualShaderNodeUniformRef::UniformType::UNIFORM_TYPE_TRANSFORM;
 				} else if (color_uniform.is_valid()) {
@@ -1969,16 +1969,16 @@ void VisualShaderEditor::_expand_output_port(int p_node, int p_port, bool p_expa
 		case VisualShaderNode::PORT_TYPE_VECTOR_3D: {
 			type_size = 3;
 		} break;
-		case VisualShaderNode::PORT_TYPE_VECTOR4: {
+		case VisualShaderNode::PORT_TYPE_VECTOR_4D: {
 			type_size = 4;
 		} break;
-		case VisualShaderNode::PORT_TYPE_IVECTOR2: {
+		case VisualShaderNode::PORT_TYPE_IVECTOR_2D: {
 			type_size = 2;
 		} break;
-		case VisualShaderNode::PORT_TYPE_IVECTOR: {
+		case VisualShaderNode::PORT_TYPE_IVECTOR_3D: {
 			type_size = 3;
 		} break;
-		case VisualShaderNode::PORT_TYPE_IVECTOR4: {
+		case VisualShaderNode::PORT_TYPE_IVECTOR_4D: {
 			type_size = 4;
 		} break;
 		default:
@@ -2840,16 +2840,16 @@ void VisualShaderEditor::_add_node(int p_idx, const Vector<Variant> &p_ops, Stri
 				case VisualShaderNode::PORT_TYPE_VECTOR_3D:
 					initial_expression_code = "output0 = vec3(1.0, 1.0, 1.0);";
 					break;
-				case VisualShaderNode::PORT_TYPE_VECTOR4:
+				case VisualShaderNode::PORT_TYPE_VECTOR_4D:
 					initial_expression_code = "output0 = vec4(1.0, 1.0);";
 					break;
-				case VisualShaderNode::PORT_TYPE_IVECTOR2:
+				case VisualShaderNode::PORT_TYPE_IVECTOR_2D:
 					initial_expression_code = "output0 = ivec2(1, 1, 1);";
 					break;
-				case VisualShaderNode::PORT_TYPE_IVECTOR:
+				case VisualShaderNode::PORT_TYPE_IVECTOR_3D:
 					initial_expression_code = "output0 = ivec3(1, 1, 1);";
 					break;
-				case VisualShaderNode::PORT_TYPE_IVECTOR4:
+				case VisualShaderNode::PORT_TYPE_IVECTOR_4D:
 					initial_expression_code = "output0 = ivec4(1, 1, 1, 1);";
 					break;
 				case VisualShaderNode::PORT_TYPE_BOOLEAN:
