@@ -592,7 +592,15 @@ void EditorFeatureProfileManager::_class_list_item_selected() {
 	List<PropertyInfo> props;
 	ClassDB::get_property_list(class_name, &props, true);
 
-	if (props.size() > 0) {
+	bool has_editor_props = false;
+	for (const PropertyInfo &E : props) {
+		if (E.usage & PROPERTY_USAGE_EDITOR) {
+			has_editor_props = true;
+			break;
+		}
+	}
+
+	if (has_editor_props) {
 		TreeItem *properties = property_list->create_item(root);
 		properties->set_text(0, TTR("Class Properties:"));
 
@@ -947,7 +955,7 @@ EditorFeatureProfileManager::EditorFeatureProfileManager() {
 	// Add some spacing above the help label.
 	Ref<StyleBoxEmpty> sb = memnew(StyleBoxEmpty);
 	sb->set_default_margin(SIDE_TOP, 20 * EDSCALE);
-	no_profile_selected_help->add_theme_style_override("normal", sb);
+	no_profile_selected_help->add_theme_style_override(SNAME("normal"), sb);
 	no_profile_selected_help->set_horizontal_alignment(HORIZONTAL_ALIGNMENT_CENTER);
 	no_profile_selected_help->set_v_size_flags(Control::SIZE_EXPAND_FILL);
 	h_split->add_child(no_profile_selected_help);

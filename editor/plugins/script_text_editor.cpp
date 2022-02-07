@@ -398,10 +398,10 @@ Ref<Texture2D> ScriptTextEditor::get_theme_icon() {
 			icon_name += "Internal";
 		}
 
-		if (get_parent_control()->has_theme_icon(icon_name, "EditorIcons")) {
-			return get_parent_control()->get_theme_icon(icon_name, "EditorIcons");
-		} else if (get_parent_control()->has_theme_icon(script->get_class(), "EditorIcons")) {
-			return get_parent_control()->get_theme_icon(script->get_class(), "EditorIcons");
+		if (get_parent_control()->has_theme_icon(icon_name, SNAME("EditorIcons"))) {
+			return get_parent_control()->get_theme_icon(icon_name, SNAME("EditorIcons"));
+		} else if (get_parent_control()->has_theme_icon(script->get_class(), SNAME("EditorIcons"))) {
+			return get_parent_control()->get_theme_icon(script->get_class(), SNAME("EditorIcons"));
 		}
 	}
 
@@ -1850,7 +1850,7 @@ void ScriptTextEditor::_enable_code_editor() {
 
 ScriptTextEditor::ScriptTextEditor() {
 	code_editor = memnew(CodeTextEditor);
-	code_editor->add_theme_constant_override("separation", 2);
+	code_editor->add_theme_constant_override(SNAME("separation"), 2);
 	code_editor->set_anchors_and_offsets_preset(Control::PRESET_WIDE);
 	code_editor->set_code_complete_func(_code_complete_scripts, this);
 	code_editor->set_v_size_flags(SIZE_EXPAND_FILL);

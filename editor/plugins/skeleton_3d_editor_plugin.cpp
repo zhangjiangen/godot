@@ -602,7 +602,7 @@ void Skeleton3DEditor::update_editors() {
 
 void Skeleton3DEditor::create_editors() {
 	set_h_size_flags(SIZE_EXPAND_FILL);
-	add_theme_constant_override("separation", 0);
+	add_theme_constant_override(SNAME("separation"), 0);
 
 	set_focus_mode(FOCUS_ALL);
 
@@ -821,7 +821,7 @@ void fragment() {
 }
 )");
 	handle_material->set_shader(handle_shader);
-	Ref<Texture2D> handle = editor->get_gui_base()->get_theme_icon("EditorBoneHandle", "EditorIcons");
+	Ref<Texture2D> handle = editor->get_gui_base()->get_theme_icon(SNAME("EditorBoneHandle"), SNAME("EditorIcons"));
 	handle_material->set_shader_param("point_size", handle->get_width());
 	handle_material->set_shader_param("texture_albedo", handle);
 

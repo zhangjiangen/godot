@@ -37,10 +37,10 @@
 #include "core/math/vector3.h"
 #include "core/templates/local_vector.h"
 
-class AABB;
-class Plane;
-class Transform3D;
+struct AABB;
+struct Plane;
 struct Rect2;
+struct Transform3D;
 struct Vector2;
 
 struct CameraMatrix {

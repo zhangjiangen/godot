@@ -362,6 +362,17 @@ bool SceneTreeEditor::_add_nodes(Node *p_node, TreeItem *p_parent, bool p_scroll
 			}
 
 			_update_visibility_color(p_node, item);
+		} else if (p_node->is_class("CanvasLayer")) {
+			bool v = p_node->call("is_visible");
+			if (v) {
+				item->add_button(0, get_theme_icon(SNAME("GuiVisibilityVisible"), SNAME("EditorIcons")), BUTTON_VISIBILITY, false, TTR("Toggle Visibility"));
+			} else {
+				item->add_button(0, get_theme_icon(SNAME("GuiVisibilityHidden"), SNAME("EditorIcons")), BUTTON_VISIBILITY, false, TTR("Toggle Visibility"));
+			}
+
+			if (!p_node->is_connected("visibility_changed", callable_mp(this, &SceneTreeEditor::_node_visibility_changed))) {
+				p_node->connect("visibility_changed", callable_mp(this, &SceneTreeEditor::_node_visibility_changed), varray(p_node));
+			}
 		} else if (p_node->is_class("Node3D")) {
 			bool is_locked = p_node->has_meta("_edit_lock_");
 			if (is_locked) {
@@ -471,6 +482,9 @@ void SceneTreeEditor::_node_visibility_changed(Node *p_node) {
 	if (p_node->is_class("CanvasItem")) {
 		visible = p_node->call("is_visible");
 		CanvasItemEditor::get_singleton()->get_viewport_control()->update();
+	} else if (p_node->is_class("CanvasLayer")) {
+		visible = p_node->call("is_visible");
+		CanvasItemEditor::get_singleton()->get_viewport_control()->update();
 	} else if (p_node->is_class("Node3D")) {
 		visible = p_node->call("is_visible");
 	}
@@ -514,7 +528,7 @@ void SceneTreeEditor::_node_removed(Node *p_node) {
 		p_node->disconnect("script_changed", callable_mp(this, &SceneTreeEditor::_node_script_changed));
 	}
 
-	if (p_node->is_class("Node3D") || p_node->is_class("CanvasItem")) {
+	if (p_node->is_class("Node3D") || p_node->is_class("CanvasItem") || p_node->is_class("CanvasLayer")) {
 		if (p_node->is_connected("visibility_changed", callable_mp(this, &SceneTreeEditor::_node_visibility_changed))) {
 			p_node->disconnect("visibility_changed", callable_mp(this, &SceneTreeEditor::_node_visibility_changed));
 		}
@@ -1205,7 +1219,7 @@ SceneTreeEditor::SceneTreeEditor(bool p_label, bool p_can_rename, bool p_can_ope
 	tree->set_begin(Point2(0, p_label ? 18 : 0));
 	tree->set_end(Point2(0, 0));
 	tree->set_allow_reselect(true);
-	tree->add_theme_constant_override("button_margin", 0);
+	tree->add_theme_constant_override(SNAME("button_margin"), 0);
 
 	add_child(tree);
 
@@ -1310,7 +1324,7 @@ SceneTreeDialog::SceneTreeDialog() {
 	filter->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	filter->set_placeholder(TTR("Filter nodes"));
 	filter->set_clear_button_enabled(true);
-	filter->add_theme_constant_override("minimum_character_width", 0);
+	filter->add_theme_constant_override(SNAME("minimum_character_width"), 0);
 	filter->connect("text_changed", callable_mp(this, &SceneTreeDialog::_filter_changed));
 	vbc->add_child(filter);
 

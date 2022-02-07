@@ -1723,15 +1723,15 @@ void AnimationTimelineEdit::update_values() {
 
 	switch (animation->get_loop_mode()) {
 		case Animation::LoopMode::LOOP_NONE: {
-			loop->set_icon(get_theme_icon("Loop", "EditorIcons"));
+			loop->set_icon(get_theme_icon(SNAME("Loop"), SNAME("EditorIcons")));
 			loop->set_pressed(false);
 		} break;
 		case Animation::LoopMode::LOOP_LINEAR: {
-			loop->set_icon(get_theme_icon("Loop", "EditorIcons"));
+			loop->set_icon(get_theme_icon(SNAME("Loop"), SNAME("EditorIcons")));
 			loop->set_pressed(true);
 		} break;
 		case Animation::LoopMode::LOOP_PINGPONG: {
-			loop->set_icon(get_theme_icon("PingPongLoop", "EditorIcons"));
+			loop->set_icon(get_theme_icon(SNAME("PingPongLoop"), SNAME("EditorIcons")));
 			loop->set_pressed(true);
 		} break;
 		default:
@@ -4368,7 +4368,7 @@ void AnimationTrackEditor::_update_tracks() {
 				g->set_timeline(timeline);
 				groups.push_back(g);
 				VBoxContainer *vb = memnew(VBoxContainer);
-				vb->add_theme_constant_override("separation", 0);
+				vb->add_theme_constant_override(SNAME("separation"), 0);
 				vb->add_child(g);
 				track_vbox->add_child(vb);
 				group_sort[base_path] = vb;
@@ -4516,10 +4516,10 @@ void AnimationTrackEditor::_notification(int p_what) {
 	if (p_what == NOTIFICATION_THEME_CHANGED || p_what == NOTIFICATION_ENTER_TREE) {
 		zoom_icon->set_texture(get_theme_icon(SNAME("Zoom"), SNAME("EditorIcons")));
 		snap->set_icon(get_theme_icon(SNAME("Snap"), SNAME("EditorIcons")));
-		view_group->set_icon(get_theme_icon(view_group->is_pressed() ? "AnimationTrackList" : "AnimationTrackGroup", "EditorIcons"));
+		view_group->set_icon(get_theme_icon(view_group->is_pressed() ? SNAME("AnimationTrackList") : SNAME("AnimationTrackGroup"), SNAME("EditorIcons")));
 		selected_filter->set_icon(get_theme_icon(SNAME("AnimationFilter"), SNAME("EditorIcons")));
 		imported_anim_warning->set_icon(get_theme_icon(SNAME("NodeWarning"), SNAME("EditorIcons")));
-		main_panel->add_theme_style_override("panel", get_theme_stylebox(SNAME("bg"), SNAME("Tree")));
+		main_panel->add_theme_style_override(SNAME("panel"), get_theme_stylebox(SNAME("bg"), SNAME("Tree")));
 		edit->get_popup()->set_item_icon(edit->get_popup()->get_item_index(EDIT_APPLY_RESET), get_theme_icon(SNAME("Reload"), SNAME("EditorIcons")));
 	}
 
@@ -5493,8 +5493,8 @@ void AnimationTrackEditor::_edit_menu_pressed(int p_option) {
 				String text;
 				Ref<Texture2D> icon = get_theme_icon(SNAME("Node"), SNAME("EditorIcons"));
 				if (node) {
-					if (has_theme_icon(node->get_class(), "EditorIcons")) {
-						icon = get_theme_icon(node->get_class(), "EditorIcons");
+					if (has_theme_icon(node->get_class(), SNAME("EditorIcons"))) {
+						icon = get_theme_icon(node->get_class(), SNAME("EditorIcons"));
 					}
 
 					text = node->get_name();
@@ -5907,7 +5907,7 @@ void AnimationTrackEditor::_cleanup_animation(Ref<Animation> p_animation) {
 
 void AnimationTrackEditor::_view_group_toggle() {
 	_update_tracks();
-	view_group->set_icon(get_theme_icon(view_group->is_pressed() ? "AnimationTrackList" : "AnimationTrackGroup", "EditorIcons"));
+	view_group->set_icon(get_theme_icon(view_group->is_pressed() ? SNAME("AnimationTrackList") : SNAME("AnimationTrackGroup"), SNAME("EditorIcons")));
 }
 
 bool AnimationTrackEditor::is_grouping_tracks() {
@@ -6085,7 +6085,7 @@ AnimationTrackEditor::AnimationTrackEditor() {
 	timeline_scroll->add_child(timeline_vbox);
 	timeline_vbox->set_v_size_flags(SIZE_EXPAND_FILL);
 	timeline_vbox->set_h_size_flags(SIZE_EXPAND_FILL);
-	timeline_vbox->add_theme_constant_override("separation", 0);
+	timeline_vbox->add_theme_constant_override(SNAME("separation"), 0);
 
 	info_message = memnew(Label);
 	info_message->set_text(TTR("Select an AnimationPlayer node to create and edit animations."));
@@ -6140,7 +6140,7 @@ AnimationTrackEditor::AnimationTrackEditor() {
 	scroll->add_child(track_vbox);
 	track_vbox->set_h_size_flags(SIZE_EXPAND_FILL);
 	scroll->set_horizontal_scroll_mode(ScrollContainer::SCROLL_MODE_DISABLED);
-	track_vbox->add_theme_constant_override("separation", 0);
+	track_vbox->add_theme_constant_override(SNAME("separation"), 0);
 
 	HBoxContainer *bottom_hb = memnew(HBoxContainer);
 	add_child(bottom_hb);

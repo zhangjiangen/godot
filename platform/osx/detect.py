@@ -85,13 +85,15 @@ def configure(env):
         env["osxcross"] = True
 
     if env["arch"] == "arm64":
-        print("Building for macOS 10.15+, platform arm64.")
-        env.Append(CCFLAGS=["-arch", "arm64", "-mmacosx-version-min=10.15"])
-        env.Append(LINKFLAGS=["-arch", "arm64", "-mmacosx-version-min=10.15"])
+        print("Building for macOS 11.00+, platform arm64.")
+        env.Append(CCFLAGS=["-arch", "arm64", "-mmacosx-version-min=11.00"])
+        env.Append(LINKFLAGS=["-arch", "arm64", "-mmacosx-version-min=11.00"])
     else:
         print("Building for macOS 10.12+, platform x86_64.")
         env.Append(CCFLAGS=["-arch", "x86_64", "-mmacosx-version-min=10.12"])
         env.Append(LINKFLAGS=["-arch", "x86_64", "-mmacosx-version-min=10.12"])
+
+    env.Append(CCFLAGS=["-fobjc-arc"])
 
     if not "osxcross" in env:  # regular native build
         if env["macports_clang"] != "no":
@@ -204,6 +206,8 @@ def configure(env):
         # Disable deprecation warnings
         env.Append(CCFLAGS=["-Wno-deprecated-declarations"])
         env.Append(LINKFLAGS=["-framework", "OpenGL"])
+
+    env.Append(LINKFLAGS=["-rpath", "@executable_path/../Frameworks", "-rpath", "@executable_path"])
 
     if env["vulkan"]:
         env.Append(CPPDEFINES=["VULKAN_ENABLED"])

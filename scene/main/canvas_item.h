@@ -46,6 +46,8 @@ class World2D;
 class CanvasItem : public Node {
 	GDCLASS(CanvasItem, Node);
 
+	friend class CanvasLayer;
+
 public:
 	enum TextureFilter : uint8_t {
 		TEXTURE_FILTER_PARENT_NODE,
@@ -80,7 +82,21 @@ private:
 	List<CanvasItem *> children_items;
 	List<CanvasItem *>::Element *C = nullptr;
 
-	Ref<Material> material;
+	int light_mask = 1;
+
+	Window *window = nullptr;
+	bool first_draw = false;
+	bool visible = true;
+	bool visible_in_tree = false;
+	bool clip_children = false;
+	bool pending_update = false;
+	bool top_level = false;
+	bool drawing = false;
+	bool block_transform_notify = false;
+	bool behind = false;
+	bool use_parent_material = false;
+	bool notify_local_transform = false;
+	bool notify_transform = false;
 
 	mutable Transform2D global_transform;
 	int light_mask = 1;
@@ -103,7 +119,7 @@ private:
 
 	void _top_level_raise_self();
 
-	void _propagate_visibility_changed(bool p_visible);
+	void _propagate_visibility_changed(bool p_visible, bool p_was_visible = false);
 
 	void _update_callback();
 

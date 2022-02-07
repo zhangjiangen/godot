@@ -2095,7 +2095,7 @@ TileMapEditorTilesPlugin::TileMapEditorTilesPlugin() {
 	scatter_spinbox->set_max(1000);
 	scatter_spinbox->set_step(0.001);
 	scatter_spinbox->set_tooltip(TTR("Defines the probability of painting nothing instead of a randomly selected tile."));
-	scatter_spinbox->get_line_edit()->add_theme_constant_override("minimum_character_width", 4);
+	scatter_spinbox->get_line_edit()->add_theme_constant_override(SNAME("minimum_character_width"), 4);
 	scatter_spinbox->connect("value_changed", callable_mp(this, &TileMapEditorTilesPlugin::_on_scattering_spinbox_changed));
 	tools_settings->add_child(scatter_spinbox);
 
@@ -2337,7 +2337,7 @@ Map<Vector2i, TileMapCell> TileMapEditorTerrainsPlugin::_draw_terrains(const Map
 	bool to_replace_modified = true;
 	while (to_replace_modified) {
 		// Get the constraints from the removed cells.
-		removed_cells_constraints_set = tile_map->get_terrain_constraints_from_removed_cells_list(tile_map_layer, to_replace, p_terrain_set);
+		removed_cells_constraints_set = tile_map->get_terrain_constraints_from_removed_cells_list(tile_map_layer, to_replace, p_terrain_set, false);
 
 		// Filter the sources to make sure they are in the potential_to_replace.
 		Map<TileMap::TerrainConstraint, Set<Vector2i>> per_constraint_tiles;

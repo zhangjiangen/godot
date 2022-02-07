@@ -32,6 +32,7 @@
 
 #include "core/core_string_names.h"
 #include "core/io/resource_loader.h"
+#include "core/multiplayer/multiplayer_api.h"
 #include "core/object/message_queue.h"
 #include "core/string/print_string.h"
 #include "instance_placeholder.h"
@@ -134,9 +135,6 @@ void Node::_notification(int p_notification) {
 				memdelete(data.path_cache);
 				data.path_cache = nullptr;
 			}
-			if (data.scene_file_path.length()) {
-				get_multiplayer()->scene_enter_exit_notify(data.scene_file_path, this, false);
-			}
 		} break;
 		case NOTIFICATION_PATH_RENAMED: {
 			if (data.path_cache) {
@@ -165,12 +163,6 @@ void Node::_notification(int p_notification) {
 			}
 
 			GDVIRTUAL_CALL(_ready);
-
-			if (data.scene_file_path.length()) {
-				ERR_FAIL_COND(!is_inside_tree());
-				get_multiplayer()->scene_enter_exit_notify(data.scene_file_path, this, true);
-			}
-
 		} break;
 		case NOTIFICATION_POSTINITIALIZE: {
 			data.in_constructor = false;
