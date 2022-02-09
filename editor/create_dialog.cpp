@@ -446,14 +446,14 @@ void CreateDialog::_notification(int p_what) {
 	}
 }
 
-void CreateDialog::select_type(const String &p_type) {
+void CreateDialog::select_type(const String &p_type, bool p_center_on_item) {
 	if (!search_options_types.has(p_type)) {
 		return;
 	}
 
 	TreeItem *to_select = search_options_types[p_type];
 	to_select->select(0);
-	search_options->scroll_to_item(to_select);
+	search_options->scroll_to_item(to_select, p_center_on_item);
 
 	if (EditorHelp::get_doc_data()->class_list.has(p_type) && !DTR(EditorHelp::get_doc_data()->class_list[p_type].brief_description).is_empty()) {
 		// Display both class name and description, since the help bit may be displayed
@@ -503,24 +503,14 @@ Variant CreateDialog::instance_selected() {
 	} else {
 		obj = ClassDB::instantiate(selected->get_text(0));
 	}
-
-	// Check if any Object-type property should be instantiated.
-	List<PropertyInfo> pinfo;
-	((Object *)obj)->get_property_list(&pinfo);
-
-	for (const PropertyInfo &pi : pinfo) {
-		if (pi.type == Variant::OBJECT && pi.usage & PROPERTY_USAGE_EDITOR_INSTANTIATE_OBJECT) {
-			Object *prop = ClassDB::instantiate(pi.class_name);
-			((Object *)obj)->set(pi.name, prop);
-		}
-	}
+	EditorNode::get_editor_data().instantiate_object_properties(obj);
 
 	return obj;
 }
 
 void CreateDialog::_item_selected() {
 	String name = get_selected_type();
-	select_type(name);
+	select_type(name, false);
 }
 
 void CreateDialog::_hide_requested() {
@@ -743,7 +733,7 @@ CreateDialog::CreateDialog() {
 	favorites->set_allow_reselect(true);
 	favorites->connect("cell_selected", callable_mp(this, &CreateDialog::_favorite_selected));
 	favorites->connect("item_activated", callable_mp(this, &CreateDialog::_favorite_activated));
-	favorites->add_theme_constant_override(SNAME("draw_guides"), 1);
+	favorites->add_theme_constant_override("draw_guides", 1);
 #ifndef _MSC_VER
 #warning cannot forward drag data to a non control, must be fixed
 #endif
@@ -760,7 +750,7 @@ CreateDialog::CreateDialog() {
 	recent->set_allow_reselect(true);
 	recent->connect("item_selected", callable_mp(this, &CreateDialog::_history_selected));
 	recent->connect("item_activated", callable_mp(this, &CreateDialog::_history_activated));
-	recent->add_theme_constant_override(SNAME("draw_guides"), 1);
+	recent->add_theme_constant_override("draw_guides", 1);
 
 	VBoxContainer *vbc = memnew(VBoxContainer);
 	vbc->set_custom_minimum_size(Size2(300, 0) * EDSCALE);

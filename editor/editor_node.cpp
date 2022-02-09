@@ -128,10 +128,10 @@
 #include "editor/plugins/animation_tree_editor_plugin.h"
 #include "editor/plugins/asset_library_editor_plugin.h"
 #include "editor/plugins/audio_stream_editor_plugin.h"
+#include "editor/plugins/audio_stream_randomizer_editor_plugin.h"
 #include "editor/plugins/camera_3d_editor_plugin.h"
 #include "editor/plugins/canvas_item_editor_plugin.h"
 #include "editor/plugins/collision_polygon_2d_editor_plugin.h"
-#include "editor/plugins/collision_polygon_3d_editor_plugin.h"
 #include "editor/plugins/collision_shape_2d_editor_plugin.h"
 #include "editor/plugins/cpu_particles_2d_editor_plugin.h"
 #include "editor/plugins/cpu_particles_3d_editor_plugin.h"
@@ -162,6 +162,7 @@
 #include "editor/plugins/path_3d_editor_plugin.h"
 #include "editor/plugins/physical_bone_3d_editor_plugin.h"
 #include "editor/plugins/polygon_2d_editor_plugin.h"
+#include "editor/plugins/polygon_3d_editor_plugin.h"
 #include "editor/plugins/replication_editor_plugin.h"
 #include "editor/plugins/resource_preloader_editor_plugin.h"
 #include "editor/plugins/root_motion_editor_plugin.h"
@@ -692,17 +693,17 @@ void EditorNode::_notification(int p_what) {
 			theme_base->set_theme(theme);
 			gui_base->set_theme(theme);
 
-			gui_base->add_theme_style_override(SNAME("panel"), gui_base->get_theme_stylebox(SNAME("Background"), SNAME("EditorStyles")));
-			scene_root_parent->add_theme_style_override(SNAME("panel"), gui_base->get_theme_stylebox(SNAME("Content"), SNAME("EditorStyles")));
-			bottom_panel->add_theme_style_override(SNAME("panel"), gui_base->get_theme_stylebox(SNAME("panel"), SNAME("TabContainer")));
-			scene_tabs->add_theme_style_override(SNAME("tab_selected"), gui_base->get_theme_stylebox(SNAME("SceneTabFG"), SNAME("EditorStyles")));
-			scene_tabs->add_theme_style_override(SNAME("tab_unselected"), gui_base->get_theme_stylebox(SNAME("SceneTabBG"), SNAME("EditorStyles")));
+			gui_base->add_theme_style_override("panel", gui_base->get_theme_stylebox(SNAME("Background"), SNAME("EditorStyles")));
+			scene_root_parent->add_theme_style_override("panel", gui_base->get_theme_stylebox(SNAME("Content"), SNAME("EditorStyles")));
+			bottom_panel->add_theme_style_override("panel", gui_base->get_theme_stylebox(SNAME("panel"), SNAME("TabContainer")));
+			scene_tabs->add_theme_style_override("tab_selected", gui_base->get_theme_stylebox(SNAME("SceneTabFG"), SNAME("EditorStyles")));
+			scene_tabs->add_theme_style_override("tab_unselected", gui_base->get_theme_stylebox(SNAME("SceneTabBG"), SNAME("EditorStyles")));
 
-			file_menu->add_theme_style_override(SNAME("hover"), gui_base->get_theme_stylebox(SNAME("MenuHover"), SNAME("EditorStyles")));
-			project_menu->add_theme_style_override(SNAME("hover"), gui_base->get_theme_stylebox(SNAME("MenuHover"), SNAME("EditorStyles")));
-			debug_menu->add_theme_style_override(SNAME("hover"), gui_base->get_theme_stylebox(SNAME("MenuHover"), SNAME("EditorStyles")));
-			settings_menu->add_theme_style_override(SNAME("hover"), gui_base->get_theme_stylebox(SNAME("MenuHover"), SNAME("EditorStyles")));
-			help_menu->add_theme_style_override(SNAME("hover"), gui_base->get_theme_stylebox(SNAME("MenuHover"), SNAME("EditorStyles")));
+			file_menu->add_theme_style_override("hover", gui_base->get_theme_stylebox(SNAME("MenuHover"), SNAME("EditorStyles")));
+			project_menu->add_theme_style_override("hover", gui_base->get_theme_stylebox(SNAME("MenuHover"), SNAME("EditorStyles")));
+			debug_menu->add_theme_style_override("hover", gui_base->get_theme_stylebox(SNAME("MenuHover"), SNAME("EditorStyles")));
+			settings_menu->add_theme_style_override("hover", gui_base->get_theme_stylebox(SNAME("MenuHover"), SNAME("EditorStyles")));
+			help_menu->add_theme_style_override("hover", gui_base->get_theme_stylebox(SNAME("MenuHover"), SNAME("EditorStyles")));
 
 			if (EDITOR_GET("interface/scene_tabs/resize_if_many_tabs")) {
 				scene_tabs->set_min_width(int(EDITOR_GET("interface/scene_tabs/minimum_width")) * EDSCALE);
@@ -715,7 +716,7 @@ void EditorNode::_notification(int p_what) {
 
 			// debugger area
 			if (EditorDebuggerNode::get_singleton()->is_visible()) {
-				bottom_panel->add_theme_style_override(SNAME("panel"), gui_base->get_theme_stylebox(SNAME("BottomPanelDebuggerOverride"), SNAME("EditorStyles")));
+				bottom_panel->add_theme_style_override("panel", gui_base->get_theme_stylebox(SNAME("BottomPanelDebuggerOverride"), SNAME("EditorStyles")));
 			}
 
 			// update_icons
@@ -745,7 +746,6 @@ void EditorNode::_notification(int p_what) {
 
 			bottom_panel_raise->set_icon(gui_base->get_theme_icon(SNAME("ExpandBottomDock"), SNAME("EditorIcons")));
 
-			// clear_button->set_icon(gui_base->get_icon("Close", "EditorIcons")); don't have access to that node. needs to become a class property
 			if (gui_base->is_layout_rtl()) {
 				dock_tab_move_left->set_icon(theme->get_icon(SNAME("Forward"), SNAME("EditorIcons")));
 				dock_tab_move_right->set_icon(theme->get_icon(SNAME("Back"), SNAME("EditorIcons")));
@@ -766,8 +766,8 @@ void EditorNode::_notification(int p_what) {
 			p->set_item_icon(p->get_item_index(HELP_SUPPORT_GODOT_DEVELOPMENT), gui_base->get_theme_icon(SNAME("Heart"), SNAME("EditorIcons")));
 
 			for (int i = 0; i < main_editor_buttons.size(); i++) {
-				main_editor_buttons.write[i]->add_theme_font_override(SNAME("font"), gui_base->get_theme_font(SNAME("main_button_font"), SNAME("EditorFonts")));
-				main_editor_buttons.write[i]->add_theme_font_size_override(SNAME("font_size"), gui_base->get_theme_font_size(SNAME("main_button_font_size"), SNAME("EditorFonts")));
+				main_editor_buttons.write[i]->add_theme_font_override("font", gui_base->get_theme_font(SNAME("main_button_font"), SNAME("EditorFonts")));
+				main_editor_buttons.write[i]->add_theme_font_size_override("font_size", gui_base->get_theme_font_size(SNAME("main_button_font_size"), SNAME("EditorFonts")));
 			}
 
 			Set<String> updated_textfile_extensions;
@@ -2280,7 +2280,7 @@ void EditorNode::_edit_current(bool p_skip_foreign) {
 		if (main_plugin) {
 			// special case if use of external editor is true
 			Resource *current_res = Object::cast_to<Resource>(current_obj);
-			if (main_plugin->get_name() == "Script" && current_obj->get_class_name() != StringName("VisualScript") && current_res && !current_res->is_built_in() && (bool(EditorSettings::get_singleton()->get("text_editor/external/use_external_editor")) || overrides_external_editor(current_obj))) {
+			if (main_plugin->get_name() == "Script" && current_obj->is_class("VisualScript") && current_res && !current_res->is_built_in() && (bool(EditorSettings::get_singleton()->get("text_editor/external/use_external_editor")) || overrides_external_editor(current_obj))) {
 				if (!changing_scene) {
 					main_plugin->edit(current_obj);
 				}
@@ -3184,8 +3184,8 @@ void EditorNode::add_editor_plugin(EditorPlugin *p_editor, bool p_config_changed
 			tb->set_icon(singleton->gui_base->get_theme_icon(p_editor->get_name(), SNAME("EditorIcons")));
 		}
 
-		tb->add_theme_font_override(SNAME("font"), singleton->gui_base->get_theme_font(SNAME("main_button_font"), SNAME("EditorFonts")));
-		tb->add_theme_font_size_override(SNAME("font_size"), singleton->gui_base->get_theme_font_size(SNAME("main_button_font_size"), SNAME("EditorFonts")));
+		tb->add_theme_font_override("font", singleton->gui_base->get_theme_font(SNAME("main_button_font"), SNAME("EditorFonts")));
+		tb->add_theme_font_size_override("font_size", singleton->gui_base->get_theme_font_size(SNAME("main_button_font_size"), SNAME("EditorFonts")));
 
 		singleton->main_editor_buttons.push_back(tb);
 		singleton->main_editor_button_vb->add_child(tb);
@@ -3293,8 +3293,8 @@ void EditorNode::set_addon_plugin_enabled(const String &p_addon, bool p_enabled,
 			return;
 		}
 
-		// Errors in the script cause the base_type to be an empty string.
-		if (String(script->get_instance_base_type()) == "") {
+		// Errors in the script cause the base_type to be an empty StringName.
+		if (script->get_instance_base_type() == StringName()) {
 			show_warning(vformat(TTR("Unable to load addon script from path: '%s'. This might be due to a code error in that script.\nDisabling the addon at '%s' to prevent further errors."), script_path, p_addon));
 			_remove_plugin_from_enabled(p_addon);
 			return;
@@ -3937,7 +3937,7 @@ StringName EditorNode::get_object_custom_type_name(const Object *p_object) const
 	ERR_FAIL_COND_V(!p_object, StringName());
 
 	Ref<Script> script = p_object->get_script();
-	if (script.is_null() && p_object->is_class("Script")) {
+	if (script.is_null() && Object::cast_to<Script>(p_object)) {
 		script = p_object;
 	}
 
@@ -4148,13 +4148,12 @@ Ref<Texture2D> EditorNode::_file_dialog_get_icon(const String &p_path) {
 
 void EditorNode::_build_icon_type_cache() {
 	List<StringName> tl;
-	StringName ei = "EditorIcons";
-	theme_base->get_theme()->get_icon_list(ei, &tl);
+	theme_base->get_theme()->get_icon_list(SNAME("EditorIcons"), &tl);
 	for (const StringName &E : tl) {
 		if (!ClassDB::class_exists(E)) {
 			continue;
 		}
-		icon_type_cache[E] = theme_base->get_theme()->get_icon(E, ei);
+		icon_type_cache[E] = theme_base->get_theme()->get_icon(E, SNAME("EditorIcons"));
 	}
 }
 
@@ -4252,10 +4251,10 @@ void EditorNode::_dock_make_float() {
 	window->add_child(p);
 	MarginContainer *margin = memnew(MarginContainer);
 	margin->set_anchors_and_offsets_preset(Control::PRESET_WIDE);
-	margin->add_theme_constant_override(SNAME("margin_right"), borders.width);
-	margin->add_theme_constant_override(SNAME("margin_top"), borders.height);
-	margin->add_theme_constant_override(SNAME("margin_left"), borders.width);
-	margin->add_theme_constant_override(SNAME("margin_bottom"), borders.height);
+	margin->add_theme_constant_override("margin_right", borders.width);
+	margin->add_theme_constant_override("margin_top", borders.height);
+	margin->add_theme_constant_override("margin_left", borders.width);
+	margin->add_theme_constant_override("margin_bottom", borders.height);
 	window->add_child(margin);
 	dock->set_anchors_and_offsets_preset(Control::PRESET_WIDE);
 	margin->add_child(dock);
@@ -5200,9 +5199,9 @@ void EditorNode::_bottom_panel_switch(bool p_enable, int p_idx) {
 			bottom_panel_items[i].control->set_visible(i == p_idx);
 		}
 		if (EditorDebuggerNode::get_singleton() == bottom_panel_items[p_idx].control) { // this is the debug panel which uses tabs, so the top section should be smaller
-			bottom_panel->add_theme_style_override(SNAME("panel"), gui_base->get_theme_stylebox(SNAME("BottomPanelDebuggerOverride"), SNAME("EditorStyles")));
+			bottom_panel->add_theme_style_override("panel", gui_base->get_theme_stylebox(SNAME("BottomPanelDebuggerOverride"), SNAME("EditorStyles")));
 		} else {
-			bottom_panel->add_theme_style_override(SNAME("panel"), gui_base->get_theme_stylebox(SNAME("panel"), SNAME("TabContainer")));
+			bottom_panel->add_theme_style_override("panel", gui_base->get_theme_stylebox(SNAME("panel"), SNAME("TabContainer")));
 		}
 		center_split->set_dragger_visibility(SplitContainer::DRAGGER_VISIBLE);
 		center_split->set_collapsed(false);
@@ -5212,7 +5211,7 @@ void EditorNode::_bottom_panel_switch(bool p_enable, int p_idx) {
 		bottom_panel_raise->show();
 
 	} else {
-		bottom_panel->add_theme_style_override(SNAME("panel"), gui_base->get_theme_stylebox(SNAME("panel"), SNAME("TabContainer")));
+		bottom_panel->add_theme_style_override("panel", gui_base->get_theme_stylebox(SNAME("panel"), SNAME("TabContainer")));
 		bottom_panel_items[p_idx].button->set_pressed(false);
 		bottom_panel_items[p_idx].control->set_visible(false);
 		center_split->set_dragger_visibility(SplitContainer::DRAGGER_HIDDEN);
@@ -5603,9 +5602,9 @@ void EditorNode::_bottom_panel_raise_toggled(bool p_pressed) {
 
 void EditorNode::_update_rendering_driver_color() {
 	if (rendering_driver->get_text() == "opengl3") {
-		rendering_driver->add_theme_color_override(SNAME("font_color"), Color::hex(0x5586a4ff));
+		rendering_driver->add_theme_color_override("font_color", Color::hex(0x5586a4ff));
 	} else if (rendering_driver->get_text() == "vulkan") {
-		rendering_driver->add_theme_color_override(SNAME("font_color"), theme_base->get_theme_color(SNAME("vulkan_color"), SNAME("Editor")));
+		rendering_driver->add_theme_color_override("font_color", theme_base->get_theme_color(SNAME("vulkan_color"), SNAME("Editor")));
 	}
 }
 
@@ -5678,6 +5677,7 @@ void EditorNode::_feature_profile_changed() {
 void EditorNode::_bind_methods() {
 	GLOBAL_DEF("editor/scene/scene_naming", SCENE_NAME_CASING_SNAKE_CASE);
 	ProjectSettings::get_singleton()->set_custom_property_info("editor/scene/scene_naming", PropertyInfo(Variant::INT, "editor/scene/scene_naming", PROPERTY_HINT_ENUM, "Auto,PascalCase,snake_case"));
+	ClassDB::bind_method("edit_current", &EditorNode::edit_current);
 	ClassDB::bind_method("_editor_select", &EditorNode::_editor_select);
 	ClassDB::bind_method("_node_renamed", &EditorNode::_node_renamed);
 	ClassDB::bind_method("edit_node", &EditorNode::edit_node);
@@ -6054,7 +6054,7 @@ EditorNode::EditorNode() {
 
 	theme_base->set_theme(theme);
 	gui_base->set_theme(theme);
-	gui_base->add_theme_style_override(SNAME("panel"), gui_base->get_theme_stylebox(SNAME("Background"), SNAME("EditorStyles")));
+	gui_base->add_theme_style_override("panel", gui_base->get_theme_stylebox(SNAME("Background"), SNAME("EditorStyles")));
 
 	resource_preview = memnew(EditorResourcePreview);
 	add_child(resource_preview);
@@ -6069,7 +6069,7 @@ EditorNode::EditorNode() {
 	main_vbox = memnew(VBoxContainer);
 	gui_base->add_child(main_vbox);
 	main_vbox->set_anchors_and_offsets_preset(Control::PRESET_WIDE, Control::PRESET_MODE_MINSIZE, 8);
-	main_vbox->add_theme_constant_override(SNAME("separation"), 8 * EDSCALE);
+	main_vbox->add_theme_constant_override("separation", 8 * EDSCALE);
 
 	menu_hb = memnew(HBoxContainer);
 	main_vbox->add_child(menu_hb);
@@ -6220,7 +6220,7 @@ EditorNode::EditorNode() {
 	VBoxContainer *srt = memnew(VBoxContainer);
 	srt->set_v_size_flags(Control::SIZE_EXPAND_FILL);
 	top_split->add_child(srt);
-	srt->add_theme_constant_override(SNAME("separation"), 0);
+	srt->add_theme_constant_override("separation", 0);
 
 	tab_preview_panel = memnew(Panel);
 	tab_preview_panel->set_size(Size2(100, 100) * EDSCALE);
@@ -6238,8 +6238,8 @@ EditorNode::EditorNode() {
 	srt->add_child(tabbar_container);
 
 	scene_tabs = memnew(TabBar);
-	scene_tabs->add_theme_style_override(SNAME("tab_selected"), gui_base->get_theme_stylebox(SNAME("SceneTabFG"), SNAME("EditorStyles")));
-	scene_tabs->add_theme_style_override(SNAME("tab_unselected"), gui_base->get_theme_stylebox(SNAME("SceneTabBG"), SNAME("EditorStyles")));
+	scene_tabs->add_theme_style_override("tab_selected", gui_base->get_theme_stylebox(SNAME("SceneTabFG"), SNAME("EditorStyles")));
+	scene_tabs->add_theme_style_override("tab_unselected", gui_base->get_theme_stylebox(SNAME("SceneTabBG"), SNAME("EditorStyles")));
 	scene_tabs->set_select_with_rmb(true);
 	scene_tabs->add_tab("unsaved");
 	scene_tabs->set_tab_alignment(TabBar::ALIGNMENT_LEFT);
@@ -6265,7 +6265,7 @@ EditorNode::EditorNode() {
 	scene_tab_add->set_flat(true);
 	scene_tab_add->set_tooltip(TTR("Add a new scene."));
 	scene_tab_add->set_icon(gui_base->get_theme_icon(SNAME("Add"), SNAME("EditorIcons")));
-	scene_tab_add->add_theme_color_override(SNAME("icon_normal_color"), Color(0.6f, 0.6f, 0.6f, 0.8f));
+	scene_tab_add->add_theme_color_override("icon_normal_color", Color(0.6f, 0.6f, 0.6f, 0.8f));
 	scene_tabs->add_child(scene_tab_add);
 	scene_tab_add->connect("pressed", callable_mp(this, &EditorNode::_menu_option), make_binds(FILE_NEW_SCENE));
 
@@ -6287,7 +6287,7 @@ EditorNode::EditorNode() {
 
 	scene_root_parent = memnew(PanelContainer);
 	scene_root_parent->set_custom_minimum_size(Size2(0, 80) * EDSCALE);
-	scene_root_parent->add_theme_style_override(SNAME("panel"), gui_base->get_theme_stylebox(SNAME("Content"), SNAME("EditorStyles")));
+	scene_root_parent->add_theme_style_override("panel", gui_base->get_theme_stylebox(SNAME("Content"), SNAME("EditorStyles")));
 	scene_root_parent->set_draw_behind_parent(true);
 	srt->add_child(scene_root_parent);
 	scene_root_parent->set_v_size_flags(Control::SIZE_EXPAND_FILL);
@@ -6301,7 +6301,7 @@ EditorNode::EditorNode() {
 
 	main_control = memnew(VBoxContainer);
 	main_control->set_v_size_flags(Control::SIZE_EXPAND_FILL);
-	main_control->add_theme_constant_override(SNAME("separation"), 0);
+	main_control->add_theme_constant_override("separation", 0);
 	scene_root_parent->add_child(main_control);
 
 	HBoxContainer *left_menu_hb = memnew(HBoxContainer);
@@ -6311,7 +6311,7 @@ EditorNode::EditorNode() {
 	file_menu->set_flat(false);
 	file_menu->set_switch_on_hover(true);
 	file_menu->set_text(TTR("Scene"));
-	file_menu->add_theme_style_override(SNAME("hover"), gui_base->get_theme_stylebox(SNAME("MenuHover"), SNAME("EditorStyles")));
+	file_menu->add_theme_style_override("hover", gui_base->get_theme_stylebox(SNAME("MenuHover"), SNAME("EditorStyles")));
 	left_menu_hb->add_child(file_menu);
 
 	prev_scene = memnew(Button);
@@ -6427,7 +6427,7 @@ EditorNode::EditorNode() {
 	project_menu->set_switch_on_hover(true);
 	project_menu->set_tooltip(TTR("Miscellaneous project or scene-wide tools."));
 	project_menu->set_text(TTR("Project"));
-	project_menu->add_theme_style_override(SNAME("hover"), gui_base->get_theme_stylebox(SNAME("MenuHover"), SNAME("EditorStyles")));
+	project_menu->add_theme_style_override("hover", gui_base->get_theme_stylebox(SNAME("MenuHover"), SNAME("EditorStyles")));
 	left_menu_hb->add_child(project_menu);
 
 	p = project_menu->get_popup();
@@ -6477,7 +6477,7 @@ EditorNode::EditorNode() {
 	debug_menu->set_flat(false);
 	debug_menu->set_switch_on_hover(true);
 	debug_menu->set_text(TTR("Debug"));
-	debug_menu->add_theme_style_override(SNAME("hover"), gui_base->get_theme_stylebox(SNAME("MenuHover"), SNAME("EditorStyles")));
+	debug_menu->add_theme_style_override("hover", gui_base->get_theme_stylebox(SNAME("MenuHover"), SNAME("EditorStyles")));
 	left_menu_hb->add_child(debug_menu);
 
 	menu_hb->add_spacer();
@@ -6486,7 +6486,7 @@ EditorNode::EditorNode() {
 	settings_menu->set_flat(false);
 	settings_menu->set_switch_on_hover(true);
 	settings_menu->set_text(TTR("Editor"));
-	settings_menu->add_theme_style_override(SNAME("hover"), gui_base->get_theme_stylebox(SNAME("MenuHover"), SNAME("EditorStyles")));
+	settings_menu->add_theme_style_override("hover", gui_base->get_theme_stylebox(SNAME("MenuHover"), SNAME("EditorStyles")));
 	left_menu_hb->add_child(settings_menu);
 
 	p = settings_menu->get_popup();
@@ -6534,7 +6534,7 @@ EditorNode::EditorNode() {
 	help_menu->set_flat(false);
 	help_menu->set_switch_on_hover(true);
 	help_menu->set_text(TTR("Help"));
-	help_menu->add_theme_style_override(SNAME("hover"), gui_base->get_theme_stylebox(SNAME("MenuHover"), SNAME("EditorStyles")));
+	help_menu->add_theme_style_override("hover", gui_base->get_theme_stylebox(SNAME("MenuHover"), SNAME("EditorStyles")));
 	left_menu_hb->add_child(help_menu);
 
 	p = help_menu->get_popup();
@@ -6638,8 +6638,8 @@ EditorNode::EditorNode() {
 	rendering_driver->set_flat(true);
 	rendering_driver->set_focus_mode(Control::FOCUS_NONE);
 	rendering_driver->connect("item_selected", callable_mp(this, &EditorNode::_rendering_driver_selected));
-	rendering_driver->add_theme_font_override(SNAME("font"), gui_base->get_theme_font(SNAME("bold"), SNAME("EditorFonts")));
-	rendering_driver->add_theme_font_size_override(SNAME("font_size"), gui_base->get_theme_font_size(SNAME("bold_size"), SNAME("EditorFonts")));
+	rendering_driver->add_theme_font_override("font", gui_base->get_theme_font(SNAME("bold"), SNAME("EditorFonts")));
+	rendering_driver->add_theme_font_size_override("font_size", gui_base->get_theme_font_size(SNAME("bold_size"), SNAME("EditorFonts")));
 
 	right_menu_hb->add_child(rendering_driver);
 
@@ -6762,7 +6762,7 @@ EditorNode::EditorNode() {
 	// Bottom panels
 
 	bottom_panel = memnew(PanelContainer);
-	bottom_panel->add_theme_style_override(SNAME("panel"), gui_base->get_theme_stylebox(SNAME("panel"), SNAME("TabContainer")));
+	bottom_panel->add_theme_style_override("panel", gui_base->get_theme_stylebox(SNAME("panel"), SNAME("TabContainer")));
 	center_split->add_child(bottom_panel);
 	center_split->set_dragger_visibility(SplitContainer::DRAGGER_HIDDEN);
 
@@ -7014,6 +7014,7 @@ EditorNode::EditorNode() {
 	add_editor_plugin(memnew(TextureLayeredEditorPlugin(this)));
 	add_editor_plugin(memnew(Texture3DEditorPlugin(this)));
 	add_editor_plugin(memnew(AudioStreamEditorPlugin(this)));
+	add_editor_plugin(memnew(AudioStreamRandomizerEditorPlugin(this)));
 	add_editor_plugin(memnew(AudioBusesEditorPlugin(audio_bus_editor)));
 	add_editor_plugin(memnew(Skeleton3DEditorPlugin(this)));
 	add_editor_plugin(memnew(SkeletonIK3DEditorPlugin(this)));

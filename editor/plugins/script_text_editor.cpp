@@ -930,21 +930,22 @@ void ScriptTextEditor::_update_connected_methods() {
 				continue;
 			}
 
-			if (methods_found.has(connection.callable.get_method())) {
+			const StringName method = connection.callable.get_method();
+			if (methods_found.has(method)) {
 				continue;
 			}
 
-			if (!ClassDB::has_method(script->get_instance_base_type(), connection.callable.get_method())) {
+			if (!ClassDB::has_method(script->get_instance_base_type(), method)) {
 				int line = -1;
 
 				for (int j = 0; j < functions.size(); j++) {
 					String name = functions[j].get_slice(":", 0);
-					if (name == connection.callable.get_method()) {
+					if (name == method) {
 						line = functions[j].get_slice(":", 1).to_int() - 1;
-						text_edit->set_line_gutter_metadata(line, connection_gutter, connection.callable.get_method());
+						text_edit->set_line_gutter_metadata(line, connection_gutter, method);
 						text_edit->set_line_gutter_icon(line, connection_gutter, get_parent_control()->get_theme_icon(SNAME("Slot"), SNAME("EditorIcons")));
 						text_edit->set_line_gutter_clickable(line, connection_gutter, true);
-						methods_found.insert(connection.callable.get_method());
+						methods_found.insert(method);
 						break;
 					}
 				}
@@ -957,7 +958,7 @@ void ScriptTextEditor::_update_connected_methods() {
 				bool found_inherited_function = false;
 				Ref<Script> inherited_script = script->get_base_script();
 				while (!inherited_script.is_null()) {
-					if (inherited_script->has_method(connection.callable.get_method())) {
+					if (inherited_script->has_method(method)) {
 						found_inherited_function = true;
 						break;
 					}
@@ -1373,7 +1374,7 @@ void ScriptTextEditor::reload(bool p_soft) {
 		return;
 	}
 	scr->set_source_code(te->get_text());
-	bool soft = p_soft || scr->get_instance_base_type() == "EditorPlugin"; //always soft-reload editor plugins
+	bool soft = p_soft || scr->get_instance_base_type() == "EditorPlugin"; // Always soft-reload editor plugins.
 
 	scr->get_language()->reload_tool_script(scr, soft);
 }
@@ -1848,7 +1849,7 @@ void ScriptTextEditor::_enable_code_editor() {
 
 ScriptTextEditor::ScriptTextEditor() {
 	code_editor = memnew(CodeTextEditor);
-	code_editor->add_theme_constant_override(SNAME("separation"), 2);
+	code_editor->add_theme_constant_override("separation", 2);
 	code_editor->set_anchors_and_offsets_preset(Control::PRESET_WIDE);
 	code_editor->set_code_complete_func(_code_complete_scripts, this);
 	code_editor->set_v_size_flags(SIZE_EXPAND_FILL);

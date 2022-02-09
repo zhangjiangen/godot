@@ -87,6 +87,19 @@ public:
 	void set_viewport(Node3DEditorViewport *p_viewport);
 };
 
+class GizmoOffScreenLine : public Control {
+	GDCLASS(GizmoOffScreenLine, Control);
+
+public:
+	Vector2 point1;
+	Vector2 point2;
+	void _notification(int p_what) {
+		if (p_what == NOTIFICATION_DRAW && is_visible()) {
+			draw_line(point1, point2, Color(0.0f, 0.75f, 0.75f), 2);
+		}
+	}
+};
+
 class Node3DEditorViewport : public Control {
 	GDCLASS(Node3DEditorViewport, Control);
 	friend class Node3DEditor;
@@ -201,6 +214,7 @@ private:
 
 	CheckBox *preview_camera;
 	SubViewportContainer *subviewport_container;
+	GizmoOffScreenLine *gizmo_offscreen_line;
 
 	MenuButton *view_menu;
 	PopupMenu *display_submenu;
@@ -237,7 +251,7 @@ private:
 	};
 
 	void _update_name();
-	void _compute_edit(const Point2 &p_point);
+	void _compute_edit(const Point2 &p_point, const bool p_auto_center = true);
 	void _clear_selected();
 	void _select_clicked(bool p_allow_locked);
 	ObjectID _select_ray(const Point2 &p_pos);
@@ -247,6 +261,7 @@ private:
 	Point2 _point_to_screen(const Vector3 &p_point);
 	Transform3D _get_camera_transform() const;
 	int get_selected_count() const;
+	void cancel_transform();
 
 	Vector3 _get_camera_position() const;
 	Vector3 _get_camera_normal() const;
@@ -310,10 +325,13 @@ private:
 		Point2 mouse_pos;
 		Point2 original_mouse_pos;
 		bool snap = false;
+		bool show_rotation_line = false;
 		Ref<EditorNode3DGizmo> gizmo;
 		int gizmo_handle = 0;
 		bool gizmo_handle_secondary = false;
 		Variant gizmo_initial_value;
+		bool original_local;
+		bool instant;
 	} _edit;
 
 	struct Cursor {
@@ -347,7 +365,7 @@ private:
 	real_t zoom_indicator_delay;
 	int zoom_failed_attempts_count = 0;
 
-	RID move_gizmo_instance[3], move_plane_gizmo_instance[3], rotate_gizmo_instance[4], scale_gizmo_instance[3], scale_plane_gizmo_instance[3];
+	RID move_gizmo_instance[3], move_plane_gizmo_instance[3], rotate_gizmo_instance[4], scale_gizmo_instance[3], scale_plane_gizmo_instance[3], axis_gizmo_instance[3];
 
 	String last_message;
 	String message;
@@ -401,6 +419,10 @@ private:
 	void _project_settings_changed();
 
 	Transform3D _compute_transform(TransformMode p_mode, const Transform3D &p_original, const Transform3D &p_original_local, Vector3 p_motion, double p_extra, bool p_local, bool p_orthogonal);
+
+	void begin_transform(TransformMode p_mode, bool instant);
+	void commit_transform();
+	void update_transform(Point2 p_mousepos, bool p_shift);
 
 protected:
 	void _notification(int p_what);
@@ -499,6 +521,35 @@ class Node3DEditor : public VBoxContainer {
 public:
 	static const unsigned int VIEWPORTS_COUNT = 4;
 
+	enum MenuOption {
+		MENU_GROUP_SELECTED,
+		MENU_KEEP_GIZMO_ONSCREEN,
+		MENU_LOCK_SELECTED,
+		MENU_SNAP_TO_FLOOR,
+		MENU_TOOL_LIST_SELECT,
+		MENU_TOOL_LOCAL_COORDS,
+		MENU_TOOL_MOVE,
+		MENU_TOOL_OVERRIDE_CAMERA,
+		MENU_TOOL_ROTATE,
+		MENU_TOOL_SCALE,
+		MENU_TOOL_SELECT,
+		MENU_TOOL_USE_SNAP,
+		MENU_TRANSFORM_CONFIGURE_SNAP,
+		MENU_TRANSFORM_DIALOG,
+		MENU_UNGROUP_SELECTED,
+		MENU_UNLOCK_SELECTED,
+		MENU_VIEW_CAMERA_SETTINGS,
+		MENU_VIEW_GIZMOS_3D_ICONS,
+		MENU_VIEW_GRID,
+		MENU_VIEW_ORIGIN,
+		MENU_VIEW_USE_1_VIEWPORT,
+		MENU_VIEW_USE_2_VIEWPORTS,
+		MENU_VIEW_USE_2_VIEWPORTS_ALT,
+		MENU_VIEW_USE_3_VIEWPORTS,
+		MENU_VIEW_USE_3_VIEWPORTS_ALT,
+		MENU_VIEW_USE_4_VIEWPORTS,
+	};
+
 	enum ToolMode {
 		TOOL_MODE_SELECT,
 		TOOL_MODE_MOVE,
@@ -517,7 +568,6 @@ public:
 		TOOL_OPT_USE_SNAP,
 		TOOL_OPT_OVERRIDE_CAMERA,
 		TOOL_OPT_MAX
-
 	};
 
 private:
@@ -546,7 +596,8 @@ private:
 	Camera3D::Projection grid_camera_last_update_perspective = Camera3D::PROJECTION_PERSPECTIVE;
 	Vector3 grid_camera_last_update_position = Vector3();
 
-	Ref<ArrayMesh> move_gizmo[3], move_plane_gizmo[3], rotate_gizmo[4], scale_gizmo[3], scale_plane_gizmo[3];
+	bool keep_gizmo_onscreen = true;
+	Ref<ArrayMesh> move_gizmo[3], move_plane_gizmo[3], rotate_gizmo[4], scale_gizmo[3], scale_plane_gizmo[3], axis_gizmo[3];
 	Ref<StandardMaterial3D> gizmo_color[3];
 	Ref<StandardMaterial3D> plane_gizmo_color[3];
 	Ref<ShaderMaterial> rotate_gizmo_color[3];
@@ -579,36 +630,9 @@ private:
 	struct Gizmo {
 		bool visible = false;
 		real_t scale = 0;
+		Vector3 target_center;
 		Transform3D transform;
 	} gizmo;
-
-	enum MenuOption {
-		MENU_TOOL_SELECT,
-		MENU_TOOL_MOVE,
-		MENU_TOOL_ROTATE,
-		MENU_TOOL_SCALE,
-		MENU_TOOL_LIST_SELECT,
-		MENU_TOOL_LOCAL_COORDS,
-		MENU_TOOL_USE_SNAP,
-		MENU_TOOL_OVERRIDE_CAMERA,
-		MENU_TRANSFORM_CONFIGURE_SNAP,
-		MENU_TRANSFORM_DIALOG,
-		MENU_VIEW_USE_1_VIEWPORT,
-		MENU_VIEW_USE_2_VIEWPORTS,
-		MENU_VIEW_USE_2_VIEWPORTS_ALT,
-		MENU_VIEW_USE_3_VIEWPORTS,
-		MENU_VIEW_USE_3_VIEWPORTS_ALT,
-		MENU_VIEW_USE_4_VIEWPORTS,
-		MENU_VIEW_ORIGIN,
-		MENU_VIEW_GRID,
-		MENU_VIEW_GIZMOS_3D_ICONS,
-		MENU_VIEW_CAMERA_SETTINGS,
-		MENU_LOCK_SELECTED,
-		MENU_UNLOCK_SELECTED,
-		MENU_GROUP_SELECTED,
-		MENU_UNGROUP_SELECTED,
-		MENU_SNAP_TO_FLOOR
-	};
 
 	Button *tool_button[TOOL_MAX];
 	Button *tool_option_button[TOOL_OPT_MAX];
@@ -768,17 +792,22 @@ public:
 	float get_zfar() const { return settings_zfar->get_value(); }
 	float get_fov() const { return settings_fov->get_value(); }
 
+	Vector3 get_gizmo_target_center() const { return gizmo.target_center; }
 	Transform3D get_gizmo_transform() const { return gizmo.transform; }
+	void set_gizmo_transform(const Transform3D &p_transform) { gizmo.transform = p_transform; }
+	bool is_keep_gizmo_onscreen_enabled() const { return keep_gizmo_onscreen; }
 	bool is_gizmo_visible() const;
 
 	ToolMode get_tool_mode() const { return tool_mode; }
 	bool are_local_coords_enabled() const { return tool_option_button[Node3DEditor::TOOL_OPT_LOCAL_COORDS]->is_pressed(); }
+	void set_local_coords_enabled(bool on) const { tool_option_button[Node3DEditor::TOOL_OPT_LOCAL_COORDS]->set_pressed(on); }
 	bool is_snap_enabled() const { return snap_enabled ^ snap_key_enabled; }
 	double get_translate_snap() const;
 	double get_rotate_snap() const;
 	double get_scale_snap() const;
 
 	Ref<ArrayMesh> get_move_gizmo(int idx) const { return move_gizmo[idx]; }
+	Ref<ArrayMesh> get_axis_gizmo(int idx) const { return axis_gizmo[idx]; }
 	Ref<ArrayMesh> get_move_plane_gizmo(int idx) const { return move_plane_gizmo[idx]; }
 	Ref<ArrayMesh> get_rotate_gizmo(int idx) const { return rotate_gizmo[idx]; }
 	Ref<ArrayMesh> get_scale_gizmo(int idx) const { return scale_gizmo[idx]; }
