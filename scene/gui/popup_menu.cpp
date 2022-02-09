@@ -108,7 +108,6 @@ Size2 PopupMenu::_get_contents_minimum_size() const {
 
 int PopupMenu::_get_item_height(int p_item) const {
 	ERR_FAIL_INDEX_V(p_item, items.size(), 0);
-	ERR_FAIL_COND_V(p_item < 0, 0);
 
 	int icon_height = items[p_item].get_icon_size().height;
 	if (items[p_item].checkable_type && !items[p_item].separator) {
@@ -139,23 +138,6 @@ int PopupMenu::_get_items_total_height() const {
 
 	// Subtract a separator which is not needed for the last item.
 	return items_total_height - vsep;
-}
-
-void PopupMenu::_scroll_to_item(int p_item) {
-	ERR_FAIL_INDEX(p_item, items.size());
-	ERR_FAIL_COND(p_item < 0);
-
-	// Scroll item into view (upwards)
-	if (items[p_item]._ofs_cache < -control->get_position().y) {
-		int amnt_over = items[p_item]._ofs_cache + control->get_position().y;
-		scroll_container->set_v_scroll(scroll_container->get_v_scroll() + amnt_over);
-	}
-
-	// Scroll item into view (downwards)
-	if (items[p_item]._ofs_cache + items[p_item]._height_cache > -control->get_position().y + scroll_container->get_size().height) {
-		int amnt_over = items[p_item]._ofs_cache + items[p_item]._height_cache + control->get_position().y - scroll_container->get_size().height;
-		scroll_container->set_v_scroll(scroll_container->get_v_scroll() + amnt_over);
-	}
 }
 
 int PopupMenu::_get_mouse_over(const Point2 &p_over) const {
@@ -276,7 +258,7 @@ void PopupMenu::gui_input(const Ref<InputEvent> &p_event) {
 			if (!items[i].separator && !items[i].disabled) {
 				mouse_over = i;
 				emit_signal(SNAME("id_focused"), i);
-				_scroll_to_item(i);
+				scroll_to_item(i);
 				control->update();
 				set_input_as_handled();
 				match_found = true;
@@ -290,7 +272,7 @@ void PopupMenu::gui_input(const Ref<InputEvent> &p_event) {
 				if (!items[i].separator && !items[i].disabled) {
 					mouse_over = i;
 					emit_signal(SNAME("id_focused"), i);
-					_scroll_to_item(i);
+					scroll_to_item(i);
 					control->update();
 					set_input_as_handled();
 					break;
@@ -308,7 +290,7 @@ void PopupMenu::gui_input(const Ref<InputEvent> &p_event) {
 			if (!items[i].separator && !items[i].disabled) {
 				mouse_over = i;
 				emit_signal(SNAME("id_focused"), i);
-				_scroll_to_item(i);
+				scroll_to_item(i);
 				control->update();
 				set_input_as_handled();
 				match_found = true;
@@ -322,7 +304,7 @@ void PopupMenu::gui_input(const Ref<InputEvent> &p_event) {
 				if (!items[i].separator && !items[i].disabled) {
 					mouse_over = i;
 					emit_signal(SNAME("id_focused"), i);
-					_scroll_to_item(i);
+					scroll_to_item(i);
 					control->update();
 					set_input_as_handled();
 					break;
@@ -472,7 +454,7 @@ void PopupMenu::gui_input(const Ref<InputEvent> &p_event) {
 			if (items[i].text.findn(search_string) == 0) {
 				mouse_over = i;
 				emit_signal(SNAME("id_focused"), i);
-				_scroll_to_item(i);
+				scroll_to_item(i);
 				control->update();
 				set_input_as_handled();
 				break;
@@ -754,26 +736,7 @@ void PopupMenu::_notification(int p_what) {
 			}
 		} break;
 		case NOTIFICATION_THEME_CHANGED:
-		case Control::NOTIFICATION_LAYOUT_DIRECTION_CHANGED: {
-			// Pass the layout direction to all submenus.
-			for (int i = 0; i < items.size(); i++) {
-				if (items[i].submenu.is_empty()) {
-					continue;
-				}
-
-				Node *n = get_node(items[i].submenu);
-				if (!n) {
-					continue;
-				}
-
-				PopupMenu *pm = Object::cast_to<PopupMenu>(n);
-				if (pm) {
-					pm->set_layout_direction(get_layout_direction());
-				}
-			}
-
-			[[fallthrough]];
-		}
+		case Control::NOTIFICATION_LAYOUT_DIRECTION_CHANGED:
 		case NOTIFICATION_TRANSLATION_CHANGED: {
 			for (int i = 0; i < items.size(); i++) {
 				items.write[i].xl_text = atr(items[i].text);
@@ -846,10 +809,10 @@ void PopupMenu::_notification(int p_what) {
 
 				// Set margin on the margin container
 				Ref<StyleBox> panel_style = get_theme_stylebox(SNAME("panel"));
-				margin_container->add_theme_constant_override(SNAME("margin_top"), panel_style->get_margin(Side::SIDE_TOP));
-				margin_container->add_theme_constant_override(SNAME("margin_bottom"), panel_style->get_margin(Side::SIDE_BOTTOM));
-				margin_container->add_theme_constant_override(SNAME("margin_left"), panel_style->get_margin(Side::SIDE_LEFT));
-				margin_container->add_theme_constant_override(SNAME("margin_right"), panel_style->get_margin(Side::SIDE_RIGHT));
+				margin_container->add_theme_constant_override("margin_top", panel_style->get_margin(Side::SIDE_TOP));
+				margin_container->add_theme_constant_override("margin_bottom", panel_style->get_margin(Side::SIDE_BOTTOM));
+				margin_container->add_theme_constant_override("margin_left", panel_style->get_margin(Side::SIDE_LEFT));
+				margin_container->add_theme_constant_override("margin_right", panel_style->get_margin(Side::SIDE_RIGHT));
 			}
 		} break;
 	}
@@ -862,7 +825,7 @@ void PopupMenu::_notification(int p_what) {
 #define ITEM_SETUP_WITH_ACCEL(p_label, p_id, p_accel) \
 	item.text = p_label;                              \
 	item.xl_text = atr(p_label);                      \
-	item.id = p_id == -1 ? items.size() - 1 : p_id;   \
+	item.id = p_id == -1 ? items.size() : p_id;       \
 	item.accel = p_accel;
 
 void PopupMenu::add_item(const String &p_label, int p_id, Key p_accel) {
@@ -944,7 +907,7 @@ void PopupMenu::add_multistate_item(const String &p_label, int p_max_states, int
 	_ref_shortcut(p_shortcut);                                                         \
 	item.text = p_shortcut->get_name();                                                \
 	item.xl_text = atr(item.text);                                                     \
-	item.id = p_id == -1 ? items.size() - 1 : p_id;                                    \
+	item.id = p_id == -1 ? items.size() : p_id;                                        \
 	item.shortcut = p_shortcut;                                                        \
 	item.shortcut_is_global = p_global;
 
@@ -1013,7 +976,7 @@ void PopupMenu::add_submenu_item(const String &p_label, const String &p_submenu,
 	Item item;
 	item.text = p_label;
 	item.xl_text = atr(p_label);
-	item.id = p_id == -1 ? items.size() - 1 : p_id;
+	item.id = p_id == -1 ? items.size() : p_id;
 	item.submenu = p_submenu;
 	items.push_back(item);
 	_shape_item(items.size() - 1);
@@ -1324,7 +1287,7 @@ bool PopupMenu::is_item_shortcut_disabled(int p_idx) const {
 void PopupMenu::set_current_index(int p_idx) {
 	ERR_FAIL_INDEX(p_idx, items.size());
 	mouse_over = p_idx;
-	_scroll_to_item(mouse_over);
+	scroll_to_item(mouse_over);
 	control->update();
 }
 
@@ -1350,6 +1313,20 @@ void PopupMenu::set_item_count(int p_count) {
 
 int PopupMenu::get_item_count() const {
 	return items.size();
+}
+
+void PopupMenu::scroll_to_item(int p_item) {
+	ERR_FAIL_INDEX(p_item, items.size());
+
+	// Scroll item into view (upwards).
+	if (items[p_item]._ofs_cache - scroll_container->get_v_scroll() < -control->get_position().y) {
+		scroll_container->set_v_scroll(items[p_item]._ofs_cache + control->get_position().y);
+	}
+
+	// Scroll item into view (downwards).
+	if (items[p_item]._ofs_cache + items[p_item]._height_cache - scroll_container->get_v_scroll() > -control->get_position().y + scroll_container->get_size().height) {
+		scroll_container->set_v_scroll(items[p_item]._ofs_cache + items[p_item]._height_cache + control->get_position().y);
+	}
 }
 
 bool PopupMenu::activate_item_by_event(const Ref<InputEvent> &p_event, bool p_for_global_only) {
@@ -1625,7 +1602,7 @@ bool PopupMenu::_set(const StringName &p_name, const Variant &p_value) {
 		} else if (property == "id") {
 			set_item_id(item_index, p_value);
 			return true;
-		} else if (components[1] == "disabled") {
+		} else if (property == "disabled") {
 			set_item_disabled(item_index, p_value);
 			return true;
 		} else if (property == "separator") {
@@ -1698,7 +1675,7 @@ bool PopupMenu::_get(const StringName &p_name, Variant &r_ret) const {
 		} else if (property == "id") {
 			r_ret = get_item_id(item_index);
 			return true;
-		} else if (components[1] == "disabled") {
+		} else if (property == "disabled") {
 			r_ret = is_item_disabled(item_index);
 			return true;
 		} else if (property == "separator") {
@@ -1803,6 +1780,8 @@ void PopupMenu::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_current_index"), &PopupMenu::get_current_index);
 	ClassDB::bind_method(D_METHOD("set_item_count", "count"), &PopupMenu::set_item_count);
 	ClassDB::bind_method(D_METHOD("get_item_count"), &PopupMenu::get_item_count);
+
+	ClassDB::bind_method(D_METHOD("scroll_to_item", "index"), &PopupMenu::scroll_to_item);
 
 	ClassDB::bind_method(D_METHOD("remove_item", "index"), &PopupMenu::remove_item);
 

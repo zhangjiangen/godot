@@ -658,7 +658,7 @@ void EditorPropertyArray::_reorder_button_up() {
 		Variant array = object->get_array();
 
 		Variant value_to_move = array.get(reorder_from_index);
-		array.call("remove", reorder_from_index);
+		array.call("remove_at", reorder_from_index);
 		array.call("insert", reorder_to_index, value_to_move);
 
 		emit_changed(get_edited_property(), array, "", false);
@@ -1082,7 +1082,7 @@ void EditorPropertyDictionary::update_property() {
 				}
 				flat->set_bg_color(get_theme_color(SNAME("prop_subsection"), SNAME("Editor")));
 
-				pc->add_theme_style_override(SNAME("panel"), flat);
+				pc->add_theme_style_override("panel", flat);
 				add_vbox = memnew(VBoxContainer);
 				pc->add_child(add_vbox);
 			}

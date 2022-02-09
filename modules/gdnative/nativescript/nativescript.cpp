@@ -801,7 +801,7 @@ void NativeScriptInstance::call_r(const StringName &p_method, const Variant **p_
 void NativeScriptInstance::notification(int p_notification) {
 #ifdef DEBUG_ENABLED
 	if (p_notification == MainLoop::NOTIFICATION_CRASH) {
-		if (current_method_call != StringName("")) {
+		if (current_method_call != StringName()) {
 			ERR_PRINT("NativeScriptInstance detected crash on method: " + current_method_call);
 			current_method_call = "";
 		}

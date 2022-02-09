@@ -525,7 +525,7 @@ void GDScriptParser::parse_program() {
 		// Check for @tool annotation.
 		AnnotationNode *annotation = parse_annotation(AnnotationInfo::SCRIPT | AnnotationInfo::CLASS_LEVEL);
 		if (annotation != nullptr) {
-			if (annotation->name == "@tool") {
+			if (annotation->name == SNAME("@tool")) {
 				// TODO: don't allow @tool anywhere else. (Should all script annotations be the first thing?).
 				_is_tool = true;
 				if (previous.type != GDScriptTokenizer::Token::NEWLINE) {
@@ -579,7 +579,7 @@ void GDScriptParser::parse_program() {
 		// Check for @icon annotation.
 		AnnotationNode *annotation = parse_annotation(AnnotationInfo::SCRIPT | AnnotationInfo::CLASS_LEVEL);
 		if (annotation != nullptr) {
-			if (annotation->name == "@icon") {
+			if (annotation->name == SNAME("@icon")) {
 				if (previous.type != GDScriptTokenizer::Token::NEWLINE) {
 					push_error(R"(Expected newline after "@icon" annotation.)");
 				}
@@ -3512,7 +3512,7 @@ bool GDScriptParser::export_annotations(const AnnotationNode *p_annotation, Node
 		variable->export_info.usage = PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_EDITOR_INSTANTIATE_OBJECT;
 	}
 
-	else if (p_annotation->name == "@export") {
+	if (p_annotation->name == SNAME("@export")) {
 		if (variable->datatype_specifier == nullptr && variable->initializer == nullptr) {
 			push_error(R"(Cannot use simple "@export" annotation with variable without type or initializer, since type can't be inferred.)", p_annotation);
 			return false;
@@ -3537,7 +3537,7 @@ bool GDScriptParser::export_annotations(const AnnotationNode *p_annotation, Node
 				variable->export_info.hint_string = Variant::get_type_name(export_type.builtin_type);
 				break;
 			case GDScriptParser::DataType::NATIVE:
-				if (ClassDB::is_parent_class(export_type.native_type, "Resource")) {
+				if (ClassDB::is_parent_class(export_type.native_type, SNAME("Resource"))) {
 					variable->export_info.type = Variant::OBJECT;
 					variable->export_info.hint = PROPERTY_HINT_RESOURCE_TYPE;
 					variable->export_info.hint_string = export_type.native_type;
