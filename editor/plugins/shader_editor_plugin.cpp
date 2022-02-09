@@ -869,8 +869,9 @@ void ShaderEditorPlugin::make_visible(bool p_visible) {
 		if (button != nullptr) {
 			button->show();
 			editor->make_bottom_panel_item_visible(shader_editor);
-		} else
-			dock_make_float(shader_editor);
+		}
+		//  else
+		// 	dock_make_float(shader_editor);
 
 	} else {
 		if (button != nullptr) {
@@ -878,8 +879,9 @@ void ShaderEditorPlugin::make_visible(bool p_visible) {
 			if (shader_editor->is_visible_in_tree()) {
 				editor->hide_bottom_panel();
 			}
-		} else
-			dock_floating_close(shader_editor);
+		}
+		//  else
+		// 	dock_floating_close(shader_editor);
 		shader_editor->apply_shaders();
 	}
 }

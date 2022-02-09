@@ -259,8 +259,9 @@ void AnimationTreeEditorPlugin::make_visible(bool p_visible) {
 		if (button != nullptr) {
 			button->show();
 			editor->make_bottom_panel_item_visible(anim_tree_editor);
-		} else
-			dock_make_float(anim_tree_editor);
+		}
+		// else
+		// 	dock_make_float(anim_tree_editor);
 		anim_tree_editor->set_process(true);
 	} else {
 		if (button != nullptr) {
@@ -268,8 +269,9 @@ void AnimationTreeEditorPlugin::make_visible(bool p_visible) {
 			if (anim_tree_editor->is_visible_in_tree()) {
 				editor->hide_bottom_panel();
 			}
-		} else
-			dock_floating_close(anim_tree_editor);
+		}
+		// else
+		// 	dock_floating_close(anim_tree_editor);
 		anim_tree_editor->set_process(false);
 	}
 }

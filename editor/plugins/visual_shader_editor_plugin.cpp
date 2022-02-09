@@ -5294,7 +5294,7 @@ void VisualShaderEditorPlugin::make_visible(bool p_visible) {
 		//editor->animation_panel_make_visible(true);
 		//button->show();
 		//editor->make_bottom_panel_item_visible(visual_shader_editor);
-		dock_make_float(visual_shader_editor);
+		//dock_make_float(visual_shader_editor);
 		visual_shader_editor->update_custom_nodes();
 		visual_shader_editor->set_process_input(true);
 		//visual_shader_editor->set_process(true);
@@ -5303,7 +5303,7 @@ void VisualShaderEditorPlugin::make_visible(bool p_visible) {
 			editor->hide_bottom_panel();
 		}
 		//button->hide();
-		dock_floating_close(visual_shader_editor);
+		//dock_floating_close(visual_shader_editor);
 		visual_shader_editor->set_process_input(false);
 		//visual_shader_editor->set_process(false);
 	}

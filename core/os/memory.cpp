@@ -740,10 +740,10 @@ private:
 };
 
 void DefaultAllocator::record_memory_alloc(void *p_ptr, size_t p_memory, const char *file_name, int file_lne) {
-	SmallMemoryManager::get().record_memory_alloc(p_ptr, p_memory, file_name, file_lne);
+	//SmallMemoryManager::get().record_memory_alloc(p_ptr, p_memory, file_name, file_lne);
 }
 void DefaultAllocator::record_memory_free(void *ptr, size_t size) {
-	SmallMemoryManager::get().record_memory_free(ptr, size);
+	//SmallMemoryManager::get().record_memory_free(ptr, size);
 }
 void DefaultAllocator::log_memory_info() {
 	//SmallMemoryManager::get().log_memory_info();
