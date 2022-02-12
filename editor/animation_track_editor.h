@@ -37,7 +37,6 @@
 #include "editor/property_selector.h"
 
 #include "scene/gui/control.h"
-#include "scene/gui/file_dialog.h"
 #include "scene/gui/menu_button.h"
 #include "scene/gui/scroll_bar.h"
 #include "scene/gui/slider.h"
@@ -406,7 +405,7 @@ class AnimationTrackEditor : public VBoxContainer {
 
 	Map<SelectedKey, KeyInfo> selection;
 
-	void _key_selected(int p_track, int p_key, bool p_single);
+	void _key_selected(int p_key, bool p_single, int p_track);
 	void _key_deselected(int p_key, int p_track);
 
 	bool moving_selection;
