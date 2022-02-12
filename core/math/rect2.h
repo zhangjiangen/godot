@@ -51,7 +51,7 @@ struct _NO_DISCARD_ Rect2 {
 	real_t get_right() const { return position.x + size.x; }
 	real_t get_top() const { return position.y + size.y; }
 
-	_FORCE_INLINE_ Vector2 get_center() const { return position + (size * 0.5); }
+	_FORCE_INLINE_ Vector2 get_center() const { return position + (size * 0.5f); }
 	real_t &operator[](int index) {
 		switch (index) {
 			case 0:
@@ -315,7 +315,7 @@ struct _NO_DISCARD_ Rect2 {
 	}
 
 	Vector2 get_support(const Vector2 &p_normal) const {
-		Vector2 half_extents = size * 0.5;
+		Vector2 half_extents = size * 0.5f;
 		Vector2 ofs = position + half_extents;
 		return Vector2(
 					   (p_normal.x > 0) ? -half_extents.x : half_extents.x,
@@ -337,14 +337,14 @@ struct _NO_DISCARD_ Rect2 {
 
 			Vector2 r = (b - a);
 			float l = r.length();
-			if (l == 0.0) {
+			if (l == 0.0f) {
 				continue;
 			}
 
 			//check inside
 			Vector2 tg = r.orthogonal();
 			float s = tg.dot(center) - tg.dot(a);
-			if (s < 0.0) {
+			if (s < 0.0f) {
 				side_plus++;
 			} else {
 				side_minus++;
@@ -352,7 +352,7 @@ struct _NO_DISCARD_ Rect2 {
 
 			//check ray box
 			r /= l;
-			Vector2 ir(1.0 / r.x, 1.0 / r.y);
+			Vector2 ir(1.0f / r.x, 1.0f / r.y);
 
 			// lb is the corner of AABB with minimal coordinates - left bottom, rt is maximal corner
 			// r.org is origin of ray

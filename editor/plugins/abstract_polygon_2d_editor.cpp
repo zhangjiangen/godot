@@ -33,6 +33,7 @@
 #include "canvas_item_editor_plugin.h"
 #include "core/math/geometry_2d.h"
 #include "core/os/keyboard.h"
+#include "editor/editor_node.h"
 #include "editor/editor_scale.h"
 
 bool AbstractPolygon2DEditor::Vertex::operator==(const AbstractPolygon2DEditor::Vertex &p_vertex) const {
@@ -242,6 +243,10 @@ void AbstractPolygon2DEditor::disable_polygon_editing(bool p_disable, String p_r
 
 bool AbstractPolygon2DEditor::forward_gui_input(const Ref<InputEvent> &p_event) {
 	if (!_get_node() || !_polygon_editing_enabled) {
+		return false;
+	}
+
+	if (!_get_node()->is_visible_in_tree()) {
 		return false;
 	}
 
@@ -475,6 +480,10 @@ bool AbstractPolygon2DEditor::forward_gui_input(const Ref<InputEvent> &p_event) 
 
 void AbstractPolygon2DEditor::forward_canvas_draw_over_viewport(Control *p_overlay) {
 	if (!_get_node()) {
+		return;
+	}
+
+	if (!_get_node()->is_visible_in_tree()) {
 		return;
 	}
 
