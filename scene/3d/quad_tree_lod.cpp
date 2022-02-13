@@ -249,7 +249,7 @@ void QuadTreeLod::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_lod_factor", "lod"), &QuadTreeLod::get_lod_factor);
 	ClassDB::bind_method(D_METHOD("compute_lod_count", "base_size", "full_size"), &QuadTreeLod::compute_lod_count);
 	ClassDB::bind_method(D_METHOD("set_split_scale", "split_scale"), &QuadTreeLod::set_split_scale);
-	ClassDB::bind_method(D_METHOD("get_split_scale", "split_scale"), &QuadTreeLod::get_split_scale);
+	ClassDB::bind_method(D_METHOD("get_split_scale"), &QuadTreeLod::get_split_scale);
 	ClassDB::bind_method(D_METHOD("clear"), &QuadTreeLod::clear);
 	ClassDB::bind_method(D_METHOD("create_from_sizes", "base_size", "full_size"), &QuadTreeLod::create_from_sizes);
 	ClassDB::bind_method(D_METHOD("update", "view_pos"), &QuadTreeLod::update);
