@@ -744,7 +744,7 @@ public:
 		bool resolved_body = false;
 
 		FunctionNode() {
-			parameters.set_debug_file_info(__FILE__, __LINE__);
+			parameters_indices.set_debug_info(__FILE__, __LINE__);
 			type = FUNCTION;
 		}
 	};

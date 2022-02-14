@@ -292,10 +292,16 @@ public:
 	}
 
 	OrderedHashMap(const OrderedHashMap &p_map) {
+		map.set_debug_info(__FILE__, __LINE__);
 		_copy_from(p_map);
 	}
 
-	_FORCE_INLINE_ OrderedHashMap() {}
+	_FORCE_INLINE_ OrderedHashMap() {
+		map.set_debug_info(__FILE__, __LINE__);
+	}
+	void set_debug_info(const char *fn, int line) {
+		map.set_debug_info(fn, line);
+	}
 };
 
 #endif // ORDERED_HASH_MAP_H

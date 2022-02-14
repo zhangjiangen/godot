@@ -42,7 +42,14 @@
 struct DictionaryPrivate {
 	SafeRefCount refcount;
 	OrderedHashMap<Variant, Variant, VariantHasher, VariantComparator> variant_map;
+	DictionaryPrivate() {
+		variant_map.set_debug_info(__FILE__, __LINE__);
+	}
+	~DictionaryPrivate() {}
 };
+void Dictionary::set_debug_info(const char *fn, int line) {
+	_p->variant_map.set_debug_info(fn, line);
+}
 
 void Dictionary::get_key_list(List<Variant> *p_keys) const {
 	if (_p->variant_map.is_empty()) {

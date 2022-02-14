@@ -89,6 +89,7 @@ public:
 	Dictionary(const Dictionary &p_from);
 	Dictionary();
 	~Dictionary();
+	void set_debug_info(const char *fn, int line);
 };
 
 #endif // DICTIONARY_H

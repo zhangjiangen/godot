@@ -1106,7 +1106,7 @@ void ClassDB::add_property(const StringName &p_class, const PropertyInfo &p_pinf
 
 void ClassDB::set_property_default_value(const StringName &p_class, const StringName &p_name, const Variant &p_default) {
 	if (!default_values.has(p_class)) {
-		default_values[p_class] = HashMap<StringName, Variant>();
+		default_values[p_class] = HashMap<StringName, Variant>(__FILE__, __LINE__);
 	}
 	default_values[p_class][p_name] = p_default;
 }

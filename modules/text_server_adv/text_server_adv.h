@@ -155,7 +155,7 @@ class TextServerAdvanced : public TextServer {
 		FT_Face face = nullptr;
 		FT_StreamRec stream;
 #endif
-		FontDataForSizeAdvanced(){
+		FontDataForSizeAdvanced() {
 			glyph_map.set_debug_info(__FILE__, __LINE__);
 		}
 		~FontDataForSizeAdvanced() {
@@ -274,7 +274,10 @@ class TextServerAdvanced : public TextServer {
 		HashMap<int, bool> breaks;
 		bool break_ops_valid = false;
 		bool js_ops_valid = false;
-
+		ShapedTextDataAdvanced() {
+			jstops.set_debug_info(__FILE__, __LINE__);
+			breaks.set_debug_info(__FILE__, __LINE__);
+		}
 		~ShapedTextDataAdvanced() {
 			for (int i = 0; i < bidi_iter.size(); i++) {
 				ubidi_close(bidi_iter[i]);
