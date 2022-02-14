@@ -1889,7 +1889,12 @@ void Node3DEditorViewport::_sinput(const Ref<InputEvent> &p_event) {
 			}
 		}
 
-		if (_edit.mode != TRANSFORM_NONE) {
+		if (_edit.mode == TRANSFORM_NONE) {
+			if (k->get_keycode() == Key::ESCAPE && !cursor.region_select) {
+				_clear_selected();
+				return;
+			}
+		} else {
 			// We're actively transforming, handle keys specially
 			TransformPlane new_plane = TRANSFORM_VIEW;
 			String new_message;
@@ -6308,14 +6313,15 @@ void fragment() {
 			// Lines to visualize transforms locked to an axis/plane
 			{
 				Ref<SurfaceTool> surftool = memnew(SurfaceTool);
-				surftool->begin(Mesh::PRIMITIVE_LINES);
+				surftool->begin(Mesh::PRIMITIVE_LINE_STRIP);
 
 				Vector3 vec;
 				vec[i] = 1;
 
 				// line extending through infinity(ish)
-				surftool->add_vertex(vec * -99999);
-				surftool->add_vertex(vec * 99999);
+				surftool->add_vertex(vec * -1048576);
+				surftool->add_vertex(Vector3());
+				surftool->add_vertex(vec * 1048576);
 				surftool->set_material(mat_hl);
 				surftool->commit(axis_gizmo[i]);
 			}
