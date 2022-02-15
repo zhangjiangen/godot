@@ -47,6 +47,10 @@
 #include "scene/main/timer.h"
 #include "scene/resources/text_file.h"
 
+class EditorNode;
+struct EditorProgress;
+class EditorFileDialog;
+
 class EditorSyntaxHighlighter : public SyntaxHighlighter {
 	GDCLASS(EditorSyntaxHighlighter, SyntaxHighlighter)
 
@@ -165,7 +169,7 @@ public:
 
 	virtual bool show_members_overview() = 0;
 
-	virtual void set_tooltip_request_func(String p_method, Object *p_obj) = 0;
+	virtual void set_tooltip_request_func(const Callable &p_toolip_callback) = 0;
 	virtual Control *get_edit_menu() = 0;
 	virtual void clear_edit_menu() = 0;
 	virtual void set_find_replace_bar(FindReplaceBar *p_bar) = 0;
@@ -315,6 +319,9 @@ class ScriptEditor : public PanelContainer {
 	void _menu_option(int p_option);
 	void _theme_option(int p_option);
 	void _show_save_theme_as_dialog();
+	bool _has_docs_tab() const;
+	bool _has_script_tab() const;
+	void _prepare_file_menu();
 
 	Tree *disk_changed_list;
 	ConfirmationDialog *disk_changed;
@@ -415,7 +422,7 @@ class ScriptEditor : public PanelContainer {
 
 	void _tree_changed();
 
-	void _script_split_dragged(float);
+	void _split_dragged(float);
 
 	Variant get_drag_data_fw(const Point2 &p_point, Control *p_from);
 	bool can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const;

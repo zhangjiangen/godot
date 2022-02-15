@@ -55,33 +55,13 @@
 
 static const int MAX_DECIMALS = 32;
 
-static _FORCE_INLINE_ bool is_digit(char32_t c) {
-	return (c >= '0' && c <= '9');
-}
-
-static _FORCE_INLINE_ bool is_hex_digit(char32_t c) {
-	return (is_digit(c) || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'));
-}
-
-static _FORCE_INLINE_ bool is_upper_case(char32_t c) {
-	return (c >= 'A' && c <= 'Z');
-}
-
-static _FORCE_INLINE_ bool is_lower_case(char32_t c) {
-	return (c >= 'a' && c <= 'z');
-}
-
 static _FORCE_INLINE_ char32_t lower_case(char32_t c) {
-	return (is_upper_case(c) ? (c + ('a' - 'A')) : c);
+	return (is_ascii_upper_case(c) ? (c + ('a' - 'A')) : c);
 }
 
 const char CharString::_null = 0;
 const char16_t Char16String::_null = 0;
 const char32_t String::_null = 0;
-
-bool is_symbol(char32_t c) {
-	return c != '_' && ((c >= '!' && c <= '/') || (c >= ':' && c <= '@') || (c >= '[' && c <= '`') || (c >= '{' && c <= '~') || c == '\t' || c == ' ');
-}
 
 bool select_word(const String &p_s, int p_col, int &r_beg, int &r_end) {
 	const String &s = p_s;
@@ -522,10 +502,10 @@ String &String::operator+=(const String &p_str) {
 	char32_t *dst = ptrw();
 
 	set(length(), 0);
-
-	for (int i = 0; i < p_str.length(); i++) {
-		dst[from + i] = src[i];
-	}
+	memcpy(dst + from, src, p_str.length() * sizeof(char32_t));
+	// for (int i = 0; i < p_str.length(); i++) {
+	// 	dst[from + i] = src[i];
+	// }
 
 	return *this;
 }
@@ -594,14 +574,13 @@ bool String::operator==(const char *p_str) const {
 		len++;
 	}
 
+	int l = length();
 	if (length() != len) {
 		return false;
 	}
 	if (is_empty()) {
 		return true;
 	}
-
-	int l = length();
 
 	const char32_t *dst = get_data();
 
@@ -633,48 +612,32 @@ bool String::operator==(const char32_t *p_str) const {
 		len++;
 	}
 
-	if (length() != len) {
+	int l = length();
+	if (l != len) {
 		return false;
 	}
 	if (is_empty()) {
 		return true;
 	}
-
-	int l = length();
 
 	const char32_t *dst = get_data();
 
-	/* Compare char by char */
-	for (int i = 0; i < l; i++) {
-		if (p_str[i] != dst[i]) {
-			return false;
-		}
-	}
-
-	return true;
+	return memcmp(p_str, dst,sizeof(char32_t) * len) == 0;
 }
 
 bool String::operator==(const String &p_str) const {
-	if (length() != p_str.length()) {
+	int l = length();
+	int last_l = p_str.length();
+	if (l != last_l) {
 		return false;
 	}
 	if (is_empty()) {
 		return true;
 	}
 
-	int l = length();
-
 	const char32_t *src = get_data();
 	const char32_t *dst = p_str.get_data();
-
-	/* Compare char by char */
-	for (int i = 0; i < l; i++) {
-		if (src[i] != dst[i]) {
-			return false;
-		}
-	}
-
-	return true;
+	return memcmp(src, dst,sizeof(char32_t) * l) == 0;
 }
 
 bool String::operator==(const StrRange &p_str_range) const {
@@ -691,13 +654,8 @@ bool String::operator==(const StrRange &p_str_range) const {
 	const char32_t *dst = &operator[](0);
 
 	/* Compare char by char */
-	for (int i = 0; i < len; i++) {
-		if (c_str[i] != dst[i]) {
-			return false;
-		}
-	}
 
-	return true;
+	return memcmp(c_str, dst,sizeof(char32_t) * len) == 0;
 }
 
 bool operator==(const char *p_chr, const String &p_str) {
@@ -975,21 +933,21 @@ String String::camelcase_to_underscore(bool lowercase) const {
 	int start_index = 0;
 
 	for (int i = 1; i < this->size(); i++) {
-		bool is_upper = is_upper_case(cstr[i]);
+		bool is_upper = is_ascii_upper_case(cstr[i]);
 		bool is_number = is_digit(cstr[i]);
 
 		bool are_next_2_lower = false;
 		bool is_next_lower = false;
 		bool is_next_number = false;
-		bool was_precedent_upper = is_upper_case(cstr[i - 1]);
+		bool was_precedent_upper = is_ascii_upper_case(cstr[i - 1]);
 		bool was_precedent_number = is_digit(cstr[i - 1]);
 
 		if (i + 2 < this->size()) {
-			are_next_2_lower = is_lower_case(cstr[i + 1]) && is_lower_case(cstr[i + 2]);
+			are_next_2_lower = is_ascii_lower_case(cstr[i + 1]) && is_ascii_lower_case(cstr[i + 2]);
 		}
 
 		if (i + 1 < this->size()) {
-			is_next_lower = is_lower_case(cstr[i + 1]);
+			is_next_lower = is_ascii_lower_case(cstr[i + 1]);
 			is_next_number = is_digit(cstr[i + 1]);
 		}
 
@@ -1654,7 +1612,7 @@ String String::utf8(const char *p_utf8, int p_len) {
 }
 
 bool String::parse_utf8(const char *p_utf8, int p_len) {
-#define _UNICERROR(m_err) print_error("Unicode parsing error: " + String(m_err) + ". Is the string valid UTF-8?");
+#define UNICERROR(m_err) print_error("Unicode parsing error: " + String(m_err) + ". Is the string valid UTF-8?");
 
 	if (!p_utf8) {
 		return true;
@@ -1695,12 +1653,12 @@ bool String::parse_utf8(const char *p_utf8, int p_len) {
 				} else if ((c & 0xf8) == 0xf0) {
 					skip = 3;
 				} else {
-					_UNICERROR("invalid skip at " + num_int64(cstr_size));
+					UNICERROR("invalid skip at " + num_int64(cstr_size));
 					return true; //invalid utf8
 				}
 
 				if (skip == 1 && (c & 0x1e) == 0) {
-					_UNICERROR("overlong rejected at " + num_int64(cstr_size));
+					UNICERROR("overlong rejected at " + num_int64(cstr_size));
 					return true; //reject overlong
 				}
 
@@ -1715,7 +1673,7 @@ bool String::parse_utf8(const char *p_utf8, int p_len) {
 		}
 
 		if (skip) {
-			_UNICERROR("no space left");
+			UNICERROR("no space left");
 			return true; //not enough space
 		}
 	}
@@ -1742,17 +1700,17 @@ bool String::parse_utf8(const char *p_utf8, int p_len) {
 		} else if ((*p_utf8 & 0xf8) == 0xf0) {
 			len = 4;
 		} else {
-			_UNICERROR("invalid len");
+			UNICERROR("invalid len");
 			return true; //invalid UTF8
 		}
 
 		if (len > cstr_size) {
-			_UNICERROR("no space left");
+			UNICERROR("no space left");
 			return true; //not enough space
 		}
 
 		if (len == 2 && (*p_utf8 & 0x1E) == 0) {
-			_UNICERROR("no space left");
+			UNICERROR("no space left");
 			return true; //reject overlong
 		}
 
@@ -1767,18 +1725,18 @@ bool String::parse_utf8(const char *p_utf8, int p_len) {
 
 			for (int i = 1; i < len; i++) {
 				if ((p_utf8[i] & 0xc0) != 0x80) {
-					_UNICERROR("invalid utf8");
+					UNICERROR("invalid utf8");
 					return true; //invalid utf8
 				}
 				if (unichar == 0 && i == 2 && ((p_utf8[i] & 0x7f) >> (7 - len)) == 0) {
-					_UNICERROR("invalid utf8 overlong");
+					UNICERROR("invalid utf8 overlong");
 					return true; //no overlong
 				}
 				unichar = (unichar << 6) | (p_utf8[i] & 0x3f);
 			}
 		}
 		if (unichar >= 0xd800 && unichar <= 0xdfff) {
-			_UNICERROR("invalid code point");
+			UNICERROR("invalid code point");
 			return CharString();
 		}
 
@@ -1788,7 +1746,7 @@ bool String::parse_utf8(const char *p_utf8, int p_len) {
 	}
 
 	return false;
-#undef _UNICERROR
+#undef UNICERROR
 }
 
 CharString String::utf8() const {
@@ -1862,7 +1820,7 @@ String String::utf16(const char16_t *p_utf16, int p_len) {
 }
 
 bool String::parse_utf16(const char16_t *p_utf16, int p_len) {
-#define _UNICERROR(m_err) print_error("Unicode parsing error: " + String(m_err) + ". Is the string valid UTF-16?");
+#define UNICERROR(m_err) print_error("Unicode parsing error: " + String(m_err) + ". Is the string valid UTF-16?");
 
 	if (!p_utf16) {
 		return true;
@@ -1902,7 +1860,7 @@ bool String::parse_utf16(const char16_t *p_utf16, int p_len) {
 				if ((c & 0xfffffc00) == 0xd800) {
 					skip = 1; // lead surrogate
 				} else if ((c & 0xfffffc00) == 0xdc00) {
-					_UNICERROR("invalid utf16 surrogate at " + num_int64(cstr_size));
+					UNICERROR("invalid utf16 surrogate at " + num_int64(cstr_size));
 					return true; // invalid UTF16
 				} else {
 					skip = 0;
@@ -1912,7 +1870,7 @@ bool String::parse_utf16(const char16_t *p_utf16, int p_len) {
 				if ((c & 0xfffffc00) == 0xdc00) { // trail surrogate
 					--skip;
 				} else {
-					_UNICERROR("invalid utf16 surrogate at " + num_int64(cstr_size));
+					UNICERROR("invalid utf16 surrogate at " + num_int64(cstr_size));
 					return true; // invalid UTF16
 				}
 			}
@@ -1922,7 +1880,7 @@ bool String::parse_utf16(const char16_t *p_utf16, int p_len) {
 		}
 
 		if (skip) {
-			_UNICERROR("no space left");
+			UNICERROR("no space left");
 			return true; // not enough space
 		}
 	}
@@ -1947,7 +1905,7 @@ bool String::parse_utf16(const char16_t *p_utf16, int p_len) {
 		}
 
 		if (len > cstr_size) {
-			_UNICERROR("no space left");
+			UNICERROR("no space left");
 			return true; //not enough space
 		}
 
@@ -1965,7 +1923,7 @@ bool String::parse_utf16(const char16_t *p_utf16, int p_len) {
 	}
 
 	return false;
-#undef _UNICERROR
+#undef UNICERROR
 }
 
 Char16String String::utf16() const {
@@ -2234,7 +2192,7 @@ bool String::is_numeric() const {
 				return false;
 			}
 			dot = true;
-		} else if (c < '0' || c > '9') {
+		} else if (!is_digit(c)) {
 			return false;
 		}
 	}
@@ -3174,7 +3132,7 @@ bool String::is_subsequence_of(const String &p_string) const {
 	return _base_is_subsequence_of(p_string, false);
 }
 
-bool String::is_subsequence_ofi(const String &p_string) const {
+bool String::is_subsequence_ofn(const String &p_string) const {
 	return _base_is_subsequence_of(p_string, true);
 }
 
@@ -3652,6 +3610,10 @@ String String::rstrip(const String &p_chars) const {
 	return substr(0, end + 1);
 }
 
+bool String::is_network_share_path() const {
+	return begins_with("//") || begins_with("\\\\");
+}
+
 String String::simplify_path() const {
 	String s = *this;
 	String drive;
@@ -3664,6 +3626,9 @@ String String::simplify_path() const {
 	} else if (s.begins_with("user://")) {
 		drive = "user://";
 		s = s.substr(7, s.length());
+	} else if (is_network_share_path()) {
+		drive = s.substr(0, 2);
+		s = s.substr(2, s.length() - 2);
 	} else if (s.begins_with("/") || s.begins_with("\\")) {
 		drive = s.substr(0, 1);
 		s = s.substr(1, s.length() - 1);
@@ -3778,7 +3743,7 @@ bool String::is_valid_identifier() const {
 			}
 		}
 
-		bool valid_char = is_digit(str[i]) || is_lower_case(str[i]) || is_upper_case(str[i]) || str[i] == '_';
+		bool valid_char = is_ascii_identifier_char(str[i]);
 
 		if (!valid_char) {
 			return false;
@@ -3803,7 +3768,7 @@ String String::uri_encode() const {
 	String res;
 	for (int i = 0; i < temp.length(); ++i) {
 		char ord = temp[i];
-		if (ord == '.' || ord == '-' || ord == '_' || ord == '~' || is_lower_case(ord) || is_upper_case(ord) || is_digit(ord)) {
+		if (ord == '.' || ord == '-' || ord == '~' || is_ascii_identifier_char(ord)) {
 			res += ord;
 		} else {
 			char h_Val[3];
@@ -3825,9 +3790,9 @@ String String::uri_decode() const {
 	for (int i = 0; i < src.length(); ++i) {
 		if (src[i] == '%' && i + 2 < src.length()) {
 			char ord1 = src[i + 1];
-			if (is_digit(ord1) || is_upper_case(ord1)) {
+			if (is_digit(ord1) || is_ascii_upper_case(ord1)) {
 				char ord2 = src[i + 2];
-				if (is_digit(ord2) || is_upper_case(ord2)) {
+				if (is_digit(ord2) || is_ascii_upper_case(ord2)) {
 					char bytes[3] = { (char)ord1, (char)ord2, 0 };
 					res += (char)strtol(bytes, nullptr, 16);
 					i += 2;
@@ -3954,7 +3919,7 @@ static _FORCE_INLINE_ int _xml_unescape(const char32_t *p_src, int p_src_len, ch
 					for (int i = 2; i < p_src_len; i++) {
 						eat = i + 1;
 						char32_t ct = p_src[i];
-						if (ct == ';' || ct < '0' || ct > '9') {
+						if (ct == ';' || !is_digit(ct)) {
 							break;
 						}
 					}
@@ -4084,7 +4049,7 @@ String String::pad_zeros(int p_digits) const {
 
 	int begin = 0;
 
-	while (begin < end && (s[begin] < '0' || s[begin] > '9')) {
+	while (begin < end && !is_digit(s[begin])) {
 		begin++;
 	}
 
@@ -4129,7 +4094,7 @@ bool String::is_valid_int() const {
 	}
 
 	for (int i = from; i < len; i++) {
-		if (operator[](i) < '0' || operator[](i) > '9') {
+		if (!is_digit(operator[](i))) {
 			return false; // no start with number plz
 		}
 	}
@@ -4365,13 +4330,13 @@ bool String::is_relative_path() const {
 String String::get_base_dir() const {
 	int end = 0;
 
-	// url scheme style base
+	// URL scheme style base.
 	int basepos = find("://");
 	if (basepos != -1) {
 		end = basepos + 3;
 	}
 
-	// windows top level directory base
+	// Windows top level directory base.
 	if (end == 0) {
 		basepos = find(":/");
 		if (basepos == -1) {
@@ -4382,7 +4347,24 @@ String String::get_base_dir() const {
 		}
 	}
 
-	// unix root directory base
+	// Windows UNC network share path.
+	if (end == 0) {
+		if (is_network_share_path()) {
+			basepos = find("/", 2);
+			if (basepos == -1) {
+				basepos = find("\\", 2);
+			}
+			int servpos = find("/", basepos + 1);
+			if (servpos == -1) {
+				servpos = find("\\", basepos + 1);
+			}
+			if (servpos != -1) {
+				end = servpos + 1;
+			}
+		}
+	}
+
+	// Unix root directory base.
 	if (end == 0) {
 		if (begins_with("/")) {
 			end = 1;

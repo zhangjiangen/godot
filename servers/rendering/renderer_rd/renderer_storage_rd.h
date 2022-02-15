@@ -364,6 +364,9 @@ private:
 		Vector<MipMap> texture_mipmaps;
 
 		Size2i size;
+		DecalAtlas() {
+			textures.set_debug_info(__FILE__, __LINE__);
+		}
 
 	} decal_atlas;
 
@@ -619,22 +622,10 @@ private:
 	_FORCE_INLINE_ void _multimesh_re_create_aabb(MultiMesh *multimesh, const float *p_data, int p_instances);
 	void _update_dirty_multimeshes();
 	virtual void _multmesh_pre_render(const Transform3D &p_camera_transform, const CameraMatrix &p_camera_mat) override {
-		temp_mesh_list.clear();
-		multimesh_owner.get_owned_array(&temp_mesh_list);
-		for (int i = 0; i < temp_mesh_list.size(); ++i) {
-			MultiMesh *multimesh = multimesh_owner.get_or_null(temp_mesh_list[i]);
-			if (multimesh->UserDate.is_valid())
-				multimesh->UserDate->PreRender(&p_camera_transform, &p_camera_mat, 1);
-		}
+
 	}
 	virtual void _multmesh_post_render() override {
-		temp_mesh_list.clear();
-		multimesh_owner.get_owned_array(&temp_mesh_list);
-		for (int i = 0; i < temp_mesh_list.size(); ++i) {
-			MultiMesh *multimesh = multimesh_owner.get_or_null(temp_mesh_list[i]);
-			if (multimesh->UserDate.is_valid())
-				multimesh->UserDate->EndRender();
-		}
+
 	}
 
 	/* PARTICLES */
@@ -1191,12 +1182,7 @@ private:
 		RID backbuffer_fb;
 		RID backbuffer_mipmap0;
 
-		struct BackbufferMipmap {
-			RID mipmap;
-			RID mipmap_copy;
-		};
-
-		Vector<BackbufferMipmap> backbuffer_mipmaps;
+		Vector<RID> backbuffer_mipmaps;
 
 		RID framebuffer_uniform_set;
 		RID backbuffer_uniform_set;
@@ -1264,8 +1250,8 @@ private:
 			RS::GlobalVariableType type;
 			Variant value;
 			Variant override;
-			int32_t buffer_index; //for vectors
-			int32_t buffer_elements; //for vectors
+			int32_t buffer_index = 0; //for vectors
+			int32_t buffer_elements = 0; //for vectors
 		};
 
 		HashMap<StringName, Variable> variables;
@@ -1299,17 +1285,21 @@ private:
 		List<RID> materials_using_texture;
 
 		RID buffer;
-		Value *buffer_values;
-		ValueUsage *buffer_usage;
-		bool *buffer_dirty_regions;
+		Value *buffer_values = nullptr;
+		ValueUsage *buffer_usage = nullptr;
+		bool *buffer_dirty_regions = nullptr;
 		uint32_t buffer_dirty_region_count = 0;
 
-		uint32_t buffer_size;
+		uint32_t buffer_size = 0;
 
 		bool must_update_texture_materials = false;
 		bool must_update_buffer_materials = false;
 
 		HashMap<RID, int32_t> instance_buffer_pos;
+		GlobalVariables() {
+			variables.set_debug_info(__FILE__, __LINE__);
+			instance_buffer_pos.set_debug_info(__FILE__, __LINE__);
+		}
 
 	} global_variables;
 

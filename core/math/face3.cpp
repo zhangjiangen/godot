@@ -157,7 +157,7 @@ Vector3 Face3::get_random_point_inside() const {
 		SWAP(a, b);
 	}
 
-	return vertex[0] * a + vertex[1] * (b - a) + vertex[2] * (1.0 - b);
+	return vertex[0] * a + vertex[1] * (b - a) + vertex[2] * (1.0f - b);
 }
 
 Plane Face3::get_plane(ClockDirection p_dir) const {
@@ -165,11 +165,11 @@ Plane Face3::get_plane(ClockDirection p_dir) const {
 }
 
 Vector3 Face3::get_median_point() const {
-	return (vertex[0] + vertex[1] + vertex[2]) / 3.0;
+	return (vertex[0] + vertex[1] + vertex[2]) / 3.0f;
 }
 
 real_t Face3::get_area() const {
-	return vec3_cross(vertex[0] - vertex[1], vertex[0] - vertex[2]).length() * 0.5;
+	return vec3_cross(vertex[0] - vertex[1], vertex[0] - vertex[2]).length() * 0.5f;
 }
 
 ClockDirection Face3::get_clock_dir() const {
@@ -223,7 +223,7 @@ bool Face3::intersects_aabb(const AABB &p_aabb) const {
 
 			Vector3 axis = vec3_cross(e1, e2);
 
-			if (axis.length_squared() < 0.0001) {
+			if (axis.length_squared() < 0.0001f) {
 				continue; // coplanar
 			}
 			axis.normalize();
@@ -260,8 +260,8 @@ void Face3::project_range(const Vector3 &p_normal, const Transform3D &p_transfor
 }
 
 void Face3::get_support(const Vector3 &p_normal, const Transform3D &p_transform, Vector3 *p_vertices, int *p_count, int p_max) const {
-#define _FACE_IS_VALID_SUPPORT_THRESHOLD 0.98
-#define _EDGE_IS_VALID_SUPPORT_THRESHOLD 0.05
+	constexpr double face_support_threshold = 0.98;
+	constexpr double edge_support_threshold = 0.05;
 
 	if (p_max <= 0) {
 		return;
@@ -270,7 +270,7 @@ void Face3::get_support(const Vector3 &p_normal, const Transform3D &p_transform,
 	Vector3 n = p_transform.basis.xform_inv(p_normal);
 
 	/** TEST FACE AS SUPPORT **/
-	if (get_plane().normal.dot(n) > _FACE_IS_VALID_SUPPORT_THRESHOLD) {
+	if (get_plane().normal.dot(n) > face_support_threshold) {
 		*p_count = MIN(3, p_max);
 
 		for (int i = 0; i < *p_count; i++) {
@@ -304,7 +304,7 @@ void Face3::get_support(const Vector3 &p_normal, const Transform3D &p_transform,
 		// check if edge is valid as a support
 		real_t dot = (vertex[i] - vertex[(i + 1) % 3]).normalized().dot(n);
 		dot = ABS(dot);
-		if (dot < _EDGE_IS_VALID_SUPPORT_THRESHOLD) {
+		if (dot < edge_support_threshold) {
 			*p_count = MIN(2, p_max);
 
 			for (int j = 0; j < *p_count; j++) {

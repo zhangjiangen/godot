@@ -242,6 +242,7 @@ public:
 
 	static Input *get_singleton();
 
+	bool is_anything_pressed() const;
 	bool is_key_pressed(Key p_keycode) const;
 	bool is_physical_key_pressed(Key p_keycode) const;
 	bool is_mouse_button_pressed(MouseButton p_button) const;
@@ -269,7 +270,7 @@ public:
 	Vector3 get_gyroscope() const;
 
 	Point2 get_mouse_position() const;
-	Vector2 get_last_mouse_velocity() const;
+	Vector2 get_last_mouse_velocity();
 	MouseButton get_mouse_button_mask() const;
 
 	void warp_mouse_position(const Vector2 &p_to);

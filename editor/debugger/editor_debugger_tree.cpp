@@ -30,7 +30,9 @@
 
 #include "editor_debugger_tree.h"
 
+#include "editor/editor_file_dialog.h"
 #include "editor/editor_node.h"
+#include "editor/scene_tree_dock.h"
 #include "scene/debugger/scene_debugger.h"
 #include "scene/resources/packed_scene.h"
 #include "servers/display_server.h"
@@ -128,7 +130,7 @@ void EditorDebuggerTree::_scene_tree_rmb_selected(const Vector2 &p_position) {
 void EditorDebuggerTree::update_scene_tree(const SceneDebuggerTree *p_tree, int p_debugger) {
 	updating_scene_tree = true;
 	const String last_path = get_selected_path();
-	const String filter = EditorNode::get_singleton()->get_scene_tree_dock()->get_filter();
+	const String filter = SceneTreeDock::get_singleton()->get_filter();
 	bool filter_changed = filter != last_filter;
 	TreeItem *scroll_item = nullptr;
 
@@ -186,7 +188,7 @@ void EditorDebuggerTree::update_scene_tree(const SceneDebuggerTree *p_tree, int 
 			// Apply filters.
 			while (parent) {
 				const bool had_siblings = item->get_prev() || item->get_next();
-				if (filter.is_subsequence_ofi(item->get_text(0))) {
+				if (filter.is_subsequence_ofn(item->get_text(0))) {
 					break; // Filter matches, must survive.
 				}
 				parent->remove_child(item);

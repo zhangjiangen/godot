@@ -37,8 +37,6 @@
 #include "scene/gui/center_container.h"
 #include "scene/gui/label.h"
 #include "scene/gui/margin_container.h"
-#include "scene/gui/scroll_container.h"
-#include "scene/gui/texture_rect.h"
 #include "scene/resources/tile_set.h"
 
 class ViewPanner;
@@ -67,9 +65,9 @@ private:
 	virtual void gui_input(const Ref<InputEvent> &p_event) override;
 
 	Ref<ViewPanner> panner;
-	void _scroll_callback(Vector2 p_scroll_vec);
+	void _scroll_callback(Vector2 p_scroll_vec, bool p_alt);
 	void _pan_callback(Vector2 p_scroll_vec);
-	void _zoom_callback(Vector2 p_scroll_vec, Vector2 p_origin);
+	void _zoom_callback(Vector2 p_scroll_vec, Vector2 p_origin, bool p_alt);
 
 	Map<Vector2, Map<int, Rect2i>> alternative_tiles_rect_cache;
 	void _update_alternative_tiles_rect_cache();

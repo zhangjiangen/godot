@@ -37,7 +37,7 @@
 #include <platform/android/jni_utils.h>
 #include <platform/android/string_android.h>
 
-static HashMap<String, JNISingleton *> jni_singletons;
+static HashMap<String, JNISingleton *> jni_singletons(__FILE__, __LINE__);
 
 extern "C" {
 
@@ -126,7 +126,7 @@ JNIEXPORT void JNICALL Java_org_godotengine_godot_plugin_GodotPlugin_nativeEmitS
 		env->DeleteLocalRef(j_param);
 	};
 
-	singleton->emit_signal(SNAME(signal_name), args, count);
+	singleton->emit_signal(StringName(signal_name), args, count);
 }
 
 JNIEXPORT void JNICALL Java_org_godotengine_godot_plugin_GodotPlugin_nativeRegisterGDNativeLibraries(JNIEnv *env, jclass clazz, jobjectArray gdnlib_paths) {

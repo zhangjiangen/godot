@@ -31,13 +31,11 @@
 #ifndef RENDERING_SERVER_COMPOSITOR_H
 #define RENDERING_SERVER_COMPOSITOR_H
 
-#include "core/math/camera_matrix.h"
-#include "core/templates/pair.h"
-#include "core/templates/self_list.h"
 #include "servers/rendering/renderer_canvas_render.h"
 #include "servers/rendering/renderer_scene.h"
 #include "servers/rendering/renderer_storage.h"
 #include "servers/rendering_server.h"
+
 class RendererSceneRender;
 struct BlitToScreen {
 	RID render_target;
@@ -76,7 +74,7 @@ public:
 	virtual RendererCanvasRender *get_canvas() = 0;
 	virtual RendererSceneRender *get_scene() = 0;
 
-	virtual void set_boot_image(const Ref<Image> &p_image, const Color &p_color, RenderingServer::SplashStretchMode p_stretch_mode, bool p_use_filter = true) = 0;
+	virtual void set_boot_image(const Ref<Image> &p_image, const Color &p_color, bool p_scale, bool p_use_filter = true) = 0;
 
 	virtual void initialize() = 0;
 	virtual void begin_frame(double frame_step) = 0;

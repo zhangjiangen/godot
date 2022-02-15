@@ -91,5 +91,76 @@ public:
 	VSlider() :
 			Slider(VERTICAL) { set_h_size_flags(0); }
 };
+class MinMaxSlider : public Control {
+	GDCLASS(MinMaxSlider, Control);
+	const int VALUE_LOW = 0;
+
+	const int VALUE_HIGH = 1;
+	const int VALUE_COUNT = 2;
+
+	const int FG_MARGIN = 1;
+
+	//signal value_changed(value)
+	float _min_value = 0.0;
+	float _max_value = 1.0;
+	Vector2 _values = Vector2(0.2, 0.6);
+	Vector2 rect_min_size = Vector2(32, 28);
+	bool _grabbing = false;
+
+	Label *_label_value;
+
+protected:
+	static void _bind_methods();
+	virtual void gui_input(const Ref<InputEvent> &p_event) override;
+	void _get_property_list(List<PropertyInfo> *p_list) const;
+	bool _get(const StringName &p_name, Variant &r_ret) const;
+	bool _set(const StringName &p_name, const Variant &p_value);
+	float _ratio_to_value(float r) { return r * (_max_value - _min_value) +
+		_min_value; }
+
+	int _get_closest_index(float ratio);
+
+	void _set_from_pixel(float px);
+	void _set_value_x(float v, bool notify_change) {
+		if (v != _values.x) {
+			_values.x = v;
+			update();
+		}
+		if (notify_change)
+			emit_signal(SNAME("value_changed"), _values);
+	}
+	void _set_value_y(float v, bool notify_change) {
+		if (v != _values.y) {
+			_values.y = v;
+			update();
+		}
+		if (notify_change)
+			emit_signal(SNAME("value_changed"), _values);
+	}
+	void _notification(int p_what);
+	void _draw();
+	float _value_to_ratio(float v) {
+		if (Math::abs(_max_value - _min_value) <
+				0.001) {
+			return 0.0;
+		}
+		return (v - _min_value) / (_max_value - _min_value);
+	}
+	void _set_value(int i, float v, bool notify_change) {
+		v = Math::clamp(v, _min_value, _max_value);
+		if (i == VALUE_LOW)
+			_set_value_x(v, notify_change);
+		if (i == VALUE_HIGH)
+			_set_value_y(v, notify_change);
+	}
+
+public:
+	MinMaxSlider();
+	void set_range(float min_v, float max_v);
+	void set_values(const Vector2 &v);
+	Vector2 get_values() { return _values; }
+	float get_low_ratio() { return _value_to_ratio(_values.x); }
+	float get_high_ratio() { return _value_to_ratio(_values.y); }
+};
 
 #endif // SLIDER_H

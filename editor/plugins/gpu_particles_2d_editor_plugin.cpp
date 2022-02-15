@@ -32,6 +32,9 @@
 
 #include "canvas_item_editor_plugin.h"
 #include "core/io/image_loader.h"
+#include "editor/editor_file_dialog.h"
+#include "editor/editor_node.h"
+#include "editor/scene_tree_dock.h"
 #include "scene/2d/cpu_particles_2d.h"
 #include "scene/gui/separator.h"
 #include "scene/resources/particles_material.h"
@@ -110,9 +113,9 @@ void GPUParticles2DEditorPlugin::_menu_callback(int p_idx) {
 
 			UndoRedo *ur = EditorNode::get_singleton()->get_undo_redo();
 			ur->create_action(TTR("Convert to CPUParticles2D"));
-			ur->add_do_method(EditorNode::get_singleton()->get_scene_tree_dock(), "replace_node", particles, cpu_particles, true, false);
+			ur->add_do_method(SceneTreeDock::get_singleton(), "replace_node", particles, cpu_particles, true, false);
 			ur->add_do_reference(cpu_particles);
-			ur->add_undo_method(EditorNode::get_singleton()->get_scene_tree_dock(), "replace_node", cpu_particles, particles, false, false);
+			ur->add_undo_method(SceneTreeDock::get_singleton(), "replace_node", cpu_particles, particles, false, false);
 			ur->add_undo_reference(particles);
 			ur->commit_action();
 

@@ -1164,9 +1164,6 @@ void VisualScript::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("remove_custom_signal", "name"), &VisualScript::remove_custom_signal);
 	ClassDB::bind_method(D_METHOD("rename_custom_signal", "name", "new_name"), &VisualScript::rename_custom_signal);
 
-	//ClassDB::bind_method(D_METHOD("set_variable_info","name","info"),&VScript::set_variable_info);
-	//ClassDB::bind_method(D_METHOD("get_variable_info","name"),&VScript::set_variable_info);
-
 	ClassDB::bind_method(D_METHOD("set_instance_base_type", "type"), &VisualScript::set_instance_base_type);
 
 	ClassDB::bind_method(D_METHOD("_set_data", "data"), &VisualScript::_set_data);
@@ -1178,6 +1175,9 @@ void VisualScript::_bind_methods() {
 }
 
 VisualScript::VisualScript() {
+	nodes.set_debug_info(__FILE__, __LINE__);
+	functions.set_debug_info(__FILE__, __LINE__);
+	variables.set_debug_info(__FILE__, __LINE__);
 	base_type = "Object";
 	is_tool_script = false;
 }
@@ -1995,7 +1995,7 @@ void VisualScriptInstance::create(const Ref<VisualScript> &p_script, Object *p_o
 					}
 					nd_queue.pop_front();
 				}
-				HashMap<int, HashMap<int, Pair<int, int>>> dc_lut; // :: to -> to_port -> (from, from_port)
+				HashMap<int, HashMap<int, Pair<int, int>>> dc_lut(__FILE__, __LINE__); // :: to -> to_port -> (from, from_port)
 				for (const Set<VisualScript::DataConnection>::Element *F = script->data_connections.front(); F; F = F->next()) {
 					dc_lut[F->get().to_node][F->get().to_port] = Pair<int, int>(F->get().from_node, F->get().from_port);
 				}

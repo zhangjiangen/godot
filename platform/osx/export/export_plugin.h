@@ -40,7 +40,6 @@
 #include "core/os/os.h"
 #include "core/version.h"
 #include "editor/editor_export.h"
-#include "editor/editor_node.h"
 #include "editor/editor_settings.h"
 #include "platform/osx/logo.gen.h"
 
@@ -87,7 +86,7 @@ class EditorExportPlatformOSX : public EditorExportPlatform {
 
 		for (int i = 0; i < pname.length(); i++) {
 			char32_t c = pname[i];
-			if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '-' || c == '.')) {
+			if (!(is_ascii_alphanumeric_char(c) || c == '-' || c == '.')) {
 				if (r_error) {
 					*r_error = vformat(TTR("The character '%s' is not allowed in Identifier."), String::chr(c));
 				}
@@ -101,6 +100,7 @@ class EditorExportPlatformOSX : public EditorExportPlatform {
 protected:
 	virtual void get_preset_features(const Ref<EditorExportPreset> &p_preset, List<String> *r_features) override;
 	virtual void get_export_options(List<ExportOption> *r_options) override;
+	virtual bool get_export_option_visibility(const String &p_option, const Map<StringName, Variant> &p_options) const override;
 
 public:
 	virtual String get_name() const override { return "macOS"; }

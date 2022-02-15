@@ -378,6 +378,8 @@ const String VersionControlEditorPlugin::get_vcs_name() const {
 }
 
 VersionControlEditorPlugin::VersionControlEditorPlugin() {
+	change_type_to_color.set_debug_info(__FILE__, __LINE__);
+	change_type_to_strings.set_debug_info(__FILE__, __LINE__);
 	singleton = this;
 	staged_files_count = 0;
 

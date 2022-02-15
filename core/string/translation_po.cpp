@@ -99,7 +99,7 @@ void TranslationPO::_set_messages(const Dictionary &p_messages) {
 	for (const Variant &ctx : context_l) {
 		const Dictionary &id_str_map = p_messages[ctx];
 
-		HashMap<StringName, Vector<StringName>> temp_map;
+		HashMap<StringName, Vector<StringName>> temp_map(__FILE__, __LINE__);
 		List<Variant> id_l;
 		id_str_map.get_key_list(&id_l);
 		for (List<Variant>::Element *E2 = id_l.front(); E2; E2 = E2->next()) {

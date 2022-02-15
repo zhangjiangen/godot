@@ -34,10 +34,11 @@
 #include "editor/editor_export.h"
 #include "editor/editor_node.h"
 #include "editor/editor_paths.h"
+#include "editor/editor_resource_preview.h"
 #include "editor/editor_settings.h"
 #include "editor/filesystem_dock.h"
 #include "editor/project_settings_editor.h"
-#include "editor_resource_preview.h"
+#include "editor/scene_tree_dock.h"
 #include "main/main.h"
 #include "plugins/canvas_item_editor_plugin.h"
 #include "plugins/node_3d_editor_plugin.h"
@@ -233,15 +234,15 @@ ScriptEditor *EditorInterface::get_script_editor() {
 }
 
 void EditorInterface::select_file(const String &p_file) {
-	EditorNode::get_singleton()->get_filesystem_dock()->select_file(p_file);
+	FileSystemDock::get_singleton()->select_file(p_file);
 }
 
 String EditorInterface::get_selected_path() const {
-	return EditorNode::get_singleton()->get_filesystem_dock()->get_selected_path();
+	return FileSystemDock::get_singleton()->get_selected_path();
 }
 
 String EditorInterface::get_current_path() const {
-	return EditorNode::get_singleton()->get_filesystem_dock()->get_current_path();
+	return FileSystemDock::get_singleton()->get_current_path();
 }
 
 void EditorInterface::inspect_object(Object *p_obj, const String &p_for_property, bool p_inspector_only) {
@@ -253,7 +254,7 @@ EditorFileSystem *EditorInterface::get_resource_file_system() {
 }
 
 FileSystemDock *EditorInterface::get_file_system_dock() {
-	return EditorNode::get_singleton()->get_filesystem_dock();
+	return FileSystemDock::get_singleton();
 }
 
 EditorSelection *EditorInterface::get_selection() {
@@ -288,7 +289,7 @@ bool EditorInterface::is_plugin_enabled(const String &p_plugin) const {
 }
 
 EditorInspector *EditorInterface::get_inspector() const {
-	return EditorNode::get_singleton()->get_inspector();
+	return InspectorDock::get_inspector_singleton();
 }
 
 Error EditorInterface::save_scene() {
@@ -453,7 +454,7 @@ void EditorPlugin::add_control_to_container(CustomControlContainer p_location, C
 
 		} break;
 		case CONTAINER_PROPERTY_EDITOR_BOTTOM: {
-			EditorNode::get_singleton()->get_inspector_dock_addon_area()->add_child(p_control);
+			InspectorDock::get_singleton()->get_addon_area()->add_child(p_control);
 
 		} break;
 		case CONTAINER_PROJECT_SETTING_TAB_LEFT: {
@@ -506,7 +507,7 @@ void EditorPlugin::remove_control_from_container(CustomControlContainer p_locati
 
 		} break;
 		case CONTAINER_PROPERTY_EDITOR_BOTTOM: {
-			EditorNode::get_singleton()->get_inspector_dock_addon_area()->remove_child(p_control);
+			InspectorDock::get_singleton()->get_addon_area()->remove_child(p_control);
 
 		} break;
 		case CONTAINER_PROJECT_SETTING_TAB_LEFT:
@@ -521,11 +522,9 @@ void EditorPlugin::add_tool_menu_item(const String &p_name, const Callable &p_ca
 	EditorNode::get_singleton()->add_tool_menu_item(p_name, p_callable);
 }
 
-void EditorPlugin::add_tool_submenu_item(const String &p_name, Object *p_submenu) {
+void EditorPlugin::add_tool_submenu_item(const String &p_name, PopupMenu *p_submenu) {
 	ERR_FAIL_NULL(p_submenu);
-	PopupMenu *submenu = Object::cast_to<PopupMenu>(p_submenu);
-	ERR_FAIL_NULL(submenu);
-	EditorNode::get_singleton()->add_tool_submenu_item(p_name, submenu);
+	EditorNode::get_singleton()->add_tool_submenu_item(p_name, p_submenu);
 }
 
 void EditorPlugin::remove_tool_menu_item(const String &p_name) {
@@ -727,9 +726,9 @@ void EditorPlugin::remove_translation_parser_plugin(const Ref<EditorTranslationP
 	EditorTranslationParser::get_singleton()->remove_parser(p_parser, EditorTranslationParser::CUSTOM);
 }
 
-void EditorPlugin::add_import_plugin(const Ref<EditorImportPlugin> &p_importer) {
+void EditorPlugin::add_import_plugin(const Ref<EditorImportPlugin> &p_importer, bool p_first_priority) {
 	ERR_FAIL_COND(!p_importer.is_valid());
-	ResourceFormatImporter::get_singleton()->add_importer(p_importer);
+	ResourceFormatImporter::get_singleton()->add_importer(p_importer, p_first_priority);
 	EditorFileSystem::get_singleton()->call_deferred(SNAME("scan"));
 }
 
@@ -769,9 +768,9 @@ void EditorPlugin::remove_inspector_plugin(const Ref<EditorInspectorPlugin> &p_p
 	EditorInspector::remove_inspector_plugin(p_plugin);
 }
 
-void EditorPlugin::add_scene_format_importer_plugin(const Ref<EditorSceneFormatImporter> &p_importer) {
+void EditorPlugin::add_scene_format_importer_plugin(const Ref<EditorSceneFormatImporter> &p_importer, bool p_first_priority) {
 	ERR_FAIL_COND(!p_importer.is_valid());
-	ResourceImporterScene::get_singleton()->add_importer(p_importer);
+	ResourceImporterScene::get_singleton()->add_importer(p_importer, p_first_priority);
 }
 
 void EditorPlugin::remove_scene_format_importer_plugin(const Ref<EditorSceneFormatImporter> &p_importer) {
@@ -779,9 +778,10 @@ void EditorPlugin::remove_scene_format_importer_plugin(const Ref<EditorSceneForm
 	ResourceImporterScene::get_singleton()->remove_importer(p_importer);
 }
 
-void EditorPlugin::add_scene_post_import_plugin(const Ref<EditorScenePostImportPlugin> &p_plugin) {
-	ResourceImporterScene::get_singleton()->add_post_importer_plugin(p_plugin);
+void EditorPlugin::add_scene_post_import_plugin(const Ref<EditorScenePostImportPlugin> &p_plugin, bool p_first_priority) {
+	ResourceImporterScene::get_singleton()->add_post_importer_plugin(p_plugin, p_first_priority);
 }
+
 void EditorPlugin::remove_scene_post_import_plugin(const Ref<EditorScenePostImportPlugin> &p_plugin) {
 	ResourceImporterScene::get_singleton()->remove_post_importer_plugin(p_plugin);
 }
@@ -841,7 +841,7 @@ EditorInterface *EditorPlugin::get_editor_interface() {
 }
 
 ScriptCreateDialog *EditorPlugin::get_script_create_dialog() {
-	return EditorNode::get_singleton()->get_script_create_dialog();
+	return SceneTreeDock::get_singleton()->get_script_create_dialog();
 }
 
 void EditorPlugin::add_debugger_plugin(const Ref<Script> &p_script) {
@@ -893,11 +893,11 @@ void EditorPlugin::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("queue_save_layout"), &EditorPlugin::queue_save_layout);
 	ClassDB::bind_method(D_METHOD("add_translation_parser_plugin", "parser"), &EditorPlugin::add_translation_parser_plugin);
 	ClassDB::bind_method(D_METHOD("remove_translation_parser_plugin", "parser"), &EditorPlugin::remove_translation_parser_plugin);
-	ClassDB::bind_method(D_METHOD("add_import_plugin", "importer"), &EditorPlugin::add_import_plugin);
+	ClassDB::bind_method(D_METHOD("add_import_plugin", "importer", "first_priority"), &EditorPlugin::add_import_plugin, DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("remove_import_plugin", "importer"), &EditorPlugin::remove_import_plugin);
-	ClassDB::bind_method(D_METHOD("add_scene_format_importer_plugin", "scene_format_importer"), &EditorPlugin::add_scene_format_importer_plugin);
+	ClassDB::bind_method(D_METHOD("add_scene_format_importer_plugin", "scene_format_importer", "first_priority"), &EditorPlugin::add_scene_format_importer_plugin, DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("remove_scene_format_importer_plugin", "scene_format_importer"), &EditorPlugin::remove_scene_format_importer_plugin);
-	ClassDB::bind_method(D_METHOD("add_scene_post_import_plugin", "scene_import_plugin"), &EditorPlugin::add_scene_post_import_plugin);
+	ClassDB::bind_method(D_METHOD("add_scene_post_import_plugin", "scene_import_plugin", "first_priority"), &EditorPlugin::add_scene_post_import_plugin, DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("remove_scene_post_import_plugin", "scene_import_plugin"), &EditorPlugin::remove_scene_post_import_plugin);
 	ClassDB::bind_method(D_METHOD("add_export_plugin", "plugin"), &EditorPlugin::add_export_plugin);
 	ClassDB::bind_method(D_METHOD("remove_export_plugin", "plugin"), &EditorPlugin::remove_export_plugin);

@@ -30,9 +30,10 @@
 
 #ifdef TOOLS_ENABLED
 #include "gdnative_library_editor_plugin.h"
-#include "gdnative.h"
-
+#include "editor/editor_file_dialog.h"
+#include "editor/editor_node.h"
 #include "editor/editor_scale.h"
+#include "gdnative.h"
 
 void GDNativeLibraryEditor::edit(Ref<GDNativeLibrary> p_library) {
 	library = p_library;
@@ -315,7 +316,6 @@ GDNativeLibraryEditor::GDNativeLibraryEditor() {
 
 		NativePlatformConfig platform_ios;
 		platform_ios.name = "iOS";
-		platform_ios.entries.push_back("armv7");
 		platform_ios.entries.push_back("arm64");
 		platform_ios.entries.push_back("x86_64");
 		// iOS can use both Static and Dynamic libraries.

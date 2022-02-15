@@ -52,13 +52,13 @@ Includes some patches in the `patches` folder which have been sent upstream.
 
 ## cvtt
 
-- Upstream: https://github.com/elasota/cvtt
-- Version: 1.0.0-beta4 (cc8472a04ba110fe999c686d07af40f7839051fd, 2018)
+- Upstream: https://github.com/elasota/ConvectionKernels
+- Version: git (dc2dbbe0ae2cf2be06ef56d1021e2222a56c7fe2, 2021)
 - License: MIT
 
 Files extracted from upstream source:
 
-- all .cpp, .h, and .txt files in ConvectionKernels/
+- all .cpp, .h, and .txt files except the folders MakeTables and etc2packer.
 
 
 ## doctest
@@ -138,10 +138,10 @@ Files extracted from upstream source:
   * License: OFL-1.1
   * Comment: Use UI font variant if available, because it has tight vertical metrics and
     good for UI.
-- `Hack_Regular.ttf`:
-  * Upstream: https://github.com/source-foundry/Hack
-  * Version: 3.003 (2018)
-  * License: MIT + Bitstream Vera License
+- `JetBrainsMono_Regular.ttf`:
+	* Upstream: https://github.com/JetBrains/JetBrainsMono
+  * Version: 2.242
+  * License: OFL-1.1
 - `DroidSans*.ttf`:
   * Upstream: https://android.googlesource.com/platform/frameworks/base/+/master/data/fonts/
   * Version: ? (pre-2014 commit when DroidSansJapanese.ttf was obsoleted)
@@ -150,6 +150,7 @@ Files extracted from upstream source:
   * Upstream: https://fonts.google.com/specimen/Open+Sans
   * Version: 1.10 (downloaded from Google Fonts in February 2021)
   * License: Apache 2.0
+
 
 
 ## freetype
@@ -168,7 +169,7 @@ Files extracted from upstream source:
 ## glslang
 
 - Upstream: https://github.com/KhronosGroup/glslang
-- Version: 11.6.0 (2fb89a0072ae7316af1c856f22663fde4928128a, 2021)
+- Version: 11.8.0 (c34bb3b6c55f6ab084124ad964be95a699700d34, 2022)
 - License: glslang
 
 Version should be kept in sync with the one of the used Vulkan SDK (see `vulkan`
@@ -181,8 +182,8 @@ copy of `DefaultTBuiltInResource` is in sync with the one defined upstream in
 
 Files extracted from upstream source:
 
-- `glslang` (except `glslang/HLSL`), `OGLCompilersDLL`, `SPIRV`,
-  minus the `CInterface` folders (depends on `StandAlone`)
+- `glslang` (except `glslang/HLSL` and `glslang/ExtensionHeaders`),
+  `OGLCompilersDLL`, `SPIRV`, w/o `CInterface` folders (depend on `StandAlone`)
 - Run `cmake . && make` and copy generated `include/glslang/build_info.h`
   to `glslang/build_info.h`
 - `LICENSE.txt`
@@ -205,7 +206,7 @@ Files extracted from upstream source:
 ## harfbuzz
 
 - Upstream: https://github.com/harfbuzz/harfbuzz
-- Version: 3.2.0 (be91d2917d9860326cb5fd1d03ffe1042a72f6d3, 2021)
+- Version: 3.3.2 (ac46c3248e8b0316235943175c4d4a11c24dd4a9, 2022)
 - License: MIT
 
 Files extracted from upstream source:
@@ -308,17 +309,13 @@ Files extracted from upstream source:
 ## libwebp
 
 - Upstream: https://chromium.googlesource.com/webm/libwebp/
-- Version: 1.2.1 (9ce5843dbabcfd3f7c39ec7ceba9cbeb213cbfdf, 2021)
+- Version: 1.2.2 (b0a860891dcd4c0c2d7c6149e5cccb6eb881cc21, 2022)
 - License: BSD-3-Clause
 
 Files extracted from upstream source:
 
 - `src/*` except from: `.am`, `.rc` and `.in` files
 - `AUTHORS`, `COPYING`, `PATENTS`
-
-Important: The files `utils/bit_reader_utils.{c,h}` have Godot-made
-changes to ensure they build for Javascript/HTML5. Those
-changes are marked with `// -- GODOT --` comments.
 
 
 ## mbedtls
@@ -468,7 +465,7 @@ Collection of single-file libraries used in Godot components.
 ## msdfgen
 
 - Upstream: https://github.com/Chlumsky/msdfgen
-- Version: 1.9.1 (1b3b6b985094e6f12751177490add3ad11dd91a9, 2010)
+- Version: 1.9.2 (64a91eec3ca3787e6f78b4c99fcd3052ad3e37c0, 2021)
 - License: MIT
 
 Files extracted from the upstream source:
@@ -555,7 +552,7 @@ Godot. Please check the file to know what's new.
 ## spirv-reflect
 
 - Upstream: https://github.com/KhronosGroup/SPIRV-Reflect
-- Version: git (cc937caab141d889c9c9dff572c5a6854d5cf9b4, 2021)
+- Version: git (1aceb6af56e74b92a00378842dda5c5a73f49a4b, 2022)
 - License: Apache 2.0
 
 Does not track Vulkan SDK releases closely, but try to package a commit newer
@@ -605,15 +602,13 @@ instead of `miniz.h` as an external dependency.
 ## thorvg
 
 - Upstream: https://github.com/Samsung/thorvg
-- Version: 0.7.0 (e527f565b770f0a41df821e6618ccaeea94f465e, 2021)
+- Version: 0.7.1 (d53eb2a880002cb770ace1c1ace9c5dfcfc28252, 2022)
 - License: MIT
 
 Files extracted from upstream source:
 
 See `thorvg/update-thorvg.sh` for extraction instructions. Set the version
 number and run the script.
-
-Patches in the `patches` directory should be re-applied after updates.
 
 
 ## vhacd
@@ -636,7 +631,7 @@ folder.
 ## volk
 
 - Upstream: https://github.com/zeux/volk
-- Version: 1.2.190 (760a782f295a66de7391d6ed573d65e3fb1c8450, 2021)
+- Version: 1.3.204 (92ba7c9f112a82cecf452ebf4b7c46f149a5799e, 2022)
 - License: MIT
 
 Unless there is a specific reason to package a more recent version, please stick
@@ -656,7 +651,7 @@ Files extracted from upstream source:
 ## vulkan
 
 - Upstream: https://github.com/KhronosGroup/Vulkan-Headers
-- Version: 1.2.190 (9e62d027636cd7210f60d934f56107ed6e1579b8, 2021)
+- Version: 1.3.204 (1dace16d8044758d32736eb59802d171970e9448, 2022)
 - License: Apache 2.0
 
 The vendored version should be kept in sync with volk, see above.

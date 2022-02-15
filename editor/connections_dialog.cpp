@@ -32,9 +32,10 @@
 
 #include "core/string/print_string.h"
 #include "editor/doc_tools.h"
-#include "editor_node.h"
-#include "editor_scale.h"
-#include "editor_settings.h"
+#include "editor/editor_node.h"
+#include "editor/editor_scale.h"
+#include "editor/editor_settings.h"
+#include "editor/scene_tree_dock.h"
 #include "plugins/script_editor_plugin.h"
 #include "scene/gui/label.h"
 #include "scene/gui/popup_menu.h"
@@ -310,7 +311,7 @@ void ConnectDialog::set_dst_node(Node *p_node) {
 
 StringName ConnectDialog::get_dst_method_name() const {
 	String txt = dst_method->get_text();
-	if (txt.find("(") != -1) {
+	if (txt.contains("(")) {
 		txt = txt.left(txt.find("(")).strip_edges();
 	}
 	return txt;
@@ -540,13 +541,27 @@ ConnectDialog::~ConnectDialog() {
 // Originally copied and adapted from EditorProperty, try to keep style in sync.
 Control *ConnectionsDockTree::make_custom_tooltip(const String &p_text) const {
 	EditorHelpBit *help_bit = memnew(EditorHelpBit);
-	help_bit->add_theme_style_override("panel", get_theme_stylebox(SNAME("panel"), SNAME("TooltipPanel")));
 	help_bit->get_rich_text()->set_fixed_size_to_width(360 * EDSCALE);
 
-	String text = TTR("Signal:") + " [u][b]" + p_text.get_slice("::", 0) + "[/b][/u]";
-	text += p_text.get_slice("::", 1).strip_edges() + "\n";
-	text += p_text.get_slice("::", 2).strip_edges();
-	help_bit->call_deferred(SNAME("set_text"), text); // Hack so it uses proper theme once inside scene.
+	// p_text is expected to be something like this:
+	// "gui_input::(event: InputEvent)::<Signal description>"
+	// with the latter being possibly empty.
+	PackedStringArray slices = p_text.split("::", false);
+	if (slices.size() < 2) {
+		// Shouldn't happen here, but just in case pass the text along.
+		help_bit->set_text(p_text);
+		return help_bit;
+	}
+
+	String text = TTR("Signal:") + " [u][b]" + slices[0] + "[/b][/u]";
+	text += slices[1].strip_edges() + "\n";
+	if (slices.size() > 2) {
+		text += slices[2].strip_edges();
+	} else {
+		text += "[i]" + TTR("No description.") + "[/i]";
+	}
+	help_bit->set_text(text);
+
 	return help_bit;
 }
 
@@ -649,8 +664,8 @@ void ConnectionsDock::_connect(ConnectDialog::ConnectionData p_cd) {
 	undo_redo->add_undo_method(source, "disconnect", p_cd.signal, callable);
 	undo_redo->add_do_method(this, "update_tree");
 	undo_redo->add_undo_method(this, "update_tree");
-	undo_redo->add_do_method(EditorNode::get_singleton()->get_scene_tree_dock()->get_tree_editor(), "update_tree"); // To force redraw of scene tree.
-	undo_redo->add_undo_method(EditorNode::get_singleton()->get_scene_tree_dock()->get_tree_editor(), "update_tree");
+	undo_redo->add_do_method(SceneTreeDock::get_singleton()->get_tree_editor(), "update_tree"); // To force redraw of scene tree.
+	undo_redo->add_undo_method(SceneTreeDock::get_singleton()->get_tree_editor(), "update_tree");
 
 	undo_redo->commit_action();
 }
@@ -671,8 +686,8 @@ void ConnectionsDock::_disconnect(TreeItem &p_item) {
 	undo_redo->add_undo_method(selected_node, "connect", cd.signal, callable, cd.binds, cd.flags);
 	undo_redo->add_do_method(this, "update_tree");
 	undo_redo->add_undo_method(this, "update_tree");
-	undo_redo->add_do_method(EditorNode::get_singleton()->get_scene_tree_dock()->get_tree_editor(), "update_tree"); // To force redraw of scene tree.
-	undo_redo->add_undo_method(EditorNode::get_singleton()->get_scene_tree_dock()->get_tree_editor(), "update_tree");
+	undo_redo->add_do_method(SceneTreeDock::get_singleton()->get_tree_editor(), "update_tree"); // To force redraw of scene tree.
+	undo_redo->add_undo_method(SceneTreeDock::get_singleton()->get_tree_editor(), "update_tree");
 
 	undo_redo->commit_action();
 }
@@ -702,8 +717,8 @@ void ConnectionsDock::_disconnect_all() {
 
 	undo_redo->add_do_method(this, "update_tree");
 	undo_redo->add_undo_method(this, "update_tree");
-	undo_redo->add_do_method(EditorNode::get_singleton()->get_scene_tree_dock()->get_tree_editor(), "update_tree");
-	undo_redo->add_undo_method(EditorNode::get_singleton()->get_scene_tree_dock()->get_tree_editor(), "update_tree");
+	undo_redo->add_do_method(SceneTreeDock::get_singleton()->get_tree_editor(), "update_tree");
+	undo_redo->add_undo_method(SceneTreeDock::get_singleton()->get_tree_editor(), "update_tree");
 
 	undo_redo->commit_action();
 }
@@ -750,7 +765,7 @@ void ConnectionsDock::_open_connection_dialog(TreeItem &p_item) {
 	String node_name = selected_node->get_name();
 	for (int i = 0; i < node_name.length(); i++) { // TODO: Regex filter may be cleaner.
 		char32_t c = node_name[i];
-		if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_')) {
+		if (!is_ascii_identifier_char(c)) {
 			if (c == ' ') {
 				// Replace spaces with underlines.
 				c = '_';
@@ -974,8 +989,8 @@ void ConnectionsDock::update_tree() {
 					name = scr->get_class();
 				}
 
-				if (has_theme_icon(scr->get_class(), "EditorIcons")) {
-					icon = get_theme_icon(scr->get_class(), "EditorIcons");
+				if (has_theme_icon(scr->get_class(), SNAME("EditorIcons"))) {
+					icon = get_theme_icon(scr->get_class(), SNAME("EditorIcons"));
 				}
 			}
 		} else {
@@ -1009,7 +1024,7 @@ void ConnectionsDock::update_tree() {
 			PackedStringArray argnames;
 
 			String filter_text = search_box->get_text();
-			if (!filter_text.is_subsequence_ofi(signal_name)) {
+			if (!filter_text.is_subsequence_ofn(signal_name)) {
 				continue;
 			}
 

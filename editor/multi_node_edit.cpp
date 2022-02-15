@@ -31,7 +31,7 @@
 #include "multi_node_edit.h"
 
 #include "core/math/math_fieldwise.h"
-#include "editor_node.h"
+#include "editor/editor_node.h"
 
 bool MultiNodeEdit::_set(const StringName &p_name, const Variant &p_value) {
 	return _set_impl(p_name, p_value, "");
@@ -87,8 +87,8 @@ bool MultiNodeEdit::_set_impl(const StringName &p_name, const Variant &p_value, 
 
 		ur->add_undo_property(n, name, n->get(name));
 	}
-	ur->add_do_method(EditorNode::get_singleton()->get_inspector(), "refresh");
-	ur->add_undo_method(EditorNode::get_singleton()->get_inspector(), "refresh");
+	ur->add_do_method(InspectorDock::get_inspector_singleton(), "refresh");
+	ur->add_undo_method(InspectorDock::get_inspector_singleton(), "refresh");
 
 	ur->commit_action();
 	return true;
@@ -126,7 +126,7 @@ bool MultiNodeEdit::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void MultiNodeEdit::_get_property_list(List<PropertyInfo> *p_list) const {
-	HashMap<String, PLData> usage;
+	HashMap<String, PLData> usage(__FILE__, __LINE__);
 
 	Node *es = EditorNode::get_singleton()->get_edited_scene();
 	if (!es) {

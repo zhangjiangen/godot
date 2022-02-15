@@ -34,10 +34,10 @@
 #ifdef MODULE_REGEX_ENABLED
 
 #include "core/string/print_string.h"
-#include "editor_node.h"
-#include "editor_scale.h"
-#include "editor_settings.h"
-#include "editor_themes.h"
+#include "editor/editor_node.h"
+#include "editor/editor_scale.h"
+#include "editor/editor_settings.h"
+#include "editor/editor_themes.h"
 #include "modules/regex/regex.h"
 #include "plugins/script_editor_plugin.h"
 #include "scene/gui/control.h"
@@ -284,6 +284,7 @@ RenameDialog::RenameDialog(SceneTreeEditor *p_scene_tree_editor, UndoRedo *p_und
 	vbc->add_child(lbl_preview_title);
 
 	lbl_preview = memnew(Label);
+	lbl_preview->set_autowrap_mode(Label::AUTOWRAP_WORD_SMART);
 	vbc->add_child(lbl_preview);
 
 	// ---- Dialog related
@@ -336,7 +337,7 @@ void RenameDialog::_bind_methods() {
 }
 
 void RenameDialog::_update_substitute() {
-	LineEdit *focus_owner_line_edit = Object::cast_to<LineEdit>(scene_tree_editor->get_focus_owner());
+	LineEdit *focus_owner_line_edit = Object::cast_to<LineEdit>(scene_tree_editor->get_viewport()->gui_get_focus_owner());
 	bool is_main_field = _is_main_field(focus_owner_line_edit);
 
 	but_insert_name->set_disabled(!is_main_field);
@@ -362,7 +363,7 @@ void RenameDialog::_post_popup() {
 	Array selected_node_list = editor_selection->get_selected_nodes();
 	ERR_FAIL_COND(selected_node_list.size() == 0);
 
-	preview_node = selected_node_list[0];
+	preview_node = Object::cast_to<Node>(selected_node_list[0]);
 
 	_update_preview();
 	_update_substitute();
@@ -631,7 +632,7 @@ bool RenameDialog::_is_main_field(LineEdit *line_edit) {
 }
 
 void RenameDialog::_insert_text(String text) {
-	LineEdit *focus_owner = Object::cast_to<LineEdit>(scene_tree_editor->get_focus_owner());
+	LineEdit *focus_owner = Object::cast_to<LineEdit>(scene_tree_editor->get_viewport()->gui_get_focus_owner());
 
 	if (_is_main_field(focus_owner)) {
 		focus_owner->selection_delete();

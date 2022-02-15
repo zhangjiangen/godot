@@ -30,6 +30,7 @@
 
 #include "grid_map_editor_plugin.h"
 #include "core/input/input.h"
+#include "editor/editor_node.h"
 #include "editor/editor_scale.h"
 #include "editor/editor_settings.h"
 #include "editor/plugins/node_3d_editor_plugin.h"
@@ -889,7 +890,7 @@ void GridMapEditor::update_palette() {
 			name = "#" + itos(id);
 		}
 
-		if (!filter.is_empty() && !filter.is_subsequence_ofi(name)) {
+		if (!filter.is_empty() && !filter.is_subsequence_ofn(name)) {
 			continue;
 		}
 

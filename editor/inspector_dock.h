@@ -38,9 +38,9 @@
 #include "editor/editor_path.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/button.h"
-#include "scene/gui/control.h"
 
 class EditorNode;
+class EditorFileDialog;
 
 class InspectorDock : public VBoxContainer {
 	GDCLASS(InspectorDock, VBoxContainer);
@@ -116,6 +116,13 @@ class InspectorDock : public VBoxContainer {
 	void _menu_expandall();
 	void _select_history(int p_idx);
 	void _prepare_history();
+
+private:
+	static InspectorDock *singleton;
+
+public:
+	static InspectorDock *get_singleton() { return singleton; }
+	static EditorInspector *get_inspector_singleton() { return singleton->inspector; }
 
 protected:
 	static void _bind_methods();

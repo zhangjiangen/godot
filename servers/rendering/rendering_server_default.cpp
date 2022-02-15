@@ -93,6 +93,12 @@ void RenderingServerDefault::_draw(bool p_swap_buffers, double frame_step) {
 
 	RSG::rasterizer->end_frame(p_swap_buffers);
 
+	XRServer *xr_server = XRServer::get_singleton();
+	if (xr_server != nullptr) {
+		// let our XR server know we're done so we can get our frame timing
+		xr_server->end_frame();
+	}
+
 	RSG::canvas->update_visibility_notifiers();
 	RSG::scene->update_visibility_notifiers();
 
@@ -273,9 +279,9 @@ Vector<RenderingServer::FrameProfileArea> RenderingServerDefault::get_frame_prof
 
 /* TESTING */
 
-void RenderingServerDefault::set_boot_image(const Ref<Image> &p_image, const Color &p_color, RenderingServer::SplashStretchMode p_stretch_mode, bool p_use_filter) {
+void RenderingServerDefault::set_boot_image(const Ref<Image> &p_image, const Color &p_color, bool p_scale, bool p_use_filter) {
 	redraw_request();
-	RSG::rasterizer->set_boot_image(p_image, p_color, p_stretch_mode, p_use_filter);
+	RSG::rasterizer->set_boot_image(p_image, p_color, p_scale, p_use_filter);
 }
 
 void RenderingServerDefault::set_default_clear_color(const Color &p_color) {

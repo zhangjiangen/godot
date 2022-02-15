@@ -29,6 +29,9 @@
 /*************************************************************************/
 
 #include "shader_create_dialog.h"
+
+#include "core/config/project_settings.h"
+#include "editor/editor_file_dialog.h"
 #include "editor/editor_scale.h"
 #include "scene/resources/visual_shader.h"
 #include "servers/rendering/shader_types.h"
@@ -221,7 +224,7 @@ void ShaderCreateDialog::_language_changed(int p_language) {
 	String extension = "";
 
 	if (!path.is_empty()) {
-		if (path.find(".") != -1) {
+		if (path.contains(".")) {
 			extension = path.get_extension();
 		}
 		if (extension.length() == 0) {

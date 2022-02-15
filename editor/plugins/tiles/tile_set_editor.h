@@ -33,6 +33,7 @@
 
 #include "atlas_merging_dialog.h"
 #include "scene/gui/box_container.h"
+#include "scene/gui/tab_bar.h"
 #include "scene/resources/tile_set.h"
 #include "tile_proxies_manager_dialog.h"
 #include "tile_set_atlas_source_editor.h"
@@ -57,7 +58,7 @@ private:
 	TileSetAtlasSourceEditor *tile_set_atlas_source_editor;
 	TileSetScenesCollectionSourceEditor *tile_set_scenes_collection_source_editor;
 
-	UndoRedo *undo_redo = EditorNode::get_undo_redo();
+	UndoRedo *undo_redo;
 
 	void _drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from);
 	bool _can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const;
@@ -67,6 +68,7 @@ private:
 	// Sources management.
 	Button *sources_delete_button;
 	MenuButton *sources_add_button;
+	MenuButton *source_sort_button;
 	MenuButton *sources_advanced_menu_button;
 	ItemList *sources_list;
 	Ref<Texture2D> missing_texture_texture;
@@ -74,6 +76,7 @@ private:
 	void _source_delete_pressed();
 	void _source_add_id_pressed(int p_id_pressed);
 	void _sources_advanced_menu_id_pressed(int p_id_pressed);
+	void _set_source_sort(int p_sort);
 
 	AtlasMergingDialog *atlas_merging_dialog;
 	TileProxiesManagerDialog *tile_proxies_manager_dialog;

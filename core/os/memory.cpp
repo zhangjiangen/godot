@@ -521,13 +521,15 @@ public:
 #define OP_MEMORY_NEW(Count)                                                \
 	if (p_memory <= Count) {                                                \
 		{                                                                   \
-			MutexLock<::Mutex> lock(_mutex##Count);                         \
+			_mutex##Count.lock();                                           \
 			if (_data##Count) {                                             \
 				void *ret = (void *)&_data##Count->data;                    \
 				_data##Count = _data##Count->Next;                          \
 				--_count##Count;                                            \
+				_mutex##Count.unlock();                                     \
 				return ret;                                                 \
 			}                                                               \
+			_mutex##Count.unlock();                                         \
 		}                                                                   \
 		{                                                                   \
 			Data<Count> *data = (Data<Count> *)malloc(sizeof(Data<Count>)); \
@@ -574,17 +576,19 @@ public:
 #undef OP_MEMORY_NEW
 #define OP_MEMORY_FREE(Count)                                                           \
 	if (p_memory <= Count) {                                                            \
-        Data<Count> *data = (Data<Count> *)ptr;                                     \
+		Data<Count> *data = (Data<Count> *)ptr;                                         \
 		{                                                                               \
-			MutexLock<::Mutex> lock(_mutex##Count);                                     \
+			_mutex##Count.lock();                                                       \
 			/*Data<Count> *data = (Data<Count> *)(((uint8_t *)ptr) - sizeof(void *));*/ \
                                                                                         \
 			if (_count##Count < 512) {                                                  \
 				data->Next = _data##Count;                                              \
 				_data##Count = data;                                                    \
 				++_count##Count;                                                        \
+				_mutex##Count.unlock();                                                 \
 				return;                                                                 \
 			}                                                                           \
+			_mutex##Count.unlock();                                                     \
 			--_curr_count##Count;                                                       \
 		}                                                                               \
 		free(data);                                                                     \
@@ -711,13 +715,13 @@ public:
 			printf("--------------begin log memory count:%d size: %0.3fMB------------\n", count, mb);
 		}
 		while (Root != nullptr) {
-			if (Root->total_count > 100) {
+			if (Root->total_memory > 204800) {
 				mb = ((float)Root->total_memory) / 1024.0f;
 				if (mb < 1024.0f)
-					printf("    source: %s ,line : %d ,memory size: %0.3fKB,count: %d\n", Root->file_name, (int)Root->file_line, mb, (int)Root->total_count);
+					printf("    source: %s ,line : %d ,   memory size:[ %0.3f KB]   ,count: %d\n", Root->file_name, (int)Root->file_line, mb, (int)Root->total_count);
 				else {
 					mb /= 1024.0f;
-					printf("    source: %s ,line : %d ,memory size: %0.3fMB,count: %d\n", Root->file_name, (int)Root->file_line, mb, (int)Root->total_count);
+					printf("    source: %s ,line : %d ,   memory size: {%0.3f MB}   ,count: %d\n", Root->file_name, (int)Root->file_line, mb, (int)Root->total_count);
 				}
 			}
 			Root = Root->Next;
@@ -785,7 +789,6 @@ void *MallocAllocator::alloc_memory(size_t p_memory, const char *file_name, int 
 	uint32_t *p = (uint32_t *)DefaultAllocator::alloc(size, file_name, file_lne);
 
 	*p = MEMORY_TAG_MALLOC;
-	uint32_t tag = *p;
 	++p;
 	*p = p_memory;
 	++p;

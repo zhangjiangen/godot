@@ -35,9 +35,10 @@
 #include "core/io/resource_saver.h"
 #include "core/string/string_builder.h"
 #include "editor/create_dialog.h"
+#include "editor/editor_file_dialog.h"
+#include "editor/editor_file_system.h"
 #include "editor/editor_node.h"
 #include "editor/editor_scale.h"
-#include "editor_file_system.h"
 
 void ScriptCreateDialog::_notification(int p_what) {
 	switch (p_what) {
@@ -153,7 +154,7 @@ bool ScriptCreateDialog::_validate_class(const String &p_string) {
 			}
 		}
 
-		bool valid_char = (p_string[i] >= '0' && p_string[i] <= '9') || (p_string[i] >= 'a' && p_string[i] <= 'z') || (p_string[i] >= 'A' && p_string[i] <= 'Z') || p_string[i] == '_' || p_string[i] == '.';
+		bool valid_char = is_ascii_identifier_char(p_string[i]) || p_string[i] == '.';
 
 		if (!valid_char) {
 			return false;
@@ -378,7 +379,7 @@ void ScriptCreateDialog::_language_changed(int l) {
 	String path = file_path->get_text();
 	String extension = "";
 	if (!path.is_empty()) {
-		if (path.find(".") != -1) {
+		if (path.contains(".")) {
 			extension = path.get_extension();
 		}
 
@@ -656,14 +657,18 @@ void ScriptCreateDialog::_update_dialog() {
 		if (is_new_script_created) {
 			class_name->set_editable(true);
 			class_name->set_placeholder(TTR("Allowed: a-z, A-Z, 0-9, _ and ."));
-			class_name->set_placeholder_alpha(0.3);
+			Color placeholder_color = class_name->get_theme_color(SNAME("font_placeholder_color"));
+			placeholder_color.a = 0.3;
+			class_name->add_theme_color_override("font_placeholder_color", placeholder_color);
 		} else {
 			class_name->set_editable(false);
 		}
 	} else {
 		class_name->set_editable(false);
 		class_name->set_placeholder(TTR("N/A"));
-		class_name->set_placeholder_alpha(1);
+		Color placeholder_color = class_name->get_theme_color(SNAME("font_placeholder_color"));
+		placeholder_color.a = 1;
+		class_name->add_theme_color_override("font_placeholder_color", placeholder_color);
 		class_name->set_text("");
 	}
 
@@ -759,10 +764,10 @@ void ScriptCreateDialog::_update_dialog() {
 }
 
 ScriptLanguage::ScriptTemplate ScriptCreateDialog::_get_current_template() const {
-	int selected_id = template_menu->get_selected_id();
+	int selected_index = template_menu->get_selected();
 	for (const ScriptLanguage::ScriptTemplate &t : template_list) {
 		if (is_using_templates) {
-			if (t.id == selected_id) {
+			if (t.id == selected_index) {
 				return t;
 			}
 		} else {
@@ -807,7 +812,7 @@ ScriptLanguage::ScriptTemplate ScriptCreateDialog::_parse_template(const ScriptL
 	List<String> comment_delimiters;
 	language->get_comment_delimiters(&comment_delimiters);
 	for (const String &script_delimiter : comment_delimiters) {
-		if (script_delimiter.find(" ") == -1) {
+		if (!script_delimiter.contains(" ")) {
 			meta_delimiter = script_delimiter;
 			break;
 		}

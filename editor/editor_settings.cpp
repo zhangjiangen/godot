@@ -369,7 +369,7 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 			// Skip locales which we can't render properly (see above comment).
 			// Test against language code without regional variants (e.g. ur_PK).
 			String lang_code = locale.get_slice("_", 0);
-			if (locales_to_skip.find(lang_code) != -1) {
+			if (locales_to_skip.has(lang_code)) {
 				continue;
 			}
 
@@ -377,7 +377,7 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 			lang_hint += locale;
 
 			int score = TranslationServer::get_singleton()->compare_locales(host_lang, locale);
-			if (score >= best_score) {
+			if (score > 0 && score >= best_score) {
 				best = locale;
 				best_score = score;
 				if (score == 10) {
@@ -643,10 +643,15 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	_initial_set("editors/2d/bone_outline_size", 2);
 	_initial_set("editors/2d/viewport_border_color", Color(0.4, 0.4, 1.0, 0.4));
 	_initial_set("editors/2d/constrain_editor_view", true);
-	_initial_set("editors/2d/warped_mouse_panning", true);
-	_initial_set("editors/2d/simple_panning", false);
-	_initial_set("editors/2d/scroll_to_pan", false);
-	_initial_set("editors/2d/pan_speed", 20);
+
+	// Panning
+	// Enum should be in sync with ControlScheme in ViewPanner.
+	EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "editors/panning/2d_editor_panning_scheme", 0, "Scroll Zooms,Scroll Pans");
+	EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "editors/panning/sub_editors_panning_scheme", 0, "Scroll Zooms,Scroll Pans");
+	EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "editors/panning/animation_editors_panning_scheme", 1, "Scroll Zooms,Scroll Pans");
+	_initial_set("editors/panning/simple_panning", false);
+	_initial_set("editors/panning/warped_mouse_panning", true);
+	_initial_set("editors/panning/2d_editor_pan_speed", 20);
 
 	// Tiles editor
 	_initial_set("editors/tiles_editor/display_grid", true);
@@ -839,7 +844,7 @@ void EditorSettings::create() {
 
 		singleton->setup_language();
 		singleton->setup_network();
-		singleton->load_favorites();
+		singleton->load_favorites_and_recent_dirs();
 		singleton->list_text_editor_themes();
 
 		return;
@@ -1097,7 +1102,13 @@ Variant EditorSettings::get_project_metadata(const String &p_section, const Stri
 
 void EditorSettings::set_favorites(const Vector<String> &p_favorites) {
 	favorites = p_favorites;
-	FileAccess *f = FileAccess::open(get_project_settings_dir().plus_file("favorites"), FileAccess::WRITE);
+	String favorites_file;
+	if (Engine::get_singleton()->is_project_manager_hint()) {
+		favorites_file = EditorPaths::get_singleton()->get_config_dir().plus_file("favorite_dirs");
+	} else {
+		favorites_file = get_project_settings_dir().plus_file("favorites");
+	}
+	FileAccess *f = FileAccess::open(favorites_file, FileAccess::WRITE);
 	if (f) {
 		for (int i = 0; i < favorites.size(); i++) {
 			f->store_line(favorites[i]);
@@ -1112,7 +1123,13 @@ Vector<String> EditorSettings::get_favorites() const {
 
 void EditorSettings::set_recent_dirs(const Vector<String> &p_recent_dirs) {
 	recent_dirs = p_recent_dirs;
-	FileAccess *f = FileAccess::open(get_project_settings_dir().plus_file("recent_dirs"), FileAccess::WRITE);
+	String recent_dirs_file;
+	if (Engine::get_singleton()->is_project_manager_hint()) {
+		recent_dirs_file = EditorPaths::get_singleton()->get_config_dir().plus_file("recent_dirs");
+	} else {
+		recent_dirs_file = get_project_settings_dir().plus_file("recent_dirs");
+	}
+	FileAccess *f = FileAccess::open(recent_dirs_file, FileAccess::WRITE);
 	if (f) {
 		for (int i = 0; i < recent_dirs.size(); i++) {
 			f->store_line(recent_dirs[i]);
@@ -1125,8 +1142,17 @@ Vector<String> EditorSettings::get_recent_dirs() const {
 	return recent_dirs;
 }
 
-void EditorSettings::load_favorites() {
-	FileAccess *f = FileAccess::open(get_project_settings_dir().plus_file("favorites"), FileAccess::READ);
+void EditorSettings::load_favorites_and_recent_dirs() {
+	String favorites_file;
+	String recent_dirs_file;
+	if (Engine::get_singleton()->is_project_manager_hint()) {
+		favorites_file = EditorPaths::get_singleton()->get_config_dir().plus_file("favorite_dirs");
+		recent_dirs_file = EditorPaths::get_singleton()->get_config_dir().plus_file("recent_dirs");
+	} else {
+		favorites_file = get_project_settings_dir().plus_file("favorites");
+		recent_dirs_file = get_project_settings_dir().plus_file("recent_dirs");
+	}
+	FileAccess *f = FileAccess::open(favorites_file, FileAccess::READ);
 	if (f) {
 		String line = f->get_line().strip_edges();
 		while (!line.is_empty()) {
@@ -1136,7 +1162,7 @@ void EditorSettings::load_favorites() {
 		memdelete(f);
 	}
 
-	f = FileAccess::open(get_project_settings_dir().plus_file("recent_dirs"), FileAccess::READ);
+	f = FileAccess::open(recent_dirs_file, FileAccess::READ);
 	if (f) {
 		String line = f->get_line().strip_edges();
 		while (!line.is_empty()) {
@@ -1594,6 +1620,8 @@ void EditorSettings::_bind_methods() {
 }
 
 EditorSettings::EditorSettings() {
+	hints.set_debug_info(__FILE__, __LINE__);
+	props.set_debug_info(__FILE__, __LINE__);
 	last_order = 0;
 	optimize_save = true;
 	save_changed_setting = true;

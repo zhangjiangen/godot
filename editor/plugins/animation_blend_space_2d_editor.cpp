@@ -35,6 +35,8 @@
 #include "core/io/resource_loader.h"
 #include "core/math/geometry_2d.h"
 #include "core/os/keyboard.h"
+#include "editor/editor_file_dialog.h"
+#include "editor/editor_node.h"
 #include "editor/editor_scale.h"
 #include "scene/animation/animation_blend_tree.h"
 #include "scene/animation/animation_player.h"
@@ -180,7 +182,7 @@ void AnimationNodeBlendSpace2DEditor::_blend_space_gui_input(const Ref<InputEven
 		selected_point = -1;
 
 		for (int i = 0; i < points.size(); i++) {
-			if (making_triangle.find(i) != -1) {
+			if (making_triangle.has(i)) {
 				continue;
 			}
 

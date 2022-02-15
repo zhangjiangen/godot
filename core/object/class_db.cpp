@@ -234,9 +234,9 @@ ClassDB::APIType ClassDB::get_current_api() {
 	return current_api;
 }
 
-HashMap<StringName, ClassDB::ClassInfo> ClassDB::classes;
-HashMap<StringName, StringName> ClassDB::resource_base_extensions;
-HashMap<StringName, StringName> ClassDB::compat_classes;
+HashMap<StringName, ClassDB::ClassInfo> ClassDB::classes(__FILE__, __LINE__);
+HashMap<StringName, StringName> ClassDB::resource_base_extensions(__FILE__, __LINE__);
+HashMap<StringName, StringName> ClassDB::compat_classes(__FILE__, __LINE__);
 
 bool ClassDB::_is_parent_class(const StringName &p_class, const StringName &p_inherits) {
 	if (!classes.has(p_class)) {
@@ -732,7 +732,7 @@ void ClassDB::bind_integer_constant(const StringName &p_class, const StringName 
 
 	String enum_name = p_enum;
 	if (!enum_name.is_empty()) {
-		if (enum_name.find(".") != -1) {
+		if (enum_name.contains(".")) {
 			enum_name = enum_name.get_slicec('.', 1);
 		}
 
@@ -1007,20 +1007,30 @@ bool ClassDB::get_signal(const StringName &p_class, const StringName &p_signal, 
 	return false;
 }
 
-void ClassDB::add_property_group(const StringName &p_class, const String &p_name, const String &p_prefix) {
+void ClassDB::add_property_group(const StringName &p_class, const String &p_name, const String &p_prefix, int p_indent_depth) {
 	OBJTYPE_WLOCK;
 	ClassInfo *type = classes.getptr(p_class);
 	ERR_FAIL_COND(!type);
 
-	type->property_list.push_back(PropertyInfo(Variant::NIL, p_name, PROPERTY_HINT_NONE, p_prefix, PROPERTY_USAGE_GROUP));
+	String prefix = p_prefix;
+	if (p_indent_depth > 0) {
+		prefix = vformat("%s,%d", p_prefix, p_indent_depth);
+	}
+
+	type->property_list.push_back(PropertyInfo(Variant::NIL, p_name, PROPERTY_HINT_NONE, prefix, PROPERTY_USAGE_GROUP));
 }
 
-void ClassDB::add_property_subgroup(const StringName &p_class, const String &p_name, const String &p_prefix) {
+void ClassDB::add_property_subgroup(const StringName &p_class, const String &p_name, const String &p_prefix, int p_indent_depth) {
 	OBJTYPE_WLOCK;
 	ClassInfo *type = classes.getptr(p_class);
 	ERR_FAIL_COND(!type);
 
-	type->property_list.push_back(PropertyInfo(Variant::NIL, p_name, PROPERTY_HINT_NONE, p_prefix, PROPERTY_USAGE_SUBGROUP));
+	String prefix = p_prefix;
+	if (p_indent_depth > 0) {
+		prefix = vformat("%s,%d", p_prefix, p_indent_depth);
+	}
+
+	type->property_list.push_back(PropertyInfo(Variant::NIL, p_name, PROPERTY_HINT_NONE, prefix, PROPERTY_USAGE_SUBGROUP));
 }
 
 void ClassDB::add_property_array_count(const StringName &p_class, const String &p_label, const StringName &p_count_property, const StringName &p_count_setter, const StringName &p_count_getter, const String &p_array_element_prefix, uint32_t p_count_usage) {
@@ -1577,13 +1587,13 @@ void ClassDB::get_extensions_for_type(const StringName &p_class, List<String> *p
 	}
 }
 
-HashMap<StringName, HashMap<StringName, Variant>> ClassDB::default_values;
+HashMap<StringName, HashMap<StringName, Variant>> ClassDB::default_values(__FILE__, __LINE__);
 Set<StringName> ClassDB::default_values_cached;
 
 Variant ClassDB::class_get_default_property_value(const StringName &p_class, const StringName &p_property, bool *r_valid) {
 	if (!default_values_cached.has(p_class)) {
 		if (!default_values.has(p_class)) {
-			default_values[p_class] = HashMap<StringName, Variant>();
+			default_values[p_class] = HashMap<StringName, Variant>(__FILE__, __LINE__);
 		}
 
 		Object *c = nullptr;
@@ -1641,7 +1651,8 @@ Variant ClassDB::class_get_default_property_value(const StringName &p_class, con
 	// Some properties may have an instantiated Object as default value,
 	// (like Path2D's `curve` used to have), but that's not a good practice.
 	// Instead, those properties should use PROPERTY_USAGE_EDITOR_INSTANTIATE_OBJECT
-	// to be auto-instantiated when created in the editor.
+	// to be auto-instantiated when created in the editor with the following method:
+	// EditorNode::get_editor_data().instantiate_object_properties(obj);
 	if (var.get_type() == Variant::OBJECT) {
 		Object *obj = var.get_validated_object();
 		if (obj) {

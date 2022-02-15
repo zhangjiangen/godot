@@ -53,7 +53,8 @@ public:
 		WINDOW_MODE_WINDOWED,
 		WINDOW_MODE_MINIMIZED,
 		WINDOW_MODE_MAXIMIZED,
-		WINDOW_MODE_FULLSCREEN
+		WINDOW_MODE_FULLSCREEN,
+		WINDOW_MODE_EXCLUSIVE_FULLSCREEN,
 	};
 
 	// Keep the VSyncMode enum values in sync with the `display/window/vsync/vsync_mode`
@@ -63,6 +64,12 @@ public:
 		VSYNC_ENABLED,
 		VSYNC_ADAPTIVE,
 		VSYNC_MAILBOX
+	};
+
+	enum HandleType {
+		DISPLAY_HANDLE,
+		WINDOW_HANDLE,
+		WINDOW_VIEW,
 	};
 
 	typedef DisplayServer *(*CreateFunction)(const String &, WindowMode, VSyncMode, uint32_t, const Size2i &, Error &r_error);
@@ -160,12 +167,15 @@ public:
 
 	virtual void clipboard_set(const String &p_text);
 	virtual String clipboard_get() const;
+	virtual bool clipboard_has() const;
 	virtual void clipboard_set_primary(const String &p_text);
 	virtual String clipboard_get_primary() const;
 
 	enum {
 		SCREEN_OF_MAIN_WINDOW = -1
 	};
+
+	const float SCREEN_REFRESH_RATE_FALLBACK = -1.0; // Returned by screen_get_refresh_rate if the method fails.
 
 	virtual int get_screen_count() const = 0;
 	virtual Point2i screen_get_position(int p_screen = SCREEN_OF_MAIN_WINDOW) const = 0;
@@ -181,6 +191,7 @@ public:
 		}
 		return scale;
 	}
+	virtual float screen_get_refresh_rate(int p_screen = SCREEN_OF_MAIN_WINDOW) const = 0;
 	virtual bool screen_is_touchscreen(int p_screen = SCREEN_OF_MAIN_WINDOW) const;
 
 	// Keep the ScreenOrientation enum values in sync with the `display/window/handheld/orientation`
@@ -231,6 +242,8 @@ public:
 	virtual void show_window(WindowID p_id);
 	virtual void delete_sub_window(WindowID p_id);
 
+	virtual int64_t window_get_native_handle(HandleType p_handle_type, WindowID p_window = MAIN_WINDOW_ID) const;
+
 	virtual WindowID get_window_at_screen_position(const Point2i &p_position) const = 0;
 
 	virtual void window_attach_instance_id(ObjectID p_instance, WindowID p_window = MAIN_WINDOW_ID) = 0;
@@ -264,6 +277,7 @@ public:
 	virtual void window_set_position(const Point2i &p_position, WindowID p_window = MAIN_WINDOW_ID) = 0;
 
 	virtual void window_set_transient(WindowID p_window, WindowID p_parent) = 0;
+	virtual void window_set_exclusive(WindowID p_window, bool p_exclusive);
 
 	virtual void window_set_max_size(const Size2i p_size, WindowID p_window = MAIN_WINDOW_ID) = 0;
 	virtual Size2i window_get_max_size(WindowID p_window = MAIN_WINDOW_ID) const = 0;
@@ -386,6 +400,7 @@ VARIANT_ENUM_CAST(DisplayServer::MouseMode)
 VARIANT_ENUM_CAST(DisplayServer::ScreenOrientation)
 VARIANT_ENUM_CAST(DisplayServer::WindowMode)
 VARIANT_ENUM_CAST(DisplayServer::WindowFlags)
+VARIANT_ENUM_CAST(DisplayServer::HandleType)
 VARIANT_ENUM_CAST(DisplayServer::CursorShape)
 VARIANT_ENUM_CAST(DisplayServer::VSyncMode)
 

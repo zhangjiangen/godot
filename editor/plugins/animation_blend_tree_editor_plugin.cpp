@@ -34,12 +34,15 @@
 #include "core/input/input.h"
 #include "core/io/resource_loader.h"
 #include "core/os/keyboard.h"
+#include "editor/editor_file_dialog.h"
 #include "editor/editor_inspector.h"
+#include "editor/editor_node.h"
 #include "editor/editor_scale.h"
 #include "scene/animation/animation_player.h"
 #include "scene/gui/menu_button.h"
 #include "scene/gui/panel.h"
 #include "scene/gui/progress_bar.h"
+#include "scene/gui/view_panner.h"
 #include "scene/main/window.h"
 
 void AnimationNodeBlendTreeEditor::add_custom_type(const String &p_name, const Ref<Script> &p_script) {
@@ -300,7 +303,7 @@ void AnimationNodeBlendTreeEditor::_add_node(int p_idx) {
 		base_name = add_options[p_idx].name;
 	} else {
 		ERR_FAIL_COND(add_options[p_idx].script.is_null());
-		String base_type = add_options[p_idx].script->get_instance_base_type();
+		StringName base_type = add_options[p_idx].script->get_instance_base_type();
 		AnimationNode *an = Object::cast_to<AnimationNode>(ClassDB::instantiate(base_type));
 		ERR_FAIL_COND(!an);
 		anode = Ref<AnimationNode>(an);
@@ -556,7 +559,7 @@ bool AnimationNodeBlendTreeEditor::_update_filters(const Ref<AnimationNode> &ano
 	updating = true;
 
 	Set<String> paths;
-	HashMap<String, Set<String>> types;
+	HashMap<String, Set<String>> types(__FILE__, __LINE__);
 	{
 		List<StringName> animations;
 		player->get_animation_list(&animations);
@@ -734,7 +737,8 @@ void AnimationNodeBlendTreeEditor::_removed_from_graph() {
 
 void AnimationNodeBlendTreeEditor::_notification(int p_what) {
 	if (p_what == NOTIFICATION_ENTER_TREE || p_what == EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED) {
-		graph->set_panning_scheme((GraphEdit::PanningScheme)EDITOR_GET("interface/editors/sub_editor_panning_scheme").operator int());
+		graph->get_panner()->setup((ViewPanner::ControlScheme)EDITOR_GET("editors/panning/sub_editors_panning_scheme").operator int(), ED_GET_SHORTCUT("canvas_item_editor/pan_view"), bool(EditorSettings::get_singleton()->get("editors/panning/simple_panning")));
+		graph->set_warped_panning(bool(EditorSettings::get_singleton()->get("editors/panning/warped_mouse_panning")));
 	}
 
 	if (p_what == NOTIFICATION_ENTER_TREE || p_what == NOTIFICATION_THEME_CHANGED) {
@@ -832,7 +836,7 @@ void AnimationNodeBlendTreeEditor::_node_renamed(const String &p_text, Ref<Anima
 
 	const String &new_name = p_text;
 
-	ERR_FAIL_COND(new_name.is_empty() || new_name.find(".") != -1 || new_name.find("/") != -1);
+	ERR_FAIL_COND(new_name.is_empty() || new_name.contains(".") || new_name.contains("/"));
 
 	if (new_name == prev_name) {
 		return; //nothing to do
@@ -897,6 +901,9 @@ void AnimationNodeBlendTreeEditor::_node_renamed(const String &p_text, Ref<Anima
 }
 
 void AnimationNodeBlendTreeEditor::_node_renamed_focus_out(Node *le, Ref<AnimationNode> p_node) {
+	if (le == nullptr) {
+		return; // The text_submitted signal triggered the graph update and freed the LineEdit.
+	}
 	_node_renamed(le->call("get_text"), p_node);
 }
 

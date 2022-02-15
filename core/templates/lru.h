@@ -115,6 +115,7 @@ public:
 	}
 
 	LRUCache() {
+		_map.set_debug_info(__FILE__, __LINE__);
 		capacity = 64;
 	}
 

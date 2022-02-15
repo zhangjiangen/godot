@@ -31,6 +31,7 @@
 #include "navigation_obstacle_2d.h"
 
 #include "scene/2d/collision_shape_2d.h"
+#include "scene/resources/world_2d.h"
 #include "servers/navigation_server_2d.h"
 
 void NavigationObstacle2D::_bind_methods() {
@@ -53,9 +54,9 @@ void NavigationObstacle2D::_validate_property(PropertyInfo &p_property) const {
 
 void NavigationObstacle2D::_notification(int p_what) {
 	switch (p_what) {
-		case NOTIFICATION_READY: {
-			initialize_agent();
+		case NOTIFICATION_ENTER_TREE: {
 			parent_node2d = Object::cast_to<Node2D>(get_parent());
+			reevaluate_agent_radius();
 			if (parent_node2d != nullptr) {
 				// place agent on navigation map first or else the RVO agent callback creation fails silently later
 				NavigationServer2D::get_singleton()->agent_set_map(get_rid(), parent_node2d->get_world_2d()->get_navigation_map());
@@ -83,6 +84,7 @@ void NavigationObstacle2D::_notification(int p_what) {
 
 NavigationObstacle2D::NavigationObstacle2D() {
 	agent = NavigationServer2D::get_singleton()->agent_create();
+	initialize_agent();
 }
 
 NavigationObstacle2D::~NavigationObstacle2D() {
@@ -110,7 +112,7 @@ void NavigationObstacle2D::initialize_agent() {
 void NavigationObstacle2D::reevaluate_agent_radius() {
 	if (!estimate_radius) {
 		NavigationServer2D::get_singleton()->agent_set_radius(agent, radius);
-	} else if (parent_node2d) {
+	} else if (parent_node2d && parent_node2d->is_inside_tree()) {
 		NavigationServer2D::get_singleton()->agent_set_radius(agent, estimate_agent_radius());
 	}
 }

@@ -44,6 +44,7 @@
 #include "editor/create_dialog.h"
 #include "editor/dictionary_property_edit.h"
 #include "editor/editor_export.h"
+#include "editor/editor_file_dialog.h"
 #include "editor/editor_file_system.h"
 #include "editor/editor_help.h"
 #include "editor/editor_node.h"
@@ -52,6 +53,7 @@
 #include "editor/filesystem_dock.h"
 #include "editor/multi_node_edit.h"
 #include "editor/property_selector.h"
+#include "editor/scene_tree_dock.h"
 #include "scene/gui/label.h"
 #include "scene/main/window.h"
 #include "scene/resources/font.h"
@@ -208,19 +210,19 @@ void CustomPropertyEditor::_menu_option(int p_which) {
 				} break;
 				case OBJ_MENU_NEW_SCRIPT: {
 					if (Object::cast_to<Node>(owner)) {
-						EditorNode::get_singleton()->get_scene_tree_dock()->open_script_dialog(Object::cast_to<Node>(owner), false);
+						SceneTreeDock::get_singleton()->open_script_dialog(Object::cast_to<Node>(owner), false);
 					}
 
 				} break;
 				case OBJ_MENU_EXTEND_SCRIPT: {
 					if (Object::cast_to<Node>(owner)) {
-						EditorNode::get_singleton()->get_scene_tree_dock()->open_script_dialog(Object::cast_to<Node>(owner), true);
+						SceneTreeDock::get_singleton()->open_script_dialog(Object::cast_to<Node>(owner), true);
 					}
 
 				} break;
 				case OBJ_MENU_SHOW_IN_FILE_SYSTEM: {
 					RES r = v;
-					FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+					FileSystemDock *file_system_dock = FileSystemDock::get_singleton();
 					file_system_dock->navigate_to_path(r->get_path());
 					// Ensure that the FileSystem dock is visible.
 					TabContainer *tab_container = (TabContainer *)file_system_dock->get_parent_control();
@@ -269,7 +271,9 @@ void CustomPropertyEditor::_menu_option(int p_which) {
 						res->call_void("set_instance_base_type", owner->get_class());
 					}
 
+					EditorNode::get_editor_data().instantiate_object_properties(obj);
 					v = obj;
+
 					emit_signal(SNAME("variant_changed"));
 
 				} break;
@@ -623,7 +627,7 @@ bool CustomPropertyEditor::edit(Object *p_owner, const String &p_name, Variant::
 				MAKE_PROPSELECT
 				Variant::Type type = Variant::NIL;
 				String tname = hint_text;
-				if (tname.find(".") != -1) {
+				if (tname.contains(".")) {
 					tname = tname.get_slice(".", 0);
 				}
 				for (int i = 0; i < Variant::VARIANT_MAX; i++) {
@@ -1092,7 +1096,9 @@ void CustomPropertyEditor::_type_create_selected(int p_idx) {
 		ERR_FAIL_COND(!obj);
 		ERR_FAIL_COND(!Object::cast_to<Resource>(obj));
 
+		EditorNode::get_editor_data().instantiate_object_properties(obj);
 		v = obj;
+
 		emit_signal(SNAME("variant_changed"));
 		hide();
 	}
@@ -1256,7 +1262,7 @@ void CustomPropertyEditor::_action_pressed(int p_which) {
 				if (owner->is_class("Node") && (v.get_type() == Variant::NODE_PATH) && Object::cast_to<Node>(owner)->has_node(v)) {
 					Node *target_node = Object::cast_to<Node>(owner)->get_node(v);
 					EditorNode::get_singleton()->get_editor_selection()->clear();
-					EditorNode::get_singleton()->get_scene_tree_dock()->set_selected(target_node);
+					SceneTreeDock::get_singleton()->set_selected(target_node);
 				}
 
 				hide();
@@ -1283,7 +1289,9 @@ void CustomPropertyEditor::_action_pressed(int p_which) {
 					ERR_BREAK(!obj);
 					ERR_BREAK(!Object::cast_to<Resource>(obj));
 
+					EditorNode::get_editor_data().instantiate_object_properties(obj);
 					v = obj;
+
 					emit_signal(SNAME("variant_changed"));
 					hide();
 				}

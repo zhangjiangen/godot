@@ -217,7 +217,7 @@ LightmapGIData::~LightmapGIData() {
 
 void LightmapGI::_find_meshes_and_lights(Node *p_at_node, Vector<MeshesFound> &meshes, Vector<LightsFound> &lights, Vector<Vector3> &probes) {
 	MeshInstance3D *mi = Object::cast_to<MeshInstance3D>(p_at_node);
-	if (mi && mi->get_gi_mode() == GeometryInstance3D::GI_MODE_BAKED && mi->is_visible_in_tree()) {
+	if (mi && mi->get_gi_mode() == GeometryInstance3D::GI_MODE_STATIC && mi->is_visible_in_tree()) {
 		Ref<Mesh> mesh = mi->get_mesh();
 		if (mesh.is_valid()) {
 			bool all_have_uv2_and_normal = true;
@@ -842,7 +842,7 @@ LightmapGI::BakeError LightmapGI::bake(Node *p_from_node, String p_image_data_pa
 		}
 
 		LocalVector<Vector3> new_probe_positions;
-		HashMap<Vector3i, bool, Vector3iHash> positions_used;
+		HashMap<Vector3i, bool, Vector3iHash> positions_used(__FILE__, __LINE__);
 		for (uint32_t i = 0; i < 8; i++) { //insert bounding endpoints
 			Vector3i pos;
 			if (i & 1) {

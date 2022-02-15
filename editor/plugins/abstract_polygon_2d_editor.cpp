@@ -33,6 +33,7 @@
 #include "canvas_item_editor_plugin.h"
 #include "core/math/geometry_2d.h"
 #include "core/os/keyboard.h"
+#include "editor/editor_node.h"
 #include "editor/editor_scale.h"
 
 bool AbstractPolygon2DEditor::Vertex::operator==(const AbstractPolygon2DEditor::Vertex &p_vertex) const {
@@ -147,12 +148,15 @@ void AbstractPolygon2DEditor::_menu_option(int p_option) {
 
 void AbstractPolygon2DEditor::_notification(int p_what) {
 	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE:
+		case NOTIFICATION_THEME_CHANGED: {
+			button_create->set_icon(get_theme_icon(SNAME("CurveCreate"), SNAME("EditorIcons")));
+			button_edit->set_icon(get_theme_icon(SNAME("CurveEdit"), SNAME("EditorIcons")));
+			button_delete->set_icon(get_theme_icon(SNAME("CurveDelete"), SNAME("EditorIcons")));
+		} break;
 		case NOTIFICATION_READY: {
 			disable_polygon_editing(false, String());
 
-			button_create->set_icon(EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("CurveCreate"), SNAME("EditorIcons")));
-			button_edit->set_icon(EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("CurveEdit"), SNAME("EditorIcons")));
-			button_delete->set_icon(EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("CurveDelete"), SNAME("EditorIcons")));
 			button_edit->set_pressed(true);
 
 			get_tree()->connect("node_removed", callable_mp(this, &AbstractPolygon2DEditor::_node_removed));
@@ -239,6 +243,10 @@ void AbstractPolygon2DEditor::disable_polygon_editing(bool p_disable, String p_r
 
 bool AbstractPolygon2DEditor::forward_gui_input(const Ref<InputEvent> &p_event) {
 	if (!_get_node() || !_polygon_editing_enabled) {
+		return false;
+	}
+
+	if (!_get_node()->is_visible_in_tree()) {
 		return false;
 	}
 
@@ -472,6 +480,10 @@ bool AbstractPolygon2DEditor::forward_gui_input(const Ref<InputEvent> &p_event) 
 
 void AbstractPolygon2DEditor::forward_canvas_draw_over_viewport(Control *p_overlay) {
 	if (!_get_node()) {
+		return;
+	}
+
+	if (!_get_node()->is_visible_in_tree()) {
 		return;
 	}
 

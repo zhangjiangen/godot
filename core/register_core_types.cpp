@@ -37,6 +37,7 @@
 #include "core/crypto/aes_context.h"
 #include "core/crypto/crypto.h"
 #include "core/crypto/hashing_context.h"
+#include "core/debugger/engine_profiler.h"
 #include "core/extension/native_extension.h"
 #include "core/extension/native_extension_manager.h"
 #include "core/input/input.h"
@@ -69,7 +70,6 @@
 #include "core/math/triangle_mesh.h"
 #include "core/multiplayer/multiplayer_api.h"
 #include "core/multiplayer/multiplayer_peer.h"
-#include "core/multiplayer/multiplayer_replicator.h"
 #include "core/object/class_db.h"
 #include "core/object/undo_redo.h"
 #include "core/os/main_loop.h"
@@ -200,7 +200,6 @@ void register_core_types() {
 
 	GDREGISTER_VIRTUAL_CLASS(MultiplayerPeer);
 	GDREGISTER_CLASS(MultiplayerPeerExtension);
-	GDREGISTER_VIRTUAL_CLASS(MultiplayerReplicator);
 	GDREGISTER_CLASS(MultiplayerAPI);
 	GDREGISTER_CLASS(MainLoop);
 	GDREGISTER_CLASS(Translation);
@@ -238,6 +237,8 @@ void register_core_types() {
 	GDREGISTER_VIRTUAL_CLASS(NativeExtensionManager);
 
 	GDREGISTER_VIRTUAL_CLASS(ResourceUID);
+
+	GDREGISTER_CLASS(EngineProfiler);
 
 	resource_uid = memnew(ResourceUID);
 

@@ -33,9 +33,9 @@
 #include "animation_track_editor_plugins.h"
 #include "core/input/input.h"
 #include "editor/animation_bezier_editor.h"
+#include "editor/editor_node.h"
+#include "editor/editor_scale.h"
 #include "editor/plugins/animation_player_editor_plugin.h"
-#include "editor_node.h"
-#include "editor_scale.h"
 #include "scene/animation/animation_player.h"
 #include "scene/gui/view_panner.h"
 #include "scene/main/window.h"
@@ -570,7 +570,7 @@ public:
 				p_list->push_back(PropertyInfo(Variant::VECTOR3, "position"));
 			} break;
 			case Animation::TYPE_ROTATION_3D: {
-				p_list->push_back(PropertyInfo(Variant::VECTOR3, "rotation"));
+				p_list->push_back(PropertyInfo(Variant::QUATERNION, "rotation"));
 			} break;
 			case Animation::TYPE_SCALE_3D: {
 				p_list->push_back(PropertyInfo(Variant::VECTOR3, "scale"));
@@ -1459,7 +1459,7 @@ int AnimationTimelineEdit::get_name_limit() const {
 
 void AnimationTimelineEdit::_notification(int p_what) {
 	if (p_what == NOTIFICATION_ENTER_TREE || p_what == EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED) {
-		panner->set_control_scheme((ViewPanner::ControlScheme)EDITOR_GET("interface/editors/animation_editors_panning_scheme").operator int());
+		panner->setup((ViewPanner::ControlScheme)EDITOR_GET("editors/panning/animation_editors_panning_scheme").operator int(), ED_GET_SHORTCUT("canvas_item_editor/pan_view"), bool(EditorSettings::get_singleton()->get("editors/panning/simple_panning")));
 	}
 
 	if (p_what == NOTIFICATION_ENTER_TREE) {
@@ -1723,15 +1723,15 @@ void AnimationTimelineEdit::update_values() {
 
 	switch (animation->get_loop_mode()) {
 		case Animation::LoopMode::LOOP_NONE: {
-			loop->set_icon(get_theme_icon("Loop", "EditorIcons"));
+			loop->set_icon(get_theme_icon(SNAME("Loop"), SNAME("EditorIcons")));
 			loop->set_pressed(false);
 		} break;
 		case Animation::LoopMode::LOOP_LINEAR: {
-			loop->set_icon(get_theme_icon("Loop", "EditorIcons"));
+			loop->set_icon(get_theme_icon(SNAME("Loop"), SNAME("EditorIcons")));
 			loop->set_pressed(true);
 		} break;
 		case Animation::LoopMode::LOOP_PINGPONG: {
-			loop->set_icon(get_theme_icon("PingPongLoop", "EditorIcons"));
+			loop->set_icon(get_theme_icon(SNAME("PingPongLoop"), SNAME("EditorIcons")));
 			loop->set_pressed(true);
 		} break;
 		default:
@@ -1799,7 +1799,7 @@ void AnimationTimelineEdit::gui_input(const Ref<InputEvent> &p_event) {
 			int x = mb->get_position().x - get_name_limit();
 
 			float ofs = x / get_zoom_scale() + get_value();
-			emit_signal(SNAME("timeline_changed"), ofs, false, Input::get_singleton()->is_key_pressed(Key::ALT));
+			emit_signal(SNAME("timeline_changed"), ofs, false, mb->is_alt_pressed());
 			dragging_timeline = true;
 		}
 	}
@@ -1833,7 +1833,7 @@ void AnimationTimelineEdit::gui_input(const Ref<InputEvent> &p_event) {
 	}
 }
 
-void AnimationTimelineEdit::_scroll_callback(Vector2 p_scroll_vec) {
+void AnimationTimelineEdit::_scroll_callback(Vector2 p_scroll_vec, bool p_alt) {
 	// Timeline has no vertical scroll, so we change it to horizontal.
 	p_scroll_vec.x += p_scroll_vec.y;
 	_pan_callback(-p_scroll_vec * 32);
@@ -1843,7 +1843,7 @@ void AnimationTimelineEdit::_pan_callback(Vector2 p_scroll_vec) {
 	set_value(get_value() - p_scroll_vec.x / get_zoom_scale());
 }
 
-void AnimationTimelineEdit::_zoom_callback(Vector2 p_scroll_vec, Vector2 p_origin) {
+void AnimationTimelineEdit::_zoom_callback(Vector2 p_scroll_vec, Vector2 p_origin, bool p_alt) {
 	if (p_scroll_vec.y < 0) {
 		get_zoom()->set_value(get_zoom()->get_value() * 1.05);
 	} else {
@@ -1872,7 +1872,7 @@ void AnimationTimelineEdit::_track_added(int p_track) {
 void AnimationTimelineEdit::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("zoom_changed"));
 	ADD_SIGNAL(MethodInfo("name_limit_changed"));
-	ADD_SIGNAL(MethodInfo("timeline_changed", PropertyInfo(Variant::FLOAT, "position"), PropertyInfo(Variant::BOOL, "drag")));
+	ADD_SIGNAL(MethodInfo("timeline_changed", PropertyInfo(Variant::FLOAT, "position"), PropertyInfo(Variant::BOOL, "drag"), PropertyInfo(Variant::BOOL, "timeline_only")));
 	ADD_SIGNAL(MethodInfo("track_added", PropertyInfo(Variant::INT, "track")));
 	ADD_SIGNAL(MethodInfo("length_changed", PropertyInfo(Variant::FLOAT, "size")));
 }
@@ -1932,8 +1932,6 @@ AnimationTimelineEdit::AnimationTimelineEdit() {
 
 	panner.instantiate();
 	panner->set_callbacks(callable_mp(this, &AnimationTimelineEdit::_scroll_callback), callable_mp(this, &AnimationTimelineEdit::_pan_callback), callable_mp(this, &AnimationTimelineEdit::_zoom_callback));
-	panner->set_disable_rmb(true);
-	panner->set_control_scheme(ViewPanner::SCROLL_PANS);
 
 	set_layout_direction(Control::LAYOUT_DIRECTION_LTR);
 }
@@ -2120,23 +2118,19 @@ void AnimationTrackEdit::_notification(int p_what) {
 				update_mode_rect.position.y = 0;
 				update_mode_rect.size.y = get_size().height;
 
-				ofs += update_icon->get_width() + hsep;
-				update_mode_rect.size.x += hsep;
+				ofs += update_icon->get_width() + hsep / 2;
+				update_mode_rect.size.x += hsep / 2;
 
 				if (animation->track_get_type(track) == Animation::TYPE_VALUE) {
 					draw_texture(down_icon, Vector2(ofs, int(get_size().height - down_icon->get_height()) / 2));
 					update_mode_rect.size.x += down_icon->get_width();
-					bezier_edit_rect = Rect2();
 				} else if (animation->track_get_type(track) == Animation::TYPE_BEZIER) {
 					Ref<Texture2D> bezier_icon = get_theme_icon(SNAME("EditBezier"), SNAME("EditorIcons"));
 					update_mode_rect.size.x += down_icon->get_width();
-					bezier_edit_rect.position = update_mode_rect.position + (update_mode_rect.size - bezier_icon->get_size()) / 2;
-					bezier_edit_rect.size = bezier_icon->get_size();
-					draw_texture(bezier_icon, bezier_edit_rect.position);
+
 					update_mode_rect = Rect2();
 				} else {
 					update_mode_rect = Rect2();
-					bezier_edit_rect = Rect2();
 				}
 
 				ofs += down_icon->get_width();
@@ -2162,8 +2156,8 @@ void AnimationTrackEdit::_notification(int p_what) {
 				interp_mode_rect.position.y = 0;
 				interp_mode_rect.size.y = get_size().height;
 
-				ofs += icon->get_width() + hsep;
-				interp_mode_rect.size.x += hsep;
+				ofs += icon->get_width() + hsep / 2;
+				interp_mode_rect.size.x += hsep / 2;
 
 				if (!animation->track_is_compressed(track) && (animation->track_get_type(track) == Animation::TYPE_VALUE || animation->track_get_type(track) == Animation::TYPE_BLEND_SHAPE || animation->track_get_type(track) == Animation::TYPE_POSITION_3D || animation->track_get_type(track) == Animation::TYPE_SCALE_3D || animation->track_get_type(track) == Animation::TYPE_ROTATION_3D)) {
 					draw_texture(down_icon, Vector2(ofs, int(get_size().height - down_icon->get_height()) / 2));
@@ -2195,8 +2189,8 @@ void AnimationTrackEdit::_notification(int p_what) {
 				loop_wrap_rect.position.y = 0;
 				loop_wrap_rect.size.y = get_size().height;
 
-				ofs += icon->get_width() + hsep;
-				loop_wrap_rect.size.x += hsep;
+				ofs += icon->get_width() + hsep / 2;
+				loop_wrap_rect.size.x += hsep / 2;
 
 				if (!animation->track_is_compressed(track) && (animation->track_get_type(track) == Animation::TYPE_VALUE || animation->track_get_type(track) == Animation::TYPE_BLEND_SHAPE || animation->track_get_type(track) == Animation::TYPE_POSITION_3D || animation->track_get_type(track) == Animation::TYPE_SCALE_3D || animation->track_get_type(track) == Animation::TYPE_ROTATION_3D)) {
 					draw_texture(down_icon, Vector2(ofs, int(get_size().height - down_icon->get_height()) / 2));
@@ -2215,7 +2209,7 @@ void AnimationTrackEdit::_notification(int p_what) {
 
 				Ref<Texture2D> icon = get_theme_icon(animation->track_is_compressed(track) ? SNAME("Lock") : SNAME("Remove"), SNAME("EditorIcons"));
 
-				remove_rect.position.x = ofs + ((get_size().width - ofs) - icon->get_width()) / 2;
+				remove_rect.position.x = ofs + ((get_size().width - ofs) - icon->get_width());
 				remove_rect.position.y = int(get_size().height - icon->get_height()) / 2;
 				remove_rect.size = icon->get_size();
 
@@ -2794,11 +2788,6 @@ void AnimationTrackEdit::gui_input(const Ref<InputEvent> &p_event) {
 			return;
 		}
 
-		if (bezier_edit_rect.has_point(pos)) {
-			emit_signal(SNAME("bezier_edit"));
-			accept_event();
-		}
-
 		// Check keyframes.
 
 		if (!animation->track_is_compressed(track)) { // Selecting compressed keyframes for editing is not possible.
@@ -3123,7 +3112,7 @@ void AnimationTrackEdit::append_to_selection(const Rect2 &p_box, bool p_deselect
 }
 
 void AnimationTrackEdit::_bind_methods() {
-	ADD_SIGNAL(MethodInfo("timeline_changed", PropertyInfo(Variant::FLOAT, "position"), PropertyInfo(Variant::BOOL, "drag")));
+	ADD_SIGNAL(MethodInfo("timeline_changed", PropertyInfo(Variant::FLOAT, "position"), PropertyInfo(Variant::BOOL, "drag"), PropertyInfo(Variant::BOOL, "timeline_only")));
 	ADD_SIGNAL(MethodInfo("remove_request", PropertyInfo(Variant::INT, "track")));
 	ADD_SIGNAL(MethodInfo("dropped", PropertyInfo(Variant::INT, "from_track"), PropertyInfo(Variant::INT, "to_track")));
 	ADD_SIGNAL(MethodInfo("insert_key", PropertyInfo(Variant::FLOAT, "ofs")));
@@ -3291,7 +3280,7 @@ AnimationTrackEditGroup::AnimationTrackEditGroup() {
 //////////////////////////////////////
 
 void AnimationTrackEditor::add_track_edit_plugin(const Ref<AnimationTrackEditPlugin> &p_plugin) {
-	if (track_edit_plugins.find(p_plugin) != -1) {
+	if (track_edit_plugins.has(p_plugin)) {
 		return;
 	}
 	track_edit_plugins.push_back(p_plugin);
@@ -3328,10 +3317,21 @@ void AnimationTrackEditor::set_animation(const Ref<Animation> &p_anim) {
 		snap->set_disabled(false);
 		snap_mode->set_disabled(false);
 
+		bezier_edit_icon->set_disabled(true);
+
 		imported_anim_warning->hide();
+		bool import_warning_done = false;
+		bool bezier_done = false;
 		for (int i = 0; i < animation->get_track_count(); i++) {
 			if (animation->track_is_imported(i)) {
 				imported_anim_warning->show();
+				import_warning_done = true;
+			}
+			if (animation->track_get_type(i) == Animation::TrackType::TYPE_BEZIER) {
+				bezier_edit_icon->set_disabled(false);
+				bezier_done = true;
+			}
+			if (import_warning_done && bezier_done) {
 				break;
 			}
 		}
@@ -3345,6 +3345,7 @@ void AnimationTrackEditor::set_animation(const Ref<Animation> &p_anim) {
 		step->set_read_only(true);
 		snap->set_disabled(true);
 		snap_mode->set_disabled(true);
+		bezier_edit_icon->set_disabled(true);
 	}
 }
 
@@ -3483,7 +3484,7 @@ void AnimationTrackEditor::_track_remove_request(int p_track) {
 
 void AnimationTrackEditor::_track_grab_focus(int p_track) {
 	// Don't steal focus if not working with the track editor.
-	if (Object::cast_to<AnimationTrackEdit>(get_focus_owner())) {
+	if (Object::cast_to<AnimationTrackEdit>(get_viewport()->gui_get_focus_owner())) {
 		track_edits[p_track]->grab_focus();
 	}
 }
@@ -3650,7 +3651,7 @@ void AnimationTrackEditor::_insert_track(bool p_create_reset, bool p_create_bezi
 			pos = animation->get_length();
 		}
 		set_anim_pos(pos);
-		emit_signal(SNAME("timeline_changed"), pos, true);
+		emit_signal(SNAME("timeline_changed"), pos, true, false);
 	}
 }
 
@@ -4169,13 +4170,15 @@ AnimationTrackEditor::TrackIndices AnimationTrackEditor::_confirm_insert(InsertD
 		} break;
 		case Animation::TYPE_BEZIER: {
 			Array array;
-			array.resize(5);
+			array.resize(6);
 			array[0] = p_id.value;
 			array[1] = -0.25;
 			array[2] = 0;
 			array[3] = 0.25;
 			array[4] = 0;
+			array[5] = Animation::HANDLE_MODE_BALANCED;
 			value = array;
+			bezier_edit_icon->set_disabled(false);
 
 		} break;
 		case Animation::TYPE_ANIMATION: {
@@ -4401,7 +4404,6 @@ void AnimationTrackEditor::_update_tracks() {
 		track_edit->connect("insert_key", callable_mp(this, &AnimationTrackEditor::_insert_key_from_track), varray(i), CONNECT_DEFERRED);
 		track_edit->connect("select_key", callable_mp(this, &AnimationTrackEditor::_key_selected), varray(i), CONNECT_DEFERRED);
 		track_edit->connect("deselect_key", callable_mp(this, &AnimationTrackEditor::_key_deselected), varray(i), CONNECT_DEFERRED);
-		track_edit->connect("bezier_edit", callable_mp(this, &AnimationTrackEditor::_bezier_edit), varray(i), CONNECT_DEFERRED);
 		track_edit->connect("move_selection_begin", callable_mp(this, &AnimationTrackEditor::_move_selection_begin));
 		track_edit->connect("move_selection", callable_mp(this, &AnimationTrackEditor::_move_selection));
 		track_edit->connect("move_selection_commit", callable_mp(this, &AnimationTrackEditor::_move_selection_commit));
@@ -4512,13 +4514,14 @@ MenuButton *AnimationTrackEditor::get_edit_menu() {
 
 void AnimationTrackEditor::_notification(int p_what) {
 	if (p_what == NOTIFICATION_ENTER_TREE || p_what == EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED) {
-		panner->set_control_scheme((ViewPanner::ControlScheme)EDITOR_GET("interface/editors/animation_editors_panning_scheme").operator int());
+		panner->setup((ViewPanner::ControlScheme)EDITOR_GET("editors/panning/animation_editors_panning_scheme").operator int(), ED_GET_SHORTCUT("canvas_item_editor/pan_view"), bool(EditorSettings::get_singleton()->get("editors/panning/simple_panning")));
 	}
 
 	if (p_what == NOTIFICATION_THEME_CHANGED || p_what == NOTIFICATION_ENTER_TREE) {
 		zoom_icon->set_texture(get_theme_icon(SNAME("Zoom"), SNAME("EditorIcons")));
+		bezier_edit_icon->set_icon(get_theme_icon(SNAME("EditBezier"), SNAME("EditorIcons")));
 		snap->set_icon(get_theme_icon(SNAME("Snap"), SNAME("EditorIcons")));
-		view_group->set_icon(get_theme_icon(view_group->is_pressed() ? "AnimationTrackList" : "AnimationTrackGroup", "EditorIcons"));
+		view_group->set_icon(get_theme_icon(view_group->is_pressed() ? SNAME("AnimationTrackList") : SNAME("AnimationTrackGroup"), SNAME("EditorIcons")));
 		selected_filter->set_icon(get_theme_icon(SNAME("AnimationFilter"), SNAME("EditorIcons")));
 		imported_anim_warning->set_icon(get_theme_icon(SNAME("NodeWarning"), SNAME("EditorIcons")));
 		main_panel->add_theme_style_override("panel", get_theme_stylebox(SNAME("bg"), SNAME("Tree")));
@@ -4632,6 +4635,7 @@ void AnimationTrackEditor::_new_track_node_selected(NodePath p_path) {
 			adding_track_path = path_to;
 			prop_selector->set_type_filter(filter);
 			prop_selector->select_property_from_instance(node);
+			bezier_edit_icon->set_disabled(false);
 		} break;
 		case Animation::TYPE_AUDIO: {
 			if (!node->is_class("AudioStreamPlayer") && !node->is_class("AudioStreamPlayer2D") && !node->is_class("AudioStreamPlayer3D")) {
@@ -5012,7 +5016,7 @@ struct _AnimMoveRestore {
 void AnimationTrackEditor::_clear_key_edit() {
 	if (key_edit) {
 		// If key edit is the object being inspected, remove it first.
-		if (EditorNode::get_singleton()->get_inspector()->get_edited_object() == key_edit) {
+		if (InspectorDock::get_inspector_singleton()->get_edited_object() == key_edit) {
 			EditorNode::get_singleton()->push_item(nullptr);
 		}
 
@@ -5022,7 +5026,7 @@ void AnimationTrackEditor::_clear_key_edit() {
 	}
 
 	if (multi_key_edit) {
-		if (EditorNode::get_singleton()->get_inspector()->get_edited_object() == multi_key_edit) {
+		if (InspectorDock::get_inspector_singleton()->get_edited_object() == multi_key_edit) {
 			EditorNode::get_singleton()->push_item(nullptr);
 		}
 
@@ -5232,16 +5236,6 @@ void AnimationTrackEditor::_scroll_input(const Ref<InputEvent> &p_event) {
 
 	Ref<InputEventMouseButton> mb = p_event;
 
-	if (mb.is_valid() && mb->is_pressed() && mb->is_alt_pressed() && mb->get_button_index() == MouseButton::WHEEL_UP) {
-		goto_prev_step(true);
-		scroll->accept_event();
-	}
-
-	if (mb.is_valid() && mb->is_pressed() && mb->is_alt_pressed() && mb->get_button_index() == MouseButton::WHEEL_DOWN) {
-		goto_next_step(true);
-		scroll->accept_event();
-	}
-
 	if (mb.is_valid() && mb->get_button_index() == MouseButton::LEFT) {
 		if (mb->is_pressed()) {
 			box_selecting = true;
@@ -5306,8 +5300,30 @@ void AnimationTrackEditor::_scroll_input(const Ref<InputEvent> &p_event) {
 	}
 }
 
-void AnimationTrackEditor::_scroll_callback(Vector2 p_scroll_vec) {
-	_pan_callback(-p_scroll_vec * 32);
+void AnimationTrackEditor::_toggle_bezier_edit() {
+	if (bezier_edit->is_visible()) {
+		_cancel_bezier_edit();
+	} else {
+		int track_count = animation->get_track_count();
+		for (int i = 0; i < track_count; ++i) {
+			if (animation->track_get_type(i) == Animation::TrackType::TYPE_BEZIER) {
+				_bezier_edit(i);
+				return;
+			}
+		}
+	}
+}
+
+void AnimationTrackEditor::_scroll_callback(Vector2 p_scroll_vec, bool p_alt) {
+	if (p_alt) {
+		if (p_scroll_vec.x < 0 || p_scroll_vec.y < 0) {
+			goto_prev_step(true);
+		} else {
+			goto_next_step(true);
+		}
+	} else {
+		_pan_callback(-p_scroll_vec * 32);
+	}
 }
 
 void AnimationTrackEditor::_pan_callback(Vector2 p_scroll_vec) {
@@ -5315,7 +5331,7 @@ void AnimationTrackEditor::_pan_callback(Vector2 p_scroll_vec) {
 	scroll->set_v_scroll(scroll->get_v_scroll() - p_scroll_vec.y);
 }
 
-void AnimationTrackEditor::_zoom_callback(Vector2 p_scroll_vec, Vector2 p_origin) {
+void AnimationTrackEditor::_zoom_callback(Vector2 p_scroll_vec, Vector2 p_origin, bool p_alt) {
 	if (p_scroll_vec.y < 0) {
 		timeline->get_zoom()->set_value(timeline->get_zoom()->get_value() * 1.05);
 	} else {
@@ -5326,6 +5342,7 @@ void AnimationTrackEditor::_zoom_callback(Vector2 p_scroll_vec, Vector2 p_origin
 void AnimationTrackEditor::_cancel_bezier_edit() {
 	bezier_edit->hide();
 	scroll->show();
+	bezier_edit_icon->set_pressed(false);
 }
 
 void AnimationTrackEditor::_bezier_edit(int p_for_track) {
@@ -5449,7 +5466,7 @@ void AnimationTrackEditor::goto_prev_step(bool p_from_mouse_event) {
 		pos = 0;
 	}
 	set_anim_pos(pos);
-	emit_signal(SNAME("timeline_changed"), pos, true);
+	emit_signal(SNAME("timeline_changed"), pos, true, false);
 }
 
 void AnimationTrackEditor::goto_next_step(bool p_from_mouse_event) {
@@ -5476,7 +5493,7 @@ void AnimationTrackEditor::goto_next_step(bool p_from_mouse_event) {
 	}
 	set_anim_pos(pos);
 
-	emit_signal(SNAME("timeline_changed"), pos, true);
+	emit_signal(SNAME("timeline_changed"), pos, true, false);
 }
 
 void AnimationTrackEditor::_edit_menu_pressed(int p_option) {
@@ -5497,8 +5514,8 @@ void AnimationTrackEditor::_edit_menu_pressed(int p_option) {
 				String text;
 				Ref<Texture2D> icon = get_theme_icon(SNAME("Node"), SNAME("EditorIcons"));
 				if (node) {
-					if (has_theme_icon(node->get_class(), "EditorIcons")) {
-						icon = get_theme_icon(node->get_class(), "EditorIcons");
+					if (has_theme_icon(node->get_class(), SNAME("EditorIcons"))) {
+						icon = get_theme_icon(node->get_class(), SNAME("EditorIcons"));
 					}
 
 					text = node->get_name();
@@ -5700,16 +5717,16 @@ void AnimationTrackEditor::_edit_menu_pressed(int p_option) {
 				to_restore.push_back(amr);
 			}
 
-#define _NEW_POS(m_ofs) (((s > 0) ? m_ofs : from_t + (len - (m_ofs - from_t))) - pivot) * ABS(s) + from_t
+#define NEW_POS(m_ofs) (((s > 0) ? m_ofs : from_t + (len - (m_ofs - from_t))) - pivot) * ABS(s) + from_t
 			// 3 - Move the keys (re insert them).
 			for (Map<SelectedKey, KeyInfo>::Element *E = selection.back(); E; E = E->prev()) {
-				float newpos = _NEW_POS(E->get().pos);
+				float newpos = NEW_POS(E->get().pos);
 				undo_redo->add_do_method(animation.ptr(), "track_insert_key", E->key().track, newpos, animation->track_get_key_value(E->key().track, E->key().key), animation->track_get_key_transition(E->key().track, E->key().key));
 			}
 
 			// 4 - (Undo) Remove inserted keys.
 			for (Map<SelectedKey, KeyInfo>::Element *E = selection.back(); E; E = E->prev()) {
-				float newpos = _NEW_POS(E->get().pos);
+				float newpos = NEW_POS(E->get().pos);
 				undo_redo->add_undo_method(animation.ptr(), "track_remove_key_at_time", E->key().track, newpos);
 			}
 
@@ -5729,13 +5746,13 @@ void AnimationTrackEditor::_edit_menu_pressed(int p_option) {
 			// 7-reselect.
 			for (Map<SelectedKey, KeyInfo>::Element *E = selection.back(); E; E = E->prev()) {
 				float oldpos = E->get().pos;
-				float newpos = _NEW_POS(oldpos);
+				float newpos = NEW_POS(oldpos);
 				if (newpos >= 0) {
 					undo_redo->add_do_method(this, "_select_at_anim", animation, E->key().track, newpos);
 				}
 				undo_redo->add_undo_method(this, "_select_at_anim", animation, E->key().track, oldpos);
 			}
-#undef _NEW_POS
+#undef NEW_POS
 			undo_redo->commit_action();
 		} break;
 		case EDIT_DUPLICATE_SELECTION: {
@@ -5911,7 +5928,8 @@ void AnimationTrackEditor::_cleanup_animation(Ref<Animation> p_animation) {
 
 void AnimationTrackEditor::_view_group_toggle() {
 	_update_tracks();
-	view_group->set_icon(get_theme_icon(view_group->is_pressed() ? "AnimationTrackList" : "AnimationTrackGroup", "EditorIcons"));
+	view_group->set_icon(get_theme_icon(view_group->is_pressed() ? SNAME("AnimationTrackList") : SNAME("AnimationTrackGroup"), SNAME("EditorIcons")));
+	bezier_edit->set_filtered(selected_filter->is_pressed());
 }
 
 bool AnimationTrackEditor::is_grouping_tracks() {
@@ -6000,7 +6018,7 @@ void AnimationTrackEditor::_bind_methods() {
 	ClassDB::bind_method("_key_deselected", &AnimationTrackEditor::_key_deselected); // Still used by some connect_compat.
 	ClassDB::bind_method("_clear_selection", &AnimationTrackEditor::_clear_selection); // Still used by some connect_compat.
 
-	ADD_SIGNAL(MethodInfo("timeline_changed", PropertyInfo(Variant::FLOAT, "position"), PropertyInfo(Variant::BOOL, "drag")));
+	ADD_SIGNAL(MethodInfo("timeline_changed", PropertyInfo(Variant::FLOAT, "position"), PropertyInfo(Variant::BOOL, "drag"), PropertyInfo(Variant::BOOL, "timeline_only")));
 	ADD_SIGNAL(MethodInfo("keying_changed"));
 	ADD_SIGNAL(MethodInfo("animation_len_changed", PropertyInfo(Variant::FLOAT, "len")));
 	ADD_SIGNAL(MethodInfo("animation_step_changed", PropertyInfo(Variant::FLOAT, "step")));
@@ -6111,8 +6129,6 @@ AnimationTrackEditor::AnimationTrackEditor() {
 
 	panner.instantiate();
 	panner->set_callbacks(callable_mp(this, &AnimationTrackEditor::_scroll_callback), callable_mp(this, &AnimationTrackEditor::_pan_callback), callable_mp(this, &AnimationTrackEditor::_zoom_callback));
-	panner->set_disable_rmb(true);
-	panner->set_control_scheme(ViewPanner::SCROLL_PANS);
 
 	scroll = memnew(ScrollContainer);
 	timeline_vbox->add_child(scroll);
@@ -6120,7 +6136,9 @@ AnimationTrackEditor::AnimationTrackEditor() {
 	VScrollBar *sb = scroll->get_v_scroll_bar();
 	scroll->remove_child(sb);
 	timeline_scroll->add_child(sb); // Move here so timeline and tracks are always aligned.
+	scroll->set_focus_mode(FOCUS_CLICK);
 	scroll->connect("gui_input", callable_mp(this, &AnimationTrackEditor::_scroll_input));
+	scroll->connect("focus_exited", callable_mp(panner.ptr(), &ViewPanner::release_pan_key));
 
 	bezier_edit = memnew(AnimationBezierTrackEdit);
 	timeline_vbox->add_child(bezier_edit);
@@ -6156,6 +6174,15 @@ AnimationTrackEditor::AnimationTrackEditor() {
 	bottom_hb->add_child(imported_anim_warning);
 
 	bottom_hb->add_spacer();
+
+	bezier_edit_icon = memnew(Button);
+	bezier_edit_icon->set_flat(true);
+	bezier_edit_icon->set_disabled(true);
+	bezier_edit_icon->set_toggle_mode(true);
+	bezier_edit_icon->connect("pressed", callable_mp(this, &AnimationTrackEditor::_toggle_bezier_edit));
+	bezier_edit_icon->set_tooltip(TTR("Toggle between the bezier curve editor and track editor."));
+
+	bottom_hb->add_child(bezier_edit_icon);
 
 	selected_filter = memnew(Button);
 	selected_filter->set_flat(true);

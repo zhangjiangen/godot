@@ -1451,8 +1451,8 @@ Ref<Material> CSGCylinder3D::get_material() const {
 
 CSGCylinder3D::CSGCylinder3D() {
 	// defaults
-	radius = 1.0;
-	height = 1.0;
+	radius = 0.5;
+	height = 2.0;
 	sides = 8;
 	cone = false;
 	smooth_faces = true;
@@ -1671,8 +1671,8 @@ Ref<Material> CSGTorus3D::get_material() const {
 
 CSGTorus3D::CSGTorus3D() {
 	// defaults
-	inner_radius = 2.0;
-	outer_radius = 3.0;
+	inner_radius = 0.5;
+	outer_radius = 1.0;
 	sides = 8;
 	ring_sides = 6;
 	smooth_faces = true;
@@ -1694,7 +1694,7 @@ CSGBrush *CSGPolygon3D::_build_brush() {
 	}
 	int shape_sides = shape_polygon.size();
 	Vector<int> shape_faces = Geometry2D::triangulate_polygon(shape_polygon);
-	ERR_FAIL_COND_V_MSG(shape_faces.size() < 3, brush, "Failed to triangulate CSGPolygon");
+	ERR_FAIL_COND_V_MSG(shape_faces.size() < 3, brush, "Failed to triangulate CSGPolygon. Make sure the polygon doesn't have any intersecting edges.");
 
 	// Get polygon enclosing Rect2.
 	Rect2 shape_rect(shape_polygon[0], Vector2());

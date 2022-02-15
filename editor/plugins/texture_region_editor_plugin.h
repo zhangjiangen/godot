@@ -32,13 +32,15 @@
 #define TEXTURE_REGION_EDITOR_PLUGIN_H
 
 #include "canvas_item_editor_plugin.h"
-#include "editor/editor_node.h"
 #include "editor/editor_plugin.h"
 #include "scene/2d/sprite_2d.h"
 #include "scene/3d/sprite_3d.h"
 #include "scene/gui/nine_patch_rect.h"
 #include "scene/resources/style_box.h"
 #include "scene/resources/texture.h"
+
+class EditorNode;
+class ViewPanner;
 
 class TextureRegionEditor : public VBoxContainer {
 	GDCLASS(TextureRegionEditor, VBoxContainer);
@@ -97,6 +99,11 @@ class TextureRegionEditor : public VBoxContainer {
 	bool creating;
 	Vector2 drag_from;
 	int drag_index;
+
+	Ref<ViewPanner> panner;
+	void _scroll_callback(Vector2 p_scroll_vec, bool p_alt);
+	void _pan_callback(Vector2 p_scroll_vec);
+	void _zoom_callback(Vector2 p_scroll_vec, Vector2 p_origin, bool p_alt);
 
 	void _set_snap_mode(int p_mode);
 	void _set_snap_off_x(float p_val);

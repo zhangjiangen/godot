@@ -30,6 +30,7 @@
 
 #include "slider.h"
 #include "core/os/keyboard.h"
+#include "scene/gui/label.h"
 
 Size2 Slider::get_minimum_size() const {
 	Ref<StyleBox> style = get_theme_stylebox(SNAME("slider"));
@@ -281,4 +282,202 @@ void Slider::_bind_methods() {
 Slider::Slider(Orientation p_orientation) {
 	orientation = p_orientation;
 	set_focus_mode(FOCUS_ALL);
+}
+
+MinMaxSlider::MinMaxSlider() {
+	rect_min_size = Vector2(32, 28);
+	rect_min_size = Vector2(32, 28);
+
+	_label_value = memnew(Label);
+	_label_value->set_horizontal_alignment(HORIZONTAL_ALIGNMENT_CENTER);
+	_label_value->set_clip_text(true);
+	_label_value->set_anchor(SIDE_TOP, 0);
+	_label_value->set_anchor(SIDE_LEFT, 0);
+	_label_value->set_anchor(SIDE_RIGHT, 1);
+	_label_value->set_anchor(SIDE_BOTTOM, 1);
+	_label_value->set_offset(SIDE_RIGHT, 8);
+	_label_value->set_mouse_filter(MOUSE_FILTER_IGNORE);
+	_label_value->add_theme_color_override("font_color_shadow", Color(0, 0, 0, 0.5));
+	_label_value->add_theme_constant_override("shadow_offset_x", 1);
+	_label_value->add_theme_constant_override("shadow_offset_y", 1);
+	add_child(_label_value);
+}
+
+void MinMaxSlider::_draw() {
+	int grabber_width = 3;
+	int background_v_margin = 0;
+	int foreground_margin = FG_MARGIN;
+	Color grabber_color = Color(0.8, 0.8, 0.8);
+	Color interval_color = Color(0.9, 0.4, 0.2);
+	Color background_color = Color(0.1, 0.1, 0.1);
+
+	Rect2 control_rect = Rect2(Vector2(), get_size());
+
+	Rect2 bg_rect = Rect2(
+			control_rect.position.x,
+			control_rect.position.y + background_v_margin,
+			control_rect.size.x,
+			control_rect.size.y - 2 * background_v_margin);
+	draw_rect(bg_rect, background_color);
+
+	Rect2 fg_rect = control_rect.grow(-foreground_margin);
+
+	float low_ratio = get_low_ratio();
+	float high_ratio = get_high_ratio();
+	//print("low",low_ratio,"high",high_ratio)
+
+	float low_x = fg_rect.position.x + low_ratio * fg_rect.size.x;
+	float high_x = fg_rect.position.x + high_ratio * fg_rect.size.x;
+
+	Rect2 interval_rect = Rect2(
+			low_x, fg_rect.position.y, high_x - low_x, fg_rect.size.y);
+	draw_rect(interval_rect, interval_color);
+
+	low_x = fg_rect.position.x + low_ratio * (fg_rect.size.x - grabber_width);
+	high_x = fg_rect.position.x + high_ratio * (fg_rect.size.x - grabber_width);
+	Rect2 grabber_rect = Rect2(
+			low_x,
+			fg_rect.position.y,
+			grabber_width,
+			fg_rect.size.y);
+	draw_rect(grabber_rect, grabber_color);
+	grabber_rect = Rect2(
+			high_x,
+			fg_rect.position.y,
+			grabber_width,
+			fg_rect.size.y);
+	draw_rect(grabber_rect, grabber_color);
+}
+void MinMaxSlider::gui_input(const Ref<InputEvent> &p_event) {
+	Ref<InputEventMouseButton> mm = p_event;
+	if (mm.is_valid()) {
+		if (mm->is_pressed()) {
+			if (mm->get_button_index() == MouseButton::LEFT) {
+				_grabbing = true;
+				_set_from_pixel(mm->get_position().x);
+			}
+		} else {
+			if (mm->get_button_index() == MouseButton::LEFT) {
+				_grabbing = false;
+			}
+		}
+	}
+
+	Ref<InputEventMouseButton> move = p_event;
+	if (move.is_valid()) {
+		if (_grabbing) {
+			_set_from_pixel(move->get_position().x);
+		}
+	}
+}
+
+void MinMaxSlider::_get_property_list(List<PropertyInfo> *p_list) const {
+	p_list->push_back(
+			PropertyInfo(Variant::FLOAT, "min_value"));
+	p_list->push_back(
+			PropertyInfo(Variant::FLOAT, "max_value"));
+	p_list->push_back(
+			PropertyInfo(Variant::VECTOR2, "value"));
+}
+
+bool MinMaxSlider::_get(const StringName &p_name, Variant &r_ret) const {
+	if (p_name == "min_value") {
+		r_ret = _min_value;
+		return true;
+	}
+	if (p_name == "max_value") {
+		r_ret = _max_value;
+		return true;
+	}
+	if (p_name == "value") {
+		r_ret = _values;
+		return true;
+	}
+	return false;
+}
+bool MinMaxSlider::_set(const StringName &p_name, const Variant &p_value) {
+	if (p_name == "min_value") {
+		_min_value = (p_value);
+		update();
+		return true;
+	}
+	if (p_name == "max_value") {
+		_max_value = (p_value);
+		update();
+		return true;
+	}
+	if (p_name == "value") {
+		_values = (p_value);
+		update();
+		return true;
+	}
+	return false;
+}
+
+void MinMaxSlider::set_range(float min_v, float max_v) {
+	_min_value = MIN(min_v, max_v);
+	_max_value = MAX(min_v, max_v);
+	update();
+}
+void MinMaxSlider::set_values(const Vector2 &v) {
+	_values = v;
+	if (_values.x > _values.y)
+		_values.x = _values.y;
+	if (_values.y < _values.x)
+		_values.y = _values.x;
+	update();
+}
+void MinMaxSlider::_notification(int p_what) {
+	switch (p_what) {
+		case NOTIFICATION_THEME_CHANGED: {
+			update_minimum_size();
+			update();
+		} break;
+		case NOTIFICATION_MOUSE_ENTER: {
+			update();
+		} break;
+		case NOTIFICATION_MOUSE_EXIT: {
+			update();
+		} break;
+		case NOTIFICATION_VISIBILITY_CHANGED: // fallthrough
+		case NOTIFICATION_EXIT_TREE: {
+			//grab.active = false;
+			_grabbing = false;
+		} break;
+		case NOTIFICATION_DRAW: {
+			_draw();
+		}
+	}
+}
+int MinMaxSlider::_get_closest_index(float ratio) {
+	float lr = get_low_ratio();
+	float hr = get_high_ratio();
+	if (ratio < lr)
+		return VALUE_LOW;
+	else if (ratio > hr)
+		return VALUE_HIGH;
+	float distance_low = ratio - lr;
+	float distance_high = hr - ratio;
+	if (distance_low < distance_high) {
+		return VALUE_LOW;
+	}
+	return VALUE_HIGH;
+}
+
+void MinMaxSlider::_set_from_pixel(float px) {
+	float r = (px - FG_MARGIN) / (get_size().x - FG_MARGIN * 2.0);
+	int i = _get_closest_index(r);
+	float v = _ratio_to_value(r);
+	_set_value(i, v, true);
+}
+
+void MinMaxSlider::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_values", "value"), &MinMaxSlider::set_values);
+	ClassDB::bind_method(D_METHOD("get_values"), &MinMaxSlider::get_values);
+
+	ClassDB::bind_method(D_METHOD("set_range", "min", "max"), &MinMaxSlider::set_range);
+
+	ADD_SIGNAL(MethodInfo("value_changed", PropertyInfo(Variant::VECTOR2, "value")));
+
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "values"), "set_values", "get_values");
 }

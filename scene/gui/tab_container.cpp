@@ -704,7 +704,7 @@ void TabContainer::add_child_notify(Node *p_child) {
 	}
 
 	_refresh_texts();
-	call_deferred("_repaint");
+	call_deferred(SNAME("_repaint"));
 	update();
 
 	bool first = (_get_tabs().size() == 1);
@@ -1175,6 +1175,14 @@ void TabContainer::set_use_hidden_tabs_for_min_size(bool p_use_hidden_tabs) {
 
 bool TabContainer::get_use_hidden_tabs_for_min_size() const {
 	return use_hidden_tabs_for_min_size;
+}
+
+Vector<int> TabContainer::get_allowed_size_flags_horizontal() const {
+	return Vector<int>();
+}
+
+Vector<int> TabContainer::get_allowed_size_flags_vertical() const {
+	return Vector<int>();
 }
 
 void TabContainer::_bind_methods() {

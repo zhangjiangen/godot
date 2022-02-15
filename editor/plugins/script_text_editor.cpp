@@ -30,6 +30,7 @@
 
 #include "script_text_editor.h"
 
+#include "core/config/project_settings.h"
 #include "core/math/expression.h"
 #include "core/os/keyboard.h"
 #include "editor/debugger/editor_debugger_node.h"
@@ -398,10 +399,10 @@ Ref<Texture2D> ScriptTextEditor::get_theme_icon() {
 			icon_name += "Internal";
 		}
 
-		if (get_parent_control()->has_theme_icon(icon_name, "EditorIcons")) {
-			return get_parent_control()->get_theme_icon(icon_name, "EditorIcons");
-		} else if (get_parent_control()->has_theme_icon(script->get_class(), "EditorIcons")) {
-			return get_parent_control()->get_theme_icon(script->get_class(), "EditorIcons");
+		if (get_parent_control()->has_theme_icon(icon_name, SNAME("EditorIcons"))) {
+			return get_parent_control()->get_theme_icon(icon_name, SNAME("EditorIcons"));
+		} else if (get_parent_control()->has_theme_icon(script->get_class(), SNAME("EditorIcons"))) {
+			return get_parent_control()->get_theme_icon(script->get_class(), SNAME("EditorIcons"));
 		}
 	}
 
@@ -413,12 +414,14 @@ void ScriptTextEditor::_validate_script() {
 
 	String text = te->get_text();
 	List<String> fnc;
-	Set<int> safe_lines;
-	List<ScriptLanguage::Warning> warnings;
-	List<ScriptLanguage::ScriptError> errors;
+
+	warnings.clear();
+	errors.clear();
+	safe_lines.clear();
 
 	if (!script->get_language()->validate(text, script->get_path(), &fnc, &errors, &warnings, &safe_lines)) {
-		String error_text = TTR("Error at ") + "(" + itos(errors[0].line) + "," + itos(errors[0].column) + "): " + errors[0].message;
+		// TRANSLATORS: Script error pointing to a line and column number.
+		String error_text = vformat(TTR("Error at (%d, %d):"), errors[0].line, errors[0].column) + " " + errors[0].message;
 		code_editor->set_error(error_text);
 		code_editor->set_error_pos(errors[0].line - 1, errors[0].column - 1);
 		script_is_valid = false;
@@ -437,7 +440,14 @@ void ScriptTextEditor::_validate_script() {
 		script_is_valid = true;
 	}
 	_update_connected_methods();
+	_update_warnings();
+	_update_errors();
 
+	emit_signal(SNAME("name_changed"));
+	emit_signal(SNAME("edited_script_changed"));
+}
+
+void ScriptTextEditor::_update_warnings() {
 	int warning_nb = warnings.size();
 	warnings_panel->clear();
 
@@ -465,7 +475,6 @@ void ScriptTextEditor::_validate_script() {
 		}
 	}
 
-	code_editor->set_error_count(errors.size());
 	code_editor->set_warning_count(warning_nb);
 
 	if (has_connections_table) {
@@ -489,6 +498,10 @@ void ScriptTextEditor::_validate_script() {
 		warnings_panel->pop(); // Cell.
 	}
 	warnings_panel->pop(); // Table.
+}
+
+void ScriptTextEditor::_update_errors() {
+	code_editor->set_error_count(errors.size());
 
 	errors_panel->clear();
 	errors_panel->push_table(2);
@@ -507,6 +520,7 @@ void ScriptTextEditor::_validate_script() {
 	}
 	errors_panel->pop(); // Table
 
+	CodeEdit *te = code_editor->get_text_editor();
 	bool highlight_safe = EDITOR_DEF("text_editor/appearance/gutters/highlight_type_safe_lines", true);
 	bool last_is_safe = false;
 	for (int i = 0; i < te->get_line_count(); i++) {
@@ -536,9 +550,6 @@ void ScriptTextEditor::_validate_script() {
 			te->set_line_gutter_item_color(i, 1, default_line_number_color);
 		}
 	}
-
-	emit_signal(SNAME("name_changed"));
-	emit_signal(SNAME("edited_script_changed"));
 }
 
 void ScriptTextEditor::_update_bookmark_list() {
@@ -920,21 +931,22 @@ void ScriptTextEditor::_update_connected_methods() {
 				continue;
 			}
 
-			if (methods_found.has(connection.callable.get_method())) {
+			const StringName method = connection.callable.get_method();
+			if (methods_found.has(method)) {
 				continue;
 			}
 
-			if (!ClassDB::has_method(script->get_instance_base_type(), connection.callable.get_method())) {
+			if (!ClassDB::has_method(script->get_instance_base_type(), method)) {
 				int line = -1;
 
 				for (int j = 0; j < functions.size(); j++) {
 					String name = functions[j].get_slice(":", 0);
-					if (name == connection.callable.get_method()) {
+					if (name == method) {
 						line = functions[j].get_slice(":", 1).to_int() - 1;
-						text_edit->set_line_gutter_metadata(line, connection_gutter, connection.callable.get_method());
+						text_edit->set_line_gutter_metadata(line, connection_gutter, method);
 						text_edit->set_line_gutter_icon(line, connection_gutter, get_parent_control()->get_theme_icon(SNAME("Slot"), SNAME("EditorIcons")));
 						text_edit->set_line_gutter_clickable(line, connection_gutter, true);
-						methods_found.insert(connection.callable.get_method());
+						methods_found.insert(method);
 						break;
 					}
 				}
@@ -947,7 +959,7 @@ void ScriptTextEditor::_update_connected_methods() {
 				bool found_inherited_function = false;
 				Ref<Script> inherited_script = script->get_base_script();
 				while (!inherited_script.is_null()) {
-					if (inherited_script->has_method(connection.callable.get_method())) {
+					if (inherited_script->has_method(method)) {
 						found_inherited_function = true;
 						break;
 					}
@@ -1285,7 +1297,7 @@ void ScriptTextEditor::_edit_option_toggle_inline_comment() {
 	script->get_language()->get_comment_delimiters(&comment_delimiters);
 
 	for (const String &script_delimiter : comment_delimiters) {
-		if (script_delimiter.find(" ") == -1) {
+		if (!script_delimiter.contains(" ")) {
 			delimiter = script_delimiter;
 			break;
 		}
@@ -1323,6 +1335,11 @@ void ScriptTextEditor::_change_syntax_highlighter(int p_idx) {
 void ScriptTextEditor::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_THEME_CHANGED:
+			if (is_visible_in_tree()) {
+				_update_warnings();
+				_update_errors();
+			}
+			[[fallthrough]];
 		case NOTIFICATION_ENTER_TREE: {
 			code_editor->get_text_editor()->set_gutter_width(connection_gutter, code_editor->get_text_editor()->get_line_height());
 		} break;
@@ -1358,7 +1375,7 @@ void ScriptTextEditor::reload(bool p_soft) {
 		return;
 	}
 	scr->set_source_code(te->get_text());
-	bool soft = p_soft || scr->get_instance_base_type() == "EditorPlugin"; //always soft-reload editor plugins
+	bool soft = p_soft || scr->get_instance_base_type() == "EditorPlugin"; // Always soft-reload editor plugins.
 
 	scr->get_language()->reload_tool_script(scr, soft);
 }
@@ -1375,8 +1392,10 @@ void ScriptTextEditor::clear_breakpoints() {
 	code_editor->get_text_editor()->clear_breakpointed_lines();
 }
 
-void ScriptTextEditor::set_tooltip_request_func(String p_method, Object *p_obj) {
-	code_editor->get_text_editor()->set_tooltip_request_func(p_obj, p_method, this);
+void ScriptTextEditor::set_tooltip_request_func(const Callable &p_toolip_callback) {
+	Variant args[1] = { this };
+	const Variant *argp[] = { &args[0] };
+	code_editor->get_text_editor()->set_tooltip_request_func(p_toolip_callback.bind(argp, 1));
 }
 
 void ScriptTextEditor::set_debugger_active(bool p_active) {

@@ -1543,7 +1543,7 @@ void GDScriptFunction::call_r(Variant &retvalue, GDScriptInstance *p_instance, c
 						}
 					} else if (methodstr == "free") {
 						if (err.error == Callable::CallError::CALL_ERROR_INVALID_METHOD) {
-							if (base->is_ref()) {
+							if (base->is_ref_counted()) {
 								err_text = "Attempted to free a reference.";
 								OPCODE_BREAK;
 							} else if (base->get_type() == Variant::OBJECT) {
@@ -1631,7 +1631,7 @@ void GDScriptFunction::call_r(Variant &retvalue, GDScriptInstance *p_instance, c
 						}
 					} else if (methodstr == "free") {
 						if (err.error == Callable::CallError::CALL_ERROR_INVALID_METHOD) {
-							if (base->is_ref()) {
+							if (base->is_ref_counted()) {
 								err_text = "Attempted to free a reference.";
 								OPCODE_BREAK;
 							} else if (base->get_type() == Variant::OBJECT) {

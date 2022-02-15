@@ -37,6 +37,7 @@
 #include "core/os/keyboard.h"
 #include "editor/debugger/editor_debugger_node.h"
 #include "editor/editor_feature_profile.h"
+#include "editor/editor_file_dialog.h"
 #include "editor/editor_node.h"
 #include "editor/editor_scale.h"
 #include "editor/editor_settings.h"
@@ -78,7 +79,7 @@ void SceneTreeDock::input(const Ref<InputEvent> &p_event) {
 void SceneTreeDock::unhandled_key_input(const Ref<InputEvent> &p_event) {
 	ERR_FAIL_COND(p_event.is_null());
 
-	if (get_focus_owner() && get_focus_owner()->is_text_field()) {
+	if (get_viewport()->gui_get_focus_owner() && get_viewport()->gui_get_focus_owner()->is_text_field()) {
 		return;
 	}
 
@@ -1043,7 +1044,7 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 				if (node) {
 					node->set_scene_inherited_state(Ref<SceneState>());
 					scene_tree->update_tree();
-					EditorNode::get_singleton()->get_inspector()->update_tree();
+					InspectorDock::get_inspector_singleton()->update_tree();
 				}
 			}
 		} break;
@@ -1206,8 +1207,16 @@ void SceneTreeDock::_notification(int p_what) {
 
 			create_root_dialog->add_child(top_row);
 
+			ScrollContainer *scroll_container = memnew(ScrollContainer);
+			scroll_container->set_name("NodeShortcutsScrollContainer");
+			create_root_dialog->add_child(scroll_container);
+			scroll_container->set_v_size_flags(SIZE_EXPAND_FILL);
+			scroll_container->set_horizontal_scroll_mode(ScrollContainer::SCROLL_MODE_DISABLED);
+
 			VBoxContainer *node_shortcuts = memnew(VBoxContainer);
 			node_shortcuts->set_name("NodeShortcuts");
+			scroll_container->add_child(node_shortcuts);
+			node_shortcuts->set_h_size_flags(SIZE_EXPAND_FILL);
 
 			VBoxContainer *beginner_node_shortcuts = memnew(VBoxContainer);
 			beginner_node_shortcuts->set_name("BeginnerNodeShortcuts");
@@ -1247,8 +1256,6 @@ void SceneTreeDock::_notification(int p_what) {
 			button_clipboard->set_icon(get_theme_icon(SNAME("ActionPaste"), SNAME("EditorIcons")));
 			button_clipboard->connect("pressed", callable_bind(callable_mp(this, &SceneTreeDock::_tool_selected), TOOL_PASTE, false));
 
-			node_shortcuts->add_spacer();
-			create_root_dialog->add_child(node_shortcuts);
 			_update_create_root_dialog();
 		} break;
 
@@ -1554,7 +1561,7 @@ void SceneTreeDock::perform_node_renames(Node *p_base, Map<Node *, NodePath> *p_
 
 					for (int i = 0; i < anim->get_track_count(); i++) {
 						NodePath track_np = anim->track_get_path(i);
-						Node *n = root->get_node(track_np);
+						Node *n = root->get_node_or_null(track_np);
 						if (!n) {
 							continue;
 						}
@@ -1723,7 +1730,7 @@ void SceneTreeDock::_do_reparent(Node *p_new_parent, int p_position_in_parent, V
 
 	Node *validate = new_parent;
 	while (validate) {
-		ERR_FAIL_COND_MSG(p_nodes.find(validate) != -1, "Selection changed at some point. Can't reparent.");
+		ERR_FAIL_COND_MSG(p_nodes.has(validate), "Selection changed at some point. Can't reparent.");
 		validate = validate->get_parent();
 	}
 
@@ -2067,7 +2074,7 @@ void SceneTreeDock::_delete_confirm(bool p_cut) {
 	// Fixes the EditorHistory from still offering deleted notes
 	EditorHistory *editor_history = EditorNode::get_singleton()->get_editor_history();
 	editor_history->cleanup_history();
-	EditorNode::get_singleton()->get_inspector_dock()->call_void("_prepare_history");
+	InspectorDock::get_singleton()->call("_prepare_history");
 }
 
 void SceneTreeDock::_update_script_button() {
@@ -2809,15 +2816,9 @@ void SceneTreeDock::_tree_rmb(const Vector2 &p_menu_pos) {
 	menu->popup();
 }
 
-void SceneTreeDock::_open_tree_menu() {
-	menu->clear();
-
-	menu->add_check_item(TTR("Auto Expand to Selected"), TOOL_AUTO_EXPAND);
-	menu->set_item_checked(menu->get_item_idx_from_text(TTR("Auto Expand to Selected")), EditorSettings::get_singleton()->get("docks/scene_tree/auto_expand_to_selected"));
-
-	menu->reset_size();
-	menu->set_position(get_screen_position() + get_local_mouse_position());
-	menu->popup();
+void SceneTreeDock::_update_tree_menu() {
+	PopupMenu *tree_menu = button_tree_menu->get_popup();
+	tree_menu->set_item_checked(tree_menu->get_item_idx_from_text(TTR("Auto Expand to Selected")), EditorSettings::get_singleton()->get("docks/scene_tree/auto_expand_to_selected"));
 }
 
 void SceneTreeDock::_filter_changed(const String &p_filter) {
@@ -3066,6 +3067,10 @@ List<Node *> SceneTreeDock::paste_nodes() {
 	return pasted_nodes;
 }
 
+List<Node *> SceneTreeDock::get_node_clipboard() const {
+	return node_clipboard;
+}
+
 void SceneTreeDock::add_remote_tree_editor(Control *p_remote) {
 	ERR_FAIL_COND(remote_tree != nullptr);
 	add_child(p_remote);
@@ -3114,7 +3119,7 @@ void SceneTreeDock::_local_tree_selected() {
 
 void SceneTreeDock::_update_create_root_dialog() {
 	BaseButton *toggle = Object::cast_to<BaseButton>(create_root_dialog->get_node(String("NodeShortcutsTopRow/NodeShortcutsToggle")));
-	Node *node_shortcuts = create_root_dialog->get_node(String("NodeShortcuts"));
+	Node *node_shortcuts = create_root_dialog->get_node(String("NodeShortcutsScrollContainer/NodeShortcuts"));
 
 	if (!toggle || !node_shortcuts) {
 		return;
@@ -3144,6 +3149,7 @@ void SceneTreeDock::_update_create_root_dialog() {
 					Button *button = memnew(Button);
 					favorite_nodes->add_child(button);
 					button->set_text(l);
+					button->set_clip_text(true);
 					String name = l.get_slicec(' ', 0);
 					if (ScriptServer::is_global_class(name)) {
 						name = ScriptServer::get_global_class_native_base(name);
@@ -3220,7 +3226,7 @@ void SceneTreeDock::_create_remap_for_node(Node *p_node, Map<RES, RES> &r_remap)
 		}
 
 		Variant v = p_node->get(E.name);
-		if (v.is_ref()) {
+		if (v.is_ref_counted()) {
 			RES res = v;
 			if (res.is_valid()) {
 				if (!states_stack_ready) {
@@ -3258,7 +3264,7 @@ void SceneTreeDock::_create_remap_for_resource(RES p_resource, Map<RES, RES> &r_
 		}
 
 		Variant v = p_resource->get(E.name);
-		if (v.is_ref()) {
+		if (v.is_ref_counted()) {
 			RES res = v;
 			if (res.is_valid()) {
 				if (res->is_built_in() && !r_remap.has(res)) {
@@ -3292,6 +3298,7 @@ void SceneTreeDock::_update_configuration_warning() {
 }
 
 SceneTreeDock::SceneTreeDock(EditorNode *p_editor, Node *p_scene_root, EditorSelection *p_editor_selection, EditorData &p_editor_data) {
+	clipboard_resource_remap.set_debug_info(__FILE__, __LINE__);
 	singleton = this;
 	set_name("Scene");
 	editor = p_editor;
@@ -3370,10 +3377,14 @@ SceneTreeDock::SceneTreeDock(EditorNode *p_editor, Node *p_scene_root, EditorSel
 	filter_hbc->add_child(button_detach_script);
 	button_detach_script->hide();
 
-	button_tree_menu = memnew(Button);
+	button_tree_menu = memnew(MenuButton);
 	button_tree_menu->set_flat(true);
-	button_tree_menu->connect("pressed", callable_mp(this, &SceneTreeDock::_open_tree_menu));
+	button_tree_menu->connect("about_to_popup", callable_mp(this, &SceneTreeDock::_update_tree_menu));
 	filter_hbc->add_child(button_tree_menu);
+
+	PopupMenu *tree_menu = button_tree_menu->get_popup();
+	tree_menu->add_check_item(TTR("Auto Expand to Selected"), TOOL_AUTO_EXPAND);
+	tree_menu->connect("id_pressed", callable_mp(this, &SceneTreeDock::_tool_selected), make_binds(false));
 
 	button_hb = memnew(HBoxContainer);
 	vbc->add_child(button_hb);
@@ -3401,6 +3412,7 @@ SceneTreeDock::SceneTreeDock(EditorNode *p_editor, Node *p_scene_root, EditorSel
 
 	create_root_dialog = memnew(VBoxContainer);
 	vbc->add_child(create_root_dialog);
+	create_root_dialog->set_v_size_flags(SIZE_EXPAND_FILL);
 	create_root_dialog->hide();
 
 	scene_tree = memnew(SceneTreeEditor(false, true, true));

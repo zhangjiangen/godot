@@ -49,8 +49,8 @@
 #include "create_dialog.h"
 
 #include "dependency_editor.h"
-#include "editor_dir_dialog.h"
-#include "editor_file_system.h"
+#include "editor/editor_dir_dialog.h"
+#include "editor/editor_file_system.h"
 #include "script_create_dialog.h"
 
 class EditorNode;
@@ -303,6 +303,12 @@ private:
 
 	void _feature_profile_changed();
 	Vector<String> _remove_self_included_paths(Vector<String> selected_strings);
+
+private:
+	static FileSystemDock *singleton;
+
+public:
+	static FileSystemDock *get_singleton() { return singleton; }
 
 protected:
 	void _notification(int p_what);

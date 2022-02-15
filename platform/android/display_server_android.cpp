@@ -95,6 +95,17 @@ String DisplayServerAndroid::clipboard_get() const {
 	}
 }
 
+bool DisplayServerAndroid::clipboard_has() const {
+	GodotJavaWrapper *godot_java = OS_Android::get_singleton()->get_godot_java();
+	ERR_FAIL_COND_V(!godot_java, false);
+
+	if (godot_java->has_has_clipboard()) {
+		return godot_java->has_clipboard();
+	} else {
+		return DisplayServer::clipboard_has();
+	}
+}
+
 void DisplayServerAndroid::screen_set_keep_on(bool p_enable) {
 	GodotJavaWrapper *godot_java = OS_Android::get_singleton()->get_godot_java();
 	ERR_FAIL_COND(!godot_java);
@@ -148,6 +159,16 @@ int DisplayServerAndroid::screen_get_dpi(int p_screen) const {
 	ERR_FAIL_COND_V(!godot_io_java, 0);
 
 	return godot_io_java->get_screen_dpi();
+}
+
+float DisplayServerAndroid::screen_get_refresh_rate(int p_screen) const {
+	GodotIOJavaWrapper *godot_io_java = OS_Android::get_singleton()->get_godot_io_java();
+	if (!godot_io_java) {
+		ERR_PRINT("An error occurred while trying to get the screen refresh rate.");
+		return SCREEN_REFRESH_RATE_FALLBACK;
+	}
+
+	return godot_io_java->get_screen_refresh_rate(SCREEN_REFRESH_RATE_FALLBACK);
 }
 
 bool DisplayServerAndroid::screen_is_touchscreen(int p_screen) const {
@@ -240,6 +261,24 @@ Vector<DisplayServer::WindowID> DisplayServerAndroid::get_window_list() const {
 
 DisplayServer::WindowID DisplayServerAndroid::get_window_at_screen_position(const Point2i &p_position) const {
 	return MAIN_WINDOW_ID;
+}
+
+int64_t DisplayServerAndroid::window_get_native_handle(HandleType p_handle_type, WindowID p_window) const {
+	ERR_FAIL_COND_V(p_window != MAIN_WINDOW_ID, 0);
+	switch (p_handle_type) {
+		case DISPLAY_HANDLE: {
+			return 0; // Not supported.
+		}
+		case WINDOW_HANDLE: {
+			return (int64_t)((OS_Android *)OS::get_singleton())->get_godot_java()->get_activity();
+		}
+		case WINDOW_VIEW: {
+			return 0; // Not supported.
+		}
+		default: {
+			return 0;
+		}
+	}
 }
 
 void DisplayServerAndroid::window_attach_instance_id(ObjectID p_instance, DisplayServer::WindowID p_window) {

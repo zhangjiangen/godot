@@ -31,8 +31,8 @@
 #include "node_dock.h"
 
 #include "connections_dialog.h"
-#include "editor_node.h"
-#include "editor_scale.h"
+#include "editor/editor_node.h"
+#include "editor/editor_scale.h"
 
 void NodeDock::show_groups() {
 	groups_button->set_pressed(true);
@@ -133,4 +133,8 @@ NodeDock::NodeDock() {
 	select_a_node->set_horizontal_alignment(HORIZONTAL_ALIGNMENT_CENTER);
 	select_a_node->set_autowrap_mode(Label::AUTOWRAP_WORD_SMART);
 	add_child(select_a_node);
+}
+
+NodeDock::~NodeDock() {
+	singleton = nullptr;
 }

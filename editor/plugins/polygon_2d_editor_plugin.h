@@ -35,6 +35,9 @@
 
 class ViewPanner;
 class ScrollContainer;
+class Panel;
+class HSlider;
+class SpinBox;
 
 class Polygon2DEditor : public AbstractPolygon2DEditor {
 	GDCLASS(Polygon2DEditor, AbstractPolygon2DEditor);
@@ -81,9 +84,9 @@ class Polygon2DEditor : public AbstractPolygon2DEditor {
 	TextureRect *uv_icon_zoom;
 
 	Ref<ViewPanner> uv_panner;
-	void _uv_scroll_callback(Vector2 p_scroll_vec);
+	void _uv_scroll_callback(Vector2 p_scroll_vec, bool p_alt);
 	void _uv_pan_callback(Vector2 p_scroll_vec);
-	void _uv_zoom_callback(Vector2 p_scroll_vec, Vector2 p_origin);
+	void _uv_zoom_callback(Vector2 p_scroll_vec, Vector2 p_origin, bool p_alt);
 
 	VBoxContainer *bone_scroll_main_vb;
 	ScrollContainer *bone_scroll;

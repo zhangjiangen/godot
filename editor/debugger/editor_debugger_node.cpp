@@ -36,6 +36,7 @@
 #include "editor/editor_node.h"
 #include "editor/plugins/editor_debugger_plugin.h"
 #include "editor/plugins/script_editor_plugin.h"
+#include "editor/scene_tree_dock.h"
 #include "scene/gui/menu_button.h"
 #include "scene/gui/tab_container.h"
 
@@ -65,7 +66,7 @@ EditorDebuggerNode::EditorDebuggerNode() {
 	add_child(tabs);
 
 	Ref<StyleBoxEmpty> empty;
-	New_instantiate(empty);
+	empty.instantiate();
 	tabs->add_theme_style_override("panel", empty);
 
 	auto_switch_remote_scene_tree = EDITOR_DEF("debugger/auto_switch_to_remote_scene_tree", false);
@@ -75,8 +76,8 @@ EditorDebuggerNode::EditorDebuggerNode() {
 	remote_scene_tree = memnew(EditorDebuggerTree);
 	remote_scene_tree->connect("object_selected", callable_mp(this, &EditorDebuggerNode::_remote_object_requested));
 	remote_scene_tree->connect("save_node", callable_mp(this, &EditorDebuggerNode::_save_node_requested));
-	EditorNode::get_singleton()->get_scene_tree_dock()->add_remote_tree_editor(remote_scene_tree);
-	EditorNode::get_singleton()->get_scene_tree_dock()->connect("remote_tree_selected", callable_mp(this, &EditorDebuggerNode::request_remote_tree));
+	SceneTreeDock::get_singleton()->add_remote_tree_editor(remote_scene_tree);
+	SceneTreeDock::get_singleton()->connect("remote_tree_selected", callable_mp(this, &EditorDebuggerNode::request_remote_tree));
 
 	remote_scene_tree_timeout = EDITOR_DEF("debugger/remote_scene_tree_refresh_interval", 1.0);
 	inspect_edited_object_timeout = EDITOR_DEF("debugger/remote_inspect_refresh_interval", 0.2);
@@ -332,10 +333,10 @@ void EditorDebuggerNode::_notification(int p_what) {
 		// Switch to remote tree view if so desired.
 		auto_switch_remote_scene_tree = (bool)EditorSettings::get_singleton()->get("debugger/auto_switch_to_remote_scene_tree");
 		if (auto_switch_remote_scene_tree) {
-			EditorNode::get_singleton()->get_scene_tree_dock()->show_remote_tree();
+			SceneTreeDock::get_singleton()->show_remote_tree();
 		}
 		// Good to go.
-		EditorNode::get_singleton()->get_scene_tree_dock()->show_tab_buttons();
+		SceneTreeDock::get_singleton()->show_tab_buttons();
 		debugger->set_editor_remote_tree(remote_scene_tree);
 		debugger->start(server->take_connection());
 		// Send breakpoints.
@@ -361,8 +362,8 @@ void EditorDebuggerNode::_debugger_stopped(int p_id) {
 	if (!found) {
 		EditorNode::get_singleton()->get_pause_button()->set_pressed(false);
 		EditorNode::get_singleton()->get_pause_button()->set_disabled(true);
-		EditorNode::get_singleton()->get_scene_tree_dock()->hide_remote_tree();
-		EditorNode::get_singleton()->get_scene_tree_dock()->hide_tab_buttons();
+		SceneTreeDock::get_singleton()->hide_remote_tree();
+		SceneTreeDock::get_singleton()->hide_tab_buttons();
 		EditorNode::get_singleton()->notify_all_debug_sessions_exited();
 	}
 }
@@ -500,7 +501,7 @@ void EditorDebuggerNode::set_breakpoint(const String &p_path, int p_line, bool p
 		dbg->set_breakpoint(p_path, p_line, p_enabled);
 	});
 
-	emit_signal("breakpoint_toggled", p_path, p_line, p_enabled);
+	emit_signal(SNAME("breakpoint_toggled"), p_path, p_line, p_enabled);
 }
 
 void EditorDebuggerNode::set_breakpoints(const String &p_path, Array p_lines) {
@@ -576,7 +577,7 @@ void EditorDebuggerNode::_remote_object_property_updated(ObjectID p_id, const St
 		if (obj->remote_object_id != p_id) {
 			return;
 		}
-		EditorNode::get_singleton()->get_inspector()->update_property(p_property);
+		InspectorDock::get_inspector_singleton()->update_property(p_property);
 	}
 }
 
@@ -683,7 +684,7 @@ EditorDebuggerNode::CameraOverride EditorDebuggerNode::get_camera_override() {
 void EditorDebuggerNode::add_debugger_plugin(const Ref<Script> &p_script) {
 	ERR_FAIL_COND_MSG(debugger_plugins.has(p_script), "Debugger plugin already exists.");
 	ERR_FAIL_COND_MSG(p_script.is_null(), "Debugger plugin script is null");
-	ERR_FAIL_COND_MSG(String(p_script->get_instance_base_type()) == "", "Debugger plugin script has error.");
+	ERR_FAIL_COND_MSG(p_script->get_instance_base_type() == StringName(), "Debugger plugin script has error.");
 	ERR_FAIL_COND_MSG(String(p_script->get_instance_base_type()) != "EditorDebuggerPlugin", "Base type of debugger plugin is not 'EditorDebuggerPlugin'.");
 	ERR_FAIL_COND_MSG(!p_script->is_tool(), "Debugger plugin script is not in tool mode.");
 	debugger_plugins.insert(p_script);

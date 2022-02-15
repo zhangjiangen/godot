@@ -32,6 +32,7 @@
 
 #include "core/object/message_queue.h"
 #include "core/string/print_string.h"
+#include "editor/editor_file_system.h"
 #include "editor/editor_node.h"
 #include "editor/editor_scale.h"
 #include "editor/node_dock.h"
@@ -133,8 +134,8 @@ void SceneTreeEditor::_cell_button_pressed(Object *p_item, int p_column, int p_i
 
 		set_selected(n);
 
-		NodeDock::singleton->get_parent()->call_void("set_current_tab", NodeDock::singleton->get_index());
-		NodeDock::singleton->show_connections();
+		NodeDock::get_singleton()->get_parent()->call("set_current_tab", NodeDock::get_singleton()->get_index());
+		NodeDock::get_singleton()->show_connections();
 
 	} else if (p_id == BUTTON_GROUPS) {
 		editor_selection->clear();
@@ -142,8 +143,8 @@ void SceneTreeEditor::_cell_button_pressed(Object *p_item, int p_column, int p_i
 
 		set_selected(n);
 
-		NodeDock::singleton->get_parent()->call_void("set_current_tab", NodeDock::singleton->get_index());
-		NodeDock::singleton->show_groups();
+		NodeDock::get_singleton()->get_parent()->call("set_current_tab", NodeDock::get_singleton()->get_index());
+		NodeDock::get_singleton()->show_groups();
 	}
 }
 
@@ -362,6 +363,17 @@ bool SceneTreeEditor::_add_nodes(Node *p_node, TreeItem *p_parent, bool p_scroll
 			}
 
 			_update_visibility_color(p_node, item);
+		} else if (p_node->is_class("CanvasLayer")) {
+			bool v = p_node->call("is_visible");
+			if (v) {
+				item->add_button(0, get_theme_icon(SNAME("GuiVisibilityVisible"), SNAME("EditorIcons")), BUTTON_VISIBILITY, false, TTR("Toggle Visibility"));
+			} else {
+				item->add_button(0, get_theme_icon(SNAME("GuiVisibilityHidden"), SNAME("EditorIcons")), BUTTON_VISIBILITY, false, TTR("Toggle Visibility"));
+			}
+
+			if (!p_node->is_connected("visibility_changed", callable_mp(this, &SceneTreeEditor::_node_visibility_changed))) {
+				p_node->connect("visibility_changed", callable_mp(this, &SceneTreeEditor::_node_visibility_changed), varray(p_node));
+			}
 		} else if (p_node->is_class("Node3D")) {
 			bool is_locked = p_node->has_meta("_edit_lock_");
 			if (is_locked) {
@@ -411,7 +423,7 @@ bool SceneTreeEditor::_add_nodes(Node *p_node, TreeItem *p_parent, bool p_scroll
 		item->set_as_cursor(0);
 	}
 
-	bool keep = (filter.is_subsequence_ofi(String(p_node->get_name())));
+	bool keep = (filter.is_subsequence_ofn(String(p_node->get_name())));
 
 	for (int i = 0; i < p_node->get_child_count(); i++) {
 		bool child_keep = _add_nodes(p_node->get_child(i), item, p_scroll_to_selected);
@@ -471,6 +483,9 @@ void SceneTreeEditor::_node_visibility_changed(Node *p_node) {
 	if (p_node->is_class("CanvasItem")) {
 		visible = p_node->call("is_visible");
 		CanvasItemEditor::get_singleton()->get_viewport_control()->update();
+	} else if (p_node->is_class("CanvasLayer")) {
+		visible = p_node->call("is_visible");
+		CanvasItemEditor::get_singleton()->get_viewport_control()->update();
 	} else if (p_node->is_class("Node3D")) {
 		visible = p_node->call("is_visible");
 	}
@@ -514,7 +529,7 @@ void SceneTreeEditor::_node_removed(Node *p_node) {
 		p_node->disconnect("script_changed", callable_mp(this, &SceneTreeEditor::_node_script_changed));
 	}
 
-	if (p_node->is_class("Node3D") || p_node->is_class("CanvasItem")) {
+	if (p_node->is_class("Node3D") || p_node->is_class("CanvasItem") || p_node->is_class("CanvasLayer")) {
 		if (p_node->is_connected("visibility_changed", callable_mp(this, &SceneTreeEditor::_node_visibility_changed))) {
 			p_node->disconnect("visibility_changed", callable_mp(this, &SceneTreeEditor::_node_visibility_changed));
 		}

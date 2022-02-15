@@ -289,10 +289,10 @@ void RendererSceneRenderRD::environment_set_tonemap(RID p_env, RS::EnvironmentTo
 	env->set_tonemap(p_tone_mapper, p_exposure, p_white, p_auto_exposure, p_min_luminance, p_max_luminance, p_auto_exp_speed, p_auto_exp_scale);
 }
 
-void RendererSceneRenderRD::environment_set_glow(RID p_env, bool p_enable, Vector<float> p_levels, float p_intensity, float p_strength, float p_mix, float p_bloom_threshold, RS::EnvironmentGlowBlendMode p_blend_mode, float p_hdr_bleed_threshold, float p_hdr_bleed_scale, float p_hdr_luminance_cap) {
+void RendererSceneRenderRD::environment_set_glow(RID p_env, bool p_enable, Vector<float> p_levels, float p_intensity, float p_strength, float p_mix, float p_bloom_threshold, RS::EnvironmentGlowBlendMode p_blend_mode, float p_hdr_bleed_threshold, float p_hdr_bleed_scale, float p_hdr_luminance_cap, float p_glow_map_strength, RID p_glow_map) {
 	RendererSceneEnvironmentRD *env = environment_owner.get_or_null(p_env);
 	ERR_FAIL_COND(!env);
-	env->set_glow(p_enable, p_levels, p_intensity, p_strength, p_mix, p_bloom_threshold, p_blend_mode, p_hdr_bleed_threshold, p_hdr_bleed_scale, p_hdr_luminance_cap);
+	env->set_glow(p_enable, p_levels, p_intensity, p_strength, p_mix, p_bloom_threshold, p_blend_mode, p_hdr_bleed_threshold, p_hdr_bleed_scale, p_hdr_luminance_cap, p_glow_map_strength, p_glow_map);
 }
 
 void RendererSceneRenderRD::environment_glow_set_use_bicubic_upscale(bool p_enable) {
@@ -514,7 +514,7 @@ Ref<Image> RendererSceneRenderRD::environment_bake_panorama(RID p_env, bool p_ba
 		ambient_color_sky_mix = env->ambient_sky_contribution;
 		const float ambient_energy = env->ambient_light_energy;
 		ambient_color = env->ambient_light;
-		ambient_color.to_linear();
+		ambient_color = ambient_color.to_linear();
 		ambient_color.r *= ambient_energy;
 		ambient_color.g *= ambient_energy;
 		ambient_color.b *= ambient_energy;
@@ -533,7 +533,7 @@ Ref<Image> RendererSceneRenderRD::environment_bake_panorama(RID p_env, bool p_ba
 	} else {
 		const float bg_energy = env->bg_energy;
 		Color panorama_color = ((environment_background == RS::ENV_BG_CLEAR_COLOR) ? storage->get_default_clear_color() : env->bg_color);
-		panorama_color.to_linear();
+		panorama_color = panorama_color.to_linear();
 		panorama_color.r *= bg_energy;
 		panorama_color.g *= bg_energy;
 		panorama_color.b *= bg_energy;
@@ -925,7 +925,7 @@ void RendererSceneRenderRD::shadow_atlas_set_size(RID p_atlas, int p_size, bool 
 	}
 	for (int i = 0; i < 4; i++) {
 		//clear subdivisions
-		shadow_atlas->quadrants[i].shadows.resize(0);
+		shadow_atlas->quadrants[i].shadows.clear();
 		shadow_atlas->quadrants[i].shadows.resize(1 << shadow_atlas->quadrants[i].subdivision);
 	}
 
@@ -972,7 +972,7 @@ void RendererSceneRenderRD::shadow_atlas_set_quadrant_subdivision(RID p_atlas, i
 		}
 	}
 
-	shadow_atlas->quadrants[p_quadrant].shadows.resize(0);
+	shadow_atlas->quadrants[p_quadrant].shadows.clear();
 	shadow_atlas->quadrants[p_quadrant].shadows.resize(subdiv * subdiv);
 	shadow_atlas->quadrants[p_quadrant].subdivision = subdiv;
 
@@ -1132,11 +1132,11 @@ bool RendererSceneRenderRD::_shadow_atlas_find_omni_shadows(ShadowAtlas *shadow_
 	return false;
 }
 
-bool RendererSceneRenderRD::shadow_atlas_update_light(RID p_atlas, RID p_light_intance, float p_coverage, uint64_t p_light_version) {
+bool RendererSceneRenderRD::shadow_atlas_update_light(RID p_atlas, RID p_light_instance, float p_coverage, uint64_t p_light_version) {
 	ShadowAtlas *shadow_atlas = shadow_atlas_owner.get_or_null(p_atlas);
 	ERR_FAIL_COND_V(!shadow_atlas, false);
 
-	LightInstance *li = light_instance_owner.get_or_null(p_light_intance);
+	LightInstance *li = light_instance_owner.get_or_null(p_light_instance);
 	ERR_FAIL_COND_V(!li, false);
 
 	if (shadow_atlas->size == 0 || shadow_atlas->smallest_subdiv == 0) {
@@ -1185,8 +1185,8 @@ bool RendererSceneRenderRD::shadow_atlas_update_light(RID p_atlas, RID p_light_i
 	bool should_realloc = false;
 	bool should_redraw = false;
 
-	if (shadow_atlas->shadow_owners.has(p_light_intance)) {
-		old_key = shadow_atlas->shadow_owners[p_light_intance];
+	if (shadow_atlas->shadow_owners.has(p_light_instance)) {
+		old_key = shadow_atlas->shadow_owners[p_light_instance];
 		old_quadrant = (old_key >> ShadowAtlas::QUADRANT_SHIFT) & 0x3;
 		old_shadow = old_key & ShadowAtlas::SHADOW_INDEX_MASK;
 
@@ -1230,7 +1230,7 @@ bool RendererSceneRenderRD::shadow_atlas_update_light(RID p_atlas, RID p_light_i
 		ShadowAtlas::Quadrant::Shadow *sh = &shadow_atlas->quadrants[new_quadrant].shadows.write[new_shadow];
 		_shadow_atlas_invalidate_shadow(sh, p_atlas, shadow_atlas, new_quadrant, new_shadow);
 
-		sh->owner = p_light_intance;
+		sh->owner = p_light_instance;
 		sh->alloc_tick = tick;
 		sh->version = p_light_version;
 
@@ -1241,7 +1241,7 @@ bool RendererSceneRenderRD::shadow_atlas_update_light(RID p_atlas, RID p_light_i
 			ShadowAtlas::Quadrant::Shadow *extra_sh = &shadow_atlas->quadrants[new_quadrant].shadows.write[new_omni_shadow];
 			_shadow_atlas_invalidate_shadow(extra_sh, p_atlas, shadow_atlas, new_quadrant, new_omni_shadow);
 
-			extra_sh->owner = p_light_intance;
+			extra_sh->owner = p_light_instance;
 			extra_sh->alloc_tick = tick;
 			extra_sh->version = p_light_version;
 		}
@@ -1249,7 +1249,7 @@ bool RendererSceneRenderRD::shadow_atlas_update_light(RID p_atlas, RID p_light_i
 		li->shadow_atlases.insert(p_atlas);
 
 		//update it in map
-		shadow_atlas->shadow_owners[p_light_intance] = new_key;
+		shadow_atlas->shadow_owners[p_light_instance] = new_key;
 		//make it dirty, as it should redraw anyway
 		return true;
 	}
@@ -1270,10 +1270,10 @@ void RendererSceneRenderRD::_shadow_atlas_invalidate_shadow(RendererSceneRenderR
 			omni_shadow->owner = RID();
 		}
 
+		p_shadow_atlas->shadow_owners.erase(p_shadow->owner);
 		p_shadow->version = 0;
 		p_shadow->owner = RID();
 		sli->shadow_atlases.erase(p_atlas);
-		p_shadow_atlas->shadow_owners.erase(p_shadow->owner);
 	}
 }
 
@@ -1920,6 +1920,11 @@ void RendererSceneRenderRD::_free_render_buffer_data(RenderBuffers *rb) {
 		rb->ambient_buffer = RID();
 		rb->reflection_buffer = RID();
 	}
+
+	if (rb->gi.voxel_gi_buffer.is_valid()) {
+		RD::get_singleton()->free(rb->gi.voxel_gi_buffer);
+		rb->gi.voxel_gi_buffer = RID();
+	}
 }
 
 void RendererSceneRenderRD::_process_sss(RID p_render_buffers, const CameraMatrix &p_camera) {
@@ -2496,8 +2501,17 @@ void RendererSceneRenderRD::_render_buffers_post_process_and_tonemap(const Rende
 			tonemap.glow_texture_size.y = rb->blur[1].mipmaps[0].height;
 			tonemap.glow_use_bicubic_upscale = glow_bicubic_upscale;
 			tonemap.glow_texture = rb->blur[1].texture;
+			if (env->glow_map.is_valid()) {
+				tonemap.glow_map_strength = env->glow_map_strength;
+				tonemap.glow_map = storage->texture_get_rd_texture(env->glow_map);
+			} else {
+				tonemap.glow_map_strength = 0.0f;
+				tonemap.glow_map = storage->texture_rd_get_default(RendererStorageRD::DEFAULT_RD_TEXTURE_WHITE);
+			}
+
 		} else {
 			tonemap.glow_texture = storage->texture_rd_get_default(RendererStorageRD::DEFAULT_RD_TEXTURE_BLACK);
+			tonemap.glow_map = storage->texture_rd_get_default(RendererStorageRD::DEFAULT_RD_TEXTURE_WHITE);
 		}
 
 		if (rb->screen_space_aa == RS::VIEWPORT_SCREEN_SPACE_AA_FXAA) {
@@ -2590,6 +2604,7 @@ void RendererSceneRenderRD::_post_process_subpass(RID p_source_texture, RID p_fr
 
 	tonemap.use_glow = false;
 	tonemap.glow_texture = storage->texture_rd_get_default(RendererStorageRD::DEFAULT_RD_TEXTURE_BLACK);
+	tonemap.glow_map = storage->texture_rd_get_default(RendererStorageRD::DEFAULT_RD_TEXTURE_WHITE);
 	tonemap.use_auto_exposure = false;
 	tonemap.exposure_texture = storage->texture_rd_get_default(RendererStorageRD::DEFAULT_RD_TEXTURE_WHITE);
 
@@ -2636,8 +2651,12 @@ void RendererSceneRenderRD::_render_buffers_debug_draw(RID p_render_buffers, RID
 	if (debug_draw == RS::VIEWPORT_DEBUG_DRAW_SHADOW_ATLAS) {
 		if (p_shadow_atlas.is_valid()) {
 			RID shadow_atlas_texture = shadow_atlas_get_texture(p_shadow_atlas);
-			Size2 rtsize = storage->render_target_get_size(rb->render_target);
 
+			if (shadow_atlas_texture.is_null()) {
+				shadow_atlas_texture = storage->texture_rd_get_default(RendererStorageRD::DEFAULT_RD_TEXTURE_BLACK);
+			}
+
+			Size2 rtsize = storage->render_target_get_size(rb->render_target);
 			effects->copy_to_fb_rect(shadow_atlas_texture, storage->render_target_get_rd_framebuffer(rb->render_target), Rect2i(Vector2(), rtsize / 2), false, true);
 		}
 	}
@@ -3244,7 +3263,6 @@ void RendererSceneRenderRD::_setup_lights(const PagedArray<RID> &p_lights, const
 
 	r_directional_light_count = 0;
 	r_positional_light_count = 0;
-	sky.sky_scene_state.ubo.directional_light_count = 0;
 
 	Plane camera_plane(-p_camera_transform.basis.get_axis(Vector3::AXIS_Z).normalized(), p_camera_transform.origin);
 
@@ -3265,43 +3283,7 @@ void RendererSceneRenderRD::_setup_lights(const PagedArray<RID> &p_lights, const
 		RS::LightType type = storage->light_get_type(base);
 		switch (type) {
 			case RS::LIGHT_DIRECTIONAL: {
-				//	Copy to SkyDirectionalLightData
-				if (r_directional_light_count < sky.sky_scene_state.max_directional_lights) {
-					RendererSceneSkyRD::SkyDirectionalLightData &sky_light_data = sky.sky_scene_state.directional_lights[r_directional_light_count];
-					Transform3D light_transform = li->transform;
-					Vector3 world_direction = light_transform.basis.xform(Vector3(0, 0, 1)).normalized();
-
-					sky_light_data.direction[0] = world_direction.x;
-					sky_light_data.direction[1] = world_direction.y;
-					sky_light_data.direction[2] = -world_direction.z;
-
-					float sign = storage->light_is_negative(base) ? -1 : 1;
-					sky_light_data.energy = sign * storage->light_get_param(base, RS::LIGHT_PARAM_ENERGY);
-
-					Color linear_col = storage->light_get_color(base).to_linear();
-					sky_light_data.color[0] = linear_col.r;
-					sky_light_data.color[1] = linear_col.g;
-					sky_light_data.color[2] = linear_col.b;
-
-					sky_light_data.enabled = true;
-
-					float angular_diameter = storage->light_get_param(base, RS::LIGHT_PARAM_SIZE);
-					if (angular_diameter > 0.0) {
-						// I know tan(0) is 0, but let's not risk it with numerical precision.
-						// technically this will keep expanding until reaching the sun, but all we care
-						// is expand until we reach the radius of the near plane (there can't be more occluders than that)
-						angular_diameter = Math::tan(Math::deg2rad(angular_diameter));
-						if (storage->light_has_shadow(base)) {
-							r_directional_light_soft_shadows = true;
-						}
-					} else {
-						angular_diameter = 0.0;
-					}
-					sky_light_data.size = angular_diameter;
-					sky.sky_scene_state.ubo.directional_light_count++;
-				}
-
-				if (r_directional_light_count >= cluster.max_directional_lights || storage->light_directional_is_sky_only(base)) {
+				if (r_directional_light_count >= cluster.max_directional_lights) {
 					continue;
 				}
 
@@ -3378,6 +3360,9 @@ void RendererSceneRenderRD::_setup_lights(const PagedArray<RID> &p_lights, const
 					// technically this will keep expanding until reaching the sun, but all we care
 					// is expand until we reach the radius of the near plane (there can't be more occluders than that)
 					angular_diameter = Math::tan(Math::deg2rad(angular_diameter));
+					if (storage->light_has_shadow(base)) {
+						r_directional_light_soft_shadows = true;
+					}
 				} else {
 					angular_diameter = 0.0;
 				}

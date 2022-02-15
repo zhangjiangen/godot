@@ -238,9 +238,12 @@ class RendererCanvasRenderRD : public RendererCanvasRender {
 		RID indices;
 	};
 
-	struct {
+	struct PolygonBuffersMap {
 		HashMap<PolygonID, PolygonBuffers> polygons;
 		PolygonID last_id;
+		PolygonBuffersMap() {
+			polygons.set_debug_info(__FILE__, __LINE__);
+		}
 	} polygon_buffers;
 
 	/********************/

@@ -259,7 +259,7 @@ public:
 		ARRAY_FORMAT_WEIGHTS = 1 << ARRAY_WEIGHTS,
 		ARRAY_FORMAT_INDEX = 1 << ARRAY_INDEX,
 
-		ARRAY_FORMAT_BLEND_SHAPE_MASK = (~(ARRAY_FORMAT_COLOR | ARRAY_FORMAT_TEX_UV | ARRAY_FORMAT_TEX_UV2 | ARRAY_FORMAT_BONES | ARRAY_FORMAT_WEIGHTS | ARRAY_FORMAT_CUSTOM0 | ARRAY_FORMAT_CUSTOM1 | ARRAY_FORMAT_CUSTOM2 | ARRAY_FORMAT_CUSTOM3 | ARRAY_FORMAT_INDEX)) & 0x7FFFFFFF,
+		ARRAY_FORMAT_BLEND_SHAPE_MASK = ARRAY_FORMAT_VERTEX | ARRAY_FORMAT_NORMAL | ARRAY_FORMAT_TANGENT,
 
 		ARRAY_FORMAT_CUSTOM_BASE = (ARRAY_INDEX + 1),
 		ARRAY_FORMAT_CUSTOM_BITS = 3,
@@ -447,8 +447,8 @@ public:
 
 	enum LightBakeMode {
 		LIGHT_BAKE_DISABLED,
-		LIGHT_BAKE_DYNAMIC,
 		LIGHT_BAKE_STATIC,
+		LIGHT_BAKE_DYNAMIC,
 	};
 
 	virtual void light_set_bake_mode(RID p_light, LightBakeMode p_bake_mode) = 0;
@@ -473,7 +473,7 @@ public:
 	virtual void light_directional_set_blend_splits(RID p_light, bool p_enable) = 0;
 	virtual void light_directional_set_sky_only(RID p_light, bool p_sky_only) = 0;
 
-	virtual void directional_shadow_atlas_set_size(int p_size, bool p_16_bits = false) = 0;
+	virtual void directional_shadow_atlas_set_size(int p_size, bool p_16_bits = true) = 0;
 
 	enum ShadowQuality {
 		SHADOW_QUALITY_HARD,
@@ -847,7 +847,7 @@ public:
 
 	virtual void viewport_set_sdf_oversize_and_scale(RID p_viewport, ViewportSDFOversize p_oversize, ViewportSDFScale p_scale) = 0;
 
-	virtual void viewport_set_shadow_atlas_size(RID p_viewport, int p_size, bool p_16_bits = false) = 0;
+	virtual void viewport_set_shadow_atlas_size(RID p_viewport, int p_size, bool p_16_bits = true) = 0;
 	virtual void viewport_set_shadow_atlas_quadrant_subdivision(RID p_viewport, int p_quadrant, int p_subdiv) = 0;
 
 	enum ViewportMSAA {
@@ -991,7 +991,7 @@ public:
 		ENV_GLOW_BLEND_MODE_MIX,
 	};
 
-	virtual void environment_set_glow(RID p_env, bool p_enable, Vector<float> p_levels, float p_intensity, float p_strength, float p_mix, float p_bloom_threshold, EnvironmentGlowBlendMode p_blend_mode, float p_hdr_bleed_threshold, float p_hdr_bleed_scale, float p_hdr_luminance_cap) = 0;
+	virtual void environment_set_glow(RID p_env, bool p_enable, Vector<float> p_levels, float p_intensity, float p_strength, float p_mix, float p_bloom_threshold, EnvironmentGlowBlendMode p_blend_mode, float p_hdr_bleed_threshold, float p_hdr_bleed_scale, float p_hdr_luminance_cap, float p_glow_map_strength, RID p_glow_map) = 0;
 
 	virtual void environment_glow_set_use_bicubic_upscale(bool p_enable) = 0;
 	virtual void environment_glow_set_use_high_quality(bool p_enable) = 0;
@@ -1042,9 +1042,9 @@ public:
 	virtual void environment_set_ssil_quality(EnvironmentSSILQuality p_quality, bool p_half_size, float p_adaptive_target, int p_blur_passes, float p_fadeout_from, float p_fadeout_to) = 0;
 
 	enum EnvironmentSDFGIYScale {
-		ENV_SDFGI_Y_SCALE_DISABLED,
+		ENV_SDFGI_Y_SCALE_50_PERCENT,
 		ENV_SDFGI_Y_SCALE_75_PERCENT,
-		ENV_SDFGI_Y_SCALE_50_PERCENT
+		ENV_SDFGI_Y_SCALE_100_PERCENT,
 	};
 
 	virtual void environment_set_sdfgi(RID p_env, bool p_enable, int p_cascades, float p_min_cell_size, EnvironmentSDFGIYScale p_y_scale, bool p_use_occlusion, float p_bounce_feedback, bool p_read_sky, float p_energy, float p_normal_bias, float p_probe_bias) = 0;
@@ -1510,16 +1510,7 @@ public:
 	virtual void mesh_add_surface_from_mesh_data(RID p_mesh, const Geometry3D::MeshData &p_mesh_data);
 	virtual void mesh_add_surface_from_planes(RID p_mesh, const Vector<Plane> &p_planes);
 
-	enum SplashStretchMode {
-		SPLASH_STRETCH_MODE_DISABLED,
-		SPLASH_STRETCH_MODE_KEEP,
-		SPLASH_STRETCH_MODE_KEEP_WIDTH,
-		SPLASH_STRETCH_MODE_KEEP_HEIGHT,
-		SPLASH_STRETCH_MODE_COVER,
-		SPLASH_STRETCH_MODE_EXPAND,
-	};
-
-	virtual void set_boot_image(const Ref<Image> &p_image, const Color &p_color, RenderingServer::SplashStretchMode p_stretch_mode, bool p_use_filter = true) = 0;
+	virtual void set_boot_image(const Ref<Image> &p_image, const Color &p_color, bool p_scale, bool p_use_filter = true) = 0;
 	virtual void set_default_clear_color(const Color &p_color) = 0;
 
 	enum Features {
@@ -1633,7 +1624,6 @@ VARIANT_ENUM_CAST(RenderingServer::CanvasLightShadowFilter);
 VARIANT_ENUM_CAST(RenderingServer::CanvasOccluderPolygonCullMode);
 VARIANT_ENUM_CAST(RenderingServer::GlobalVariableType);
 VARIANT_ENUM_CAST(RenderingServer::RenderingInfo);
-VARIANT_ENUM_CAST(RenderingServer::SplashStretchMode);
 VARIANT_ENUM_CAST(RenderingServer::Features);
 VARIANT_ENUM_CAST(RenderingServer::CanvasTextureChannel);
 VARIANT_ENUM_CAST(RenderingServer::BakeChannels);

@@ -32,10 +32,8 @@
 #define CANVAS_ITEM_H
 
 #include "scene/main/node.h"
-#include "scene/main/scene_tree.h"
 #include "scene/resources/canvas_item_material.h"
 #include "scene/resources/font.h"
-#include "servers/text_server.h"
 
 class CanvasLayer;
 class MultiMesh;
@@ -45,6 +43,8 @@ class World2D;
 
 class CanvasItem : public Node {
 	GDCLASS(CanvasItem, Node);
+
+	friend class CanvasLayer;
 
 public:
 	enum TextureFilter : uint8_t {
@@ -80,30 +80,31 @@ private:
 	List<CanvasItem *> children_items;
 	List<CanvasItem *>::Element *C = nullptr;
 
+	int light_mask = 1;
+	mutable bool global_invalid = false;
 	Ref<Material> material;
+	bool first_draw = false;
+	bool visible = true;
+	bool visible_in_tree = false;
+	bool clip_children = false;
+	bool pending_update = false;
+	bool top_level = false;
+	bool drawing = false;
+	bool block_transform_notify = false;
+	bool behind = false;
+	bool use_parent_material = false;
+	bool notify_local_transform = false;
+	bool notify_transform = false;
 
 	mutable Transform2D global_transform;
-	int light_mask = 1;
 	RS::CanvasItemTextureFilter texture_filter_cache = RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR;
 	RS::CanvasItemTextureRepeat texture_repeat_cache = RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED;
 	TextureFilter texture_filter = TEXTURE_FILTER_PARENT_NODE;
 	TextureRepeat texture_repeat = TEXTURE_REPEAT_PARENT_NODE;
-	bool first_draw : 2;
-	bool visible : 2;
-	bool clip_children : 2;
-	bool pending_update : 2;
-	bool top_level : 2;
-	bool drawing : 2;
-	bool block_transform_notify : 2;
-	bool behind : 2;
-	bool use_parent_material : 2;
-	bool notify_local_transform : 2;
-	bool notify_transform : 2;
-	mutable bool global_invalid : 2;
 
 	void _top_level_raise_self();
 
-	void _propagate_visibility_changed(bool p_visible);
+	void _propagate_visibility_changed(bool p_visible, bool p_was_visible = false);
 
 	void _update_callback();
 

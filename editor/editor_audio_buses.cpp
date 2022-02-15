@@ -30,11 +30,13 @@
 
 #include "editor_audio_buses.h"
 
+#include "core/config/project_settings.h"
 #include "core/input/input.h"
 #include "core/io/resource_saver.h"
 #include "core/os/keyboard.h"
-#include "editor_node.h"
-#include "editor_scale.h"
+#include "editor/editor_file_dialog.h"
+#include "editor/editor_node.h"
+#include "editor/editor_scale.h"
 #include "filesystem_dock.h"
 #include "scene/resources/font.h"
 #include "servers/audio_server.h"
@@ -1163,7 +1165,7 @@ void EditorAudioBuses::_server_save() {
 }
 
 void EditorAudioBuses::_select_layout() {
-	EditorNode::get_singleton()->get_filesystem_dock()->select_file(edited_path);
+	FileSystemDock::get_singleton()->select_file(edited_path);
 }
 
 void EditorAudioBuses::_save_as_layout() {

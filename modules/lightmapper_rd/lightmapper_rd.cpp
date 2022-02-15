@@ -275,7 +275,7 @@ Lightmapper::BakeError LightmapperRD::_blit_meshes_into_atlas(int p_max_texture_
 }
 
 void LightmapperRD::_create_acceleration_structures(RenderingDevice *rd, Size2i atlas_size, int atlas_slices, AABB &bounds, int grid_size, Vector<Probe> &probe_positions, GenerateProbes p_generate_probes, Vector<int> &slice_triangle_count, Vector<int> &slice_seam_count, RID &vertex_buffer, RID &triangle_buffer, RID &lights_buffer, RID &triangle_cell_indices_buffer, RID &probe_positions_buffer, RID &grid_texture, RID &seams_buffer, BakeStepFunc p_step_function, void *p_bake_userdata) {
-	HashMap<Vertex, uint32_t, VertexHash> vertex_map;
+	HashMap<Vertex, uint32_t, VertexHash> vertex_map(__FILE__, __LINE__);
 
 	//fill triangles array and vertex array
 	LocalVector<Triangle> triangles;
@@ -298,7 +298,7 @@ void LightmapperRD::_create_acceleration_structures(RenderingDevice *rd, Size2i 
 			p_step_function(0.3 + p, vformat(TTR("Plotting mesh into acceleration structure %d/%d"), m_i + 1, mesh_instances.size()), p_bake_userdata, false);
 		}
 
-		HashMap<Edge, EdgeUV2, EdgeHash> edges;
+		HashMap<Edge, EdgeUV2, EdgeHash> edges(__FILE__, __LINE__);
 
 		MeshInstance &mi = mesh_instances.write[m_i];
 

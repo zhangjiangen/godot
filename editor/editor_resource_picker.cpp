@@ -30,13 +30,15 @@
 
 #include "editor_resource_picker.h"
 
+#include "editor/editor_file_dialog.h"
+#include "editor/editor_node.h"
 #include "editor/editor_resource_preview.h"
-#include "editor_node.h"
-#include "editor_scale.h"
-#include "editor_settings.h"
-#include "filesystem_dock.h"
+#include "editor/editor_scale.h"
+#include "editor/editor_settings.h"
+#include "editor/filesystem_dock.h"
+#include "editor/scene_tree_dock.h"
 
-HashMap<StringName, List<StringName>> EditorResourcePicker::allowed_types_cache;
+HashMap<StringName, List<StringName>> EditorResourcePicker::allowed_types_cache(__FILE__, __LINE__);
 
 void EditorResourcePicker::clear_caches() {
 	allowed_types_cache.clear();
@@ -50,7 +52,7 @@ void EditorResourcePicker::_update_resource() {
 		search_button->set_visible(false);
 	}
 	bool save_button_visble = false;
-	FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+	FileSystemDock *file_system_dock = FileSystemDock::get_singleton();
 	String file_path = file_system_dock->get_current_path();
 	if (edited_resource.is_valid() && !file_path.is_empty()) {
 		save_button_visble = true;
@@ -91,16 +93,16 @@ void EditorResourcePicker::_update_resource_preview(const String &p_path, const 
 		return;
 	}
 
-	String type = edited_resource->get_class_name();
-	if (ClassDB::is_parent_class(type, "Script")) {
-		assign_button->set_text(edited_resource->get_path().get_file());
+	Ref<Script> script = edited_resource;
+	if (script.is_valid()) {
+		assign_button->set_text(script->get_path().get_file());
 		return;
 	}
 
 	if (p_preview.is_valid()) {
 		preview_rect->set_offset(SIDE_LEFT, assign_button->get_icon()->get_width() + assign_button->get_theme_stylebox(SNAME("normal"))->get_default_margin(SIDE_LEFT) + get_theme_constant(SNAME("hseparation"), SNAME("Button")));
 
-		if (type == "GradientTexture1D") {
+		if (Ref<GradientTexture1D>(edited_resource).is_valid()) {
 			preview_rect->set_stretch_mode(TextureRect::STRETCH_SCALE);
 			assign_button->set_custom_minimum_size(Size2(1, 1));
 		} else {
@@ -342,7 +344,7 @@ void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 		} break;
 
 		case OBJ_MENU_SHOW_IN_FILE_SYSTEM: {
-			FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+			FileSystemDock *file_system_dock = FileSystemDock::get_singleton();
 			file_system_dock->navigate_to_path(edited_resource->get_path());
 
 			// Ensure that the FileSystem dock is visible.
@@ -390,6 +392,8 @@ void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 
 			Resource *resp = Object::cast_to<Resource>(obj);
 			ERR_BREAK(!resp);
+
+			EditorNode::get_editor_data().instantiate_object_properties(obj);
 
 			edited_resource = RES(resp);
 			emit_signal(SNAME("resource_changed"), edited_resource);
@@ -492,7 +496,7 @@ void EditorResourcePicker::_button_input(const Ref<InputEvent> &p_event) {
 }
 void EditorResourcePicker::_button_search() {
 	if (edited_resource.is_valid()) {
-		FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+		FileSystemDock *file_system_dock = FileSystemDock::get_singleton();
 		file_system_dock->navigate_to_path(edited_resource->get_path());
 	}
 }
@@ -660,7 +664,8 @@ void EditorResourcePicker::drop_data_fw(const Point2 &p_point, const Variant &p_
 			for (Set<String>::Element *E = allowed_types.front(); E; E = E->next()) {
 				String at = E->get().strip_edges();
 
-				if (at == "BaseMaterial3D" && ClassDB::is_parent_class(dropped_resource->get_class(), "Texture2D")) {
+				if (at == "BaseMaterial3D" && Ref<Texture2D>(dropped_resource).is_valid()) {
+					// Use existing resource if possible and only replace its data.
 					Ref<StandardMaterial3D> mat = edited_resource;
 					if (mat.is_valid()) {
 						mat->set_texture(StandardMaterial3D::TextureParam::TEXTURE_ALBEDO, dropped_resource);
@@ -674,7 +679,7 @@ void EditorResourcePicker::drop_data_fw(const Point2 &p_point, const Variant &p_
 					break;
 				}
 
-				if (at == "ShaderMaterial" && ClassDB::is_parent_class(dropped_resource->get_class(), "Shader")) {
+				if (at == "ShaderMaterial" && Ref<Shader>(dropped_resource).is_valid()) {
 					Ref<ShaderMaterial> mat = edited_resource;
 
 					if (mat.is_valid()) {
@@ -701,7 +706,7 @@ void EditorResourcePicker::drop_data_fw(const Point2 &p_point, const Variant &p_
 					break;
 				}
 
-				if (at == "Font" && ClassDB::is_parent_class(dropped_resource->get_class(), "FontData")) {
+				if (at == "Font" && Ref<FontData>(dropped_resource).is_valid()) {
 					Ref<Font> font = edited_resource;
 					if (!font.is_valid()) {
 						New_instantiate(font);
@@ -711,7 +716,7 @@ void EditorResourcePicker::drop_data_fw(const Point2 &p_point, const Variant &p_
 					break;
 				}
 
-				if (at == "Texture2D" && ClassDB::is_parent_class(dropped_resource->get_class(), "Image")) {
+				if (at == "Texture2D" && Ref<Image>(dropped_resource).is_valid()) {
 					Ref<ImageTexture> texture = edited_resource;
 					if (!texture.is_valid()) {
 						New_instantiate(texture);
@@ -906,6 +911,7 @@ void EditorResourcePicker::_ensure_resource_menu() {
 	edit_menu->connect("id_pressed", callable_mp(this, &EditorResourcePicker::_edit_menu_cbk));
 	edit_menu->connect("popup_hide", callable_mp((BaseButton *)edit_button, &BaseButton::set_pressed), varray(false));
 }
+
 EditorResourcePicker::EditorResourcePicker() {
 	assign_button = memnew(Button);
 	assign_button->set_flat(true);
@@ -950,7 +956,7 @@ EditorResourcePicker::EditorResourcePicker() {
 	add_child(set_resource_button);
 	set_resource_button->connect("pressed", callable_mp(this, &EditorResourcePicker::_button_set_resource));
 	if (EditorNode::get_singleton()) {
-		FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+		FileSystemDock *file_system_dock = FileSystemDock::get_singleton();
 		if (file_system_dock) {
 			file_system_dock->connect("on_select_file", callable_mp(this, &EditorScriptPicker::on_file_system_select_file));
 		}
@@ -958,7 +964,7 @@ EditorResourcePicker::EditorResourcePicker() {
 }
 
 void EditorResourcePicker::_button_save_resource() {
-	FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+	FileSystemDock *file_system_dock = FileSystemDock::get_singleton();
 	String file_path = file_system_dock->get_selected_path();
 	if (file_path.is_empty()) {
 		return;
@@ -973,7 +979,7 @@ void EditorResourcePicker::_button_save_resource() {
 	ResourceSaver::save(path, edited_resource, ResourceSaver::FLAG_CHANGE_PATH);
 }
 void EditorResourcePicker::_button_set_resource() {
-	FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+	FileSystemDock *file_system_dock = FileSystemDock::get_singleton();
 	String file_path = file_system_dock->get_current_path();
 	String file_type = EditorFileSystem::get_singleton()->get_file_type(file_path);
 
@@ -1024,7 +1030,7 @@ void EditorResourcePicker::_button_set_resource() {
 }
 
 void EditorResourcePicker::update_set_resource_button() {
-	FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+	FileSystemDock *file_system_dock = FileSystemDock::get_singleton();
 	if (file_system_dock) {
 		on_file_system_select_file(file_system_dock->get_current_path());
 	}
@@ -1036,7 +1042,7 @@ void EditorResourcePicker::on_file_system_select_file(const String file_path) {
 
 	bool is_visible = false;
 	bool save_button_visble = false;
-	FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
+	FileSystemDock *file_system_dock = FileSystemDock::get_singleton();
 	const String curr_file_path = file_system_dock->get_current_path();
 	if (edited_resource.is_valid() && curr_file_path != "res://") {
 		save_button_visble = true;
@@ -1089,14 +1095,14 @@ bool EditorScriptPicker::handle_menu_selected(int p_which) {
 	switch (p_which) {
 		case OBJ_MENU_NEW_SCRIPT: {
 			if (script_owner) {
-				EditorNode::get_singleton()->get_scene_tree_dock()->open_script_dialog(script_owner, false);
+				SceneTreeDock::get_singleton()->open_script_dialog(script_owner, false);
 			}
 			return true;
 		}
 
 		case OBJ_MENU_EXTEND_SCRIPT: {
 			if (script_owner) {
-				EditorNode::get_singleton()->get_scene_tree_dock()->open_script_dialog(script_owner, true);
+				SceneTreeDock::get_singleton()->open_script_dialog(script_owner, true);
 			}
 			return true;
 		}
@@ -1141,7 +1147,7 @@ bool EditorShaderPicker::handle_menu_selected(int p_which) {
 	switch (p_which) {
 		case OBJ_MENU_NEW_SHADER: {
 			if (material.is_valid()) {
-				EditorNode::get_singleton()->get_scene_tree_dock()->open_shader_dialog(material, preferred_mode);
+				SceneTreeDock::get_singleton()->open_shader_dialog(material, preferred_mode);
 				return true;
 			}
 		} break;

@@ -120,6 +120,7 @@ void ParticlesMaterial::finish_shaders() {
 }
 
 void ParticlesMaterial::_update_shader() {
+	MutexLock lock(material_mutex);
 	dirty_materials->remove(&element);
 
 	MaterialKey mk = _compute_key();

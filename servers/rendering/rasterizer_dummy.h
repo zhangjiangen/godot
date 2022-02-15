@@ -31,7 +31,6 @@
 #ifndef RASTERIZER_DUMMY_H
 #define RASTERIZER_DUMMY_H
 
-#include "core/math/camera_matrix.h"
 #include "core/templates/rid_owner.h"
 #include "core/templates/self_list.h"
 #include "scene/resources/mesh.h"
@@ -72,11 +71,11 @@ public:
 	/* SHADOW ATLAS API */
 
 	RID shadow_atlas_create() override { return RID(); }
-	void shadow_atlas_set_size(RID p_atlas, int p_size, bool p_16_bits = false) override {}
+	void shadow_atlas_set_size(RID p_atlas, int p_size, bool p_16_bits = true) override {}
 	void shadow_atlas_set_quadrant_subdivision(RID p_atlas, int p_quadrant, int p_subdivision) override {}
 	bool shadow_atlas_update_light(RID p_atlas, RID p_light_intance, float p_coverage, uint64_t p_light_version) override { return false; }
 
-	void directional_shadow_atlas_set_size(int p_size, bool p_16_bits = false) override {}
+	void directional_shadow_atlas_set_size(int p_size, bool p_16_bits = true) override {}
 	int get_directional_light_shadow_size(RID p_light_intance) override { return 0; }
 	void set_directional_shadow_count(int p_count) override {}
 
@@ -109,7 +108,7 @@ public:
 	void environment_set_canvas_max_layer(RID p_env, int p_max_layer) override {}
 	void environment_set_ambient_light(RID p_env, const Color &p_color, RS::EnvironmentAmbientSource p_ambient = RS::ENV_AMBIENT_SOURCE_BG, float p_energy = 1.0, float p_sky_contribution = 0.0, RS::EnvironmentReflectionSource p_reflection_source = RS::ENV_REFLECTION_SOURCE_BG) override {}
 
-	void environment_set_glow(RID p_env, bool p_enable, Vector<float> p_levels, float p_intensity, float p_strength, float p_mix, float p_bloom_threshold, RS::EnvironmentGlowBlendMode p_blend_mode, float p_hdr_bleed_threshold, float p_hdr_bleed_scale, float p_hdr_luminance_cap) override {}
+	void environment_set_glow(RID p_env, bool p_enable, Vector<float> p_levels, float p_intensity, float p_strength, float p_mix, float p_bloom_threshold, RS::EnvironmentGlowBlendMode p_blend_mode, float p_hdr_bleed_threshold, float p_hdr_bleed_scale, float p_hdr_luminance_cap, float p_glow_map_strength, RID p_glow_map) override {}
 	void environment_glow_set_use_bicubic_upscale(bool p_enable) override {}
 	void environment_glow_set_use_high_quality(bool p_enable) override {}
 
@@ -766,7 +765,7 @@ public:
 	RendererCanvasRender *get_canvas() override { return &canvas; }
 	RendererSceneRender *get_scene() override { return &scene; }
 
-	void set_boot_image(const Ref<Image> &p_image, const Color &p_color, RenderingServer::SplashStretchMode p_stretch_mode, bool p_use_filter = true) override {}
+	void set_boot_image(const Ref<Image> &p_image, const Color &p_color, bool p_scale, bool p_use_filter = true) override {}
 
 	void initialize() override {}
 	void begin_frame(double frame_step) override {

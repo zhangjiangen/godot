@@ -38,9 +38,9 @@
 #include "core/io/resource_saver.h"
 #include "core/os/os.h"
 #include "core/variant/variant_parser.h"
-#include "editor_node.h"
-#include "editor_resource_preview.h"
-#include "editor_settings.h"
+#include "editor/editor_node.h"
+#include "editor/editor_resource_preview.h"
+#include "editor/editor_settings.h"
 
 EditorFileSystem *EditorFileSystem::singleton = nullptr;
 //the name is the version, to keep compatibility with different versions of Godot
@@ -2376,6 +2376,7 @@ void EditorFileSystem::_update_extensions() {
 }
 
 EditorFileSystem::EditorFileSystem() {
+	file_cache.set_debug_info(__FILE__, __LINE__);
 	ResourceLoader::import = _resource_import;
 	reimport_on_missing_imported_files = GLOBAL_DEF("editor/import/reimport_missing_imported_files", true);
 	GLOBAL_DEF("editor/import/use_multiple_threads", true);

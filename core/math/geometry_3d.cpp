@@ -124,8 +124,8 @@ static bool _connect_faces(_FaceClassify *p_faces, int len, int p_group) {
 					Vector3 vj2 = p_faces[j].face.vertex[l];
 					Vector3 vj1 = p_faces[j].face.vertex[(l + 1) % 3];
 
-					if (vi1.distance_to(vj1) < 0.00001 &&
-							vi2.distance_to(vj2) < 0.00001) {
+					if (vi1.distance_to(vj1) < 0.00001f &&
+							vi2.distance_to(vj2) < 0.00001f) {
 						if (p_faces[i].links[k].face != -1) {
 							ERR_PRINT("already linked\n");
 							error = true;
@@ -281,16 +281,16 @@ static inline void _plot_face(uint8_t ***p_cell_status, int x, int y, int z, int
 	int div_y = len_y > 1 ? 2 : 1;
 	int div_z = len_z > 1 ? 2 : 1;
 
-#define _SPLIT(m_i, m_div, m_v, m_len_v, m_new_v, m_new_len_v) \
-	if (m_div == 1) {                                          \
-		m_new_v = m_v;                                         \
-		m_new_len_v = 1;                                       \
-	} else if (m_i == 0) {                                     \
-		m_new_v = m_v;                                         \
-		m_new_len_v = m_len_v / 2;                             \
-	} else {                                                   \
-		m_new_v = m_v + m_len_v / 2;                           \
-		m_new_len_v = m_len_v - m_len_v / 2;                   \
+#define SPLIT_DIV(m_i, m_div, m_v, m_len_v, m_new_v, m_new_len_v) \
+	if (m_div == 1) {                                             \
+		m_new_v = m_v;                                            \
+		m_new_len_v = 1;                                          \
+	} else if (m_i == 0) {                                        \
+		m_new_v = m_v;                                            \
+		m_new_len_v = m_len_v / 2;                                \
+	} else {                                                      \
+		m_new_v = m_v + m_len_v / 2;                              \
+		m_new_len_v = m_len_v - m_len_v / 2;                      \
 	}
 
 	int new_x;
@@ -301,18 +301,20 @@ static inline void _plot_face(uint8_t ***p_cell_status, int x, int y, int z, int
 	int new_len_z;
 
 	for (int i = 0; i < div_x; i++) {
-		_SPLIT(i, div_x, x, len_x, new_x, new_len_x);
+		SPLIT_DIV(i, div_x, x, len_x, new_x, new_len_x);
 
 		for (int j = 0; j < div_y; j++) {
-			_SPLIT(j, div_y, y, len_y, new_y, new_len_y);
+			SPLIT_DIV(j, div_y, y, len_y, new_y, new_len_y);
 
 			for (int k = 0; k < div_z; k++) {
-				_SPLIT(k, div_z, z, len_z, new_z, new_len_z);
+				SPLIT_DIV(k, div_z, z, len_z, new_z, new_len_z);
 
 				_plot_face(p_cell_status, new_x, new_y, new_z, new_len_x, new_len_y, new_len_z, voxelsize, p_face);
 			}
 		}
 	}
+
+#undef SPLIT_DIV
 }
 
 static inline void _mark_outside(uint8_t ***p_cell_status, int x, int y, int z, int len_x, int len_y, int len_z) {
@@ -491,11 +493,10 @@ static inline void _build_faces(uint8_t ***p_cell_status, int x, int y, int z, i
 }
 
 Vector<Face3> Geometry3D::wrap_geometry(Vector<Face3> p_array, real_t *p_error) {
-#define _MIN_SIZE 1.0
-#define _MAX_LENGTH 20
-
 	int face_count = p_array.size();
 	const Face3 *faces = p_array.ptr();
+	constexpr double min_size = 1.0;
+	constexpr int max_length = 20;
 
 	AABB global_aabb;
 
@@ -507,27 +508,27 @@ Vector<Face3> Geometry3D::wrap_geometry(Vector<Face3> p_array, real_t *p_error) 
 		}
 	}
 
-	global_aabb.grow_by(0.01); // Avoid numerical error.
+	global_aabb.grow_by(0.01f); // Avoid numerical error.
 
 	// Determine amount of cells in grid axis.
 	int div_x, div_y, div_z;
 
-	if (global_aabb.size.x / _MIN_SIZE < _MAX_LENGTH) {
-		div_x = (int)(global_aabb.size.x / _MIN_SIZE) + 1;
+	if (global_aabb.size.x / min_size < max_length) {
+		div_x = (int)(global_aabb.size.x / min_size) + 1;
 	} else {
-		div_x = _MAX_LENGTH;
+		div_x = max_length;
 	}
 
-	if (global_aabb.size.y / _MIN_SIZE < _MAX_LENGTH) {
-		div_y = (int)(global_aabb.size.y / _MIN_SIZE) + 1;
+	if (global_aabb.size.y / min_size < max_length) {
+		div_y = (int)(global_aabb.size.y / min_size) + 1;
 	} else {
-		div_y = _MAX_LENGTH;
+		div_y = max_length;
 	}
 
-	if (global_aabb.size.z / _MIN_SIZE < _MAX_LENGTH) {
-		div_z = (int)(global_aabb.size.z / _MIN_SIZE) + 1;
+	if (global_aabb.size.z / min_size < max_length) {
+		div_z = (int)(global_aabb.size.z / min_size) + 1;
 	} else {
-		div_z = _MAX_LENGTH;
+		div_z = max_length;
 	}
 
 	Vector3 voxelsize = global_aabb.size;
@@ -637,7 +638,7 @@ Geometry3D::MeshData Geometry3D::build_convex_mesh(const Vector<Plane> &p_planes
 
 		Vector3 ref = Vector3(0.0, 1.0, 0.0);
 
-		if (ABS(p.normal.dot(ref)) > 0.95) {
+		if (ABS(p.normal.dot(ref)) > 0.95f) {
 			ref = Vector3(0.0, 0.0, 1.0); // Change axis.
 		}
 
@@ -662,7 +663,7 @@ Geometry3D::MeshData Geometry3D::build_convex_mesh(const Vector<Plane> &p_planes
 			Vector<Vector3> new_vertices;
 			Plane clip = p_planes[j];
 
-			if (clip.normal.dot(p.normal) > 0.95) {
+			if (clip.normal.dot(p.normal) > 0.95f) {
 				continue;
 			}
 
@@ -715,7 +716,7 @@ Geometry3D::MeshData Geometry3D::build_convex_mesh(const Vector<Plane> &p_planes
 		for (int j = 0; j < vertices.size(); j++) {
 			int idx = -1;
 			for (int k = 0; k < mesh.vertices.size(); k++) {
-				if (mesh.vertices[k].distance_to(vertices[j]) < 0.001) {
+				if (mesh.vertices[k].distance_to(vertices[j]) < 0.001f) {
 					idx = k;
 					break;
 				}
@@ -792,8 +793,8 @@ Vector<Plane> Geometry3D::build_cylinder_planes(real_t p_radius, real_t p_height
 	Vector3 axis;
 	axis[p_axis] = 1.0;
 
-	planes.push_back(Plane(axis, p_height * 0.5));
-	planes.push_back(Plane(-axis, p_height * 0.5));
+	planes.push_back(Plane(axis, p_height * 0.5f));
+	planes.push_back(Plane(-axis, p_height * 0.5f));
 
 	return planes;
 }
@@ -852,7 +853,7 @@ Vector<Plane> Geometry3D::build_capsule_planes(real_t p_radius, real_t p_height,
 
 		for (int j = 1; j <= p_lats; j++) {
 			Vector3 plane_normal = normal.lerp(axis, j / (real_t)p_lats).normalized();
-			Vector3 position = axis * p_height * 0.5 + plane_normal * p_radius;
+			Vector3 position = axis * p_height * 0.5f + plane_normal * p_radius;
 			planes.push_back(Plane(plane_normal, position));
 			planes.push_back(Plane(plane_normal * axis_neg, position * axis_neg));
 		}

@@ -38,7 +38,10 @@
 #include "editor/editor_scale.h"
 #include "editor/editor_settings.h"
 #include "scene/2d/skeleton_2d.h"
+#include "scene/gui/menu_button.h"
 #include "scene/gui/scroll_container.h"
+#include "scene/gui/separator.h"
+#include "scene/gui/slider.h"
 #include "scene/gui/view_panner.h"
 
 Node2D *Polygon2DEditor::_get_node() const {
@@ -66,7 +69,7 @@ void Polygon2DEditor::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
-			uv_panner->set_control_scheme((ViewPanner::ControlScheme)EDITOR_GET("interface/editors/sub_editor_panning_scheme").operator int());
+			uv_panner->setup((ViewPanner::ControlScheme)EDITOR_GET("editors/panning/sub_editors_panning_scheme").operator int(), ED_GET_SHORTCUT("canvas_item_editor/pan_view"), bool(EditorSettings::get_singleton()->get("editors/panning/simple_panning")));
 		} break;
 		case NOTIFICATION_READY: {
 			button_uv->set_icon(get_theme_icon(SNAME("Uv"), SNAME("EditorIcons")));
@@ -473,7 +476,7 @@ void Polygon2DEditor::_uv_input(const Ref<InputEvent> &p_input) {
 				uv_move_current = uv_mode;
 				if (uv_move_current == UV_MODE_CREATE) {
 					if (!uv_create) {
-						points_prev.resize(0);
+						points_prev.clear();
 						Vector2 tuv = mtx.affine_inverse().xform(snap_point(mb->get_position()));
 						points_prev.push_back(tuv);
 						uv_create_to = tuv;
@@ -682,7 +685,7 @@ void Polygon2DEditor::_uv_input(const Ref<InputEvent> &p_input) {
 							}
 
 							polygon_create.clear();
-						} else if (polygon_create.find(closest) == -1) {
+						} else if (!polygon_create.has(closest)) {
 							//add temporarily if not exists
 							polygon_create.push_back(closest);
 						}
@@ -926,7 +929,7 @@ void Polygon2DEditor::_uv_input(const Ref<InputEvent> &p_input) {
 	}
 }
 
-void Polygon2DEditor::_uv_scroll_callback(Vector2 p_scroll_vec) {
+void Polygon2DEditor::_uv_scroll_callback(Vector2 p_scroll_vec, bool p_alt) {
 	_uv_pan_callback(-p_scroll_vec * 32);
 }
 
@@ -935,7 +938,7 @@ void Polygon2DEditor::_uv_pan_callback(Vector2 p_scroll_vec) {
 	uv_vscroll->set_value(uv_vscroll->get_value() - p_scroll_vec.y);
 }
 
-void Polygon2DEditor::_uv_zoom_callback(Vector2 p_scroll_vec, Vector2 p_origin) {
+void Polygon2DEditor::_uv_zoom_callback(Vector2 p_scroll_vec, Vector2 p_origin, bool p_alt) {
 	if (p_scroll_vec.y < 0) {
 		uv_zoom->set_value(uv_zoom->get_value() / (1 - (0.1 * Math::abs(p_scroll_vec.y))));
 	} else {
@@ -1280,10 +1283,6 @@ Polygon2DEditor::Polygon2DEditor(EditorNode *p_editor) :
 	uv_edit_mode[2]->connect("pressed", callable_mp(this, &Polygon2DEditor::_uv_edit_mode_select), varray(2));
 	uv_edit_mode[3]->connect("pressed", callable_mp(this, &Polygon2DEditor::_uv_edit_mode_select), varray(3));
 
-	uv_panner.instantiate();
-	uv_panner->set_callbacks(callable_mp(this, &Polygon2DEditor::_uv_scroll_callback), callable_mp(this, &Polygon2DEditor::_uv_pan_callback), callable_mp(this, &Polygon2DEditor::_uv_zoom_callback));
-	uv_panner->set_disable_rmb(true);
-
 	uv_mode_hb->add_child(memnew(VSeparator));
 
 	uv_main_vb->add_child(uv_mode_hb);
@@ -1470,8 +1469,13 @@ Polygon2DEditor::Polygon2DEditor(EditorNode *p_editor) :
 	bone_scroll_vb = memnew(VBoxContainer);
 	bone_scroll->add_child(bone_scroll_vb);
 
+	uv_panner.instantiate();
+	uv_panner->set_callbacks(callable_mp(this, &Polygon2DEditor::_uv_scroll_callback), callable_mp(this, &Polygon2DEditor::_uv_pan_callback), callable_mp(this, &Polygon2DEditor::_uv_zoom_callback));
+
 	uv_edit_draw->connect("draw", callable_mp(this, &Polygon2DEditor::_uv_draw));
 	uv_edit_draw->connect("gui_input", callable_mp(this, &Polygon2DEditor::_uv_input));
+	uv_edit_draw->connect("focus_exited", callable_mp(uv_panner.ptr(), &ViewPanner::release_pan_key));
+	uv_edit_draw->set_focus_mode(FOCUS_CLICK);
 	uv_draw_zoom = 1.0;
 	point_drag_index = -1;
 	uv_drag = false;

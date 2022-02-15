@@ -87,6 +87,11 @@ Error HTTPClientJavaScript::request(Method p_method, const String &p_url, const 
 	ERR_FAIL_COND_V(port < 0, ERR_UNCONFIGURED);
 	ERR_FAIL_COND_V(!p_url.begins_with("/"), ERR_INVALID_PARAMETER);
 
+	Error err = verify_headers(p_headers);
+	if (err) {
+		return err;
+	}
+
 	String url = (use_tls ? "https://" : "http://") + host + ":" + itos(port) + p_url;
 	Vector<CharString> keeper;
 	Vector<const char *> c_strings;
@@ -143,7 +148,7 @@ Error HTTPClientJavaScript::get_response_headers(List<String> *r_response) {
 	return OK;
 }
 
-int HTTPClientJavaScript::get_response_body_length() const {
+int64_t HTTPClientJavaScript::get_response_body_length() const {
 	return godot_js_fetch_body_length_get(js_id);
 }
 

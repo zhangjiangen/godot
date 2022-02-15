@@ -32,16 +32,12 @@
 #define EDITOR_NODE_H
 
 #include "core/templates/safe_refcount.h"
-#include "editor/editor_data.h"
 #include "editor/editor_export.h"
 #include "editor/editor_folding.h"
 #include "editor/editor_native_shader_source_visualizer.h"
 #include "editor/editor_run.h"
-#include "editor/editor_toaster.h"
 #include "editor/inspector_dock.h"
 #include "editor/property_editor.h"
-#include "editor/scene_tree_dock.h"
-#include "scene/gui/link_button.h"
 
 typedef void (*EditorNodeInitCallback)();
 typedef void (*EditorPluginInitializeCallback)();
@@ -50,16 +46,20 @@ typedef bool (*EditorBuildCallback)();
 class AcceptDialog;
 class AudioStreamPreviewGenerator;
 class BackgroundProgress;
+class Button;
 class CenterContainer;
 class ConfirmationDialog;
 class Control;
 class DependencyEditor;
 class DependencyErrorDialog;
+class DynamicFontImportSettings;
 class EditorAbout;
 class EditorCommandPalette;
 class EditorExport;
+class EditorExtensionManager;
 class EditorFeatureProfileManager;
 class EditorFileServer;
+class EditorFolding;
 class EditorInspector;
 class EditorLayoutsDialog;
 class EditorLog;
@@ -67,12 +67,16 @@ class EditorPlugin;
 class EditorPluginList;
 class EditorQuickOpen;
 class EditorResourcePreview;
+class EditorRun;
 class EditorRunNative;
 class EditorSettingsDialog;
+class EditorToaster;
 class ExportTemplateManager;
+class FileDialog;
 class FileSystemDock;
 class HSplitContainer;
 class ImportDock;
+class LinkButton;
 class MenuButton;
 class NodeDock;
 class OrphanResourcesDialog;
@@ -83,17 +87,14 @@ class ProgressDialog;
 class ProjectExportDialog;
 class ProjectSettingsEditor;
 class RunSettingsDialog;
+class SceneImportSettings;
 class ScriptCreateDialog;
-class TabContainer;
+class SubViewport;
 class TabBar;
+class TabContainer;
 class TextureProgressBar;
-class Button;
 class VSplitContainer;
 class Window;
-class SubViewport;
-class SceneImportSettings;
-class EditorExtensionManager;
-class DynamicFontImportSettings;
 
 class EditorNode : public Node {
 	GDCLASS(EditorNode, Node);
@@ -302,11 +303,6 @@ private:
 	Ref<Theme> theme;
 
 	PopupMenu *recent_scenes;
-	SceneTreeDock *scene_tree_dock;
-	InspectorDock *inspector_dock;
-	NodeDock *node_dock;
-	ImportDock *import_dock;
-	FileSystemDock *filesystem_dock;
 	EditorRunNative *run_native;
 
 	ConfirmationDialog *confirmation;
@@ -328,8 +324,8 @@ private:
 	ConfirmationDialog *install_android_build_template;
 	ConfirmationDialog *remove_android_build_template;
 
-	EditorSettingsDialog *settings_config_dialog;
-	ProjectSettingsEditor *project_settings;
+	EditorSettingsDialog *editor_settings_dialog;
+	ProjectSettingsEditor *project_settings_editor;
 	bool settings_changed = true; // make it update settings on first frame
 	void _update_from_settings();
 
@@ -389,6 +385,7 @@ private:
 	HBoxContainer *tabbar_container;
 	Button *distraction_free;
 	Button *scene_tab_add;
+	Control *scene_tab_add_ph;
 
 	bool scene_distraction;
 	bool script_distraction;
@@ -718,11 +715,8 @@ public:
 	EditorPluginList *get_editor_plugins_over() { return editor_plugins_over; }
 	EditorPluginList *get_editor_plugins_force_over() { return editor_plugins_force_over; }
 	EditorPluginList *get_editor_plugins_force_input_forwarding() { return editor_plugins_force_input_forwarding; }
-	EditorInspector *get_inspector() { return inspector_dock->get_inspector(); }
-	Container *get_inspector_dock_addon_area() { return inspector_dock->get_addon_area(); }
-	ScriptCreateDialog *get_script_create_dialog() { return scene_tree_dock->get_script_create_dialog(); }
 
-	ProjectSettingsEditor *get_project_settings() { return project_settings; }
+	ProjectSettingsEditor *get_project_settings() { return project_settings_editor; }
 
 	static void add_editor_plugin(EditorPlugin *p_editor, bool p_config_changed = false);
 	static void remove_editor_plugin(EditorPlugin *p_editor, bool p_config_changed = false);
@@ -747,8 +741,7 @@ public:
 	bool is_addon_plugin_enabled(const String &p_addon) const;
 
 	void edit_node(Node *p_node);
-	void edit_resource(const Ref<Resource> &p_resource) { inspector_dock->edit_resource(p_resource); };
-	void open_resource(const String &p_type) { inspector_dock->open_resource(p_type); };
+	void edit_resource(const Ref<Resource> &p_resource) { InspectorDock::get_singleton()->edit_resource(p_resource); };
 
 	void save_resource_in_path(const Ref<Resource> &p_resource, const String &p_path);
 	void save_resource(const Ref<Resource> &p_resource);
@@ -799,10 +792,6 @@ public:
 
 	void request_instance_scene(const String &p_path);
 	void request_instantiate_scenes(const Vector<String> &p_files);
-	FileSystemDock *get_filesystem_dock();
-	ImportDock *get_import_dock();
-	SceneTreeDock *get_scene_tree_dock();
-	InspectorDock *get_inspector_dock();
 	static UndoRedo *get_undo_redo() { return &singleton->editor_data.get_undo_redo(); }
 
 	EditorSelection *get_editor_selection() { return editor_selection; }

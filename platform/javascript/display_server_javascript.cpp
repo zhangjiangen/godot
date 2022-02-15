@@ -137,7 +137,6 @@ int DisplayServerJavaScript::mouse_button_callback(int p_pressed, int p_button, 
 	DisplayServerJavaScript *ds = get_singleton();
 
 	Point2 pos(p_x, p_y);
-	Input::get_singleton()->set_mouse_position(pos);
 	Ref<InputEventMouseButton> ev;
 	New_instantiate(ev);
 	ev->set_position(pos);
@@ -219,7 +218,6 @@ void DisplayServerJavaScript::mouse_move_callback(double p_x, double p_y, double
 	}
 
 	Point2 pos(p_x, p_y);
-	Input::get_singleton()->set_mouse_position(pos);
 	Ref<InputEventMouseMotion> ev;
 	New_instantiate(ev);
 	dom2godot_mod(ev, p_modifiers);
@@ -229,7 +227,6 @@ void DisplayServerJavaScript::mouse_move_callback(double p_x, double p_y, double
 	ev->set_global_position(pos);
 
 	ev->set_relative(Vector2(p_rel_x, p_rel_y));
-	Input::get_singleton()->set_mouse_position(ev->get_position());
 	ev->set_velocity(Input::get_singleton()->get_last_mouse_velocity());
 
 	Input::get_singleton()->parse_input_event(ev);
@@ -666,7 +663,7 @@ DisplayServerJavaScript::DisplayServerJavaScript(const String &p_rendering_drive
 	godot_js_config_canvas_id_get(canvas_id, 256);
 
 	// Handle contextmenu, webglcontextlost
-	godot_js_display_setup_canvas(p_resolution.x, p_resolution.y, p_window_mode == WINDOW_MODE_FULLSCREEN, OS::get_singleton()->is_hidpi_allowed() ? 1 : 0);
+	godot_js_display_setup_canvas(p_resolution.x, p_resolution.y, (p_window_mode == WINDOW_MODE_FULLSCREEN || p_window_mode == WINDOW_MODE_EXCLUSIVE_FULLSCREEN), OS::get_singleton()->is_hidpi_allowed() ? 1 : 0);
 
 	// Check if it's windows.
 	swap_cancel_ok = godot_js_display_is_swap_ok_cancel() == 1;
@@ -797,6 +794,10 @@ float DisplayServerJavaScript::screen_get_scale(int p_screen) const {
 	return godot_js_display_pixel_ratio_get();
 }
 
+float DisplayServerJavaScript::screen_get_refresh_rate(int p_screen) const {
+	return SCREEN_REFRESH_RATE_FALLBACK; // Javascript doesn't have much of a need for the screen refresh rate, and there's no native way to do so.
+}
+
 Vector<DisplayServer::WindowID> DisplayServerJavaScript::get_window_list() const {
 	Vector<WindowID> ret;
 	ret.push_back(MAIN_WINDOW_ID);
@@ -900,6 +901,7 @@ void DisplayServerJavaScript::window_set_mode(WindowMode p_mode, WindowID p_wind
 			}
 			window_mode = WINDOW_MODE_WINDOWED;
 		} break;
+		case WINDOW_MODE_EXCLUSIVE_FULLSCREEN:
 		case WINDOW_MODE_FULLSCREEN: {
 			int result = godot_js_display_fullscreen_request();
 			ERR_FAIL_COND_MSG(result, "The request was denied. Remember that enabling fullscreen is only possible from an input callback for the HTML5 platform.");

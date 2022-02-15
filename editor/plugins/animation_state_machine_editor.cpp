@@ -35,6 +35,8 @@
 #include "core/io/resource_loader.h"
 #include "core/math/geometry_2d.h"
 #include "core/os/keyboard.h"
+#include "editor/editor_file_dialog.h"
+#include "editor/editor_node.h"
 #include "editor/editor_scale.h"
 #include "scene/animation/animation_blend_tree.h"
 #include "scene/animation/animation_player.h"
@@ -755,7 +757,7 @@ void AnimationNodeStateMachineEditor::_state_machine_draw() {
 		//now scroll it to draw
 		state_machine_draw->draw_style_box(sb, nr.node);
 
-		if (playing && (blend_from == name || current == name || travel_path.find(name) != -1)) {
+		if (playing && (blend_from == name || current == name || travel_path.has(name))) {
 			state_machine_draw->draw_style_box(playing_overlay, nr.node);
 		}
 
@@ -1059,7 +1061,7 @@ void AnimationNodeStateMachineEditor::_removed_from_graph() {
 void AnimationNodeStateMachineEditor::_name_edited(const String &p_text) {
 	const String &new_name = p_text;
 
-	ERR_FAIL_COND(new_name.is_empty() || new_name.find(".") != -1 || new_name.find("/") != -1);
+	ERR_FAIL_COND(new_name.is_empty() || new_name.contains(".") || new_name.contains("/"));
 
 	if (new_name == prev_name) {
 		return; // Nothing to do.

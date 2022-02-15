@@ -34,14 +34,16 @@
 #include "canvas_item_editor_plugin.h"
 #include "editor/editor_file_system.h"
 #include "editor/editor_inspector.h"
-#include "editor/editor_node.h"
 #include "editor/editor_plugin.h"
+#include "scene/gui/color_picker.h"
 #include "scene/gui/color_rect.h"
 #include "scene/gui/menu_button.h"
 #include "scene/gui/option_button.h"
 #include "scene/gui/popup_menu.h"
 
 /*************************************************************************/
+
+class EditorNode;
 
 class TextControlEditor : public HBoxContainer {
 	GDCLASS(TextControlEditor, HBoxContainer);
@@ -62,10 +64,7 @@ class TextControlEditor : public HBoxContainer {
 	ColorPickerButton *outline_color_picker = nullptr;
 	Button *clear_formatting = nullptr;
 
-	Control *edited_control = nullptr;
-	String edited_color;
-	String edited_font;
-	String edited_font_size;
+	Vector<Control *> edited_controls;
 	Ref<Font> custom_font;
 
 protected:

@@ -35,7 +35,7 @@
 #include "core/string/ustring.h"
 #include "core/typedefs.h"
 
-struct Vector3i {
+struct _NO_DISCARD_ Vector3i {
 	enum Axis {
 		AXIS_X,
 		AXIS_Y,
@@ -194,6 +194,12 @@ Vector3i &Vector3i::operator*=(const int32_t p_scalar) {
 	return *this;
 }
 
+Vector3i Vector3i::operator*(const int32_t p_scalar) const {
+	return Vector3i(x * p_scalar, y * p_scalar, z * p_scalar);
+}
+
+// Multiplication operators required to workaround issues with LLVM using implicit conversion.
+
 _FORCE_INLINE_ Vector3i operator*(const int32_t p_scalar, const Vector3i &p_vector) {
 	return p_vector * p_scalar;
 }
@@ -208,10 +214,6 @@ _FORCE_INLINE_ Vector3i operator*(const float p_scalar, const Vector3i &p_vector
 
 _FORCE_INLINE_ Vector3i operator*(const double p_scalar, const Vector3i &p_vector) {
 	return p_vector * p_scalar;
-}
-
-Vector3i Vector3i::operator*(const int32_t p_scalar) const {
-	return Vector3i(x * p_scalar, y * p_scalar, z * p_scalar);
 }
 
 Vector3i &Vector3i::operator/=(const int32_t p_scalar) {

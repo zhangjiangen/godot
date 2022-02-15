@@ -30,10 +30,13 @@
 
 #include "dependency_editor.h"
 
+#include "core/config/project_settings.h"
 #include "core/io/file_access.h"
 #include "core/io/resource_loader.h"
-#include "editor_node.h"
-#include "editor_scale.h"
+#include "editor/editor_file_dialog.h"
+#include "editor/editor_file_system.h"
+#include "editor/editor_node.h"
+#include "editor/editor_scale.h"
 #include "scene/gui/margin_container.h"
 
 void DependencyEditor::_searched(const String &p_path) {
@@ -171,7 +174,7 @@ void DependencyEditor::_update_list() {
 		String path;
 		String type;
 
-		if (n.find("::") != -1) {
+		if (n.contains("::")) {
 			path = n.get_slice("::", 0);
 			type = n.get_slice("::", 1);
 		} else {
@@ -721,7 +724,7 @@ bool OrphanResourcesDialog::_fill_owners(EditorFileSystemDirectory *efsd, HashMa
 }
 
 void OrphanResourcesDialog::refresh() {
-	HashMap<String, int> refs;
+	HashMap<String, int> refs(__FILE__, __LINE__);
 	_fill_owners(EditorFileSystem::get_singleton()->get_filesystem(), refs, nullptr);
 	files->clear();
 	TreeItem *root = files->create_item();

@@ -32,11 +32,11 @@
 #define BULLET_UTILITIES_H
 
 #define bulletnew(cl) \
-	new cl
+	memnew(cl)
 
 #define bulletdelete(cl) \
 	{                    \
-		delete cl;       \
+		memdelete(cl);   \
 		cl = nullptr;    \
 	}
 

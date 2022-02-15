@@ -31,23 +31,18 @@
 #ifndef RENDERING_SERVER_SCENE_CULL_H
 #define RENDERING_SERVER_SCENE_CULL_H
 
-#include "core/templates/bin_sorted_array.h"
-#include "core/templates/pass_func.h"
-#include "servers/rendering/renderer_compositor.h"
-
 #include "core/math/dynamic_bvh.h"
-#include "core/math/geometry_3d.h"
-#include "core/math/octree.h"
-#include "core/os/semaphore.h"
-#include "core/os/thread.h"
+#include "core/templates/bin_sorted_array.h"
 #include "core/templates/local_vector.h"
 #include "core/templates/paged_allocator.h"
 #include "core/templates/paged_array.h"
+#include "core/templates/pass_func.h"
 #include "core/templates/rid_owner.h"
 #include "core/templates/self_list.h"
 #include "servers/rendering/renderer_scene.h"
 #include "servers/rendering/renderer_scene_occlusion_cull.h"
 #include "servers/rendering/renderer_scene_render.h"
+#include "servers/rendering/renderer_storage.h"
 #include "servers/xr/xr_interface.h"
 
 class RendererSceneCull : public RendererScene {
@@ -1115,7 +1110,7 @@ public:
 	PASS6(environment_set_ssil, RID, bool, float, float, float, float)
 	PASS6(environment_set_ssil_quality, RS::EnvironmentSSILQuality, bool, float, int, float, float)
 
-	PASS11(environment_set_glow, RID, bool, Vector<float>, float, float, float, float, RS::EnvironmentGlowBlendMode, float, float, float)
+	PASS13(environment_set_glow, RID, bool, Vector<float>, float, float, float, float, RS::EnvironmentGlowBlendMode, float, float, float, float, RID)
 	PASS1(environment_glow_set_use_bicubic_upscale, bool)
 	PASS1(environment_glow_set_use_high_quality, bool)
 

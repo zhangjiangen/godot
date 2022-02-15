@@ -34,7 +34,6 @@
 #include "core/math/camera_matrix.h"
 #include "core/templates/paged_array.h"
 #include "servers/rendering/renderer_scene.h"
-#include "servers/rendering/renderer_storage.h"
 
 class RendererSceneRender {
 public:
@@ -80,11 +79,11 @@ public:
 	/* SHADOW ATLAS API */
 
 	virtual RID shadow_atlas_create() = 0;
-	virtual void shadow_atlas_set_size(RID p_atlas, int p_size, bool p_16_bits = false) = 0;
+	virtual void shadow_atlas_set_size(RID p_atlas, int p_size, bool p_16_bits = true) = 0;
 	virtual void shadow_atlas_set_quadrant_subdivision(RID p_atlas, int p_quadrant, int p_subdivision) = 0;
 	virtual bool shadow_atlas_update_light(RID p_atlas, RID p_light_intance, float p_coverage, uint64_t p_light_version) = 0;
 
-	virtual void directional_shadow_atlas_set_size(int p_size, bool p_16_bits = false) = 0;
+	virtual void directional_shadow_atlas_set_size(int p_size, bool p_16_bits = true) = 0;
 	virtual int get_directional_light_shadow_size(RID p_light_intance) = 0;
 	virtual void set_directional_shadow_count(int p_count) = 0;
 
@@ -123,7 +122,7 @@ public:
 	virtual void environment_set_camera_feed_id(RID p_env, int p_camera_feed_id) = 0;
 #endif
 
-	virtual void environment_set_glow(RID p_env, bool p_enable, Vector<float> p_levels, float p_intensity, float p_strength, float p_mix, float p_bloom_threshold, RS::EnvironmentGlowBlendMode p_blend_mode, float p_hdr_bleed_threshold, float p_hdr_bleed_scale, float p_hdr_luminance_cap) = 0;
+	virtual void environment_set_glow(RID p_env, bool p_enable, Vector<float> p_levels, float p_intensity, float p_strength, float p_mix, float p_bloom_threshold, RS::EnvironmentGlowBlendMode p_blend_mode, float p_hdr_bleed_threshold, float p_hdr_bleed_scale, float p_hdr_luminance_cap, float p_glow_map_strength, RID p_glow_map) = 0;
 	virtual void environment_glow_set_use_bicubic_upscale(bool p_enable) = 0;
 	virtual void environment_glow_set_use_high_quality(bool p_enable) = 0;
 

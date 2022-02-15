@@ -29,9 +29,11 @@
 /*************************************************************************/
 
 #include "import_dock.h"
-#include "editor_node.h"
-#include "editor_resource_preview.h"
-#include "editor_scale.h"
+
+#include "core/config/project_settings.h"
+#include "editor/editor_node.h"
+#include "editor/editor_resource_preview.h"
+#include "editor/editor_scale.h"
 
 class ImportDockParameters : public Object {
 	GDCLASS(ImportDockParameters, Object);
@@ -90,6 +92,8 @@ public:
 		checking = false;
 	}
 };
+
+ImportDock *ImportDock::singleton = nullptr;
 
 void ImportDock::set_edit_path(const String &p_path) {
 	Ref<ConfigFile> config;
@@ -445,7 +449,7 @@ static bool _find_owners(EditorFileSystemDirectory *efsd, const String &p_path) 
 
 	for (int i = 0; i < efsd->get_file_count(); i++) {
 		Vector<String> deps = efsd->get_file_deps(i);
-		if (deps.find(p_path) != -1) {
+		if (deps.has(p_path)) {
 			return true;
 		}
 	}
@@ -606,6 +610,7 @@ void ImportDock::initialize_import_options() const {
 }
 
 ImportDock::ImportDock() {
+	singleton = this;
 	set_name("Import");
 
 	content = memnew(VBoxContainer);
@@ -687,5 +692,6 @@ ImportDock::ImportDock() {
 }
 
 ImportDock::~ImportDock() {
+	singleton = nullptr;
 	memdelete(params);
 }

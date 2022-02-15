@@ -203,7 +203,7 @@ void ScriptServer::thread_exit() {
 	}
 }
 
-HashMap<StringName, ScriptServer::GlobalScriptClass> ScriptServer::global_classes;
+HashMap<StringName, ScriptServer::GlobalScriptClass> ScriptServer::global_classes(__FILE__, __LINE__);
 
 void ScriptServer::global_classes_clear() {
 	global_classes.clear();

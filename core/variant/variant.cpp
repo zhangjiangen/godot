@@ -38,8 +38,6 @@
 #include "core/math/math_funcs.h"
 #include "core/string/print_string.h"
 #include "core/variant/variant_parser.h"
-#include "scene/gui/control.h"
-#include "scene/main/node.h"
 
 String Variant::get_type_name(Variant::Type p_type) {
 	switch (p_type) {
@@ -1025,6 +1023,13 @@ bool Variant::is_null() const {
 	}
 }
 
+bool Variant::initialize_ref(Object *p_object) {
+	RefCounted *ref_counted = const_cast<RefCounted *>(static_cast<const RefCounted *>(p_object));
+	if (!ref_counted->init_ref()) {
+		return false;
+	}
+	return true;
+}
 void Variant::reference(const Variant &p_variant) {
 	switch (type) {
 		case NIL:
@@ -1692,8 +1697,6 @@ String Variant::stringify(int recursion_count) const {
 				pairs.push_back(sp);
 			}
 
-			pairs.sort();
-
 			for (int i = 0; i < pairs.size(); i++) {
 				if (i > 0) {
 					str += ", ";
@@ -2002,22 +2005,6 @@ Object *Variant::get_validated_object_with_check(bool &r_previously_freed) const
 Object *Variant::get_validated_object() const {
 	if (type == OBJECT) {
 		return ObjectDB::get_instance(_get_obj().id);
-	} else {
-		return nullptr;
-	}
-}
-
-Variant::operator Node *() const {
-	if (type == OBJECT) {
-		return Object::cast_to<Node>(_get_obj().obj);
-	} else {
-		return nullptr;
-	}
-}
-
-Variant::operator Control *() const {
-	if (type == OBJECT) {
-		return Object::cast_to<Control>(_get_obj().obj);
 	} else {
 		return nullptr;
 	}
@@ -3257,7 +3244,7 @@ bool Variant::hash_compare(const Variant &p_variant, int recursion_count) const 
 	return false;
 }
 
-bool Variant::is_ref() const {
+bool Variant::is_ref_counted() const {
 	return type == OBJECT && _get_obj().id.is_ref_counted();
 }
 
@@ -3417,7 +3404,7 @@ String Variant::get_call_error_text(Object *p_base, const StringName &p_method, 
 	}
 
 	String class_name = p_base->get_class();
-	Ref<Script> script = p_base->get_script();
+	Ref<Resource> script = p_base->get_script();
 	if (script.is_valid() && script->get_path().is_resource_file()) {
 		class_name += "(" + script->get_path().get_file() + ")";
 	}

@@ -30,6 +30,7 @@
 
 #include "project_manager.h"
 
+#include "core/config/project_settings.h"
 #include "core/io/config_file.h"
 #include "core/io/dir_access.h"
 #include "core/io/file_access.h"
@@ -40,11 +41,11 @@
 #include "core/os/os.h"
 #include "core/string/translation.h"
 #include "core/version.h"
-#include "core/version_hash.gen.h"
+#include "editor/editor_file_dialog.h"
+#include "editor/editor_scale.h"
+#include "editor/editor_settings.h"
+#include "editor/editor_themes.h"
 #include "editor/editor_vcs_interface.h"
-#include "editor_scale.h"
-#include "editor_settings.h"
-#include "editor_themes.h"
 #include "scene/gui/center_container.h"
 #include "scene/gui/line_edit.h"
 #include "scene/gui/margin_container.h"
@@ -54,6 +55,7 @@
 #include "scene/main/window.h"
 #include "servers/display_server.h"
 #include "servers/navigation_server_3d.h"
+#include "servers/physics_server_2d.h"
 
 static inline String get_project_key_from_path(const String &dir) {
 	return dir.replace("/", "::");
@@ -99,8 +101,8 @@ private:
 	LineEdit *install_path;
 	TextureRect *status_rect;
 	TextureRect *install_status_rect;
-	FileDialog *fdialog;
-	FileDialog *fdialog_install;
+	EditorFileDialog *fdialog;
+	EditorFileDialog *fdialog_install;
 	OptionButton *vcs_metadata_selection;
 	String zip_path;
 	String zip_title;
@@ -364,19 +366,19 @@ private:
 		fdialog->set_current_dir(project_path->get_text());
 
 		if (mode == MODE_IMPORT) {
-			fdialog->set_file_mode(FileDialog::FILE_MODE_OPEN_FILE);
+			fdialog->set_file_mode(EditorFileDialog::FILE_MODE_OPEN_FILE);
 			fdialog->clear_filters();
 			fdialog->add_filter(vformat("project.godot ; %s %s", VERSION_NAME, TTR("Project")));
 			fdialog->add_filter("*.zip ; " + TTR("ZIP File"));
 		} else {
-			fdialog->set_file_mode(FileDialog::FILE_MODE_OPEN_DIR);
+			fdialog->set_file_mode(EditorFileDialog::FILE_MODE_OPEN_DIR);
 		}
 		fdialog->popup_file_dialog();
 	}
 
 	void _browse_install_path() {
 		fdialog_install->set_current_dir(install_path->get_text());
-		fdialog_install->set_file_mode(FileDialog::FILE_MODE_OPEN_DIR);
+		fdialog_install->set_file_mode(EditorFileDialog::FILE_MODE_OPEN_DIR);
 		fdialog_install->popup_file_dialog();
 	}
 
@@ -925,12 +927,15 @@ public:
 		spacer->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 		default_files_container->add_child(spacer);
 
-		fdialog = memnew(FileDialog);
-		fdialog->set_access(FileDialog::ACCESS_FILESYSTEM);
-		fdialog_install = memnew(FileDialog);
-		fdialog_install->set_access(FileDialog::ACCESS_FILESYSTEM);
+		fdialog = memnew(EditorFileDialog);
+		fdialog->set_previews_enabled(false); //Crucial, otherwise the engine crashes.
+		fdialog->set_access(EditorFileDialog::ACCESS_FILESYSTEM);
+		fdialog_install = memnew(EditorFileDialog);
+		fdialog_install->set_previews_enabled(false); //Crucial, otherwise the engine crashes.
+		fdialog_install->set_access(EditorFileDialog::ACCESS_FILESYSTEM);
 		add_child(fdialog);
 		add_child(fdialog_install);
+
 		project_name->connect("text_changed", callable_mp(this, &ProjectDialog::_text_changed));
 		project_path->connect("text_changed", callable_mp(this, &ProjectDialog::_path_text_changed));
 		install_path->connect("text_changed", callable_mp(this, &ProjectDialog::_path_text_changed));
@@ -1424,7 +1429,7 @@ void ProjectList::create_project_item_control(int p_index) {
 
 		Button *show = memnew(Button);
 		// Display a folder icon if the project directory can be opened, or a "broken file" icon if it can't.
-		show->set_icon(get_theme_icon(!item.missing ? "Load" : "FileBroken", "EditorIcons"));
+		show->set_icon(get_theme_icon(!item.missing ? SNAME("Load") : SNAME("FileBroken"), SNAME("EditorIcons")));
 		show->set_flat(true);
 		if (!item.grayed) {
 			// Don't make the icon less prominent if the parent is already grayed out.
@@ -1476,7 +1481,7 @@ void ProjectList::sort_projects() {
 		bool visible = true;
 		if (!_search_term.is_empty()) {
 			String search_path;
-			if (_search_term.find("/") != -1) {
+			if (_search_term.contains("/")) {
 				// Search path will match the whole path
 				search_path = item.path;
 			} else {
@@ -1859,6 +1864,8 @@ void ProjectList::_bind_methods() {
 	ADD_SIGNAL(MethodInfo(SIGNAL_PROJECT_ASK_OPEN));
 }
 
+ProjectManager *ProjectManager::singleton = nullptr;
+
 void ProjectManager::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_TRANSLATION_CHANGED:
@@ -1901,6 +1908,21 @@ void ProjectManager::_notification(int p_what) {
 		case NOTIFICATION_WM_ABOUT: {
 			_show_about();
 		} break;
+	}
+}
+
+Ref<Texture2D> ProjectManager::_file_dialog_get_icon(const String &p_path) {
+	return singleton->icon_type_cache["ObjectHR"];
+}
+
+void ProjectManager::_build_icon_type_cache(Ref<Theme> p_theme) {
+	List<StringName> tl;
+	p_theme->get_icon_list(SNAME("EditorIcons"), &tl);
+	for (List<StringName>::Element *E = tl.front(); E; E = E->next()) {
+		if (!ClassDB::class_exists(E->get())) {
+			continue;
+		}
+		icon_type_cache[E->get()] = p_theme->get_icon(E->get(), SNAME("EditorIcons"));
 	}
 }
 
@@ -2460,6 +2482,8 @@ void ProjectManager::_version_button_pressed() {
 }
 
 ProjectManager::ProjectManager() {
+	singleton = this;
+
 	// load settings
 	if (!EditorSettings::get_singleton()) {
 		EditorSettings::create();
@@ -2510,12 +2534,14 @@ ProjectManager::ProjectManager() {
 		float scale_factor = MAX(1, EDSCALE);
 		Vector2i window_size = DisplayServer::get_singleton()->window_get_size();
 		DisplayServer::get_singleton()->window_set_size(Vector2i(window_size.x * scale_factor, window_size.y * scale_factor));
+
+		EditorFileDialog::get_icon_func = &ProjectManager::_file_dialog_get_icon;
 	}
 
 	// TRANSLATORS: This refers to the application where users manage their Godot projects.
 	DisplayServer::get_singleton()->window_set_title(VERSION_NAME + String(" - ") + TTR("Project Manager"));
 
-	FileDialog::set_default_show_hidden_files(EditorSettings::get_singleton()->get("filesystem/file_dialog/show_hidden_files"));
+	EditorFileDialog::set_default_show_hidden_files(EditorSettings::get_singleton()->get("filesystem/file_dialog/show_hidden_files"));
 
 	set_anchors_and_offsets_preset(Control::PRESET_WIDE);
 	set_theme(create_custom_theme());
@@ -2746,9 +2772,10 @@ ProjectManager::ProjectManager() {
 		language_restart_ask->get_cancel_button()->set_text(TTR("Continue"));
 		add_child(language_restart_ask);
 
-		scan_dir = memnew(FileDialog);
-		scan_dir->set_access(FileDialog::ACCESS_FILESYSTEM);
-		scan_dir->set_file_mode(FileDialog::FILE_MODE_OPEN_DIR);
+		scan_dir = memnew(EditorFileDialog);
+		scan_dir->set_previews_enabled(false);
+		scan_dir->set_access(EditorFileDialog::ACCESS_FILESYSTEM);
+		scan_dir->set_file_mode(EditorFileDialog::FILE_MODE_OPEN_DIR);
 		scan_dir->set_title(TTR("Select a Folder to Scan")); // must be after mode or it's overridden
 		scan_dir->set_current_dir(EditorSettings::get_singleton()->get("filesystem/directories/default_project_path"));
 		add_child(scan_dir);
@@ -2812,6 +2839,8 @@ ProjectManager::ProjectManager() {
 
 		about = memnew(EditorAbout);
 		add_child(about);
+
+		_build_icon_type_cache(get_theme());
 	}
 
 	_load_recent_projects();
@@ -2844,6 +2873,7 @@ ProjectManager::ProjectManager() {
 }
 
 ProjectManager::~ProjectManager() {
+	singleton = nullptr;
 	if (EditorSettings::get_singleton()) {
 		EditorSettings::destroy();
 	}

@@ -155,6 +155,10 @@ String DisplayServer::clipboard_get() const {
 	ERR_FAIL_V_MSG(String(), "Clipboard is not supported by this display server.");
 }
 
+bool DisplayServer::clipboard_has() const {
+	return !clipboard_get().is_empty();
+}
+
 void DisplayServer::clipboard_set_primary(const String &p_text) {
 	WARN_PRINT("Primary clipboard is not supported by this display server.");
 }
@@ -198,6 +202,10 @@ void DisplayServer::show_window(WindowID p_id) {
 
 void DisplayServer::delete_sub_window(WindowID p_id) {
 	ERR_FAIL_MSG("Sub-windows not supported by this display server.");
+}
+
+void DisplayServer::window_set_exclusive(WindowID p_window, bool p_exclusive) {
+	// Do nothing, if not supported.
 }
 
 void DisplayServer::window_set_mouse_passthrough(const Vector<Vector2> &p_region, WindowID p_window) {
@@ -312,6 +320,11 @@ void DisplayServer::set_icon(const Ref<Image> &p_icon) {
 	WARN_PRINT("Icon not supported by this display server.");
 }
 
+int64_t DisplayServer::window_get_native_handle(HandleType p_handle_type, WindowID p_window) const {
+	WARN_PRINT("Native handle not supported by this display server.");
+	return 0;
+}
+
 void DisplayServer::window_set_vsync_mode(DisplayServer::VSyncMode p_vsync_mode, WindowID p_window) {
 	WARN_PRINT("Changing the VSync mode is not supported by this display server.");
 }
@@ -359,6 +372,7 @@ void DisplayServer::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("clipboard_set", "clipboard"), &DisplayServer::clipboard_set);
 	ClassDB::bind_method(D_METHOD("clipboard_get"), &DisplayServer::clipboard_get);
+	ClassDB::bind_method(D_METHOD("clipboard_has"), &DisplayServer::clipboard_has);
 	ClassDB::bind_method(D_METHOD("clipboard_set_primary", "clipboard_primary"), &DisplayServer::clipboard_set_primary);
 	ClassDB::bind_method(D_METHOD("clipboard_get_primary"), &DisplayServer::clipboard_get_primary);
 
@@ -370,6 +384,7 @@ void DisplayServer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("screen_get_scale", "screen"), &DisplayServer::screen_get_scale, DEFVAL(SCREEN_OF_MAIN_WINDOW));
 	ClassDB::bind_method(D_METHOD("screen_is_touchscreen", "screen"), &DisplayServer::screen_is_touchscreen, DEFVAL(SCREEN_OF_MAIN_WINDOW));
 	ClassDB::bind_method(D_METHOD("screen_get_max_scale"), &DisplayServer::screen_get_max_scale);
+	ClassDB::bind_method(D_METHOD("screen_get_refresh_rate", "screen"), &DisplayServer::screen_get_refresh_rate, DEFVAL(SCREEN_OF_MAIN_WINDOW));
 
 	ClassDB::bind_method(D_METHOD("screen_set_orientation", "orientation", "screen"), &DisplayServer::screen_set_orientation, DEFVAL(SCREEN_OF_MAIN_WINDOW));
 	ClassDB::bind_method(D_METHOD("screen_get_orientation", "screen"), &DisplayServer::screen_get_orientation, DEFVAL(SCREEN_OF_MAIN_WINDOW));
@@ -382,6 +397,8 @@ void DisplayServer::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("create_sub_window", "mode", "vsync_mode", "flags", "rect"), &DisplayServer::create_sub_window, DEFVAL(Rect2i()));
 	ClassDB::bind_method(D_METHOD("delete_sub_window", "window_id"), &DisplayServer::delete_sub_window);
+
+	ClassDB::bind_method(D_METHOD("window_get_native_handle", "handle_type", "window_id"), &DisplayServer::window_get_native_handle, DEFVAL(MAIN_WINDOW_ID));
 
 	ClassDB::bind_method(D_METHOD("window_set_title", "title", "window_id"), &DisplayServer::window_set_title, DEFVAL(MAIN_WINDOW_ID));
 	ClassDB::bind_method(D_METHOD("window_set_mouse_passthrough", "region", "window_id"), &DisplayServer::window_set_mouse_passthrough, DEFVAL(MAIN_WINDOW_ID));
@@ -423,6 +440,7 @@ void DisplayServer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("window_can_draw", "window_id"), &DisplayServer::window_can_draw, DEFVAL(MAIN_WINDOW_ID));
 
 	ClassDB::bind_method(D_METHOD("window_set_transient", "window_id", "parent_window_id"), &DisplayServer::window_set_transient);
+	ClassDB::bind_method(D_METHOD("window_set_exclusive", "window_id", "exclusive"), &DisplayServer::window_set_exclusive);
 
 	ClassDB::bind_method(D_METHOD("window_set_ime_active", "active", "window_id"), &DisplayServer::window_set_ime_active, DEFVAL(MAIN_WINDOW_ID));
 	ClassDB::bind_method(D_METHOD("window_set_ime_position", "position", "window_id"), &DisplayServer::window_set_ime_position, DEFVAL(MAIN_WINDOW_ID));
@@ -527,6 +545,7 @@ void DisplayServer::_bind_methods() {
 	BIND_ENUM_CONSTANT(WINDOW_MODE_MINIMIZED);
 	BIND_ENUM_CONSTANT(WINDOW_MODE_MAXIMIZED);
 	BIND_ENUM_CONSTANT(WINDOW_MODE_FULLSCREEN);
+	BIND_ENUM_CONSTANT(WINDOW_MODE_EXCLUSIVE_FULLSCREEN);
 
 	BIND_ENUM_CONSTANT(WINDOW_FLAG_RESIZE_DISABLED);
 	BIND_ENUM_CONSTANT(WINDOW_FLAG_BORDERLESS);
@@ -547,6 +566,10 @@ void DisplayServer::_bind_methods() {
 	BIND_ENUM_CONSTANT(VSYNC_ENABLED);
 	BIND_ENUM_CONSTANT(VSYNC_ADAPTIVE);
 	BIND_ENUM_CONSTANT(VSYNC_MAILBOX);
+
+	BIND_ENUM_CONSTANT(DISPLAY_HANDLE);
+	BIND_ENUM_CONSTANT(WINDOW_HANDLE);
+	BIND_ENUM_CONSTANT(WINDOW_VIEW);
 }
 
 void DisplayServer::register_create_function(const char *p_name, CreateFunction p_function, GetRenderingDriversFunction p_get_drivers) {

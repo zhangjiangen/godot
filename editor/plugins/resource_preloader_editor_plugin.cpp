@@ -32,6 +32,8 @@
 
 #include "core/config/project_settings.h"
 #include "core/io/resource_loader.h"
+#include "editor/editor_file_dialog.h"
+#include "editor/editor_node.h"
 #include "editor/editor_scale.h"
 #include "editor/editor_settings.h"
 
@@ -110,7 +112,7 @@ void ResourcePreloaderEditor::_item_edited() {
 			return;
 		}
 
-		if (new_name.is_empty() || new_name.find("\\") != -1 || new_name.find("/") != -1 || preloader->has_resource(new_name)) {
+		if (new_name.is_empty() || new_name.contains("\\") || new_name.contains("/") || preloader->has_resource(new_name)) {
 			s->set_text(0, old_name);
 			return;
 		}

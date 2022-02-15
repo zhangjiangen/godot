@@ -31,7 +31,6 @@
 #ifndef ANIMATION_BLEND_TREE_EDITOR_PLUGIN_H
 #define ANIMATION_BLEND_TREE_EDITOR_PLUGIN_H
 
-#include "editor/editor_node.h"
 #include "editor/editor_plugin.h"
 #include "editor/plugins/animation_tree_editor_plugin.h"
 #include "editor/property_editor.h"
@@ -41,7 +40,9 @@
 #include "scene/gui/popup.h"
 #include "scene/gui/tree.h"
 
+class EditorNode;
 class ProgressBar;
+class EditorFileDialog;
 
 class AnimationNodeBlendTreeEditor : public AnimationTreeNodeEditorPlugin {
 	GDCLASS(AnimationNodeBlendTreeEditor, AnimationTreeNodeEditorPlugin);
@@ -75,7 +76,7 @@ class AnimationNodeBlendTreeEditor : public AnimationTreeNodeEditorPlugin {
 		String type;
 		Ref<Script> script;
 		int input_port_count;
-		AddOption(const String &p_name = String(), const String &p_type = String(), bool p_input_port_count = 0) :
+		AddOption(const String &p_name = String(), const String &p_type = String(), int p_input_port_count = 0) :
 				name(p_name),
 				type(p_type),
 				input_port_count(p_input_port_count) {

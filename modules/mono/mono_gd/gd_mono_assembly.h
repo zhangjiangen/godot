@@ -131,6 +131,7 @@ public:
 			name(p_name),
 			image(p_image),
 			assembly(p_assembly) {
+		cached_classes.set_debug_info(__FILE__, __LINE__);
 	}
 	~GDMonoAssembly();
 };

@@ -270,12 +270,13 @@ void RaycastOcclusionCull::scenario_set_instance(RID p_scenario, RID p_instance,
 
 	OccluderInstance &instance = scenario.instances[p_instance];
 
+	bool changed = false;
+
 	if (instance.removed) {
 		instance.removed = false;
 		scenario.removed_instances.erase(p_instance);
+		changed = true; // It was removed and re-added, we might have missed some changes
 	}
-
-	bool changed = false;
 
 	if (instance.occluder != p_occluder) {
 		Occluder *old_occluder = occluder_owner.get_or_null(instance.occluder);
@@ -589,6 +590,8 @@ void RaycastOcclusionCull::_init_embree() {
 }
 
 RaycastOcclusionCull::RaycastOcclusionCull() {
+	scenarios.set_debug_info(__FILE__, __LINE__);
+	buffers.set_debug_info(__FILE__, __LINE__);
 	raycast_singleton = this;
 	int default_quality = GLOBAL_GET("rendering/occlusion_culling/bvh_build_quality");
 	build_quality = RS::ViewportOcclusionCullingBuildQuality(default_quality);

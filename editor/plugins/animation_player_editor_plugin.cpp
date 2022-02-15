@@ -36,10 +36,13 @@
 #include "core/io/resource_saver.h"
 #include "core/os/keyboard.h"
 #include "editor/animation_track_editor.h"
+#include "editor/editor_file_dialog.h"
+#include "editor/editor_node.h"
 #include "editor/editor_scale.h"
 #include "editor/editor_settings.h"
 #include "editor/plugins/canvas_item_editor_plugin.h" // For onion skinning.
 #include "editor/plugins/node_3d_editor_plugin.h" // For onion skinning.
+#include "editor/scene_tree_dock.h"
 #include "scene/main/window.h"
 #include "scene/resources/animation.h"
 #include "scene/scene_string_names.h"
@@ -485,7 +488,7 @@ void AnimationPlayerEditor::_animation_name_edited() {
 	player->stop();
 
 	String new_name = name->get_text();
-	if (new_name.is_empty() || new_name.find(":") != -1 || new_name.find("/") != -1) {
+	if (new_name.is_empty() || new_name.contains(":") || new_name.contains("/")) {
 		error_dialog->set_text(TTR("Invalid animation name!"));
 		error_dialog->popup_centered();
 		return;
@@ -746,7 +749,7 @@ void AnimationPlayerEditor::_load_animations(Vector<String> p_files) {
 			file = file.substr(file.rfind("\\") + 1, file.length());
 		}
 
-		if (file.find(".") != -1) {
+		if (file.contains(".")) {
 			file = file.substr(0, file.find("."));
 		}
 
@@ -1505,7 +1508,7 @@ void AnimationPlayerEditor::_stop_onion_skinning() {
 }
 
 void AnimationPlayerEditor::_pin_pressed() {
-	EditorNode::get_singleton()->get_scene_tree_dock()->get_tree_editor()->update_tree();
+	SceneTreeDock::get_singleton()->get_tree_editor()->update_tree();
 }
 
 void AnimationPlayerEditor::_bind_methods() {
@@ -1794,9 +1797,9 @@ void AnimationPlayerEditorPlugin::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			Node3DEditor::get_singleton()->connect("transform_key_request", callable_mp(this, &AnimationPlayerEditorPlugin::_transform_key_request));
-			editor->get_inspector()->connect("property_keyed", callable_mp(this, &AnimationPlayerEditorPlugin::_property_keyed));
+			InspectorDock::get_inspector_singleton()->connect("property_keyed", callable_mp(this, &AnimationPlayerEditorPlugin::_property_keyed));
 			anim_editor->get_track_editor()->connect("keying_changed", callable_mp(this, &AnimationPlayerEditorPlugin::_update_keying));
-			editor->get_inspector()->connect("edited_object_changed", callable_mp(anim_editor->get_track_editor(), &AnimationTrackEditor::update_keying));
+			InspectorDock::get_inspector_singleton()->connect("edited_object_changed", callable_mp(anim_editor->get_track_editor(), &AnimationTrackEditor::update_keying));
 			set_force_draw_over_forwarding_enabled();
 		} break;
 	}
@@ -1823,7 +1826,7 @@ void AnimationPlayerEditorPlugin::_transform_key_request(Object *sp, const Strin
 }
 
 void AnimationPlayerEditorPlugin::_update_keying() {
-	editor->get_inspector()->set_keying(anim_editor->get_track_editor()->has_keying());
+	InspectorDock::get_inspector_singleton()->set_keying(anim_editor->get_track_editor()->has_keying());
 }
 
 void AnimationPlayerEditorPlugin::edit(Object *p_object) {

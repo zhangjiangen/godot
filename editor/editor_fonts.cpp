@@ -32,8 +32,8 @@
 
 #include "builtin_fonts.gen.h"
 #include "core/io/dir_access.h"
-#include "editor_scale.h"
-#include "editor_settings.h"
+#include "editor/editor_scale.h"
+#include "editor/editor_settings.h"
 #include "scene/resources/default_theme/default_theme.h"
 #include "scene/resources/font.h"
 
@@ -269,7 +269,10 @@ void editor_register_fonts(Ref<Theme> p_theme) {
 
 	/* Hack */
 
-	Ref<FontData> dfmono = load_cached_internal_font(_font_Hack_Regular, _font_Hack_Regular_size, font_hinting, font_antialiased, true);
+	Ref<FontData> dfmono = load_cached_internal_font(_font_JetBrainsMono_Regular, _font_JetBrainsMono_Regular_size, font_hinting, font_antialiased, true);
+	Dictionary opentype_features;
+	opentype_features["calt"] = 0;
+	dfmono->set_opentype_feature_overrides(opentype_features); // Disable contextual alternates (coding ligatures).
 
 	// Default font
 	MAKE_DEFAULT_FONT(df, String());

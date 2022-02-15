@@ -30,10 +30,11 @@
 
 #include "find_in_files.h"
 
+#include "core/config/project_settings.h"
 #include "core/io/dir_access.h"
 #include "core/os/os.h"
-#include "editor_node.h"
-#include "editor_scale.h"
+#include "editor/editor_node.h"
+#include "editor/editor_scale.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/button.h"
 #include "scene/gui/check_box.h"
@@ -53,11 +54,6 @@ inline void pop_back(T &container) {
 	container.resize(container.size() - 1);
 }
 
-// TODO: Copied from TextEdit private, would be nice to extract it in a single place.
-static bool is_text_char(char32_t c) {
-	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_';
-}
-
 static bool find_next(const String &line, String pattern, int from, bool match_case, bool whole_words, int &out_begin, int &out_end) {
 	int end = from;
 
@@ -73,10 +69,10 @@ static bool find_next(const String &line, String pattern, int from, bool match_c
 		out_end = end;
 
 		if (whole_words) {
-			if (begin > 0 && is_text_char(line[begin - 1])) {
+			if (begin > 0 && (is_ascii_identifier_char(line[begin - 1]))) {
 				continue;
 			}
-			if (end < line.size() && is_text_char(line[end])) {
+			if (end < line.size() && (is_ascii_identifier_char(line[end]))) {
 				continue;
 			}
 		}
@@ -296,6 +292,7 @@ const char *FindInFilesDialog::SIGNAL_FIND_REQUESTED = "find_requested";
 const char *FindInFilesDialog::SIGNAL_REPLACE_REQUESTED = "replace_requested";
 
 FindInFilesDialog::FindInFilesDialog() {
+	_filters_preferences.set_debug_info(__FILE__, __LINE__);
 	set_min_size(Size2(500 * EDSCALE, 0));
 	set_title(TTR("Find in Files"));
 
