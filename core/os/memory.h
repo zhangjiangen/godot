@@ -149,6 +149,7 @@ void memdelete(T *p_class) {
 	// 偏移到内存起始地址
 	uint32_t *base = (uint32_t *)p_class;
 	base -= 2;
+	uint32_t size = *(ptr + 1);
 	#if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)
 	uint32_t tag = *base;
 	if (tag != MEMORY_TAG_NEW) {
