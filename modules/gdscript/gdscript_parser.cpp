@@ -153,6 +153,7 @@ void GDScriptParser::clear() {
 		Node *element = list;
 		list = list->next;
 		memdelete(element);
+		--node_count;
 	}
 
 	head = nullptr;

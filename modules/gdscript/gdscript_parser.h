@@ -747,6 +747,9 @@ public:
 			parameters_indices.set_debug_info(__FILE__, __LINE__);
 			type = FUNCTION;
 		}
+		~FunctionNode() {
+			parameters_indices.clear();
+		}
 	};
 
 	struct GetNodeNode : public ExpressionNode {
@@ -1059,6 +1062,9 @@ public:
 			locals_indices.set_debug_info(__FILE__, __LINE__);
 			type = SUITE;
 		}
+		~SuiteNode() {
+			locals_indices.clear();
+		}
 	};
 
 	struct TernaryOpNode : public ExpressionNode {
@@ -1204,6 +1210,7 @@ private:
 
 	ClassNode *head = nullptr;
 	Node *list = nullptr;
+	int node_count = 0;
 	List<ParserError> errors;
 #ifdef DEBUG_ENABLED
 	List<GDScriptWarning> warnings;
@@ -1293,7 +1300,7 @@ private:
 		node->end_column = previous.end_column;
 		node->leftmost_column = previous.leftmost_column;
 		node->rightmost_column = previous.rightmost_column;
-
+		++node_count;
 		return node;
 	}
 	void clear();
