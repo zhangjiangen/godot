@@ -290,7 +290,7 @@ public:
 
 	virtual AABB multimesh_get_aabb(RID p_multimesh) const = 0;
 
-	virtual void _multmesh_pre_render(const class Transform3D &p_camera_transform, const struct CameraMatrix &p_camera_mat) {};
+	virtual void _multmesh_pre_render(const struct Transform3D &p_camera_transform, const struct CameraMatrix &p_camera_mat) {};
 	virtual void _multmesh_post_render() {};
 
 	/* SKELETON API */
