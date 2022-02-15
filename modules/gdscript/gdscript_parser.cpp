@@ -46,7 +46,7 @@
 #include "editor/editor_settings.h"
 #endif // TOOLS_ENABLED
 
-static HashMap<StringName, Variant::Type> builtin_types(__FILE__, __LINE__);
+static HashMap<StringName, Variant::Type> builtin_types;
 Variant::Type GDScriptParser::get_builtin_type(const StringName &p_type) {
 	if (builtin_types.is_empty()) {
 		builtin_types["bool"] = Variant::BOOL;
@@ -108,7 +108,6 @@ void GDScriptParser::get_annotation_list(List<MethodInfo> *r_annotations) const 
 }
 
 GDScriptParser::GDScriptParser() {
-	valid_annotations.set_debug_info(__FILE__, __LINE__);
 	// Register valid annotations.
 	// TODO: Should this be static?
 	register_annotation(MethodInfo("@tool"), AnnotationInfo::SCRIPT, &GDScriptParser::tool_annotation);
@@ -526,7 +525,7 @@ void GDScriptParser::parse_program() {
 		// Check for @tool annotation.
 		AnnotationNode *annotation = parse_annotation(AnnotationInfo::SCRIPT | AnnotationInfo::CLASS_LEVEL);
 		if (annotation != nullptr) {
-			if (annotation->name == SNAME("@tool")) {
+			if (annotation->name == "@tool") {
 				// TODO: don't allow @tool anywhere else. (Should all script annotations be the first thing?).
 				_is_tool = true;
 				if (previous.type != GDScriptTokenizer::Token::NEWLINE) {
@@ -580,7 +579,7 @@ void GDScriptParser::parse_program() {
 		// Check for @icon annotation.
 		AnnotationNode *annotation = parse_annotation(AnnotationInfo::SCRIPT | AnnotationInfo::CLASS_LEVEL);
 		if (annotation != nullptr) {
-			if (annotation->name == SNAME("@icon")) {
+			if (annotation->name == "@icon") {
 				if (previous.type != GDScriptTokenizer::Token::NEWLINE) {
 					push_error(R"(Expected newline after "@icon" annotation.)");
 				}
@@ -1180,7 +1179,7 @@ GDScriptParser::EnumNode *GDScriptParser::parse_enum() {
 	push_multiline(true);
 	consume(GDScriptTokenizer::Token::BRACE_OPEN, vformat(R"(Expected "{" after %s.)", named ? "enum name" : R"("enum")"));
 
-	HashMap<StringName, int> elements(__FILE__, __LINE__);
+	HashMap<StringName, int> elements;
 
 #ifdef DEBUG_ENABLED
 	List<MethodInfo> gdscript_funcs;
@@ -2112,7 +2111,7 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_precedence(Precedence p_pr
 	ExpressionNode *previous_operand = (this->*prefix_rule)(nullptr, p_can_assign);
 
 	while (p_precedence <= get_rule(current.type)->precedence) {
-		if (previous_operand == nullptr || (p_stop_on_assign && current.type == GDScriptTokenizer::Token::EQUAL)) {
+		if (p_stop_on_assign && current.type == GDScriptTokenizer::Token::EQUAL) {
 			return previous_operand;
 		}
 		// Also switch multiline mode on here for infix operators.
@@ -2420,9 +2419,6 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_ternary_operator(Expressio
 GDScriptParser::ExpressionNode *GDScriptParser::parse_assignment(ExpressionNode *p_previous_operand, bool p_can_assign) {
 	if (!p_can_assign) {
 		push_error("Assignment is not allowed inside an expression.");
-		return parse_expression(false); // Return the following expression.
-	}
-	if (p_previous_operand == nullptr) {
 		return parse_expression(false); // Return the following expression.
 	}
 
@@ -3398,6 +3394,7 @@ bool GDScriptParser::validate_annotation_arguments(AnnotationNode *p_annotation)
 		return false;
 	}
 
+	Callable::CallError error;
 	const List<PropertyInfo>::Element *E = info.arguments.front();
 	for (int i = 0; i < p_annotation->arguments.size(); i++) {
 		ExpressionNode *argument = p_annotation->arguments[i];
@@ -3414,7 +3411,9 @@ bool GDScriptParser::validate_annotation_arguments(AnnotationNode *p_annotation)
 				// Allow "quote-less strings", as long as they are recognized as identifiers.
 				if (argument->type == Node::IDENTIFIER) {
 					IdentifierNode *string = static_cast<IdentifierNode *>(argument);
-					Callable::CallError error;
+					error.argument = 0
+					error.expected = 0;
+					error.error = CALL_OK;
 					Vector<Variant> args = varray(string->name);
 					const Variant *name = args.ptr();
 					Variant r;
@@ -3439,7 +3438,9 @@ bool GDScriptParser::validate_annotation_arguments(AnnotationNode *p_annotation)
 					push_error(vformat(R"(Expected %s as argument %d of annotation "%s".)", Variant::get_type_name(parameter.type), i + 1, p_annotation->name));
 					return false;
 				}
-				Callable::CallError error;
+				error.argument = 0
+				error.expected = 0;
+				error.error = CALL_OK;
 				const Variant *args = &value;
 				Variant r;
 				Variant::construct(parameter.type, r, &(args), 1, error);
@@ -3513,7 +3514,7 @@ bool GDScriptParser::export_annotations(const AnnotationNode *p_annotation, Node
 		variable->export_info.usage = PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_EDITOR_INSTANTIATE_OBJECT;
 	}
 
-	if (p_annotation->name == SNAME("@export")) {
+	else if (p_annotation->name == "@export") {
 		if (variable->datatype_specifier == nullptr && variable->initializer == nullptr) {
 			push_error(R"(Cannot use simple "@export" annotation with variable without type or initializer, since type can't be inferred.)", p_annotation);
 			return false;
@@ -3538,7 +3539,7 @@ bool GDScriptParser::export_annotations(const AnnotationNode *p_annotation, Node
 				variable->export_info.hint_string = Variant::get_type_name(export_type.builtin_type);
 				break;
 			case GDScriptParser::DataType::NATIVE:
-				if (ClassDB::is_parent_class(export_type.native_type, SNAME("Resource"))) {
+				if (ClassDB::is_parent_class(export_type.native_type, "Resource")) {
 					variable->export_info.type = Variant::OBJECT;
 					variable->export_info.hint = PROPERTY_HINT_RESOURCE_TYPE;
 					variable->export_info.hint_string = export_type.native_type;
@@ -3761,6 +3762,8 @@ String GDScriptParser::DataType::to_string() const {
 		}
 		case ENUM:
 			return enum_type.operator String() + " (enum)";
+		case ENUM_VALUE:
+			return enum_type.operator String() + " (enum value)";
 		case UNRESOLVED:
 			return "<unresolved type>";
 	}

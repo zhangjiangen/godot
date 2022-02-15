@@ -197,6 +197,8 @@ void ComputeCharts(Atlas *atlas, ChartOptions options = ChartOptions());
 struct PackOptions
 {
 	// Charts larger than this will be scaled down. 0 means no limit.
+	
+    // 大于此的图表将按比例缩小。 0 表示没有限制。
 	uint32_t maxChartSize = 0;
 
 	// Number of pixels to pad charts with.
@@ -210,6 +212,10 @@ struct PackOptions
 	// If 0, generate a single atlas with texelsPerUnit determining the final resolution.
 	// If not 0, and texelsPerUnit is not 0, generate one or more atlases with that exact resolution.
 	// If not 0, and texelsPerUnit is 0, texelsPerUnit is estimated to approximately match the resolution.
+
+	// 如果为 0，则生成单个图集，其中 texelsPerUnit 确定最终分辨率。
+	// 如果不为 0，并且 texelsPerUnit 不为 0，则生成一个或多个具有该精确分辨率的图集。
+	// 如果不为0，并且texelsPerUnit为0，则估计texelsPerUnit近似匹配分辨率。 
 	uint32_t resolution = 0;
 
 	// Leave space around charts for texels that would be sampled by bilinear filtering.

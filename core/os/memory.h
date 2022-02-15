@@ -149,11 +149,13 @@ void memdelete(T *p_class) {
 	// 偏移到内存起始地址
 	uint32_t *base = (uint32_t *)p_class;
 	base -= 2;
-	uint32_t tag = *base;
 	uint32_t size = *(base + 1);
+	#if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)
+	uint32_t tag = *base;
 	if (tag != MEMORY_TAG_NEW) {
 		throw std::runtime_error("memory delete tag error!");
 	}
+	#endif
 	// 检测数据大小是否相等,类型不相等有可能内存大小不一致
 	//    uint32_t type_size = sizeof(T);
 	//	if (size != type_size) {
@@ -227,11 +229,15 @@ size_t memarr_len(const T *p_class) {
 	uint32_t tag = *ptr;
 	uint32_t size = *(ptr + 1);
 	if (tag != MEMORY_TAG_NEW_ARRAY) {
+	#if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)
 		throw std::runtime_error("memory array len tag error!");
+	#endif
 	}
 	int count = size / sizeof(T);
 	if (count * sizeof(T) != size) {
+	#if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)
 		throw std::runtime_error("memory array len type error!");
+	#endif
 	}
 
 	return count;
@@ -243,18 +249,20 @@ void memdelete_arr(T *p_class) {
 
 	if (!__has_trivial_destructor(T)) {
 		ptr -= 2;
-		uint32_t tag = *ptr;
 		uint32_t size = *(ptr + 1);
+		int count = size / sizeof(T);
+	#if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)
+
+		uint32_t tag = *ptr;
 		// 错误验证
 		if (tag != MEMORY_TAG_NEW_ARRAY) {
 			throw std::runtime_error("memory array len tag error!");
 		}
-		int count = size / sizeof(T);
 		if (count * sizeof(T) != size) {
 			throw std::runtime_error("memory array len type error!");
 		}
-
-		for (uint64_t i = 0; i < count; i++) {
+	#endif
+		for (int i = 0; i < count; i++) {
 			p_class[i].~T();
 		}
 		// 删除内存
