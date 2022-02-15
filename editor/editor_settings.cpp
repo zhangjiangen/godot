@@ -31,18 +31,22 @@
 #include "editor_settings.h"
 
 #include "core/config/project_settings.h"
+#include "core/input/input_event.h"
 #include "core/input/input_map.h"
+#include "core/input/shortcut.h"
 #include "core/io/certs_compressed.gen.h"
-#include "core/io/config_file.h"
 #include "core/io/dir_access.h"
 #include "core/io/file_access.h"
 #include "core/io/ip.h"
 #include "core/io/resource_loader.h"
 #include "core/io/resource_saver.h"
+#include "core/object/class_db.h"
 #include "core/os/keyboard.h"
 #include "core/os/os.h"
+#include "core/string/translation.h"
 #include "core/version.h"
 #include "editor/editor_node.h"
+#include "editor/editor_paths.h"
 #include "editor/editor_translation.h"
 #include "scene/main/node.h"
 #include "scene/main/scene_tree.h"
@@ -415,6 +419,8 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 #else
 	EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "interface/editor/font_hinting", 0, "Auto (Light),None,Light,Normal")
 #endif
+	EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "interface/editor/font_subpixel_positioning", 1, "Disabled,Auto,One half of a pixel,One quarter of a pixel")
+
 	EDITOR_SETTING(Variant::STRING, PROPERTY_HINT_GLOBAL_FILE, "interface/editor/main_font", "", "*.ttf,*.otf")
 	EDITOR_SETTING(Variant::STRING, PROPERTY_HINT_GLOBAL_FILE, "interface/editor/main_font_bold", "", "*.ttf,*.otf")
 	EDITOR_SETTING(Variant::STRING, PROPERTY_HINT_GLOBAL_FILE, "interface/editor/code_font", "", "*.ttf,*.otf")

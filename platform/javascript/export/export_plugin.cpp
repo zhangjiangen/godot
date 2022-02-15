@@ -31,7 +31,6 @@
 #include "export_plugin.h"
 
 #include "core/config/project_settings.h"
-#include "editor/editor_node.h"
 
 Error EditorExportPlatformJavaScript::_extract_template(const String &p_template, const String &p_dir, const String &p_name, bool pwa) {
 	FileAccess *src_f = nullptr;
@@ -645,7 +644,7 @@ Ref<Texture2D> EditorExportPlatformJavaScript::get_run_icon() const {
 void EditorExportPlatformJavaScript::_server_thread_poll(void *data) {
 	EditorExportPlatformJavaScript *ej = (EditorExportPlatformJavaScript *)data;
 	while (!ej->server_quit) {
-		OS::get_singleton()->delay_usec(1000);
+		OS::get_singleton()->delay_usec(6900);
 		{
 			MutexLock lock(ej->server_lock);
 			ej->server->poll();

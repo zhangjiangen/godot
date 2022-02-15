@@ -67,6 +67,14 @@ void CanvasLayer::set_visible(bool p_visible) {
 	}
 }
 
+void CanvasLayer::show() {
+	set_visible(true);
+}
+
+void CanvasLayer::hide() {
+	set_visible(false);
+}
+
 bool CanvasLayer::is_visible() const {
 	return visible;
 }
@@ -166,8 +174,8 @@ void CanvasLayer::_notification(int p_what) {
 			RenderingServer::get_singleton()->viewport_set_canvas_stacking(viewport, canvas, layer, get_index());
 			RenderingServer::get_singleton()->viewport_set_canvas_transform(viewport, canvas, transform);
 			_update_follow_viewport();
-
 		} break;
+
 		case NOTIFICATION_EXIT_TREE: {
 			ERR_FAIL_NULL_MSG(vp, "Viewport is not initialized.");
 
@@ -175,13 +183,12 @@ void CanvasLayer::_notification(int p_what) {
 			RenderingServer::get_singleton()->viewport_remove_canvas(viewport, canvas);
 			viewport = RID();
 			_update_follow_viewport(false);
-
 		} break;
+
 		case NOTIFICATION_MOVED_IN_PARENT: {
 			if (is_inside_tree()) {
 				RenderingServer::get_singleton()->viewport_set_canvas_stacking(viewport, canvas, layer, get_index());
 			}
-
 		} break;
 	}
 }
@@ -295,6 +302,8 @@ void CanvasLayer::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("set_visible", "visible"), &CanvasLayer::set_visible);
 	ClassDB::bind_method(D_METHOD("is_visible"), &CanvasLayer::is_visible);
+	ClassDB::bind_method(D_METHOD("show"), &CanvasLayer::show);
+	ClassDB::bind_method(D_METHOD("hide"), &CanvasLayer::hide);
 
 	ClassDB::bind_method(D_METHOD("set_transform", "transform"), &CanvasLayer::set_transform);
 	ClassDB::bind_method(D_METHOD("get_transform"), &CanvasLayer::get_transform);
