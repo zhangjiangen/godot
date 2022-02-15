@@ -3393,6 +3393,7 @@ bool GDScriptParser::validate_annotation_arguments(AnnotationNode *p_annotation)
 		return false;
 	}
 
+	Callable::CallError error;
 	const List<PropertyInfo>::Element *E = info.arguments.front();
 	for (int i = 0; i < p_annotation->arguments.size(); i++) {
 		ExpressionNode *argument = p_annotation->arguments[i];
@@ -3409,7 +3410,9 @@ bool GDScriptParser::validate_annotation_arguments(AnnotationNode *p_annotation)
 				// Allow "quote-less strings", as long as they are recognized as identifiers.
 				if (argument->type == Node::IDENTIFIER) {
 					IdentifierNode *string = static_cast<IdentifierNode *>(argument);
-					Callable::CallError error;
+					error.argument = 0
+					error.expected = 0;
+					error.error = CALL_OK;
 					Vector<Variant> args = varray(string->name);
 					const Variant *name = args.ptr();
 					Variant r;
@@ -3434,7 +3437,9 @@ bool GDScriptParser::validate_annotation_arguments(AnnotationNode *p_annotation)
 					push_error(vformat(R"(Expected %s as argument %d of annotation "%s".)", Variant::get_type_name(parameter.type), i + 1, p_annotation->name));
 					return false;
 				}
-				Callable::CallError error;
+				error.argument = 0
+				error.expected = 0;
+				error.error = CALL_OK;
 				const Variant *args = &value;
 				Variant r;
 				Variant::construct(parameter.type, r, &(args), 1, error);

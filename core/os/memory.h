@@ -254,7 +254,7 @@ void memdelete_arr(T *p_class) {
 			throw std::runtime_error("memory array len type error!");
 		}
 
-		for (uint64_t i = 0; i < count; i++) {
+		for (int i = 0; i < count; i++) {
 			p_class[i].~T();
 		}
 		// 删除内存

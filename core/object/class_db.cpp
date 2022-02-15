@@ -1169,7 +1169,11 @@ bool ClassDB::set_property(Object *p_object, const StringName &p_property, const
 	ClassInfo *type = classes.getptr(p_object->get_class_name());
 	ClassInfo *check = type;
 
+	Callable::CallError ce;
 	while (check) {
+		ce.argument = 0
+		ce.expected = 0;
+		ce.error = CALL_OK;
 		const PropertySetGet *psg = check->property_setget.getptr(p_property);
 		if (psg) {
 			if (!psg->setter) {
@@ -1179,7 +1183,6 @@ bool ClassDB::set_property(Object *p_object, const StringName &p_property, const
 				return true; //return true but do nothing
 			}
 
-			Callable::CallError ce;
 
 			if (psg->index >= 0) {
 				Variant index = psg->index;
@@ -1218,6 +1221,7 @@ bool ClassDB::get_property(Object *p_object, const StringName &p_property, Varia
 
 	ClassInfo *type = classes.getptr(p_object->get_class_name());
 	ClassInfo *check = type;
+	Callable::CallError ce;
 	while (check) {
 		const PropertySetGet *psg = check->property_setget.getptr(p_property);
 		if (psg) {
@@ -1226,13 +1230,17 @@ bool ClassDB::get_property(Object *p_object, const StringName &p_property, Varia
 			}
 
 			if (psg->index >= 0) {
+				ce.argument = 0
+				ce.expected = 0;
+				ce.error = CALL_OK;
 				Variant index = psg->index;
 				const Variant *arg[1] = { &index };
-				Callable::CallError ce;
 				p_object->call_r(r_value, psg->getter, arg, 1, ce);
 
 			} else {
-				Callable::CallError ce;
+				ce.argument = 0
+				ce.expected = 0;
+				ce.error = CALL_OK;
 				if (psg->_getptr) {
 					r_value = psg->_getptr->call(p_object, nullptr, 0, ce);
 				} else {
