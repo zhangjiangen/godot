@@ -378,7 +378,7 @@ int CowData<T>::find(const T &p_val, int p_from) const {
 		return ret;
 	}
 
-	for (int i = p_from; i < s; i++) {
+	for (uint32_t i = p_from; i < s; i++) {
 		if (get(i) == p_val) {
 			ret = i;
 			break;
