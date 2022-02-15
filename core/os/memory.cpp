@@ -797,12 +797,14 @@ void *MallocAllocator::alloc_memory(size_t p_memory, const char *file_name, int 
 void MallocAllocator::free_memory(void *p_ptr) {
 	uint32_t *base = (uint32_t *)p_ptr;
 	base -= 2;
+	#if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)
 	uint32_t tag, size;
 	tag = *base;
 	size = *(base + 1);
 	if (tag != MEMORY_TAG_MALLOC) {
 		throw std::runtime_error("memory free error!");
 	}
+	#endif
 	DefaultAllocator::free(base, size + sizeof(uint64_t));
 }
 void *MallocAllocator::realloc_memory(void *p_ptr, size_t p_new_size, const char *file_name, int file_lne) {
@@ -822,9 +824,11 @@ void *MallocAllocator::realloc_memory(void *p_ptr, size_t p_new_size, const char
 	uint32_t tag, size;
 	tag = *base;
 	size = *(base + 1);
+	#if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)
 	if (tag != MEMORY_TAG_MALLOC) {
 		throw std::runtime_error("memory free error!");
 	}
+	#endif
 	void *new_ptr;
 	new_ptr = alloc_memory(p_new_size, file_name, file_lne);
 	if (!new_ptr) {
