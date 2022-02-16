@@ -1430,7 +1430,7 @@ public:
 #endif
 
 	GDScriptParser();
-	~GDScriptParser();
+	virtual ~GDScriptParser();
 
 #ifdef DEBUG_ENABLED
 	class TreePrinter {

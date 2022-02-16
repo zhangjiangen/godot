@@ -53,12 +53,12 @@ protected:
 	const lsp::DocumentSymbol *get_native_symbol(const String &p_class, const String &p_member = "") const;
 	const lsp::DocumentSymbol *get_script_symbol(const String &p_path) const;
 	const lsp::DocumentSymbol *get_parameter_symbol(const lsp::DocumentSymbol *p_parent, const String &symbol_identifier);
-	const lsp::DocumentSymbol *get_local_symbol(const ExtendGDScriptParser *p_parser, const String &p_symbol_identifier);
+	const lsp::DocumentSymbol *get_local_symbol(const SharedPtr<ExtendGDScriptParser> p_parser, const String &p_symbol_identifier);
 
 	void reload_all_workspace_scripts();
 
-	ExtendGDScriptParser *get_parse_successed_script(const String &p_path);
-	ExtendGDScriptParser *get_parse_result(const String &p_path);
+	SharedPtr<ExtendGDScriptParser> get_parse_successed_script(const String &p_path);
+	SharedPtr<ExtendGDScriptParser> get_parse_result(const String &p_path);
 
 	void list_script_files(const String &p_root_dir, List<String> &r_files);
 
@@ -68,8 +68,8 @@ public:
 	String root;
 	String root_uri;
 
-	Map<String, ExtendGDScriptParser *> scripts;
-	Map<String, ExtendGDScriptParser *> parse_results;
+	Map<String, SharedPtr<ExtendGDScriptParser>> scripts;
+	Map<String, SharedPtr<ExtendGDScriptParser>> parse_results;
 	HashMap<StringName, ClassMembers> native_members;
 
 public:

@@ -3411,9 +3411,9 @@ bool GDScriptParser::validate_annotation_arguments(AnnotationNode *p_annotation)
 				// Allow "quote-less strings", as long as they are recognized as identifiers.
 				if (argument->type == Node::IDENTIFIER) {
 					IdentifierNode *string = static_cast<IdentifierNode *>(argument);
-					error.argument = 0
+					error.argument = 0;
 					error.expected = 0;
-					error.error = CALL_OK;
+					error.error = Callable::CallError::CALL_OK;
 					Vector<Variant> args = varray(string->name);
 					const Variant *name = args.ptr();
 					Variant r;
@@ -3438,9 +3438,9 @@ bool GDScriptParser::validate_annotation_arguments(AnnotationNode *p_annotation)
 					push_error(vformat(R"(Expected %s as argument %d of annotation "%s".)", Variant::get_type_name(parameter.type), i + 1, p_annotation->name));
 					return false;
 				}
-				error.argument = 0
+				error.argument = 0;
 				error.expected = 0;
-				error.error = CALL_OK;
+				error.error = Callable::CallError::CALL_OK;
 				const Variant *args = &value;
 				Variant r;
 				Variant::construct(parameter.type, r, &(args), 1, error);
@@ -3762,8 +3762,8 @@ String GDScriptParser::DataType::to_string() const {
 		}
 		case ENUM:
 			return enum_type.operator String() + " (enum)";
-		case ENUM_VALUE:
-			return enum_type.operator String() + " (enum value)";
+		// case ENUM_VALUE:
+		// 	return enum_type.operator String() + " (enum value)";
 		case UNRESOLVED:
 			return "<unresolved type>";
 	}

@@ -100,6 +100,7 @@ public:
 	bool operator==(const String &p_name) const;
 	bool operator==(const char *p_name) const;
 	bool operator!=(const String &p_name) const;
+	bool operator!=(const char *_name) const;
 	_FORCE_INLINE_ bool operator<(const StringName &p_name) const {
 		return _data < p_name._data;
 	}
@@ -173,7 +174,6 @@ public:
 	static void set_debug_stringnames(bool p_enable) { debug_stringname = p_enable; }
 #endif
 };
-
 bool operator==(const String &p_name, const StringName &p_string_name);
 bool operator!=(const String &p_name, const StringName &p_string_name);
 bool operator==(const char *p_name, const StringName &p_string_name);

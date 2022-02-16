@@ -1181,9 +1181,9 @@ bool ClassDB::set_property(Object *p_object, const StringName &p_property, const
 
 	Callable::CallError ce;
 	while (check) {
-		ce.argument = 0
+        ce.argument = 0;
 		ce.expected = 0;
-		ce.error = CALL_OK;
+		ce.error = Callable::CallError::CALL_OK;
 		const PropertySetGet *psg = check->property_setget.getptr(p_property);
 		if (psg) {
 			if (!psg->setter) {
@@ -1240,17 +1240,17 @@ bool ClassDB::get_property(Object *p_object, const StringName &p_property, Varia
 			}
 
 			if (psg->index >= 0) {
-				ce.argument = 0
+                ce.argument = 0;
 				ce.expected = 0;
-				ce.error = CALL_OK;
+				ce.error = Callable::CallError::CALL_OK;
 				Variant index = psg->index;
 				const Variant *arg[1] = { &index };
 				p_object->call_r(r_value, psg->getter, arg, 1, ce);
 
 			} else {
-				ce.argument = 0
+                ce.argument = 0;
 				ce.expected = 0;
-				ce.error = CALL_OK;
+                ce.error = Callable::CallError::CALL_OK;
 				if (psg->_getptr) {
 					r_value = psg->_getptr->call(p_object, nullptr, 0, ce);
 				} else {

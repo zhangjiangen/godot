@@ -149,11 +149,16 @@ bool StringName::operator==(const char *p_name) const {
 	if (!_data) {
 		return (p_name[0] == 0);
 	}
-
+	if (_data->cname) {
+		return strcmp(_data->cname, p_name) == 0;
+	}
 	return (_data->get_name() == p_name);
 }
 
 bool StringName::operator!=(const String &p_name) const {
+	return !(operator==(p_name));
+}
+bool StringName::operator!=(const char *p_name) const {
 	return !(operator==(p_name));
 }
 
@@ -292,6 +297,7 @@ StringName::StringName(const StaticCString &p_static_string, bool p_static) {
 	_data->static_count.set(p_static ? 1 : 0);
 	_data->hash = hash;
 	_data->idx = idx;
+	_data->name = p_static_string.ptr;
 	_data->cname = p_static_string.ptr;
 	_data->next = _table[idx];
 	_data->prev = nullptr;
@@ -378,6 +384,8 @@ StringName StringName::search(const char *p_name) {
 	}
 
 	MutexLock lock(mutex);
+	String name;
+	bool is_set = false;
 
 	uint32_t hash = String::hash(p_name);
 	uint32_t idx = hash & STRING_TABLE_MASK;
@@ -386,7 +394,20 @@ StringName StringName::search(const char *p_name) {
 
 	while (_data) {
 		// compare hash first
-		if (_data->hash == hash && _data->get_name() == p_name) {
+		if (_data->hash == hash) {
+			if (_data->cname) {
+				if (strcmp(_data->cname, p_name) == 0) {
+					break;
+				}
+			} else {
+				if (!is_set) {
+					is_set == true;
+					name = p_name;
+				}
+				if (name == _data->name) {
+					break;
+				}
+			}
 			break;
 		}
 		_data = _data->next;
@@ -420,10 +441,11 @@ StringName StringName::search(const char32_t *p_name) {
 	uint32_t idx = hash & STRING_TABLE_MASK;
 
 	_Data *_data = _table[idx];
+	String name(p_name);
 
 	while (_data) {
 		// compare hash first
-		if (_data->hash == hash && _data->get_name() == p_name) {
+		if (_data->hash == hash && _data->name == p_name) {
 			break;
 		}
 		_data = _data->next;
@@ -449,7 +471,7 @@ StringName StringName::search(const String &p_name) {
 
 	while (_data) {
 		// compare hash first
-		if (_data->hash == hash && p_name == _data->get_name()) {
+		if (_data->hash == hash && p_name == _data->name) {
 			break;
 		}
 		_data = _data->next;
@@ -468,15 +490,15 @@ StringName StringName::search(const String &p_name) {
 }
 
 bool operator==(const String &p_name, const StringName &p_string_name) {
-	return p_name == p_string_name.operator String();
+	return p_string_name.operator==(p_name);
 }
 bool operator!=(const String &p_name, const StringName &p_string_name) {
-	return p_name != p_string_name.operator String();
+	return p_string_name.operator!=(p_name);
 }
 
 bool operator==(const char *p_name, const StringName &p_string_name) {
-	return p_name == p_string_name.operator String();
+	return p_string_name.operator!=(p_name);
 }
 bool operator!=(const char *p_name, const StringName &p_string_name) {
-	return p_name != p_string_name.operator String();
+	return p_string_name.operator!=(p_name);
 }
