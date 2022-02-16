@@ -36,7 +36,6 @@
 #include "scene/gui/slider.h"
 #include "scene/gui/spin_box.h"
 
-class EditorNode;
 class SceneTreeDialog;
 
 class MultiMeshEditor : public Control {
@@ -87,7 +86,6 @@ class MultiMeshEditorPlugin : public EditorPlugin {
 	GDCLASS(MultiMeshEditorPlugin, EditorPlugin);
 
 	MultiMeshEditor *multimesh_editor;
-	EditorNode *editor;
 
 public:
 	virtual String get_name() const override { return "MultiMesh"; }
@@ -96,7 +94,7 @@ public:
 	virtual bool handles(Object *p_object) const override;
 	virtual void make_visible(bool p_visible) override;
 
-	MultiMeshEditorPlugin(EditorNode *p_node);
+	MultiMeshEditorPlugin();
 	~MultiMeshEditorPlugin();
 };
 

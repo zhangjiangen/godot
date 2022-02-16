@@ -35,8 +35,6 @@
 #include "scene/3d/mesh_instance_3d.h"
 #include "scene/gui/spin_box.h"
 
-class EditorNode;
-
 class MeshInstance3DEditor : public Control {
 	GDCLASS(MeshInstance3DEditor, Control);
 
@@ -87,7 +85,6 @@ class MeshInstance3DEditorPlugin : public EditorPlugin {
 	GDCLASS(MeshInstance3DEditorPlugin, EditorPlugin);
 
 	MeshInstance3DEditor *mesh_editor;
-	EditorNode *editor;
 
 public:
 	virtual String get_name() const override { return "MeshInstance3D"; }
@@ -96,7 +93,7 @@ public:
 	virtual bool handles(Object *p_object) const override;
 	virtual void make_visible(bool p_visible) override;
 
-	MeshInstance3DEditorPlugin(EditorNode *p_node);
+	MeshInstance3DEditorPlugin();
 	~MeshInstance3DEditorPlugin();
 };
 

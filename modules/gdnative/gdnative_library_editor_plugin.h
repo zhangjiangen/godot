@@ -39,7 +39,6 @@
 #include "scene/gui/menu_button.h"
 #include "scene/gui/tree.h"
 
-class EditorNode;
 class EditorFileDialog;
 
 class GDNativeLibraryEditor : public Control {
@@ -103,7 +102,6 @@ class GDNativeLibraryEditorPlugin : public EditorPlugin {
 	GDCLASS(GDNativeLibraryEditorPlugin, EditorPlugin);
 
 	GDNativeLibraryEditor *library_editor = nullptr;
-	EditorNode *editor = nullptr;
 	Button *button = nullptr;
 
 public:
@@ -113,7 +111,9 @@ public:
 	virtual bool handles(Object *p_node) const override;
 	virtual void make_visible(bool p_visible) override;
 
-	GDNativeLibraryEditorPlugin(EditorNode *p_node);
+	GDNativeLibraryEditorPlugin();
 };
-#endif
+
+#endif // TOOLS_ENABLED
+
 #endif // GDNATIVE_LIBRARY_EDITOR_PLUGIN_H

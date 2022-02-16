@@ -30,7 +30,6 @@
 
 #include "mesh_editor_plugin.h"
 
-#include "editor/editor_node.h"
 #include "editor/editor_scale.h"
 
 void MeshEditor::gui_input(const Ref<InputEvent> &p_event) {
@@ -177,7 +176,7 @@ void EditorInspectorPluginMesh::parse_begin(Object *p_object) {
 	add_custom_control(editor);
 }
 
-MeshEditorPlugin::MeshEditorPlugin(EditorNode *p_node) {
+MeshEditorPlugin::MeshEditorPlugin() {
 	Ref<EditorInspectorPluginMesh> plugin;
 	New_instantiate(plugin);
 	add_inspector_plugin(plugin);

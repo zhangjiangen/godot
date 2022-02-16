@@ -44,7 +44,6 @@
 #include "scene/gui/tree.h"
 #include "scene/resources/theme.h"
 
-class EditorNode;
 class EditorFileDialog;
 
 class ThemeItemImportTree : public VBoxContainer {
@@ -454,7 +453,6 @@ class ThemeEditorPlugin : public EditorPlugin {
 	GDCLASS(ThemeEditorPlugin, EditorPlugin);
 
 	ThemeEditor *theme_editor;
-	EditorNode *editor;
 	Button *button;
 
 public:
@@ -464,7 +462,7 @@ public:
 	virtual bool handles(Object *p_node) const override;
 	virtual void make_visible(bool p_visible) override;
 
-	ThemeEditorPlugin(EditorNode *p_node);
+	ThemeEditorPlugin();
 };
 
 #endif // THEME_EDITOR_PLUGIN_H

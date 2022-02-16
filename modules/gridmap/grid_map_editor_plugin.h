@@ -37,7 +37,6 @@
 #include "scene/gui/slider.h"
 #include "scene/gui/spin_box.h"
 
-class EditorNode;
 class Node3DEditorPlugin;
 
 class GridMapEditor : public VBoxContainer {
@@ -192,8 +191,6 @@ class GridMapEditor : public VBoxContainer {
 	ItemList *mesh_library_palette;
 	Label *info_message;
 
-	EditorNode *editor;
-
 	void update_grid(); // Change which and where the grid is displayed
 	void _draw_grids(const Vector3 &cell_size);
 	void _configure();
@@ -239,8 +236,7 @@ public:
 	EditorPlugin::AfterGUIInput forward_spatial_input_event(Camera3D *p_camera, const Ref<InputEvent> &p_event);
 
 	void edit(GridMap *p_gridmap);
-	GridMapEditor() {}
-	GridMapEditor(EditorNode *p_editor);
+	GridMapEditor();
 	~GridMapEditor();
 };
 
@@ -248,7 +244,6 @@ class GridMapEditorPlugin : public EditorPlugin {
 	GDCLASS(GridMapEditorPlugin, EditorPlugin);
 
 	GridMapEditor *grid_map_editor;
-	EditorNode *editor;
 
 protected:
 	void _notification(int p_what);
@@ -261,7 +256,7 @@ public:
 	virtual bool handles(Object *p_object) const override;
 	virtual void make_visible(bool p_visible) override;
 
-	GridMapEditorPlugin(EditorNode *p_node);
+	GridMapEditorPlugin();
 	~GridMapEditorPlugin();
 };
 

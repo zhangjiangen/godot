@@ -30,6 +30,7 @@
 
 #include "control_editor_plugin.h"
 
+#include "editor/editor_node.h"
 #include "editor/plugins/canvas_item_editor_plugin.h"
 
 void ControlPositioningWarning::_update_warning() {
@@ -504,9 +505,13 @@ void ControlEditorToolbar::_set_anchors_and_offsets_to_keep_ratio() {
 			undo_redo->add_do_method(control, "set_anchor", SIDE_BOTTOM, bottom_right_anchor.y, false, true);
 			undo_redo->add_do_method(control, "set_meta", "_edit_use_anchors_", true);
 
-			bool use_anchors = control->has_meta("_edit_use_anchors_") && control->get_meta("_edit_use_anchors_");
+			const bool use_anchors = control->has_meta("_edit_use_anchors_") && control->get_meta("_edit_use_anchors_");
 			undo_redo->add_undo_method(control, "_edit_set_state", control->_edit_get_state());
-			undo_redo->add_undo_method(control, "set_meta", "_edit_use_anchors_", use_anchors);
+			if (use_anchors) {
+				undo_redo->add_undo_method(control, "set_meta", "_edit_use_anchors_", true);
+			} else {
+				undo_redo->add_undo_method(control, "remove_meta", "_edit_use_anchors_");
+			}
 
 			anchors_mode = true;
 			anchor_mode_button->set_pressed(anchors_mode);
@@ -596,7 +601,11 @@ void ControlEditorToolbar::_button_toggle_anchor_mode(bool p_status) {
 			continue;
 		}
 
-		E->set_meta("_edit_use_anchors_", p_status);
+		if (p_status) {
+			E->set_meta("_edit_use_anchors_", true);
+		} else {
+			E->remove_meta("_edit_use_anchors_");
+		}
 	}
 
 	anchors_mode = p_status;
@@ -941,7 +950,7 @@ void ControlEditorToolbar::_notification(int p_what) {
 	}
 }
 
-ControlEditorToolbar::ControlEditorToolbar(EditorNode *p_editor) {
+ControlEditorToolbar::ControlEditorToolbar() {
 	anchor_layouts_icon = memnew(TextureRect);
 	anchor_layouts_icon->set_stretch_mode(TextureRect::StretchMode::STRETCH_KEEP_CENTERED);
 	add_child(anchor_layouts_icon);
@@ -1000,8 +1009,8 @@ ControlEditorToolbar::ControlEditorToolbar(EditorNode *p_editor) {
 	p = container_v_presets_menu->get_popup();
 	p->connect("id_pressed", callable_mp(this, &ControlEditorToolbar::_popup_callback));
 
-	undo_redo = p_editor->get_undo_redo();
-	editor_selection = p_editor->get_editor_selection();
+	undo_redo = EditorNode::get_singleton()->get_undo_redo();
+	editor_selection = EditorNode::get_singleton()->get_editor_selection();
 	editor_selection->add_editor_plugin(this);
 	editor_selection->connect("selection_changed", callable_mp(this, &ControlEditorToolbar::_selection_changed));
 
@@ -1010,10 +1019,8 @@ ControlEditorToolbar::ControlEditorToolbar(EditorNode *p_editor) {
 
 ControlEditorToolbar *ControlEditorToolbar::singleton = nullptr;
 
-ControlEditorPlugin::ControlEditorPlugin(EditorNode *p_editor) {
-	editor = p_editor;
-
-	toolbar = memnew(ControlEditorToolbar(editor));
+ControlEditorPlugin::ControlEditorPlugin() {
+	toolbar = memnew(ControlEditorToolbar);
 	toolbar->hide();
 	add_control_to_container(CONTAINER_CANVAS_EDITOR_MENU, toolbar);
 

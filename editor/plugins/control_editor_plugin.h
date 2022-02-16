@@ -31,9 +31,7 @@
 #ifndef CONTROL_EDITOR_PLUGIN_H
 #define CONTROL_EDITOR_PLUGIN_H
 
-#include "editor/editor_node.h"
 #include "editor/editor_plugin.h"
-
 #include "scene/gui/box_container.h"
 #include "scene/gui/check_box.h"
 #include "scene/gui/control.h"
@@ -237,19 +235,18 @@ public:
 
 	static ControlEditorToolbar *get_singleton() { return singleton; }
 
-	ControlEditorToolbar(EditorNode *p_editor);
+	ControlEditorToolbar();
 };
 
 class ControlEditorPlugin : public EditorPlugin {
 	GDCLASS(ControlEditorPlugin, EditorPlugin);
 
-	EditorNode *editor;
 	ControlEditorToolbar *toolbar;
 
 public:
 	virtual String get_name() const override { return "Control"; }
 
-	ControlEditorPlugin(EditorNode *p_editor);
+	ControlEditorPlugin();
 };
 
 #endif //CONTROL_EDITOR_PLUGIN_H

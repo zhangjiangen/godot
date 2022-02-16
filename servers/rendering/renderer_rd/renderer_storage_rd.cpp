@@ -3628,14 +3628,14 @@ void RendererStorageRD::mesh_instance_set_blend_shape_weight(RID p_mesh_instance
 
 void RendererStorageRD::_mesh_instance_clear(MeshInstance *mi) {
 	for (uint32_t i = 0; i < mi->surfaces.size(); i++) {
-		if (mi->surfaces[i].vertex_buffer.is_valid()) {
-			RD::get_singleton()->free(mi->surfaces[i].vertex_buffer);
-		}
 		if (mi->surfaces[i].versions) {
 			for (uint32_t j = 0; j < mi->surfaces[i].version_count; j++) {
 				RD::get_singleton()->free(mi->surfaces[i].versions[j].vertex_array);
 			}
 			memfree(mi->surfaces[i].versions);
+		}
+		if (mi->surfaces[i].vertex_buffer.is_valid()) {
+			RD::get_singleton()->free(mi->surfaces[i].vertex_buffer);
 		}
 	}
 	mi->surfaces.clear();
@@ -4577,6 +4577,8 @@ void RendererStorageRD::_particles_free_data(Particles *particles) {
 		particles->particle_instance_buffer = RID();
 	}
 
+	particles->userdata_count = 0;
+
 	if (particles->frame_params_buffer.is_valid()) {
 		RD::get_singleton()->free(particles->frame_params_buffer);
 		particles->frame_params_buffer = RID();
@@ -4771,6 +4773,14 @@ void RendererStorageRD::particles_set_process_material(RID p_particles, RID p_ma
 	ERR_FAIL_COND(!particles);
 
 	particles->process_material = p_material;
+	particles->dependency.changed_notify(DEPENDENCY_CHANGED_PARTICLES); //the instance buffer may have changed
+}
+
+RID RendererStorageRD::particles_get_process_material(RID p_particles) const {
+	Particles *particles = particles_owner.get_or_null(p_particles);
+	ERR_FAIL_COND_V(!particles, RID());
+
+	return particles->process_material;
 }
 
 void RendererStorageRD::particles_set_draw_order(RID p_particles, RS::ParticlesDrawOrder p_order) {
@@ -4907,10 +4917,13 @@ AABB RendererStorageRD::particles_get_current_aabb(RID p_particles) {
 	if (buffer.size()) {
 		bool first = true;
 
-		const ParticleData *particle_data = reinterpret_cast<const ParticleData *>(buffer.ptr());
+		const uint8_t *data_ptr = (const uint8_t *)buffer.ptr();
+		uint32_t particle_data_size = sizeof(ParticleData) + sizeof(float) * particles->userdata_count;
+
 		for (int i = 0; i < total_amount; i++) {
-			if (particle_data[i].active) {
-				Vector3 pos = Vector3(particle_data[i].xform[12], particle_data[i].xform[13], particle_data[i].xform[14]);
+			const ParticleData &particle_data = *(const ParticleData *)&data_ptr[particle_data_size * i];
+			if (particle_data.active) {
+				Vector3 pos = Vector3(particle_data.xform[12], particle_data.xform[13], particle_data.xform[14]);
 				if (!particles->use_local_coords) {
 					pos = inv.xform(pos);
 				}
@@ -5475,6 +5488,7 @@ void RendererStorageRD::particles_set_view_axis(RID p_particles, const Vector3 &
 
 	copy_push_constant.frame_remainder = particles->interpolate ? particles->frame_remainder : 0.0;
 	copy_push_constant.total_particles = particles->amount;
+	copy_push_constant.copy_mode_2d = false;
 
 	Vector3 axis = -p_axis; // cameras look to z negative
 
@@ -5495,7 +5509,7 @@ void RendererStorageRD::particles_set_view_axis(RID p_particles, const Vector3 &
 	if (do_sort) {
 		RD::ComputeListID compute_list = RD::get_singleton()->compute_list_begin();
 
-		RD::get_singleton()->compute_list_bind_compute_pipeline(compute_list, particles_shader.copy_pipelines[ParticlesShader::COPY_MODE_FILL_SORT_BUFFER]);
+		RD::get_singleton()->compute_list_bind_compute_pipeline(compute_list, particles_shader.copy_pipelines[ParticlesShader::COPY_MODE_FILL_SORT_BUFFER + particles->userdata_count * ParticlesShader::COPY_MODE_MAX]);
 		RD::get_singleton()->compute_list_bind_uniform_set(compute_list, particles->particles_copy_uniform_set, 0);
 		RD::get_singleton()->compute_list_bind_uniform_set(compute_list, particles->particles_sort_uniform_set, 1);
 		RD::get_singleton()->compute_list_bind_uniform_set(compute_list, particles->trail_bind_pose_uniform_set, 2);
@@ -5510,7 +5524,10 @@ void RendererStorageRD::particles_set_view_axis(RID p_particles, const Vector3 &
 	copy_push_constant.total_particles *= copy_push_constant.total_particles;
 
 	RD::ComputeListID compute_list = RD::get_singleton()->compute_list_begin();
-	RD::get_singleton()->compute_list_bind_compute_pipeline(compute_list, particles_shader.copy_pipelines[do_sort ? ParticlesShader::COPY_MODE_FILL_INSTANCES_WITH_SORT_BUFFER : (particles->mode == RS::PARTICLES_MODE_2D ? ParticlesShader::COPY_MODE_FILL_INSTANCES_2D : ParticlesShader::COPY_MODE_FILL_INSTANCES)]);
+	uint32_t copy_pipeline = do_sort ? ParticlesShader::COPY_MODE_FILL_INSTANCES_WITH_SORT_BUFFER : ParticlesShader::COPY_MODE_FILL_INSTANCES;
+	copy_pipeline += particles->userdata_count * ParticlesShader::COPY_MODE_MAX;
+	copy_push_constant.copy_mode_2d = particles->mode == RS::PARTICLES_MODE_2D ? 1 : 0;
+	RD::get_singleton()->compute_list_bind_compute_pipeline(compute_list, particles_shader.copy_pipelines[copy_pipeline]);
 	RD::get_singleton()->compute_list_bind_uniform_set(compute_list, particles->particles_copy_uniform_set, 0);
 	if (do_sort) {
 		RD::get_singleton()->compute_list_bind_uniform_set(compute_list, particles->particles_sort_uniform_set, 1);
@@ -5525,6 +5542,19 @@ void RendererStorageRD::particles_set_view_axis(RID p_particles, const Vector3 &
 }
 
 void RendererStorageRD::_particles_update_buffers(Particles *particles) {
+	uint32_t userdata_count = 0;
+
+	const Material *material = material_owner.get_or_null(particles->process_material);
+	if (material && material->shader && material->shader->data) {
+		const ParticlesShaderData *shader_data = static_cast<const ParticlesShaderData *>(material->shader->data);
+		userdata_count = shader_data->userdata_count;
+	}
+
+	if (userdata_count != particles->userdata_count) {
+		// Mismatch userdata, re-create buffers.
+		_particles_free_data(particles);
+	}
+
 	if (particles->amount > 0 && particles->particle_buffer.is_null()) {
 		int total_amount = particles->amount;
 		if (particles->trails_enabled && particles->trail_bind_poses.size() > 1) {
@@ -5533,7 +5563,9 @@ void RendererStorageRD::_particles_update_buffers(Particles *particles) {
 
 		uint32_t xform_size = particles->mode == RS::PARTICLES_MODE_2D ? 2 : 3;
 
-		particles->particle_buffer = RD::get_singleton()->storage_buffer_create(sizeof(ParticleData) * total_amount);
+		particles->particle_buffer = RD::get_singleton()->storage_buffer_create((sizeof(ParticleData) + userdata_count * sizeof(float) * 4) * total_amount);
+
+		particles->userdata_count = userdata_count;
 
 		particles->particle_instance_buffer = RD::get_singleton()->storage_buffer_create(sizeof(float) * 4 * (xform_size + 1 + 1) * total_amount);
 		//needs to clear it
@@ -5757,7 +5789,8 @@ void RendererStorageRD::update_particles() {
 			copy_push_constant.lifetime_reverse = particles->draw_order == RS::PARTICLES_DRAW_ORDER_REVERSE_LIFETIME;
 
 			RD::ComputeListID compute_list = RD::get_singleton()->compute_list_begin();
-			RD::get_singleton()->compute_list_bind_compute_pipeline(compute_list, particles_shader.copy_pipelines[particles->mode == RS::PARTICLES_MODE_2D ? ParticlesShader::COPY_MODE_FILL_INSTANCES_2D : ParticlesShader::COPY_MODE_FILL_INSTANCES]);
+			copy_push_constant.copy_mode_2d = particles->mode == RS::PARTICLES_MODE_2D ? 1 : 0;
+			RD::get_singleton()->compute_list_bind_compute_pipeline(compute_list, particles_shader.copy_pipelines[ParticlesShader::COPY_MODE_FILL_INSTANCES + particles->userdata_count * ParticlesShader::COPY_MODE_MAX]);
 			RD::get_singleton()->compute_list_bind_uniform_set(compute_list, particles->particles_copy_uniform_set, 0);
 			RD::get_singleton()->compute_list_bind_uniform_set(compute_list, particles->trail_bind_pose_uniform_set, 2);
 			RD::get_singleton()->compute_list_set_push_constant(compute_list, &copy_push_constant, sizeof(ParticlesShader::CopyPushConstant));
@@ -5809,6 +5842,12 @@ void RendererStorageRD::ParticlesShaderData::set_code(const String &p_code) {
 
 	actions.usage_flag_pointers["COLLIDED"] = &uses_collision;
 
+	userdata_count = 0;
+	for (uint32_t i = 0; i < ParticlesShader::MAX_USERDATAS; i++) {
+		userdatas_used[i] = false;
+		actions.usage_flag_pointers["USERDATA" + itos(i + 1)] = &userdatas_used[i];
+	}
+
 	actions.uniforms = &uniforms;
 
 	Error err = base_singleton->particles_shader.compiler.compile(RS::SHADER_PARTICLES, code, &actions, path, gen_code);
@@ -5816,6 +5855,12 @@ void RendererStorageRD::ParticlesShaderData::set_code(const String &p_code) {
 
 	if (version.is_null()) {
 		version = base_singleton->particles_shader.shader.version_create();
+	}
+
+	for (uint32_t i = 0; i < ParticlesShader::MAX_USERDATAS; i++) {
+		if (userdatas_used[i]) {
+			userdata_count++;
+		}
 	}
 
 	base_singleton->particles_shader.shader.version_set_compute_code(version, gen_code.code, gen_code.uniforms, gen_code.stage_globals[ShaderCompiler::STAGE_COMPUTE], gen_code.defines);
@@ -9995,6 +10040,11 @@ RendererStorageRD::RendererStorageRD() {
 		actions.renames["ACTIVE"] = "particle_active";
 		actions.renames["RESTART"] = "restart";
 		actions.renames["CUSTOM"] = "PARTICLE.custom";
+		for (int i = 0; i < ParticlesShader::MAX_USERDATAS; i++) {
+			String udname = "USERDATA" + itos(i + 1);
+			actions.renames[udname] = "PARTICLE.userdata" + itos(i + 1);
+			actions.usage_defines[udname] = "#define USERDATA" + itos(i + 1) + "_USED\n";
+		}
 		actions.renames["TRANSFORM"] = "PARTICLE.xform";
 		actions.renames["TIME"] = "frame_history.data[0].time";
 		actions.renames["PI"] = _MKSTR(Math_PI);
@@ -10099,17 +10149,26 @@ void process() {
 
 	{
 		Vector<String> copy_modes;
-		copy_modes.push_back("\n#define MODE_FILL_INSTANCES\n");
-		copy_modes.push_back("\n#define MODE_FILL_INSTANCES\n#define MODE_2D\n");
-		copy_modes.push_back("\n#define MODE_FILL_SORT_BUFFER\n#define USE_SORT_BUFFER\n");
-		copy_modes.push_back("\n#define MODE_FILL_INSTANCES\n#define USE_SORT_BUFFER\n");
+		for (int i = 0; i <= ParticlesShader::MAX_USERDATAS; i++) {
+			if (i == 0) {
+				copy_modes.push_back("\n#define MODE_FILL_INSTANCES\n");
+				copy_modes.push_back("\n#define MODE_FILL_SORT_BUFFER\n#define USE_SORT_BUFFER\n");
+				copy_modes.push_back("\n#define MODE_FILL_INSTANCES\n#define USE_SORT_BUFFER\n");
+			} else {
+				copy_modes.push_back("\n#define MODE_FILL_INSTANCES\n#define USERDATA_COUNT " + itos(i) + "\n");
+				copy_modes.push_back("\n#define MODE_FILL_SORT_BUFFER\n#define USE_SORT_BUFFER\n#define USERDATA_COUNT " + itos(i) + "\n");
+				copy_modes.push_back("\n#define MODE_FILL_INSTANCES\n#define USE_SORT_BUFFER\n#define USERDATA_COUNT " + itos(i) + "\n");
+			}
+		}
 
 		particles_shader.copy_shader.initialize(copy_modes);
 
 		particles_shader.copy_shader_version = particles_shader.copy_shader.version_create();
 
-		for (int i = 0; i < ParticlesShader::COPY_MODE_MAX; i++) {
-			particles_shader.copy_pipelines[i] = RD::get_singleton()->compute_pipeline_create(particles_shader.copy_shader.version_get_shader(particles_shader.copy_shader_version, i));
+		for (int i = 0; i <= ParticlesShader::MAX_USERDATAS; i++) {
+			for (int j = 0; j < ParticlesShader::COPY_MODE_MAX; j++) {
+				particles_shader.copy_pipelines[i * ParticlesShader::COPY_MODE_MAX + j] = RD::get_singleton()->compute_pipeline_create(particles_shader.copy_shader.version_get_shader(particles_shader.copy_shader_version, i * ParticlesShader::COPY_MODE_MAX + j));
+			}
 		}
 	}
 

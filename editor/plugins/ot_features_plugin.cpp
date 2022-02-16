@@ -30,9 +30,6 @@
 
 #include "ot_features_plugin.h"
 
-#include "editor/editor_node.h"
-#include "editor/editor_scale.h"
-
 void OpenTypeFeaturesEditor::_value_changed(double val) {
 	if (setting) {
 		return;
@@ -202,7 +199,7 @@ bool EditorInspectorPluginOpenTypeFeatures::parse_property(Object *p_object, con
 
 /*************************************************************************/
 
-OpenTypeFeaturesEditorPlugin::OpenTypeFeaturesEditorPlugin(EditorNode *p_node) {
+OpenTypeFeaturesEditorPlugin::OpenTypeFeaturesEditorPlugin() {
 	Ref<EditorInspectorPluginOpenTypeFeatures> ftr_plugin;
 	New_instantiate(ftr_plugin);
 	EditorInspector::add_inspector_plugin(ftr_plugin);

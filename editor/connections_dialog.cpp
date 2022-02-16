@@ -30,16 +30,12 @@
 
 #include "connections_dialog.h"
 
-#include "core/string/print_string.h"
 #include "editor/doc_tools.h"
 #include "editor/editor_node.h"
 #include "editor/editor_scale.h"
 #include "editor/editor_settings.h"
 #include "editor/scene_tree_dock.h"
 #include "plugins/script_editor_plugin.h"
-#include "scene/gui/label.h"
-#include "scene/gui/popup_menu.h"
-#include "scene/gui/spin_box.h"
 
 static Node *_find_first_script(Node *p_root, Node *p_node) {
 	if (p_node != p_root && p_node->get_owner() != p_root) {
@@ -640,7 +636,7 @@ void ConnectionsDock::_make_or_edit_connection() {
 	it = nullptr;
 
 	if (add_script_function) {
-		editor->emit_signal(SNAME("script_add_function_request"), target, cd.method, script_function_args);
+		EditorNode::get_singleton()->emit_signal(SNAME("script_add_function_request"), target, cd.method, script_function_args);
 		hide();
 	}
 
@@ -852,7 +848,7 @@ void ConnectionsDock::_go_to_script(TreeItem &p_item) {
 	}
 
 	if (script.is_valid() && ScriptEditor::get_singleton()->script_goto_method(script, cd.method)) {
-		editor->call_void("_editor_select", EditorNode::EDITOR_SCRIPT);
+		EditorNode::get_singleton()->call("_editor_select", EditorNode::EDITOR_SCRIPT);
 	}
 }
 
@@ -1147,8 +1143,7 @@ void ConnectionsDock::update_tree() {
 	connect_button->set_disabled(true);
 }
 
-ConnectionsDock::ConnectionsDock(EditorNode *p_editor) {
-	editor = p_editor;
+ConnectionsDock::ConnectionsDock() {
 	set_name(TTR("Signals"));
 
 	VBoxContainer *vbc = this;

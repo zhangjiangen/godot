@@ -36,8 +36,6 @@
 #include "scene/resources/shader.h"
 #include "scene/resources/texture.h"
 
-class EditorNode;
-
 class TextureLayeredEditor : public Control {
 	GDCLASS(TextureLayeredEditor, Control);
 
@@ -92,7 +90,7 @@ class TextureLayeredEditorPlugin : public EditorPlugin {
 public:
 	virtual String get_name() const override { return "TextureLayered"; }
 
-	TextureLayeredEditorPlugin(EditorNode *p_node);
+	TextureLayeredEditorPlugin();
 };
 
 #endif // TEXTURE_EDITOR_PLUGIN_H

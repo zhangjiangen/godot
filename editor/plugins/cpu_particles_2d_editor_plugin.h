@@ -36,7 +36,6 @@
 #include "scene/2d/cpu_particles_2d.h"
 #include "scene/gui/box_container.h"
 
-class EditorNode;
 class EditorPlugin;
 class SpinBox;
 class EditorFileDialog;
@@ -59,7 +58,6 @@ class CPUParticles2DEditorPlugin : public EditorPlugin {
 	CPUParticles2D *particles;
 
 	EditorFileDialog *file;
-	EditorNode *editor;
 
 	HBoxContainer *toolbar;
 	MenuButton *menu;
@@ -88,7 +86,7 @@ public:
 	virtual bool handles(Object *p_object) const override;
 	virtual void make_visible(bool p_visible) override;
 
-	CPUParticles2DEditorPlugin(EditorNode *p_node);
+	CPUParticles2DEditorPlugin();
 	~CPUParticles2DEditorPlugin();
 };
 

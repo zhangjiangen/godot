@@ -34,8 +34,6 @@
 #include "editor/editor_plugin.h"
 #include "scene/gui/gradient_edit.h"
 
-class EditorNode;
-
 class GradientEditor : public GradientEdit {
 	GDCLASS(GradientEditor, GradientEdit);
 
@@ -84,7 +82,7 @@ class GradientEditorPlugin : public EditorPlugin {
 public:
 	virtual String get_name() const override { return "Gradient"; }
 
-	GradientEditorPlugin(EditorNode *p_node);
+	GradientEditorPlugin();
 };
 
 #endif // GRADIENT_EDITOR_PLUGIN_H

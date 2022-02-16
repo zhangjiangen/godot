@@ -39,7 +39,6 @@
 #include "scene/gui/margin_container.h"
 
 class Tree;
-class EditorNode;
 class LineEdit;
 class TabContainer;
 class RichTextLabel;
@@ -154,8 +153,6 @@ private:
 	EditorVisualProfiler *visual_profiler;
 	EditorNetworkProfiler *network_profiler;
 	EditorPerformanceProfiler *performance_profiler;
-
-	EditorNode *editor;
 
 	OS::ProcessID remote_pid = 0;
 	bool breaked = false;
@@ -298,7 +295,7 @@ public:
 	void unregister_message_capture(const StringName &p_name);
 	bool has_capture(const StringName &p_name);
 
-	ScriptEditorDebugger(EditorNode *p_editor = nullptr);
+	ScriptEditorDebugger();
 	~ScriptEditorDebugger();
 };
 

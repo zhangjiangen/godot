@@ -35,8 +35,6 @@
 #include "scene/resources/font.h"
 #include "scene/resources/text_line.h"
 
-class EditorNode;
-
 class FontDataPreview : public Control {
 	GDCLASS(FontDataPreview, Control);
 
@@ -71,7 +69,7 @@ class FontEditorPlugin : public EditorPlugin {
 	GDCLASS(FontEditorPlugin, EditorPlugin);
 
 public:
-	FontEditorPlugin(EditorNode *p_node);
+	FontEditorPlugin();
 
 	virtual String get_name() const override { return "Font"; }
 };

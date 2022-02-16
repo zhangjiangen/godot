@@ -258,19 +258,12 @@ void AnimationTreeEditorPlugin::make_visible(bool p_visible) {
 	if (p_visible) {
 		//editor->hide_animation_player_editors();
 		//editor->animation_panel_make_visible(true);
-		if (button != nullptr) {
-			button->show();
-			editor->make_bottom_panel_item_visible(anim_tree_editor);
-		}
-		// else
-		// 	dock_make_float(anim_tree_editor);
+		button->show();
+		EditorNode::get_singleton()->make_bottom_panel_item_visible(anim_tree_editor);
 		anim_tree_editor->set_process(true);
 	} else {
-		if (button != nullptr) {
-			button->hide();
-			if (anim_tree_editor->is_visible_in_tree()) {
-				editor->hide_bottom_panel();
-			}
+		if (anim_tree_editor->is_visible_in_tree()) {
+			EditorNode::get_singleton()->hide_bottom_panel();
 		}
 		// else
 		// 	dock_floating_close(anim_tree_editor);
@@ -278,8 +271,7 @@ void AnimationTreeEditorPlugin::make_visible(bool p_visible) {
 	}
 }
 
-AnimationTreeEditorPlugin::AnimationTreeEditorPlugin(EditorNode *p_node) {
-	editor = p_node;
+AnimationTreeEditorPlugin::AnimationTreeEditorPlugin() {
 	anim_tree_editor = memnew(AnimationTreeEditor);
 	//anim_tree_editor->set_custom_minimum_size(Size2(0, 300) * EDSCALE);
 

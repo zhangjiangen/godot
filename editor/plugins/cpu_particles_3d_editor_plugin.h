@@ -34,8 +34,6 @@
 #include "editor/plugins/gpu_particles_3d_editor_plugin.h"
 #include "scene/3d/cpu_particles_3d.h"
 
-class EditorNode;
-
 class CPUParticles3DEditor : public GPUParticles3DEditorBase {
 	GDCLASS(CPUParticles3DEditor, GPUParticles3DEditorBase);
 
@@ -68,7 +66,6 @@ class CPUParticles3DEditorPlugin : public EditorPlugin {
 	GDCLASS(CPUParticles3DEditorPlugin, EditorPlugin);
 
 	CPUParticles3DEditor *particles_editor;
-	EditorNode *editor;
 
 public:
 	virtual String get_name() const override { return "CPUParticles3D"; }
@@ -77,7 +74,7 @@ public:
 	virtual bool handles(Object *p_object) const override;
 	virtual void make_visible(bool p_visible) override;
 
-	CPUParticles3DEditorPlugin(EditorNode *p_node);
+	CPUParticles3DEditorPlugin();
 	~CPUParticles3DEditorPlugin();
 };
 

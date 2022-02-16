@@ -35,7 +35,6 @@
 #include "scene/3d/gpu_particles_3d.h"
 #include "scene/gui/spin_box.h"
 
-class EditorNode;
 class SceneTreeDialog;
 
 class GPUParticles3DEditorBase : public Control {
@@ -103,7 +102,6 @@ class GPUParticles3DEditorPlugin : public EditorPlugin {
 	GDCLASS(GPUParticles3DEditorPlugin, EditorPlugin);
 
 	GPUParticles3DEditor *particles_editor;
-	EditorNode *editor;
 
 public:
 	virtual String get_name() const override { return "GPUParticles3D"; }
@@ -112,7 +110,7 @@ public:
 	virtual bool handles(Object *p_object) const override;
 	virtual void make_visible(bool p_visible) override;
 
-	GPUParticles3DEditorPlugin(EditorNode *p_node);
+	GPUParticles3DEditorPlugin();
 	~GPUParticles3DEditorPlugin();
 };
 

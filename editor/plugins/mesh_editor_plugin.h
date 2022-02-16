@@ -38,8 +38,6 @@
 #include "scene/gui/subviewport_container.h"
 #include "scene/resources/material.h"
 
-class EditorNode;
-
 class MeshEditor : public SubViewportContainer {
 	GDCLASS(MeshEditor, SubViewportContainer);
 
@@ -86,7 +84,7 @@ class MeshEditorPlugin : public EditorPlugin {
 public:
 	virtual String get_name() const override { return "Mesh"; }
 
-	MeshEditorPlugin(EditorNode *p_node);
+	MeshEditorPlugin();
 };
 
 #endif

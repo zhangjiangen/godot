@@ -43,8 +43,6 @@
 #include "scene/gui/texture_rect.h"
 #include "scene/gui/tree.h"
 
-class EditorNode;
-struct EditorProgress;
 class EditorFileDialog;
 
 class SpriteFramesEditor : public HSplitContainer {
@@ -166,7 +164,6 @@ class SpriteFramesEditorPlugin : public EditorPlugin {
 	GDCLASS(SpriteFramesEditorPlugin, EditorPlugin);
 
 	SpriteFramesEditor *frames_editor;
-	EditorNode *editor;
 	Button *button;
 
 public:
@@ -176,7 +173,7 @@ public:
 	virtual bool handles(Object *p_object) const override;
 	virtual void make_visible(bool p_visible) override;
 
-	SpriteFramesEditorPlugin(EditorNode *p_node);
+	SpriteFramesEditorPlugin();
 	~SpriteFramesEditorPlugin();
 };
 

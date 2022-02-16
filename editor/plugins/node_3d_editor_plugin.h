@@ -47,7 +47,6 @@
 #include "scene/resources/fog_material.h"
 #include "scene/resources/sky_material.h"
 
-class EditorNode;
 class EditorData;
 class Node3DEditor;
 class Node3DEditorViewport;
@@ -199,7 +198,6 @@ private:
 	Node *target_node;
 	Point2 drop_pos;
 
-	EditorNode *editor;
 	EditorData *editor_data;
 	EditorSelection *editor_selection;
 	UndoRedo *undo_redo;
@@ -441,7 +439,7 @@ public:
 	SubViewport *get_viewport_node() { return viewport; }
 	Camera3D *get_camera_3d() { return camera; } // return the default camera object.
 
-	Node3DEditorViewport(Node3DEditor *p_spatial_editor, EditorNode *p_editor, int p_index);
+	Node3DEditorViewport(Node3DEditor *p_spatial_editor, int p_index);
 	~Node3DEditorViewport();
 };
 
@@ -536,7 +534,6 @@ public:
 	};
 
 private:
-	EditorNode *editor;
 	EditorSelection *editor_selection;
 
 	Node3DEditorViewportContainer *viewport_base;
@@ -861,7 +858,7 @@ public:
 	void edit(Node3D *p_spatial);
 	void clear();
 
-	Node3DEditor(EditorNode *p_editor);
+	Node3DEditor();
 	~Node3DEditor();
 };
 
@@ -869,7 +866,6 @@ class Node3DEditorPlugin : public EditorPlugin {
 	GDCLASS(Node3DEditorPlugin, EditorPlugin);
 
 	Node3DEditor *spatial_editor;
-	EditorNode *editor;
 
 public:
 	Node3DEditor *get_spatial_editor() { return spatial_editor; }
@@ -885,7 +881,7 @@ public:
 
 	virtual void edited_scene_changed() override;
 
-	Node3DEditorPlugin(EditorNode *p_node);
+	Node3DEditorPlugin();
 	~Node3DEditorPlugin();
 };
 

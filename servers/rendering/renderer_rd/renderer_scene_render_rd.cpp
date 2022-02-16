@@ -1818,11 +1818,14 @@ void RendererSceneRenderRD::_free_render_buffer_data(RenderBuffers *rb) {
 			if (rb->blur[i].mipmaps[m].fb.is_valid()) {
 				RD::get_singleton()->free(rb->blur[i].mipmaps[m].fb);
 			}
-			if (rb->blur[i].mipmaps[m].half_fb.is_valid()) {
-				RD::get_singleton()->free(rb->blur[i].mipmaps[m].half_fb);
-			}
-			if (rb->blur[i].mipmaps[m].half_texture.is_valid()) {
-				RD::get_singleton()->free(rb->blur[i].mipmaps[m].half_texture);
+			// texture and framebuffer in both blur mipmaps are shared, so only free from the first one
+			if (i == 0) {
+				if (rb->blur[i].mipmaps[m].half_fb.is_valid()) {
+					RD::get_singleton()->free(rb->blur[i].mipmaps[m].half_fb);
+				}
+				if (rb->blur[i].mipmaps[m].half_texture.is_valid()) {
+					RD::get_singleton()->free(rb->blur[i].mipmaps[m].half_texture);
+				}
 			}
 		}
 		rb->blur[i].mipmaps.clear();
@@ -3283,7 +3286,7 @@ void RendererSceneRenderRD::_setup_lights(const PagedArray<RID> &p_lights, const
 		RS::LightType type = storage->light_get_type(base);
 		switch (type) {
 			case RS::LIGHT_DIRECTIONAL: {
-				if (r_directional_light_count >= cluster.max_directional_lights) {
+				if (r_directional_light_count >= cluster.max_directional_lights || storage->light_directional_is_sky_only(base)) {
 					continue;
 				}
 

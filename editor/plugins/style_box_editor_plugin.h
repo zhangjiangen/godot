@@ -37,8 +37,6 @@
 #include "scene/gui/texture_rect.h"
 #include "scene/resources/style_box.h"
 
-class EditorNode;
-
 class StyleBoxPreview : public VBoxContainer {
 	GDCLASS(StyleBoxPreview, VBoxContainer);
 
@@ -71,7 +69,7 @@ class StyleBoxEditorPlugin : public EditorPlugin {
 public:
 	virtual String get_name() const override { return "StyleBox"; }
 
-	StyleBoxEditorPlugin(EditorNode *p_node);
+	StyleBoxEditorPlugin();
 };
 
 #endif // STYLE_BOX_EDITOR_PLUGIN_H

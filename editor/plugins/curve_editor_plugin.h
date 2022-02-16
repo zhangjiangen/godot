@@ -35,8 +35,6 @@
 #include "editor/editor_resource_preview.h"
 #include "scene/resources/curve.h"
 
-class EditorNode;
-
 // Edits a y(x) curve
 class CurveEditor : public Control {
 	GDCLASS(CurveEditor, Control);
@@ -130,7 +128,7 @@ class CurveEditorPlugin : public EditorPlugin {
 	GDCLASS(CurveEditorPlugin, EditorPlugin);
 
 public:
-	CurveEditorPlugin(EditorNode *p_node);
+	CurveEditorPlugin();
 
 	virtual String get_name() const override { return "Curve"; }
 };

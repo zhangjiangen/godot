@@ -30,7 +30,6 @@
 
 #include "style_box_editor_plugin.h"
 
-#include "editor/editor_node.h"
 #include "editor/editor_scale.h"
 
 bool EditorInspectorPluginStyleBox::can_handle(Object *p_object) {
@@ -85,7 +84,7 @@ StyleBoxPreview::StyleBoxPreview() {
 	add_margin_child(TTR("Preview:"), preview);
 }
 
-StyleBoxEditorPlugin::StyleBoxEditorPlugin(EditorNode *p_node) {
+StyleBoxEditorPlugin::StyleBoxEditorPlugin() {
 	Ref<EditorInspectorPluginStyleBox> inspector_plugin;
 	New_instantiate(inspector_plugin);
 	add_inspector_plugin(inspector_plugin);

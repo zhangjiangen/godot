@@ -39,7 +39,6 @@
 #include "scene/resources/style_box.h"
 #include "scene/resources/texture.h"
 
-class EditorNode;
 class ViewPanner;
 
 class TextureRegionEditor : public VBoxContainer {
@@ -69,7 +68,6 @@ class TextureRegionEditor : public VBoxContainer {
 	VScrollBar *vscroll;
 	HScrollBar *hscroll;
 
-	EditorNode *editor;
 	UndoRedo *undo_redo;
 
 	Vector2 draw_ofs;
@@ -141,7 +139,7 @@ public:
 	Sprite3D *get_sprite_3d();
 
 	void edit(Object *p_obj);
-	TextureRegionEditor(EditorNode *p_editor);
+	TextureRegionEditor();
 };
 
 class TextureRegionEditorPlugin : public EditorPlugin {
@@ -150,7 +148,6 @@ class TextureRegionEditorPlugin : public EditorPlugin {
 	bool manually_hidden;
 	Button *texture_region_button;
 	TextureRegionEditor *region_editor;
-	EditorNode *editor;
 
 protected:
 	static void _bind_methods();
@@ -166,7 +163,7 @@ public:
 	void set_state(const Dictionary &p_state) override;
 	Dictionary get_state() const override;
 
-	TextureRegionEditorPlugin(EditorNode *p_node);
+	TextureRegionEditorPlugin();
 };
 
 #endif // TEXTURE_REGION_EDITOR_PLUGIN_H

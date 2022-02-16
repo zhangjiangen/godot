@@ -30,11 +30,6 @@
 
 #include "texture_layered_editor_plugin.h"
 
-#include "core/config/project_settings.h"
-#include "core/io/resource_loader.h"
-#include "editor/editor_node.h"
-#include "editor/editor_settings.h"
-
 void TextureLayeredEditor::gui_input(const Ref<InputEvent> &p_event) {
 	ERR_FAIL_COND(p_event.is_null());
 
@@ -278,7 +273,7 @@ void EditorInspectorPluginLayeredTexture::parse_begin(Object *p_object) {
 	add_custom_control(editor);
 }
 
-TextureLayeredEditorPlugin::TextureLayeredEditorPlugin(EditorNode *p_node) {
+TextureLayeredEditorPlugin::TextureLayeredEditorPlugin() {
 	Ref<EditorInspectorPluginLayeredTexture> plugin;
 	New_instantiate(plugin);
 	add_inspector_plugin(plugin);

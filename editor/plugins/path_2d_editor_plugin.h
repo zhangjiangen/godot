@@ -35,7 +35,6 @@
 #include "scene/2d/path_2d.h"
 #include "scene/gui/separator.h"
 
-class EditorNode;
 class CanvasItemEditor;
 
 class Path2DEditor : public HBoxContainer {
@@ -44,7 +43,6 @@ class Path2DEditor : public HBoxContainer {
 	UndoRedo *undo_redo;
 
 	CanvasItemEditor *canvas_item_editor;
-	EditorNode *editor;
 	Panel *panel;
 	Path2D *node;
 
@@ -106,14 +104,13 @@ public:
 	bool forward_gui_input(const Ref<InputEvent> &p_event);
 	void forward_canvas_draw_over_viewport(Control *p_overlay);
 	void edit(Node *p_path2d);
-	Path2DEditor(EditorNode *p_editor);
+	Path2DEditor();
 };
 
 class Path2DEditorPlugin : public EditorPlugin {
 	GDCLASS(Path2DEditorPlugin, EditorPlugin);
 
 	Path2DEditor *path2d_editor;
-	EditorNode *editor;
 
 public:
 	virtual bool forward_canvas_gui_input(const Ref<InputEvent> &p_event) override { return path2d_editor->forward_gui_input(p_event); }
@@ -125,7 +122,7 @@ public:
 	virtual bool handles(Object *p_object) const override;
 	virtual void make_visible(bool p_visible) override;
 
-	Path2DEditorPlugin(EditorNode *p_node);
+	Path2DEditorPlugin();
 	~Path2DEditorPlugin();
 };
 

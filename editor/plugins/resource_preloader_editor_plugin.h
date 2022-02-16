@@ -36,8 +36,6 @@
 #include "scene/gui/tree.h"
 #include "scene/main/resource_preloader.h"
 
-class EditorNode;
-struct EditorProgress;
 class EditorFileDialog;
 
 class ResourcePreloaderEditor : public PanelContainer {
@@ -90,7 +88,6 @@ class ResourcePreloaderEditorPlugin : public EditorPlugin {
 	GDCLASS(ResourcePreloaderEditorPlugin, EditorPlugin);
 
 	ResourcePreloaderEditor *preloader_editor;
-	EditorNode *editor;
 	Button *button;
 
 public:
@@ -100,7 +97,7 @@ public:
 	virtual bool handles(Object *p_object) const override;
 	virtual void make_visible(bool p_visible) override;
 
-	ResourcePreloaderEditorPlugin(EditorNode *p_node);
+	ResourcePreloaderEditorPlugin();
 	~ResourcePreloaderEditorPlugin();
 };
 

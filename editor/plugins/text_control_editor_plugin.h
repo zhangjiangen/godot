@@ -43,8 +43,6 @@
 
 /*************************************************************************/
 
-class EditorNode;
-
 class TextControlEditor : public HBoxContainer {
 	GDCLASS(TextControlEditor, HBoxContainer);
 
@@ -103,7 +101,6 @@ class TextControlEditorPlugin : public EditorPlugin {
 	GDCLASS(TextControlEditorPlugin, EditorPlugin);
 
 	TextControlEditor *text_ctl_editor;
-	EditorNode *editor;
 
 public:
 	virtual String get_name() const override { return "TextControlFontEditor"; }
@@ -112,7 +109,7 @@ public:
 	virtual bool handles(Object *p_object) const override;
 	virtual void make_visible(bool p_visible) override;
 
-	TextControlEditorPlugin(EditorNode *p_node);
+	TextControlEditorPlugin();
 };
 
 #endif // TEXT_CONTROL_EDITOR_PLUGIN_H
