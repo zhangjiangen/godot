@@ -1542,6 +1542,7 @@ void EditorExport::_notification(int p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			load_config();
 		} break;
+
 		case NOTIFICATION_PROCESS: {
 			update_export_presets();
 		} break;

@@ -166,7 +166,6 @@ void EditorPropertyMultilineText::_notification(int p_what) {
 			Ref<Font> font = get_theme_font(SNAME("font"), SNAME("Label"));
 			int font_size = get_theme_font_size(SNAME("font_size"), SNAME("Label"));
 			text->set_custom_minimum_size(Vector2(0, font->get_height(font_size) * 6));
-
 		} break;
 	}
 }
@@ -294,11 +293,11 @@ void EditorPropertyTextEnum::_bind_methods() {
 void EditorPropertyTextEnum::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
-		case NOTIFICATION_THEME_CHANGED:
+		case NOTIFICATION_THEME_CHANGED: {
 			edit_button->set_icon(get_theme_icon(SNAME("Edit"), SNAME("EditorIcons")));
 			accept_button->set_icon(get_theme_icon(SNAME("ImportCheck"), SNAME("EditorIcons")));
 			cancel_button->set_icon(get_theme_icon(SNAME("ImportFail"), SNAME("EditorIcons")));
-			break;
+		} break;
 	}
 }
 
@@ -374,8 +373,11 @@ void EditorPropertyLocale::setup(const String &p_hint_text) {
 }
 
 void EditorPropertyLocale::_notification(int p_what) {
-	if (p_what == NOTIFICATION_ENTER_TREE || p_what == NOTIFICATION_THEME_CHANGED) {
-		locale_edit->set_icon(get_theme_icon(SNAME("Translation"), SNAME("EditorIcons")));
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE:
+		case NOTIFICATION_THEME_CHANGED: {
+			locale_edit->set_icon(get_theme_icon(SNAME("Translation"), SNAME("EditorIcons")));
+		} break;
 	}
 }
 
@@ -467,8 +469,11 @@ void EditorPropertyPath::set_save_mode() {
 }
 
 void EditorPropertyPath::_notification(int p_what) {
-	if (p_what == NOTIFICATION_ENTER_TREE || p_what == NOTIFICATION_THEME_CHANGED) {
-		path_edit->set_icon(get_theme_icon(SNAME("Folder"), SNAME("EditorIcons")));
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE:
+		case NOTIFICATION_THEME_CHANGED: {
+			path_edit->set_icon(get_theme_icon(SNAME("Folder"), SNAME("EditorIcons")));
+		} break;
 	}
 }
 
@@ -1089,9 +1094,6 @@ void EditorPropertyLayersGrid::_notification(int p_what) {
 				update();
 			}
 		} break;
-
-		default:
-			break;
 	}
 }
 
@@ -1643,11 +1645,14 @@ void EditorPropertyVector2::update_property() {
 }
 
 void EditorPropertyVector2::_notification(int p_what) {
-	if (p_what == NOTIFICATION_ENTER_TREE || p_what == NOTIFICATION_THEME_CHANGED) {
-		const Color *colors = _get_property_colors();
-		for (int i = 0; i < 2; i++) {
-			spin[i]->set_custom_label_color(true, colors[i]);
-		}
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE:
+		case NOTIFICATION_THEME_CHANGED: {
+			const Color *colors = _get_property_colors();
+			for (int i = 0; i < 2; i++) {
+				spin[i]->set_custom_label_color(true, colors[i]);
+			}
+		} break;
 	}
 }
 
@@ -1734,11 +1739,14 @@ void EditorPropertyRect2::update_property() {
 }
 
 void EditorPropertyRect2::_notification(int p_what) {
-	if (p_what == NOTIFICATION_ENTER_TREE || p_what == NOTIFICATION_THEME_CHANGED) {
-		const Color *colors = _get_property_colors();
-		for (int i = 0; i < 4; i++) {
-			spin[i]->set_custom_label_color(true, colors[i % 2]);
-		}
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE:
+		case NOTIFICATION_THEME_CHANGED: {
+			const Color *colors = _get_property_colors();
+			for (int i = 0; i < 4; i++) {
+				spin[i]->set_custom_label_color(true, colors[i % 2]);
+			}
+		} break;
 	}
 }
 
@@ -1860,11 +1868,14 @@ Vector3 EditorPropertyVector3::get_vector() {
 }
 
 void EditorPropertyVector3::_notification(int p_what) {
-	if (p_what == NOTIFICATION_ENTER_TREE || p_what == NOTIFICATION_THEME_CHANGED) {
-		const Color *colors = _get_property_colors();
-		for (int i = 0; i < 3; i++) {
-			spin[i]->set_custom_label_color(true, colors[i]);
-		}
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE:
+		case NOTIFICATION_THEME_CHANGED: {
+			const Color *colors = _get_property_colors();
+			for (int i = 0; i < 3; i++) {
+				spin[i]->set_custom_label_color(true, colors[i]);
+			}
+		} break;
 	}
 }
 
@@ -1947,11 +1958,14 @@ void EditorPropertyVector2i::update_property() {
 }
 
 void EditorPropertyVector2i::_notification(int p_what) {
-	if (p_what == NOTIFICATION_ENTER_TREE || p_what == NOTIFICATION_THEME_CHANGED) {
-		const Color *colors = _get_property_colors();
-		for (int i = 0; i < 2; i++) {
-			spin[i]->set_custom_label_color(true, colors[i]);
-		}
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE:
+		case NOTIFICATION_THEME_CHANGED: {
+			const Color *colors = _get_property_colors();
+			for (int i = 0; i < 2; i++) {
+				spin[i]->set_custom_label_color(true, colors[i]);
+			}
+		} break;
 	}
 }
 
@@ -2038,11 +2052,14 @@ void EditorPropertyRect2i::update_property() {
 }
 
 void EditorPropertyRect2i::_notification(int p_what) {
-	if (p_what == NOTIFICATION_ENTER_TREE || p_what == NOTIFICATION_THEME_CHANGED) {
-		const Color *colors = _get_property_colors();
-		for (int i = 0; i < 4; i++) {
-			spin[i]->set_custom_label_color(true, colors[i % 2]);
-		}
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE:
+		case NOTIFICATION_THEME_CHANGED: {
+			const Color *colors = _get_property_colors();
+			for (int i = 0; i < 4; i++) {
+				spin[i]->set_custom_label_color(true, colors[i % 2]);
+			}
+		} break;
 	}
 }
 
@@ -2137,11 +2154,14 @@ void EditorPropertyVector3i::update_property() {
 }
 
 void EditorPropertyVector3i::_notification(int p_what) {
-	if (p_what == NOTIFICATION_ENTER_TREE || p_what == NOTIFICATION_THEME_CHANGED) {
-		const Color *colors = _get_property_colors();
-		for (int i = 0; i < 3; i++) {
-			spin[i]->set_custom_label_color(true, colors[i]);
-		}
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE:
+		case NOTIFICATION_THEME_CHANGED: {
+			const Color *colors = _get_property_colors();
+			for (int i = 0; i < 3; i++) {
+				spin[i]->set_custom_label_color(true, colors[i]);
+			}
+		} break;
 	}
 }
 
@@ -2227,11 +2247,14 @@ void EditorPropertyPlane::update_property() {
 }
 
 void EditorPropertyPlane::_notification(int p_what) {
-	if (p_what == NOTIFICATION_ENTER_TREE || p_what == NOTIFICATION_THEME_CHANGED) {
-		const Color *colors = _get_property_colors();
-		for (int i = 0; i < 4; i++) {
-			spin[i]->set_custom_label_color(true, colors[i]);
-		}
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE:
+		case NOTIFICATION_THEME_CHANGED: {
+			const Color *colors = _get_property_colors();
+			for (int i = 0; i < 4; i++) {
+				spin[i]->set_custom_label_color(true, colors[i]);
+			}
+		} break;
 	}
 }
 
@@ -2318,11 +2341,14 @@ void EditorPropertyQuaternion::update_property() {
 }
 
 void EditorPropertyQuaternion::_notification(int p_what) {
-	if (p_what == NOTIFICATION_ENTER_TREE || p_what == NOTIFICATION_THEME_CHANGED) {
-		const Color *colors = _get_property_colors();
-		for (int i = 0; i < 4; i++) {
-			spin[i]->set_custom_label_color(true, colors[i]);
-		}
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE:
+		case NOTIFICATION_THEME_CHANGED: {
+			const Color *colors = _get_property_colors();
+			for (int i = 0; i < 4; i++) {
+				spin[i]->set_custom_label_color(true, colors[i]);
+			}
+		} break;
 	}
 }
 
@@ -2412,11 +2438,14 @@ void EditorPropertyAABB::update_property() {
 }
 
 void EditorPropertyAABB::_notification(int p_what) {
-	if (p_what == NOTIFICATION_ENTER_TREE || p_what == NOTIFICATION_THEME_CHANGED) {
-		const Color *colors = _get_property_colors();
-		for (int i = 0; i < 6; i++) {
-			spin[i]->set_custom_label_color(true, colors[i % 3]);
-		}
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE:
+		case NOTIFICATION_THEME_CHANGED: {
+			const Color *colors = _get_property_colors();
+			for (int i = 0; i < 6; i++) {
+				spin[i]->set_custom_label_color(true, colors[i % 3]);
+			}
+		} break;
 	}
 }
 
@@ -2493,16 +2522,19 @@ void EditorPropertyTransform2D::update_property() {
 }
 
 void EditorPropertyTransform2D::_notification(int p_what) {
-	if (p_what == NOTIFICATION_ENTER_TREE || p_what == NOTIFICATION_THEME_CHANGED) {
-		const Color *colors = _get_property_colors();
-		for (int i = 0; i < 6; i++) {
-			// For Transform2D, use the 4th color (cyan) for the origin vector.
-			if (i % 3 == 2) {
-				spin[i]->set_custom_label_color(true, colors[3]);
-			} else {
-				spin[i]->set_custom_label_color(true, colors[i % 3]);
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE:
+		case NOTIFICATION_THEME_CHANGED: {
+			const Color *colors = _get_property_colors();
+			for (int i = 0; i < 6; i++) {
+				// For Transform2D, use the 4th color (cyan) for the origin vector.
+				if (i % 3 == 2) {
+					spin[i]->set_custom_label_color(true, colors[3]);
+				} else {
+					spin[i]->set_custom_label_color(true, colors[i % 3]);
+				}
 			}
-		}
+		} break;
 	}
 }
 
@@ -2586,11 +2618,14 @@ void EditorPropertyBasis::update_property() {
 }
 
 void EditorPropertyBasis::_notification(int p_what) {
-	if (p_what == NOTIFICATION_ENTER_TREE || p_what == NOTIFICATION_THEME_CHANGED) {
-		const Color *colors = _get_property_colors();
-		for (int i = 0; i < 9; i++) {
-			spin[i]->set_custom_label_color(true, colors[i % 3]);
-		}
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE:
+		case NOTIFICATION_THEME_CHANGED: {
+			const Color *colors = _get_property_colors();
+			for (int i = 0; i < 9; i++) {
+				spin[i]->set_custom_label_color(true, colors[i % 3]);
+			}
+		} break;
 	}
 }
 
@@ -2680,11 +2715,14 @@ void EditorPropertyTransform3D::update_using_transform(Transform3D p_transform) 
 }
 
 void EditorPropertyTransform3D::_notification(int p_what) {
-	if (p_what == NOTIFICATION_ENTER_TREE || p_what == NOTIFICATION_THEME_CHANGED) {
-		const Color *colors = _get_property_colors();
-		for (int i = 0; i < 12; i++) {
-			spin[i]->set_custom_label_color(true, colors[i % 4]);
-		}
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE:
+		case NOTIFICATION_THEME_CHANGED: {
+			const Color *colors = _get_property_colors();
+			for (int i = 0; i < 12; i++) {
+				spin[i]->set_custom_label_color(true, colors[i % 4]);
+			}
+		} break;
 	}
 }
 
@@ -2926,9 +2964,12 @@ void EditorPropertyNodePath::setup(const NodePath &p_base_hint, Vector<StringNam
 }
 
 void EditorPropertyNodePath::_notification(int p_what) {
-	if (p_what == NOTIFICATION_ENTER_TREE || p_what == NOTIFICATION_THEME_CHANGED) {
-		Ref<Texture2D> t = get_theme_icon(SNAME("Clear"), SNAME("EditorIcons"));
-		clear->set_icon(t);
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE:
+		case NOTIFICATION_THEME_CHANGED: {
+			Ref<Texture2D> t = get_theme_icon(SNAME("Clear"), SNAME("EditorIcons"));
+			clear->set_icon(t);
+		} break;
 	}
 }
 

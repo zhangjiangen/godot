@@ -210,7 +210,7 @@ public:
 	virtual bool has_method(const StringName &p_method) const;
 	virtual void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
 	virtual void call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
-	virtual void notification(int p_notification);
+	virtual void notification(int p_what);
 	String to_string(bool *r_valid);
 	virtual Ref<Script> get_script() const;
 

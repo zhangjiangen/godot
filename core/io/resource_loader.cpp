@@ -680,10 +680,6 @@ int ResourceLoader::get_import_order(const String &p_path) {
 		if (!loader[i]->recognize_path(local_path)) {
 			continue;
 		}
-		/*
-		if (p_type_hint!="" && !loader[i]->handles_type(p_type_hint))
-			continue;
-		*/
 
 		return loader[i]->get_import_order(p_path);
 	}
@@ -698,10 +694,6 @@ String ResourceLoader::get_import_group_file(const String &p_path) {
 		if (!loader[i]->recognize_path(local_path)) {
 			continue;
 		}
-		/*
-		if (p_type_hint!="" && !loader[i]->handles_type(p_type_hint))
-			continue;
-		*/
 
 		return loader[i]->get_import_group_file(p_path);
 	}
@@ -716,10 +708,6 @@ bool ResourceLoader::is_import_valid(const String &p_path) {
 		if (!loader[i]->recognize_path(local_path)) {
 			continue;
 		}
-		/*
-		if (p_type_hint!="" && !loader[i]->handles_type(p_type_hint))
-			continue;
-		*/
 
 		return loader[i]->is_import_valid(p_path);
 	}
@@ -734,10 +722,6 @@ bool ResourceLoader::is_imported(const String &p_path) {
 		if (!loader[i]->recognize_path(local_path)) {
 			continue;
 		}
-		/*
-		if (p_type_hint!="" && !loader[i]->handles_type(p_type_hint))
-			continue;
-		*/
 
 		return loader[i]->is_imported(p_path);
 	}
@@ -752,10 +736,6 @@ void ResourceLoader::get_dependencies(const String &p_path, List<String> *p_depe
 		if (!loader[i]->recognize_path(local_path)) {
 			continue;
 		}
-		/*
-		if (p_type_hint!="" && !loader[i]->handles_type(p_type_hint))
-			continue;
-		*/
 
 		loader[i]->get_dependencies(local_path, p_dependencies, p_add_types);
 	}
@@ -768,10 +748,6 @@ Error ResourceLoader::rename_dependencies(const String &p_path, const Map<String
 		if (!loader[i]->recognize_path(local_path)) {
 			continue;
 		}
-		/*
-		if (p_type_hint!="" && !loader[i]->handles_type(p_type_hint))
-			continue;
-		*/
 
 		return loader[i]->rename_dependencies(local_path, p_map);
 	}

@@ -798,17 +798,19 @@ void NativeScriptInstance::call_r(const StringName &p_method, const Variant **p_
 	return;
 }
 
-void NativeScriptInstance::notification(int p_notification) {
+void NativeScriptInstance::notification(int p_what) {
 #ifdef DEBUG_ENABLED
-	if (p_notification == MainLoop::NOTIFICATION_CRASH) {
-		if (current_method_call != StringName()) {
-			ERR_PRINT("NativeScriptInstance detected crash on method: " + current_method_call);
-			current_method_call = "";
-		}
+	switch (p_what) {
+		case MainLoop::NOTIFICATION_CRASH: {
+			if (current_method_call != StringName()) {
+				ERR_PRINT("NativeScriptInstance detected crash on method: " + current_method_call);
+				current_method_call = "";
+			}
+		} break;
 	}
 #endif
 
-	Variant value = p_notification;
+	Variant value = p_what;
 	const Variant *args[1] = { &value };
 	Callable::CallError error;
 	call("_notification", args, 1, error);
@@ -1674,7 +1676,6 @@ void NativeReloadNode::_bind_methods() {
 
 void NativeReloadNode::_notification(int p_what) {
 #ifdef TOOLS_ENABLED
-
 	switch (p_what) {
 		case NOTIFICATION_APPLICATION_FOCUS_OUT: {
 			if (unloaded) {
@@ -1707,7 +1708,6 @@ void NativeReloadNode::_notification(int p_what) {
 			}
 
 			unloaded = true;
-
 		} break;
 
 		case NOTIFICATION_APPLICATION_FOCUS_IN: {
@@ -1771,10 +1771,7 @@ void NativeReloadNode::_notification(int p_what) {
 			for (Set<StringName>::Element *R = libs_to_remove.front(); R; R = R->next()) {
 				NSL->library_gdnatives.erase(R->get());
 			}
-
 		} break;
-		default: {
-		};
 	}
 #endif
 }
