@@ -69,6 +69,8 @@ public:
 class DefaultAllocator {
 	static void *alloc_manager(size_t p_memory);
 	static void free_manager(void *ptr, size_t count);
+
+public:
 	static void record_memory_alloc(void *p_ptr, size_t p_memory, const char *file_name, int file_lne);
 	static void record_memory_free(void *p_ptr, size_t size);
 	friend class MallocAllocator;

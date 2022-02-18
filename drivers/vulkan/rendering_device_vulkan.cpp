@@ -1451,7 +1451,7 @@ bool RenderingDeviceVulkan::get_tessellation_shader_is_supported() {
 /**** BUFFER MANAGEMENT ****/
 /***************************/
 
-Error RenderingDeviceVulkan::_buffer_allocate(Buffer *p_buffer, uint32_t p_size, uint32_t p_usage, VmaMemoryUsage p_mapping) {
+Error RenderingDeviceVulkan::_buffer_allocate(Buffer *p_buffer, uint32_t p_size, uint32_t p_usage, VmaMemoryUsage p_mapping, const char *file_name, int line) {
 	VkBufferCreateInfo bufferInfo;
 	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 	bufferInfo.pNext = nullptr;
@@ -1482,6 +1482,7 @@ Error RenderingDeviceVulkan::_buffer_allocate(Buffer *p_buffer, uint32_t p_size,
 	p_buffer->usage = p_usage;
 
 	buffer_memory += p_size;
+	DefaultAllocator::record_memory_alloc(p_buffer->buffer, p_size, file_name, line);
 
 	return OK;
 }
@@ -1491,6 +1492,7 @@ Error RenderingDeviceVulkan::_buffer_free(Buffer *p_buffer) {
 
 	buffer_memory -= p_buffer->size;
 	vmaDestroyBuffer(allocator, p_buffer->buffer, p_buffer->allocation);
+	DefaultAllocator::record_memory_free(p_buffer->buffer, p_buffer->size);
 	p_buffer->buffer = VK_NULL_HANDLE;
 	p_buffer->allocation = nullptr;
 	p_buffer->size = 0;
@@ -1523,6 +1525,7 @@ Error RenderingDeviceVulkan::_insert_staging_block() {
 	VkResult err = vmaCreateBuffer(allocator, &bufferInfo, &allocInfo, &block.buffer, &block.allocation, nullptr);
 	ERR_FAIL_COND_V_MSG(err, ERR_CANT_CREATE, "vmaCreateBuffer failed with error " + itos(err) + ".");
 
+	DefaultAllocator::record_memory_alloc(block.buffer, staging_buffer_block_size, __FILE__, __LINE__);
 	block.frame_used = 0;
 	block.fill_amount = 0;
 
@@ -2002,6 +2005,7 @@ RID RenderingDeviceVulkan::texture_create(const TextureFormat &p_format, const T
 	texture.usage_flags = p_format.usage_bits;
 	texture.samples = p_format.samples;
 	texture.allowed_shared_formats = p_format.shareable_formats;
+	DefaultAllocator::record_memory_alloc(texture.image, texture.allocation_info.size, __FILE__, __LINE__);
 
 	//set base layout based on usage priority
 
@@ -2094,6 +2098,7 @@ RID RenderingDeviceVulkan::texture_create(const TextureFormat &p_format, const T
 
 	if (err) {
 		vmaDestroyImage(allocator, texture.image, texture.allocation);
+		DefaultAllocator::record_memory_free(texture.image, texture.allocation_info.size);
 		ERR_FAIL_V_MSG(RID(), "vkCreateImageView failed with error " + itos(err) + ".");
 	}
 
@@ -2712,7 +2717,7 @@ Vector<uint8_t> RenderingDeviceVulkan::texture_get_data(RID p_texture, uint32_t 
 		//allocate buffer
 		VkCommandBuffer command_buffer = frames[frame].draw_command_buffer; //makes more sense to retrieve
 		Buffer tmp_buffer;
-		_buffer_allocate(&tmp_buffer, buffer_size, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VMA_MEMORY_USAGE_CPU_ONLY);
+		_buffer_allocate(&tmp_buffer, buffer_size, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VMA_MEMORY_USAGE_CPU_ONLY, __FILE__, __LINE__);
 
 		{ //Source image barrier
 			VkImageMemoryBarrier image_memory_barrier;
@@ -4106,7 +4111,7 @@ RID RenderingDeviceVulkan::vertex_buffer_create(uint32_t p_size_bytes, const Vec
 		usage |= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 	}
 	Buffer buffer;
-	_buffer_allocate(&buffer, p_size_bytes, usage, VMA_MEMORY_USAGE_GPU_ONLY);
+	_buffer_allocate(&buffer, p_size_bytes, usage, VMA_MEMORY_USAGE_GPU_ONLY, __FILE__, __LINE__);
 	if (p_data.size()) {
 		uint64_t data_size = p_data.size();
 		const uint8_t *r = p_data.ptr();
@@ -4268,7 +4273,7 @@ RID RenderingDeviceVulkan::index_buffer_create(uint32_t p_index_count, IndexBuff
 #else
 	index_buffer.max_index = 0xFFFFFFFF;
 #endif
-	_buffer_allocate(&index_buffer, size_bytes, VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VMA_MEMORY_USAGE_GPU_ONLY);
+	_buffer_allocate(&index_buffer, size_bytes, VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VMA_MEMORY_USAGE_GPU_ONLY, __FILE__, __LINE__);
 	if (p_data.size()) {
 		uint64_t data_size = p_data.size();
 		const uint8_t *r = p_data.ptr();
@@ -5394,7 +5399,7 @@ RID RenderingDeviceVulkan::uniform_buffer_create(uint32_t p_size_bytes, const Ve
 			"Creating buffers with data is forbidden during creation of a draw list");
 
 	Buffer buffer;
-	Error err = _buffer_allocate(&buffer, p_size_bytes, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VMA_MEMORY_USAGE_GPU_ONLY);
+	Error err = _buffer_allocate(&buffer, p_size_bytes, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VMA_MEMORY_USAGE_GPU_ONLY, __FILE__, __LINE__);
 	ERR_FAIL_COND_V(err != OK, RID());
 	if (p_data.size()) {
 		uint64_t data_size = p_data.size();
@@ -5420,7 +5425,7 @@ RID RenderingDeviceVulkan::storage_buffer_create(uint32_t p_size_bytes, const Ve
 	if (p_usage & STORAGE_BUFFER_USAGE_DISPATCH_INDIRECT) {
 		flags |= VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT;
 	}
-	Error err = _buffer_allocate(&buffer, p_size_bytes, flags, VMA_MEMORY_USAGE_GPU_ONLY);
+	Error err = _buffer_allocate(&buffer, p_size_bytes, flags, VMA_MEMORY_USAGE_GPU_ONLY, __FILE__, __LINE__);
 	ERR_FAIL_COND_V(err != OK, RID());
 
 	if (p_data.size()) {
@@ -5446,7 +5451,7 @@ RID RenderingDeviceVulkan::texture_buffer_create(uint32_t p_size_elements, DataF
 	ERR_FAIL_COND_V(p_data.size() && (uint32_t)p_data.size() != size_bytes, RID());
 
 	TextureBuffer texture_buffer;
-	Error err = _buffer_allocate(&texture_buffer.buffer, size_bytes, VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT, VMA_MEMORY_USAGE_GPU_ONLY);
+	Error err = _buffer_allocate(&texture_buffer.buffer, size_bytes, VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT, VMA_MEMORY_USAGE_GPU_ONLY, __FILE__, __LINE__);
 	ERR_FAIL_COND_V(err != OK, RID());
 
 	if (p_data.size()) {
@@ -6217,7 +6222,7 @@ Vector<uint8_t> RenderingDeviceVulkan::buffer_get_data(RID p_buffer) {
 	VkCommandBuffer command_buffer = frames[frame].setup_command_buffer;
 
 	Buffer tmp_buffer;
-	_buffer_allocate(&tmp_buffer, buffer->size, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VMA_MEMORY_USAGE_CPU_ONLY);
+	_buffer_allocate(&tmp_buffer, buffer->size, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VMA_MEMORY_USAGE_CPU_ONLY, __FILE__, __LINE__);
 	VkBufferCopy region;
 	region.srcOffset = 0;
 	region.dstOffset = 0;
@@ -8871,6 +8876,7 @@ void RenderingDeviceVulkan::_free_pending_resources(int p_frame) {
 			//actually owns the image and the allocation too
 			image_memory -= texture->allocation_info.size;
 			vmaDestroyImage(allocator, texture->image, texture->allocation);
+			DefaultAllocator::record_memory_free(texture->image, texture->allocation_info.size);
 		}
 		frames[p_frame].textures_to_dispose_of.pop_front();
 	}
@@ -9480,6 +9486,7 @@ void RenderingDeviceVulkan::finalize() {
 
 	for (int i = 0; i < staging_buffer_blocks.size(); i++) {
 		vmaDestroyBuffer(allocator, staging_buffer_blocks[i].buffer, staging_buffer_blocks[i].allocation);
+		DefaultAllocator::record_memory_free(staging_buffer_blocks[i].buffer, staging_buffer_block_size);
 	}
 	vmaDestroyPool(allocator, small_allocs_pool);
 	vmaDestroyAllocator(allocator);

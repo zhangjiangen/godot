@@ -10216,9 +10216,19 @@ void process() {
 }
 
 RendererStorageRD::~RendererStorageRD() {
-	memdelete_arr(global_variables.buffer_values);
-	memdelete_arr(global_variables.buffer_usage);
-	memdelete_arr(global_variables.buffer_dirty_regions);
+    if(global_variables.buffer_values)
+    {
+        
+        memdelete_arr(global_variables.buffer_values);
+    }
+    if(global_variables.buffer_usage)
+    {
+        memdelete_arr(global_variables.buffer_usage);
+    }
+    if(global_variables.buffer_dirty_regions)
+    {
+        memdelete_arr(global_variables.buffer_dirty_regions);
+    }
 	RD::get_singleton()->free(global_variables.buffer);
 
 	//def textures

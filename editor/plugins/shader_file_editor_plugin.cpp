@@ -302,7 +302,7 @@ void ShaderFileEditorPlugin::make_visible(bool p_visible) {
 	if (p_visible) {
 		if (button != nullptr) {
 			button->show();
-			editor->make_bottom_panel_item_visible(shader_editor);
+			//editor->make_bottom_panel_item_visible(shader_editor);
 		}
 		// else
 		// 	dock_make_float(shader_editor);
