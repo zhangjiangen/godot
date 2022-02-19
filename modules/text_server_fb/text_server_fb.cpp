@@ -2187,7 +2187,7 @@ void TextServerFallback::full_copy(ShapedTextDataFallback *p_shaped) {
 	p_shaped->parent = RID();
 }
 
-RID TextServerFallback::create_shaped_text(TextServer::Direction p_direction, TextServer::Orientation p_orientation, cons char *fn, int line) {
+RID TextServerFallback::create_shaped_text(TextServer::Direction p_direction, TextServer::Orientation p_orientation, const char *fn, int line) {
 	_THREAD_SAFE_METHOD_
 	ShapedTextDataFallback *sd = _post_initialize(new (fn, line) ShapedTextDataFallback);
 	sd->direction = p_direction;
@@ -2572,7 +2572,7 @@ RID TextServerFallback::shaped_text_substr(RID p_shaped, int p_start, int p_leng
 
 	MutexLock lock(sd->mutex);
 	if (sd->parent != RID()) {
-		return shaped_text_substr(sd->parent, p_start, p_length,fn,line);
+		return shaped_text_substr(sd->parent, p_start, p_length, fn, line);
 	}
 	if (!sd->valid) {
 		const_cast<TextServerFallback *>(this)->shaped_text_shape(p_shaped);
