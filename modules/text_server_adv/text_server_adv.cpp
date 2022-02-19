@@ -3083,9 +3083,9 @@ void TextServerAdvanced::full_copy(ShapedTextDataAdvanced *p_shaped) {
 	p_shaped->parent = RID();
 }
 
-RID TextServerAdvanced::create_shaped_text(TextServer::Direction p_direction, TextServer::Orientation p_orientation) {
+RID TextServerAdvanced::create_shaped_text(TextServer::Direction p_direction, TextServer::Orientation p_orientation, const char *fn, int line) {
 	_THREAD_SAFE_METHOD_
-	ShapedTextDataAdvanced *sd = memnew(ShapedTextDataAdvanced);
+	ShapedTextDataAdvanced *sd = _post_initialize(new (fn, line) ShapedTextDataAdvanced);
 	sd->hb_buffer = hb_buffer_create();
 	sd->direction = p_direction;
 	sd->orientation = p_orientation;
@@ -3471,13 +3471,13 @@ void TextServerAdvanced::_realign(ShapedTextDataAdvanced *p_sd) const {
 	p_sd->descent = full_descent;
 }
 
-RID TextServerAdvanced::shaped_text_substr(RID p_shaped, int p_start, int p_length) const {
+RID TextServerAdvanced::shaped_text_substr(RID p_shaped, int p_start, int p_length, const char *fn, int line) const {
 	const ShapedTextDataAdvanced *sd = shaped_owner.get_or_null(p_shaped);
 	ERR_FAIL_COND_V(!sd, RID());
 
 	MutexLock lock(sd->mutex);
 	if (sd->parent != RID()) {
-		return shaped_text_substr(sd->parent, p_start, p_length);
+		return shaped_text_substr(sd->parent, p_start, p_length, fn, line);
 	}
 	if (!sd->valid) {
 		const_cast<TextServerAdvanced *>(this)->shaped_text_shape(p_shaped);
@@ -3486,7 +3486,7 @@ RID TextServerAdvanced::shaped_text_substr(RID p_shaped, int p_start, int p_leng
 	ERR_FAIL_COND_V(sd->start > p_start || sd->end < p_start, RID());
 	ERR_FAIL_COND_V(sd->end < p_start + p_length, RID());
 
-	ShapedTextDataAdvanced *new_sd = memnew(ShapedTextDataAdvanced);
+	ShapedTextDataAdvanced *new_sd = _post_initialize(new (fn, line) ShapedTextDataAdvanced); //memnew(ShapedTextDataAdvanced);
 	new_sd->parent = p_shaped;
 	new_sd->start = p_start;
 	new_sd->end = p_start + p_length;

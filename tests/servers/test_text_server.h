@@ -70,7 +70,7 @@ TEST_SUITE("[[TextServer]") {
 				String test = U"คนอ้วน khon uan ראה";
 				//                 6^       17^
 
-				RID ctx = ts->create_shaped_text();
+				RID ctx = ts->create_shaped_text(TextServer::DIRECTION_AUTO, TextServer::ORIENTATION_HORIZONTAL, __FILE__, __LINE__);
 				TEST_FAIL_COND(ctx == RID(), "Creating text buffer failed.");
 				bool ok = ts->shaped_text_add_string(ctx, test, font, 16);
 				TEST_FAIL_COND(!ok, "Adding text to the buffer failed.");
@@ -123,7 +123,7 @@ TEST_SUITE("[[TextServer]") {
 				String test = U"Arabic (اَلْعَرَبِيَّةُ, al-ʿarabiyyah)";
 				//                    7^      26^
 
-				RID ctx = ts->create_shaped_text();
+				RID ctx = ts->create_shaped_text(TextServer::DIRECTION_AUTO, TextServer::ORIENTATION_HORIZONTAL, __FILE__, __LINE__);
 				TEST_FAIL_COND(ctx == RID(), "Creating text buffer failed.");
 				bool ok = ts->shaped_text_add_string(ctx, test, font, 16);
 				TEST_FAIL_COND(!ok, "Adding text to the buffer failed.");
@@ -173,7 +173,7 @@ TEST_SUITE("[[TextServer]") {
 
 				{
 					String test = U"Test test long text long text\n";
-					RID ctx = ts->create_shaped_text();
+					RID ctx = ts->create_shaped_text(TextServer::DIRECTION_AUTO, TextServer::ORIENTATION_HORIZONTAL, __FILE__, __LINE__);
 					TEST_FAIL_COND(ctx == RID(), "Creating text buffer failed.");
 					bool ok = ts->shaped_text_add_string(ctx, test, font, 16);
 					TEST_FAIL_COND(!ok, "Adding text to the buffer failed.");
@@ -203,7 +203,7 @@ TEST_SUITE("[[TextServer]") {
 
 				{
 					String test = U"الحمـد";
-					RID ctx = ts->create_shaped_text();
+					RID ctx = ts->create_shaped_text(TextServer::DIRECTION_AUTO, TextServer::ORIENTATION_HORIZONTAL, __FILE__, __LINE__);
 					TEST_FAIL_COND(ctx == RID(), "Creating text buffer failed.");
 					bool ok = ts->shaped_text_add_string(ctx, test, font, 16);
 					TEST_FAIL_COND(!ok, "Adding text to the buffer failed.");
@@ -246,7 +246,7 @@ TEST_SUITE("[[TextServer]") {
 
 				{
 					String test = U"الحمـد الرياضي العربي";
-					RID ctx = ts->create_shaped_text();
+					RID ctx = ts->create_shaped_text(TextServer::DIRECTION_AUTO, TextServer::ORIENTATION_HORIZONTAL, __FILE__, __LINE__);
 					TEST_FAIL_COND(ctx == RID(), "Creating text buffer failed.");
 					bool ok = ts->shaped_text_add_string(ctx, test, font, 16);
 					TEST_FAIL_COND(!ok, "Adding text to the buffer failed.");
@@ -299,7 +299,7 @@ TEST_SUITE("[[TextServer]") {
 
 				{
 					String test = U"เป็น ภาษา ราชการ และ ภาษา";
-					RID ctx = ts->create_shaped_text();
+					RID ctx = ts->create_shaped_text(TextServer::DIRECTION_AUTO, TextServer::ORIENTATION_HORIZONTAL, __FILE__, __LINE__);
 					TEST_FAIL_COND(ctx == RID(), "Creating text buffer failed.");
 					bool ok = ts->shaped_text_add_string(ctx, test, font, 16);
 					TEST_FAIL_COND(!ok, "Adding text to the buffer failed.");
@@ -327,7 +327,7 @@ TEST_SUITE("[[TextServer]") {
 
 				if (ts->has_feature(TextServer::FEATURE_BREAK_ITERATORS)) {
 					String test = U"เป็นภาษาราชการและภาษา";
-					RID ctx = ts->create_shaped_text();
+					RID ctx = ts->create_shaped_text(TextServer::DIRECTION_AUTO, TextServer::ORIENTATION_HORIZONTAL, __FILE__, __LINE__);
 					TEST_FAIL_COND(ctx == RID(), "Creating text buffer failed.");
 					bool ok = ts->shaped_text_add_string(ctx, test, font, 16);
 					TEST_FAIL_COND(!ok, "Adding text to the buffer failed.");
@@ -377,7 +377,7 @@ TEST_SUITE("[[TextServer]") {
 				font.push_back(font1);
 				font.push_back(font2);
 
-				RID ctx = ts->create_shaped_text();
+				RID ctx = ts->create_shaped_text(TextServer::DIRECTION_AUTO, TextServer::ORIENTATION_HORIZONTAL, __FILE__, __LINE__);
 				TEST_FAIL_COND(ctx == RID(), "Creating text buffer failed.");
 				bool ok = ts->shaped_text_add_string(ctx, test_1, font, 16);
 				TEST_FAIL_COND(!ok, "Adding text to the buffer failed.");
@@ -427,7 +427,7 @@ TEST_SUITE("[[TextServer]") {
 				bool ok;
 				float width_old, width;
 				if (ts->has_feature(TextServer::FEATURE_KASHIDA_JUSTIFICATION)) {
-					ctx = ts->create_shaped_text();
+					ctx = ts->create_shaped_text(TextServer::DIRECTION_AUTO, TextServer::ORIENTATION_HORIZONTAL, __FILE__, __LINE__);
 					TEST_FAIL_COND(ctx == RID(), "Creating text buffer failed.");
 					ok = ts->shaped_text_add_string(ctx, test_1, font, 16);
 					TEST_FAIL_COND(!ok, "Adding text to the buffer failed.");
@@ -440,7 +440,7 @@ TEST_SUITE("[[TextServer]") {
 
 					ts->free(ctx);
 
-					ctx = ts->create_shaped_text();
+					ctx = ts->create_shaped_text(TextServer::DIRECTION_AUTO, TextServer::ORIENTATION_HORIZONTAL, __FILE__, __LINE__);
 					TEST_FAIL_COND(ctx == RID(), "Creating text buffer failed.");
 					ok = ts->shaped_text_add_string(ctx, test_2, font, 16);
 					TEST_FAIL_COND(!ok, "Adding text to the buffer failed.");
@@ -454,7 +454,7 @@ TEST_SUITE("[[TextServer]") {
 					ts->free(ctx);
 				}
 
-				ctx = ts->create_shaped_text();
+				ctx = ts->create_shaped_text(TextServer::DIRECTION_AUTO, TextServer::ORIENTATION_HORIZONTAL, __FILE__, __LINE__);
 				TEST_FAIL_COND(ctx == RID(), "Creating text buffer failed.");
 				ok = ts->shaped_text_add_string(ctx, test_3, font, 16);
 				TEST_FAIL_COND(!ok, "Adding text to the buffer failed.");

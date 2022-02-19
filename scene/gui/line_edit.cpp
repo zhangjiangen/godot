@@ -2437,7 +2437,7 @@ void LineEdit::_ensure_menu() {
 }
 
 LineEdit::LineEdit() {
-	text_rid = TS->create_shaped_text();
+	text_rid = TS->create_shaped_text(TextServer::DIRECTION_AUTO, TextServer::ORIENTATION_HORIZONTAL, __FILE__, __LINE__);
 	_create_undo_state();
 
 	deselect();

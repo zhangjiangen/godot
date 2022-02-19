@@ -52,7 +52,7 @@ void RenderForwardClustered::RenderBufferDataForwardClustered::ensure_specular()
 			tf.usage_bits |= RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT;
 		}
 
-		specular = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		specular = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 		if (msaa == RS::VIEWPORT_MSAA_DISABLED) {
 			{
@@ -73,7 +73,7 @@ void RenderForwardClustered::RenderBufferDataForwardClustered::ensure_specular()
 		} else {
 			tf.samples = texture_samples;
 			tf.usage_bits = RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT | RD::TEXTURE_USAGE_CAN_COPY_FROM_BIT;
-			specular_msaa = RD::get_singleton()->texture_create(tf, RD::TextureView());
+			specular_msaa = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 			{
 				Vector<RID> fb;
@@ -105,14 +105,14 @@ void RenderForwardClustered::RenderBufferDataForwardClustered::ensure_voxelgi() 
 			RD::TextureFormat tf_aa = tf;
 			tf_aa.usage_bits |= RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT;
 			tf_aa.samples = texture_samples;
-			voxelgi_buffer_msaa = RD::get_singleton()->texture_create(tf_aa, RD::TextureView());
+			voxelgi_buffer_msaa = RD::get_singleton()->texture_create(tf_aa, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 		} else {
 			tf.usage_bits |= RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT;
 		}
 
 		tf.usage_bits |= RD::TEXTURE_USAGE_STORAGE_BIT;
 
-		voxelgi_buffer = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		voxelgi_buffer = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 		Vector<RID> fb;
 		if (msaa != RS::VIEWPORT_MSAA_DISABLED) {
@@ -228,12 +228,12 @@ void RenderForwardClustered::RenderBufferDataForwardClustered::configure(RID p_c
 		texture_samples = ts[p_msaa];
 		tf.samples = texture_samples;
 
-		color_msaa = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		color_msaa = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 		tf.format = RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_D24_UNORM_S8_UINT, RD::TEXTURE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT) ? RD::DATA_FORMAT_D24_UNORM_S8_UINT : RD::DATA_FORMAT_D32_SFLOAT_S8_UINT;
 		tf.usage_bits = RD::TEXTURE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | RD::TEXTURE_USAGE_CAN_COPY_FROM_BIT | RD::TEXTURE_USAGE_SAMPLING_BIT;
 
-		depth_msaa = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		depth_msaa = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 		{
 			Vector<RID> fb;
@@ -268,7 +268,7 @@ void RenderForwardClustered::_allocate_normal_roughness_texture(RenderBufferData
 		tf.usage_bits |= RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT;
 	}
 
-	rb->normal_roughness_buffer = RD::get_singleton()->texture_create(tf, RD::TextureView());
+	rb->normal_roughness_buffer = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 	if (rb->msaa == RS::VIEWPORT_MSAA_DISABLED) {
 		Vector<RID> fb;
@@ -278,7 +278,7 @@ void RenderForwardClustered::_allocate_normal_roughness_texture(RenderBufferData
 	} else {
 		tf.usage_bits = RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT | RD::TEXTURE_USAGE_CAN_COPY_FROM_BIT | RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_STORAGE_BIT;
 		tf.samples = rb->texture_samples;
-		rb->normal_roughness_buffer_msaa = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		rb->normal_roughness_buffer_msaa = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 		Vector<RID> fb;
 		fb.push_back(rb->depth_msaa);

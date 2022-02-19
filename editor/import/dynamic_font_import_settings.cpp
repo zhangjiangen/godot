@@ -625,7 +625,7 @@ void DynamicFontImportSettings::_glyph_text_selected() {
 		}
 	}
 
-	RID text_rid = TS->create_shaped_text();
+	RID text_rid = TS->create_shaped_text(TextServer::DIRECTION_AUTO, TextServer::ORIENTATION_HORIZONTAL, __FILE__, __LINE__);
 	if (text_rid.is_valid()) {
 		TS->shaped_text_add_string(text_rid, text_edit->get_text(), font_main->get_rids(), 16, ftrs, text_edit->get_language());
 		TS->shaped_text_shape(text_rid);

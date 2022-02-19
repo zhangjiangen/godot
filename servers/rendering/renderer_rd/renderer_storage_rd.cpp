@@ -569,7 +569,7 @@ void RendererStorageRD::texture_2d_initialize(RID p_texture, const Ref<Image> &p
 	Vector<uint8_t> data = image->get_data(); //use image data
 	Vector<Vector<uint8_t>> data_slices;
 	data_slices.push_back(data);
-	texture.rd_texture = RD::get_singleton()->texture_create(rd_format, rd_view, data_slices);
+	texture.rd_texture = RD::get_singleton()->texture_create(rd_format, rd_view, data_slices, __FILE__, __LINE__);
 	ERR_FAIL_COND(texture.rd_texture.is_null());
 	if (texture.rd_format_srgb != RD::DATA_FORMAT_MAX) {
 		rd_view.format_override = texture.rd_format_srgb;
@@ -679,7 +679,7 @@ void RendererStorageRD::texture_2d_layered_initialize(RID p_texture, const Vecto
 		Vector<uint8_t> data = images[i]->get_data(); //use image data
 		data_slices.push_back(data);
 	}
-	texture.rd_texture = RD::get_singleton()->texture_create(rd_format, rd_view, data_slices);
+	texture.rd_texture = RD::get_singleton()->texture_create(rd_format, rd_view, data_slices, __FILE__, __LINE__);
 	ERR_FAIL_COND(texture.rd_texture.is_null());
 	if (texture.rd_format_srgb != RD::DATA_FORMAT_MAX) {
 		rd_view.format_override = texture.rd_format_srgb;
@@ -795,7 +795,7 @@ void RendererStorageRD::texture_3d_initialize(RID p_texture, Image::Format p_for
 	Vector<Vector<uint8_t>> data_slices;
 	data_slices.push_back(all_data); //one slice
 
-	texture.rd_texture = RD::get_singleton()->texture_create(rd_format, rd_view, data_slices);
+	texture.rd_texture = RD::get_singleton()->texture_create(rd_format, rd_view, data_slices, __FILE__, __LINE__);
 	ERR_FAIL_COND(texture.rd_texture.is_null());
 	if (texture.rd_format_srgb != RD::DATA_FORMAT_MAX) {
 		rd_view.format_override = texture.rd_format_srgb;
@@ -6025,7 +6025,7 @@ RID RendererStorageRD::particles_collision_get_heightfield_framebuffer(RID p_par
 		tf.texture_type = RD::TEXTURE_TYPE_2D;
 		tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 
-		particles_collision->heightfield_texture = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		particles_collision->heightfield_texture = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 		Vector<RID> fb_tex;
 		fb_tex.push_back(particles_collision->heightfield_texture);
@@ -7149,7 +7149,7 @@ void RendererStorageRD::voxel_gi_allocate_data(RID p_voxel_gi, const Transform3D
 			tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT | RD::TEXTURE_USAGE_CAN_COPY_FROM_BIT;
 			Vector<Vector<uint8_t>> s;
 			s.push_back(p_distance_field);
-			voxel_gi->sdf_texture = RD::get_singleton()->texture_create(tf, RD::TextureView(), s);
+			voxel_gi->sdf_texture = RD::get_singleton()->texture_create(tf, RD::TextureView(), s, __FILE__, __LINE__);
 		}
 #if 0
 			{
@@ -7162,7 +7162,7 @@ void RendererStorageRD::voxel_gi_allocate_data(RID p_voxel_gi, const Transform3D
 				tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_STORAGE_BIT | RD::TEXTURE_USAGE_CAN_COPY_TO_BIT;
 				tf.shareable_formats.push_back(RD::DATA_FORMAT_R8_UNORM);
 				tf.shareable_formats.push_back(RD::DATA_FORMAT_R8_UINT);
-				voxel_gi->sdf_texture = RD::get_singleton()->texture_create(tf, RD::TextureView());
+				voxel_gi->sdf_texture = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 			}
 			RID shared_tex;
 			{
@@ -7665,7 +7665,7 @@ void RendererStorageRD::_update_render_target(RenderTarget *rt) {
 		rd_format.shareable_formats.push_back(rt->color_format_srgb);
 	}
 
-	rt->color = RD::get_singleton()->texture_create(rd_format, rd_view);
+	rt->color = RD::get_singleton()->texture_create(rd_format, rd_view, Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 	ERR_FAIL_COND(rt->color.is_null());
 
 	Vector<RID> fb_textures;
@@ -7731,7 +7731,7 @@ void RendererStorageRD::_create_render_target_backbuffer(RenderTarget *rt) {
 	tf.usage_bits = RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT | RD::TEXTURE_USAGE_STORAGE_BIT | RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_COPY_TO_BIT;
 	tf.mipmaps = mipmaps_required;
 
-	rt->backbuffer = RD::get_singleton()->texture_create(tf, RD::TextureView());
+	rt->backbuffer = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 	RD::get_singleton()->set_resource_name(rt->backbuffer, "Render Target Back Buffer");
 	rt->backbuffer_mipmap0 = RD::get_singleton()->texture_create_shared_from_slice(RD::TextureView(), rt->backbuffer, 0, 0);
 	RD::get_singleton()->set_resource_name(rt->backbuffer_mipmap0, "Back Buffer slice mipmap 0");
@@ -7969,7 +7969,7 @@ RID RendererStorageRD::render_target_get_sdf_texture(RID p_render_target) {
 		memset(pv.ptrw(), 0, 16 * 4);
 		Vector<Vector<uint8_t>> vpv;
 
-		rt->sdf_buffer_read = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv);
+		rt->sdf_buffer_read = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv, __FILE__, __LINE__);
 	}
 
 	return rt->sdf_buffer_read;
@@ -7991,7 +7991,7 @@ void RendererStorageRD::_render_target_allocate_sdf(RenderTarget *rt) {
 	tformat.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_STORAGE_BIT | RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT;
 	tformat.texture_type = RD::TEXTURE_TYPE_2D;
 
-	rt->sdf_buffer_write = RD::get_singleton()->texture_create(tformat, RD::TextureView());
+	rt->sdf_buffer_write = RD::get_singleton()->texture_create(tformat, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 	{
 		Vector<RID> write_fb;
@@ -8024,13 +8024,13 @@ void RendererStorageRD::_render_target_allocate_sdf(RenderTarget *rt) {
 	tformat.height = rt->process_size.height;
 	tformat.usage_bits = RD::TEXTURE_USAGE_STORAGE_BIT;
 
-	rt->sdf_buffer_process[0] = RD::get_singleton()->texture_create(tformat, RD::TextureView());
-	rt->sdf_buffer_process[1] = RD::get_singleton()->texture_create(tformat, RD::TextureView());
+	rt->sdf_buffer_process[0] = RD::get_singleton()->texture_create(tformat, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
+	rt->sdf_buffer_process[1] = RD::get_singleton()->texture_create(tformat, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 	tformat.format = RD::DATA_FORMAT_R16_SNORM;
 	tformat.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_STORAGE_BIT;
 
-	rt->sdf_buffer_read = RD::get_singleton()->texture_create(tformat, RD::TextureView());
+	rt->sdf_buffer_read = RD::get_singleton()->texture_create(tformat, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 	{
 		Vector<RD::Uniform> uniforms;
@@ -8553,7 +8553,7 @@ void RendererStorageRD::_update_decal_atlas() {
 	tformat.shareable_formats.push_back(RD::DATA_FORMAT_R8G8B8A8_UNORM);
 	tformat.shareable_formats.push_back(RD::DATA_FORMAT_R8G8B8A8_SRGB);
 
-	decal_atlas.texture = RD::get_singleton()->texture_create(tformat, RD::TextureView());
+	decal_atlas.texture = RD::get_singleton()->texture_create(tformat, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 	RD::get_singleton()->texture_clear(decal_atlas.texture, Color(0, 0, 0, 0), 0, decal_atlas.mipmaps, 0, 1);
 
 	{
@@ -9583,7 +9583,7 @@ RendererStorageRD::RendererStorageRD() {
 		{
 			Vector<Vector<uint8_t>> vpv;
 			vpv.push_back(pv);
-			default_rd_textures[DEFAULT_RD_TEXTURE_WHITE] = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv);
+			default_rd_textures[DEFAULT_RD_TEXTURE_WHITE] = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv, __FILE__, __LINE__);
 		}
 
 		for (int i = 0; i < 16; i++) {
@@ -9596,10 +9596,10 @@ RendererStorageRD::RendererStorageRD() {
 		{
 			Vector<Vector<uint8_t>> vpv;
 			vpv.push_back(pv);
-			default_rd_textures[DEFAULT_RD_TEXTURE_BLACK] = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv);
+			default_rd_textures[DEFAULT_RD_TEXTURE_BLACK] = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv, __FILE__, __LINE__);
 
 			//take the chance and initialize decal atlas to something
-			decal_atlas.texture = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv);
+			decal_atlas.texture = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv, __FILE__, __LINE__);
 			decal_atlas.texture_srgb = decal_atlas.texture;
 		}
 
@@ -9613,7 +9613,7 @@ RendererStorageRD::RendererStorageRD() {
 		{
 			Vector<Vector<uint8_t>> vpv;
 			vpv.push_back(pv);
-			default_rd_textures[DEFAULT_RD_TEXTURE_NORMAL] = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv);
+			default_rd_textures[DEFAULT_RD_TEXTURE_NORMAL] = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv, __FILE__, __LINE__);
 		}
 
 		for (int i = 0; i < 16; i++) {
@@ -9626,7 +9626,7 @@ RendererStorageRD::RendererStorageRD() {
 		{
 			Vector<Vector<uint8_t>> vpv;
 			vpv.push_back(pv);
-			default_rd_textures[DEFAULT_RD_TEXTURE_ANISO] = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv);
+			default_rd_textures[DEFAULT_RD_TEXTURE_ANISO] = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv, __FILE__, __LINE__);
 		}
 
 		for (int i = 0; i < 16; i++) {
@@ -9649,7 +9649,7 @@ RendererStorageRD::RendererStorageRD() {
 			tformat.format = RD::DATA_FORMAT_R8G8B8A8_UINT;
 			Vector<Vector<uint8_t>> vpv;
 			vpv.push_back(pv);
-			default_rd_textures[DEFAULT_RD_TEXTURE_2D_UINT] = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv);
+			default_rd_textures[DEFAULT_RD_TEXTURE_2D_UINT] = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv, __FILE__, __LINE__);
 		}
 	}
 
@@ -9677,7 +9677,7 @@ RendererStorageRD::RendererStorageRD() {
 			for (int i = 0; i < 6; i++) {
 				vpv.push_back(pv);
 			}
-			default_rd_textures[DEFAULT_RD_TEXTURE_CUBEMAP_ARRAY_BLACK] = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv);
+			default_rd_textures[DEFAULT_RD_TEXTURE_CUBEMAP_ARRAY_BLACK] = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv, __FILE__, __LINE__);
 		}
 	}
 
@@ -9705,7 +9705,7 @@ RendererStorageRD::RendererStorageRD() {
 			for (int i = 0; i < 6; i++) {
 				vpv.push_back(pv);
 			}
-			default_rd_textures[DEFAULT_RD_TEXTURE_CUBEMAP_BLACK] = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv);
+			default_rd_textures[DEFAULT_RD_TEXTURE_CUBEMAP_BLACK] = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv, __FILE__, __LINE__);
 		}
 	}
 
@@ -9733,7 +9733,7 @@ RendererStorageRD::RendererStorageRD() {
 			for (int i = 0; i < 6; i++) {
 				vpv.push_back(pv);
 			}
-			default_rd_textures[DEFAULT_RD_TEXTURE_CUBEMAP_WHITE] = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv);
+			default_rd_textures[DEFAULT_RD_TEXTURE_CUBEMAP_WHITE] = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv, __FILE__, __LINE__);
 		}
 	}
 
@@ -9759,7 +9759,7 @@ RendererStorageRD::RendererStorageRD() {
 		{
 			Vector<Vector<uint8_t>> vpv;
 			vpv.push_back(pv);
-			default_rd_textures[DEFAULT_RD_TEXTURE_3D_BLACK] = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv);
+			default_rd_textures[DEFAULT_RD_TEXTURE_3D_BLACK] = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv, __FILE__, __LINE__);
 		}
 		for (int i = 0; i < 64; i++) {
 			pv.set(i * 4 + 0, 255);
@@ -9771,7 +9771,7 @@ RendererStorageRD::RendererStorageRD() {
 		{
 			Vector<Vector<uint8_t>> vpv;
 			vpv.push_back(pv);
-			default_rd_textures[DEFAULT_RD_TEXTURE_3D_WHITE] = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv);
+			default_rd_textures[DEFAULT_RD_TEXTURE_3D_WHITE] = RD::get_singleton()->texture_create(tformat, RD::TextureView(), vpv, __FILE__, __LINE__);
 		}
 	}
 
@@ -10216,19 +10216,15 @@ void process() {
 }
 
 RendererStorageRD::~RendererStorageRD() {
-    if(global_variables.buffer_values)
-    {
-        
-        memdelete_arr(global_variables.buffer_values);
-    }
-    if(global_variables.buffer_usage)
-    {
-        memdelete_arr(global_variables.buffer_usage);
-    }
-    if(global_variables.buffer_dirty_regions)
-    {
-        memdelete_arr(global_variables.buffer_dirty_regions);
-    }
+	if (global_variables.buffer_values) {
+		memdelete_arr(global_variables.buffer_values);
+	}
+	if (global_variables.buffer_usage) {
+		memdelete_arr(global_variables.buffer_usage);
+	}
+	if (global_variables.buffer_dirty_regions) {
+		memdelete_arr(global_variables.buffer_dirty_regions);
+	}
 	RD::get_singleton()->free(global_variables.buffer);
 
 	//def textures

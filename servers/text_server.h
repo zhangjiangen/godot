@@ -364,7 +364,10 @@ public:
 
 	/* Shaped text buffer interface */
 
-	virtual RID create_shaped_text(Direction p_direction = DIRECTION_AUTO, Orientation p_orientation = ORIENTATION_HORIZONTAL) = 0;
+	virtual RID create_shaped_text(Direction p_direction = DIRECTION_AUTO, Orientation p_orientation = ORIENTATION_HORIZONTAL, const char *fn = __FILE__, int line = __LINE__) = 0;
+	RID _create_shaped_text(Direction p_direction = DIRECTION_AUTO, Orientation p_orientation = ORIENTATION_HORIZONTAL) {
+		return create_shaped_text(p_direction, p_orientation, __FILE__, __LINE__);
+	}
 
 	virtual void shaped_text_clear(RID p_shaped) = 0;
 
@@ -394,7 +397,11 @@ public:
 	virtual Variant shaped_get_span_meta(RID p_shaped, int p_index) const = 0;
 	virtual void shaped_set_span_update_font(RID p_shaped, int p_index, const Vector<RID> &p_fonts, int p_size, const Dictionary &p_opentype_features = Dictionary()) = 0;
 
-	virtual RID shaped_text_substr(RID p_shaped, int p_start, int p_length) const = 0; // Copy shaped substring (e.g. line break) without reshaping, but correctly reordered, preservers range.
+	virtual RID shaped_text_substr(RID p_shaped, int p_start, int p_length, const char *fn = __FILE__, int line = __LINE__) const = 0; // Copy shaped substring (e.g. line break) without reshaping, but correctly reordered, preservers range.
+	RID _shaped_text_substr(RID p_shaped, int p_start, int p_length) const // Copy shaped substring (e.g. line break) without reshaping, but correctly reordered, preservers range.
+	{
+		return shaped_text_substr(p_shaped, p_start, p_length, __FILE__, __LINE__);
+	}
 	virtual RID shaped_text_get_parent(RID p_shaped) const = 0;
 
 	virtual float shaped_text_fit_to_width(RID p_shaped, float p_width, uint16_t /*JustificationFlag*/ p_jst_flags = JUSTIFICATION_WORD_BOUND | JUSTIFICATION_KASHIDA) = 0;
@@ -524,7 +531,6 @@ class TextServerManager : public Object {
 	GDCLASS(TextServerManager, Object);
 
 public:
-
 protected:
 	static void _bind_methods();
 

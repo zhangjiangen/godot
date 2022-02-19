@@ -136,7 +136,7 @@ void Label::_shape() {
 		PackedInt32Array line_breaks = TS->shaped_text_get_line_breaks(text_rid, width, 0, autowrap_flags);
 
 		for (int i = 0; i < line_breaks.size(); i = i + 2) {
-			RID line = TS->shaped_text_substr(text_rid, line_breaks[i], line_breaks[i + 1] - line_breaks[i]);
+			RID line = TS->shaped_text_substr(text_rid, line_breaks[i], line_breaks[i + 1] - line_breaks[i], __FILE__, __LINE__);
 			lines_rid.push_back(line);
 		}
 	}
@@ -951,7 +951,7 @@ void Label::_bind_methods() {
 }
 
 Label::Label(const String &p_text) {
-	text_rid = TS->create_shaped_text();
+	text_rid = TS->create_shaped_text(TextServer::DIRECTION_AUTO, TextServer::ORIENTATION_HORIZONTAL, __FILE__, __LINE__);
 
 	set_mouse_filter(MOUSE_FILTER_IGNORE);
 	set_text(p_text);

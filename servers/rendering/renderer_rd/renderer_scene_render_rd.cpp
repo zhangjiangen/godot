@@ -745,7 +745,7 @@ bool RendererSceneRenderRD::reflection_probe_instance_begin_render(RID p_instanc
 			tf.height = atlas->size;
 			tf.usage_bits = RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT | RD::TEXTURE_USAGE_SAMPLING_BIT | (_render_buffers_can_be_storage() ? RD::TEXTURE_USAGE_STORAGE_BIT : 0);
 
-			atlas->reflection = RD::get_singleton()->texture_create(tf, RD::TextureView());
+			atlas->reflection = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 		}
 		{
 			RD::TextureFormat tf;
@@ -753,7 +753,7 @@ bool RendererSceneRenderRD::reflection_probe_instance_begin_render(RID p_instanc
 			tf.width = atlas->size;
 			tf.height = atlas->size;
 			tf.usage_bits = RD::TEXTURE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | RD::TEXTURE_USAGE_SAMPLING_BIT;
-			atlas->depth_buffer = RD::get_singleton()->texture_create(tf, RD::TextureView());
+			atlas->depth_buffer = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 		}
 		atlas->reflections.resize(atlas->count);
 		for (int i = 0; i < atlas->count; i++) {
@@ -901,7 +901,7 @@ void RendererSceneRenderRD::_update_shadow_atlas(ShadowAtlas *shadow_atlas) {
 		tf.height = shadow_atlas->size;
 		tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 
-		shadow_atlas->depth = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		shadow_atlas->depth = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 		Vector<RID> fb_tex;
 		fb_tex.push_back(shadow_atlas->depth);
 		shadow_atlas->fb = RD::get_singleton()->framebuffer_create(fb_tex);
@@ -1285,7 +1285,7 @@ void RendererSceneRenderRD::_update_directional_shadow_atlas() {
 		tf.height = directional_shadow.size;
 		tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 
-		directional_shadow.depth = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		directional_shadow.depth = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 		Vector<RID> fb_tex;
 		fb_tex.push_back(directional_shadow.depth);
 		directional_shadow.fb = RD::get_singleton()->framebuffer_create(fb_tex);
@@ -1461,7 +1461,7 @@ RendererSceneRenderRD::ShadowCubemap *RendererSceneRenderRD::_get_shadow_cubemap
 			tf.texture_type = RD::TEXTURE_TYPE_CUBE;
 			tf.array_layers = 6;
 			tf.usage_bits = RD::TEXTURE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | RD::TEXTURE_USAGE_SAMPLING_BIT;
-			sc.cubemap = RD::get_singleton()->texture_create(tf, RD::TextureView());
+			sc.cubemap = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 		}
 
 		for (int i = 0; i < 6; i++) {
@@ -1570,16 +1570,16 @@ void RendererSceneRenderRD::_allocate_blur_textures(RenderBuffers *rb) {
 	}
 	tf.mipmaps = mipmaps_required;
 
-	rb->sss_texture = RD::get_singleton()->texture_create(tf, RD::TextureView());
+	rb->sss_texture = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 	tf.width = rb->internal_width;
 	tf.height = rb->internal_height;
-	rb->blur[0].texture = RD::get_singleton()->texture_create(tf, RD::TextureView());
+	rb->blur[0].texture = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 	//the second one is smaller (only used for separatable part of blur)
 	tf.width >>= 1;
 	tf.height >>= 1;
 	tf.mipmaps--;
-	rb->blur[1].texture = RD::get_singleton()->texture_create(tf, RD::TextureView());
+	rb->blur[1].texture = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 	int base_width = rb->internal_width;
 	int base_height = rb->internal_height;
@@ -1604,7 +1604,7 @@ void RendererSceneRenderRD::_allocate_blur_textures(RenderBuffers *rb) {
 			tf.height = base_height;
 			tf.mipmaps = 1; // 1 or 0?
 
-			mm.half_texture = RD::get_singleton()->texture_create(tf, RD::TextureView());
+			mm.half_texture = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 			Vector<RID> half_fb;
 			half_fb.push_back(mm.half_texture);
@@ -1656,7 +1656,7 @@ void RendererSceneRenderRD::_allocate_blur_textures(RenderBuffers *rb) {
 			}
 
 			// create weight texture
-			rb->weight_buffers[i].weight = RD::get_singleton()->texture_create(tf, RD::TextureView());
+			rb->weight_buffers[i].weight = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 			// create frame buffer
 			Vector<RID> fb;
@@ -1699,7 +1699,7 @@ void RendererSceneRenderRD::_allocate_depth_backbuffer_textures(RenderBuffers *r
 		tf.usage_bits |= RD::TEXTURE_USAGE_CAN_COPY_TO_BIT | RD::TEXTURE_USAGE_STORAGE_BIT;
 		tf.usage_bits |= RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT; // set this as color attachment because we're copying data into it, it's not actually used as a depth buffer
 
-		rb->depth_back_texture = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		rb->depth_back_texture = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 	}
 
 	if (!_render_buffers_can_be_storage()) {
@@ -1738,7 +1738,7 @@ void RendererSceneRenderRD::_allocate_luminance_textures(RenderBuffers *rb) {
 			tf.usage_bits = RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT | RD::TEXTURE_USAGE_SAMPLING_BIT;
 		}
 
-		RID texture = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		RID texture = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 		rb->luminance.reduce.push_back(texture);
 		if (!_render_buffers_can_be_storage()) {
@@ -1749,7 +1749,7 @@ void RendererSceneRenderRD::_allocate_luminance_textures(RenderBuffers *rb) {
 		}
 
 		if (final) {
-			rb->luminance.current = RD::get_singleton()->texture_create(tf, RD::TextureView());
+			rb->luminance.current = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 			if (!_render_buffers_can_be_storage()) {
 				Vector<RID> fb;
@@ -1973,11 +1973,11 @@ void RendererSceneRenderRD::_process_ssr(RID p_render_buffers, RID p_dest_frameb
 		tf.texture_type = RD::TEXTURE_TYPE_2D;
 		tf.usage_bits = RD::TEXTURE_USAGE_STORAGE_BIT;
 
-		rb->ssr.depth_scaled = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		rb->ssr.depth_scaled = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 		tf.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
 
-		rb->ssr.normal_scaled = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		rb->ssr.normal_scaled = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 	}
 
 	if (ssr_roughness_quality != RS::ENV_SSR_ROUGNESS_QUALITY_DISABLED && !rb->ssr.blur_radius[0].is_valid()) {
@@ -1988,8 +1988,8 @@ void RendererSceneRenderRD::_process_ssr(RID p_render_buffers, RID p_dest_frameb
 		tf.texture_type = RD::TEXTURE_TYPE_2D;
 		tf.usage_bits = RD::TEXTURE_USAGE_STORAGE_BIT | RD::TEXTURE_USAGE_SAMPLING_BIT;
 
-		rb->ssr.blur_radius[0] = RD::get_singleton()->texture_create(tf, RD::TextureView());
-		rb->ssr.blur_radius[1] = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		rb->ssr.blur_radius[0] = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
+		rb->ssr.blur_radius[1] = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 	}
 
 	if (rb->blur[0].texture.is_null()) {
@@ -2054,7 +2054,7 @@ void RendererSceneRenderRD::_process_ssao(RID p_render_buffers, RID p_environmen
 			tf.height = buffer_height;
 			tf.array_layers = 4;
 			tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_STORAGE_BIT;
-			rb->ss_effects.ssao.ao_deinterleaved = RD::get_singleton()->texture_create(tf, RD::TextureView());
+			rb->ss_effects.ssao.ao_deinterleaved = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 			RD::get_singleton()->set_resource_name(rb->ss_effects.ssao.ao_deinterleaved, "SSAO De-interleaved Array");
 			for (uint32_t i = 0; i < 4; i++) {
 				RID slice = RD::get_singleton()->texture_create_shared_from_slice(RD::TextureView(), rb->ss_effects.ssao.ao_deinterleaved, i, 0);
@@ -2071,7 +2071,7 @@ void RendererSceneRenderRD::_process_ssao(RID p_render_buffers, RID p_environmen
 			tf.height = buffer_height;
 			tf.array_layers = 4;
 			tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_STORAGE_BIT;
-			rb->ss_effects.ssao.ao_pong = RD::get_singleton()->texture_create(tf, RD::TextureView());
+			rb->ss_effects.ssao.ao_pong = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 			RD::get_singleton()->set_resource_name(rb->ss_effects.ssao.ao_pong, "SSAO De-interleaved Array Pong");
 			for (uint32_t i = 0; i < 4; i++) {
 				RID slice = RD::get_singleton()->texture_create_shared_from_slice(RD::TextureView(), rb->ss_effects.ssao.ao_pong, i, 0);
@@ -2086,9 +2086,9 @@ void RendererSceneRenderRD::_process_ssao(RID p_render_buffers, RID p_environmen
 			tf.width = half_width;
 			tf.height = half_height;
 			tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_STORAGE_BIT;
-			rb->ss_effects.ssao.importance_map[0] = RD::get_singleton()->texture_create(tf, RD::TextureView());
+			rb->ss_effects.ssao.importance_map[0] = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 			RD::get_singleton()->set_resource_name(rb->ss_effects.ssao.importance_map[0], "SSAO Importance Map");
-			rb->ss_effects.ssao.importance_map[1] = RD::get_singleton()->texture_create(tf, RD::TextureView());
+			rb->ss_effects.ssao.importance_map[1] = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 			RD::get_singleton()->set_resource_name(rb->ss_effects.ssao.importance_map[1], "SSAO Importance Map Pong");
 		}
 		{
@@ -2097,7 +2097,7 @@ void RendererSceneRenderRD::_process_ssao(RID p_render_buffers, RID p_environmen
 			tf.width = rb->internal_width;
 			tf.height = rb->internal_height;
 			tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_STORAGE_BIT;
-			rb->ss_effects.ssao.ao_final = RD::get_singleton()->texture_create(tf, RD::TextureView());
+			rb->ss_effects.ssao.ao_final = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 			RD::get_singleton()->set_resource_name(rb->ss_effects.ssao.ao_final, "SSAO Final");
 		}
 		ssao_using_half_size = ssao_half_size;
@@ -2179,12 +2179,12 @@ void RendererSceneRenderRD::_process_ssil(RID p_render_buffers, RID p_environmen
 			tf.width = rb->width;
 			tf.height = rb->height;
 			tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_STORAGE_BIT | RD::TEXTURE_USAGE_CAN_COPY_TO_BIT;
-			rb->ss_effects.ssil.ssil_final = RD::get_singleton()->texture_create(tf, RD::TextureView());
+			rb->ss_effects.ssil.ssil_final = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 			RD::get_singleton()->set_resource_name(rb->ss_effects.ssil.ssil_final, "SSIL texture");
 			RD::get_singleton()->texture_clear(rb->ss_effects.ssil.ssil_final, Color(0, 0, 0, 0), 0, 1, 0, 1);
 			if (rb->ss_effects.last_frame.is_null()) {
 				tf.mipmaps = 6;
-				rb->ss_effects.last_frame = RD::get_singleton()->texture_create(tf, RD::TextureView());
+				rb->ss_effects.last_frame = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 				RD::get_singleton()->set_resource_name(rb->ss_effects.last_frame, "Last Frame Radiance");
 				RD::get_singleton()->texture_clear(rb->ss_effects.last_frame, Color(0, 0, 0, 0), 0, tf.mipmaps, 0, 1);
 				for (uint32_t i = 0; i < 6; i++) {
@@ -2202,7 +2202,7 @@ void RendererSceneRenderRD::_process_ssil(RID p_render_buffers, RID p_environmen
 			tf.height = buffer_height;
 			tf.array_layers = 4;
 			tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_STORAGE_BIT;
-			rb->ss_effects.ssil.deinterleaved = RD::get_singleton()->texture_create(tf, RD::TextureView());
+			rb->ss_effects.ssil.deinterleaved = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 			RD::get_singleton()->set_resource_name(rb->ss_effects.ssil.deinterleaved, "SSIL deinterleaved buffer");
 			for (uint32_t i = 0; i < 4; i++) {
 				RID slice = RD::get_singleton()->texture_create_shared_from_slice(RD::TextureView(), rb->ss_effects.ssil.deinterleaved, i, 0);
@@ -2219,7 +2219,7 @@ void RendererSceneRenderRD::_process_ssil(RID p_render_buffers, RID p_environmen
 			tf.height = buffer_height;
 			tf.array_layers = 4;
 			tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_STORAGE_BIT;
-			rb->ss_effects.ssil.pong = RD::get_singleton()->texture_create(tf, RD::TextureView());
+			rb->ss_effects.ssil.pong = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 			RD::get_singleton()->set_resource_name(rb->ss_effects.ssil.pong, "SSIL deinterleaved pong buffer");
 			for (uint32_t i = 0; i < 4; i++) {
 				RID slice = RD::get_singleton()->texture_create_shared_from_slice(RD::TextureView(), rb->ss_effects.ssil.pong, i, 0);
@@ -2236,7 +2236,7 @@ void RendererSceneRenderRD::_process_ssil(RID p_render_buffers, RID p_environmen
 			tf.height = buffer_height;
 			tf.array_layers = 4;
 			tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_STORAGE_BIT;
-			rb->ss_effects.ssil.edges = RD::get_singleton()->texture_create(tf, RD::TextureView());
+			rb->ss_effects.ssil.edges = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 			RD::get_singleton()->set_resource_name(rb->ss_effects.ssil.edges, "SSIL edges buffer");
 			for (uint32_t i = 0; i < 4; i++) {
 				RID slice = RD::get_singleton()->texture_create_shared_from_slice(RD::TextureView(), rb->ss_effects.ssil.edges, i, 0);
@@ -2251,9 +2251,9 @@ void RendererSceneRenderRD::_process_ssil(RID p_render_buffers, RID p_environmen
 			tf.width = half_width;
 			tf.height = half_height;
 			tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_STORAGE_BIT;
-			rb->ss_effects.ssil.importance_map[0] = RD::get_singleton()->texture_create(tf, RD::TextureView());
+			rb->ss_effects.ssil.importance_map[0] = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 			RD::get_singleton()->set_resource_name(rb->ss_effects.ssil.importance_map[0], "SSIL Importance Map");
-			rb->ss_effects.ssil.importance_map[1] = RD::get_singleton()->texture_create(tf, RD::TextureView());
+			rb->ss_effects.ssil.importance_map[1] = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 			RD::get_singleton()->set_resource_name(rb->ss_effects.ssil.importance_map[1], "SSIL Importance Map Pong");
 		}
 		uniform_sets_are_invalid = true;
@@ -2988,13 +2988,13 @@ void RendererSceneRenderRD::render_buffers_configure(RID p_render_buffers, RID p
 		}
 		tf.usage_bits |= RD::TEXTURE_USAGE_INPUT_ATTACHMENT_BIT; // only needed when using subpasses in the mobile renderer
 
-		rb->internal_texture = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		rb->internal_texture = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 		if ((p_internal_width != p_width || p_internal_height != p_height)) {
 			tf.width = rb->width;
 			tf.height = rb->height;
-			rb->texture = RD::get_singleton()->texture_create(tf, RD::TextureView());
-			rb->upscale_texture = RD::get_singleton()->texture_create(tf, RD::TextureView());
+			rb->texture = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
+			rb->upscale_texture = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 		} else {
 			rb->texture = rb->internal_texture;
 			rb->upscale_texture = rb->internal_texture;
@@ -3023,7 +3023,7 @@ void RendererSceneRenderRD::render_buffers_configure(RID p_render_buffers, RID p
 			tf.usage_bits |= RD::TEXTURE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 		}
 
-		rb->depth_texture = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		rb->depth_texture = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 	}
 
 	if (!_render_buffers_can_be_storage()) {
@@ -4082,18 +4082,18 @@ void RendererSceneRenderRD::_update_volumetric_fog(RID p_render_buffers, RID p_e
 		tf.texture_type = RD::TEXTURE_TYPE_3D;
 		tf.usage_bits = RD::TEXTURE_USAGE_STORAGE_BIT | RD::TEXTURE_USAGE_CAN_COPY_FROM_BIT;
 
-		rb->volumetric_fog->light_density_map = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		rb->volumetric_fog->light_density_map = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 		RD::get_singleton()->set_resource_name(rb->volumetric_fog->light_density_map, "Fog light-density map");
 
 		tf.usage_bits = RD::TEXTURE_USAGE_STORAGE_BIT | RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_COPY_TO_BIT;
 
-		rb->volumetric_fog->prev_light_density_map = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		rb->volumetric_fog->prev_light_density_map = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 		RD::get_singleton()->set_resource_name(rb->volumetric_fog->prev_light_density_map, "Fog previous light-density map");
 		RD::get_singleton()->texture_clear(rb->volumetric_fog->prev_light_density_map, Color(0, 0, 0, 0), 0, 1, 0, 1);
 
 		tf.usage_bits = RD::TEXTURE_USAGE_STORAGE_BIT | RD::TEXTURE_USAGE_SAMPLING_BIT;
 
-		rb->volumetric_fog->fog_map = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		rb->volumetric_fog->fog_map = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 		RD::get_singleton()->set_resource_name(rb->volumetric_fog->fog_map, "Fog map");
 
 #if defined(OSX_ENABLED) || defined(IPHONE_ENABLED)
@@ -4110,13 +4110,13 @@ void RendererSceneRenderRD::_update_volumetric_fog(RID p_render_buffers, RID p_e
 #else
 		tf.format = RD::DATA_FORMAT_R32_UINT;
 		tf.usage_bits = RD::TEXTURE_USAGE_STORAGE_BIT | RD::TEXTURE_USAGE_CAN_COPY_TO_BIT;
-		rb->volumetric_fog->density_map = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		rb->volumetric_fog->density_map = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 		RD::get_singleton()->set_resource_name(rb->volumetric_fog->density_map, "Fog density map");
 		RD::get_singleton()->texture_clear(rb->volumetric_fog->density_map, Color(0, 0, 0, 0), 0, 1, 0, 1);
-		rb->volumetric_fog->light_map = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		rb->volumetric_fog->light_map = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 		RD::get_singleton()->set_resource_name(rb->volumetric_fog->light_map, "Fog light map");
 		RD::get_singleton()->texture_clear(rb->volumetric_fog->light_map, Color(0, 0, 0, 0), 0, 1, 0, 1);
-		rb->volumetric_fog->emissive_map = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		rb->volumetric_fog->emissive_map = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 		RD::get_singleton()->set_resource_name(rb->volumetric_fog->emissive_map, "Fog emissive map");
 		RD::get_singleton()->texture_clear(rb->volumetric_fog->emissive_map, Color(0, 0, 0, 0), 0, 1, 0, 1);
 #endif
@@ -4871,7 +4871,7 @@ void RendererSceneRenderRD::_pre_opaque_render(RenderDataRD *p_render_data, bool
 				tf.mipmaps = 5;
 				tf.array_layers = 4;
 				tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_STORAGE_BIT;
-				rb->ss_effects.linear_depth = RD::get_singleton()->texture_create(tf, RD::TextureView());
+				rb->ss_effects.linear_depth = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 				RD::get_singleton()->set_resource_name(rb->ss_effects.linear_depth, "SS Effects Depth");
 				for (uint32_t i = 0; i < tf.mipmaps; i++) {
 					RID slice = RD::get_singleton()->texture_create_shared_from_slice(RD::TextureView(), rb->ss_effects.linear_depth, 0, i, 1, RD::TEXTURE_SLICE_2D_ARRAY);
@@ -5437,19 +5437,19 @@ TypedArray<Image> RendererSceneRenderRD::bake_render_uv2(RID p_base, const Vecto
 	tf.height = p_image_size.height;
 	tf.usage_bits = RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT | RD::TEXTURE_USAGE_CAN_COPY_FROM_BIT;
 
-	RID albedo_alpha_tex = RD::get_singleton()->texture_create(tf, RD::TextureView());
-	RID normal_tex = RD::get_singleton()->texture_create(tf, RD::TextureView());
-	RID orm_tex = RD::get_singleton()->texture_create(tf, RD::TextureView());
+	RID albedo_alpha_tex = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
+	RID normal_tex = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
+	RID orm_tex = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 	tf.format = RD::DATA_FORMAT_R16G16B16A16_SFLOAT;
-	RID emission_tex = RD::get_singleton()->texture_create(tf, RD::TextureView());
+	RID emission_tex = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 	tf.format = RD::DATA_FORMAT_R32_SFLOAT;
-	RID depth_write_tex = RD::get_singleton()->texture_create(tf, RD::TextureView());
+	RID depth_write_tex = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 	tf.usage_bits = RD::TEXTURE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | RD::TEXTURE_USAGE_CAN_COPY_FROM_BIT;
 	tf.format = RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_D32_SFLOAT, RD::TEXTURE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT) ? RD::DATA_FORMAT_D32_SFLOAT : RD::DATA_FORMAT_X8_D24_UNORM_PACK32;
-	RID depth_tex = RD::get_singleton()->texture_create(tf, RD::TextureView());
+	RID depth_tex = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 	Vector<RID> fb_tex;
 	fb_tex.push_back(albedo_alpha_tex);

@@ -328,7 +328,7 @@ void EditorSpinSlider::_draw_spin_slider() {
 	}
 
 	int suffix_start = numstr.length();
-	RID num_rid = TS->create_shaped_text();
+	RID num_rid = TS->create_shaped_text(TextServer::DIRECTION_AUTO, TextServer::ORIENTATION_HORIZONTAL, __FILE__, __LINE__);
 	TS->shaped_text_add_string(num_rid, numstr + U"\u2009" + suffix, font->get_rids(), font_size);
 
 	float text_start = rtl ? Math::round(sb->get_offset().x) : Math::round(sb->get_offset().x + label_width + sep);

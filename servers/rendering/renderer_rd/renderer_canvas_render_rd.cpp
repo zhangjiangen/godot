@@ -1515,7 +1515,7 @@ void RendererCanvasRenderRD::_update_shadow_atlas() {
 			tf.usage_bits = RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT | RD::TEXTURE_USAGE_SAMPLING_BIT;
 			tf.format = RD::DATA_FORMAT_R32_SFLOAT;
 
-			state.shadow_texture = RD::get_singleton()->texture_create(tf, RD::TextureView());
+			state.shadow_texture = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 			fb_textures.push_back(state.shadow_texture);
 		}
 		{
@@ -1526,7 +1526,7 @@ void RendererCanvasRenderRD::_update_shadow_atlas() {
 			tf.usage_bits = RD::TEXTURE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 			tf.format = RD::DATA_FORMAT_D32_SFLOAT;
 			//chunks to write
-			state.shadow_depth_texture = RD::get_singleton()->texture_create(tf, RD::TextureView());
+			state.shadow_depth_texture = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 			fb_textures.push_back(state.shadow_depth_texture);
 		}
 
@@ -2557,7 +2557,7 @@ RendererCanvasRenderRD::RendererCanvasRenderRD(RendererStorageRD *p_storage) {
 		tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT;
 		tf.format = RD::DATA_FORMAT_R32_SFLOAT;
 
-		state.shadow_texture = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		state.shadow_texture = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 	}
 
 	{
@@ -2649,7 +2649,7 @@ void RendererCanvasRenderRD::set_shadow_texture_size(int p_size) {
 			tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT;
 			tf.format = RD::DATA_FORMAT_R32_SFLOAT;
 
-			state.shadow_texture = RD::get_singleton()->texture_create(tf, RD::TextureView());
+			state.shadow_texture = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 		}
 	}
 }

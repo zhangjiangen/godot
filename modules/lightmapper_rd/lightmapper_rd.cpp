@@ -537,7 +537,7 @@ void LightmapperRD::_create_acceleration_structures(RenderingDevice *rd, Size2i 
 		//grid and indices
 		tf.format = RD::DATA_FORMAT_R32G32_UINT;
 		texdata.write[0] = grid_indices.to_byte_array();
-		grid_texture = rd->texture_create(tf, RD::TextureView(), texdata);
+		grid_texture = rd->texture_create(tf, RD::TextureView(), texdata, __FILE__, __LINE__);
 	}
 }
 
@@ -737,33 +737,33 @@ LightmapperRD::BakeError LightmapperRD::bake(BakeQuality p_quality, bool p_use_d
 		tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT;
 		tf.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
 
-		albedo_array_tex = rd->texture_create(tf, RD::TextureView(), albedo_data);
+		albedo_array_tex = rd->texture_create(tf, RD::TextureView(), albedo_data, __FILE__, __LINE__);
 
 		tf.format = RD::DATA_FORMAT_R16G16B16A16_SFLOAT;
 
-		emission_array_tex = rd->texture_create(tf, RD::TextureView(), emission_data);
+		emission_array_tex = rd->texture_create(tf, RD::TextureView(), emission_data, __FILE__, __LINE__);
 
 		//this will be rastered to
 		tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT | RD::TEXTURE_USAGE_CAN_COPY_FROM_BIT | RD::TEXTURE_USAGE_STORAGE_BIT;
 		normal_tex = rd->texture_create(tf, RD::TextureView());
 		tf.format = RD::DATA_FORMAT_R32G32B32A32_SFLOAT;
-		position_tex = rd->texture_create(tf, RD::TextureView());
-		unocclude_tex = rd->texture_create(tf, RD::TextureView());
+		position_tex = rd->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
+		unocclude_tex = rd->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 		tf.format = RD::DATA_FORMAT_R16G16B16A16_SFLOAT;
 		tf.usage_bits = RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT | RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_STORAGE_BIT | RD::TEXTURE_USAGE_CAN_COPY_FROM_BIT | RD::TEXTURE_USAGE_CAN_COPY_TO_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT;
 
-		light_source_tex = rd->texture_create(tf, RD::TextureView());
+		light_source_tex = rd->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 		rd->texture_clear(light_source_tex, Color(0, 0, 0, 0), 0, 1, 0, atlas_slices);
-		light_primary_dynamic_tex = rd->texture_create(tf, RD::TextureView());
+		light_primary_dynamic_tex = rd->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 		rd->texture_clear(light_primary_dynamic_tex, Color(0, 0, 0, 0), 0, 1, 0, atlas_slices);
 
 		if (p_bake_sh) {
 			tf.array_layers *= 4;
 		}
-		light_accum_tex = rd->texture_create(tf, RD::TextureView());
+		light_accum_tex = rd->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 		rd->texture_clear(light_accum_tex, Color(0, 0, 0, 0), 0, 1, 0, tf.array_layers);
-		light_dest_tex = rd->texture_create(tf, RD::TextureView());
+		light_dest_tex = rd->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 		rd->texture_clear(light_dest_tex, Color(0, 0, 0, 0), 0, 1, 0, tf.array_layers);
 		light_accum_tex2 = light_dest_tex;
 
@@ -787,7 +787,7 @@ LightmapperRD::BakeError LightmapperRD::bake(BakeQuality p_quality, bool p_use_d
 
 			Vector<Vector<uint8_t>> tdata;
 			tdata.push_back(panorama_tex->get_data());
-			light_environment_tex = rd->texture_create(tfp, RD::TextureView(), tdata);
+			light_environment_tex = rd->texture_create(tfp, RD::TextureView(), tdata, __FILE__, __LINE__);
 
 #ifdef DEBUG_TEXTURES
 			panorama_tex->save_exr("res://0_panorama.exr", false);
@@ -937,7 +937,7 @@ LightmapperRD::BakeError LightmapperRD::bake(BakeQuality p_quality, bool p_use_d
 		tf.usage_bits = RD::TEXTURE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 		tf.format = RD::DATA_FORMAT_D32_SFLOAT;
 
-		raster_depth_buffer = rd->texture_create(tf, RD::TextureView());
+		raster_depth_buffer = rd->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 	}
 
 	rd->submit();

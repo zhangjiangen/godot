@@ -953,7 +953,7 @@ void TextServerExtension::draw_hex_code_box(RID p_canvas, int p_size, const Vect
 /* Shaped text buffer interface                                          */
 /*************************************************************************/
 
-RID TextServerExtension::create_shaped_text(TextServer::Direction p_direction, TextServer::Orientation p_orientation) {
+RID TextServerExtension::create_shaped_text(TextServer::Direction p_direction, TextServer::Orientation p_orientation, const char *fn, int line) {
 	RID ret;
 	if (GDVIRTUAL_CALL(_create_shaped_text, p_direction, p_orientation, ret)) {
 		return ret;
@@ -1089,7 +1089,7 @@ void TextServerExtension::shaped_set_span_update_font(RID p_shaped, int p_index,
 	GDVIRTUAL_CALL(_shaped_set_span_update_font, p_shaped, p_index, fonts, p_size, p_opentype_features);
 }
 
-RID TextServerExtension::shaped_text_substr(RID p_shaped, int p_start, int p_length) const {
+RID TextServerExtension::shaped_text_substr(RID p_shaped, int p_start, int p_length, const char *fn, int line) const {
 	RID ret;
 	if (GDVIRTUAL_CALL(_shaped_text_substr, p_shaped, p_start, p_length, ret)) {
 		return ret;

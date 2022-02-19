@@ -39,34 +39,7 @@
 #include "core/string/ustring.h"
 #include "core/templates/rid.h"
 #include "core/typedefs.h"
-struct MemoryDebugInfo {
-	union {
-		const char *file_name;
-		uint32_t addres;
-	};
 
-	uint32_t line;
-	uint32_t hash() const {
-		return addres & line;
-	}
-	MemoryDebugInfo() {
-		file_name = nullptr;
-		line = 0;
-	}
-	bool operator==(const MemoryDebugInfo &p_info) const {
-		if (p_info.file_name != file_name || p_info.line != line) {
-			return false;
-		}
-		return true;
-	}
-	bool operator!=(const MemoryDebugInfo &p_info) const {
-		return !operator==(p_info);
-	}
-	void operator=(const MemoryDebugInfo &p_info) {
-		file_name = p_info.file_name;
-		line = p_info.line;
-	}
-};
 /**
  * Hashing functions
  */
@@ -119,6 +92,34 @@ static inline uint32_t hash_one_uint64(const uint64_t p_int) {
 	v = v ^ (v >> 22);
 	return uint32_t(v);
 }
+struct MemoryDebugInfo {
+	union {
+		const char *file_name;
+		uint64_t addres;
+	};
+
+	uint32_t line;
+	uint32_t hash() const {
+		return hash_one_uint64(addres) & line;
+	}
+	MemoryDebugInfo() {
+		file_name = nullptr;
+		line = 0;
+	}
+	bool operator==(const MemoryDebugInfo &p_info) const {
+		if (p_info.file_name == file_name && p_info.line == line) {
+			return true;
+		}
+		return false;
+	}
+	bool operator!=(const MemoryDebugInfo &p_info) const {
+		return !operator==(p_info);
+	}
+	void operator=(const MemoryDebugInfo &p_info) {
+		file_name = p_info.file_name;
+		line = p_info.line;
+	}
+};
 
 static inline uint32_t hash_djb2_one_float(double p_in, uint32_t p_prev = 5381) {
 	union {

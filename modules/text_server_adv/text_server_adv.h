@@ -494,7 +494,7 @@ public:
 
 	/* Shaped text buffer interface */
 
-	virtual RID create_shaped_text(Direction p_direction = DIRECTION_AUTO, Orientation p_orientation = ORIENTATION_HORIZONTAL) override;
+	virtual RID create_shaped_text(Direction p_direction = DIRECTION_AUTO, Orientation p_orientation = ORIENTATION_HORIZONTAL, const char *fn = __FILE__, int line = __LINE__) override;
 
 	virtual void shaped_text_clear(RID p_shaped) override;
 
@@ -524,7 +524,7 @@ public:
 	virtual Variant shaped_get_span_meta(RID p_shaped, int p_index) const override;
 	virtual void shaped_set_span_update_font(RID p_shaped, int p_index, const Vector<RID> &p_fonts, int p_size, const Dictionary &p_opentype_features = Dictionary()) override;
 
-	virtual RID shaped_text_substr(RID p_shaped, int p_start, int p_length) const override;
+	virtual RID shaped_text_substr(RID p_shaped, int p_start, int p_length, const char *fn = __FILE__, int line = __LINE__) const override;
 	virtual RID shaped_text_get_parent(RID p_shaped) const override;
 
 	virtual float shaped_text_fit_to_width(RID p_shaped, float p_width, uint16_t /*JustificationFlag*/ p_jst_flags = JUSTIFICATION_WORD_BOUND | JUSTIFICATION_KASHIDA) override;

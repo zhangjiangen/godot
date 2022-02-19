@@ -165,7 +165,7 @@ void TextParagraph::_shape_lines() {
 			// Dropcap, flow around.
 			PackedInt32Array line_breaks = TS->shaped_text_get_line_breaks(rid, width - h_offset, 0, flags);
 			for (int i = 0; i < line_breaks.size(); i = i + 2) {
-				RID line = TS->shaped_text_substr(rid, line_breaks[i], line_breaks[i + 1] - line_breaks[i]);
+				RID line = TS->shaped_text_substr(rid, line_breaks[i], line_breaks[i + 1] - line_breaks[i], __FILE__, __LINE__);
 				float h = (TS->shaped_text_get_orientation(line) == TextServer::ORIENTATION_HORIZONTAL) ? TS->shaped_text_get_size(line).y : TS->shaped_text_get_size(line).x;
 				if (v_offset < h) {
 					TS->free(line);
@@ -183,7 +183,7 @@ void TextParagraph::_shape_lines() {
 		// Use fixed for the rest of lines.
 		PackedInt32Array line_breaks = TS->shaped_text_get_line_breaks(rid, width, start, flags);
 		for (int i = 0; i < line_breaks.size(); i = i + 2) {
-			RID line = TS->shaped_text_substr(rid, line_breaks[i], line_breaks[i + 1] - line_breaks[i]);
+			RID line = TS->shaped_text_substr(rid, line_breaks[i], line_breaks[i + 1] - line_breaks[i], __FILE__, __LINE__);
 			if (!tab_stops.is_empty()) {
 				TS->shaped_text_tab_align(line, tab_stops);
 			}
@@ -833,7 +833,7 @@ void TextParagraph::draw_line_outline(RID p_canvas, const Vector2 &p_pos, int p_
 }
 
 TextParagraph::TextParagraph(const String &p_text, const Ref<Font> &p_fonts, int p_size, const Dictionary &p_opentype_features, const String &p_language, float p_width, TextServer::Direction p_direction, TextServer::Orientation p_orientation) {
-	rid = TS->create_shaped_text(p_direction, p_orientation);
+	rid = TS->create_shaped_text(p_direction, TextServer::ORIENTATION_HORIZONTAL, __FILE__, __LINE__);
 	TS->shaped_text_add_string(rid, p_text, p_fonts->get_rids(), p_size, p_opentype_features, p_language);
 	spacing_top = p_fonts->get_spacing(TextServer::SPACING_TOP);
 	spacing_bottom = p_fonts->get_spacing(TextServer::SPACING_BOTTOM);
@@ -841,8 +841,8 @@ TextParagraph::TextParagraph(const String &p_text, const Ref<Font> &p_fonts, int
 }
 
 TextParagraph::TextParagraph() {
-	rid = TS->create_shaped_text();
-	dropcap_rid = TS->create_shaped_text();
+	rid = TS->create_shaped_text(TextServer::DIRECTION_AUTO, TextServer::ORIENTATION_HORIZONTAL, __FILE__, __LINE__);
+	dropcap_rid = TS->create_shaped_text(TextServer::DIRECTION_AUTO, TextServer::ORIENTATION_HORIZONTAL, __FILE__, __LINE__);
 }
 
 TextParagraph::~TextParagraph() {

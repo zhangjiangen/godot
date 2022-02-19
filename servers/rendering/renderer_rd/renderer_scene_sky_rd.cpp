@@ -408,7 +408,7 @@ void RendererSceneSkyRD::ReflectionData::update_reflection_data(RendererStorageR
 	tf.mipmaps = 7;
 	tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_STORAGE_BIT | RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT;
 
-	downsampled_radiance_cubemap = RD::get_singleton()->texture_create(tf, RD::TextureView());
+	downsampled_radiance_cubemap = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 	RD::get_singleton()->set_resource_name(downsampled_radiance_cubemap, "downsampled radiance cubemap");
 	{
 		uint32_t mmw = 64;
@@ -738,7 +738,7 @@ Ref<Image> RendererSceneSkyRD::Sky::bake_panorama(RendererStorageRD *p_storage, 
 		tf.height = p_size.height;
 		tf.usage_bits = RD::TEXTURE_USAGE_STORAGE_BIT | RD::TEXTURE_USAGE_CAN_COPY_FROM_BIT;
 
-		RID rad_tex = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		RID rad_tex = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 		p_storage->get_effects()->copy_cubemap_to_panorama(radiance, rad_tex, p_size, p_roughness_layers, reflection.layers.size() > 1);
 		Vector<uint8_t> data = RD::get_singleton()->texture_get_data(rad_tex, 0);
 		RD::get_singleton()->free(rad_tex);
@@ -1750,7 +1750,7 @@ void RendererSceneSkyRD::update_dirty_skys() {
 				tf.height = h;
 				tf.usage_bits = RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT | RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_STORAGE_BIT;
 
-				sky->radiance = RD::get_singleton()->texture_create(tf, RD::TextureView());
+				sky->radiance = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 				sky->reflection.update_reflection_data(storage, sky->radiance_size, mipmaps, true, sky->radiance, 0, sky->mode == RS::SKY_MODE_REALTIME, roughness_layers, texture_format);
 
@@ -1765,7 +1765,7 @@ void RendererSceneSkyRD::update_dirty_skys() {
 				tf.height = h;
 				tf.usage_bits = RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT | RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_STORAGE_BIT;
 
-				sky->radiance = RD::get_singleton()->texture_create(tf, RD::TextureView());
+				sky->radiance = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 				sky->reflection.update_reflection_data(storage, sky->radiance_size, MIN(mipmaps, layers), false, sky->radiance, 0, sky->mode == RS::SKY_MODE_REALTIME, roughness_layers, texture_format);
 			}
@@ -1781,7 +1781,7 @@ void RendererSceneSkyRD::update_dirty_skys() {
 			tformat.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT;
 			tformat.texture_type = RD::TEXTURE_TYPE_2D;
 
-			sky->half_res_pass = RD::get_singleton()->texture_create(tformat, RD::TextureView());
+			sky->half_res_pass = RD::get_singleton()->texture_create(tformat, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 			Vector<RID> texs;
 			texs.push_back(sky->half_res_pass);
 			sky->half_res_framebuffer = RD::get_singleton()->framebuffer_create(texs);
@@ -1796,7 +1796,7 @@ void RendererSceneSkyRD::update_dirty_skys() {
 			tformat.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT;
 			tformat.texture_type = RD::TEXTURE_TYPE_2D;
 
-			sky->quarter_res_pass = RD::get_singleton()->texture_create(tformat, RD::TextureView());
+			sky->quarter_res_pass = RD::get_singleton()->texture_create(tformat, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 			Vector<RID> texs;
 			texs.push_back(sky->quarter_res_pass);
 			sky->quarter_res_framebuffer = RD::get_singleton()->framebuffer_create(texs);

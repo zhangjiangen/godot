@@ -164,12 +164,12 @@ void RenderForwardMobile::RenderBufferDataForwardMobile::configure(RID p_color_b
 		texture_samples = ts[p_msaa];
 		tf.samples = texture_samples;
 
-		color_msaa = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		color_msaa = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 		tf.format = RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_D24_UNORM_S8_UINT, RD::TEXTURE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT) ? RD::DATA_FORMAT_D24_UNORM_S8_UINT : RD::DATA_FORMAT_D32_SFLOAT_S8_UINT;
 		tf.usage_bits = RD::TEXTURE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | RD::TEXTURE_USAGE_CAN_COPY_FROM_BIT | RD::TEXTURE_USAGE_SAMPLING_BIT;
 
-		depth_msaa = RD::get_singleton()->texture_create(tf, RD::TextureView());
+		depth_msaa = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 
 		{
 			Vector<RID> fb;

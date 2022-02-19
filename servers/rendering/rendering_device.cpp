@@ -99,7 +99,7 @@ RID RenderingDevice::_texture_create(const Ref<RDTextureFormat> &p_format, const
 		ERR_FAIL_COND_V(byte_slice.is_empty(), RID());
 		data.push_back(byte_slice);
 	}
-	return texture_create(p_format->base, p_view->base, data);
+	return texture_create(p_format->base, p_view->base, data, __FILE__, __LINE__);
 }
 
 RID RenderingDevice::_texture_create_shared(const Ref<RDTextureView> &p_view, RID p_with_texture) {

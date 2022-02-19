@@ -312,7 +312,7 @@ public:
 
 	/* Shaped text buffer interface */
 
-	virtual RID create_shaped_text(Direction p_direction = DIRECTION_AUTO, Orientation p_orientation = ORIENTATION_HORIZONTAL) override;
+	virtual RID create_shaped_text(Direction p_direction = DIRECTION_AUTO, Orientation p_orientation = ORIENTATION_HORIZONTAL, const char *fn = __FILE__, int line = __LINE__) override;
 	GDVIRTUAL2R(RID, _create_shaped_text, Direction, Orientation);
 
 	virtual void shaped_text_clear(RID p_shaped) override;
@@ -362,7 +362,7 @@ public:
 	GDVIRTUAL2RC(Variant, _shaped_get_span_meta, RID, int);
 	GDVIRTUAL5(_shaped_set_span_update_font, RID, int, const Array &, int, const Dictionary &);
 
-	virtual RID shaped_text_substr(RID p_shaped, int p_start, int p_length) const override;
+	virtual RID shaped_text_substr(RID p_shaped, int p_start, int p_length, const char *fn = __FILE__, int line = __LINE__) const override;
 	virtual RID shaped_text_get_parent(RID p_shaped) const override;
 	GDVIRTUAL3RC(RID, _shaped_text_substr, RID, int, int);
 	GDVIRTUAL1RC(RID, _shaped_text_get_parent, RID);

@@ -45,16 +45,14 @@ struct MemmoryInfo {
 };
 template <typename TKey, typename TData>
 class MemoryHashMap {
-#define MIN_HASH_TABLE_POWER 3
-#define RELATIONSHIP 8
-	friend class SmallMemoryManager;
+	const uint8_t MIN_HASH_TABLE_POWER = 3;
+	const uint8_t RELATIONSHIP = 8;
 
 public:
 	struct Pair {
 		TKey key;
 		TData data;
-		Pair() :
-				key(nullptr) {}
+
 		Pair(const TKey &p_key) :
 				key(p_key),
 				data() {}
@@ -67,12 +65,13 @@ public:
 	struct Element {
 	private:
 		friend class MemoryHashMap;
-		friend class SmallMemoryManager;
 
-		uint64_t hash = 0;
-		Element *next = nullptr;
 		Element() {}
 		Pair pair;
+		uint32_t hash = 0;
+
+	public:
+		Element *next = nullptr;
 
 	public:
 		const TKey &key() const {
@@ -95,17 +94,19 @@ public:
 	};
 
 private:
+public:
 	Element **hash_table = nullptr;
+	uint32_t elements = 0;
 	uint32_t hash_table_size = 0;
 	uint8_t hash_table_power = 0;
-	uint32_t elements = 0;
 
+private:
 	void make_hash_table() {
 		ERR_FAIL_COND(hash_table);
 
 		hash_table_power = MIN_HASH_TABLE_POWER;
 		hash_table_size = (uint32_t)1 << hash_table_power;
-		hash_table = new Element *[hash_table_size];
+		hash_table = new Element *[(uint64_t)hash_table_size];
 
 		elements = 0;
 		for (int i = 0; i < (1 << MIN_HASH_TABLE_POWER); i++) {
@@ -115,8 +116,7 @@ private:
 
 	void erase_hash_table() {
 		ERR_FAIL_COND_MSG(elements, "Cannot erase hash table if there are still elements inside.");
-
-		memdelete_arr(hash_table);
+		clear();
 		hash_table = nullptr;
 		hash_table_power = 0;
 		elements = 0;
@@ -150,10 +150,9 @@ private:
 			return;
 		}
 
-		Element **new_hash_table = new Element *[((uint64_t)1 << new_hash_table_power)];
-		if (!new_hash_table) {
-			return;
-		}
+		Element **new_hash_table = nullptr;
+		new_hash_table = new Element *[(uint64_t)1 << new_hash_table_power];
+		ERR_FAIL_COND_MSG(!new_hash_table, "Out of memory.");
 
 		for (int i = 0; i < (1 << new_hash_table_power); i++) {
 			new_hash_table[i] = nullptr;
@@ -179,14 +178,14 @@ private:
 
 	/* I want to have only one function.. */
 	_FORCE_INLINE_ const Element *get_element(const TKey &p_key) const {
-		uint64_t hash = HashMapHasherDefault::hash(p_key);
+		uint32_t hash = HashMapHasherDefault::hash(p_key);
 		uint32_t index = hash & ((1 << hash_table_power) - 1);
 
 		Element *e = hash_table[index];
 
 		while (e) {
 			/* checking hash first avoids comparing key, which may take longer */
-			if (e->hash == hash && e->key() == p_key) {
+			if (e->hash == hash && e->pair.key == p_key) {
 				/* the pair exists in this hashtable, so just update data */
 				return e;
 			}
@@ -200,10 +199,8 @@ private:
 	Element *create_element(const TKey &p_key) {
 		/* if element doesn't exist, create it */
 		Element *e = new Element(p_key);
-		if (!e) {
-			return nullptr;
-		}
-		uint64_t hash = HashMapHasherDefault::hash(p_key);
+		ERR_FAIL_COND_V_MSG(!e, nullptr, "Out of memory.");
+		uint32_t hash = HashMapHasherDefault::hash(p_key);
 		uint32_t index = hash & ((1 << hash_table_power) - 1);
 		e->next = hash_table[index];
 		e->hash = hash;
@@ -227,7 +224,7 @@ private:
 
 		hash_table_power = p_t.hash_table_power;
 		hash_table_size = (uint32_t)1 << p_t.hash_table_power;
-		hash_table = new Element *[hash_table_size];
+		hash_table = memnew_arr(Element *, (size_t)hash_table_size);
 		elements = p_t.elements;
 
 		for (int i = 0; i < (1 << hash_table_power); i++) {
@@ -275,9 +272,26 @@ public:
 	}
 
 	bool has(const TKey &p_key) const {
-		return getptr(p_key) != nullptr;
+		return hash_table != nullptr && get_element(p_key) != nullptr;
 	}
 
+	/**
+	 * Get a key from data, return a const reference.
+	 * WARNING: this doesn't check errors, use either getptr and check nullptr, or check
+	 * first with has(key)
+	 */
+
+	const TData &get(const TKey &p_key) const {
+		const TData *res = getptr(p_key);
+		CRASH_COND_MSG(!res, "Map key not found.");
+		return *res;
+	}
+
+	TData &get(const TKey &p_key) {
+		TData *res = getptr(p_key);
+		CRASH_COND_MSG(!res, "Map key not found.");
+		return *res;
+	}
 	bool try_get(const TKey &p_key, const TData *&data) const {
 		data = getptr(p_key);
 		return data != nullptr;
@@ -320,6 +334,7 @@ public:
 
 		return nullptr;
 	}
+
 	/**
 	 * Erase an item, return true if erasing was successful
 	 */
@@ -329,14 +344,14 @@ public:
 			return false;
 		}
 
-		uint64_t hash = HashMapHasherDefault::hash(p_key);
+		uint32_t hash = HashMapHasherDefault::hash(p_key);
 		uint32_t index = hash & ((1 << hash_table_power) - 1);
 
 		Element *e = hash_table[index];
 		Element *p = nullptr;
 		while (e) {
 			/* checking hash first avoids comparing key, which may take longer */
-			if (e->hash == hash && e->key() == p_key) {
+			if (e->hash == hash && e->pair.key == p_key) {
 				if (p) {
 					p->next = e->next;
 				} else {
@@ -378,7 +393,7 @@ public:
 		/* if we made it up to here, the pair doesn't exist, create */
 		if (!e) {
 			e = create_element(p_key);
-			//CRASH_COND(!e);
+			CRASH_COND(!e);
 			check_hash_table(); // perform mantenience routine
 		}
 
@@ -416,9 +431,7 @@ public:
 		} else { /* get the next key */
 
 			const Element *e = get_element(*p_key);
-			if (!e) {
-				return nullptr;
-			}
+			ERR_FAIL_COND_V_MSG(!e, nullptr, "Invalid key supplied.");
 			if (e->next) {
 				/* if there is a "next" in the list, return that */
 				return &e->next->pair.key;
@@ -450,8 +463,7 @@ public:
 	void clear() {
 		/* clean up */
 		if (hash_table) {
-			int size = 1 << hash_table_power;
-			for (int i = 0; i < size; i++) {
+			for (int i = 0; i < (1 << hash_table_power); i++) {
 				while (hash_table[i]) {
 					Element *e = hash_table[i];
 					hash_table[i] = e->next;
@@ -469,10 +481,12 @@ public:
 	}
 
 	void operator=(const MemoryHashMap &p_table) {
+		clear();
 		copy_from(p_table);
 	}
 
-	MemoryHashMap() {}
+	MemoryHashMap() {
+	}
 
 	MemoryHashMap(const MemoryHashMap &p_table) {
 		copy_from(p_table);
@@ -482,6 +496,7 @@ public:
 		clear();
 	}
 };
+
 class SmallMemoryManager {
 	// 存储的数据，内部用的联合，如果被回收了，那么里面的数据就没有意义了，就会变成链表的指针
 	template <int Count>
@@ -640,6 +655,9 @@ public:
 		MemoryDebugInfo key;
 		key.file_name = file_name;
 		key.line = file_lne;
+		if (file_lne < 5 || file_name == nullptr || strlen(file_name) < 3) {
+			key.file_name = "none or script";
+		}
 		MutexLock<::Mutex> lock(_memory_info_mutex);
 		MemmoryInfo *info = nullptr;
 		if (_memory_info.try_get(key, info)) {
@@ -654,11 +672,12 @@ public:
 		// 存储指针映射
 		point_map.set(ptr, key);
 		++TestCount;
-		if (TestCount > 500000) {
+		if (TestCount > 200000) {
 			TestCount = 0;
 			log_memory_info();
 		}
 	}
+
 	void record_memory_free(void *ptr, size_t size) {
 		MemoryDebugInfo *key = nullptr;
 		MutexLock<::Mutex> lock(_memory_info_mutex);
@@ -667,7 +686,12 @@ public:
 			if (_memory_info.try_get(*key, info)) {
 				info->size -= size;
 				info->count -= 1;
-				_memory_info.erase(*key);
+				if (info->count <= 0) {
+					_memory_info.erase(*key);
+				}
+			} else {
+				_memory_info.try_get(*key, info);
+				printf("error : not fund key!\n");
 			}
 			point_map.erase(ptr);
 		} else {
@@ -682,8 +706,34 @@ public:
 		int total_count;
 		MemoryLog *Next;
 	};
-	void log_memory_info() {
+	struct MemoryLogList {
 		MemoryLog *Root = nullptr;
+		void Add(MemoryLog *n) {
+			if (Root == nullptr) {
+				Root = n;
+				return;
+			}
+			if (n->total_count > Root->total_count) {
+				n->Next = Root;
+				Root = n;
+				return;
+			}
+			MemoryLog *t = Root;
+			while (t) {
+				if (t->Next == nullptr) {
+					t->Next = n;
+					return;
+				} else if (t->Next->total_count < n->total_count) {
+					n->Next = t->Next;
+					t->Next = n;
+					return;
+				}
+				t = t->Next;
+			}
+		}
+	};
+	void log_memory_info() {
+		MemoryLogList ml;
 		int count = 0;
 		int total = 0;
 		{
@@ -693,14 +743,16 @@ public:
 			for (int i = 0; i < size; i++) {
 				e = _memory_info.hash_table[i];
 				while (e != nullptr) {
-					MemoryLog *info = (MemoryLog *)alloca(sizeof(MemoryLog));
-					info->file_name = e->key().file_name;
-					info->file_line = e->key().line;
-					info->total_count = e->value().count;
-					info->total_memory = e->value().size;
-					total += info->total_memory;
-					info->Next = Root;
-					Root = info;
+					if (e->value().size > 204800) {
+						MemoryLog *info = (MemoryLog *)alloca(sizeof(MemoryLog));
+						info->file_name = e->key().file_name;
+						info->file_line = e->key().line;
+						info->total_count = e->value().count;
+						info->total_memory = e->value().size;
+						info->Next = nullptr;
+						ml.Add(info);
+					}
+					total += e->value().size;
 					e = e->next;
 					++count;
 				}
@@ -714,14 +766,22 @@ public:
 			mb /= 1024.0f;
 			printf("--------------begin log memory count:%d size: %0.3fMB------------\n", count, mb);
 		}
+		int strcount = 0;
+		MemoryLog *Root = ml.Root;
 		while (Root != nullptr) {
 			if (Root->total_memory > 204800) {
 				mb = ((float)Root->total_memory) / 1024.0f;
+				strcount = strlen(Root->file_name);
+				const char *fn = Root->file_name;
+				if (strcount >= 30) {
+					fn += strcount - 30;
+				}
+				printf("%-30s", fn);
 				if (mb < 1024.0f)
-					printf("    source: %s ,line : %d ,   memory size:[ %0.3f KB]   ,count: %d\n", Root->file_name, (int)Root->file_line, mb, (int)Root->total_count);
+					printf(", line : %8d , s:[ %8.3f KB]   ,c: %8d\n", (int)Root->file_line, mb, (int)Root->total_count);
 				else {
 					mb /= 1024.0f;
-					printf("    source: %s ,line : %d ,   memory size: {%0.3f MB}   ,count: %d\n", Root->file_name, (int)Root->file_line, mb, (int)Root->total_count);
+					printf(", line : %8d , s:{ %8.3f MB}   ,c: %8d\n", (int)Root->file_line, mb, (int)Root->total_count);
 				}
 			}
 			Root = Root->Next;
@@ -730,7 +790,8 @@ public:
 	}
 
 private:
-	MemoryHashMap<MemoryDebugInfo, MemmoryInfo> _memory_info;
+	MemoryHashMap<MemoryDebugInfo, MemmoryInfo>
+			_memory_info;
 	MemoryHashMap<void *, MemoryDebugInfo> point_map;
 	int TestCount = 0;
 	::Mutex _memory_info_mutex;
@@ -797,14 +858,14 @@ void *MallocAllocator::alloc_memory(size_t p_memory, const char *file_name, int 
 void MallocAllocator::free_memory(void *p_ptr) {
 	uint32_t *base = (uint32_t *)p_ptr;
 	base -= 2;
-	#if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)
+#if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)
 	uint32_t tag, size;
 	tag = *base;
 	size = *(base + 1);
 	if (tag != MEMORY_TAG_MALLOC) {
 		throw std::runtime_error("memory free error!");
 	}
-	#endif
+#endif
 	DefaultAllocator::free(base, size + sizeof(uint64_t));
 }
 void *MallocAllocator::realloc_memory(void *p_ptr, size_t p_new_size, const char *file_name, int file_lne) {
@@ -824,11 +885,11 @@ void *MallocAllocator::realloc_memory(void *p_ptr, size_t p_new_size, const char
 	uint32_t tag, size;
 	tag = *base;
 	size = *(base + 1);
-	#if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)
+#if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)
 	if (tag != MEMORY_TAG_MALLOC) {
 		throw std::runtime_error("memory free error!");
 	}
-	#endif
+#endif
 	void *new_ptr;
 	new_ptr = alloc_memory(p_new_size, file_name, file_lne);
 	if (!new_ptr) {

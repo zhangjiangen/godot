@@ -1779,7 +1779,7 @@ void RenderingDeviceVulkan::_buffer_memory_barrier(VkBuffer buffer, uint64_t p_f
 /**** TEXTURE ****/
 /*****************/
 
-RID RenderingDeviceVulkan::texture_create(const TextureFormat &p_format, const TextureView &p_view, const Vector<Vector<uint8_t>> &p_data) {
+RID RenderingDeviceVulkan::texture_create(const TextureFormat &p_format, const TextureView &p_view, const Vector<Vector<uint8_t>> &p_data, const char *fn, int line) {
 	_THREAD_SAFE_METHOD_
 
 	VkImageCreateInfo image_create_info;
@@ -2005,7 +2005,7 @@ RID RenderingDeviceVulkan::texture_create(const TextureFormat &p_format, const T
 	texture.usage_flags = p_format.usage_bits;
 	texture.samples = p_format.samples;
 	texture.allowed_shared_formats = p_format.shareable_formats;
-	DefaultAllocator::record_memory_alloc(texture.image, texture.allocation_info.size, __FILE__, __LINE__);
+	DefaultAllocator::record_memory_alloc(texture.image, texture.allocation_info.size, fn, line);
 
 	//set base layout based on usage priority
 

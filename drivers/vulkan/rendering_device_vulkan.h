@@ -59,19 +59,18 @@ class RenderingDeviceVulkan : public RenderingDevice {
 	// our enums to enums used
 	// by vulkan.
 
-// typedef enum VkMemoryPropertyFlagBits {
-//     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT = 0x00000001,//表示设备（GPU）访问这块存储效率最高
-//     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT = 0x00000002,//表示这块存储可以通过调用vkMapMemory进行映射，使得主机（CPU）可以访问。
-//     VK_MEMORY_PROPERTY_HOST_COHERENT_BIT = 0x00000004,//表示这块存储不需要调用vkFlushMappedMemoryRanges和vkInvalidateMappedMemoryRanges来flush主机写入的数据，就可以使设备可见，对于设备写入的数据也可以直接对主机可见。
-//     VK_MEMORY_PROPERTY_HOST_CACHED_BIT = 0x00000008,//表示这块存储缓存在主机上。主机内存访问非缓存内存比缓存内存慢，然而，未缓存的内存始终是主机相关的。
-//     VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT = 0x00000010,//表示只能设备访问。存储不能同时是VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT和VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT类型。
-//     VK_MEMORY_PROPERTY_PROTECTED_BIT = 0x00000020,//表示只运行设备访问，同时允许受保护的队列操作访问
-//     VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD = 0x00000040,
-//     VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD = 0x00000080,
-//     VK_MEMORY_PROPERTY_RDMA_CAPABLE_BIT_NV = 0x00000100,
-//     VK_MEMORY_PROPERTY_FLAG_BITS_MAX_ENUM = 0x7FFFFFFF
-// } VkMemoryPropertyFlagBits;
-
+	// typedef enum VkMemoryPropertyFlagBits {
+	//     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT = 0x00000001,//表示设备（GPU）访问这块存储效率最高
+	//     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT = 0x00000002,//表示这块存储可以通过调用vkMapMemory进行映射，使得主机（CPU）可以访问。
+	//     VK_MEMORY_PROPERTY_HOST_COHERENT_BIT = 0x00000004,//表示这块存储不需要调用vkFlushMappedMemoryRanges和vkInvalidateMappedMemoryRanges来flush主机写入的数据，就可以使设备可见，对于设备写入的数据也可以直接对主机可见。
+	//     VK_MEMORY_PROPERTY_HOST_CACHED_BIT = 0x00000008,//表示这块存储缓存在主机上。主机内存访问非缓存内存比缓存内存慢，然而，未缓存的内存始终是主机相关的。
+	//     VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT = 0x00000010,//表示只能设备访问。存储不能同时是VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT和VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT类型。
+	//     VK_MEMORY_PROPERTY_PROTECTED_BIT = 0x00000020,//表示只运行设备访问，同时允许受保护的队列操作访问
+	//     VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD = 0x00000040,
+	//     VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD = 0x00000080,
+	//     VK_MEMORY_PROPERTY_RDMA_CAPABLE_BIT_NV = 0x00000100,
+	//     VK_MEMORY_PROPERTY_FLAG_BITS_MAX_ENUM = 0x7FFFFFFF
+	// } VkMemoryPropertyFlagBits;
 
 	VkPhysicalDeviceLimits limits;
 
@@ -238,7 +237,7 @@ private:
 		}
 	};
 
-	Error _buffer_allocate(Buffer *p_buffer, uint32_t p_size, uint32_t p_usage, VmaMemoryUsage p_mapping,const char* file_name = __FILE__,int line = __LINE__);
+	Error _buffer_allocate(Buffer *p_buffer, uint32_t p_size, uint32_t p_usage, VmaMemoryUsage p_mapping, const char *file_name = __FILE__, int line = __LINE__);
 	Error _buffer_free(Buffer *p_buffer);
 	Error _buffer_update(Buffer *p_buffer, size_t p_offset, const uint8_t *p_data, size_t p_data_size, bool p_use_draw_command_buffer = false, uint32_t p_required_align = 32);
 
@@ -1056,7 +1055,7 @@ private:
 	void _begin_frame();
 
 public:
-	virtual RID texture_create(const TextureFormat &p_format, const TextureView &p_view, const Vector<Vector<uint8_t>> &p_data = Vector<Vector<uint8_t>>());
+	virtual RID texture_create(const TextureFormat &p_format, const TextureView &p_view, const Vector<Vector<uint8_t>> &p_data = Vector<Vector<uint8_t>>(), const char *fn = __FILE__, int line = __LINE__);
 	virtual RID texture_create_shared(const TextureView &p_view, RID p_with_texture, bool p_is_only_sample);
 
 	virtual RID texture_create_shared_from_slice(const TextureView &p_view, RID p_with_texture, uint32_t p_layer, uint32_t p_mipmap, uint32_t p_mipmaps = 1, TextureSliceType p_slice_type = TEXTURE_SLICE_2D);

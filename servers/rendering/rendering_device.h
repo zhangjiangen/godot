@@ -508,7 +508,7 @@ public:
 		}
 	};
 
-	virtual RID texture_create(const TextureFormat &p_format, const TextureView &p_view, const Vector<Vector<uint8_t>> &p_data = Vector<Vector<uint8_t>>()) = 0;
+	virtual RID texture_create(const TextureFormat &p_format, const TextureView &p_view, const Vector<Vector<uint8_t>> &p_data = Vector<Vector<uint8_t>>(), const char *fn = __FILE__, int line = __LINE__) = 0;
 	virtual RID texture_create_shared(const TextureView &p_view, RID p_with_texture, bool p_is_only_sample) = 0;
 
 	virtual bool get_geometry_shader_is_supported() {
