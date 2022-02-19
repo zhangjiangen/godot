@@ -2271,6 +2271,11 @@ Variant::Variant(signed int p_int) {
 	_data._int = p_int;
 }
 
+Variant::Variant(Variant::Type p_int) {
+	type = INT;
+	_data._int = (int)p_int;
+}
+
 Variant::Variant(unsigned int p_int) {
 	type = INT;
 	_data._int = p_int;

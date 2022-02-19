@@ -269,7 +269,7 @@ uint32_t CowData<T>::_copy_on_write() {
 
 		// initialize new elements
 		if (__has_trivial_copy(T)) {
-			memcpy(_data, _ptr, current_size * sizeof(T));
+			memcpy((void *)_data, (void *)_ptr, current_size * sizeof(T));
 
 		} else {
 			for (uint32_t i = 0; i < current_size; i++) {

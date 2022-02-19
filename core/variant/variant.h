@@ -184,7 +184,7 @@ private:
 
 			if (p_from->reference()) {
 				if (p_base->refcount.unref()) {
-					memdelete_allocator<PackedArrayRef<T>, DefaultAllocator>((PackedArrayRef<T>*)p_base);
+					memdelete_allocator<PackedArrayRef<T>, DefaultAllocator>((PackedArrayRef<T> *)p_base);
 				}
 				return p_from;
 			} else {
@@ -193,7 +193,7 @@ private:
 		}
 		static _FORCE_INLINE_ void destroy(PackedArrayRef<T> *p_array) {
 			if (p_array->refcount.unref()) {
-                memdelete_allocator<PackedArrayRef<T>, DefaultAllocator>(p_array);
+				memdelete_allocator<PackedArrayRef<T>, DefaultAllocator>(p_array);
 			}
 		}
 	};
@@ -378,6 +378,7 @@ public:
 
 	Variant(bool p_bool);
 	Variant(signed int p_int); // real one
+	Variant(Type p_int); // type
 	Variant(unsigned int p_int);
 #ifdef NEED_LONG_INT
 	Variant(signed long p_long); // real one
