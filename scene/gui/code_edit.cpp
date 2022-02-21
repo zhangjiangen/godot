@@ -76,8 +76,6 @@ void CodeEdit::_notification(int p_what) {
 		} break;
 
 		case NOTIFICATION_DRAW: {
-			if (!text_line.is_valid())
-				New_instantiate(text_line);
 			RID ci = get_canvas_item();
 			const Size2 size = get_size();
 			const bool caret_visible = is_caret_visible();
@@ -141,11 +139,13 @@ void CodeEdit::_notification(int p_what) {
 
 				for (int i = 0; i < lines; i++) {
 					int l = code_completion_line_ofs + i;
-					ERR_CONTINUE(l < 0 || l >= code_completion_options_count);
-					text_line->clear();
-					text_line->add_string(code_completion_options[l].display, font, font_size);
+						ERR_CONTINUE(l < 0 || l >= code_completion_options_count);
 
-					int yofs = (row_height - text_line->get_size().y) / 2;
+					Ref<TextLine> tl;
+					tl.instantiate();
+					tl->add_string(code_completion_options[l].display, font, font_size);
+
+					int yofs = (row_height - tl->get_size().y) / 2;
 					Point2 title_pos(code_completion_rect.position.x, code_completion_rect.position.y + i * row_height + yofs);
 
 					/* Draw completion icon if it is valid. */
@@ -157,17 +157,17 @@ void CodeEdit::_notification(int p_what) {
 					}
 					title_pos.x = icon_area.position.x + icon_area.size.width + icon_hsep;
 
-					text_line->set_width(code_completion_rect.size.width - (icon_area_size.x + icon_hsep));
+					tl->set_width(code_completion_rect.size.width - (icon_area_size.x + icon_hsep));
 					if (rtl) {
 						if (code_completion_options[l].default_value.get_type() == Variant::COLOR) {
 							draw_rect(Rect2(Point2(code_completion_rect.position.x, icon_area.position.y), icon_area_size), (Color)code_completion_options[l].default_value);
 						}
-						text_line->set_horizontal_alignment(HORIZONTAL_ALIGNMENT_RIGHT);
+						tl->set_horizontal_alignment(HORIZONTAL_ALIGNMENT_RIGHT);
 					} else {
 						if (code_completion_options[l].default_value.get_type() == Variant::COLOR) {
 							draw_rect(Rect2(Point2(code_completion_rect.position.x + code_completion_rect.size.width - icon_area_size.x, icon_area.position.y), icon_area_size), (Color)code_completion_options[l].default_value);
 						}
-						text_line->set_horizontal_alignment(HORIZONTAL_ALIGNMENT_LEFT);
+						tl->set_horizontal_alignment(HORIZONTAL_ALIGNMENT_LEFT);
 					}
 
 					Point2 match_pos = Point2(code_completion_rect.position.x + icon_area_size.x + icon_hsep, code_completion_rect.position.y + i * row_height);
@@ -180,7 +180,7 @@ void CodeEdit::_notification(int p_what) {
 						draw_rect(Rect2(match_pos + Point2(match_offset, 0), Size2(match_len, row_height)), code_completion_existing_color);
 					}
 
-					text_line->draw(ci, title_pos, code_completion_options[l].font_color);
+					tl->draw(ci, title_pos, code_completion_options[l].font_color);
 				}
 
 				/* Draw a small scroll rectangle to show a position in the options. */
@@ -1320,17 +1320,15 @@ bool CodeEdit::is_line_numbers_zero_padded() const {
 
 void CodeEdit::_line_number_draw_callback(int p_line, int p_gutter, const Rect2 &p_region) {
 	String fc = TS->format_number(String::num(p_line + 1).lpad(line_number_digits, line_number_padding));
-	if (!text_line.is_valid()) {
-		New_instantiate(text_line);
-	}
-	text_line->clear();
-	text_line->add_string(fc, font, font_size);
-	int yofs = p_region.position.y + (get_line_height() - text_line->get_size().y) / 2;
+	Ref<TextLine> tl;
+	tl.instantiate();
+	tl->add_string(fc, font, font_size);
+	int yofs = p_region.position.y + (get_line_height() - tl->get_size().y) / 2;
 	Color number_color = get_line_gutter_item_color(p_line, line_number_gutter);
 	if (number_color == Color(1, 1, 1)) {
 		number_color = line_number_color;
 	}
-	text_line->draw(get_canvas_item(), Point2(p_region.position.x, yofs), number_color);
+	tl->draw(get_canvas_item(), Point2(p_region.position.x, yofs), number_color);
 }
 
 /* Fold Gutter */

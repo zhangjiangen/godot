@@ -4531,9 +4531,7 @@ void TextServerAdvanced::_shape_run(ShapedTextDataAdvanced *p_sd, int32_t p_star
 
 	// Process glyphs.
 	if (glyph_count > 0) {
-		//Glyph *w = (Glyph *)memalloc(glyph_count * sizeof(Glyph));
-		LocalVector<Glyph> TempGlyph;
-		TempGlyph.resize(glyph_count);
+		Glyph *w = (Glyph *)memalloc(glyph_count * sizeof(Glyph));
 
 		int end = (p_direction == HB_DIRECTION_RTL || p_direction == HB_DIRECTION_BTT) ? p_end : 0;
 		uint32_t last_cluster_id = UINT32_MAX;
@@ -4543,26 +4541,26 @@ void TextServerAdvanced::_shape_run(ShapedTextDataAdvanced *p_sd, int32_t p_star
 		for (unsigned int i = 0; i < glyph_count; i++) {
 			if ((i > 0) && (last_cluster_id != glyph_info[i].cluster)) {
 				if (p_direction == HB_DIRECTION_RTL || p_direction == HB_DIRECTION_BTT) {
-					end = TempGlyph[last_cluster_index].start;
+					end = w[last_cluster_index].start;
 				} else {
 					for (unsigned int j = last_cluster_index; j < i; j++) {
-						TempGlyph[j].end = glyph_info[i].cluster;
+						w[j].end = glyph_info[i].cluster;
 					}
 				}
 				if (p_direction == HB_DIRECTION_RTL || p_direction == HB_DIRECTION_BTT) {
-					TempGlyph[last_cluster_index].flags |= GRAPHEME_IS_RTL;
+					w[last_cluster_index].flags |= GRAPHEME_IS_RTL;
 				}
 				if (last_cluster_valid) {
-					TempGlyph[last_cluster_index].flags |= GRAPHEME_IS_VALID;
+					w[last_cluster_index].flags |= GRAPHEME_IS_VALID;
 				}
-				TempGlyph[last_cluster_index].count = i - last_cluster_index;
+				w[last_cluster_index].count = i - last_cluster_index;
 				last_cluster_index = i;
 				last_cluster_valid = true;
 			}
 
 			last_cluster_id = glyph_info[i].cluster;
 
-			Glyph &gl = TempGlyph[i];
+			Glyph &gl = w[i];
 			gl = Glyph();
 
 			gl.start = glyph_info[i].cluster;
@@ -4608,15 +4606,15 @@ void TextServerAdvanced::_shape_run(ShapedTextDataAdvanced *p_sd, int32_t p_star
 		}
 		if (p_direction == HB_DIRECTION_LTR || p_direction == HB_DIRECTION_TTB) {
 			for (unsigned int j = last_cluster_index; j < glyph_count; j++) {
-				TempGlyph[j].end = p_end;
+				w[j].end = p_end;
 			}
 		}
-		TempGlyph[last_cluster_index].count = glyph_count - last_cluster_index;
+		w[last_cluster_index].count = glyph_count - last_cluster_index;
 		if (p_direction == HB_DIRECTION_RTL || p_direction == HB_DIRECTION_BTT) {
-			TempGlyph[last_cluster_index].flags |= GRAPHEME_IS_RTL;
+			w[last_cluster_index].flags |= GRAPHEME_IS_RTL;
 		}
 		if (last_cluster_valid) {
-			TempGlyph[last_cluster_index].flags |= GRAPHEME_IS_VALID;
+			w[last_cluster_index].flags |= GRAPHEME_IS_VALID;
 		}
 
 		// Fallback.
@@ -4624,37 +4622,37 @@ void TextServerAdvanced::_shape_run(ShapedTextDataAdvanced *p_sd, int32_t p_star
 		int failed_subrun_end = p_start;
 
 		for (unsigned int i = 0; i < glyph_count; i++) {
-			if ((TempGlyph[i].flags & GRAPHEME_IS_VALID) == GRAPHEME_IS_VALID) {
+			if ((w[i].flags & GRAPHEME_IS_VALID) == GRAPHEME_IS_VALID) {
 				if (failed_subrun_start != p_end + 1) {
 					_shape_run(p_sd, failed_subrun_start, failed_subrun_end, p_script, p_direction, p_fonts, p_span, p_fb_index + 1);
 					failed_subrun_start = p_end + 1;
 					failed_subrun_end = p_start;
 				}
-				for (int j = 0; j < TempGlyph[i].count; j++) {
+				for (int j = 0; j < w[i].count; j++) {
 					if (p_sd->orientation == ORIENTATION_HORIZONTAL) {
-						p_sd->ascent = MAX(p_sd->ascent, -TempGlyph[i + j].y_off);
-						p_sd->descent = MAX(p_sd->descent, TempGlyph[i + j].y_off);
+						p_sd->ascent = MAX(p_sd->ascent, -w[i + j].y_off);
+						p_sd->descent = MAX(p_sd->descent, w[i + j].y_off);
 					} else {
-						float gla = Math::round(font_get_glyph_advance(f, fs, TempGlyph[i + j].index).x * 0.5);
+						float gla = Math::round(font_get_glyph_advance(f, fs, w[i + j].index).x * 0.5);
 						p_sd->ascent = MAX(p_sd->ascent, gla);
 						p_sd->descent = MAX(p_sd->descent, gla);
 					}
-					p_sd->width += TempGlyph[i + j].advance;
-					TempGlyph[i + j].start += p_sd->start;
-					TempGlyph[i + j].end += p_sd->start;
-					p_sd->glyphs.push_back(TempGlyph[i + j]);
+					p_sd->width += w[i + j].advance;
+					w[i + j].start += p_sd->start;
+					w[i + j].end += p_sd->start;
+					p_sd->glyphs.push_back(w[i + j]);
 				}
 			} else {
-				if (failed_subrun_start >= TempGlyph[i].start) {
-					failed_subrun_start = TempGlyph[i].start;
+				if (failed_subrun_start >= w[i].start) {
+					failed_subrun_start = w[i].start;
 				}
-				if (failed_subrun_end <= TempGlyph[i].end) {
-					failed_subrun_end = TempGlyph[i].end;
+				if (failed_subrun_end <= w[i].end) {
+					failed_subrun_end = w[i].end;
 				}
 			}
-			i += TempGlyph[i].count - 1;
+			i += w[i].count - 1;
 		}
-		//memfree(w);
+		memfree(w);
 		if (failed_subrun_start != p_end + 1) {
 			_shape_run(p_sd, failed_subrun_start, failed_subrun_end, p_script, p_direction, p_fonts, p_span, p_fb_index + 1);
 		}
@@ -4808,9 +4806,9 @@ bool TextServerAdvanced::shaped_text_shape(RID p_shaped) {
 							}
 							sd->glyphs.push_back(gl);
 						} else {
-							fonts.clear();
-							fonts_scr_only.clear();
-							fonts_no_match.clear();
+							Vector<RID> fonts;
+							Vector<RID> fonts_scr_only;
+							Vector<RID> fonts_no_match;
 							int font_count = span.fonts.size();
 							for (int l = 0; l < font_count; l++) {
 								if (font_is_script_supported(span.fonts[l], script)) {
