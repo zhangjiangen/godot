@@ -3111,8 +3111,7 @@ String VisualShaderNodeColorFunc::generate_code(Shader::Mode p_mode, VisualShade
 			code + "		vec3 c = " + p_input_vars[0] + ";\n";
 			code + "		float max1 = max(c.r, c.g);\n";
 			code + "		float max2 = max(max1, c.b);\n";
-			code + "		float max3 = max(max1, max2);\n";
-			code + "		" + p_output_vars[0] + " = vec3(max3, max3, max3);\n";
+			code + "		" + p_output_vars[0] + " = vec3(max2, max2, max2);\n";
 			code + "	}\n";
 			break;
 		case FUNC_SEPIA:
@@ -7533,231 +7532,231 @@ VisualShaderNodeMultiplyAdd::PortType VisualShaderNodeMultiplyAdd::get_output_po
 			return PORT_TYPE_VECTOR_3D;
 		case OP_TYPE_VECTOR_4D:
 			return PORT_TYPE_VECTOR_4D;
-        case OP_TYPE_IVECTOR_2D:
+		case OP_TYPE_IVECTOR_2D:
 			return PORT_TYPE_IVECTOR_2D;
 		case OP_TYPE_IVECTOR_3D:
 			return PORT_TYPE_IVECTOR_3D;
 		case OP_TYPE_IVECTOR_4D:
 			return PORT_TYPE_IVECTOR_4D;
 		default:
-            return PORT_TYPE_VECTOR_3D;
-        }
-        return PORT_TYPE_VECTOR_3D;
+			return PORT_TYPE_VECTOR_3D;
+	}
+	return PORT_TYPE_VECTOR_3D;
+}
+
+String VisualShaderNodeMultiplyAdd::get_output_port_name(int p_port) const {
+	return "";
+}
+
+String VisualShaderNodeMultiplyAdd::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	return "	" + p_output_vars[0] + " = fma(" + p_input_vars[0] + ", " + p_input_vars[1] + ", " + p_input_vars[2] + ");\n";
+}
+
+void VisualShaderNodeMultiplyAdd::set_op_type(OpType p_op_type) {
+	ERR_FAIL_INDEX((int)p_op_type, int(OP_TYPE_MAX));
+	if (op_type == p_op_type) {
+		return;
+	}
+	switch (p_op_type) {
+		case OP_TYPE_SCALAR: {
+			set_input_port_default_value(0, 0.0, get_input_port_default_value(0));
+			set_input_port_default_value(1, 0.0, get_input_port_default_value(1));
+			set_input_port_default_value(2, 0.0, get_input_port_default_value(2));
+		} break;
+		case OP_TYPE_VECTOR_2D: {
+			set_input_port_default_value(0, Vector2(), get_input_port_default_value(0));
+			set_input_port_default_value(1, Vector2(), get_input_port_default_value(1));
+			set_input_port_default_value(2, Vector2(), get_input_port_default_value(2));
+		} break;
+		case OP_TYPE_VECTOR_3D: {
+			set_input_port_default_value(0, Vector3(), get_input_port_default_value(0));
+			set_input_port_default_value(1, Vector3(), get_input_port_default_value(1));
+			set_input_port_default_value(2, Vector3(), get_input_port_default_value(2));
+		} break;
+		case OP_TYPE_VECTOR_4D: {
+			set_input_port_default_value(0, Plane(), get_input_port_default_value(0));
+			set_input_port_default_value(1, Plane(), get_input_port_default_value(1));
+			set_input_port_default_value(2, Plane(), get_input_port_default_value(2));
+		} break;
+		case OP_TYPE_IVECTOR_2D: {
+			set_input_port_default_value(0, Vector2i(), get_input_port_default_value(0));
+			set_input_port_default_value(1, Vector2i(), get_input_port_default_value(1));
+			set_input_port_default_value(2, Vector2i(), get_input_port_default_value(2));
+		} break;
+		case OP_TYPE_IVECTOR_3D: {
+			set_input_port_default_value(0, Vector3i(), get_input_port_default_value(0));
+			set_input_port_default_value(1, Vector3i(), get_input_port_default_value(1));
+			set_input_port_default_value(2, Vector3i(), get_input_port_default_value(2));
+		} break;
+		case OP_TYPE_IVECTOR_4D: {
+			set_input_port_default_value(0, Rect2i(), get_input_port_default_value(0));
+			set_input_port_default_value(1, Rect2i(), get_input_port_default_value(1));
+			set_input_port_default_value(2, Rect2i(), get_input_port_default_value(2));
+		} break;
+		default:
+			break;
+	}
+	op_type = p_op_type;
+	emit_changed();
+}
+
+VisualShaderNodeMultiplyAdd::OpType VisualShaderNodeMultiplyAdd::get_op_type() const {
+	return op_type;
+}
+
+Vector<StringName> VisualShaderNodeMultiplyAdd::get_editable_properties() const {
+	Vector<StringName> props;
+	props.push_back("op_type");
+	return props;
+}
+
+void VisualShaderNodeMultiplyAdd::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_op_type", "type"), &VisualShaderNodeMultiplyAdd::set_op_type);
+	ClassDB::bind_method(D_METHOD("get_op_type"), &VisualShaderNodeMultiplyAdd::get_op_type);
+
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "op_type", PROPERTY_HINT_ENUM, "Scalar,Vector2,Vector3"), "set_op_type", "get_op_type");
+
+	BIND_ENUM_CONSTANT(OP_TYPE_SCALAR);
+	BIND_ENUM_CONSTANT(OP_TYPE_VECTOR_2D);
+	BIND_ENUM_CONSTANT(OP_TYPE_VECTOR_3D);
+	BIND_ENUM_CONSTANT(OP_TYPE_VECTOR_2D);
+	BIND_ENUM_CONSTANT(OP_TYPE_VECTOR_4D);
+	BIND_ENUM_CONSTANT(OP_TYPE_IVECTOR_2D);
+	BIND_ENUM_CONSTANT(OP_TYPE_IVECTOR_3D);
+	BIND_ENUM_CONSTANT(OP_TYPE_IVECTOR_2D);
+	BIND_ENUM_CONSTANT(OP_TYPE_IVECTOR_4D);
+	BIND_ENUM_CONSTANT(OP_TYPE_MAX);
+}
+
+VisualShaderNodeMultiplyAdd::VisualShaderNodeMultiplyAdd() {
+	set_input_port_default_value(0, 0.0);
+	set_input_port_default_value(1, 0.0);
+	set_input_port_default_value(2, 0.0);
+}
+
+////////////// Billboard
+
+String VisualShaderNodeBillboard::get_caption() const {
+	return "GetBillboardMatrix";
+}
+
+int VisualShaderNodeBillboard::get_input_port_count() const {
+	return 0;
+}
+
+VisualShaderNodeBillboard::PortType VisualShaderNodeBillboard::get_input_port_type(int p_port) const {
+	return PORT_TYPE_SCALAR;
+}
+
+String VisualShaderNodeBillboard::get_input_port_name(int p_port) const {
+	return "";
+}
+
+int VisualShaderNodeBillboard::get_output_port_count() const {
+	return 1;
+}
+
+VisualShaderNodeBillboard::PortType VisualShaderNodeBillboard::get_output_port_type(int p_port) const {
+	return PORT_TYPE_TRANSFORM;
+}
+
+String VisualShaderNodeBillboard::get_output_port_name(int p_port) const {
+	return "model_view_matrix";
+}
+
+String VisualShaderNodeBillboard::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	StringBuilder code;
+
+	switch (billboard_type) {
+		case BILLBOARD_TYPE_ENABLED:
+			code + "	{\n";
+			code + "		mat4 __mvm = INV_CAMERA_MATRIX * mat4(CAMERA_MATRIX[0], CAMERA_MATRIX[1], CAMERA_MATRIX[2], WORLD_MATRIX[3]);\n";
+			if (keep_scale) {
+				code + "		__mvm = __mvm * mat4(vec4(length(WORLD_MATRIX[0].xyz), 0.0, 0.0, 0.0), vec4(0.0, length(WORLD_MATRIX[1].xyz), 0.0, 0.0), vec4(0.0, 0.0, length(WORLD_MATRIX[2].xyz), 0.0), vec4(0.0, 0.0, 0.0, 1.0));\n";
+			}
+			code + "		" + p_output_vars[0] + " = __mvm;\n";
+			code + "	}\n";
+			break;
+		case BILLBOARD_TYPE_FIXED_Y:
+			code + "	{\n";
+			code + "		mat4 __mvm = INV_CAMERA_MATRIX * mat4(CAMERA_MATRIX[0], WORLD_MATRIX[1], vec4(normalize(cross(CAMERA_MATRIX[0].xyz, WORLD_MATRIX[1].xyz)), 0.0), WORLD_MATRIX[3]);\n";
+			if (keep_scale) {
+				code + "		__mvm = __mvm * mat4(vec4(length(WORLD_MATRIX[0].xyz), 0.0, 0.0, 0.0), vec4(0.0, 1.0, 0.0, 0.0), vec4(0.0, 0.0, length(WORLD_MATRIX[2].xyz), 0.0), vec4(0.0, 0.0, 0.0, 1.0));\n";
+			} else {
+				code + "		__mvm = __mvm * mat4(vec4(1.0, 0.0, 0.0, 0.0), vec4(0.0, 1.0 / length(WORLD_MATRIX[1].xyz), 0.0, 0.0), vec4(0.0, 0.0, 1.0, 0.0), vec4(0.0, 0.0, 0.0, 1.0));\n";
+			}
+			code + "		" + p_output_vars[0] + " = __mvm;\n";
+			code + "	}\n";
+			break;
+		case BILLBOARD_TYPE_PARTICLES:
+			code + "	{\n";
+			code + "		mat4 __wm = mat4(normalize(CAMERA_MATRIX[0]) * length(WORLD_MATRIX[0]), normalize(CAMERA_MATRIX[1]) * length(WORLD_MATRIX[0]), normalize(CAMERA_MATRIX[2]) * length(WORLD_MATRIX[2]), WORLD_MATRIX[3]);\n";
+			code + "		__wm = __wm * mat4(vec4(cos(INSTANCE_CUSTOM.x), -sin(INSTANCE_CUSTOM.x), 0.0, 0.0), vec4(sin(INSTANCE_CUSTOM.x), cos(INSTANCE_CUSTOM.x), 0.0, 0.0), vec4(0.0, 0.0, 1.0, 0.0), vec4(0.0, 0.0, 0.0, 1.0));\n";
+			code + "		" + p_output_vars[0] + " = INV_CAMERA_MATRIX * __wm;\n";
+			code + "	}\n";
+			break;
+		default:
+			code + "	" + p_output_vars[0] + " = mat4(1.0);\n";
+			break;
 	}
 
-	String VisualShaderNodeMultiplyAdd::get_output_port_name(int p_port) const {
-		return "";
+	return code;
+}
+
+bool VisualShaderNodeBillboard::is_show_prop_names() const {
+	return true;
+}
+
+void VisualShaderNodeBillboard::set_billboard_type(BillboardType p_billboard_type) {
+	ERR_FAIL_INDEX(int(p_billboard_type), int(BILLBOARD_TYPE_MAX));
+	if (billboard_type == p_billboard_type) {
+		return;
 	}
+	billboard_type = p_billboard_type;
+	simple_decl = bool(billboard_type == BILLBOARD_TYPE_DISABLED);
+	set_disabled(simple_decl);
+	emit_changed();
+}
 
-	String VisualShaderNodeMultiplyAdd::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
-		return "	" + p_output_vars[0] + " = fma(" + p_input_vars[0] + ", " + p_input_vars[1] + ", " + p_input_vars[2] + ");\n";
+VisualShaderNodeBillboard::BillboardType VisualShaderNodeBillboard::get_billboard_type() const {
+	return billboard_type;
+}
+
+void VisualShaderNodeBillboard::set_keep_scale_enabled(bool p_enabled) {
+	keep_scale = p_enabled;
+	emit_changed();
+}
+
+bool VisualShaderNodeBillboard::is_keep_scale_enabled() const {
+	return keep_scale;
+}
+
+Vector<StringName> VisualShaderNodeBillboard::get_editable_properties() const {
+	Vector<StringName> props;
+	props.push_back("billboard_type");
+	if (billboard_type == BILLBOARD_TYPE_ENABLED || billboard_type == BILLBOARD_TYPE_FIXED_Y) {
+		props.push_back("keep_scale");
 	}
+	return props;
+}
 
-	void VisualShaderNodeMultiplyAdd::set_op_type(OpType p_op_type) {
-		ERR_FAIL_INDEX((int)p_op_type, int(OP_TYPE_MAX));
-		if (op_type == p_op_type) {
-			return;
-		}
-		switch (p_op_type) {
-			case OP_TYPE_SCALAR: {
-				set_input_port_default_value(0, 0.0, get_input_port_default_value(0));
-				set_input_port_default_value(1, 0.0, get_input_port_default_value(1));
-				set_input_port_default_value(2, 0.0, get_input_port_default_value(2));
-			} break;
-			case OP_TYPE_VECTOR_2D: {
-				set_input_port_default_value(0, Vector2(), get_input_port_default_value(0));
-				set_input_port_default_value(1, Vector2(), get_input_port_default_value(1));
-				set_input_port_default_value(2, Vector2(), get_input_port_default_value(2));
-			} break;
-			case OP_TYPE_VECTOR_3D: {
-				set_input_port_default_value(0, Vector3(), get_input_port_default_value(0));
-				set_input_port_default_value(1, Vector3(), get_input_port_default_value(1));
-				set_input_port_default_value(2, Vector3(), get_input_port_default_value(2));
-			} break;
-			case OP_TYPE_VECTOR_4D: {
-				set_input_port_default_value(0, Plane(), get_input_port_default_value(0));
-				set_input_port_default_value(1, Plane(), get_input_port_default_value(1));
-				set_input_port_default_value(2, Plane(), get_input_port_default_value(2));
-			} break;
-			case OP_TYPE_IVECTOR_2D: {
-				set_input_port_default_value(0, Vector2i(), get_input_port_default_value(0));
-				set_input_port_default_value(1, Vector2i(), get_input_port_default_value(1));
-				set_input_port_default_value(2, Vector2i(), get_input_port_default_value(2));
-			} break;
-			case OP_TYPE_IVECTOR_3D: {
-				set_input_port_default_value(0, Vector3i(), get_input_port_default_value(0));
-				set_input_port_default_value(1, Vector3i(), get_input_port_default_value(1));
-				set_input_port_default_value(2, Vector3i(), get_input_port_default_value(2));
-			} break;
-			case OP_TYPE_IVECTOR_4D: {
-				set_input_port_default_value(0, Rect2i(), get_input_port_default_value(0));
-				set_input_port_default_value(1, Rect2i(), get_input_port_default_value(1));
-				set_input_port_default_value(2, Rect2i(), get_input_port_default_value(2));
-			} break;
-			default:
-				break;
-		}
-		op_type = p_op_type;
-		emit_changed();
-	}
+void VisualShaderNodeBillboard::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_billboard_type", "billboard_type"), &VisualShaderNodeBillboard::set_billboard_type);
+	ClassDB::bind_method(D_METHOD("get_billboard_type"), &VisualShaderNodeBillboard::get_billboard_type);
 
-	VisualShaderNodeMultiplyAdd::OpType VisualShaderNodeMultiplyAdd::get_op_type() const {
-		return op_type;
-	}
+	ClassDB::bind_method(D_METHOD("set_keep_scale_enabled", "enabled"), &VisualShaderNodeBillboard::set_keep_scale_enabled);
+	ClassDB::bind_method(D_METHOD("is_keep_scale_enabled"), &VisualShaderNodeBillboard::is_keep_scale_enabled);
 
-	Vector<StringName> VisualShaderNodeMultiplyAdd::get_editable_properties() const {
-		Vector<StringName> props;
-		props.push_back("op_type");
-		return props;
-	}
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "billboard_type", PROPERTY_HINT_ENUM, "Disabled,Enabled,Y-Billboard,Particles"), "set_billboard_type", "get_billboard_type");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "keep_scale"), "set_keep_scale_enabled", "is_keep_scale_enabled");
 
-	void VisualShaderNodeMultiplyAdd::_bind_methods() {
-		ClassDB::bind_method(D_METHOD("set_op_type", "type"), &VisualShaderNodeMultiplyAdd::set_op_type);
-		ClassDB::bind_method(D_METHOD("get_op_type"), &VisualShaderNodeMultiplyAdd::get_op_type);
+	BIND_ENUM_CONSTANT(BILLBOARD_TYPE_DISABLED);
+	BIND_ENUM_CONSTANT(BILLBOARD_TYPE_ENABLED);
+	BIND_ENUM_CONSTANT(BILLBOARD_TYPE_FIXED_Y);
+	BIND_ENUM_CONSTANT(BILLBOARD_TYPE_PARTICLES);
+	BIND_ENUM_CONSTANT(BILLBOARD_TYPE_MAX);
+}
 
-		ADD_PROPERTY(PropertyInfo(Variant::INT, "op_type", PROPERTY_HINT_ENUM, "Scalar,Vector2,Vector3"), "set_op_type", "get_op_type");
-
-		BIND_ENUM_CONSTANT(OP_TYPE_SCALAR);
-		BIND_ENUM_CONSTANT(OP_TYPE_VECTOR_2D);
-		BIND_ENUM_CONSTANT(OP_TYPE_VECTOR_3D);
-		BIND_ENUM_CONSTANT(OP_TYPE_VECTOR_2D);
-		BIND_ENUM_CONSTANT(OP_TYPE_VECTOR_4D);
-		BIND_ENUM_CONSTANT(OP_TYPE_IVECTOR_2D);
-		BIND_ENUM_CONSTANT(OP_TYPE_IVECTOR_3D);
-		BIND_ENUM_CONSTANT(OP_TYPE_IVECTOR_2D);
-		BIND_ENUM_CONSTANT(OP_TYPE_IVECTOR_4D);
-		BIND_ENUM_CONSTANT(OP_TYPE_MAX);
-	}
-
-	VisualShaderNodeMultiplyAdd::VisualShaderNodeMultiplyAdd() {
-		set_input_port_default_value(0, 0.0);
-		set_input_port_default_value(1, 0.0);
-		set_input_port_default_value(2, 0.0);
-	}
-
-	////////////// Billboard
-
-	String VisualShaderNodeBillboard::get_caption() const {
-		return "GetBillboardMatrix";
-	}
-
-	int VisualShaderNodeBillboard::get_input_port_count() const {
-		return 0;
-	}
-
-	VisualShaderNodeBillboard::PortType VisualShaderNodeBillboard::get_input_port_type(int p_port) const {
-		return PORT_TYPE_SCALAR;
-	}
-
-	String VisualShaderNodeBillboard::get_input_port_name(int p_port) const {
-		return "";
-	}
-
-	int VisualShaderNodeBillboard::get_output_port_count() const {
-		return 1;
-	}
-
-	VisualShaderNodeBillboard::PortType VisualShaderNodeBillboard::get_output_port_type(int p_port) const {
-		return PORT_TYPE_TRANSFORM;
-	}
-
-	String VisualShaderNodeBillboard::get_output_port_name(int p_port) const {
-		return "model_view_matrix";
-	}
-
-	String VisualShaderNodeBillboard::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
-		StringBuilder code;
-
-		switch (billboard_type) {
-			case BILLBOARD_TYPE_ENABLED:
-				code + "	{\n";
-				code + "		mat4 __mvm = INV_CAMERA_MATRIX * mat4(CAMERA_MATRIX[0], CAMERA_MATRIX[1], CAMERA_MATRIX[2], WORLD_MATRIX[3]);\n";
-				if (keep_scale) {
-					code + "		__mvm = __mvm * mat4(vec4(length(WORLD_MATRIX[0].xyz), 0.0, 0.0, 0.0), vec4(0.0, length(WORLD_MATRIX[1].xyz), 0.0, 0.0), vec4(0.0, 0.0, length(WORLD_MATRIX[2].xyz), 0.0), vec4(0.0, 0.0, 0.0, 1.0));\n";
-				}
-				code + "		" + p_output_vars[0] + " = __mvm;\n";
-				code + "	}\n";
-				break;
-			case BILLBOARD_TYPE_FIXED_Y:
-				code + "	{\n";
-				code + "		mat4 __mvm = INV_CAMERA_MATRIX * mat4(CAMERA_MATRIX[0], WORLD_MATRIX[1], vec4(normalize(cross(CAMERA_MATRIX[0].xyz, WORLD_MATRIX[1].xyz)), 0.0), WORLD_MATRIX[3]);\n";
-				if (keep_scale) {
-					code + "		__mvm = __mvm * mat4(vec4(length(WORLD_MATRIX[0].xyz), 0.0, 0.0, 0.0), vec4(0.0, 1.0, 0.0, 0.0), vec4(0.0, 0.0, length(WORLD_MATRIX[2].xyz), 0.0), vec4(0.0, 0.0, 0.0, 1.0));\n";
-				} else {
-					code + "		__mvm = __mvm * mat4(vec4(1.0, 0.0, 0.0, 0.0), vec4(0.0, 1.0 / length(WORLD_MATRIX[1].xyz), 0.0, 0.0), vec4(0.0, 0.0, 1.0, 0.0), vec4(0.0, 0.0, 0.0, 1.0));\n";
-				}
-				code + "		" + p_output_vars[0] + " = __mvm;\n";
-				code + "	}\n";
-				break;
-			case BILLBOARD_TYPE_PARTICLES:
-				code + "	{\n";
-				code + "		mat4 __wm = mat4(normalize(CAMERA_MATRIX[0]) * length(WORLD_MATRIX[0]), normalize(CAMERA_MATRIX[1]) * length(WORLD_MATRIX[0]), normalize(CAMERA_MATRIX[2]) * length(WORLD_MATRIX[2]), WORLD_MATRIX[3]);\n";
-				code + "		__wm = __wm * mat4(vec4(cos(INSTANCE_CUSTOM.x), -sin(INSTANCE_CUSTOM.x), 0.0, 0.0), vec4(sin(INSTANCE_CUSTOM.x), cos(INSTANCE_CUSTOM.x), 0.0, 0.0), vec4(0.0, 0.0, 1.0, 0.0), vec4(0.0, 0.0, 0.0, 1.0));\n";
-				code + "		" + p_output_vars[0] + " = INV_CAMERA_MATRIX * __wm;\n";
-				code + "	}\n";
-				break;
-			default:
-				code + "	" + p_output_vars[0] + " = mat4(1.0);\n";
-				break;
-		}
-
-		return code;
-	}
-
-	bool VisualShaderNodeBillboard::is_show_prop_names() const {
-		return true;
-	}
-
-	void VisualShaderNodeBillboard::set_billboard_type(BillboardType p_billboard_type) {
-		ERR_FAIL_INDEX(int(p_billboard_type), int(BILLBOARD_TYPE_MAX));
-		if (billboard_type == p_billboard_type) {
-			return;
-		}
-		billboard_type = p_billboard_type;
-		simple_decl = bool(billboard_type == BILLBOARD_TYPE_DISABLED);
-		set_disabled(simple_decl);
-		emit_changed();
-	}
-
-	VisualShaderNodeBillboard::BillboardType VisualShaderNodeBillboard::get_billboard_type() const {
-		return billboard_type;
-	}
-
-	void VisualShaderNodeBillboard::set_keep_scale_enabled(bool p_enabled) {
-		keep_scale = p_enabled;
-		emit_changed();
-	}
-
-	bool VisualShaderNodeBillboard::is_keep_scale_enabled() const {
-		return keep_scale;
-	}
-
-	Vector<StringName> VisualShaderNodeBillboard::get_editable_properties() const {
-		Vector<StringName> props;
-		props.push_back("billboard_type");
-		if (billboard_type == BILLBOARD_TYPE_ENABLED || billboard_type == BILLBOARD_TYPE_FIXED_Y) {
-			props.push_back("keep_scale");
-		}
-		return props;
-	}
-
-	void VisualShaderNodeBillboard::_bind_methods() {
-		ClassDB::bind_method(D_METHOD("set_billboard_type", "billboard_type"), &VisualShaderNodeBillboard::set_billboard_type);
-		ClassDB::bind_method(D_METHOD("get_billboard_type"), &VisualShaderNodeBillboard::get_billboard_type);
-
-		ClassDB::bind_method(D_METHOD("set_keep_scale_enabled", "enabled"), &VisualShaderNodeBillboard::set_keep_scale_enabled);
-		ClassDB::bind_method(D_METHOD("is_keep_scale_enabled"), &VisualShaderNodeBillboard::is_keep_scale_enabled);
-
-		ADD_PROPERTY(PropertyInfo(Variant::INT, "billboard_type", PROPERTY_HINT_ENUM, "Disabled,Enabled,Y-Billboard,Particles"), "set_billboard_type", "get_billboard_type");
-		ADD_PROPERTY(PropertyInfo(Variant::BOOL, "keep_scale"), "set_keep_scale_enabled", "is_keep_scale_enabled");
-
-		BIND_ENUM_CONSTANT(BILLBOARD_TYPE_DISABLED);
-		BIND_ENUM_CONSTANT(BILLBOARD_TYPE_ENABLED);
-		BIND_ENUM_CONSTANT(BILLBOARD_TYPE_FIXED_Y);
-		BIND_ENUM_CONSTANT(BILLBOARD_TYPE_PARTICLES);
-		BIND_ENUM_CONSTANT(BILLBOARD_TYPE_MAX);
-	}
-
-	VisualShaderNodeBillboard::VisualShaderNodeBillboard() {
-		simple_decl = false;
-	}
+VisualShaderNodeBillboard::VisualShaderNodeBillboard() {
+	simple_decl = false;
+}

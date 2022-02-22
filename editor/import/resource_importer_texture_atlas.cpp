@@ -218,7 +218,7 @@ Error ResourceImporterTextureAtlas::import_group_file(const String &p_group_file
 
 			EditorAtlasPacker::Chart chart;
 
-	Rect2 used_rect = Rect2(Vector2(), image->get_size());
+			Rect2 used_rect = Rect2(Vector2(), image->get_size());
 			if (trim_alpha_border_from_region) {
 				// Clip a region from the image.
 				used_rect = image->get_used_rect();
