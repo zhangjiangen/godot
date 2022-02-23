@@ -778,9 +778,9 @@ public:
 		}
 		float salf_size = float(point_map.memory_size + point_size_map.memory_size + _memory_info.memory_size) / 1024.0f;
 		if (mb < 1024.0f) {
-			printf("%0.3f KB-------------------\n", mb);
+			printf(" , log cache: %0.3f KB-------------------\n", mb);
 		} else {
-			printf("%0.3f MB-------------------\n", mb / 1024.0f);
+			printf(" , log cache: %0.3f MB-------------------\n", mb / 1024.0f);
 		}
 		int strcount = 0;
 		MemoryLog *Root = ml.Root;
