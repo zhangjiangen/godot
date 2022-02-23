@@ -1463,11 +1463,11 @@ Error VulkanContext::_update_swap_chain(Window *window) {
 	uint32_t presentModeCount;
 	err = fpGetPhysicalDeviceSurfacePresentModesKHR(gpu, window->surface, &presentModeCount, nullptr);
 	ERR_FAIL_COND_V(err, ERR_CANT_CREATE);
-	VkPresentModeKHR *presentModes = (VkPresentModeKHR *)memalloc(presentModeCount * sizeof(VkPresentModeKHR));
+	VkPresentModeKHR *presentModes = (VkPresentModeKHR *)alloca(presentModeCount * sizeof(VkPresentModeKHR));
 	ERR_FAIL_COND_V(!presentModes, ERR_CANT_CREATE);
 	err = fpGetPhysicalDeviceSurfacePresentModesKHR(gpu, window->surface, &presentModeCount, presentModes);
 	if (err) {
-		memfree(presentModes);
+		//memfree(presentModes);
 		ERR_FAIL_V(ERR_CANT_CREATE);
 	}
 
@@ -1499,7 +1499,7 @@ Error VulkanContext::_update_swap_chain(Window *window) {
 	}
 
 	if (window->width == 0 || window->height == 0) {
-		memfree(presentModes);
+		//memfree(presentModes);
 		//likely window minimized, no swapchain created
 		return OK;
 	}
@@ -1567,7 +1567,7 @@ Error VulkanContext::_update_swap_chain(Window *window) {
 
 	print_verbose("Using present mode: " + String(string_VkPresentModeKHR(window->presentMode)));
 
-	memfree(presentModes);
+	//memfree(presentModes);
 
 	// Determine the number of VkImages to use in the swap chain.
 	// Application desires to acquire 3 images at a time for triple
@@ -1643,18 +1643,18 @@ Error VulkanContext::_update_swap_chain(Window *window) {
 		ERR_FAIL_COND_V(swapchainImageCount != sp_image_count, ERR_BUG);
 	}
 
-	VkImage *swapchainImages = (VkImage *)memalloc(swapchainImageCount * sizeof(VkImage));
+	VkImage *swapchainImages = (VkImage *)alloca(swapchainImageCount * sizeof(VkImage));
 	ERR_FAIL_COND_V(!swapchainImages, ERR_CANT_CREATE);
 	err = fpGetSwapchainImagesKHR(device, window->swapchain, &swapchainImageCount, swapchainImages);
 	if (err) {
-		memfree(swapchainImages);
+		//memfree(swapchainImages);
 		ERR_FAIL_V(ERR_CANT_CREATE);
 	}
 
 	window->swapchain_image_resources =
 			(SwapchainImageResources *)memalloc(sizeof(SwapchainImageResources) * swapchainImageCount);
 	if (!window->swapchain_image_resources) {
-		memfree(swapchainImages);
+		//memfree(swapchainImages);
 		ERR_FAIL_V(ERR_CANT_CREATE);
 	}
 
@@ -1685,12 +1685,12 @@ Error VulkanContext::_update_swap_chain(Window *window) {
 
 		err = vkCreateImageView(device, &color_image_view, nullptr, &window->swapchain_image_resources[i].view);
 		if (err) {
-			memfree(swapchainImages);
+			//memfree(swapchainImages);
 			ERR_FAIL_V(ERR_CANT_CREATE);
 		}
 	}
 
-	memfree(swapchainImages);
+	//memfree(swapchainImages);
 
 	/******** FRAMEBUFFER ************/
 

@@ -105,8 +105,7 @@ private:
 	static Ref<ResourceFormatLoader> loader[MAX_LOADERS];
 	static int loader_count;
 	static bool timestamp_on_load;
-	// 资源处理线程池
-	static ThreadWorkPool resource_process_thread;
+	
 	static void *err_notify_ud;
 	static ResourceLoadErrorNotify err_notify;
 	static void *dep_err_notify_ud;

@@ -184,8 +184,15 @@ hb_bool_t TextServerAdvanced::_bmp_get_font_h_extents(hb_font_t *p_font, void *p
 	return true;
 }
 
+static void hb_glob_allc_cb(void *ptr, int count) {
+	DefaultAllocator::record_memory_alloc(ptr, count, __FILE__, __LINE__);
+}
+static void hb_glob_free_cb(void *ptr) {
+	DefaultAllocator::record_memory_free(ptr, 0);
+}
 void TextServerAdvanced::_bmp_create_font_funcs() {
 	if (funcs == nullptr) {
+		hb_set_memmory_cb(&hb_glob_allc_cb, &hb_glob_free_cb);
 		funcs = hb_font_funcs_create();
 
 		hb_font_funcs_set_font_h_extents_func(funcs, _bmp_get_font_h_extents, nullptr, nullptr);
