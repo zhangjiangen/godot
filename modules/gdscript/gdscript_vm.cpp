@@ -124,6 +124,34 @@ static String _get_var_type(const Variant *p_var) {
 }
 #endif // DEBUG_ENABLED
 
+Variant GDScriptFunction::_get_default_variant_for_data_type(const GDScriptDataType &p_data_type) {
+	if (p_data_type.kind == GDScriptDataType::BUILTIN) {
+		if (p_data_type.builtin_type == Variant::ARRAY) {
+			Array array;
+			// Typed array.
+			if (p_data_type.has_container_element_type()) {
+				const GDScriptDataType &element_type = p_data_type.get_container_element_type();
+				array.set_typed(
+						element_type.kind == GDScriptDataType::BUILTIN ? element_type.builtin_type : Variant::OBJECT,
+						element_type.native_type,
+						element_type.script_type);
+			}
+
+			return array;
+		} else {
+			Callable::CallError ce;
+			Variant variant;
+			Variant::construct(p_data_type.builtin_type, variant, nullptr, 0, ce);
+
+			ERR_FAIL_COND_V(ce.error != Callable::CallError::CALL_OK, Variant());
+
+			return variant;
+		}
+	}
+
+	return Variant();
+}
+
 String GDScriptFunction::_get_call_error(const Callable::CallError &p_err, const String &p_where, const Variant **argptrs) const {
 	String err_text;
 
@@ -3339,6 +3367,9 @@ void GDScriptFunction::call_r(Variant &retvalue, GDScriptInstance *p_instance, c
 		}
 
 #endif
+		// Get a default return type in case of failure
+		retvalue = _get_default_variant_for_data_type(return_type);
+
 		OPCODE_OUT;
 	}
 
