@@ -26,8 +26,8 @@
  * Google Author(s): Behdad Esfahbod
  */
 
-#include "hb.hh"
 #include "hb-machinery.hh"
+#include "hb.hh"
 
 #if !defined(HB_NO_SETLOCALE) && (!defined(HAVE_NEWLOCALE) || !defined(HAVE_USELOCALE))
 #define HB_NO_SETLOCALE 1
@@ -52,7 +52,7 @@
 
 #define hb_locale_t void *
 #define hb_setlocale(Category, Locale) "C"
-#define hb_uselocale(Locale) ((hb_locale_t) 0)
+#define hb_uselocale(Locale) ((hb_locale_t)0)
 
 #endif
 
@@ -65,43 +65,39 @@
  * Common data types used across HarfBuzz are defined here.
  **/
 
-
 /* hb_options_t */
 
 hb_atomic_int_t _hb_options;
 
-void
-_hb_options_init ()
-{
-  hb_options_union_t u;
-  u.i = 0;
-  u.opts.initialized = true;
+void _hb_options_init() {
+	hb_options_union_t u;
+	u.i = 0;
+	u.opts.initialized = true;
 
-  const char *c = getenv ("HB_OPTIONS");
-  if (c)
-  {
-    while (*c)
-    {
-      const char *p = strchr (c, ':');
-      if (!p)
-	p = c + strlen (c);
+	const char *c = getenv("HB_OPTIONS");
+	if (c) {
+		while (*c) {
+			const char *p = strchr(c, ':');
+			if (!p)
+				p = c + strlen(c);
 
-#define OPTION(name, symbol) \
-	if (0 == strncmp (c, name, p - c) && strlen (name) == static_cast<size_t>(p - c)) do { u.opts.symbol = true; } while (0)
+#define OPTION(name, symbol)                                                        \
+	if (0 == strncmp(c, name, p - c) && strlen(name) == static_cast<size_t>(p - c)) \
+		do {                                                                        \
+			u.opts.symbol = true;                                                   \
+	} while (0)
 
-      OPTION ("uniscribe-bug-compatible", uniscribe_bug_compatible);
+			OPTION("uniscribe-bug-compatible", uniscribe_bug_compatible);
 
 #undef OPTION
 
-      c = *p ? p + 1 : p;
-    }
+			c = *p ? p + 1 : p;
+		}
+	}
 
-  }
-
-  /* This is idempotent and threadsafe. */
-  _hb_options.set_relaxed (u.i);
+	/* This is idempotent and threadsafe. */
+	_hb_options.set_relaxed(u.i);
 }
-
 
 /* hb_tag_t */
 
@@ -120,22 +116,21 @@ _hb_options_init ()
  * Since: 0.9.2
  **/
 hb_tag_t
-hb_tag_from_string (const char *str, int len)
-{
-  char tag[4];
-  unsigned int i;
+hb_tag_from_string(const char *str, int len) {
+	char tag[4];
+	unsigned int i;
 
-  if (!str || !len || !*str)
-    return HB_TAG_NONE;
+	if (!str || !len || !*str)
+		return HB_TAG_NONE;
 
-  if (len < 0 || len > 4)
-    len = 4;
-  for (i = 0; i < (unsigned) len && str[i]; i++)
-    tag[i] = str[i];
-  for (; i < 4; i++)
-    tag[i] = ' ';
+	if (len < 0 || len > 4)
+		len = 4;
+	for (i = 0; i < (unsigned)len && str[i]; i++)
+		tag[i] = str[i];
+	for (; i < 4; i++)
+		tag[i] = ' ';
 
-  return HB_TAG (tag[0], tag[1], tag[2], tag[3]);
+	return HB_TAG(tag[0], tag[1], tag[2], tag[3]);
 }
 
 /**
@@ -148,23 +143,20 @@ hb_tag_from_string (const char *str, int len)
  *
  * Since: 0.9.5
  **/
-void
-hb_tag_to_string (hb_tag_t tag, char *buf)
-{
-  buf[0] = (char) (uint8_t) (tag >> 24);
-  buf[1] = (char) (uint8_t) (tag >> 16);
-  buf[2] = (char) (uint8_t) (tag >>  8);
-  buf[3] = (char) (uint8_t) (tag >>  0);
+void hb_tag_to_string(hb_tag_t tag, char *buf) {
+	buf[0] = (char)(uint8_t)(tag >> 24);
+	buf[1] = (char)(uint8_t)(tag >> 16);
+	buf[2] = (char)(uint8_t)(tag >> 8);
+	buf[3] = (char)(uint8_t)(tag >> 0);
 }
-
 
 /* hb_direction_t */
 
 const char direction_strings[][4] = {
-  "ltr",
-  "rtl",
-  "ttb",
-  "btt"
+	"ltr",
+	"rtl",
+	"ttb",
+	"btt"
 };
 
 /**
@@ -184,20 +176,19 @@ const char direction_strings[][4] = {
  * Since: 0.9.2
  **/
 hb_direction_t
-hb_direction_from_string (const char *str, int len)
-{
-  if (unlikely (!str || !len || !*str))
-    return HB_DIRECTION_INVALID;
+hb_direction_from_string(const char *str, int len) {
+	if (unlikely(!str || !len || !*str))
+		return HB_DIRECTION_INVALID;
 
-  /* Lets match loosely: just match the first letter, such that
-   * all of "ltr", "left-to-right", etc work!
-   */
-  char c = TOLOWER (str[0]);
-  for (unsigned int i = 0; i < ARRAY_LENGTH (direction_strings); i++)
-    if (c == direction_strings[i][0])
-      return (hb_direction_t) (HB_DIRECTION_LTR + i);
+	/* Lets match loosely: just match the first letter, such that
+	 * all of "ltr", "left-to-right", etc work!
+	 */
+	char c = TOLOWER(str[0]);
+	for (unsigned int i = 0; i < ARRAY_LENGTH(direction_strings); i++)
+		if (c == direction_strings[i][0])
+			return (hb_direction_t)(HB_DIRECTION_LTR + i);
 
-  return HB_DIRECTION_INVALID;
+	return HB_DIRECTION_INVALID;
 }
 
 /**
@@ -211,46 +202,42 @@ hb_direction_from_string (const char *str, int len)
  * Since: 0.9.2
  **/
 const char *
-hb_direction_to_string (hb_direction_t direction)
-{
-  if (likely ((unsigned int) (direction - HB_DIRECTION_LTR)
-	      < ARRAY_LENGTH (direction_strings)))
-    return direction_strings[direction - HB_DIRECTION_LTR];
+hb_direction_to_string(hb_direction_t direction) {
+	if (likely((unsigned int)(direction - HB_DIRECTION_LTR) < ARRAY_LENGTH(direction_strings)))
+		return direction_strings[direction - HB_DIRECTION_LTR];
 
-  return "invalid";
+	return "invalid";
 }
-
 
 /* hb_language_t */
 
 struct hb_language_impl_t {
-  const char s[1];
+	const char s[1];
 };
 
 static const char canon_map[256] = {
-   0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,   0,   0,   0,
-   0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,   0,   0,   0,
-   0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,  '-',  0,   0,
-  '0', '1', '2', '3', '4', '5', '6', '7',  '8', '9',  0,   0,   0,   0,   0,   0,
-   0,  'a', 'b', 'c', 'd', 'e', 'f', 'g',  'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
-  'p', 'q', 'r', 's', 't', 'u', 'v', 'w',  'x', 'y', 'z',  0,   0,   0,   0,  '-',
-   0,  'a', 'b', 'c', 'd', 'e', 'f', 'g',  'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
-  'p', 'q', 'r', 's', 't', 'u', 'v', 'w',  'x', 'y', 'z',  0,   0,   0,   0,   0
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '-', 0, 0,
+	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 0, 0, 0, 0, 0, 0,
+	0, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+	'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 0, 0, 0, 0, '-',
+	0, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+	'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 0, 0, 0, 0, 0
 };
 
 static bool
-lang_equal (hb_language_t  v1,
-	    const void    *v2)
-{
-  const unsigned char *p1 = (const unsigned char *) v1;
-  const unsigned char *p2 = (const unsigned char *) v2;
+lang_equal(hb_language_t v1,
+		const void *v2) {
+	const unsigned char *p1 = (const unsigned char *)v1;
+	const unsigned char *p2 = (const unsigned char *)v2;
 
-  while (*p1 && *p1 == canon_map[*p2]) {
-    p1++;
-    p2++;
-  }
+	while (*p1 && *p1 == canon_map[*p2]) {
+		p1++;
+		p2++;
+	}
 
-  return *p1 == canon_map[*p2];
+	return *p1 == canon_map[*p2];
 }
 
 #if 0
@@ -269,89 +256,78 @@ lang_hash (const void *key)
 }
 #endif
 
-
 struct hb_language_item_t {
+	struct hb_language_item_t *next;
+	hb_language_t lang;
 
-  struct hb_language_item_t *next;
-  hb_language_t lang;
+	bool operator==(const char *s) const { return lang_equal(lang, s); }
 
-  bool operator == (const char *s) const
-  { return lang_equal (lang, s); }
+	hb_language_item_t &operator=(const char *s) {
+		/* We can't call strdup(), because we allow custom allocators. */
+		size_t len = strlen(s) + 1;
+		lang = (hb_language_t)hb_malloc(len);
+		if (likely(lang)) {
+			memcpy((unsigned char *)lang, s, len);
+			for (unsigned char *p = (unsigned char *)lang; *p; p++)
+				*p = canon_map[*p];
+		}
 
-  hb_language_item_t & operator = (const char *s)
-  {
-    /* We can't call strdup(), because we allow custom allocators. */
-    size_t len = strlen(s) + 1;
-    lang = (hb_language_t) hb_malloc(len);
-    if (likely (lang))
-    {
-      memcpy((unsigned char *) lang, s, len);
-      for (unsigned char *p = (unsigned char *) lang; *p; p++)
-	*p = canon_map[*p];
-    }
+		return *this;
+	}
 
-    return *this;
-  }
-
-  void fini () { hb_free ((void *) lang); }
+	void fini() { hb_free((void *)lang); }
 };
-
 
 /* Thread-safe lockfree language list */
 
-static hb_atomic_ptr_t <hb_language_item_t> langs;
+static hb_atomic_ptr_t<hb_language_item_t> langs;
 
 static inline void
-free_langs ()
-{
+free_langs() {
 retry:
-  hb_language_item_t *first_lang = langs;
-  if (unlikely (!langs.cmpexch (first_lang, nullptr)))
-    goto retry;
+	hb_language_item_t *first_lang = langs;
+	if (unlikely(!langs.cmpexch(first_lang, nullptr)))
+		goto retry;
 
-  while (first_lang) {
-    hb_language_item_t *next = first_lang->next;
-    first_lang->fini ();
-    hb_free (first_lang);
-    first_lang = next;
-  }
+	while (first_lang) {
+		hb_language_item_t *next = first_lang->next;
+		first_lang->fini();
+		hb_free(first_lang);
+		first_lang = next;
+	}
 }
 
 static hb_language_item_t *
-lang_find_or_insert (const char *key)
-{
+lang_find_or_insert(const char *key) {
 retry:
-  hb_language_item_t *first_lang = langs;
+	hb_language_item_t *first_lang = langs;
 
-  for (hb_language_item_t *lang = first_lang; lang; lang = lang->next)
-    if (*lang == key)
-      return lang;
+	for (hb_language_item_t *lang = first_lang; lang; lang = lang->next)
+		if (*lang == key)
+			return lang;
 
-  /* Not found; allocate one. */
-  hb_language_item_t *lang = (hb_language_item_t *) hb_calloc (1, sizeof (hb_language_item_t));
-  if (unlikely (!lang))
-    return nullptr;
-  lang->next = first_lang;
-  *lang = key;
-  if (unlikely (!lang->lang))
-  {
-    hb_free (lang);
-    return nullptr;
-  }
+	/* Not found; allocate one. */
+	hb_language_item_t *lang = (hb_language_item_t *)hb_calloc(1, sizeof(hb_language_item_t));
+	if (unlikely(!lang))
+		return nullptr;
+	lang->next = first_lang;
+	*lang = key;
+	if (unlikely(!lang->lang)) {
+		hb_free(lang);
+		return nullptr;
+	}
 
-  if (unlikely (!langs.cmpexch (first_lang, lang)))
-  {
-    lang->fini ();
-    hb_free (lang);
-    goto retry;
-  }
+	if (unlikely(!langs.cmpexch(first_lang, lang))) {
+		lang->fini();
+		hb_free(lang);
+		goto retry;
+	}
 
-  if (!first_lang)
-    hb_atexit (free_langs); /* First person registers atexit() callback. */
+	if (!first_lang)
+		hb_atexit(free_langs); /* First person registers atexit() callback. */
 
-  return lang;
+	return lang;
 }
-
 
 /**
  * hb_language_from_string:
@@ -368,25 +344,22 @@ retry:
  * Since: 0.9.2
  **/
 hb_language_t
-hb_language_from_string (const char *str, int len)
-{
-  if (!str || !len || !*str)
-    return HB_LANGUAGE_INVALID;
+hb_language_from_string(const char *str, int len) {
+	if (!str || !len || !*str)
+		return HB_LANGUAGE_INVALID;
 
-  hb_language_item_t *item = nullptr;
-  if (len >= 0)
-  {
-    /* NUL-terminate it. */
-    char strbuf[64];
-    len = hb_min (len, (int) sizeof (strbuf) - 1);
-    memcpy (strbuf, str, len);
-    strbuf[len] = '\0';
-    item = lang_find_or_insert (strbuf);
-  }
-  else
-    item = lang_find_or_insert (str);
+	hb_language_item_t *item = nullptr;
+	if (len >= 0) {
+		/* NUL-terminate it. */
+		char strbuf[64];
+		len = hb_min(len, (int)sizeof(strbuf) - 1);
+		memcpy(strbuf, str, len);
+		strbuf[len] = '\0';
+		item = lang_find_or_insert(strbuf);
+	} else
+		item = lang_find_or_insert(str);
 
-  return likely (item) ? item->lang : HB_LANGUAGE_INVALID;
+	return likely(item) ? item->lang : HB_LANGUAGE_INVALID;
 }
 
 /**
@@ -402,11 +375,11 @@ hb_language_from_string (const char *str, int len)
  * Since: 0.9.2
  **/
 const char *
-hb_language_to_string (hb_language_t language)
-{
-  if (unlikely (!language)) return nullptr;
+hb_language_to_string(hb_language_t language) {
+	if (unlikely(!language))
+		return nullptr;
 
-  return language->s;
+	return language->s;
 }
 
 /**
@@ -427,20 +400,17 @@ hb_language_to_string (hb_language_t language)
  * Since: 0.9.2
  **/
 hb_language_t
-hb_language_get_default ()
-{
-  static hb_atomic_ptr_t <hb_language_t> default_language;
+hb_language_get_default() {
+	static hb_atomic_ptr_t<hb_language_t> default_language;
 
-  hb_language_t language = default_language;
-  if (unlikely (language == HB_LANGUAGE_INVALID))
-  {
-    language = hb_language_from_string (hb_setlocale (LC_CTYPE, nullptr), -1);
-    (void) default_language.cmpexch (HB_LANGUAGE_INVALID, language);
-  }
+	hb_language_t language = default_language;
+	if (unlikely(language == HB_LANGUAGE_INVALID)) {
+		language = hb_language_from_string(hb_setlocale(LC_CTYPE, nullptr), -1);
+		(void)default_language.cmpexch(HB_LANGUAGE_INVALID, language);
+	}
 
-  return language;
+	return language;
 }
-
 
 /* hb_script_t */
 
@@ -456,42 +426,53 @@ hb_language_get_default ()
  * Since: 0.9.2
  **/
 hb_script_t
-hb_script_from_iso15924_tag (hb_tag_t tag)
-{
-  if (unlikely (tag == HB_TAG_NONE))
-    return HB_SCRIPT_INVALID;
+hb_script_from_iso15924_tag(hb_tag_t tag) {
+	if (unlikely(tag == HB_TAG_NONE))
+		return HB_SCRIPT_INVALID;
 
-  /* Be lenient, adjust case (one capital letter followed by three small letters) */
-  tag = (tag & 0xDFDFDFDFu) | 0x00202020u;
+	/* Be lenient, adjust case (one capital letter followed by three small letters) */
+	tag = (tag & 0xDFDFDFDFu) | 0x00202020u;
 
-  switch (tag) {
+	switch (tag) {
+		/* These graduated from the 'Q' private-area codes, but
+		 * the old code is still aliased by Unicode, and the Qaai
+		 * one in use by ICU. */
+		case HB_TAG('Q', 'a', 'a', 'i'):
+			return HB_SCRIPT_INHERITED;
+		case HB_TAG('Q', 'a', 'a', 'c'):
+			return HB_SCRIPT_COPTIC;
 
-    /* These graduated from the 'Q' private-area codes, but
-     * the old code is still aliased by Unicode, and the Qaai
-     * one in use by ICU. */
-    case HB_TAG('Q','a','a','i'): return HB_SCRIPT_INHERITED;
-    case HB_TAG('Q','a','a','c'): return HB_SCRIPT_COPTIC;
+		/* Script variants from https://unicode.org/iso15924/ */
+		case HB_TAG('A', 'r', 'a', 'n'):
+			return HB_SCRIPT_ARABIC;
+		case HB_TAG('C', 'y', 'r', 's'):
+			return HB_SCRIPT_CYRILLIC;
+		case HB_TAG('G', 'e', 'o', 'k'):
+			return HB_SCRIPT_GEORGIAN;
+		case HB_TAG('H', 'a', 'n', 's'):
+			return HB_SCRIPT_HAN;
+		case HB_TAG('H', 'a', 'n', 't'):
+			return HB_SCRIPT_HAN;
+		case HB_TAG('J', 'a', 'm', 'o'):
+			return HB_SCRIPT_HANGUL;
+		case HB_TAG('L', 'a', 't', 'f'):
+			return HB_SCRIPT_LATIN;
+		case HB_TAG('L', 'a', 't', 'g'):
+			return HB_SCRIPT_LATIN;
+		case HB_TAG('S', 'y', 'r', 'e'):
+			return HB_SCRIPT_SYRIAC;
+		case HB_TAG('S', 'y', 'r', 'j'):
+			return HB_SCRIPT_SYRIAC;
+		case HB_TAG('S', 'y', 'r', 'n'):
+			return HB_SCRIPT_SYRIAC;
+	}
 
-    /* Script variants from https://unicode.org/iso15924/ */
-    case HB_TAG('A','r','a','n'): return HB_SCRIPT_ARABIC;
-    case HB_TAG('C','y','r','s'): return HB_SCRIPT_CYRILLIC;
-    case HB_TAG('G','e','o','k'): return HB_SCRIPT_GEORGIAN;
-    case HB_TAG('H','a','n','s'): return HB_SCRIPT_HAN;
-    case HB_TAG('H','a','n','t'): return HB_SCRIPT_HAN;
-    case HB_TAG('J','a','m','o'): return HB_SCRIPT_HANGUL;
-    case HB_TAG('L','a','t','f'): return HB_SCRIPT_LATIN;
-    case HB_TAG('L','a','t','g'): return HB_SCRIPT_LATIN;
-    case HB_TAG('S','y','r','e'): return HB_SCRIPT_SYRIAC;
-    case HB_TAG('S','y','r','j'): return HB_SCRIPT_SYRIAC;
-    case HB_TAG('S','y','r','n'): return HB_SCRIPT_SYRIAC;
-  }
+	/* If it looks right, just use the tag as a script */
+	if (((uint32_t)tag & 0xE0E0E0E0u) == 0x40606060u)
+		return (hb_script_t)tag;
 
-  /* If it looks right, just use the tag as a script */
-  if (((uint32_t) tag & 0xE0E0E0E0u) == 0x40606060u)
-    return (hb_script_t) tag;
-
-  /* Otherwise, return unknown */
-  return HB_SCRIPT_UNKNOWN;
+	/* Otherwise, return unknown */
+	return HB_SCRIPT_UNKNOWN;
 }
 
 /**
@@ -510,9 +491,8 @@ hb_script_from_iso15924_tag (hb_tag_t tag)
  * Since: 0.9.2
  **/
 hb_script_t
-hb_script_from_string (const char *str, int len)
-{
-  return hb_script_from_iso15924_tag (hb_tag_from_string (str, len));
+hb_script_from_string(const char *str, int len) {
+	return hb_script_from_iso15924_tag(hb_tag_from_string(str, len));
 }
 
 /**
@@ -527,9 +507,8 @@ hb_script_from_string (const char *str, int len)
  * Since: 0.9.2
  **/
 hb_tag_t
-hb_script_to_iso15924_tag (hb_script_t script)
-{
-  return (hb_tag_t) script;
+hb_script_to_iso15924_tag(hb_script_t script) {
+	return (hb_tag_t)script;
 }
 
 /**
@@ -548,94 +527,89 @@ hb_script_to_iso15924_tag (hb_script_t script)
  * Since: 0.9.2
  **/
 hb_direction_t
-hb_script_get_horizontal_direction (hb_script_t script)
-{
-  /* https://docs.google.com/spreadsheets/d/1Y90M0Ie3MUJ6UVCRDOypOtijlMDLNNyyLk36T6iMu0o */
-  switch ((hb_tag_t) script)
-  {
-    /* Unicode-1.1 additions */
-    case HB_SCRIPT_ARABIC:
-    case HB_SCRIPT_HEBREW:
+hb_script_get_horizontal_direction(hb_script_t script) {
+	/* https://docs.google.com/spreadsheets/d/1Y90M0Ie3MUJ6UVCRDOypOtijlMDLNNyyLk36T6iMu0o */
+	switch ((hb_tag_t)script) {
+		/* Unicode-1.1 additions */
+		case HB_SCRIPT_ARABIC:
+		case HB_SCRIPT_HEBREW:
 
-    /* Unicode-3.0 additions */
-    case HB_SCRIPT_SYRIAC:
-    case HB_SCRIPT_THAANA:
+		/* Unicode-3.0 additions */
+		case HB_SCRIPT_SYRIAC:
+		case HB_SCRIPT_THAANA:
 
-    /* Unicode-4.0 additions */
-    case HB_SCRIPT_CYPRIOT:
+		/* Unicode-4.0 additions */
+		case HB_SCRIPT_CYPRIOT:
 
-    /* Unicode-4.1 additions */
-    case HB_SCRIPT_KHAROSHTHI:
+		/* Unicode-4.1 additions */
+		case HB_SCRIPT_KHAROSHTHI:
 
-    /* Unicode-5.0 additions */
-    case HB_SCRIPT_PHOENICIAN:
-    case HB_SCRIPT_NKO:
+		/* Unicode-5.0 additions */
+		case HB_SCRIPT_PHOENICIAN:
+		case HB_SCRIPT_NKO:
 
-    /* Unicode-5.1 additions */
-    case HB_SCRIPT_LYDIAN:
+		/* Unicode-5.1 additions */
+		case HB_SCRIPT_LYDIAN:
 
-    /* Unicode-5.2 additions */
-    case HB_SCRIPT_AVESTAN:
-    case HB_SCRIPT_IMPERIAL_ARAMAIC:
-    case HB_SCRIPT_INSCRIPTIONAL_PAHLAVI:
-    case HB_SCRIPT_INSCRIPTIONAL_PARTHIAN:
-    case HB_SCRIPT_OLD_SOUTH_ARABIAN:
-    case HB_SCRIPT_OLD_TURKIC:
-    case HB_SCRIPT_SAMARITAN:
+		/* Unicode-5.2 additions */
+		case HB_SCRIPT_AVESTAN:
+		case HB_SCRIPT_IMPERIAL_ARAMAIC:
+		case HB_SCRIPT_INSCRIPTIONAL_PAHLAVI:
+		case HB_SCRIPT_INSCRIPTIONAL_PARTHIAN:
+		case HB_SCRIPT_OLD_SOUTH_ARABIAN:
+		case HB_SCRIPT_OLD_TURKIC:
+		case HB_SCRIPT_SAMARITAN:
 
-    /* Unicode-6.0 additions */
-    case HB_SCRIPT_MANDAIC:
+		/* Unicode-6.0 additions */
+		case HB_SCRIPT_MANDAIC:
 
-    /* Unicode-6.1 additions */
-    case HB_SCRIPT_MEROITIC_CURSIVE:
-    case HB_SCRIPT_MEROITIC_HIEROGLYPHS:
+		/* Unicode-6.1 additions */
+		case HB_SCRIPT_MEROITIC_CURSIVE:
+		case HB_SCRIPT_MEROITIC_HIEROGLYPHS:
 
-    /* Unicode-7.0 additions */
-    case HB_SCRIPT_MANICHAEAN:
-    case HB_SCRIPT_MENDE_KIKAKUI:
-    case HB_SCRIPT_NABATAEAN:
-    case HB_SCRIPT_OLD_NORTH_ARABIAN:
-    case HB_SCRIPT_PALMYRENE:
-    case HB_SCRIPT_PSALTER_PAHLAVI:
+		/* Unicode-7.0 additions */
+		case HB_SCRIPT_MANICHAEAN:
+		case HB_SCRIPT_MENDE_KIKAKUI:
+		case HB_SCRIPT_NABATAEAN:
+		case HB_SCRIPT_OLD_NORTH_ARABIAN:
+		case HB_SCRIPT_PALMYRENE:
+		case HB_SCRIPT_PSALTER_PAHLAVI:
 
-    /* Unicode-8.0 additions */
-    case HB_SCRIPT_HATRAN:
+		/* Unicode-8.0 additions */
+		case HB_SCRIPT_HATRAN:
 
-    /* Unicode-9.0 additions */
-    case HB_SCRIPT_ADLAM:
+		/* Unicode-9.0 additions */
+		case HB_SCRIPT_ADLAM:
 
-    /* Unicode-11.0 additions */
-    case HB_SCRIPT_HANIFI_ROHINGYA:
-    case HB_SCRIPT_OLD_SOGDIAN:
-    case HB_SCRIPT_SOGDIAN:
+		/* Unicode-11.0 additions */
+		case HB_SCRIPT_HANIFI_ROHINGYA:
+		case HB_SCRIPT_OLD_SOGDIAN:
+		case HB_SCRIPT_SOGDIAN:
 
-    /* Unicode-12.0 additions */
-    case HB_SCRIPT_ELYMAIC:
+		/* Unicode-12.0 additions */
+		case HB_SCRIPT_ELYMAIC:
 
-    /* Unicode-13.0 additions */
-    case HB_SCRIPT_CHORASMIAN:
-    case HB_SCRIPT_YEZIDI:
+		/* Unicode-13.0 additions */
+		case HB_SCRIPT_CHORASMIAN:
+		case HB_SCRIPT_YEZIDI:
 
-    /* Unicode-14.0 additions */
-    case HB_SCRIPT_OLD_UYGHUR:
+		/* Unicode-14.0 additions */
+		case HB_SCRIPT_OLD_UYGHUR:
 
-      return HB_DIRECTION_RTL;
+			return HB_DIRECTION_RTL;
 
+		/* https://github.com/harfbuzz/harfbuzz/issues/1000 */
+		case HB_SCRIPT_OLD_HUNGARIAN:
+		case HB_SCRIPT_OLD_ITALIC:
+		case HB_SCRIPT_RUNIC:
 
-    /* https://github.com/harfbuzz/harfbuzz/issues/1000 */
-    case HB_SCRIPT_OLD_HUNGARIAN:
-    case HB_SCRIPT_OLD_ITALIC:
-    case HB_SCRIPT_RUNIC:
+			return HB_DIRECTION_INVALID;
+	}
 
-      return HB_DIRECTION_INVALID;
-  }
-
-  return HB_DIRECTION_LTR;
+	return HB_DIRECTION_LTR;
 }
 
-
 /* hb_version */
-
 
 /**
  * SECTION:hb-version
@@ -648,7 +622,6 @@ hb_script_get_horizontal_direction (hb_script_t script)
  * conditionally based on those versions, again, at compile- or run-time.
  **/
 
-
 /**
  * hb_version:
  * @major: (out): Library major version component
@@ -659,14 +632,12 @@ hb_script_get_horizontal_direction (hb_script_t script)
  *
  * Since: 0.9.2
  **/
-void
-hb_version (unsigned int *major,
-	    unsigned int *minor,
-	    unsigned int *micro)
-{
-  *major = HB_VERSION_MAJOR;
-  *minor = HB_VERSION_MINOR;
-  *micro = HB_VERSION_MICRO;
+void hb_version(unsigned int *major,
+		unsigned int *minor,
+		unsigned int *micro) {
+	*major = HB_VERSION_MAJOR;
+	*minor = HB_VERSION_MINOR;
+	*micro = HB_VERSION_MICRO;
 }
 
 /**
@@ -679,9 +650,8 @@ hb_version (unsigned int *major,
  * Since: 0.9.2
  **/
 const char *
-hb_version_string ()
-{
-  return HB_VERSION_STRING;
+hb_version_string() {
+	return HB_VERSION_STRING;
 }
 
 /**
@@ -699,183 +669,165 @@ hb_version_string ()
  * Since: 0.9.30
  **/
 hb_bool_t
-hb_version_atleast (unsigned int major,
-		    unsigned int minor,
-		    unsigned int micro)
-{
-  return HB_VERSION_ATLEAST (major, minor, micro);
+hb_version_atleast(unsigned int major,
+		unsigned int minor,
+		unsigned int micro) {
+	return HB_VERSION_ATLEAST(major, minor, micro);
 }
-
-
 
 /* hb_feature_t and hb_variation_t */
 
 static bool
-parse_space (const char **pp, const char *end)
-{
-  while (*pp < end && ISSPACE (**pp))
-    (*pp)++;
-  return true;
+parse_space(const char **pp, const char *end) {
+	while (*pp < end && ISSPACE(**pp))
+		(*pp)++;
+	return true;
 }
 
 static bool
-parse_char (const char **pp, const char *end, char c)
-{
-  parse_space (pp, end);
+parse_char(const char **pp, const char *end, char c) {
+	parse_space(pp, end);
 
-  if (*pp == end || **pp != c)
-    return false;
+	if (*pp == end || **pp != c)
+		return false;
 
-  (*pp)++;
-  return true;
+	(*pp)++;
+	return true;
 }
 
 static bool
-parse_uint (const char **pp, const char *end, unsigned int *pv)
-{
-  /* Intentionally use hb_parse_int inside instead of hb_parse_uint,
-   * such that -1 turns into "big number"... */
-  int v;
-  if (unlikely (!hb_parse_int (pp, end, &v))) return false;
+parse_uint(const char **pp, const char *end, unsigned int *pv) {
+	/* Intentionally use hb_parse_int inside instead of hb_parse_uint,
+	 * such that -1 turns into "big number"... */
+	int v;
+	if (unlikely(!hb_parse_int(pp, end, &v)))
+		return false;
 
-  *pv = v;
-  return true;
+	*pv = v;
+	return true;
 }
 
 static bool
-parse_uint32 (const char **pp, const char *end, uint32_t *pv)
-{
-  /* Intentionally use hb_parse_int inside instead of hb_parse_uint,
-   * such that -1 turns into "big number"... */
-  int v;
-  if (unlikely (!hb_parse_int (pp, end, &v))) return false;
+parse_uint32(const char **pp, const char *end, uint32_t *pv) {
+	/* Intentionally use hb_parse_int inside instead of hb_parse_uint,
+	 * such that -1 turns into "big number"... */
+	int v;
+	if (unlikely(!hb_parse_int(pp, end, &v)))
+		return false;
 
-  *pv = v;
-  return true;
+	*pv = v;
+	return true;
 }
 
 static bool
-parse_bool (const char **pp, const char *end, uint32_t *pv)
-{
-  parse_space (pp, end);
+parse_bool(const char **pp, const char *end, uint32_t *pv) {
+	parse_space(pp, end);
 
-  const char *p = *pp;
-  while (*pp < end && ISALPHA(**pp))
-    (*pp)++;
+	const char *p = *pp;
+	while (*pp < end && ISALPHA(**pp))
+		(*pp)++;
 
-  /* CSS allows on/off as aliases 1/0. */
-  if (*pp - p == 2
-      && TOLOWER (p[0]) == 'o'
-      && TOLOWER (p[1]) == 'n')
-    *pv = 1;
-  else if (*pp - p == 3
-	   && TOLOWER (p[0]) == 'o'
-	   && TOLOWER (p[1]) == 'f'
-	   && TOLOWER (p[2]) == 'f')
-    *pv = 0;
-  else
-    return false;
+	/* CSS allows on/off as aliases 1/0. */
+	if (*pp - p == 2 && TOLOWER(p[0]) == 'o' && TOLOWER(p[1]) == 'n')
+		*pv = 1;
+	else if (*pp - p == 3 && TOLOWER(p[0]) == 'o' && TOLOWER(p[1]) == 'f' && TOLOWER(p[2]) == 'f')
+		*pv = 0;
+	else
+		return false;
 
-  return true;
+	return true;
 }
 
 /* hb_feature_t */
 
 static bool
-parse_feature_value_prefix (const char **pp, const char *end, hb_feature_t *feature)
-{
-  if (parse_char (pp, end, '-'))
-    feature->value = 0;
-  else {
-    parse_char (pp, end, '+');
-    feature->value = 1;
-  }
+parse_feature_value_prefix(const char **pp, const char *end, hb_feature_t *feature) {
+	if (parse_char(pp, end, '-'))
+		feature->value = 0;
+	else {
+		parse_char(pp, end, '+');
+		feature->value = 1;
+	}
 
-  return true;
+	return true;
 }
 
 static bool
-parse_tag (const char **pp, const char *end, hb_tag_t *tag)
-{
-  parse_space (pp, end);
+parse_tag(const char **pp, const char *end, hb_tag_t *tag) {
+	parse_space(pp, end);
 
-  char quote = 0;
+	char quote = 0;
 
-  if (*pp < end && (**pp == '\'' || **pp == '"'))
-  {
-    quote = **pp;
-    (*pp)++;
-  }
+	if (*pp < end && (**pp == '\'' || **pp == '"')) {
+		quote = **pp;
+		(*pp)++;
+	}
 
-  const char *p = *pp;
-  while (*pp < end && (ISALNUM(**pp) || **pp == '_'))
-    (*pp)++;
+	const char *p = *pp;
+	while (*pp < end && (ISALNUM(**pp) || **pp == '_'))
+		(*pp)++;
 
-  if (p == *pp || *pp - p > 4)
-    return false;
+	if (p == *pp || *pp - p > 4)
+		return false;
 
-  *tag = hb_tag_from_string (p, *pp - p);
+	*tag = hb_tag_from_string(p, *pp - p);
 
-  if (quote)
-  {
-    /* CSS expects exactly four bytes.  And we only allow quotations for
-     * CSS compatibility.  So, enforce the length. */
-     if (*pp - p != 4)
-       return false;
-    if (*pp == end || **pp != quote)
-      return false;
-    (*pp)++;
-  }
+	if (quote) {
+		/* CSS expects exactly four bytes.  And we only allow quotations for
+		 * CSS compatibility.  So, enforce the length. */
+		if (*pp - p != 4)
+			return false;
+		if (*pp == end || **pp != quote)
+			return false;
+		(*pp)++;
+	}
 
-  return true;
+	return true;
 }
 
 static bool
-parse_feature_indices (const char **pp, const char *end, hb_feature_t *feature)
-{
-  parse_space (pp, end);
+parse_feature_indices(const char **pp, const char *end, hb_feature_t *feature) {
+	parse_space(pp, end);
 
-  bool has_start;
+	bool has_start;
 
-  feature->start = HB_FEATURE_GLOBAL_START;
-  feature->end = HB_FEATURE_GLOBAL_END;
+	feature->start = HB_FEATURE_GLOBAL_START;
+	feature->end = HB_FEATURE_GLOBAL_END;
 
-  if (!parse_char (pp, end, '['))
-    return true;
+	if (!parse_char(pp, end, '['))
+		return true;
 
-  has_start = parse_uint (pp, end, &feature->start);
+	has_start = parse_uint(pp, end, &feature->start);
 
-  if (parse_char (pp, end, ':') || parse_char (pp, end, ';')) {
-    parse_uint (pp, end, &feature->end);
-  } else {
-    if (has_start)
-      feature->end = feature->start + 1;
-  }
+	if (parse_char(pp, end, ':') || parse_char(pp, end, ';')) {
+		parse_uint(pp, end, &feature->end);
+	} else {
+		if (has_start)
+			feature->end = feature->start + 1;
+	}
 
-  return parse_char (pp, end, ']');
+	return parse_char(pp, end, ']');
 }
 
 static bool
-parse_feature_value_postfix (const char **pp, const char *end, hb_feature_t *feature)
-{
-  bool had_equal = parse_char (pp, end, '=');
-  bool had_value = parse_uint32 (pp, end, &feature->value) ||
-		   parse_bool (pp, end, &feature->value);
-  /* CSS doesn't use equal-sign between tag and value.
-   * If there was an equal-sign, then there *must* be a value.
-   * A value without an equal-sign is ok, but not required. */
-  return !had_equal || had_value;
+parse_feature_value_postfix(const char **pp, const char *end, hb_feature_t *feature) {
+	bool had_equal = parse_char(pp, end, '=');
+	bool had_value = parse_uint32(pp, end, &feature->value) ||
+			parse_bool(pp, end, &feature->value);
+	/* CSS doesn't use equal-sign between tag and value.
+	 * If there was an equal-sign, then there *must* be a value.
+	 * A value without an equal-sign is ok, but not required. */
+	return !had_equal || had_value;
 }
 
 static bool
-parse_one_feature (const char **pp, const char *end, hb_feature_t *feature)
-{
-  return parse_feature_value_prefix (pp, end, feature) &&
-	 parse_tag (pp, end, &feature->tag) &&
-	 parse_feature_indices (pp, end, feature) &&
-	 parse_feature_value_postfix (pp, end, feature) &&
-	 parse_space (pp, end) &&
-	 *pp == end;
+parse_one_feature(const char **pp, const char *end, hb_feature_t *feature) {
+	return parse_feature_value_prefix(pp, end, feature) &&
+			parse_tag(pp, end, &feature->tag) &&
+			parse_feature_indices(pp, end, feature) &&
+			parse_feature_value_postfix(pp, end, feature) &&
+			parse_space(pp, end) &&
+			*pp == end;
 }
 
 /**
@@ -928,24 +880,22 @@ parse_one_feature (const char **pp, const char *end, hb_feature_t *feature)
  * Since: 0.9.5
  **/
 hb_bool_t
-hb_feature_from_string (const char *str, int len,
-			hb_feature_t *feature)
-{
-  hb_feature_t feat;
+hb_feature_from_string(const char *str, int len,
+		hb_feature_t *feature) {
+	hb_feature_t feat;
 
-  if (len < 0)
-    len = strlen (str);
+	if (len < 0)
+		len = strlen(str);
 
-  if (likely (parse_one_feature (&str, str + len, &feat)))
-  {
-    if (feature)
-      *feature = feat;
-    return true;
-  }
+	if (likely(parse_one_feature(&str, str + len, &feat))) {
+		if (feature)
+			*feature = feat;
+		return true;
+	}
 
-  if (feature)
-    memset (feature, 0, sizeof (*feature));
-  return false;
+	if (feature)
+		memset(feature, 0, sizeof(*feature));
+	return false;
 }
 
 /**
@@ -960,63 +910,59 @@ hb_feature_from_string (const char *str, int len,
  *
  * Since: 0.9.5
  **/
-void
-hb_feature_to_string (hb_feature_t *feature,
-		      char *buf, unsigned int size)
-{
-  if (unlikely (!size)) return;
+void hb_feature_to_string(hb_feature_t *feature,
+		char *buf, unsigned int size) {
+	if (unlikely(!size))
+		return;
 
-  char s[128];
-  unsigned int len = 0;
-  if (feature->value == 0)
-    s[len++] = '-';
-  hb_tag_to_string (feature->tag, s + len);
-  len += 4;
-  while (len && s[len - 1] == ' ')
-    len--;
-  if (feature->start != HB_FEATURE_GLOBAL_START || feature->end != HB_FEATURE_GLOBAL_END)
-  {
-    s[len++] = '[';
-    if (feature->start)
-      len += hb_max (0, snprintf (s + len, ARRAY_LENGTH (s) - len, "%u", feature->start));
-    if (feature->end != feature->start + 1) {
-      s[len++] = ':';
-      if (feature->end != HB_FEATURE_GLOBAL_END)
-	len += hb_max (0, snprintf (s + len, ARRAY_LENGTH (s) - len, "%u", feature->end));
-    }
-    s[len++] = ']';
-  }
-  if (feature->value > 1)
-  {
-    s[len++] = '=';
-    len += hb_max (0, snprintf (s + len, ARRAY_LENGTH (s) - len, "%u", feature->value));
-  }
-  assert (len < ARRAY_LENGTH (s));
-  len = hb_min (len, size - 1);
-  memcpy (buf, s, len);
-  buf[len] = '\0';
+	char s[128];
+	unsigned int len = 0;
+	if (feature->value == 0)
+		s[len++] = '-';
+	hb_tag_to_string(feature->tag, s + len);
+	len += 4;
+	while (len && s[len - 1] == ' ')
+		len--;
+	if (feature->start != HB_FEATURE_GLOBAL_START || feature->end != HB_FEATURE_GLOBAL_END) {
+		s[len++] = '[';
+		if (feature->start)
+			len += hb_max(0, snprintf(s + len, ARRAY_LENGTH(s) - len, "%u", feature->start));
+		if (feature->end != feature->start + 1) {
+			s[len++] = ':';
+			if (feature->end != HB_FEATURE_GLOBAL_END)
+				len += hb_max(0, snprintf(s + len, ARRAY_LENGTH(s) - len, "%u", feature->end));
+		}
+		s[len++] = ']';
+	}
+	if (feature->value > 1) {
+		s[len++] = '=';
+		len += hb_max(0, snprintf(s + len, ARRAY_LENGTH(s) - len, "%u", feature->value));
+	}
+	assert(len < ARRAY_LENGTH(s));
+	len = hb_min(len, size - 1);
+	memcpy(buf, s, len);
+	buf[len] = '\0';
 }
 
 /* hb_variation_t */
 
 static bool
-parse_variation_value (const char **pp, const char *end, hb_variation_t *variation)
-{
-  parse_char (pp, end, '='); /* Optional. */
-  double v;
-  if (unlikely (!hb_parse_double (pp, end, &v))) return false;
+parse_variation_value(const char **pp, const char *end, hb_variation_t *variation) {
+	parse_char(pp, end, '='); /* Optional. */
+	double v;
+	if (unlikely(!hb_parse_double(pp, end, &v)))
+		return false;
 
-  variation->value = v;
-  return true;
+	variation->value = v;
+	return true;
 }
 
 static bool
-parse_one_variation (const char **pp, const char *end, hb_variation_t *variation)
-{
-  return parse_tag (pp, end, &variation->tag) &&
-	 parse_variation_value (pp, end, variation) &&
-	 parse_space (pp, end) &&
-	 *pp == end;
+parse_one_variation(const char **pp, const char *end, hb_variation_t *variation) {
+	return parse_tag(pp, end, &variation->tag) &&
+			parse_variation_value(pp, end, variation) &&
+			parse_space(pp, end) &&
+			*pp == end;
 }
 
 /**
@@ -1040,63 +986,54 @@ parse_one_variation (const char **pp, const char *end, hb_variation_t *variation
  * Since: 1.4.2
  */
 hb_bool_t
-hb_variation_from_string (const char *str, int len,
-			  hb_variation_t *variation)
-{
-  hb_variation_t var;
+hb_variation_from_string(const char *str, int len,
+		hb_variation_t *variation) {
+	hb_variation_t var;
 
-  if (len < 0)
-    len = strlen (str);
+	if (len < 0)
+		len = strlen(str);
 
-  if (likely (parse_one_variation (&str, str + len, &var)))
-  {
-    if (variation)
-      *variation = var;
-    return true;
-  }
+	if (likely(parse_one_variation(&str, str + len, &var))) {
+		if (variation)
+			*variation = var;
+		return true;
+	}
 
-  if (variation)
-    memset (variation, 0, sizeof (*variation));
-  return false;
+	if (variation)
+		memset(variation, 0, sizeof(*variation));
+	return false;
 }
 
 #ifndef HB_NO_SETLOCALE
 
-static inline void free_static_C_locale ();
+static inline void free_static_C_locale();
 
 static struct hb_C_locale_lazy_loader_t : hb_lazy_loader_t<hb_remove_pointer<hb_locale_t>,
-							     hb_C_locale_lazy_loader_t>
-{
-  static hb_locale_t create ()
-  {
-    hb_locale_t l = newlocale (LC_ALL_MASK, "C", NULL);
-    if (!l)
-      return l;
+												  hb_C_locale_lazy_loader_t> {
+	static hb_locale_t create() {
+		hb_locale_t l = newlocale(LC_ALL_MASK, "C", NULL);
+		if (!l)
+			return l;
 
-    hb_atexit (free_static_C_locale);
+		hb_atexit(free_static_C_locale);
 
-    return l;
-  }
-  static void destroy (hb_locale_t l)
-  {
-    freelocale (l);
-  }
-  static hb_locale_t get_null ()
-  {
-    return (hb_locale_t) 0;
-  }
+		return l;
+	}
+	static void destroy(hb_locale_t l) {
+		freelocale(l);
+	}
+	static hb_locale_t get_null() {
+		return (hb_locale_t)0;
+	}
 } static_C_locale;
 
-static inline
-void free_static_C_locale ()
-{
-  static_C_locale.free_instance ();
+static inline void free_static_C_locale() {
+	static_C_locale.free_instance();
 }
 
 static hb_locale_t
-get_C_locale ()
-{
-  return static_C_locale.get_unconst ();
+get_C_locale() {
+	return static_C_locale.get_unconst();
 }
 
 #endif
@@ -1113,29 +1050,28 @@ get_C_locale ()
  *
  * Since: 1.4.2
  */
-void
-hb_variation_to_string (hb_variation_t *variation,
-			char *buf, unsigned int size)
-{
-  if (unlikely (!size)) return;
+void hb_variation_to_string(hb_variation_t *variation,
+		char *buf, unsigned int size) {
+	if (unlikely(!size))
+		return;
 
-  char s[128];
-  unsigned int len = 0;
-  hb_tag_to_string (variation->tag, s + len);
-  len += 4;
-  while (len && s[len - 1] == ' ')
-    len--;
-  s[len++] = '=';
+	char s[128];
+	unsigned int len = 0;
+	hb_tag_to_string(variation->tag, s + len);
+	len += 4;
+	while (len && s[len - 1] == ' ')
+		len--;
+	s[len++] = '=';
 
-  hb_locale_t oldlocale HB_UNUSED;
-  oldlocale = hb_uselocale (get_C_locale ());
-  len += hb_max (0, snprintf (s + len, ARRAY_LENGTH (s) - len, "%g", (double) variation->value));
-  (void) hb_uselocale (oldlocale);
+	hb_locale_t oldlocale HB_UNUSED;
+	oldlocale = hb_uselocale(get_C_locale());
+	len += hb_max(0, snprintf(s + len, ARRAY_LENGTH(s) - len, "%g", (double)variation->value));
+	(void)hb_uselocale(oldlocale);
 
-  assert (len < ARRAY_LENGTH (s));
-  len = hb_min (len, size - 1);
-  memcpy (buf, s, len);
-  buf[len] = '\0';
+	assert(len < ARRAY_LENGTH(s));
+	len = hb_min(len, size - 1);
+	memcpy(buf, s, len);
+	buf[len] = '\0';
 }
 
 /**
@@ -1148,10 +1084,8 @@ hb_variation_to_string (hb_variation_t *variation,
  *
  * Since: 2.1.0
  */
-uint8_t
-(hb_color_get_alpha) (hb_color_t color)
-{
-  return hb_color_get_alpha (color);
+uint8_t(hb_color_get_alpha)(hb_color_t color) {
+	return hb_color_get_alpha(color);
 }
 
 /**
@@ -1164,10 +1098,8 @@ uint8_t
  *
  * Since: 2.1.0
  */
-uint8_t
-(hb_color_get_red) (hb_color_t color)
-{
-  return hb_color_get_red (color);
+uint8_t(hb_color_get_red)(hb_color_t color) {
+	return hb_color_get_red(color);
 }
 
 /**
@@ -1180,10 +1112,8 @@ uint8_t
  *
  * Since: 2.1.0
  */
-uint8_t
-(hb_color_get_green) (hb_color_t color)
-{
-  return hb_color_get_green (color);
+uint8_t(hb_color_get_green)(hb_color_t color) {
+	return hb_color_get_green(color);
 }
 
 /**
@@ -1196,12 +1126,45 @@ uint8_t
  *
  * Since: 2.1.0
  */
-uint8_t
-(hb_color_get_blue) (hb_color_t color)
-{
-  return hb_color_get_blue (color);
+uint8_t(hb_color_get_blue)(hb_color_t color) {
+	return hb_color_get_blue(color);
 }
-
+static void (*glob_allc_cb)(void *, int) = nullptr;
+static void (*glob_free_cb)(void *) = nullptr;
+void hb_set_memmory_cb(void (*_allc)(void *, int), void (*_free)(void *)) {
+	glob_allc_cb = _allc;
+	glob_free_cb = _free;
+}
+void *def_hb_malloc_impl(int size) {
+	void *r = malloc(size);
+	if (glob_allc_cb) {
+		(*glob_allc_cb)(r, size);
+	}
+	return r;
+}
+void *def_hb_calloc_impl(int nmemb, int size) {
+	void *r = calloc(nmemb, size);
+	if (glob_allc_cb) {
+		(*glob_allc_cb)(r, nmemb * size);
+	}
+	return r;
+}
+void *def_hb_realloc_impl(void *ptr, int size) {
+	if (glob_free_cb) {
+		(*glob_free_cb)(ptr);
+	}
+	void *r = realloc(ptr, size);
+	if (glob_allc_cb) {
+		(*glob_allc_cb)(r, size);
+	}
+	return r;
+}
+void def_hb_free_impl(void *ptr) {
+	if (glob_free_cb) {
+		(*glob_free_cb)(ptr);
+	}
+	free(ptr);
+}
 
 /* If there is no visibility control, then hb-static.cc will NOT
  * define anything.  Instead, we get it to define one set in here

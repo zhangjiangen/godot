@@ -23,7 +23,7 @@ jobs:
             target: release_debug
             tools: true
             tests: false # Disabled due freeze caused by mix Mono build and CI
-            sconsflags: module_mono_enabled=yes mono_glue=no
+            sconsflags: module_mono_enabled=yes mono_static=yes mono_glue=no
             doc-test: true
 
             bin: "./bin/godot_linuxbsd_opt_tools_64_mono"
@@ -48,7 +48,7 @@ jobs:
             target: release
             tools: false
             tests: false
-            sconsflags: module_mono_enabled=yes mono_glue=no debug_symbols=no
+            sconsflags: module_mono_enabled=yes mono_static=yes mono_glue=no debug_symbols=no
             build-mono: false
             artifact: true
 

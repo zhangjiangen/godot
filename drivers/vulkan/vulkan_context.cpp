@@ -46,6 +46,8 @@
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 #define APP_SHORT_NAME "GodotEngine"
 
+VulkanHooks *VulkanContext::vulkan_hooks = nullptr;
+
 VKAPI_ATTR VkBool32 VKAPI_CALL VulkanContext::_debug_messenger_callback(
 		VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 		VkDebugUtilsMessageTypeFlagsEXT messageType,
@@ -696,19 +698,27 @@ Error VulkanContext::_create_instance() {
 		inst_info.pNext = &dbg_report_callback_create_info;
 	}
 
-	VkResult err = vkCreateInstance(&inst_info, nullptr, &inst);
-	ERR_FAIL_COND_V_MSG(err == VK_ERROR_INCOMPATIBLE_DRIVER, ERR_CANT_CREATE,
-			"Cannot find a compatible Vulkan installable client driver (ICD).\n\n"
-			"vkCreateInstance Failure");
-	ERR_FAIL_COND_V_MSG(err == VK_ERROR_EXTENSION_NOT_PRESENT, ERR_CANT_CREATE,
-			"Cannot find a specified extension library.\n"
-			"Make sure your layers path is set appropriately.\n"
-			"vkCreateInstance Failure");
-	ERR_FAIL_COND_V_MSG(err, ERR_CANT_CREATE,
-			"vkCreateInstance failed.\n\n"
-			"Do you have a compatible Vulkan installable client driver (ICD) installed?\n"
-			"Please look at the Getting Started guide for additional information.\n"
-			"vkCreateInstance Failure");
+	VkResult err;
+
+	if (vulkan_hooks) {
+		if (!vulkan_hooks->create_vulkan_instance(&inst_info, &inst)) {
+			return ERR_CANT_CREATE;
+		}
+	} else {
+		err = vkCreateInstance(&inst_info, nullptr, &inst);
+		ERR_FAIL_COND_V_MSG(err == VK_ERROR_INCOMPATIBLE_DRIVER, ERR_CANT_CREATE,
+				"Cannot find a compatible Vulkan installable client driver (ICD).\n\n"
+				"vkCreateInstance Failure");
+		ERR_FAIL_COND_V_MSG(err == VK_ERROR_EXTENSION_NOT_PRESENT, ERR_CANT_CREATE,
+				"Cannot find a specified extension library.\n"
+				"Make sure your layers path is set appropriately.\n"
+				"vkCreateInstance Failure");
+		ERR_FAIL_COND_V_MSG(err, ERR_CANT_CREATE,
+				"vkCreateInstance failed.\n\n"
+				"Do you have a compatible Vulkan installable client driver (ICD) installed?\n"
+				"Please look at the Getting Started guide for additional information.\n"
+				"vkCreateInstance Failure");
+	}
 
 	inst_initialized = true;
 
@@ -800,7 +810,7 @@ Error VulkanContext::_create_physical_device(VkSurfaceKHR p_surface) {
 			"Do you have a compatible Vulkan installable client driver (ICD) installed?\n"
 			"vkEnumeratePhysicalDevices Failure");
 
-	VkPhysicalDevice *physical_devices = (VkPhysicalDevice *)memalloc(sizeof(VkPhysicalDevice) * gpu_count);
+	VkPhysicalDevice *physical_devices = (VkPhysicalDevice *)alloca(sizeof(VkPhysicalDevice) * gpu_count);
 	err = vkEnumeratePhysicalDevices(inst, &gpu_count, physical_devices);
 	if (err) {
 		memfree(physical_devices);
@@ -821,108 +831,123 @@ Error VulkanContext::_create_physical_device(VkSurfaceKHR p_surface) {
 		{ 0, nullptr },
 	};
 
-	// TODO: At least on Linux Laptops integrated GPUs fail with Vulkan in many instances.
-	//   The device should really be a preference, but for now choosing a discrete GPU over the
-	//   integrated one is better than the default.
-
 	int32_t device_index = -1;
-	int type_selected = -1;
-	print_verbose("Vulkan devices:");
-	for (uint32_t i = 0; i < gpu_count; ++i) {
-		VkPhysicalDeviceProperties props;
-		vkGetPhysicalDeviceProperties(physical_devices[i], &props);
-
-		bool present_supported = false;
-
-		uint32_t device_queue_family_count = 0;
-		vkGetPhysicalDeviceQueueFamilyProperties(physical_devices[i], &device_queue_family_count, nullptr);
-		VkQueueFamilyProperties *device_queue_props = (VkQueueFamilyProperties *)alloca(device_queue_family_count * sizeof(VkQueueFamilyProperties));
-		vkGetPhysicalDeviceQueueFamilyProperties(physical_devices[i], &device_queue_family_count, device_queue_props);
-		for (uint32_t j = 0; j < device_queue_family_count; j++) {
-			VkBool32 supports;
-			vkGetPhysicalDeviceSurfaceSupportKHR(physical_devices[i], j, p_surface, &supports);
-			if (supports && ((device_queue_props[j].queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0)) {
-				present_supported = true;
-			} else {
-				continue;
-			}
+	if (vulkan_hooks) {
+		if (!vulkan_hooks->get_physical_device(&gpu)) {
+			return ERR_CANT_CREATE;
 		}
-		String name = props.deviceName;
-		String vendor = "Unknown";
-		String dev_type;
-		switch (props.deviceType) {
-			case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU: {
-				dev_type = "Discrete";
-			} break;
-			case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU: {
-				dev_type = "Integrated";
-			} break;
-			case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU: {
-				dev_type = "Virtual";
-			} break;
-			case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_CPU: {
-				dev_type = "CPU";
-			} break;
-			default: {
-				dev_type = "Other";
-			} break;
-		}
-		uint32_t vendor_idx = 0;
-		while (vendor_names[vendor_idx].name != nullptr) {
-			if (props.vendorID == vendor_names[vendor_idx].id) {
-				vendor = vendor_names[vendor_idx].name;
+
+		// not really needed but nice to print the correct entry
+		for (uint32_t i = 0; i < gpu_count; ++i) {
+			if (physical_devices[i] == gpu) {
+				device_index = i;
 				break;
 			}
-			vendor_idx++;
 		}
-		//free(device_queue_props);
-		print_verbose("  #" + itos(i) + ": " + vendor + " " + name + " - " + (present_supported ? "Supported" : "Unsupported") + ", " + dev_type);
+	} else {
+		// TODO: At least on Linux Laptops integrated GPUs fail with Vulkan in many instances.
+		//   The device should really be a preference, but for now choosing a discrete GPU over the
+		//   integrated one is better than the default.
 
-		if (present_supported) { // Select first supported device of preferred type: Discrete > Integrated > Virtual > CPU > Other.
+		int type_selected = -1;
+		print_verbose("Vulkan devices:");
+		for (uint32_t i = 0; i < gpu_count; ++i) {
+			VkPhysicalDeviceProperties props;
+			vkGetPhysicalDeviceProperties(physical_devices[i], &props);
+
+			bool present_supported = false;
+
+			uint32_t device_queue_family_count = 0;
+			vkGetPhysicalDeviceQueueFamilyProperties(physical_devices[i], &device_queue_family_count, nullptr);
+			VkQueueFamilyProperties *device_queue_props = (VkQueueFamilyProperties *)malloc(device_queue_family_count * sizeof(VkQueueFamilyProperties));
+			vkGetPhysicalDeviceQueueFamilyProperties(physical_devices[i], &device_queue_family_count, device_queue_props);
+			for (uint32_t j = 0; j < device_queue_family_count; j++) {
+				VkBool32 supports;
+				vkGetPhysicalDeviceSurfaceSupportKHR(physical_devices[i], j, p_surface, &supports);
+				if (supports && ((device_queue_props[j].queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0)) {
+					present_supported = true;
+				} else {
+					continue;
+				}
+			}
+			String name = props.deviceName;
+			String vendor = "Unknown";
+			String dev_type;
 			switch (props.deviceType) {
 				case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU: {
-					if (type_selected < 4) {
-						type_selected = 4;
-						device_index = i;
-					}
+					dev_type = "Discrete";
 				} break;
 				case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU: {
-					if (type_selected < 3) {
-						type_selected = 3;
-						device_index = i;
-					}
+					dev_type = "Integrated";
 				} break;
 				case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU: {
-					if (type_selected < 2) {
-						type_selected = 2;
-						device_index = i;
-					}
+					dev_type = "Virtual";
 				} break;
 				case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_CPU: {
-					if (type_selected < 1) {
-						type_selected = 1;
-						device_index = i;
-					}
+					dev_type = "CPU";
 				} break;
 				default: {
-					if (type_selected < 0) {
-						type_selected = 0;
-						device_index = i;
-					}
+					dev_type = "Other";
 				} break;
 			}
+			uint32_t vendor_idx = 0;
+			while (vendor_names[vendor_idx].name != nullptr) {
+				if (props.vendorID == vendor_names[vendor_idx].id) {
+					vendor = vendor_names[vendor_idx].name;
+					break;
+				}
+				vendor_idx++;
+			}
+			free(device_queue_props);
+			print_verbose("  #" + itos(i) + ": " + vendor + " " + name + " - " + (present_supported ? "Supported" : "Unsupported") + ", " + dev_type);
+
+			if (present_supported) { // Select first supported device of preffered type: Discrete > Integrated > Virtual > CPU > Other.
+				switch (props.deviceType) {
+					case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU: {
+						if (type_selected < 4) {
+							type_selected = 4;
+							device_index = i;
+						}
+					} break;
+					case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU: {
+						if (type_selected < 3) {
+							type_selected = 3;
+							device_index = i;
+						}
+					} break;
+					case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU: {
+						if (type_selected < 2) {
+							type_selected = 2;
+							device_index = i;
+						}
+					} break;
+					case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_CPU: {
+						if (type_selected < 1) {
+							type_selected = 1;
+							device_index = i;
+						}
+					} break;
+					default: {
+						if (type_selected < 0) {
+							type_selected = 0;
+							device_index = i;
+						}
+					} break;
+				}
+			}
 		}
+
+		int32_t user_device_index = Engine::get_singleton()->get_gpu_index(); // Force user selected GPU.
+		if (user_device_index >= 0 && user_device_index < (int32_t)gpu_count) {
+			device_index = user_device_index;
+		}
+
+		ERR_FAIL_COND_V_MSG(device_index == -1, ERR_CANT_CREATE, "None of Vulkan devices supports both graphics and present queues.");
+
+		gpu = physical_devices[device_index];
 	}
 
-	int32_t user_device_index = Engine::get_singleton()->get_gpu_index(); // Force user selected GPU.
-	if (user_device_index >= 0 && user_device_index < (int32_t)gpu_count) {
-		device_index = user_device_index;
-	}
-
-	ERR_FAIL_COND_V_MSG(device_index == -1, ERR_CANT_CREATE, "None of Vulkan devices supports both graphics and present queues.");
-
-	gpu = physical_devices[device_index];
-	memfree(physical_devices);
+	//free(physical_devices);
 
 	/* Look for device extensions */
 	uint32_t device_extension_count = 0;
@@ -959,10 +984,10 @@ Error VulkanContext::_create_physical_device(VkSurfaceKHR p_surface) {
 	ERR_FAIL_COND_V(err, ERR_CANT_CREATE);
 
 	if (device_extension_count > 0) {
-		VkExtensionProperties *device_extensions = (VkExtensionProperties *)memalloc(sizeof(VkExtensionProperties) * device_extension_count);
+		VkExtensionProperties *device_extensions = (VkExtensionProperties *)alloca(sizeof(VkExtensionProperties) * device_extension_count);
 		err = vkEnumerateDeviceExtensionProperties(gpu, nullptr, &device_extension_count, device_extensions);
 		if (err) {
-			memfree(device_extensions);
+			//memfree(device_extensions);
 			ERR_FAIL_V(ERR_CANT_CREATE);
 		}
 
@@ -976,7 +1001,7 @@ Error VulkanContext::_create_physical_device(VkSurfaceKHR p_surface) {
 				extension_names[enabled_extension_count++] = VK_KHR_MULTIVIEW_EXTENSION_NAME;
 			}
 			if (enabled_extension_count >= MAX_EXTENSIONS) {
-				memfree(device_extensions);
+				//memfree(device_extensions);
 				ERR_FAIL_V_MSG(ERR_BUG, "Enabled extension count reaches MAX_EXTENSIONS, BUG");
 			}
 		}
@@ -993,7 +1018,7 @@ Error VulkanContext::_create_physical_device(VkSurfaceKHR p_surface) {
 					VK_KHR_incremental_present_enabled = true;
 				}
 				if (enabled_extension_count >= MAX_EXTENSIONS) {
-					memfree(device_extensions);
+					//memfree(device_extensions);
 					ERR_FAIL_V_MSG(ERR_BUG, "Enabled extension count reaches MAX_EXTENSIONS, BUG");
 				}
 			}
@@ -1011,13 +1036,13 @@ Error VulkanContext::_create_physical_device(VkSurfaceKHR p_surface) {
 					VK_GOOGLE_display_timing_enabled = true;
 				}
 				if (enabled_extension_count >= MAX_EXTENSIONS) {
-					memfree(device_extensions);
+					//memfree(device_extensions);
 					ERR_FAIL_V_MSG(ERR_BUG, "Enabled extension count reaches MAX_EXTENSIONS, BUG");
 				}
 			}
 		}
 
-		memfree(device_extensions);
+		//memfree(device_extensions);
 	}
 
 	ERR_FAIL_COND_V_MSG(!swapchainExtFound, ERR_CANT_CREATE,
@@ -1149,15 +1174,21 @@ Error VulkanContext::_create_device() {
 		sdevice.queueCreateInfoCount = 2;
 	}
 
-	err = vkCreateDevice(gpu, &sdevice, nullptr, &device);
-	ERR_FAIL_COND_V(err, ERR_CANT_CREATE);
+	if (vulkan_hooks) {
+		if (!vulkan_hooks->create_vulkan_device(&sdevice, &device)) {
+			return ERR_CANT_CREATE;
+		}
+	} else {
+		err = vkCreateDevice(gpu, &sdevice, nullptr, &device);
+		ERR_FAIL_COND_V(err, ERR_CANT_CREATE);
+	}
 
 	return OK;
 }
 
 Error VulkanContext::_initialize_queues(VkSurfaceKHR p_surface) {
 	// Iterate over each queue to learn whether it supports presenting:
-	VkBool32 *supportsPresent = (VkBool32 *)memalloc(queue_family_count * sizeof(VkBool32));
+	VkBool32 *supportsPresent = (VkBool32 *)alloca(queue_family_count * sizeof(VkBool32));
 	for (uint32_t i = 0; i < queue_family_count; i++) {
 		fpGetPhysicalDeviceSurfaceSupportKHR(gpu, i, p_surface, &supportsPresent[i]);
 	}
@@ -1191,7 +1222,7 @@ Error VulkanContext::_initialize_queues(VkSurfaceKHR p_surface) {
 		}
 	}
 
-	memfree(supportsPresent);
+	//memfree(supportsPresent);
 
 	// Generate error if could not find both a graphics and a present queue
 	ERR_FAIL_COND_V_MSG(graphicsQueueFamilyIndex == UINT32_MAX || presentQueueFamilyIndex == UINT32_MAX, ERR_CANT_CREATE,
@@ -1235,10 +1266,10 @@ Error VulkanContext::_initialize_queues(VkSurfaceKHR p_surface) {
 	uint32_t formatCount;
 	VkResult err = fpGetPhysicalDeviceSurfaceFormatsKHR(gpu, p_surface, &formatCount, nullptr);
 	ERR_FAIL_COND_V(err, ERR_CANT_CREATE);
-	VkSurfaceFormatKHR *surfFormats = (VkSurfaceFormatKHR *)memalloc(formatCount * sizeof(VkSurfaceFormatKHR));
+	VkSurfaceFormatKHR *surfFormats = (VkSurfaceFormatKHR *)alloca(formatCount * sizeof(VkSurfaceFormatKHR));
 	err = fpGetPhysicalDeviceSurfaceFormatsKHR(gpu, p_surface, &formatCount, surfFormats);
 	if (err) {
-		memfree(surfFormats);
+		//memfree(surfFormats);
 		ERR_FAIL_V(ERR_CANT_CREATE);
 	}
 	// If the format list includes just one entry of VK_FORMAT_UNDEFINED,
@@ -1257,7 +1288,7 @@ Error VulkanContext::_initialize_queues(VkSurfaceKHR p_surface) {
 		uint32_t allowed_formats_count = sizeof(allowed_formats) / sizeof(VkFormat);
 
 		if (formatCount < 1) {
-			memfree(surfFormats);
+			//memfree(surfFormats);
 			ERR_FAIL_V_MSG(ERR_CANT_CREATE, "formatCount less than 1");
 		}
 
@@ -1273,12 +1304,12 @@ Error VulkanContext::_initialize_queues(VkSurfaceKHR p_surface) {
 		}
 
 		if (format == VK_FORMAT_UNDEFINED) {
-			memfree(surfFormats);
+			//memfree(surfFormats);
 			ERR_FAIL_V_MSG(ERR_CANT_CREATE, "No usable surface format found.");
 		}
 	}
 
-	memfree(surfFormats);
+	//memfree(surfFormats);
 
 	Error serr = _create_semaphores();
 	if (serr) {
@@ -1463,11 +1494,11 @@ Error VulkanContext::_update_swap_chain(Window *window) {
 	uint32_t presentModeCount;
 	err = fpGetPhysicalDeviceSurfacePresentModesKHR(gpu, window->surface, &presentModeCount, nullptr);
 	ERR_FAIL_COND_V(err, ERR_CANT_CREATE);
-	VkPresentModeKHR *presentModes = (VkPresentModeKHR *)memalloc(presentModeCount * sizeof(VkPresentModeKHR));
+	VkPresentModeKHR *presentModes = (VkPresentModeKHR *)alloca(presentModeCount * sizeof(VkPresentModeKHR));
 	ERR_FAIL_COND_V(!presentModes, ERR_CANT_CREATE);
 	err = fpGetPhysicalDeviceSurfacePresentModesKHR(gpu, window->surface, &presentModeCount, presentModes);
 	if (err) {
-		memfree(presentModes);
+		//memfree(presentModes);
 		ERR_FAIL_V(ERR_CANT_CREATE);
 	}
 
@@ -1499,7 +1530,7 @@ Error VulkanContext::_update_swap_chain(Window *window) {
 	}
 
 	if (window->width == 0 || window->height == 0) {
-		memfree(presentModes);
+		//memfree(presentModes);
 		//likely window minimized, no swapchain created
 		return OK;
 	}
@@ -1567,7 +1598,7 @@ Error VulkanContext::_update_swap_chain(Window *window) {
 
 	print_verbose("Using present mode: " + String(string_VkPresentModeKHR(window->presentMode)));
 
-	memfree(presentModes);
+	//memfree(presentModes);
 
 	// Determine the number of VkImages to use in the swap chain.
 	// Application desires to acquire 3 images at a time for triple
@@ -1643,18 +1674,18 @@ Error VulkanContext::_update_swap_chain(Window *window) {
 		ERR_FAIL_COND_V(swapchainImageCount != sp_image_count, ERR_BUG);
 	}
 
-	VkImage *swapchainImages = (VkImage *)memalloc(swapchainImageCount * sizeof(VkImage));
+	VkImage *swapchainImages = (VkImage *)alloca(swapchainImageCount * sizeof(VkImage));
 	ERR_FAIL_COND_V(!swapchainImages, ERR_CANT_CREATE);
 	err = fpGetSwapchainImagesKHR(device, window->swapchain, &swapchainImageCount, swapchainImages);
 	if (err) {
-		memfree(swapchainImages);
+		//memfree(swapchainImages);
 		ERR_FAIL_V(ERR_CANT_CREATE);
 	}
 
 	window->swapchain_image_resources =
 			(SwapchainImageResources *)memalloc(sizeof(SwapchainImageResources) * swapchainImageCount);
 	if (!window->swapchain_image_resources) {
-		memfree(swapchainImages);
+		//memfree(swapchainImages);
 		ERR_FAIL_V(ERR_CANT_CREATE);
 	}
 
@@ -1685,12 +1716,12 @@ Error VulkanContext::_update_swap_chain(Window *window) {
 
 		err = vkCreateImageView(device, &color_image_view, nullptr, &window->swapchain_image_resources[i].view);
 		if (err) {
-			memfree(swapchainImages);
+			//memfree(swapchainImages);
 			ERR_FAIL_V(ERR_CANT_CREATE);
 		}
 	}
 
-	memfree(swapchainImages);
+	//memfree(swapchainImages);
 
 	/******** FRAMEBUFFER ************/
 
@@ -1979,24 +2010,25 @@ Error VulkanContext::swap_buffers() {
 	}
 
 	VkSemaphore *semaphores_to_acquire = (VkSemaphore *)alloca(windows.size() * sizeof(VkSemaphore));
+	VkPipelineStageFlags *pipe_stage_flags = (VkPipelineStageFlags *)alloca(windows.size() * sizeof(VkPipelineStageFlags));
 	uint32_t semaphores_to_acquire_count = 0;
 
 	for (KeyValue<int, Window> &E : windows) {
 		Window *w = &E.value;
 
 		if (w->semaphore_acquired) {
-			semaphores_to_acquire[semaphores_to_acquire_count++] = w->image_acquired_semaphores[frame_index];
+			semaphores_to_acquire[semaphores_to_acquire_count] = w->image_acquired_semaphores[frame_index];
+			pipe_stage_flags[semaphores_to_acquire_count] = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			semaphores_to_acquire_count++;
 		}
 	}
 
-	VkPipelineStageFlags pipe_stage_flags;
 	VkSubmitInfo submit_info;
 	submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	submit_info.pNext = nullptr;
-	submit_info.pWaitDstStageMask = &pipe_stage_flags;
-	pipe_stage_flags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 	submit_info.waitSemaphoreCount = semaphores_to_acquire_count;
 	submit_info.pWaitSemaphores = semaphores_to_acquire;
+	submit_info.pWaitDstStageMask = pipe_stage_flags;
 	submit_info.commandBufferCount = commands_to_submit;
 	submit_info.pCommandBuffers = commands_ptr;
 	submit_info.signalSemaphoreCount = 1;
@@ -2012,7 +2044,7 @@ Error VulkanContext::swap_buffers() {
 		// present queue before presenting, waiting for the draw complete
 		// semaphore and signalling the ownership released semaphore when finished
 		VkFence nullFence = VK_NULL_HANDLE;
-		pipe_stage_flags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		pipe_stage_flags[0] = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 		submit_info.waitSemaphoreCount = 1;
 		submit_info.pWaitSemaphores = &draw_complete_semaphores[frame_index];
 		submit_info.commandBufferCount = 0;

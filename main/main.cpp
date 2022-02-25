@@ -487,6 +487,7 @@ void Main::test_cleanup() {
 	}
 
 	unregister_core_driver_types();
+	unregister_core_extensions();
 	unregister_core_types();
 
 	OS::get_singleton()->finalize_core();
@@ -637,7 +638,6 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 			continue;
 		}
 #endif
-
 		List<String>::Element *N = I->next();
 
 		if (I->get() == "-h" || I->get() == "--help" || I->get() == "/?") { // display help
@@ -1160,6 +1160,8 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 	// Initialize user data dir.
 	OS::get_singleton()->ensure_user_data_dir();
 
+	register_core_extensions(); // core extensions must be registered after globals setup and before display
+
 	ResourceUID::get_singleton()->load_from_cache(); // load UUIDs from cache.
 
 	GLOBAL_DEF("memory/limits/multithreaded_server/rid_pool_prealloc", 60);
@@ -1275,7 +1277,6 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 
 	OS::get_singleton()->set_cmdline(execpath, main_args);
 
-	register_core_extensions(); //before display
 	// possibly be worth changing the default from vulkan to something lower spec,
 	// for the project manager, depending on how smooth the fallback is.
 	GLOBAL_DEF_RST("rendering/driver/driver_name", "vulkan");
@@ -1532,6 +1533,7 @@ error:
 	}
 
 	unregister_core_driver_types();
+	unregister_core_extensions();
 	unregister_core_types();
 
 	OS::get_singleton()->_cmdline.clear();
@@ -1964,6 +1966,10 @@ Error Main::setup2(Thread::ID p_main_tid_override) {
 	Engine::get_singleton()->on_init();
 
 	return OK;
+}
+
+String Main::get_rendering_driver_name() {
+	return rendering_driver;
 }
 
 // everything the main loop needs to know about frame timings
@@ -2896,6 +2902,7 @@ void Main::cleanup(bool p_force) {
 	memdelete(message_queue);
 
 	unregister_core_driver_types();
+	unregister_core_extensions();
 	unregister_core_types();
 
 	OS::get_singleton()->finalize_core();

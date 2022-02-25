@@ -78,6 +78,7 @@ public:
 public:
 	// 是否管理
 	_FORCE_INLINE_ static bool is_manager(size_t count) {
+		//return false;
 		return count <= 1024;
 	}
 	_FORCE_INLINE_ static void *alloc(size_t p_memory, const char *file_name, int file_lne) {

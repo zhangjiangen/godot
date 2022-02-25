@@ -232,10 +232,10 @@ extern "C" void  hb_free_impl(void *ptr);
 #define hb_realloc hb_realloc_impl
 #define hb_free hb_free_impl
 #else
-#define hb_malloc malloc
-#define hb_calloc calloc
-#define hb_realloc realloc
-#define hb_free free
+#define hb_malloc def_hb_malloc_impl
+#define hb_calloc def_hb_calloc_impl
+#define hb_realloc def_hb_realloc_impl
+#define hb_free def_hb_free_impl
 #endif
 
 
