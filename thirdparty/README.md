@@ -454,7 +454,7 @@ Collection of single-file libraries used in Godot components.
   * License: Public Domain or MIT
 - `stb_rect_pack.h`
   * Upstream: https://github.com/nothings/stb
-  * Version: 1.00 (2bb4a0accd4003c1db4c24533981e01b1adfd656, 2019)
+  * Version: 1.01 (af1a5bc352164740c1cc1354942b1c6b72eacb8a, 2021)
   * License: Public Domain or Unlicense or MIT
 - `yuv2rgb.h`
   * Upstream: http://wss.co.uk/pinknoise/yuv2rgb/ (to check)
@@ -690,10 +690,10 @@ Files extracted from upstream source:
 SDK release: https://github.com/KhronosGroup/Vulkan-ValidationLayers/blob/master/layers/generated/vk_enum_string_helper.h
 
 `vk_mem_alloc.h` is taken from https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator
-Version: 3.0.0-development (2022-02-08), commit `a1895bc76547370564d604faa27e0b73de747df1`
+Version: 3.0.0-development (2022-02-24), commit `dc3f6bb9159df22ceed69c7765ddfb4fbb1b6ed0`
 `vk_mem_alloc.cpp` is a Godot file and should be preserved on updates.
 
-Patches in the `patches` directory should be re-applied after updates (order must be followed among the number-prefixed ones).
+Patches in the `patches` directory should be re-applied after updates.
 
 
 ## wslay
