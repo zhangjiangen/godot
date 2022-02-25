@@ -38,14 +38,17 @@
 #include "scene/gui/rich_text_label.h"
 #include "scene/gui/tab_container.h"
 #include "scene/gui/text_edit.h"
+#include "scene/gui/tree.h"
 #include "scene/main/timer.h"
 #include "scene/resources/shader.h"
+#include "servers/rendering/shader_preprocessor.h"
 #include "servers/rendering/shader_warnings.h"
 
 class ShaderTextEditor : public CodeTextEditor {
 	GDCLASS(ShaderTextEditor, CodeTextEditor);
 
 	Color marked_line_color = Color(1, 1, 1);
+	float preprocessor_inactive_color_intensity = 0.5f;
 
 	struct WarningsComparator {
 		_ALWAYS_INLINE_ bool operator()(const ShaderWarning &p_a, const ShaderWarning &p_b) const { return (p_a.get_line() < p_b.get_line()); }
@@ -54,13 +57,17 @@ class ShaderTextEditor : public CodeTextEditor {
 	Ref<CodeHighlighter> syntax_highlighter;
 	RichTextLabel *warnings_panel = nullptr;
 	RichTextLabel *resource_path_panel = nullptr;
+	Tree *shader_dependency_tree;
 	Ref<Shader> shader;
+	String error_shader_path;
 	List<ShaderWarning> warnings;
+	ShaderEditor *shader_editor;
 	Error last_compile_result = Error::OK;
 
 	void _check_shader_mode();
 	void _update_warning_panel();
 
+	void _clear_tree_item_backgrounds(TreeItem *p_node);
 protected:
 	void _notification(int p_what);
 	static void _bind_methods();
@@ -70,13 +77,20 @@ protected:
 
 public:
 	virtual void _validate_script() override;
+	virtual void goto_error() override;
 
+	void load_theme_settings();
 	void reload_text();
 	void set_warnings_panel(RichTextLabel *p_warnings_panel);
 	void set_resource_path_panel(RichTextLabel *p_resource_path_panel);
 
+	void set_shader_editor(ShaderEditor *p_editor);
+
+	void set_shader_dependency_tree(Tree *p_tree);
+
 	Ref<Shader> get_edited_shader() const;
 	void set_edited_shader(const Ref<Shader> &p_shader);
+	void set_edited_shader(const Ref<Shader> &p_shader, String p_code);
 	ShaderTextEditor();
 };
 
@@ -107,12 +121,14 @@ class ShaderEditor : public PanelContainer {
 		BOOKMARK_GOTO_NEXT,
 		BOOKMARK_GOTO_PREV,
 		BOOKMARK_REMOVE_ALL,
+		VIEW_SHADER_DEPENDENCIES,
 		HELP_DOCS,
 	};
 
 	MenuButton *edit_menu;
 	MenuButton *search_menu;
 	PopupMenu *bookmarks_menu;
+	MenuButton *view_menu;
 	MenuButton *help_menu;
 	PopupMenu *context_menu;
 	RichTextLabel *warnings_panel = nullptr;
@@ -124,6 +140,10 @@ class ShaderEditor : public PanelContainer {
 	ConfirmationDialog *disk_changed;
 
 	ShaderTextEditor *shader_editor;
+
+	// Map<String, String> shader_rolling_code;
+	// ShaderDependencyGraph shader_dependencies;
+	Tree *shader_dependency_tree;
 
 	void _menu_option(int p_option);
 	mutable Ref<Shader> shader;
@@ -137,6 +157,10 @@ class ShaderEditor : public PanelContainer {
 	void _warning_clicked(Variant p_line);
 	void _update_warnings(bool p_validate);
 
+	void _tree_activate_shader();
+
+	void _update_shader_dependency_tree_items(TreeItem *p_parent_tree_item, ShaderDependencyNode *p_node);
+
 protected:
 	void _notification(int p_what);
 	static void _bind_methods();
@@ -147,10 +171,18 @@ protected:
 	void _bookmark_item_pressed(int p_idx);
 
 public:
+	Map<String, String> shader_rolling_code;
+	ShaderDependencyGraph shader_dependencies;
+	void _update_shader_dependency_tree();
+
 	void apply_shaders();
+
+	Ref<Shader> get_shader();
 
 	void ensure_select_current();
 	void edit(const Ref<Shader> &p_shader);
+
+	void open_path(String p_path);
 
 	void goto_line_selection(int p_line, int p_begin, int p_end);
 
