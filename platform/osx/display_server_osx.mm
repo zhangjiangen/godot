@@ -1772,7 +1772,8 @@ DisplayServer::WindowMode DisplayServerOSX::window_get_mode(WindowID p_window) c
 	if (wd.fullscreen) { // If fullscreen, it's not in another mode.
 		return WINDOW_MODE_FULLSCREEN;
 	}
-	if ([wd.window_object isZoomed] && !wd.resize_disabled) {
+	//if ([wd.window_object isZoomed] && !wd.resize_disabled) {
+	if ( !wd.resize_disabled) {
 		return WINDOW_MODE_MAXIMIZED;
 	}
 	if ([wd.window_object respondsToSelector:@selector(isMiniaturized)]) {

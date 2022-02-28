@@ -183,6 +183,18 @@ hb_bool_t TextServerAdvanced::_bmp_get_font_h_extents(hb_font_t *p_font, void *p
 
 	return true;
 }
+static void *my_malloc(const void *context, size_t size) {
+	void *ret = MallocAllocator::alloc_memory(size, __FILE__, __LINE__);
+	return ret;
+}
+static void *my_remalloc(const void *context, void *mem, size_t size) {
+	void *ret = MallocAllocator::realloc_memory(mem,size, __FILE__, __LINE__);
+	return ret;
+}
+static void my_free(const void *context, void *mem) {
+	if(mem)
+		return MallocAllocator::free_memory(mem);
+}
 
 static void hb_glob_allc_cb(void *ptr, int count) {
 	DefaultAllocator::record_memory_alloc(ptr, count, __FILE__, __LINE__);
@@ -193,6 +205,8 @@ static void hb_glob_free_cb(void *ptr) {
 void TextServerAdvanced::_bmp_create_font_funcs() {
 	if (funcs == nullptr) {
 		hb_set_memmory_cb(&hb_glob_allc_cb, &hb_glob_free_cb);
+        UErrorCode status = U_ZERO_ERROR;
+		u_setMemoryFunctions(nullptr, &my_malloc, &my_remalloc, &my_free,&status);
 		funcs = hb_font_funcs_create();
 
 		hb_font_funcs_set_font_h_extents_func(funcs, _bmp_get_font_h_extents, nullptr, nullptr);

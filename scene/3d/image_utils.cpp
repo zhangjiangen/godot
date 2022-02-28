@@ -315,6 +315,35 @@ void ImageUtils::paint_indexed_splat(Ref<Image> index_map_ref, Ref<Image> weight
 	}
 }
 
+Vector<float> ImageUtils::get_heightmap_max_spacing(Ref<Image> index_map_ref, int tile_x_count, int tile_z_count) {
+	Vector<float> ret;
+	if (index_map_ref->get_format() != Image::FORMAT_RH) {
+		return ret;
+	}
+	float t0, t1, t2, t3;
+	for (int xstart = 1; xstart < index_map_ref->get_width() - 1; xstart += tile_x_count - 1) {
+		for (int ystart = 1; ystart < index_map_ref->get_height() - 1; ystart += tile_z_count - 1) {
+			float max_range = -100.0f;
+			for (int x = xstart; x < tile_x_count; ++x) {
+				for (int y = ystart; y < tile_z_count; ++y) {
+					t0 = index_map_ref->get_pixel(x, y).r;
+					t1 = index_map_ref->get_pixel(x + 1, y).r;
+					t2 = index_map_ref->get_pixel(x, y + 1).r;
+					t3 = index_map_ref->get_pixel(x + 1, y + 1).r;
+					max_range = Math::abs(t0 - t1);
+					max_range = Math::abs(t2 - t3);
+					max_range = Math::abs(t0 - t2);
+					max_range = Math::abs(t1 - t3);
+					max_range = Math::abs(t0 - t3);
+					max_range = Math::abs(t1 - t2);
+				}
+			}
+			ret.append(max_range);
+		}
+	}
+	return ret;
+}
+
 void ImageUtils::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_red_range", "image", "rect"), &ImageUtils::get_red_range);
 	ClassDB::bind_method(D_METHOD("get_red_sum", "image", "rect"), &ImageUtils::get_red_sum);
@@ -324,5 +353,6 @@ void ImageUtils::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("lerp_color_brush", "image", "brush_image", "pos", "factor", "target_value"), &ImageUtils::lerp_color_brush);
 	ClassDB::bind_method(D_METHOD("generate_gaussian_brush", "image"), &ImageUtils::generate_gaussian_brush);
 	ClassDB::bind_method(D_METHOD("blur_red_brush", "image", "brush_image", "pos", "factor"), &ImageUtils::blur_red_brush);
+	ClassDB::bind_method(D_METHOD("get_heightmap_max_spacing", "image", "tile_x_count", "tile_z_count"), &ImageUtils::get_heightmap_max_spacing);
 	ClassDB::bind_method(D_METHOD("paint_indexed_splat", "index_map_ref", "weight_map_ref", "brush_ref", "pos", "texture_index", "actor"), &ImageUtils::paint_indexed_splat);
 }

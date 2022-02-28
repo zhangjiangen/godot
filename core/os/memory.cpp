@@ -43,9 +43,12 @@ struct MemmoryInfo {
 	size_t size;
 	size_t count;
 };
+static void *MemoryHashMap_Malloc(size_t count);
+static void MemoryHashMap_Free(void *ptr, size_t count);
 template <typename TKey, typename TData>
 class MemoryHashMap {
 	const uint8_t MIN_HASH_TABLE_POWER = 3;
+	const uint8_t MAX_HASH_TABLE_POWER = 16;
 	const uint8_t RELATIONSHIP = 8;
 
 public:
@@ -107,7 +110,7 @@ private:
 
 		hash_table_power = MIN_HASH_TABLE_POWER;
 		hash_table_size = (uint32_t)1 << hash_table_power;
-		hash_table = new Element *[(uint64_t)hash_table_size];
+		hash_table = new (MemoryHashMap_Malloc(sizeof(Element *) * (uint64_t)hash_table_size)) Element *[(uint64_t)hash_table_size];
 
 		elements = 0;
 		for (int i = 0; i < (1 << MIN_HASH_TABLE_POWER); i++) {
@@ -145,6 +148,9 @@ private:
 			if (new_hash_table_power < (int)MIN_HASH_TABLE_POWER) {
 				new_hash_table_power = MIN_HASH_TABLE_POWER;
 			}
+			if (new_hash_table_power > (int)MAX_HASH_TABLE_POWER) {
+				new_hash_table_power = MAX_HASH_TABLE_POWER;
+			}
 		}
 
 		if (new_hash_table_power == -1) {
@@ -152,7 +158,7 @@ private:
 		}
 
 		Element **new_hash_table = nullptr;
-		new_hash_table = new Element *[(uint64_t)1 << new_hash_table_power];
+		new_hash_table = new (MemoryHashMap_Malloc(sizeof(Element *) * (uint64_t)(1 << new_hash_table_power))) Element *[(uint64_t)1 << new_hash_table_power];
 		memory_size = sizeof(Element *) * (uint64_t)1 << new_hash_table_power;
 		ERR_FAIL_COND_MSG(!new_hash_table, "Out of memory.");
 
@@ -172,7 +178,7 @@ private:
 				}
 			}
 
-			delete[] hash_table;
+			MemoryHashMap_Free(hash_table, sizeof(Element *) * hash_table_size);
 		}
 		hash_table = new_hash_table;
 		hash_table_size = ((uint64_t)1 << new_hash_table_power);
@@ -201,7 +207,7 @@ private:
 
 	Element *create_element(const TKey &p_key) {
 		/* if element doesn't exist, create it */
-		Element *e = new Element(p_key);
+		Element *e = new (MemoryHashMap_Malloc(sizeof(Element))) Element(p_key);
 		memory_size += sizeof(Element);
 		ERR_FAIL_COND_V_MSG(!e, nullptr, "Out of memory.");
 		uint32_t hash = HashMapHasherDefault::hash(p_key);
@@ -213,42 +219,6 @@ private:
 		elements++;
 
 		return e;
-	}
-
-	void copy_from(const MemoryHashMap &p_t) {
-		if (&p_t == this) {
-			return; /* much less bother with that */
-		}
-
-		clear();
-
-		if (!p_t.hash_table || p_t.hash_table_power <= 0) {
-			return; /* not copying from empty table */
-		}
-
-		hash_table_power = p_t.hash_table_power;
-		hash_table_size = (uint32_t)1 << p_t.hash_table_power;
-		hash_table = memnew_arr(Element *, (size_t)hash_table_size);
-
-		memory_size = sizeof(Element *) * hash_table_size;
-		elements = p_t.elements;
-
-		for (int i = 0; i < (1 << hash_table_power); i++) {
-			hash_table[i] = nullptr;
-
-			const Element *e = p_t.hash_table[i];
-
-			while (e) {
-				Element *le = new Element(*e); /* local element */
-				memory_size += sizeof(Element);
-
-				/* add to list and reassign pointers */
-				le->next = hash_table[i];
-				hash_table[i] = le;
-
-				e = e->next;
-			}
-		}
 	}
 
 public:
@@ -367,7 +337,7 @@ public:
 				}
 				memory_size -= sizeof(Element);
 
-				delete e;
+				MemoryHashMap_Free(e, sizeof(Element));
 				elements--;
 
 				if (elements == 0) {
@@ -475,11 +445,11 @@ public:
 				while (hash_table[i]) {
 					Element *e = hash_table[i];
 					hash_table[i] = e->next;
-					delete e;
+					MemoryHashMap_Free(e, sizeof(Element));
 				}
 			}
 
-			delete[] hash_table;
+			MemoryHashMap_Free(hash_table, sizeof(Element *) * hash_table_size);
 		}
 
 		memory_size = 0;
@@ -489,17 +459,10 @@ public:
 		elements = 0;
 	}
 
-	void operator=(const MemoryHashMap &p_table) {
-		clear();
-		copy_from(p_table);
-	}
-
 	MemoryHashMap() {
 	}
 
-	MemoryHashMap(const MemoryHashMap &p_table) {
-		copy_from(p_table);
-	}
+	MemoryHashMap(const MemoryHashMap &p_table) = delete;
 
 	~MemoryHashMap() {
 		clear();
@@ -561,6 +524,9 @@ public:
 		}                                                                   \
 	}
 	void *alloc_manager(int p_memory) {
+		if (p_memory > 1024) {
+			return malloc(p_memory);
+		}
 		OP_MEMORY_NEW(8)
 		//
 		else OP_MEMORY_NEW(16)
@@ -601,7 +567,7 @@ public:
 		Data<Count> *data = (Data<Count> *)ptr; \
 		{                                       \
 			_mutex##Count.lock();               \
-			if (_FreeCache##Count < 256) {      \
+			if (_FreeCache##Count < 512) {      \
 				data->Next = _data##Count;      \
 				_data##Count = data;            \
 				++_FreeCache##Count;            \
@@ -615,6 +581,10 @@ public:
 	}
 	void free_manager(void *ptr, size_t p_memory) {
 		if (ptr == nullptr || p_memory == 0) {
+			return;
+		}
+		if (p_memory > 1024) {
+			free(ptr);
 			return;
 		}
 		OP_MEMORY_FREE(8)
@@ -722,7 +692,7 @@ public:
 				Root = n;
 				return;
 			}
-			if (n->total_count > Root->total_count) {
+			if (n->total_memory > Root->total_memory) {
 				n->Next = Root;
 				Root = n;
 				return;
@@ -732,7 +702,7 @@ public:
 				if (t->Next == nullptr) {
 					t->Next = n;
 					return;
-				} else if (t->Next->total_count < n->total_count) {
+				} else if (t->Next->total_memory < n->total_memory) {
 					n->Next = t->Next;
 					t->Next = n;
 					return;
@@ -777,10 +747,10 @@ public:
 			printf("--------------begin log memory alloc pos count:%d size: %0.3fMB point count:%d", count, mb, point_count);
 		}
 		float salf_size = float(point_map.memory_size + point_size_map.memory_size + _memory_info.memory_size) / 1024.0f;
-		if (mb < 1024.0f) {
-			printf(" , log cache: %0.3f KB-------------------\n", mb);
+		if (salf_size < 1024.0f) {
+			printf(" , log cache: %0.3f KB-------------------\n", salf_size);
 		} else {
-			printf(" , log cache: %0.3f MB-------------------\n", mb / 1024.0f);
+			printf(" , log cache: %0.3f MB-------------------\n", salf_size / 1024.0f);
 		}
 		int strcount = 0;
 		MemoryLog *Root = ml.Root;
@@ -817,6 +787,12 @@ private:
 	}
 };
 
+static void *MemoryHashMap_Malloc(size_t count) {
+	return SmallMemoryManager::get().alloc_manager(count);
+}
+static void MemoryHashMap_Free(void *ptr, size_t count) {
+	SmallMemoryManager::get().free_manager(ptr, count);
+}
 void DefaultAllocator::record_memory_alloc(void *p_ptr, size_t p_memory, const char *file_name, int file_lne) {
 	SmallMemoryManager::get().record_memory_alloc(p_ptr, p_memory, file_name, file_lne);
 }

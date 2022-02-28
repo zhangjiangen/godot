@@ -2727,7 +2727,7 @@ void ScriptEditor::_editor_settings_changed() {
 }
 
 void ScriptEditor::_filesystem_changed() {
-	_update_script_names();
+	//_update_script_names();
 }
 
 void ScriptEditor::_files_moved(const String &p_old_file, const String &p_new_file) {
