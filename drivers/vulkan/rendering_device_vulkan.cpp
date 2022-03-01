@@ -4913,30 +4913,25 @@ Vector<uint8_t> RenderingDeviceVulkan::shader_compile_binary_from_spirv(const Ve
 					for (uint32_t j = 0; j < sc_count; j++) {
 						int32_t existing = -1;
 						RenderingDeviceVulkanShaderBinarySpecializationConstant sconst;
-						ShaderInfo::ConstantInfo const_info;
-						sconst.constant_id = spec_constants[j]->constant_id;
-						switch (spec_constants[j]->constant_type) {
+						SpvReflectSpecializationConstant *spc = spec_constants[j];
+
+						sconst.constant_id = spc->constant_id;
+						sconst.int_value = 0.0; // clear previous value JIC
+						switch (spc->constant_type) {
 							case SPV_REFLECT_SPECIALIZATION_CONSTANT_BOOL: {
 								sconst.type = PIPELINE_SPECIALIZATION_CONSTANT_TYPE_BOOL;
-								sconst.bool_value = spec_constants[j]->default_value.int_bool_value != 0;
-								const_info.type = sconst.type;
-								const_info.bool_value = sconst.bool_value;
+								sconst.bool_value = spc->default_value.int_bool_value != 0;
 							} break;
 							case SPV_REFLECT_SPECIALIZATION_CONSTANT_INT: {
 								sconst.type = PIPELINE_SPECIALIZATION_CONSTANT_TYPE_INT;
-								sconst.int_value = spec_constants[j]->default_value.int_bool_value;
-								const_info.type = sconst.type;
-								const_info.int_value = sconst.int_value;
+								sconst.int_value = spc->default_value.int_bool_value;
 							} break;
 							case SPV_REFLECT_SPECIALIZATION_CONSTANT_FLOAT: {
 								sconst.type = PIPELINE_SPECIALIZATION_CONSTANT_TYPE_FLOAT;
-								sconst.float_value = spec_constants[j]->default_value.float_value;
-								const_info.type = sconst.type;
-								const_info.float_value = sconst.float_value;
+								sconst.float_value = spc->default_value.float_value;
 							} break;
 						}
 						sconst.stage_flags = 1 << p_spirv[i].shader_stage;
-						const_info.stage_flags = sconst.stage_flags;
 
 						for (int k = 0; k < specialization_constants.size(); k++) {
 							if (specialization_constants[k].constant_id == sconst.constant_id) {
@@ -4946,7 +4941,6 @@ Vector<uint8_t> RenderingDeviceVulkan::shader_compile_binary_from_spirv(const Ve
 								break;
 							}
 						}
-						p_shader_info.const_info[stage].push_back(const_info);
 						if (existing > 0) {
 							specialization_constants.write[existing].stage_flags |= sconst.stage_flags;
 						} else {
