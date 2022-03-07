@@ -5664,8 +5664,10 @@ void TextEdit::_generate_context_menu() {
 	if (editable) {
 		menu->add_item(RTR("Paste"), MENU_PASTE, is_shortcut_keys_enabled() ? _get_menu_action_accelerator("ui_paste") : Key::NONE);
 	}
-	menu->add_separator();
-	if (is_selecting_enabled()) {
+	if (selecting_enabled || editable) {
+		menu->add_separator();
+	}
+	if (selecting_enabled) {
 		menu->add_item(RTR("Select All"), MENU_SELECT_ALL, is_shortcut_keys_enabled() ? _get_menu_action_accelerator("ui_text_select_all") : Key::NONE);
 	}
 	if (editable) {
@@ -6579,7 +6581,7 @@ void TextEdit::_base_remove_text(int p_from_line, int p_from_column, int p_to_li
 	emit_signal(SNAME("lines_edited_from"), p_to_line, p_from_line);
 }
 
-TextEdit::TextEdit() {
+TextEdit::TextEdit(const String &p_placeholder) {
 	placeholder_data_buf.instantiate();
 
 	clear();
@@ -6620,6 +6622,8 @@ TextEdit::TextEdit() {
 	idle_detect->connect("timeout", callable_mp(this, &TextEdit::_push_current_op));
 
 	undo_stack_max_size = GLOBAL_GET("gui/common/text_edit_undo_stack_max_size");
+
+	set_placeholder(p_placeholder);
 
 	set_editable(true);
 }
