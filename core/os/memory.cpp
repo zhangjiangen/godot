@@ -626,6 +626,7 @@ public:
 		return *instance;
 	}
 	void record_memory_alloc(void *ptr, size_t p_memory, const char *file_name, int file_lne) {
+		return;
 		MemoryDebugInfo key;
 		key.file_name = file_name;
 		key.line = file_lne;
@@ -654,6 +655,7 @@ public:
 	}
 
 	void record_memory_free(void *ptr, size_t size) {
+		return;
 		if (ptr == nullptr)
 			return;
 		MemoryDebugInfo *key = nullptr;

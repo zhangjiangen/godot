@@ -1790,6 +1790,7 @@ static void _register_variant_builtin_methods() {
 	bind_method(Transform3D, inverse, sarray(), varray());
 	bind_method(Transform3D, affine_inverse, sarray(), varray());
 	bind_method(Transform3D, orthonormalized, sarray(), varray());
+	bind_method(Transform3D, make_scale_uniform, sarray(), varray());
 	bind_method(Transform3D, rotated, sarray("axis", "phi"), varray());
 	bind_method(Transform3D, scaled, sarray("scale"), varray());
 	bind_method(Transform3D, translated, sarray("offset"), varray());

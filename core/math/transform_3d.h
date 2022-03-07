@@ -68,6 +68,10 @@ struct _NO_DISCARD_ Transform3D {
 
 	void orthonormalize();
 	Transform3D orthonormalized() const;
+	void make_scale_uniform()
+	{
+		basis.make_scale_uniform();
+	}
 	void orthogonalize();
 	Transform3D orthogonalized() const;
 	bool is_equal_approx(const Transform3D &p_transform) const;
