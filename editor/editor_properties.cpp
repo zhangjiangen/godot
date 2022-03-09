@@ -1209,7 +1209,7 @@ void EditorPropertyLayers::_button_pressed() {
 	}
 
 	Rect2 gp = button->get_screen_rect();
-	layers->set_as_minsize();
+	layers->reset_size();
 	Vector2 popup_pos = gp.position - Vector2(layers->get_contents_minimum_size().x, 0);
 	layers->set_position(popup_pos);
 	layers->popup();
@@ -1650,7 +1650,7 @@ void EditorPropertyVector2::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			const Color *colors = _get_property_colors();
 			for (int i = 0; i < 2; i++) {
-				spin[i]->set_custom_label_color(true, colors[i]);
+				spin[i]->add_theme_color_override("label_color", colors[i]);
 			}
 		} break;
 	}
@@ -1744,7 +1744,7 @@ void EditorPropertyRect2::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			const Color *colors = _get_property_colors();
 			for (int i = 0; i < 4; i++) {
-				spin[i]->set_custom_label_color(true, colors[i % 2]);
+				spin[i]->add_theme_color_override("label_color", colors[i % 2]);
 			}
 		} break;
 	}
@@ -1873,7 +1873,7 @@ void EditorPropertyVector3::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			const Color *colors = _get_property_colors();
 			for (int i = 0; i < 3; i++) {
-				spin[i]->set_custom_label_color(true, colors[i]);
+				spin[i]->add_theme_color_override("label_color", colors[i]);
 			}
 		} break;
 	}
@@ -1963,7 +1963,7 @@ void EditorPropertyVector2i::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			const Color *colors = _get_property_colors();
 			for (int i = 0; i < 2; i++) {
-				spin[i]->set_custom_label_color(true, colors[i]);
+				spin[i]->add_theme_color_override("label_color", colors[i]);
 			}
 		} break;
 	}
@@ -2057,7 +2057,7 @@ void EditorPropertyRect2i::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			const Color *colors = _get_property_colors();
 			for (int i = 0; i < 4; i++) {
-				spin[i]->set_custom_label_color(true, colors[i % 2]);
+				spin[i]->add_theme_color_override("label_color", colors[i % 2]);
 			}
 		} break;
 	}
@@ -2159,7 +2159,7 @@ void EditorPropertyVector3i::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			const Color *colors = _get_property_colors();
 			for (int i = 0; i < 3; i++) {
-				spin[i]->set_custom_label_color(true, colors[i]);
+				spin[i]->add_theme_color_override("label_color", colors[i]);
 			}
 		} break;
 	}
@@ -2252,7 +2252,7 @@ void EditorPropertyPlane::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			const Color *colors = _get_property_colors();
 			for (int i = 0; i < 4; i++) {
-				spin[i]->set_custom_label_color(true, colors[i]);
+				spin[i]->add_theme_color_override("label_color", colors[i]);
 			}
 		} break;
 	}
@@ -2346,7 +2346,7 @@ void EditorPropertyQuaternion::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			const Color *colors = _get_property_colors();
 			for (int i = 0; i < 4; i++) {
-				spin[i]->set_custom_label_color(true, colors[i]);
+				spin[i]->add_theme_color_override("label_color", colors[i]);
 			}
 		} break;
 	}
@@ -2443,7 +2443,7 @@ void EditorPropertyAABB::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			const Color *colors = _get_property_colors();
 			for (int i = 0; i < 6; i++) {
-				spin[i]->set_custom_label_color(true, colors[i % 3]);
+				spin[i]->add_theme_color_override("label_color", colors[i % 3]);
 			}
 		} break;
 	}
@@ -2529,9 +2529,9 @@ void EditorPropertyTransform2D::_notification(int p_what) {
 			for (int i = 0; i < 6; i++) {
 				// For Transform2D, use the 4th color (cyan) for the origin vector.
 				if (i % 3 == 2) {
-					spin[i]->set_custom_label_color(true, colors[3]);
+					spin[i]->add_theme_color_override("label_color", colors[3]);
 				} else {
-					spin[i]->set_custom_label_color(true, colors[i % 3]);
+					spin[i]->add_theme_color_override("label_color", colors[i % 3]);
 				}
 			}
 		} break;
@@ -2623,7 +2623,7 @@ void EditorPropertyBasis::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			const Color *colors = _get_property_colors();
 			for (int i = 0; i < 9; i++) {
-				spin[i]->set_custom_label_color(true, colors[i % 3]);
+				spin[i]->add_theme_color_override("label_color", colors[i % 3]);
 			}
 		} break;
 	}
@@ -2720,7 +2720,7 @@ void EditorPropertyTransform3D::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			const Color *colors = _get_property_colors();
 			for (int i = 0; i < 12; i++) {
-				spin[i]->set_custom_label_color(true, colors[i % 4]);
+				spin[i]->add_theme_color_override("label_color", colors[i % 4]);
 			}
 		} break;
 	}

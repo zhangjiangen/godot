@@ -584,8 +584,8 @@ Button::Button(const String &p_text) {
 	New_instantiate(text_buf);
 	text_buf->set_flags(TextServer::BREAK_MANDATORY);
 	button_color = Color(1, 1, 1);
-
 	set_mouse_filter(MOUSE_FILTER_STOP);
+
 	set_text(p_text);
 }
 
