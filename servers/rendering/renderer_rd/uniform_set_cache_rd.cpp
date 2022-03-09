@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  string_name.cpp                                                      */
+/*  uniform_set_cache_rd.cpp                                             */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,35 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "gdnative/string_name.h"
+#include "uniform_set_cache_rd.h"
 
-#include "core/string/string_name.h"
+UniformSetCacheRD *UniformSetCacheRD::singleton = nullptr;
 
-static_assert(sizeof(godot_string_name) == sizeof(StringName), "StringName size mismatch");
+void UniformSetCacheRD::_invalidate(Cache *p_cache) {
+	if (p_cache->prev) {
+		p_cache->prev->next = p_cache->next;
+	} else {
+		// At begining of table
+		uint32_t table_idx = p_cache->hash % HASH_TABLE_SIZE;
+		hash_table[table_idx] = p_cache->next;
+	}
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+	if (p_cache->next) {
+		p_cache->next->prev = p_cache->prev;
+	}
 
-void GDAPI godot_string_name_new(godot_string_name *r_dest) {
-	StringName *dest = (StringName *)r_dest;
-	memnew_placement(dest, StringName);
+	cache_allocator.free(p_cache);
+	cache_instances_used--;
+}
+void UniformSetCacheRD::_uniform_set_invalidation_callback(void *p_userdata) {
+	singleton->_invalidate(reinterpret_cast<Cache *>(p_userdata));
 }
 
-void GDAPI godot_string_name_new_copy(godot_string_name *r_dest, const godot_string_name *p_src) {
-	memnew_placement(r_dest, StringName(*(StringName *)p_src));
+UniformSetCacheRD::UniformSetCacheRD() {
+	ERR_FAIL_COND(singleton != nullptr);
+	singleton = this;
 }
 
-void GDAPI godot_string_name_new_with_latin1_chars(godot_string_name *r_dest, const char *p_contents) {
-	StringName *dest = (StringName *)r_dest;
-	memnew_placement(dest, StringName(p_contents));
+UniformSetCacheRD::~UniformSetCacheRD() {
+	if (cache_instances_used > 0) {
+		ERR_PRINT("At exit: " + itos(cache_instances_used) + " uniform set cache instance(s) still in use.");
+	}
 }
-
-void GDAPI godot_string_name_destroy(godot_string_name *p_self) {
-	StringName *self = (StringName *)p_self;
-	self->~StringName();
-}
-
-#ifdef __cplusplus
-}
-#endif
