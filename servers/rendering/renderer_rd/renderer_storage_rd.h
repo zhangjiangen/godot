@@ -1911,9 +1911,6 @@ public:
 		return light->cull_mask;
 	}
 
-<<<<<<< HEAD
-	_FORCE_INLINE_ bool light_has_shadow(RID p_light) const override {
-=======
 	_FORCE_INLINE_ bool light_is_distance_fade_enabled(RID p_light) {
 		const Light *light = light_owner.get_or_null(p_light);
 		return light->distance_fade;
@@ -1935,7 +1932,6 @@ public:
 	}
 
 	_FORCE_INLINE_ bool light_has_shadow(RID p_light) const {
->>>>>>> master
 		const Light *light = light_owner.get_or_null(p_light);
 		ERR_FAIL_COND_V(!light, RS::LIGHT_DIRECTIONAL);
 

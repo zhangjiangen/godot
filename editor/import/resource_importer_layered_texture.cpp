@@ -391,7 +391,7 @@ void ResourceImporterLayeredTexture::_save_astc_tex(Vector<Ref<Image>> p_images,
 	f->store_8('T');
 	f->store_8('L');
 
-	f->store_32(StreamTextureLayered::FORMAT_VERSION);
+	f->store_32(CompressedTexture2D::FORMAT_VERSION);
 	f->store_32(p_images.size()); //2d layers or 3d depth
 	f->store_32(mode);
 	f->store_32(0);

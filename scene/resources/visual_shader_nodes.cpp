@@ -6423,10 +6423,10 @@ String VisualShaderNodeTextureUniformTriplanar::get_input_port_name(int p_port) 
 }
 
 String VisualShaderNodeTextureUniformTriplanar::generate_global_per_node(Shader::Mode p_mode, int p_id) const {
-<<<<<<< HEAD
-	StringBuilder code;
 
-	code + "// TRIPLANAR FUNCTION GLOBAL CODE\n";
+    StringBuilder code;
+
+	code + "// " + get_caption() + "\n";
 	code + "	vec4 triplanar_texture(sampler2D p_sampler, vec3 p_weights, vec3 p_triplanar_pos) {\n";
 	code + "		vec4 samp = vec4(0.0);\n";
 	code + "		samp += texture(p_sampler, p_triplanar_pos.xy) * p_weights.z;\n";
@@ -6441,25 +6441,6 @@ String VisualShaderNodeTextureUniformTriplanar::generate_global_per_node(Shader:
 	code + "\n";
 	code + "	varying vec3 triplanar_power_normal;\n";
 	code + "	varying vec3 triplanar_pos;\n";
-=======
-	String code;
-
-	code += "// " + get_caption() + "\n";
-	code += "	vec4 triplanar_texture(sampler2D p_sampler, vec3 p_weights, vec3 p_triplanar_pos) {\n";
-	code += "		vec4 samp = vec4(0.0);\n";
-	code += "		samp += texture(p_sampler, p_triplanar_pos.xy) * p_weights.z;\n";
-	code += "		samp += texture(p_sampler, p_triplanar_pos.xz) * p_weights.y;\n";
-	code += "		samp += texture(p_sampler, p_triplanar_pos.zy * vec2(-1.0, 1.0)) * p_weights.x;\n";
-	code += "		return samp;\n";
-	code += "	}\n";
-	code += "\n";
-	code += "	uniform vec3 triplanar_scale = vec3(1.0, 1.0, 1.0);\n";
-	code += "	uniform vec3 triplanar_offset;\n";
-	code += "	uniform float triplanar_sharpness = 0.5;\n";
-	code += "\n";
-	code += "	varying vec3 triplanar_power_normal;\n";
-	code += "	varying vec3 triplanar_pos;\n";
->>>>>>> master
 
 	return code;
 }

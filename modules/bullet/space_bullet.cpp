@@ -585,9 +585,9 @@ void SpaceBullet::create_empty_world(bool p_create_soft_world) {
 
 	void *world_mem;
 	if (p_create_soft_world) {
-		world_mem = malloc(sizeof(btSoftRigidDynamicsWorld));
+		world_mem = memalloc(sizeof(btSoftRigidDynamicsWorld));
 	} else {
-		world_mem = malloc(sizeof(btDiscreteDynamicsWorld));
+		world_mem = memalloc(sizeof(btDiscreteDynamicsWorld));
 	}
 
 	ERR_FAIL_COND_MSG(!world_mem, "Out of memory.");
@@ -641,7 +641,7 @@ void SpaceBullet::destroy_world() {
 
 	// Deallocate world
 	dynamicsWorld->~btDiscreteDynamicsWorld();
-	free(dynamicsWorld);
+	memfree(dynamicsWorld);
 	dynamicsWorld = nullptr;
 
 	bulletdelete(solver);

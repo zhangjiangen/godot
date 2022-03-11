@@ -426,26 +426,26 @@ void ResourceImporterTexture::_save_astc_stex(const Ref<Image> &p_image, const S
 	f->store_8('2'); //godot streamable texture 2D
 
 	//format version
-	f->store_32(StreamTexture2D::FORMAT_VERSION);
+	f->store_32(CompressedTexture2D::FORMAT_VERSION);
 	//texture may be resized later, so original size must be saved first
 	f->store_32(p_image->get_width());
 	f->store_32(p_image->get_height());
 
 	uint32_t flags = 0;
 	if (p_streamable) {
-		flags |= StreamTexture2D::FORMAT_BIT_STREAM;
+		flags |= CompressedTexture2D::FORMAT_BIT_STREAM;
 	}
 	if (p_mipmaps) {
-		flags |= StreamTexture2D::FORMAT_BIT_HAS_MIPMAPS; //mipmaps bit
+		flags |= CompressedTexture2D::FORMAT_BIT_HAS_MIPMAPS; //mipmaps bit
 	}
 	if (p_detect_3d) {
-		flags |= StreamTexture2D::FORMAT_BIT_DETECT_3D;
+		flags |= CompressedTexture2D::FORMAT_BIT_DETECT_3D;
 	}
 	if (p_detect_roughness) {
-		flags |= StreamTexture2D::FORMAT_BIT_DETECT_ROUGNESS;
+		flags |= CompressedTexture2D::FORMAT_BIT_DETECT_ROUGNESS;
 	}
 	if (p_detect_normal) {
-		flags |= StreamTexture2D::FORMAT_BIT_DETECT_NORMAL;
+		flags |= CompressedTexture2D::FORMAT_BIT_DETECT_NORMAL;
 	}
 
 	f->store_32(flags);

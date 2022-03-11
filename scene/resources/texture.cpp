@@ -1017,15 +1017,9 @@ CompressedTexture3D::~CompressedTexture3D() {
 
 /////////////////////////////
 
-<<<<<<< HEAD
-RES ResourceFormatLoaderStreamTexture3D::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
-	Ref<StreamTexture3D> st;
-	New_instantiate(st);
-=======
 RES ResourceFormatLoaderCompressedTexture3D::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
 	Ref<CompressedTexture3D> st;
-	st.instantiate();
->>>>>>> master
+    New_instantiate(st);
 	Error err = st->load(p_path);
 	if (r_error) {
 		*r_error = err;
@@ -2785,29 +2779,16 @@ CompressedTextureLayered::~CompressedTextureLayered() {
 RES ResourceFormatLoaderCompressedTextureLayered::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
 	Ref<CompressedTextureLayered> st;
 	if (p_path.get_extension().to_lower() == "stexarray") {
-<<<<<<< HEAD
-		Ref<StreamTexture2DArray> s;
-		New_instantiate(s);
-		st = s;
-	} else if (p_path.get_extension().to_lower() == "scube") {
-		Ref<StreamCubemap> s;
-		New_instantiate(s);
-		st = s;
-	} else if (p_path.get_extension().to_lower() == "scubearray") {
-		Ref<StreamCubemapArray> s;
-		New_instantiate(s);
-=======
 		Ref<CompressedTexture2DArray> s;
-		s.instantiate();
+        New_instantiate(s);
 		st = s;
 	} else if (p_path.get_extension().to_lower() == "scube") {
 		Ref<CompressedCubemap> s;
-		s.instantiate();
+        New_instantiate(s);
 		st = s;
 	} else if (p_path.get_extension().to_lower() == "scubearray") {
 		Ref<CompressedCubemapArray> s;
-		s.instantiate();
->>>>>>> master
+        New_instantiate(s);
 		st = s;
 	} else {
 		if (r_error) {
