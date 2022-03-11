@@ -138,7 +138,7 @@ float CSGShape3D::get_snap() const {
 
 void CSGShape3D::_make_dirty(bool p_parent_removing) {
 	if ((p_parent_removing || is_root_shape()) && !dirty) {
-		call_deferred("_update_shape"); // Must be deferred; otherwise, is_root_shape() will use the previous parent
+		call_deferred(SNAME("_update_shape")); // Must be deferred; otherwise, is_root_shape() will use the previous parent
 	}
 
 	if (!is_root_shape()) {
@@ -280,7 +280,7 @@ void CSGShape3D::mikktSetTSpaceDefault(const SMikkTSpaceContext *pContext, const
 }
 
 void CSGShape3D::_update_shape() {
-	if (!is_root_shape() || !is_inside_tree()) {
+	if (!is_root_shape()) {
 		return;
 	}
 
@@ -489,10 +489,6 @@ Vector<Vector3> CSGShape3D::get_brush_faces() {
 	}
 
 	return faces;
-}
-
-Vector<Face3> CSGShape3D::get_faces(uint32_t p_usage_flags) const {
-	return Vector<Face3>();
 }
 
 void CSGShape3D::_notification(int p_what) {
@@ -1534,6 +1530,9 @@ CSGBrush *CSGTorus3D::_build_brush() {
 			for (int i = 0; i < sides; i++) {
 				float inci = float(i) / sides;
 				float inci_n = float((i + 1)) / sides;
+				if (i == sides - 1) {
+					inci_n = 0;
+				}
 
 				float angi = inci * Math_TAU;
 				float angi_n = inci_n * Math_TAU;
@@ -1544,6 +1543,9 @@ CSGBrush *CSGTorus3D::_build_brush() {
 				for (int j = 0; j < ring_sides; j++) {
 					float incj = float(j) / ring_sides;
 					float incj_n = float((j + 1)) / ring_sides;
+					if (j == ring_sides - 1) {
+						incj_n = 0;
+					}
 
 					float angj = incj * Math_TAU;
 					float angj_n = incj_n * Math_TAU;
