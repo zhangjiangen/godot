@@ -1045,11 +1045,9 @@ public:
 	bool has_method(const StringName &p_method) const;
 	void get_method_list(List<MethodInfo> *p_list) const;
 	Variant callv(const StringName &p_method, const Array &p_args);
-	Variant call(const StringName &p_name, VARIANT_ARG_LIST); // C++ helper
-	void call_void(const StringName &p_name, VARIANT_ARG_LIST); // C++ helper
 	virtual void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
 	virtual void call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
-	void call_r(Variant &ret, const StringName &p_name, VARIANT_ARG_LIST); // C++ helper
+
 	virtual Variant callp(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
 
 	template <typename... VarArgs>
@@ -1060,7 +1058,19 @@ public:
 			argptrs[i] = &args[i];
 		}
 		Callable::CallError cerr;
-		return callp(p_method, sizeof...(p_args) == 0 ? nullptr : (const Variant **)argptrs, sizeof...(p_args), cerr);
+		Variant ret;
+		call_r(ret, p_method, sizeof...(p_args) == 0 ? nullptr : (const Variant **)argptrs, sizeof...(p_args), cerr);
+		return ret;
+	}
+	template <typename... VarArgs>
+	void call_void(const StringName &p_method, VarArgs... p_args) {
+		Variant args[sizeof...(p_args) + 1] = { p_args..., Variant() }; // +1 makes sure zero sized arrays are also supported.
+		const Variant *argptrs[sizeof...(p_args) + 1];
+		for (uint32_t i = 0; i < sizeof...(p_args); i++) {
+			argptrs[i] = &args[i];
+		}
+		Callable::CallError cerr;
+		call_r(p_method, sizeof...(p_args) == 0 ? nullptr : (const Variant **)argptrs, sizeof...(p_args), cerr);
 	}
 
 	void notification(int p_notification, bool p_reversed = false);

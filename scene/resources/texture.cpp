@@ -2952,15 +2952,15 @@ RES ResourceFormatLoaderCompressedTextureLayered::load(const String &p_path, con
 	Ref<CompressedTextureLayered> ct;
 	if (p_path.get_extension().to_lower() == "ctexarray") {
 		Ref<CompressedTexture2DArray> c;
-		New_instantiate(s);
+		New_instantiate(c);
 		ct = c;
 	} else if (p_path.get_extension().to_lower() == "ccube") {
 		Ref<CompressedCubemap> c;
-		New_instantiate(s);
+		New_instantiate(c);
 		ct = c;
 	} else if (p_path.get_extension().to_lower() == "ccubearray") {
 		Ref<CompressedCubemapArray> c;
-		New_instantiate(s);
+		New_instantiate(c);
 		ct = c;
 	} else {
 		if (r_error) {

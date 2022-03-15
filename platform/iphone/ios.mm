@@ -58,13 +58,13 @@ String iOS::get_model() const {
 	// [[UIDevice currentDevice] model] only returns "iPad" or "iPhone".
 	size_t size;
 	sysctlbyname("hw.machine", nullptr, &size, nullptr, 0);
-	char *model = (char *)malloc(size);
+	char *model = (char *)alloca(size);
 	if (model == nullptr) {
 		return "";
 	}
 	sysctlbyname("hw.machine", model, &size, nullptr, 0);
 	NSString *platform = [NSString stringWithCString:model encoding:NSUTF8StringEncoding];
-	free(model);
+	//free(model);
 	const char *str = [platform UTF8String];
 	return String::utf8(str != nullptr ? str : "");
 }

@@ -761,39 +761,6 @@ Variant Object::callv(const StringName &p_method, const Array &p_args) {
 	return ret;
 }
 
-void Object::call_void(const StringName &p_name, VARIANT_ARG_DECLARE) // C++ helper
-{
-	VARIANT_ARGPTRS;
-	int argc = 0;
-	for (int i = 0; i < VARIANT_ARG_MAX; i++) {
-		if (argptr[i]->get_type() == Variant::NIL) {
-			break;
-		}
-		argc++;
-	}
-
-	Callable::CallError error;
-
-	call_r(p_name, argptr, argc, error);
-}
-Variant Object::call(const StringName &p_name, VARIANT_ARG_DECLARE) {
-	VARIANT_ARGPTRS;
-
-	int argc = 0;
-	for (int i = 0; i < VARIANT_ARG_MAX; i++) {
-		if (argptr[i]->get_type() == Variant::NIL) {
-			break;
-		}
-		argc++;
-	}
-
-	Callable::CallError error;
-
-	Variant ret;
-
-	call_r(ret, p_name, argptr, argc, error);
-	return ret;
-}
 Variant Object::callp(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
 	Variant ret;
 
@@ -923,24 +890,7 @@ void Object::call_r(const StringName &p_method, const Variant **p_args, int p_ar
 
 	return;
 }
-void Object::call_r(Variant &ret, const StringName &p_name, VARIANT_ARG_DECLARE) // C++ helper
-{
-	ret.clear();
-	VARIANT_ARGPTRS;
 
-	int argc = 0;
-	for (int i = 0; i < VARIANT_ARG_MAX; i++) {
-		if (argptr[i]->get_type() == Variant::NIL) {
-			break;
-		}
-		argc++;
-	}
-
-	Callable::CallError error;
-
-	call_r(ret, p_name, argptr, argc, error);
-	return;
-}
 void Object::notification(int p_notification, bool p_reversed) {
 	_notificationv(p_notification, p_reversed);
 

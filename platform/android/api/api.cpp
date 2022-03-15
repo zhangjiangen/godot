@@ -77,6 +77,11 @@ void JavaObject::call_r(Variant &ret, const StringName &, const Variant **, int,
 	ret.clear();
 }
 void JavaObject::call_r(const StringName &, const Variant **, int, Callable::CallError &) {
+}
+
+JavaClassWrapper *JavaClassWrapper::singleton = nullptr;
+
+Ref<JavaClass> JavaClassWrapper::wrap(const String &) {
 	return Ref<JavaClass>();
 }
 

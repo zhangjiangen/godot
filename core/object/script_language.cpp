@@ -315,21 +315,6 @@ Variant ScriptInstance::call(const StringName &p_method, const Variant **p_args,
 	call_r(ret, p_method, p_args, p_argcount, r_error);
 	return ret;
 }
-Variant ScriptInstance::call(const StringName &p_method, VARIANT_ARG_DECLARE) {
-	VARIANT_ARGPTRS;
-	int argc = 0;
-	for (int i = 0; i < VARIANT_ARG_MAX; i++) {
-		if (argptr[i]->get_type() == Variant::NIL) {
-			break;
-		}
-		argc++;
-	}
-
-	Callable::CallError error;
-	Variant ret;
-	call_r(ret, p_method, argptr, argc, error);
-	return ret;
-}
 
 void ScriptInstance::property_set_fallback(const StringName &, const Variant &, bool *r_valid) {
 	if (r_valid) {

@@ -165,6 +165,7 @@ DisplayServerOSX::WindowID DisplayServerOSX::_create_window(WindowMode p_mode, V
 	}
 
 	WindowData &wd = windows[id];
+	
 	window_set_mode(p_mode, id);
 
 	const NSRect contentRect = [wd.window_view frame];
@@ -1178,6 +1179,7 @@ void DisplayServerOSX::mouse_warp_to_position(const Point2i &p_to) {
 		if (mouse_mode != MOUSE_MODE_CONFINED && mouse_mode != MOUSE_MODE_CONFINED_HIDDEN) {
 			CGAssociateMouseAndMouseCursorPosition(true);
 		}
+		CFRelease(lEventRef);
 	}
 }
 
@@ -1704,89 +1706,94 @@ Size2i DisplayServerOSX::window_get_real_size(WindowID p_window) const {
 
 void DisplayServerOSX::window_set_mode(WindowMode p_mode, WindowID p_window) {
 	_THREAD_SAFE_METHOD_
+	@autoreleasepool
+	{
+	
+		ERR_FAIL_COND(!windows.has(p_window));
+		WindowData &wd = windows[p_window];
 
-	ERR_FAIL_COND(!windows.has(p_window));
-	WindowData &wd = windows[p_window];
+		WindowMode old_mode = window_get_mode(p_window);
+		if (old_mode == p_mode) {
+			return; // Do nothing.
+		}
 
-	WindowMode old_mode = window_get_mode(p_window);
-	if (old_mode == p_mode) {
-		return; // Do nothing.
-	}
+		switch (old_mode) {
+			case WINDOW_MODE_WINDOWED: {
+				// Do nothing.
+			} break;
+			case WINDOW_MODE_MINIMIZED: {
+				[wd.window_object deminiaturize:nil];
+			} break;
+			case WINDOW_MODE_EXCLUSIVE_FULLSCREEN:
+			case WINDOW_MODE_FULLSCREEN: {
+				[wd.window_object setLevel:NSNormalWindowLevel];
+				_set_window_per_pixel_transparency_enabled(true, p_window);
+				if (wd.resize_disabled) { // Restore resize disabled.
+					[wd.window_object setStyleMask:[wd.window_object styleMask] & ~NSWindowStyleMaskResizable];
+				}
+				if (wd.min_size != Size2i()) {
+					Size2i size = wd.min_size / screen_get_max_scale();
+					[wd.window_object setContentMinSize:NSMakeSize(size.x, size.y)];
+				}
+				if (wd.max_size != Size2i()) {
+					Size2i size = wd.max_size / screen_get_max_scale();
+					[wd.window_object setContentMaxSize:NSMakeSize(size.x, size.y)];
+				}
+				[wd.window_object toggleFullScreen:nil];
+				wd.fullscreen = false;
+			} break;
+			case WINDOW_MODE_MAXIMIZED: {
+				if ([wd.window_object isZoomed]) {
+					[wd.window_object zoom:nil];
+				}
+			} break;
+		}
 
-	switch (old_mode) {
-		case WINDOW_MODE_WINDOWED: {
-			// Do nothing.
-		} break;
-		case WINDOW_MODE_MINIMIZED: {
-			[wd.window_object deminiaturize:nil];
-		} break;
-		case WINDOW_MODE_EXCLUSIVE_FULLSCREEN:
-		case WINDOW_MODE_FULLSCREEN: {
-			[wd.window_object setLevel:NSNormalWindowLevel];
-			_set_window_per_pixel_transparency_enabled(true, p_window);
-			if (wd.resize_disabled) { // Restore resize disabled.
-				[wd.window_object setStyleMask:[wd.window_object styleMask] & ~NSWindowStyleMaskResizable];
-			}
-			if (wd.min_size != Size2i()) {
-				Size2i size = wd.min_size / screen_get_max_scale();
-				[wd.window_object setContentMinSize:NSMakeSize(size.x, size.y)];
-			}
-			if (wd.max_size != Size2i()) {
-				Size2i size = wd.max_size / screen_get_max_scale();
-				[wd.window_object setContentMaxSize:NSMakeSize(size.x, size.y)];
-			}
-			[wd.window_object toggleFullScreen:nil];
-			wd.fullscreen = false;
-		} break;
-		case WINDOW_MODE_MAXIMIZED: {
-			if ([wd.window_object isZoomed]) {
-				[wd.window_object zoom:nil];
-			}
-		} break;
-	}
-
-	switch (p_mode) {
-		case WINDOW_MODE_WINDOWED: {
-			// Do nothing.
-		} break;
-		case WINDOW_MODE_MINIMIZED: {
-			[wd.window_object performMiniaturize:nil];
-		} break;
-		case WINDOW_MODE_EXCLUSIVE_FULLSCREEN:
-		case WINDOW_MODE_FULLSCREEN: {
-			_set_window_per_pixel_transparency_enabled(false, p_window);
-			if (wd.resize_disabled) { // Fullscreen window should be resizable to work.
-				[wd.window_object setStyleMask:[wd.window_object styleMask] | NSWindowStyleMaskResizable];
-			}
-			[wd.window_object setContentMinSize:NSMakeSize(0, 0)];
-			[wd.window_object setContentMaxSize:NSMakeSize(FLT_MAX, FLT_MAX)];
-			[wd.window_object toggleFullScreen:nil];
-			wd.fullscreen = true;
-		} break;
-		case WINDOW_MODE_MAXIMIZED: {
-			if (![wd.window_object isZoomed]) {
-				[wd.window_object zoom:nil];
-			}
-		} break;
+		switch (p_mode) {
+			case WINDOW_MODE_WINDOWED: {
+				// Do nothing.
+			} break;
+			case WINDOW_MODE_MINIMIZED: {
+				[wd.window_object performMiniaturize:nil];
+			} break;
+			case WINDOW_MODE_EXCLUSIVE_FULLSCREEN:
+			case WINDOW_MODE_FULLSCREEN: {
+				_set_window_per_pixel_transparency_enabled(false, p_window);
+				if (wd.resize_disabled) { // Fullscreen window should be resizable to work.
+					[wd.window_object setStyleMask:[wd.window_object styleMask] | NSWindowStyleMaskResizable];
+				}
+				[wd.window_object setContentMinSize:NSMakeSize(0, 0)];
+				[wd.window_object setContentMaxSize:NSMakeSize(FLT_MAX, FLT_MAX)];
+				[wd.window_object toggleFullScreen:nil];
+				wd.fullscreen = true;
+			} break;
+			case WINDOW_MODE_MAXIMIZED: {
+				if (![wd.window_object isZoomed]) {
+					[wd.window_object zoom:nil];
+				}
+			} break;
+		}
 	}
 }
 
 DisplayServer::WindowMode DisplayServerOSX::window_get_mode(WindowID p_window) const {
 	_THREAD_SAFE_METHOD_
+	@autoreleasepool
+	{
+		ERR_FAIL_COND_V(!windows.has(p_window), WINDOW_MODE_WINDOWED);
+		const WindowData &wd = windows[p_window];
 
-	ERR_FAIL_COND_V(!windows.has(p_window), WINDOW_MODE_WINDOWED);
-	const WindowData &wd = windows[p_window];
-
-	if (wd.fullscreen) { // If fullscreen, it's not in another mode.
-		return WINDOW_MODE_FULLSCREEN;
-	}
-	if ([wd.window_object isZoomed] && !wd.resize_disabled) {
-	//if ( !wd.resize_disabled) {
-		return WINDOW_MODE_MAXIMIZED;
-	}
-	if ([wd.window_object respondsToSelector:@selector(isMiniaturized)]) {
-		if ([wd.window_object isMiniaturized]) {
-			return WINDOW_MODE_MINIMIZED;
+		if (wd.fullscreen) { // If fullscreen, it's not in another mode.
+			return WINDOW_MODE_FULLSCREEN;
+		}
+		if ([wd.window_object isZoomed] && !wd.resize_disabled) {
+		//if ( !wd.resize_disabled) {
+			return WINDOW_MODE_MAXIMIZED;
+		}
+		if ([wd.window_object respondsToSelector:@selector(isMiniaturized)]) {
+			if ([wd.window_object isMiniaturized]) {
+				return WINDOW_MODE_MINIMIZED;
+			}
 		}
 	}
 
@@ -2334,20 +2341,30 @@ Key DisplayServerOSX::keyboard_get_keycode_from_physical(Key p_keycode) const {
 void DisplayServerOSX::process_events() {
 	_THREAD_SAFE_METHOD_
 
-	while (true) {
-		NSEvent *event = [NSApp
-				nextEventMatchingMask:NSEventMaskAny
-							untilDate:[NSDate distantPast]
-							   inMode:NSDefaultRunLoopMode
-							  dequeue:YES];
+	// while (true) {
+	// 	NSEvent *event = [NSApp
+	// 			nextEventMatchingMask:NSEventMaskAny
+	// 						untilDate:[NSDate distantPast]
+	// 						   inMode:NSDefaultRunLoopMode
+	// 						  dequeue:YES];
 
-		if (event == nil) {
-			break;
-		}
+	// 	if (event == nil) {
+	// 		break;
+	// 	}
 
-		[NSApp sendEvent:event];
+	// 	[NSApp sendEvent:event];
+	// }
+	@autoreleasepool
+	{
+    while (NSEvent *event = [NSApp nextEventMatchingMask : NSAnyEventMask
+                              untilDate:[NSDate distantPast]
+							inMode : NSDefaultRunLoopMode
+							dequeue : YES]) {
+         [NSApp sendEvent : event];
+		 
+      }
+
 	}
-
 	if (!drop_events) {
 		_process_key_events();
 		Input::get_singleton()->flush_buffered_events();
@@ -2604,6 +2621,7 @@ DisplayServerOSX::DisplayServerOSX(const String &p_rendering_driver, WindowMode 
 	ERR_FAIL_COND(!event_source);
 
 	CGEventSourceSetLocalEventsSuppressionInterval(event_source, 0.0);
+	CFRelease(event_source);
 
 	int screen_count = get_screen_count();
 	for (int i = 0; i < screen_count; i++) {

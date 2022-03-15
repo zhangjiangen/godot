@@ -686,7 +686,7 @@ void LiveEditor::_node_call_func(int p_id, const StringName &p_method, const Var
 		Node *n2 = n->get_node(np);
 
 		Callable::CallError ce;
-		n2->call(p_method, p_args, p_argcount, ce);
+		n2->call_r(p_method, p_args, p_argcount, ce);
 	}
 }
 
@@ -734,7 +734,7 @@ void LiveEditor::_res_call_func(int p_id, const StringName &p_method, const Vari
 	}
 
 	Callable::CallError ce;
-	r->call(p_method, p_args, p_argcount, ce);
+	r->call_r(p_method, p_args, p_argcount, ce);
 }
 
 void LiveEditor::_root_func(const NodePath &p_scene_path, const String &p_scene_from) {

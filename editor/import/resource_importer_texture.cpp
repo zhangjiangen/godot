@@ -272,7 +272,7 @@ void ResourceImporterTexture::save_to_ctex_format(FileAccess *f, const Ref<Image
 		case COMPRESS_VRAM_COMPRESSED: {
 			Ref<Image> image = p_image->duplicate();
 
-			image->compress_from_channels(p_compress_format, p_channels, p_lossy_quality, csource);
+			image->compress_from_channels(p_compress_format, p_channels, p_lossy_quality);
 
 			f->store_32(CompressedTexture2D::DATA_FORMAT_IMAGE);
 			f->store_16(image->get_width());
@@ -575,13 +575,13 @@ Error ResourceImporterTexture::import(const String &p_source_file, const String 
 			r_platform_variants->push_back("etc");
 			formats_imported.push_back("etc");
 		}
-		if (can_astc) {
-			int level = p_options["compress/astc_level"];
-			level += Image::COMPRESS_ASTC_4x4;
-			_save_astc_stex(image, p_save_path + ".astc.stex", compress_mode, lossy, (Image::CompressMode)level, mipmaps, stream, detect_3d, detect_roughness, detect_normal, force_normal, srgb_friendly_pack, true, mipmap_limit, normal_image, roughness_channel);
-			r_platform_variants->push_back("astc");
-			formats_imported.push_back("astc");
-		}
+//		if (can_astc) {
+//			int level = p_options["compress/astc_level"];
+//			level += Image::COMPRESS_ASTC_4x4;
+//			_save_astc_stex(image, p_save_path + ".astc.stex", compress_mode, lossy, (Image::CompressMode)level, mipmaps, stream, detect_3d, detect_roughness, detect_normal, force_normal, srgb_friendly_pack, true, mipmap_limit, normal_image, roughness_channel);
+//			r_platform_variants->push_back("astc");
+//			formats_imported.push_back("astc");
+//		}
 
 		if (!ok_on_pc) {
 			EditorNode::add_io_error(TTR("Warning, no suitable PC VRAM compression enabled in Project Settings. This texture will not display correctly on PC."));

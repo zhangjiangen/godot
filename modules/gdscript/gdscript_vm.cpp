@@ -3158,7 +3158,8 @@ void GDScriptFunction::call_r(Variant &retvalue, GDScriptInstance *p_instance, c
 
 				obj->call_r(has_next, CoreStringNames::get_singleton()->_iter_next, (const Variant **)args, 1, ce);
 
-#ifdef DEBUG_ENABLED if (ce.error != Callable::CallError::CALL_OK) {
+#ifdef DEBUG_ENABLED
+            if (ce.error != Callable::CallError::CALL_OK) {
 				err_text = vformat(R"(There was an error calling "_iter_next" on iterator object of type %s.)", *container);
 				OPCODE_BREAK;
 			}
@@ -3170,7 +3171,8 @@ void GDScriptFunction::call_r(Variant &retvalue, GDScriptInstance *p_instance, c
 			} else {
 				GET_INSTRUCTION_ARG(iterator, 2);
 				obj->call_r(*iterator, CoreStringNames::get_singleton()->_iter_get, (const Variant **)args, 1, ce);
-#ifdef DEBUG_ENABLED if (ce.error != Callable::CallError::CALL_OK) {
+#ifdef DEBUG_ENABLED
+            if (ce.error != Callable::CallError::CALL_OK) {
 				err_text = vformat(R"(There was an error calling "_iter_get" on iterator object of type %s.)", *container);
 				OPCODE_BREAK;
 			}
