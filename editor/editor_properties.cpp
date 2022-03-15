@@ -110,9 +110,6 @@ EditorPropertyText::EditorPropertyText() {
 	add_focusable(text);
 	text->connect("text_changed", callable_mp(this, &EditorPropertyText::_text_changed));
 	text->connect("text_submitted", callable_mp(this, &EditorPropertyText::_text_submitted));
-
-	string_name = false;
-	updating = false;
 }
 
 ///////////////////// MULTILINE TEXT /////////////////////////
@@ -500,9 +497,6 @@ EditorPropertyPath::EditorPropertyPath() {
 	add_focusable(path);
 	dialog = nullptr;
 	path_edit->connect("pressed", callable_mp(this, &EditorPropertyPath::_path_pressed));
-	folder = false;
-	global = false;
-	save_mode = false;
 }
 
 ///////////////////// CLASS NAME /////////////////////////
@@ -1302,7 +1296,6 @@ EditorPropertyInteger::EditorPropertyInteger() {
 	add_child(spin);
 	add_focusable(spin);
 	spin->connect("value_changed", callable_mp(this, &EditorPropertyInteger::_value_changed));
-	setting = false;
 }
 
 ///////////////////// OBJECT ID /////////////////////////
@@ -1611,10 +1604,6 @@ EditorPropertyEasing::EditorPropertyEasing() {
 	spin->get_line_edit()->connect("focus_exited", callable_mp(this, &EditorPropertyEasing::_spin_focus_exited));
 	spin->hide();
 	add_child(spin);
-
-	dragging = false;
-	flip = false;
-	full = false;
 }
 
 ///////////////////// VECTOR2 /////////////////////////
@@ -1704,7 +1693,6 @@ EditorPropertyVector2::EditorPropertyVector2(bool p_force_wide) {
 	if (!horizontal) {
 		set_label_reference(spin[0]); //show text and buttons around this
 	}
-	setting = false;
 }
 
 ///////////////////// RECT2 /////////////////////////
@@ -1808,7 +1796,6 @@ EditorPropertyRect2::EditorPropertyRect2(bool p_force_wide) {
 	if (!horizontal) {
 		set_label_reference(spin[0]); //show text and buttons around this
 	}
-	setting = false;
 }
 
 ///////////////////// VECTOR3 /////////////////////////
@@ -2017,7 +2004,6 @@ EditorPropertyVector2i::EditorPropertyVector2i(bool p_force_wide) {
 	if (!horizontal) {
 		set_label_reference(spin[0]); //show text and buttons around this
 	}
-	setting = false;
 }
 
 ///////////////////// RECT2i /////////////////////////
@@ -2121,7 +2107,6 @@ EditorPropertyRect2i::EditorPropertyRect2i(bool p_force_wide) {
 	if (!horizontal) {
 		set_label_reference(spin[0]); //show text and buttons around this
 	}
-	setting = false;
 }
 
 ///////////////////// VECTOR3i /////////////////////////
@@ -2212,7 +2197,6 @@ EditorPropertyVector3i::EditorPropertyVector3i(bool p_force_wide) {
 	if (!horizontal) {
 		set_label_reference(spin[0]); //show text and buttons around this
 	}
-	setting = false;
 }
 
 ///////////////////// PLANE /////////////////////////
@@ -2306,7 +2290,6 @@ EditorPropertyPlane::EditorPropertyPlane(bool p_force_wide) {
 	if (!horizontal) {
 		set_label_reference(spin[0]); //show text and buttons around this
 	}
-	setting = false;
 }
 
 ///////////////////// QUATERNION /////////////////////////
@@ -2397,7 +2380,6 @@ EditorPropertyQuaternion::EditorPropertyQuaternion() {
 	if (!horizontal) {
 		set_label_reference(spin[0]); //show text and buttons around this
 	}
-	setting = false;
 }
 
 ///////////////////// AABB /////////////////////////
@@ -2481,7 +2463,6 @@ EditorPropertyAABB::EditorPropertyAABB() {
 		spin[i]->connect("value_changed", callable_mp(this, &EditorPropertyAABB::_value_changed), varray(desc[i]));
 	}
 	set_bottom_editor(g);
-	setting = false;
 }
 
 ///////////////////// TRANSFORM2D /////////////////////////
@@ -2571,7 +2552,6 @@ EditorPropertyTransform2D::EditorPropertyTransform2D(bool p_include_origin) {
 		spin[i]->connect("value_changed", callable_mp(this, &EditorPropertyTransform2D::_value_changed), varray(desc[i]));
 	}
 	set_bottom_editor(g);
-	setting = false;
 }
 
 ///////////////////// BASIS /////////////////////////
@@ -2660,7 +2640,6 @@ EditorPropertyBasis::EditorPropertyBasis() {
 		spin[i]->connect("value_changed", callable_mp(this, &EditorPropertyBasis::_value_changed), varray(desc[i]));
 	}
 	set_bottom_editor(g);
-	setting = false;
 }
 
 ///////////////////// TRANSFORM /////////////////////////
@@ -2757,7 +2736,6 @@ EditorPropertyTransform3D::EditorPropertyTransform3D() {
 		spin[i]->connect("value_changed", callable_mp(this, &EditorPropertyTransform3D::_value_changed), varray(desc[i]));
 	}
 	set_bottom_editor(g);
-	setting = false;
 }
 
 ////////////// COLOR PICKER //////////////////////
@@ -2993,7 +2971,6 @@ EditorPropertyNodePath::EditorPropertyNodePath() {
 	clear->set_flat(true);
 	clear->connect("pressed", callable_mp(this, &EditorPropertyNodePath::_node_clear));
 	hbc->add_child(clear);
-	use_path_from_scene_root = false;
 
 	scene_tree = nullptr; //do not allocate unnecessarily
 }

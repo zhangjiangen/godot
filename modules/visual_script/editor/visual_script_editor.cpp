@@ -4726,8 +4726,6 @@ VisualScriptEditor::VisualScriptEditor() {
 
 	undo_redo = EditorNode::get_singleton()->get_undo_redo();
 
-	updating_members = false;
-
 	set_process_input(true);
 
 	default_value_edit = memnew(CustomPropertyEditor);

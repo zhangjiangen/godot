@@ -145,7 +145,7 @@ private:
 		uint32_t old_capacity = capacity;
 
 		// Capacity can't be 0.
-		capacity = MAX(1, p_new_capacity);
+		capacity = MAX(1u, p_new_capacity);
 
 		TKey *old_keys = keys;
 		TValue *old_values = values;
@@ -375,7 +375,7 @@ public:
 
 	OAHashMap(uint32_t p_initial_capacity = 64) {
 		// Capacity can't be 0.
-		capacity = MAX(1, p_initial_capacity);
+		capacity = MAX(1u, p_initial_capacity);
 
 		keys = static_cast<TKey *>(memalloc(sizeof(TKey) * capacity));
 		values = static_cast<TValue *>(memalloc(sizeof(TValue) * capacity));

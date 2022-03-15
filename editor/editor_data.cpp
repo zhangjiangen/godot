@@ -1208,9 +1208,6 @@ void EditorSelection::clear() {
 }
 
 EditorSelection::EditorSelection() {
-	emitted = false;
-	changed = false;
-	nl_changed = false;
 }
 
 EditorSelection::~EditorSelection() {

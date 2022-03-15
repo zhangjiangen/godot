@@ -781,14 +781,14 @@ void FileSystemDock::_update_file_list(bool p_keep_selection) {
 				icon = folder_icon;
 				if (searched_string.length() == 0 || text.to_lower().find(searched_string) >= 0) {
 					files->add_item(text, icon, true);
-					files->set_item_metadata(files->get_item_count() - 1, favorite);
+					files->set_item_metadata(-1, favorite);
 				}
 			} else if (favorite.ends_with("/")) {
 				text = favorite.substr(0, favorite.length() - 1).get_file();
 				icon = folder_icon;
 				if (searched_string.length() == 0 || text.to_lower().find(searched_string) >= 0) {
 					files->add_item(text, icon, true);
-					files->set_item_metadata(files->get_item_count() - 1, favorite);
+					files->set_item_metadata(-1, favorite);
 				}
 			} else {
 				int index;
@@ -842,9 +842,9 @@ void FileSystemDock::_update_file_list(bool p_keep_selection) {
 						bd += "/";
 					}
 
-					files->set_item_metadata(files->get_item_count() - 1, bd);
-					files->set_item_selectable(files->get_item_count() - 1, false);
-					files->set_item_icon_modulate(files->get_item_count() - 1, folder_color);
+					files->set_item_metadata(-1, bd);
+					files->set_item_selectable(-1, false);
+					files->set_item_icon_modulate(-1, folder_color);
 				}
 
 				bool reversed = file_sort == FILE_SORT_NAME_REVERSE;
@@ -854,8 +854,8 @@ void FileSystemDock::_update_file_list(bool p_keep_selection) {
 					String dname = efd->get_subdir(i)->get_name();
 
 					files->add_item(dname, folder_icon, true);
-					files->set_item_metadata(files->get_item_count() - 1, directory.plus_file(dname) + "/");
-					files->set_item_icon_modulate(files->get_item_count() - 1, folder_color);
+					files->set_item_metadata(-1, directory.plus_file(dname) + "/");
+					files->set_item_icon_modulate(-1, folder_color);
 
 					if (cselection.has(dname)) {
 						files->select(files->get_item_count() - 1, false);
@@ -2089,6 +2089,10 @@ void FileSystemDock::focus_on_filter() {
 	}
 }
 
+ScriptCreateDialog *FileSystemDock::get_script_create_dialog() const {
+	return make_script_dialog;
+}
+
 void FileSystemDock::set_file_list_display_mode(FileListDisplayMode p_mode) {
 	if (p_mode == file_list_display_mode) {
 		return;
@@ -3171,10 +3175,7 @@ FileSystemDock::FileSystemDock() {
 	searched_string = String();
 	uncollapsed_paths_before_search = Vector<String>();
 
-	updating_tree = false;
 	tree_update_id = 0;
-	initialized = false;
-	import_dock_needs_update = false;
 
 	history_pos = 0;
 	history_max_size = 20;
@@ -3183,8 +3184,6 @@ FileSystemDock::FileSystemDock() {
 	display_mode = DISPLAY_MODE_TREE_ONLY;
 	old_display_mode = DISPLAY_MODE_TREE_ONLY;
 	file_list_display_mode = FILE_LIST_DISPLAY_THUMBNAILS;
-
-	always_show_folders = false;
 }
 
 FileSystemDock::~FileSystemDock() {

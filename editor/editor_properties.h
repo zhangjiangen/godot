@@ -54,8 +54,8 @@ class EditorPropertyText : public EditorProperty {
 	GDCLASS(EditorPropertyText, EditorProperty);
 	LineEdit *text;
 
-	bool updating;
-	bool string_name;
+	bool updating = false;
+	bool string_name = false;
 	void _text_changed(const String &p_string);
 	void _text_submitted(const String &p_string);
 
@@ -131,9 +131,9 @@ public:
 class EditorPropertyPath : public EditorProperty {
 	GDCLASS(EditorPropertyPath, EditorProperty);
 	Vector<String> extensions;
-	bool folder;
-	bool global;
-	bool save_mode;
+	bool folder = false;
+	bool global = false;
+	bool save_mode = false;
 	EditorFileDialog *dialog;
 	LineEdit *path;
 	Button *path_edit;
@@ -373,7 +373,7 @@ public:
 class EditorPropertyInteger : public EditorProperty {
 	GDCLASS(EditorPropertyInteger, EditorProperty);
 	EditorSpinSlider *spin;
-	bool setting;
+	bool setting = false;
 	void _value_changed(int64_t p_val);
 
 protected:
@@ -424,11 +424,11 @@ class EditorPropertyEasing : public EditorProperty {
 	Control *easing_draw;
 	PopupMenu *preset;
 	EditorSpinSlider *spin;
-	bool setting;
+	bool setting = false;
 
-	bool dragging;
-	bool full;
-	bool flip;
+	bool dragging = false;
+	bool full = false;
+	bool flip = false;
 
 	enum {
 		EASING_ZERO,
@@ -464,7 +464,7 @@ public:
 class EditorPropertyVector2 : public EditorProperty {
 	GDCLASS(EditorPropertyVector2, EditorProperty);
 	EditorSpinSlider *spin[2];
-	bool setting;
+	bool setting = false;
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
@@ -481,7 +481,7 @@ public:
 class EditorPropertyRect2 : public EditorProperty {
 	GDCLASS(EditorPropertyRect2, EditorProperty);
 	EditorSpinSlider *spin[4];
-	bool setting;
+	bool setting = false;
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
@@ -518,7 +518,7 @@ public:
 class EditorPropertyVector2i : public EditorProperty {
 	GDCLASS(EditorPropertyVector2i, EditorProperty);
 	EditorSpinSlider *spin[2];
-	bool setting;
+	bool setting = false;
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
@@ -535,7 +535,7 @@ public:
 class EditorPropertyRect2i : public EditorProperty {
 	GDCLASS(EditorPropertyRect2i, EditorProperty);
 	EditorSpinSlider *spin[4];
-	bool setting;
+	bool setting = false;
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
@@ -552,7 +552,7 @@ public:
 class EditorPropertyVector3i : public EditorProperty {
 	GDCLASS(EditorPropertyVector3i, EditorProperty);
 	EditorSpinSlider *spin[3];
-	bool setting;
+	bool setting = false;
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
@@ -569,7 +569,7 @@ public:
 class EditorPropertyPlane : public EditorProperty {
 	GDCLASS(EditorPropertyPlane, EditorProperty);
 	EditorSpinSlider *spin[4];
-	bool setting;
+	bool setting = false;
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
@@ -586,7 +586,7 @@ public:
 class EditorPropertyQuaternion : public EditorProperty {
 	GDCLASS(EditorPropertyQuaternion, EditorProperty);
 	EditorSpinSlider *spin[4];
-	bool setting;
+	bool setting = false;
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
@@ -603,7 +603,7 @@ public:
 class EditorPropertyAABB : public EditorProperty {
 	GDCLASS(EditorPropertyAABB, EditorProperty);
 	EditorSpinSlider *spin[6];
-	bool setting;
+	bool setting = false;
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
@@ -620,7 +620,7 @@ public:
 class EditorPropertyTransform2D : public EditorProperty {
 	GDCLASS(EditorPropertyTransform2D, EditorProperty);
 	EditorSpinSlider *spin[6];
-	bool setting;
+	bool setting = false;
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
@@ -637,7 +637,7 @@ public:
 class EditorPropertyBasis : public EditorProperty {
 	GDCLASS(EditorPropertyBasis, EditorProperty);
 	EditorSpinSlider *spin[9];
-	bool setting;
+	bool setting = false;
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
@@ -654,7 +654,7 @@ public:
 class EditorPropertyTransform3D : public EditorProperty {
 	GDCLASS(EditorPropertyTransform3D, EditorProperty);
 	EditorSpinSlider *spin[12];
-	bool setting;
+	bool setting = false;
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
@@ -695,7 +695,7 @@ class EditorPropertyNodePath : public EditorProperty {
 	Button *clear;
 	SceneTreeDialog *scene_tree;
 	NodePath base_hint;
-	bool use_path_from_scene_root;
+	bool use_path_from_scene_root = false;
 
 	Vector<StringName> valid_types;
 	void _node_selected(const NodePath &p_path);

@@ -9574,7 +9574,7 @@ RendererStorageRD::RendererStorageRD() {
 
 	static_assert(sizeof(GlobalVariables::Value) == 16);
 
-	global_variables.buffer_size = GLOBAL_GET("rendering/limits/global_shader_variables/buffer_size");
+	global_variables.buffer_size = MAX(4096, (int)GLOBAL_GET("rendering/limits/global_shader_variables/buffer_size"));
 	global_variables.buffer_size = MIN(256, global_variables.buffer_size);
 	global_variables.buffer_size = MAX(32, global_variables.buffer_size);
 	global_variables.buffer_values = memnew_arr(GlobalVariables::Value, global_variables.buffer_size);

@@ -701,7 +701,7 @@ void EditorNode::_notification(int p_what) {
 		} break;
 
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
-			scene_tabs->set_tab_close_display_policy((bool(EDITOR_GET("interface/scene_tabs/always_show_close_button")) ? TabBar::CLOSE_BUTTON_SHOW_ALWAYS : TabBar::CLOSE_BUTTON_SHOW_ACTIVE_ONLY));
+			scene_tabs->set_tab_close_display_policy((TabBar::CloseButtonDisplayPolicy)EDITOR_GET("interface/scene_tabs/display_close_button").operator int());
 
 			bool theme_changed =
 					EditorSettings::get_singleton()->check_changed_settings_in_group("interface/theme") ||
@@ -5882,16 +5882,7 @@ EditorNode::EditorNode() {
 	}
 
 	singleton = this;
-	exiting = false;
-	dimmed = false;
 	last_checked_version = 0;
-	changing_scene = false;
-	_initializing_addons = false;
-	docks_visible = true;
-	restoring_scenes = false;
-	cmdline_export_mode = false;
-	scene_distraction = false;
-	script_distraction = false;
 
 	TranslationServer::get_singleton()->set_enabled(false);
 	// load settings
@@ -6066,7 +6057,6 @@ EditorNode::EditorNode() {
 	ClassDB::set_class_enabled("RootMotionView", true);
 
 	// defs here, use EDITOR_GET in logic
-	EDITOR_DEF_RST("interface/scene_tabs/always_show_close_button", false);
 	EDITOR_DEF("interface/editor/save_on_focus_loss", false);
 	EDITOR_DEF("interface/editor/show_update_spinner", false);
 	EDITOR_DEF("interface/editor/update_continuously", false);
@@ -6292,7 +6282,7 @@ EditorNode::EditorNode() {
 	scene_tabs->set_select_with_rmb(true);
 	scene_tabs->add_tab("unsaved");
 	scene_tabs->set_tab_alignment(TabBar::ALIGNMENT_LEFT);
-	scene_tabs->set_tab_close_display_policy((bool(EDITOR_GET("interface/scene_tabs/always_show_close_button")) ? TabBar::CLOSE_BUTTON_SHOW_ALWAYS : TabBar::CLOSE_BUTTON_SHOW_ACTIVE_ONLY));
+	scene_tabs->set_tab_close_display_policy((TabBar::CloseButtonDisplayPolicy)EDITOR_GET("interface/scene_tabs/display_close_button").operator int());
 	scene_tabs->set_max_tab_width(int(EDITOR_GET("interface/scene_tabs/maximum_width")) * EDSCALE);
 	scene_tabs->set_drag_to_rearrange_enabled(true);
 	scene_tabs->connect("tab_changed", callable_mp(this, &EditorNode::_scene_tab_changed));
@@ -6342,7 +6332,7 @@ EditorNode::EditorNode() {
 	scene_root_parent->set_v_size_flags(Control::SIZE_EXPAND_FILL);
 
 	scene_root = memnew(SubViewport);
-	scene_root->set_embed_subwindows_hint(true);
+	scene_root->set_embedding_subwindows(true);
 	scene_root->set_disable_3d(true);
 
 	scene_root->set_disable_input(true);
@@ -6557,7 +6547,7 @@ EditorNode::EditorNode() {
 	ED_SHORTCUT_OVERRIDE("editor/take_screenshot", "macos", KeyModifierMask::CMD | Key::F12);
 	p->add_shortcut(ED_GET_SHORTCUT("editor/take_screenshot"), EDITOR_SCREENSHOT);
 
-	p->set_item_tooltip(p->get_item_count() - 1, TTR("Screenshots are stored in the Editor Data/Settings Folder."));
+	p->set_item_tooltip(-1, TTR("Screenshots are stored in the Editor Data/Settings Folder."));
 
 	ED_SHORTCUT_AND_COMMAND("editor/fullscreen_mode", TTR("Toggle Fullscreen"), KeyModifierMask::SHIFT | Key::F11);
 	ED_SHORTCUT_OVERRIDE("editor/fullscreen_mode", "macos", KeyModifierMask::CMD | KeyModifierMask::CTRL | Key::F);
@@ -7153,9 +7143,6 @@ EditorNode::EditorNode() {
 	current = nullptr;
 	saving_resource = Ref<Resource>();
 
-	reference_resource_mem = true;
-	save_external_resources_mem = true;
-
 	set_process(true);
 
 	open_imported = memnew(ConfirmationDialog);
@@ -7166,7 +7153,6 @@ EditorNode::EditorNode() {
 	gui_base->add_child(open_imported);
 
 	saved_version = 1;
-	unsaved_cache = true;
 	_last_instantiated_scene = nullptr;
 
 	quick_open = memnew(EditorQuickOpen);
@@ -7180,10 +7166,7 @@ EditorNode::EditorNode() {
 	_update_recent_scenes();
 
 	editor_data.restore_editor_global_states();
-	convert_old = false;
-	opening_prev = false;
 	set_process_unhandled_input(true);
-	_playing_edited = false;
 
 	load_errors = memnew(RichTextLabel);
 	load_error_dialog = memnew(AcceptDialog);
@@ -7223,8 +7206,6 @@ EditorNode::EditorNode() {
 	ImportDock::get_singleton()->initialize_import_options();
 
 	FileAccess::set_file_close_fail_notify_callback(_file_access_close_error_notify);
-
-	waiting_for_first_scan = true;
 
 	print_handler.printfunc = _print_handler;
 	print_handler.userdata = this;
