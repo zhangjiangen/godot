@@ -1002,7 +1002,7 @@ static void register_builtin_method(const Vector<String> &p_argnames, const Vect
 	builtin_method_names[T::get_base_type()].push_back(name);
 }
 
-void Variant::call(const StringName &p_method, const Variant **p_args, int p_argcount, Variant &r_ret, Callable::CallError &r_error) {
+void Variant::callp(const StringName &p_method, const Variant **p_args, int p_argcount, Variant &r_ret, Callable::CallError &r_error) {
 	if (type == Variant::OBJECT) {
 		//call object
 		Object *obj = _get_obj().obj;

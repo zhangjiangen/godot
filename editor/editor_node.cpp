@@ -90,6 +90,7 @@
 #include "editor/editor_paths.h"
 #include "editor/editor_plugin.h"
 #include "editor/editor_properties.h"
+#include "editor/editor_property_name_processor.h"
 #include "editor/editor_resource_picker.h"
 #include "editor/editor_resource_preview.h"
 #include "editor/editor_run.h"
@@ -3858,18 +3859,18 @@ void EditorNode::register_editor_types() {
 	GDREGISTER_CLASS(EditorScript);
 	GDREGISTER_CLASS(EditorSelection);
 	GDREGISTER_CLASS(EditorFileDialog);
-	GDREGISTER_VIRTUAL_CLASS(EditorSettings);
+	GDREGISTER_ABSTRACT_CLASS(EditorSettings);
 	GDREGISTER_CLASS(EditorNode3DGizmo);
 	GDREGISTER_CLASS(EditorNode3DGizmoPlugin);
-	GDREGISTER_VIRTUAL_CLASS(EditorResourcePreview);
+	GDREGISTER_ABSTRACT_CLASS(EditorResourcePreview);
 	GDREGISTER_CLASS(EditorResourcePreviewGenerator);
-	GDREGISTER_VIRTUAL_CLASS(EditorFileSystem);
+	GDREGISTER_ABSTRACT_CLASS(EditorFileSystem);
 	GDREGISTER_CLASS(EditorFileSystemDirectory);
 	GDREGISTER_CLASS(EditorVCSInterface);
-	GDREGISTER_VIRTUAL_CLASS(ScriptEditor);
-	GDREGISTER_VIRTUAL_CLASS(ScriptEditorBase);
+	GDREGISTER_ABSTRACT_CLASS(ScriptEditor);
+	GDREGISTER_ABSTRACT_CLASS(ScriptEditorBase);
 	GDREGISTER_CLASS(EditorSyntaxHighlighter);
-	GDREGISTER_VIRTUAL_CLASS(EditorInterface);
+	GDREGISTER_ABSTRACT_CLASS(EditorInterface);
 	// 注册编辑面板分段类
 	GDREGISTER_CLASS(EditorInspectorSection);
 	GDREGISTER_CLASS(EditorInspectorArray);
@@ -3889,7 +3890,7 @@ void EditorNode::register_editor_types() {
 
 	GDREGISTER_CLASS(EditorSpinSlider);
 
-	GDREGISTER_VIRTUAL_CLASS(FileSystemDock);
+	GDREGISTER_ABSTRACT_CLASS(FileSystemDock);
 
 	// FIXME: Is this stuff obsolete, or should it be ported to new APIs?
 	GDREGISTER_CLASS(EditorScenePostImport);
@@ -5529,7 +5530,7 @@ void EditorNode::_add_dropped_files_recursive(const Vector<String> &p_files, Str
 }
 
 void EditorNode::_file_access_close_error_notify(const String &p_str) {
-	add_io_error("Unable to write to file '" + p_str + "', file in use, locked or lacking permissions.");
+	add_io_error(vformat(TTR("Unable to write to file '%s', file in use, locked or lacking permissions."), p_str));
 }
 
 void EditorNode::reload_scene(const String &p_path) {
@@ -5844,6 +5845,9 @@ void EditorNode::notify_settings_changed() {
 }
 
 EditorNode::EditorNode() {
+	EditorPropertyNameProcessor *epnp = memnew(EditorPropertyNameProcessor);
+	add_child(epnp);
+
 	Input::get_singleton()->set_use_accumulated_input(true);
 	Resource::_get_local_scene_func = _resource_get_edited_scene;
 
@@ -6066,6 +6070,7 @@ EditorNode::EditorNode() {
 	EDITOR_DEF("interface/editor/save_on_focus_loss", false);
 	EDITOR_DEF("interface/editor/show_update_spinner", false);
 	EDITOR_DEF("interface/editor/update_continuously", false);
+	EDITOR_DEF("interface/editor/translate_properties", true);
 	EDITOR_DEF_RST("interface/scene_tabs/restore_scenes_on_load", true);
 	EDITOR_DEF_RST("interface/inspector/capitalize_properties", true);
 	EDITOR_DEF_RST("interface/inspector/default_float_step", 0.001);

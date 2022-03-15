@@ -424,7 +424,11 @@ public:
 	virtual void get_method_list(List<MethodInfo> *p_list) const;
 	virtual bool has_method(const StringName &p_method) const;
 
+<<<<<<< HEAD
 	virtual void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+=======
+	virtual Variant callp(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+>>>>>>> master
 		r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
 		ret.clear();
 	}

@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  register_types.cpp                                                   */
+/*  editor_property_name_processor.h                                     */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,39 +28,31 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "register_types.h"
+#ifndef EDITOR_PROPERTY_NAME_PROCESSOR_H
+#define EDITOR_PROPERTY_NAME_PROCESSOR_H
 
-#include "webxr_interface.h"
-#include "webxr_interface_js.h"
+#include "scene/main/node.h"
 
-#ifdef JAVASCRIPT_ENABLED
-Ref<WebXRInterfaceJS> webxr;
-#endif
+class EditorPropertyNameProcessor : public Node {
+	GDCLASS(EditorPropertyNameProcessor, Node);
 
-void register_webxr_types() {
-	GDREGISTER_ABSTRACT_CLASS(WebXRInterface);
+	static EditorPropertyNameProcessor *singleton;
 
-#ifdef JAVASCRIPT_ENABLED
-	New_instantiate(webxr);
-	XRServer::get_singleton()->add_interface(webxr);
-#endif
-}
+	Map<String, String> capitalize_string_remaps;
 
-void unregister_webxr_types() {
-#ifdef JAVASCRIPT_ENABLED
-	if (webxr.is_valid()) {
-		// uninitialise our interface if it is initialised
-		if (webxr->is_initialized()) {
-			webxr->uninitialize();
-		}
+	String _capitalize_name(const String &p_name) const;
 
-		// unregister our interface from the XR server
-		if (XRServer::get_singleton()) {
-			XRServer::get_singleton()->remove_interface(webxr);
-		}
+public:
+	static EditorPropertyNameProcessor *get_singleton() { return singleton; }
 
-		// and release
-		webxr.unref();
-	}
-#endif
-}
+	// Capitalize & localize property path segments.
+	String process_name(const String &p_name) const;
+
+	// Make tooltip string for names processed by process_name().
+	String make_tooltip_for_name(const String &p_name) const;
+
+	EditorPropertyNameProcessor();
+	~EditorPropertyNameProcessor();
+};
+
+#endif // EDITOR_PROPERTY_NAME_PROCESSOR_H

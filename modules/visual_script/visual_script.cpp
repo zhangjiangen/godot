@@ -1888,13 +1888,13 @@ void VisualScriptInstance::notification(int p_notification) {
 	Variant what = p_notification;
 	const Variant *whatp = &what;
 	Callable::CallError ce;
-	call(VisualScriptLanguage::singleton->notification, &whatp, 1, ce); // Do as call.
+	callp(VisualScriptLanguage::singleton->notification, &whatp, 1, ce); // Do as call.
 }
 
 String VisualScriptInstance::to_string(bool *r_valid) {
 	if (has_method(CoreStringNames::get_singleton()->_to_string)) {
 		Callable::CallError ce;
-		Variant ret = call(CoreStringNames::get_singleton()->_to_string, nullptr, 0, ce);
+		Variant ret = callp(CoreStringNames::get_singleton()->_to_string, nullptr, 0, ce);
 		if (ce.error == Callable::CallError::CALL_OK) {
 			if (ret.get_type() != Variant::STRING) {
 				if (r_valid) {

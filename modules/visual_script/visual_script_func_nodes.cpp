@@ -813,21 +813,21 @@ public:
 				} else if (returns) {
 					if (call_mode == VisualScriptFunctionCall::CALL_MODE_INSTANCE) {
 						if (returns >= 2) {
-							v.call(function, p_inputs + 1, input_args, *p_outputs[1], r_error);
+							v.callp(function, p_inputs + 1, input_args, *p_outputs[1], r_error);
 						} else if (returns == 1) {
 							Variant ret;
-							v.call(function, p_inputs + 1, input_args, ret, r_error);
+							v.callp(function, p_inputs + 1, input_args, ret, r_error);
 						} else {
 							r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
 							r_error_str = "Invalid returns count for call_mode == CALL_MODE_INSTANCE";
 							return 0;
 						}
 					} else {
-						v.call(function, p_inputs + 1, input_args, *p_outputs[0], r_error);
+						v.callp(function, p_inputs + 1, input_args, *p_outputs[0], r_error);
 					}
 				} else {
 					Variant ret;
-					v.call(function, p_inputs + 1, input_args, ret, r_error);
+					v.callp(function, p_inputs + 1, input_args, ret, r_error);
 				}
 
 				if (call_mode == VisualScriptFunctionCall::CALL_MODE_INSTANCE) {
@@ -2373,7 +2373,7 @@ public:
 	virtual int step(const Variant **p_inputs, Variant **p_outputs, StartMode p_start_mode, Variant *p_working_mem, Callable::CallError &r_error, String &r_error_str) {
 		Object *obj = instance->get_owner_ptr();
 
-		obj->emit_signal(name, p_inputs, argcount);
+		obj->emit_signalp(name, p_inputs, argcount);
 
 		return 0;
 	}

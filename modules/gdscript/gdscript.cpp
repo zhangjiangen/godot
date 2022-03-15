@@ -1294,7 +1294,7 @@ bool GDScriptInstance::set(const StringName &p_name, const Variant &p_value) {
 			if (member->setter) {
 				const Variant *val = &p_value;
 				Callable::CallError err;
-				call(member->setter, &val, 1, err);
+				callp(member->setter, &val, 1, err);
 				if (err.error == Callable::CallError::CALL_OK) {
 					return true; //function exists, call was successful
 				} else {
@@ -1598,7 +1598,7 @@ void GDScriptInstance::notification(int p_notification) {
 String GDScriptInstance::to_string(bool *r_valid) {
 	if (has_method(CoreStringNames::get_singleton()->_to_string)) {
 		Callable::CallError ce;
-		Variant ret = call(CoreStringNames::get_singleton()->_to_string, nullptr, 0, ce);
+		Variant ret = callp(CoreStringNames::get_singleton()->_to_string, nullptr, 0, ce);
 		if (ce.error == Callable::CallError::CALL_OK) {
 			if (ret.get_type() != Variant::STRING) {
 				if (r_valid) {

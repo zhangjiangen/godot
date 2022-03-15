@@ -135,7 +135,7 @@ struct DirAccessRef {
 
 	operator bool() const { return f != nullptr; }
 
-	DirAccess *f;
+	DirAccess *f = nullptr;
 
 	DirAccessRef(DirAccess *fa) { f = fa; }
 	~DirAccessRef() {
