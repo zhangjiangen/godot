@@ -189,7 +189,7 @@ void VoxelBlockyLibrary::bake() {
 
 	generate_side_culling_matrix();
 
-	uint64_t time_spent = Time::get_singleton()->get_ticks_usec() - time_before;
+	//uint64_t time_spent = Time::get_singleton()->get_ticks_usec() - time_before;
 	//PRINT_VERBOSE(String("Took {0} us to bake VoxelLibrary").format(varray(time_spent)));
 }
 

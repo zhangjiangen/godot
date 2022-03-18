@@ -111,7 +111,7 @@ public:
 		return &_root;
 	}
 
-	const Node *get_child(const Node *node, unsigned int i) const {
+	const Node *get_child(const Node *node, int i) const {
 		ERR_FAIL_COND_V(node == nullptr, nullptr);
 		ERR_FAIL_INDEX_V(i, 8, nullptr);
 		return get_node(node->first_child + i);

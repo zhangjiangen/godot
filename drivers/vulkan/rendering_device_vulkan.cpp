@@ -6215,7 +6215,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 
 	//write the contents
 	if (writes.size()) {
-		for (int i = 0; i < writes.size(); i++) {
+		for (uint32_t i = 0; i < writes.size(); i++) {
 			writes[i].dstSet = descriptor_set;
 		}
 		vkUpdateDescriptorSets(device, writes.size(), writes.ptr(), 0, nullptr);
