@@ -2,134 +2,135 @@ Import('env')
 Import('env_modules')
 
 # Note, support for FastNoise2 requires C++17
-FAST_NOISE_2_SRC = True
+FAST_NOISE_2_SRC = False
 
 RUN_TESTS = False
 if env['target'] == 'debug':
-	RUN_TESTS = True
+    RUN_TESTS = True
 
 env_voxel = env_modules.Clone()
 
 voxel_files = [
-	"*.cpp",
-	
-	"constants/*.cpp",
+    "*.cpp",
 
-	"meshers/blocky/*.cpp",
-	"meshers/transvoxel/*.cpp",
-	"meshers/dmc/*.cpp",
-	"meshers/cubes/*.cpp",
-	"meshers/*.cpp",
+    "constants/*.cpp",
 
-	"streams/*.cpp",
-	"streams/sqlite/*.cpp",
-	"streams/region/*.cpp",
+    "meshers/blocky/*.cpp",
+    "meshers/transvoxel/*.cpp",
+    "meshers/dmc/*.cpp",
+    "meshers/cubes/*.cpp",
+    "meshers/*.cpp",
 
-	"storage/*.cpp",
+    "streams/*.cpp",
+    "streams/sqlite/*.cpp",
+    "streams/region/*.cpp",
 
-	"generators/*.cpp",
-	"generators/graph/*.cpp",
-	"generators/simple/*.cpp",
+    "storage/*.cpp",
 
-	"util/*.cpp",
+    "generators/*.cpp",
+    "generators/graph/*.cpp",
+    "generators/simple/*.cpp",
 
-	"util/math/*.cpp",
+    "util/*.cpp",
 
-	"util/godot/*.cpp",
+    "util/math/*.cpp",
 
-	#"util/noise/*.cpp",
-	"util/noise/fast_noise_lite.cpp",
-	"util/noise/fast_noise_lite_gradient.cpp",
-	"util/noise/fast_noise_lite_range.cpp",
-	"util/noise/osn_noise_range.cpp",
+    "util/godot/*.cpp",
 
-	"util/tasks/*.cpp",
+    # "util/noise/*.cpp",
+    "util/noise/fast_noise_lite.cpp",
+    "util/noise/fast_noise_lite_gradient.cpp",
+    "util/noise/fast_noise_lite_range.cpp",
+    "util/noise/osn_noise_range.cpp",
 
-	"terrain/*.cpp",
-	"terrain/instancing/*.cpp",
+    "util/tasks/*.cpp",
 
-	"server/*.cpp",
-	"edition/*.cpp",
+    "terrain/*.cpp",
+    "terrain/instancing/*.cpp",
 
-	"thirdparty/lz4/*.c",
-	"thirdparty/sqlite/*.c",
-	"thirdparty/meshoptimizer/*.cpp"
+    "server/*.cpp",
+    "edition/*.cpp",
+
+    "thirdparty/lz4/*.c",
+    "thirdparty/sqlite/*.c",
+    "thirdparty/meshoptimizer/*.cpp"
 ]
 
 if env["tools"]:
-	# Editor-only stuff
-	voxel_editor_files = [
-		"editor/*.cpp",
-		"editor/graph/*.cpp",
-		"editor/terrain/*.cpp",
-		"editor/fast_noise_lite/*.cpp",
-		"editor/instancer/*.cpp",
-		"editor/instance_library/*.cpp",
-		"editor/vox/*.cpp",
-	]
-	voxel_files += voxel_editor_files
+    # Editor-only stuff
+    voxel_editor_files = [
+        "editor/*.cpp",
+        "editor/graph/*.cpp",
+        "editor/terrain/*.cpp",
+        "editor/fast_noise_lite/*.cpp",
+        "editor/instancer/*.cpp",
+        "editor/instance_library/*.cpp",
+        "editor/vox/*.cpp",
+    ]
+    voxel_files += voxel_editor_files
 
 env_voxel.Append(CPPDEFINES=[
-	# See https://github.com/zeux/meshoptimizer/issues/311
-	"MESHOPTIMIZER_ZYLANN_NEVER_COLLAPSE_BORDERS",
-	# Because of the above, the MeshOptimizer library in this module is different to an official one.
-	# Godot 4 includes an official version, which means they would both conflict at linking time.
-	# To prevent this clash we wrap the entire library within an additional namespace.
-	# This should be solved either by solving issue #311 or by porting the module to a dynamic library (GDExtension).
-	"MESHOPTIMIZER_ZYLANN_WRAP_LIBRARY_IN_NAMESPACE"
+    # See https://github.com/zeux/meshoptimizer/issues/311
+    "MESHOPTIMIZER_ZYLANN_NEVER_COLLAPSE_BORDERS",
+    # Because of the above, the MeshOptimizer library in this module is different to an official one.
+    # Godot 4 includes an official version, which means they would both conflict at linking time.
+    # To prevent this clash we wrap the entire library within an additional namespace.
+    # This should be solved either by solving issue #311 or by porting the module to a dynamic library (GDExtension).
+    "MESHOPTIMIZER_ZYLANN_WRAP_LIBRARY_IN_NAMESPACE"
 ])
 
 if RUN_TESTS:
-	voxel_files += [
-		"tests/*.cpp"
-	]
-	env_voxel.Append(CPPDEFINES={"VOXEL_RUN_TESTS": 0})
+    voxel_files += [
+        "tests/*.cpp"
+    ]
+    env_voxel.Append(CPPDEFINES={"VOXEL_RUN_TESTS": 0})
 
 if env["platform"] == "windows":
-	# When compiling SQLite with Godot on Windows with MSVC, it produces the following warning:
-	# `sqlite3.c(42754): warning C4996: 'GetVersionExA': was declared deprecated `
-	# To fix it, let's indicate to SQLite it should not use this function, even if it is available.
-	# https://stackoverflow.com/questions/20031597/error-c4996-received-when-compiling-sqlite-c-in-visual-studio-2013
-	env_voxel.Append(CPPDEFINES={"SQLITE_WIN32_GETVERSIONEX": 0})
+    # When compiling SQLite with Godot on Windows with MSVC, it produces the following warning:
+    # `sqlite3.c(42754): warning C4996: 'GetVersionExA': was declared deprecated `
+    # To fix it, let's indicate to SQLite it should not use this function, even if it is available.
+    # https://stackoverflow.com/questions/20031597/error-c4996-received-when-compiling-sqlite-c-in-visual-studio-2013
+    env_voxel.Append(CPPDEFINES={"SQLITE_WIN32_GETVERSIONEX": 0})
 
 # ----------------------------------------------------------------------------------------------------------------------
 # FastNoise 2
 
 if FAST_NOISE_2_SRC:
-	if not env.msvc:
-		# TODO Workaround for https://github.com/Auburn/FastNoise2/issues/80
-		# FastNoise2 is using MSVC-specific compiler directives.
-		# Done before calling FastNoise2 SConscript, as FastNoise2 also includes the headers
-		env_voxel.Append(CXXFLAGS=["-Wno-unknown-pragmas"])
-	
-	# Build from source. Should be the simplest, but requires C++17
-	SConscript('thirdparty/fast_noise_2/SConscript', exports = ["env", "env_voxel"])
+    if not env.msvc:
+        # TODO Workaround for https://github.com/Auburn/FastNoise2/issues/80
+        # FastNoise2 is using MSVC-specific compiler directives.
+        # Done before calling FastNoise2 SConscript, as FastNoise2 also includes the headers
+        env_voxel.Append(CXXFLAGS=["-Wno-unknown-pragmas"])
 
-	env_voxel.Append(CPPPATH=["thirdparty/fast_noise_2/include"])
-	
-	voxel_files += [
-		"util/noise/fast_noise_2.cpp"
-	]
+    # Build from source. Should be the simplest, but requires C++17
+    SConscript('thirdparty/fast_noise_2/SConscript',
+               exports=["env", "env_voxel"])
 
-	if env["tools"]:
-		voxel_files += [
-			"editor/fast_noise_2/*.cpp"
-		]
+    env_voxel.Append(CPPPATH=["thirdparty/fast_noise_2/include"])
+
+    voxel_files += [
+        "util/noise/fast_noise_2.cpp"
+    ]
+
+    if env["tools"]:
+        voxel_files += [
+            "editor/fast_noise_2/*.cpp"
+        ]
 
 # ----------------------------------------------------------------------------------------------------------------------
 
 for f in voxel_files:
-	env_voxel.add_source_files(env.modules_sources, f)
+    env_voxel.add_source_files(env.modules_sources, f)
 
 # TODO Check webassembly builds (`env["platform"] == "javascript"`)
 
 # Ignored clang warnings because Godot's codebase is old and isn't using override yet
 if env['platform'] in ['osx', 'android']:
-	env_voxel.Append(CXXFLAGS=['-Wno-inconsistent-missing-override'])
+    env_voxel.Append(CXXFLAGS=['-Wno-inconsistent-missing-override'])
 
 # Doesn't work, since the rest of Godot doesn't use this, linking fails.
 # No safe STL boundary checks for you.
-#if env['target'] == 'debug':
+# if env['target'] == 'debug':
 #	if env.msvc:
 #		# Enable STL bound checks, Godot's master environment doesn't do it
 #		env_voxel.Append(CXXFLAGS=['/D_DEBUG'])
