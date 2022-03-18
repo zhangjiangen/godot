@@ -86,31 +86,15 @@ void AvatarResource3D::set_skeleton(const Ref<PackedScene> &p_skeleton) {
 Ref<PackedScene> AvatarResource3D::get_skeleton() {
 	return skeleton;
 }
-void AvatarResource3D::set_animations(Dictionary p_animations) {
-	animations.clear();
-	List<Variant> var_names;
-	p_animations.get_key_list(&var_names);
-	for (const StringName &E : var_names) {
-		animations[E] = p_animations[E];
-	}
-	_resource_change();
-}
-Dictionary AvatarResource3D::get_animations() {
-	Dictionary anim;
-	for (const KeyValue<StringName, Ref<Animation>> &E : animations) {
-		anim[E.key] = E.value;
-	}
-	return anim;
-}
 void AvatarResource3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_mesh", "mesh"), &AvatarResource3D::set_mesh);
 	ClassDB::bind_method(D_METHOD("get_mesh"), &AvatarResource3D::get_mesh);
-	ClassDB::bind_method(D_METHOD("set_animations", "animation"), &AvatarResource3D::set_animations);
-	ClassDB::bind_method(D_METHOD("get_animations"), &AvatarResource3D::get_animations);
+	ClassDB::bind_method(D_METHOD("set_skeleton", "p_skeleton"), &AvatarResource3D::set_skeleton);
+	ClassDB::bind_method(D_METHOD("get_skeleton"), &AvatarResource3D::get_skeleton);
 
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "mesh", PROPERTY_HINT_RESOURCE_TYPE, "Mesh"), "set_mesh", "get_mesh");
 	ADD_GROUP("Skeleton", "");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "animations", PROPERTY_HINT_RESOURCE_TYPE, "Skin"), "set_animations", "get_animations");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "skeleton", PROPERTY_HINT_RESOURCE_TYPE, "PackedScene"), "set_skeleton", "get_skeleton");
 }
 ///////////////////////////////////AvatarInstance3D/////////////////////////////////////////////////
 bool AvatarInstance3D::_set(const StringName &p_name, const Variant &p_value) {
@@ -123,11 +107,7 @@ void AvatarInstance3D::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void AvatarInstance3D::_notification(int p_what) {
-	switch (p_what) {
-		case NOTIFICATION_ENTER_TREE: {
-			_resolve_skeleton_path();
-		} break;
-	}
+
 }
 
 void AvatarInstance3D::on_change_resource() {
@@ -142,25 +122,58 @@ void AvatarInstance3D::on_change_resource() {
 	for (int i = 0; i < remove_node.size(); ++i) {
 		memdelete(remove_node[i]);
 	}
-	// 创建骨架
 	if (avatar_resource.is_valid()) {
+		// 创建骨架
 		Ref<PackedScene> skeleton = avatar_resource->get_skeleton();
 		if (skeleton.is_valid()) {
 			Node3D *instantiated_scene = Object::cast_to<Node3D>(skeleton->instantiate(PackedScene::GEN_EDIT_STATE_INSTANCE));
 			instantiated_scene->set_owner(get_owner());
-			instantiated_scene->set_load_by_avatar_resource();
+			instantiated_scene->set_load_by_avatar_resource(true);
+		}
+		// 加载模型信息
+		const Vector<AvatarResource3D::MeshData> &mesh_data = avatar_resource->_get_mesh();
+		for (int i = 0; i < mesh_data.size(); ++i) {
+			const AvatarResource3D::MeshData &data = mesh_data[i];
+			if (data.mesh.is_valid()) {
+				MeshInstance3D *meshIns = memnew(MeshInstance3D);
+				meshIns->set_mesh(data.mesh);
+				meshIns->set_load_by_avatar_resource(true);
+				meshIns->set_owner(get_owner());
+				if (data.name.size() > 0) {
+					meshIns->set_name(data.name);
+				}
+				if (!data.attach_node.is_empty()) {
+					Node *parent = get_node(data.attach_node);
+					if (parent) {
+						parent->add_child(meshIns);
+						if (data.skin.is_valid()) {
+							meshIns->set_skin(data.skin);
+						}
+					} else {
+						add_child(meshIns);
+					}
+				} else {
+					add_child(meshIns);
+				}
+			}
 		}
 	}
-	// 加载模型信息
 
 	notify_property_list_changed();
 }
-void AvatarInstance3D::_resolve_skeleton_path() {
-}
 
+void AvatarInstance3D::set_avatar_resource(const Ref<AvatarResource3D> &p_res) {
+	avatar_resource = p_res;
+}
+Ref<AvatarResource3D> AvatarInstance3D::get_avatar_resource() const {
+	return avatar_resource;
+}
 AvatarInstance3D::AvatarInstance3D() {
 }
 void AvatarInstance3D::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_avatar_resource", "p_resource"), &AvatarInstance3D::set_avatar_resource);
+	ClassDB::bind_method(D_METHOD("get_avatar_resource"), &AvatarInstance3D::get_avatar_resource);
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "avatar_resource", PROPERTY_HINT_RESOURCE_TYPE, "AvatarResource3D"), "set_avatar_resource", "get_avatar_resource");
 }
 //////////////////////////////////////MeshInstance3D//////////////////////////////////////////////
 bool MeshInstance3D::_set(const StringName &p_name, const Variant &p_value) {

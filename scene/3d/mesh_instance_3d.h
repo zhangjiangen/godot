@@ -41,7 +41,7 @@ class PackedScene;
 class AvatarResource3D : public Resource {
 	GDCLASS(AvatarResource3D, Resource);
 
-protected:
+public:
 	struct MeshData {
 		String name;
 		Ref<Mesh> mesh;
@@ -49,10 +49,10 @@ protected:
 		Ref<Skin> skin;
 		Transform3D globle_trans;
 	};
+
+protected:
 	Vector<MeshData> mesh_data;
 	Ref<PackedScene> skeleton;
-	// 动画信息
-	Map<StringName, Ref<Animation>> animations;
 
 protected:
 	void _get_property_list(List<PropertyInfo> *p_list) const;
@@ -62,10 +62,6 @@ protected:
 	static void _bind_methods();
 
 public:
-	const Map<StringName, Ref<Animation>> &_get_animations() {
-		return animations;
-	}
-
 	const Vector<MeshData> &_get_mesh() const;
 
 public:
@@ -74,9 +70,6 @@ public:
 
 	void set_skeleton(const Ref<PackedScene> &p_skeleton);
 	Ref<PackedScene> get_skeleton();
-
-	void set_animations(Dictionary p_animations);
-	Dictionary get_animations();
 };
 class AvatarInstance3D : public Node3D {
 	GDCLASS(AvatarInstance3D, Node3D);
@@ -94,9 +87,10 @@ protected:
 	static void _bind_methods();
 
 	void on_change_resource();
-	void _resolve_skeleton_path();
 
 public:
+	void set_avatar_resource(const Ref<AvatarResource3D> &p_res);
+	Ref<AvatarResource3D> get_avatar_resource() const;
 	AvatarInstance3D();
 };
 class MeshInstance3D : public GeometryInstance3D {

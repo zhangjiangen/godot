@@ -2799,6 +2799,9 @@ void Node::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_set_import_path", "import_path"), &Node::set_import_path);
 	ClassDB::bind_method(D_METHOD("_get_import_path"), &Node::get_import_path);
 
+	ClassDB::bind_method(D_METHOD("set_load_by_avatar_resource", "p_value"), &Node::set_load_by_avatar_resource);
+	ClassDB::bind_method(D_METHOD("is_load_by_avatar_resource"), &Node::is_load_by_avatar_resource);
+
 #ifdef TOOLS_ENABLED
 	ClassDB::bind_method(D_METHOD("_set_property_pinned", "property", "pinned"), &Node::set_property_pinned);
 #endif
@@ -2888,6 +2891,7 @@ void Node::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("child_entered_tree", PropertyInfo(Variant::OBJECT, "node", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT, "Node")));
 	ADD_SIGNAL(MethodInfo("child_exited_tree", PropertyInfo(Variant::OBJECT, "node", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT, "Node")));
 
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "load_by_avatar_resource", PROPERTY_HINT_NONE, "MultiplayerAPI", PROPERTY_USAGE_NO_EDITOR), "set_load_by_avatar_resource", "is_load_by_avatar_resource");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING_NAME, "name", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "set_name", "get_name");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "scene_file_path", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "set_scene_file_path", "get_scene_file_path");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "owner", PROPERTY_HINT_RESOURCE_TYPE, "Node", PROPERTY_USAGE_NONE), "set_owner", "get_owner");

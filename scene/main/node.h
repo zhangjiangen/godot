@@ -507,8 +507,8 @@ public:
 	Ref<MultiplayerAPI> get_custom_multiplayer() const;
 	void set_custom_multiplayer(Ref<MultiplayerAPI> p_multiplayer);
 
-	void set_load_by_avatar_resource() {
-		data.load_form_avatar_resource = true;
+	void set_load_by_avatar_resource(bool p_value) {
+		data.load_form_avatar_resource = p_value;
 	}
 	bool is_load_by_avatar_resource() {
 		return data.load_form_avatar_resource;
