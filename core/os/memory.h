@@ -116,7 +116,7 @@ void *operator new(size_t p_size, void *p_pointer, size_t check, const char *p_d
 #ifdef _MSC_VER
 // When compiling with VC++ 2017, the above declarations of placement new generate many irrelevant warnings (C4291).
 // The purpose of the following definitions is to muffle these warnings, not to provide a usable implementation of placement delete.
-void operator delete(void *p_mem, const char *p_description);
+void operator delete(void *p_mem, const char *p_description, size_t line));
 void operator delete(void *p_mem, void *(*p_allocfunc)(size_t p_size, const char *file_name, int file_lne), const char *p_description, size_t line);
 void operator delete(void *p_mem, void *p_pointer, size_t check, const char *p_description);
 #endif

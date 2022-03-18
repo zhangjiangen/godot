@@ -827,7 +827,7 @@ void *operator new(size_t p_size, void *(*p_allocfunc)(size_t p_size, const char
 }
 
 #ifdef _MSC_VER
-void operator delete(void *p_mem, const char *p_description) {
+void operator delete(void *p_mem, const char *p_description, size_t line) {
 	CRASH_NOW_MSG("Call to placement delete should not happen.");
 }
 
