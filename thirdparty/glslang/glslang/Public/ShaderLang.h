@@ -555,7 +555,8 @@ public:
 		n = numStrings;
 	}
 
-#ifdef ENABLE_HLSL void setEnvTargetHlslFunctionality1(){ environment.target.hlslFunctionality1 = true; }
+#ifdef ENABLE_HLSL
+    void setEnvTargetHlslFunctionality1(){ environment.target.hlslFunctionality1 = true; }
 	bool getEnvTargetHlslFunctionality1() const { return environment.target.hlslFunctionality1; }
 #else
 	bool getEnvTargetHlslFunctionality1() const {
