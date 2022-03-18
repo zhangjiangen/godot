@@ -47,7 +47,7 @@
 
 class OSIPhone : public OS_Unix {
 private:
-	static HashMap<String, void *> dynamic_symbol_lookup_table(__FILE__, __LINE__);
+	static HashMap<String, void *> dynamic_symbol_lookup_table;
 	friend void register_dynamic_symbol(char *name, void *address);
 
 	AudioDriverCoreAudio audio_driver;
