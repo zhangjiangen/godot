@@ -663,7 +663,8 @@ if selected_platform in platform_list:
                 env.Append(CXXFLAGS=["-Wno-error=#warnings"])
         else:  # always enable those errors
             env.Append(CCFLAGS=["-Werror=return-type"])
-
+    if env['platform'] in ['osx', 'android']:
+        env.Append(CXXFLAGS=['-Wno-inconsistent-missing-override'])
     if hasattr(detect, "get_program_suffix"):
         suffix = "_" + detect.get_program_suffix()
     else:

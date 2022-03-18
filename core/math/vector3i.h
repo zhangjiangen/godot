@@ -120,7 +120,9 @@ struct _NO_DISCARD_ Vector3i {
 	explicit _FORCE_INLINE_ Vector3i(const int xyz) :
 			x(xyz), y(xyz), z(xyz) {}
 	_FORCE_INLINE_ Vector3i(const Vector3i &other) {
-		*this = other;
+		x = other.x;
+		y = other.y;
+		z = other.z;
 	}
 };
 
