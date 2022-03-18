@@ -173,7 +173,7 @@ static void rasterize_triangle_barycentric(Vector2f a, Vector2f b, Vector2f c, F
 void VoxelBlockyLibrary::bake() {
 	RWLockWrite lock(_baked_data_rw_lock);
 
-	const uint64_t time_before = Time::get_singleton()->get_ticks_usec();
+	//const uint64_t time_before = Time::get_singleton()->get_ticks_usec();
 
 	// This is the only place we modify the data.
 
