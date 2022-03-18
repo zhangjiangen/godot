@@ -831,7 +831,7 @@ void operator delete(void *p_mem, const char *p_description) {
 	CRASH_NOW_MSG("Call to placement delete should not happen.");
 }
 
-void operator delete(void *p_mem, void *(*p_allocfunc)(size_t p_size)) {
+void operator delete(void *p_mem, void *(*p_allocfunc)(size_t p_size, const char *file_name, int file_lne)) {
 	CRASH_NOW_MSG("Call to placement delete should not happen.");
 }
 
@@ -882,7 +882,7 @@ void *MallocAllocator::realloc_memory(void *p_ptr, size_t p_new_size, const char
 	size = *(base + 1);
 #if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)
 	if (tag != MEMORY_TAG_MALLOC) {
-		throw std::runtime_error("memory free error!");
+		abort();
 	}
 #endif
 	void *new_ptr;

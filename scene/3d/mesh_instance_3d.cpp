@@ -92,7 +92,7 @@ void AvatarResource3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_skeleton", "p_skeleton"), &AvatarResource3D::set_skeleton);
 	ClassDB::bind_method(D_METHOD("get_skeleton"), &AvatarResource3D::get_skeleton);
 
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "mesh", PROPERTY_HINT_RESOURCE_TYPE, "Mesh"), "set_mesh", "get_mesh");
+	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "mesh", PROPERTY_HINT_RESOURCE_TYPE), "set_mesh", "get_mesh");
 	ADD_GROUP("Skeleton", "");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "skeleton", PROPERTY_HINT_RESOURCE_TYPE, "PackedScene"), "set_skeleton", "get_skeleton");
 }
@@ -107,7 +107,6 @@ void AvatarInstance3D::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void AvatarInstance3D::_notification(int p_what) {
-
 }
 
 void AvatarInstance3D::on_change_resource() {

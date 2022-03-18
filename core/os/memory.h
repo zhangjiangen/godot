@@ -116,7 +116,7 @@ void *operator new(size_t p_size, void *p_pointer, size_t check, const char *p_d
 // When compiling with VC++ 2017, the above declarations of placement new generate many irrelevant warnings (C4291).
 // The purpose of the following definitions is to muffle these warnings, not to provide a usable implementation of placement delete.
 void operator delete(void *p_mem, const char *p_description);
-void operator delete(void *p_mem, void *(*p_allocfunc)(size_t p_size));
+void operator delete(void *p_mem, void *(*p_allocfunc)(size_t p_size, const char *file_name, int file_lne));
 void operator delete(void *p_mem, void *p_pointer, size_t check, const char *p_description);
 #endif
 
@@ -156,7 +156,7 @@ void memdelete(T *p_class) {
 #if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)
 	uint32_t tag = *base;
 	if (tag != MEMORY_TAG_NEW) {
-		throw std::runtime_error("memory delete tag error!");
+		abort();
 	}
 #endif
 	// 检测数据大小是否相等,类型不相等有可能内存大小不一致
@@ -233,13 +233,13 @@ size_t memarr_len(const T *p_class) {
 	uint32_t size = *(ptr + 1);
 	if (tag != MEMORY_TAG_NEW_ARRAY) {
 #if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)
-		throw std::runtime_error("memory array len tag error!");
+		abort();
 #endif
 	}
 	int count = size / sizeof(T);
 	if (count * sizeof(T) != size) {
 #if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)
-		throw std::runtime_error("memory array len type error!");
+		abort();
 #endif
 	}
 
@@ -263,10 +263,10 @@ void memdelete_arr(T *p_class) {
 	uint32_t tag = *ptr;
 	// 错误验证
 	if (tag != MEMORY_TAG_NEW_ARRAY) {
-		throw std::runtime_error("memory array len tag error!");
+		abort();
 	}
 	if (count * sizeof(T) != size) {
-		throw std::runtime_error("memory array len type error!");
+		abort();
 	}
 #endif
 	// 删除内存
