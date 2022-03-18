@@ -229,256 +229,254 @@ Error Data::_load_from_file(String fpath) {
 		f.get_32(); // child_chunks_size
 
 		//PRINT_VERBOSE(String("Reading chunk {0} at {1}, size={2}")
-							  //.format(varray(chunk_id, SIZE_T_TO_VARIANT(f.get_position()), chunk_size)));
+		//.format(varray(chunk_id, SIZE_T_TO_VARIANT(f.get_position()), chunk_size)));
 
-							  if (strcmp(chunk_id, "SIZE") == 0) {
-								  Vector3i size;
-								  size.x = f.get_32();
-								  size.y = f.get_32();
-								  size.z = f.get_32();
-								  ERR_FAIL_COND_V(size.x > 256, ERR_PARSE_ERROR);
-								  ERR_FAIL_COND_V(size.y > 256, ERR_PARSE_ERROR);
-								  ERR_FAIL_COND_V(size.z > 256, ERR_PARSE_ERROR);
-								  last_size = magica_to_opengl(size);
+		if (strcmp(chunk_id, "SIZE") == 0) {
+			Vector3i size;
+			size.x = f.get_32();
+			size.y = f.get_32();
+			size.z = f.get_32();
+			ERR_FAIL_COND_V(size.x > 256, ERR_PARSE_ERROR);
+			ERR_FAIL_COND_V(size.y > 256, ERR_PARSE_ERROR);
+			ERR_FAIL_COND_V(size.z > 256, ERR_PARSE_ERROR);
+			last_size = magica_to_opengl(size);
 
-							  } else if (strcmp(chunk_id, "XYZI") == 0) {
-								  std::unique_ptr<Model> model = std::make_unique<Model>();
-								  model->color_indexes.resize(last_size.x * last_size.y * last_size.z, 0);
-								  model->size = last_size;
+		} else if (strcmp(chunk_id, "XYZI") == 0) {
+			std::unique_ptr<Model> model = std::make_unique<Model>();
+			model->color_indexes.resize(last_size.x * last_size.y * last_size.z, 0);
+			model->size = last_size;
 
-								  const uint32_t num_voxels = f.get_32();
+			const uint32_t num_voxels = f.get_32();
 
-								  for (uint32_t i = 0; i < num_voxels; ++i) {
-									  Vector3i pos;
-									  pos.x = f.get_8();
-									  pos.y = f.get_8();
-									  pos.z = f.get_8();
-									  const uint32_t c = f.get_8();
-									  pos = magica_to_opengl(pos);
-									  ERR_FAIL_COND_V(pos.x >= model->size.x || pos.x < 0, ERR_PARSE_ERROR);
-									  ERR_FAIL_COND_V(pos.y >= model->size.y || pos.y < 0, ERR_PARSE_ERROR);
-									  ERR_FAIL_COND_V(pos.z >= model->size.z || pos.z < 0, ERR_PARSE_ERROR);
-									  model->color_indexes[Vector3iUtil::get_zxy_index(pos, model->size)] = c;
-								  }
+			for (uint32_t i = 0; i < num_voxels; ++i) {
+				Vector3i pos;
+				pos.x = f.get_8();
+				pos.y = f.get_8();
+				pos.z = f.get_8();
+				const uint32_t c = f.get_8();
+				pos = magica_to_opengl(pos);
+				ERR_FAIL_COND_V(pos.x >= model->size.x || pos.x < 0, ERR_PARSE_ERROR);
+				ERR_FAIL_COND_V(pos.y >= model->size.y || pos.y < 0, ERR_PARSE_ERROR);
+				ERR_FAIL_COND_V(pos.z >= model->size.z || pos.z < 0, ERR_PARSE_ERROR);
+				model->color_indexes[Vector3iUtil::get_zxy_index(pos, model->size)] = c;
+			}
 
-								  _models.push_back(std::move(model));
+			_models.push_back(std::move(model));
 
-							  } else if (strcmp(chunk_id, "RGBA") == 0) {
-								  _palette[0] = Color8{ 0, 0, 0, 0 };
-								  for (uint32_t i = 1; i < _palette.size(); ++i) {
-									  Color8 c;
-									  c.r = f.get_8();
-									  c.g = f.get_8();
-									  c.b = f.get_8();
-									  c.a = f.get_8();
-									  _palette[i] = c;
-								  }
-								  f.get_32();
+		} else if (strcmp(chunk_id, "RGBA") == 0) {
+			_palette[0] = Color8{ 0, 0, 0, 0 };
+			for (uint32_t i = 1; i < _palette.size(); ++i) {
+				Color8 c;
+				c.r = f.get_8();
+				c.g = f.get_8();
+				c.b = f.get_8();
+				c.a = f.get_8();
+				_palette[i] = c;
+			}
+			f.get_32();
 
-							  } else if (strcmp(chunk_id, "nTRN") == 0) {
-								  std::unique_ptr<TransformNode> node_ptr = std::make_unique<TransformNode>();
-								  TransformNode &node = *node_ptr;
+		} else if (strcmp(chunk_id, "nTRN") == 0) {
+			std::unique_ptr<TransformNode> node_ptr = std::make_unique<TransformNode>();
+			TransformNode &node = *node_ptr;
 
-								  Error header_err = parse_node_common_header(node, f, _scene_graph);
-								  ERR_FAIL_COND_V(header_err != OK, header_err);
+			Error header_err = parse_node_common_header(node, f, _scene_graph);
+			ERR_FAIL_COND_V(header_err != OK, header_err);
 
-								  auto name_it = node.attributes.find("_name");
-								  if (name_it != node.attributes.end()) {
-									  node.name = name_it->second;
-								  }
+			auto name_it = node.attributes.find("_name");
+			if (name_it != node.attributes.end()) {
+				node.name = name_it->second;
+			}
 
-								  auto hidden_it = node.attributes.find("_hidden");
-								  if (hidden_it != node.attributes.end()) {
-									  node.hidden = (hidden_it->second == "1");
-								  } else {
-									  node.hidden = false;
-								  }
+			auto hidden_it = node.attributes.find("_hidden");
+			if (hidden_it != node.attributes.end()) {
+				node.hidden = (hidden_it->second == "1");
+			} else {
+				node.hidden = false;
+			}
 
-								  node.child_node_id = f.get_32();
+			node.child_node_id = f.get_32();
 
-								  const int reserved_id = f.get_32();
-								  ERR_FAIL_COND_V(reserved_id != -1, ERR_INVALID_DATA);
+			const int reserved_id = f.get_32();
+			ERR_FAIL_COND_V(reserved_id != -1, ERR_INVALID_DATA);
 
-								  node.layer_id = f.get_32();
+			node.layer_id = f.get_32();
 
-								  const int frame_count = f.get_32();
-								  ERR_FAIL_COND_V(frame_count != 1, ERR_INVALID_DATA);
+			const int frame_count = f.get_32();
+			ERR_FAIL_COND_V(frame_count != 1, ERR_INVALID_DATA);
 
-								  //for (int frame_index = 0; frame_index < frame_count; ++frame_index) {
+			//for (int frame_index = 0; frame_index < frame_count; ++frame_index) {
 
-								  std::unordered_map<String, String> frame;
-								  const Error frame_err = parse_dictionary(f, frame);
-								  ERR_FAIL_COND_V(frame_err != OK, frame_err);
+			std::unordered_map<String, String> frame;
+			const Error frame_err = parse_dictionary(f, frame);
+			ERR_FAIL_COND_V(frame_err != OK, frame_err);
 
-								  auto t_it = frame.find("_t");
-								  if (t_it != frame.end()) {
-									  // It is 3 integers formatted as text
-									  Vector<float> coords = t_it->second.split_floats(" ");
-									  ERR_FAIL_COND_V(coords.size() < 3, ERR_PARSE_ERROR);
-									  ////PRINT_VERBOSE(String("Pos: {0}, {1}, {2}").format(varray(coords[0], coords[1],
-									  ///coords[2])));
-									  node.position = magica_to_opengl(Vector3i(coords[0], coords[1], coords[2]));
-								  }
+			auto t_it = frame.find("_t");
+			if (t_it != frame.end()) {
+				// It is 3 integers formatted as text
+				Vector<float> coords = t_it->second.split_floats(" ");
+				ERR_FAIL_COND_V(coords.size() < 3, ERR_PARSE_ERROR);
+				////PRINT_VERBOSE(String("Pos: {0}, {1}, {2}").format(varray(coords[0], coords[1],
+				///coords[2])));
+				node.position = magica_to_opengl(Vector3i(coords[0], coords[1], coords[2]));
+			}
 
-								  auto r_it = frame.find("_r");
-								  if (r_it != frame.end()) {
-									  Rotation rot;
-									  // TODO Is it really an integer formatted as text?
-									  rot.data = r_it->second.to_int();
-									  rot.basis = parse_basis(rot.data);
-									  node.rotation = rot;
-								  }
+			auto r_it = frame.find("_r");
+			if (r_it != frame.end()) {
+				Rotation rot;
+				// TODO Is it really an integer formatted as text?
+				rot.data = r_it->second.to_int();
+				rot.basis = parse_basis(rot.data);
+				node.rotation = rot;
+			}
 
-								  //}
+			//}
 
-								  _scene_graph[node.id] = std::move(node_ptr);
+			_scene_graph[node.id] = std::move(node_ptr);
 
-							  } else if (strcmp(chunk_id, "nGRP") == 0) {
-								  std::unique_ptr<GroupNode> node_ptr = std::make_unique<GroupNode>();
-								  GroupNode &node = *node_ptr;
+		} else if (strcmp(chunk_id, "nGRP") == 0) {
+			std::unique_ptr<GroupNode> node_ptr = std::make_unique<GroupNode>();
+			GroupNode &node = *node_ptr;
 
-								  Error header_err = parse_node_common_header(node, f, _scene_graph);
-								  ERR_FAIL_COND_V(header_err != OK, header_err);
+			Error header_err = parse_node_common_header(node, f, _scene_graph);
+			ERR_FAIL_COND_V(header_err != OK, header_err);
 
-								  const unsigned int child_count = f.get_32();
-								  // Sanity check
-								  ERR_FAIL_COND_V(child_count > 65536, ERR_INVALID_DATA);
-								  node.child_node_ids.resize(child_count);
+			const unsigned int child_count = f.get_32();
+			// Sanity check
+			ERR_FAIL_COND_V(child_count > 65536, ERR_INVALID_DATA);
+			node.child_node_ids.resize(child_count);
 
-								  for (unsigned int i = 0; i < child_count; ++i) {
-									  node.child_node_ids[i] = f.get_32();
-								  }
+			for (unsigned int i = 0; i < child_count; ++i) {
+				node.child_node_ids[i] = f.get_32();
+			}
 
-								  _scene_graph[node.id] = std::move(node_ptr);
+			_scene_graph[node.id] = std::move(node_ptr);
 
-							  } else if (strcmp(chunk_id, "nSHP") == 0) {
-								  std::unique_ptr<ShapeNode> node_ptr = std::make_unique<ShapeNode>();
-								  ShapeNode &node = *node_ptr;
+		} else if (strcmp(chunk_id, "nSHP") == 0) {
+			std::unique_ptr<ShapeNode> node_ptr = std::make_unique<ShapeNode>();
+			ShapeNode &node = *node_ptr;
 
-								  Error header_err = parse_node_common_header(node, f, _scene_graph);
-								  ERR_FAIL_COND_V(header_err != OK, header_err);
+			Error header_err = parse_node_common_header(node, f, _scene_graph);
+			ERR_FAIL_COND_V(header_err != OK, header_err);
 
-								  const unsigned int model_count = f.get_32();
-								  ERR_FAIL_COND_V(model_count != 1, ERR_INVALID_DATA);
+			const unsigned int model_count = f.get_32();
+			ERR_FAIL_COND_V(model_count != 1, ERR_INVALID_DATA);
 
-								  //for (unsigned int i = 0; i < model_count; ++i) {
+			//for (unsigned int i = 0; i < model_count; ++i) {
 
-								  node.model_id = f.get_32();
-								  ERR_FAIL_COND_V(node.model_id > 65536, ERR_INVALID_DATA);
-								  ERR_FAIL_COND_V(node.model_id < 0, ERR_INVALID_DATA);
+			node.model_id = f.get_32();
+			ERR_FAIL_COND_V(node.model_id > 65536, ERR_INVALID_DATA);
+			ERR_FAIL_COND_V(node.model_id < 0, ERR_INVALID_DATA);
 
-								  Error model_attributes_err = parse_dictionary(f, node.model_attributes);
-								  ERR_FAIL_COND_V(model_attributes_err != OK, model_attributes_err);
+			Error model_attributes_err = parse_dictionary(f, node.model_attributes);
+			ERR_FAIL_COND_V(model_attributes_err != OK, model_attributes_err);
 
-								  //}
+			//}
 
-								  _scene_graph[node.id] = std::move(node_ptr);
+			_scene_graph[node.id] = std::move(node_ptr);
 
-							  } else if (strcmp(chunk_id, "LAYR") == 0) {
-								  std::unique_ptr<Layer> layer_ptr = std::make_unique<Layer>();
-								  Layer &layer = *layer_ptr;
+		} else if (strcmp(chunk_id, "LAYR") == 0) {
+			std::unique_ptr<Layer> layer_ptr = std::make_unique<Layer>();
+			Layer &layer = *layer_ptr;
 
-								  const int layer_id = f.get_32();
-								  for (unsigned int i = 0; i < _layers.size(); ++i) {
-									  const Layer *existing_layer = _layers[i].get();
-									  CRASH_COND(existing_layer == nullptr);
-									  ERR_FAIL_COND_V_MSG(existing_layer->id == layer_id, ERR_INVALID_DATA,
-											  String("Layer with ID {0} already exists").format(varray(layer_id)));
-								  }
-								  layer.id = layer_id;
+			const int layer_id = f.get_32();
+			for (unsigned int i = 0; i < _layers.size(); ++i) {
+				const Layer *existing_layer = _layers[i].get();
+				CRASH_COND(existing_layer == nullptr);
+				ERR_FAIL_COND_V_MSG(existing_layer->id == layer_id, ERR_INVALID_DATA,
+						String("Layer with ID {0} already exists").format(varray(layer_id)));
+			}
+			layer.id = layer_id;
 
-								  Error attributes_err = parse_dictionary(f, layer.attributes);
-								  ERR_FAIL_COND_V(attributes_err != OK, attributes_err);
+			Error attributes_err = parse_dictionary(f, layer.attributes);
+			ERR_FAIL_COND_V(attributes_err != OK, attributes_err);
 
-								  auto name_it = layer.attributes.find("_name");
-								  if (name_it != layer.attributes.end()) {
-									  layer.name = name_it->second;
-								  }
+			auto name_it = layer.attributes.find("_name");
+			if (name_it != layer.attributes.end()) {
+				layer.name = name_it->second;
+			}
 
-								  auto hidden_it = layer.attributes.find("_hidden");
-								  if (hidden_it != layer.attributes.end()) {
-									  layer.hidden = (hidden_it->second == "1");
-								  } else {
-									  layer.hidden = false;
-								  }
+			auto hidden_it = layer.attributes.find("_hidden");
+			if (hidden_it != layer.attributes.end()) {
+				layer.hidden = (hidden_it->second == "1");
+			} else {
+				layer.hidden = false;
+			}
 
-								  const int reserved_id = f.get_32();
-								  ERR_FAIL_COND_V(reserved_id != -1, ERR_INVALID_DATA);
+			const int reserved_id = f.get_32();
+			ERR_FAIL_COND_V(reserved_id != -1, ERR_INVALID_DATA);
 
-								  _layers.push_back(std::move(layer_ptr));
+			_layers.push_back(std::move(layer_ptr));
 
-							  } else if (strcmp(chunk_id, "MATL") == 0) {
-								  std::unique_ptr<Material> material_ptr = std::make_unique<Material>();
-								  Material &material = *material_ptr;
+		} else if (strcmp(chunk_id, "MATL") == 0) {
+			std::unique_ptr<Material> material_ptr = std::make_unique<Material>();
+			Material &material = *material_ptr;
 
-								  const int material_id = f.get_32();
-								  ERR_FAIL_COND_V(material_id < 0 || material_id > static_cast<int>(_palette.size()),
-										  ERR_INVALID_DATA);
-								  ERR_FAIL_COND_V_MSG(_materials.find(material_id) != _materials.end(),
-										  ERR_INVALID_DATA,
-										  String("Material ID {0} already exists").format(varray(material_id)));
-								  material.id = material_id;
+			const int material_id = f.get_32();
+			ERR_FAIL_COND_V(material_id < 0 || material_id > static_cast<int>(_palette.size()), ERR_INVALID_DATA);
+			ERR_FAIL_COND_V_MSG(_materials.find(material_id) != _materials.end(), ERR_INVALID_DATA,
+					String("Material ID {0} already exists").format(varray(material_id)));
+			material.id = material_id;
 
-								  std::unordered_map<String, String> attributes;
-								  Error attributes_err = parse_dictionary(f, attributes);
-								  ERR_FAIL_COND_V(attributes_err != OK, attributes_err);
+			std::unordered_map<String, String> attributes;
+			Error attributes_err = parse_dictionary(f, attributes);
+			ERR_FAIL_COND_V(attributes_err != OK, attributes_err);
 
-								  auto type_it = attributes.find("_type");
-								  if (type_it != attributes.end()) {
-									  String type_name = type_it->second;
-									  if (type_name == "_diffuse") {
-										  material.type = Material::TYPE_DIFFUSE;
-									  } else if (type_name == "_metal") {
-										  material.type = Material::TYPE_METAL;
-									  } else if (type_name == "_glass") {
-										  material.type = Material::TYPE_GLASS;
-									  } else if (type_name == "_emit") {
-										  material.type = Material::TYPE_EMIT;
-									  }
-								  }
+			auto type_it = attributes.find("_type");
+			if (type_it != attributes.end()) {
+				String type_name = type_it->second;
+				if (type_name == "_diffuse") {
+					material.type = Material::TYPE_DIFFUSE;
+				} else if (type_name == "_metal") {
+					material.type = Material::TYPE_METAL;
+				} else if (type_name == "_glass") {
+					material.type = Material::TYPE_GLASS;
+				} else if (type_name == "_emit") {
+					material.type = Material::TYPE_EMIT;
+				}
+			}
 
-								  auto weight_it = attributes.find("_weight");
-								  if (weight_it != attributes.end()) {
-									  material.weight = weight_it->second.to_float();
-								  }
+			auto weight_it = attributes.find("_weight");
+			if (weight_it != attributes.end()) {
+				material.weight = weight_it->second.to_float();
+			}
 
-								  auto rough_it = attributes.find("_rough");
-								  if (rough_it != attributes.end()) {
-									  material.roughness = rough_it->second.to_float();
-								  }
+			auto rough_it = attributes.find("_rough");
+			if (rough_it != attributes.end()) {
+				material.roughness = rough_it->second.to_float();
+			}
 
-								  auto spec_it = attributes.find("_spec");
-								  if (spec_it != attributes.end()) {
-									  material.specular = spec_it->second.to_float();
-								  }
+			auto spec_it = attributes.find("_spec");
+			if (spec_it != attributes.end()) {
+				material.specular = spec_it->second.to_float();
+			}
 
-								  auto ior_it = attributes.find("_ior");
-								  if (ior_it != attributes.end()) {
-									  material.ior = ior_it->second.to_float();
-								  }
+			auto ior_it = attributes.find("_ior");
+			if (ior_it != attributes.end()) {
+				material.ior = ior_it->second.to_float();
+			}
 
-								  auto att_it = attributes.find("_att");
-								  if (att_it != attributes.end()) {
-									  material.att = att_it->second.to_float();
-								  }
+			auto att_it = attributes.find("_att");
+			if (att_it != attributes.end()) {
+				material.att = att_it->second.to_float();
+			}
 
-								  auto flux_it = attributes.find("_flux");
-								  if (flux_it != attributes.end()) {
-									  material.flux = flux_it->second.to_float();
-								  }
+			auto flux_it = attributes.find("_flux");
+			if (flux_it != attributes.end()) {
+				material.flux = flux_it->second.to_float();
+			}
 
-								  // auto plastic_it = attributes.find("_plastic");
-								  // if (plastic_it != attributes.end()) {
-								  // 	// ???
-								  // }
+			// auto plastic_it = attributes.find("_plastic");
+			// if (plastic_it != attributes.end()) {
+			// 	// ???
+			// }
 
-								  _materials.insert(std::make_pair(material_id, std::move(material_ptr)));
+			_materials.insert(std::make_pair(material_id, std::move(material_ptr)));
 
-							  } else {
-								  //PRINT_VERBOSE(String("Skipping chunk ") + chunk_id);
-								  // Ignore chunk
-								  f.seek(f.get_position() + chunk_size);
-							  }
+		} else {
+			//PRINT_VERBOSE(String("Skipping chunk ") + chunk_id);
+			// Ignore chunk
+			f.seek(f.get_position() + chunk_size);
+		}
 	}
 
 	// There is no indication on the official spec to detect the root node of the scene graph.
@@ -594,7 +592,7 @@ const Layer &Data::get_layer_by_index(unsigned int index) const {
 	return *layer;
 }
 
-const int Data::get_material_id_for_palette_index(unsigned int palette_index) const {
+int Data::get_material_id_for_palette_index(unsigned int palette_index) const {
 	auto it = _materials.find(palette_index);
 	if (it == _materials.end()) {
 		return -1;
