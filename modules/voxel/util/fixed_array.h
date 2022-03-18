@@ -15,7 +15,7 @@ public:
 	inline FixedArray(T defval) {
 		fill(defval);
 	}
-	FixedArray(const FixedArray<T, N> &other) {
+	inline FixedArray(const FixedArray<T, N> &other) {
 		for (unsigned int i = 0; i < N; ++i) {
 			_data[i] = other._data[i];
 		}
@@ -24,6 +24,11 @@ public:
 	inline void fill(T v) {
 		for (unsigned int i = 0; i < N; ++i) {
 			_data[i] = v;
+		}
+	}
+	void operator=(const FixedArray<T, N> &p_from) {
+		for (unsigned int i = 0; i < N; ++i) {
+			_data[i] = other._data[i];
 		}
 	}
 
