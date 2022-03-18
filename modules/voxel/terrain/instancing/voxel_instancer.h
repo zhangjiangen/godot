@@ -131,8 +131,6 @@ private:
 
 	void on_library_item_changed(int item_id, VoxelInstanceLibraryItem::ChangeType change) override;
 
-	struct Block;
-
 	static void remove_floating_multimesh_instances(Block &block, const Transform3D &parent_transform,
 			Box3i p_voxel_box, const VoxelTool &voxel_tool, int block_size_po2);
 

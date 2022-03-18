@@ -15,6 +15,11 @@ public:
 	inline FixedArray(T defval) {
 		fill(defval);
 	}
+	FixedArray(const FixedArray<T, N> &other) {
+		for (unsigned int i = 0; i < N; ++i) {
+			_data[i] = other._data[i];
+		}
+	}
 
 	inline void fill(T v) {
 		for (unsigned int i = 0; i < N; ++i) {
@@ -55,11 +60,11 @@ public:
 		return !equals(other);
 	}
 
-	inline void operator=(const FixedArray<T, N> &other) {
-		for (unsigned int i = 0; i < N; ++i) {
-			_data[i] = other._data[i];
-		}
-	}
+	// inline void operator=(const FixedArray<T, N> &other) {
+	// 	for (unsigned int i = 0; i < N; ++i) {
+	// 		_data[i] = other._data[i];
+	// 	}
+	// }
 
 	inline T *data() {
 		return _data;

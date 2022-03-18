@@ -236,7 +236,6 @@ public:
 		}
 
 	private:
-		const ProgramGraph::Node &_node;
 		std::vector<uint16_t> &_program;
 		std::vector<HeapResource> &_heap_resources;
 		std::vector<Variant> &_params;

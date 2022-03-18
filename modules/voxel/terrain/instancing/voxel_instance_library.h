@@ -14,9 +14,10 @@ public:
 	class IListener {
 	public:
 		virtual void on_library_item_changed(int id, VoxelInstanceLibraryItem::ChangeType change) = 0;
+		virtual ~IListener() {}
 	};
 
-	~VoxelInstanceLibrary();
+	virtual ~VoxelInstanceLibrary();
 
 	int get_next_available_id();
 	void add_item(int id, Ref<VoxelInstanceLibraryItem> item);
