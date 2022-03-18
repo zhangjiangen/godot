@@ -1,14 +1,15 @@
 #pragma once
-#include <functional>
-#include <vector>
-#include <string>
 #include <cstdint>
+#include <functional>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "FastNoise_Config.h"
-
+#ifdef _MSC_VER
 #pragma warning( push )
 #pragma warning( disable : 4251 )
+#endif
 
 namespace FastNoise
 {
@@ -52,7 +53,7 @@ namespace FastNoise
         static const Metadata& Get()
         {
             static_assert( std::is_base_of<Generator, T>::value, "This function should only be used for FastNoise node classes, for example FastNoise::Simplex" );
-            static_assert( std::is_member_function_pointer<decltype(&T::GetMetadata)>::value, "Cannot get Metadata for abstract node class, use a derived class, for example: Fractal -> FractalFBm" );
+            static_assert( std::is_member_function_pointer<decltype( &T::GetMetadata )>::value, "Cannot get Metadata for abstract node class, use a derived class, for example: Fractal -> FractalFBm" );
 
             return Impl::GetMetadata<T>();
         }
@@ -77,7 +78,7 @@ namespace FastNoise
         struct Member
         {
             const char* name;
-            int dimensionIdx = -1;            
+            int dimensionIdx = -1;
         };
 
         /// <summary>
@@ -131,7 +132,7 @@ namespace FastNoise
                     return i;
                 }
 
-                bool operator ==( const ValueUnion& rhs ) const
+                bool operator==( const ValueUnion& rhs ) const
                 {
                     return i == rhs.i;
                 }
@@ -173,9 +174,9 @@ namespace FastNoise
         const char* name;
         std::vector<const char*> groups;
 
-        std::vector<MemberVariable>   memberVariables;
+        std::vector<MemberVariable> memberVariables;
         std::vector<MemberNodeLookup> memberNodeLookups;
-        std::vector<MemberHybrid>     memberHybrids;
+        std::vector<MemberHybrid> memberHybrids;
 
         /// <summary>
         /// Create new instance of a FastNoise node from metadata
@@ -216,7 +217,7 @@ namespace FastNoise
         std::vector<NodeData*> nodeLookups;
         std::vector<std::pair<NodeData*, float>> hybrids;
 
-        bool operator ==( const NodeData& rhs ) const
+        bool operator==( const NodeData& rhs ) const
         {
             return metadata == rhs.metadata &&
                 variables == rhs.variables &&
@@ -224,6 +225,7 @@ namespace FastNoise
                 hybrids == rhs.hybrids;
         }
     };
-}
-
+} // namespace FastNoise
+#ifdef _MSC_VER
 #pragma warning( pop )
+#endif
