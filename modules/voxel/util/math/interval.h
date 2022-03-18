@@ -20,7 +20,8 @@ struct Interval {
 #endif
 	}
 
-	inline Interval(const Interval &other) : min(other.min), max(other.max) {}
+	Interval(const Interval &) = default;
+	Interval(Interval &&) = default;
 
 	inline static Interval from_single_value(real_t p_val) {
 		return Interval(p_val, p_val);

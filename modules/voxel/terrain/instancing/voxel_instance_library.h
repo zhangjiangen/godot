@@ -17,7 +17,7 @@ public:
 		virtual ~IListener() {}
 	};
 
-	virtual ~VoxelInstanceLibrary();
+	~VoxelInstanceLibrary();
 
 	int get_next_available_id();
 	void add_item(int id, Ref<VoxelInstanceLibraryItem> item);

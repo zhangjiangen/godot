@@ -43,7 +43,7 @@ public:
 	// If this is not respected, the mesher might produce seams at the edges, or an error
 	unsigned int get_maximum_padding() const;
 
-	virtual Ref<Resource> duplicate(bool p_subresources = false) const {
+	virtual Ref<Resource> duplicate(bool p_subresources = false) const override {
 		return Ref<Resource>();
 	}
 
