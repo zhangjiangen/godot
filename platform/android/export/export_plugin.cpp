@@ -2176,11 +2176,6 @@ bool EditorExportPlatformAndroid::can_export(const Ref<EditorExportPreset> &p_pr
 		err += TTR("Invalid package name:") + " " + pn_err + "\n";
 	}
 
-	String etc_error = test_etc2();
-	if (!etc_error.is_empty()) {
-		valid = false;
-		err += etc_error;
-	}
 
 	// Ensure that `Use Custom Build` is enabled if a plugin is selected.
 	String enabled_plugins_names = PluginConfigAndroid::get_plugins_names(get_enabled_plugins(p_preset));

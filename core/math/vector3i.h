@@ -117,6 +117,11 @@ struct _NO_DISCARD_ Vector3i {
 		y = p_y;
 		z = p_z;
 	}
+	explicit _FORCE_INLINE_ Vector3i(const int xyz) :
+			x(xyz), y(xyz), z(xyz) {}
+	_FORCE_INLINE_ Vector3i(const Vector3i &other) {
+		*this = other;
+	}
 };
 
 int64_t Vector3i::length_squared() const {

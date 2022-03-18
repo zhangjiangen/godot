@@ -386,13 +386,6 @@ bool EditorExportPlatformJavaScript::can_export(const Ref<EditorExportPreset> &p
 
 	// Validate the rest of the configuration.
 
-	if (p_preset->get("vram_texture_compression/for_mobile")) {
-		String etc_error = test_etc2();
-		if (!etc_error.is_empty()) {
-			valid = false;
-			err += etc_error;
-		}
-	}
 
 	if (!err.is_empty()) {
 		r_error = err;

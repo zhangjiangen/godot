@@ -431,17 +431,13 @@ void OS_OSX::run() {
 	bool quit = false;
 	while (!force_quit && !quit) {
 		@try {
-			// if (DisplayServer::get_singleton()) {
-			// 	DisplayServer::get_singleton()->process_events(); // Get rid of pending events.
-			// }
-			// joypad_osx->process_joypads();
+			if (DisplayServer::get_singleton()) {
+				DisplayServer::get_singleton()->process_events(); // Get rid of pending events.
+			}
+			joypad_osx->process_joypads();
 
-			// if (Main::iteration()) {
-			// 	quit = true;
-			// }
-			if(update_once())
-			{
-				quit =true;
+			if (Main::iteration()) {
+				quit = true;
 			}
 		} @catch (NSException *exception) {
 			ERR_PRINT("NSException: " + String::utf8([exception reason].UTF8String));
@@ -449,19 +445,6 @@ void OS_OSX::run() {
 	}
 
 	main_loop->finalize();
-}
-bool OS_OSX::update_once()
-{
-	bool ret =false;
-	@autoreleasepool
-	{
-		if (DisplayServer::get_singleton()) {
-			DisplayServer::get_singleton()->process_events(); // Get rid of pending events.
-		}
-		joypad_osx->process_joypads();
-		ret =  Main::iteration();
-	}
-	return ret;
 }
 
 OS_OSX::OS_OSX() {
@@ -500,31 +483,23 @@ OS_OSX::OS_OSX() {
 	CFRunLoopAddObserver(CFRunLoopGetCurrent(), pre_wait_observer, kCFRunLoopCommonModes);
 
 	// Process application:openFile: event.
-	// while (true) {
-	// 	NSEvent *event = [NSApp
-	// 			nextEventMatchingMask:NSEventMaskAny
-	// 						untilDate:[NSDate distantPast]
-	// 						   inMode:NSDefaultRunLoopMode
-	// 						  dequeue:YES];
+	while (true) {
+		NSEvent *event = [NSApp
+				nextEventMatchingMask:NSEventMaskAny
+							untilDate:[NSDate distantPast]
+							   inMode:NSDefaultRunLoopMode
+							  dequeue:YES];
 
-	// 	if (event == nil) {
-	// 		break;
-	// 	}
+		if (event == nil) {
+			break;
+		}
 
-	// 	[NSApp sendEvent:event];
-	// } 
-	@autoreleasepool
-	{
-    while (NSEvent *event = [NSApp nextEventMatchingMask : NSAnyEventMask
-                              untilDate:[NSDate distantPast]
-							inMode : NSDefaultRunLoopMode
-							dequeue : YES]) {
-         [NSApp sendEvent : event];
-		 
-      }
-
+		[NSApp sendEvent:event];
 	}
+
+	[NSApp activateIgnoringOtherApps:YES];
 }
+
 OS_OSX::~OS_OSX() {
 	CFRunLoopRemoveObserver(CFRunLoopGetCurrent(), pre_wait_observer, kCFRunLoopCommonModes);
 	CFRelease(pre_wait_observer);

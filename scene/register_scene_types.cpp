@@ -472,6 +472,8 @@ void register_scene_types() {
 	GDREGISTER_CLASS(XRAnchor3D);
 	GDREGISTER_CLASS(XROrigin3D);
 	GDREGISTER_CLASS(MeshInstance3D);
+	GDREGISTER_CLASS(AvatarResource3D);
+	GDREGISTER_CLASS(AvatarInstance3D);
 	GDREGISTER_CLASS(OccluderInstance3D);
 	GDREGISTER_ABSTRACT_CLASS(Occluder3D);
 	GDREGISTER_CLASS(ArrayOccluder3D);

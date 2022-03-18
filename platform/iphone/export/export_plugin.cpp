@@ -1829,14 +1829,6 @@ bool EditorExportPlatformIOS::can_export(const Ref<EditorExportPreset> &p_preset
 		err += TTR("Invalid Identifier:") + " " + pn_err + "\n";
 		valid = false;
 	}
-
-	const String etc_error = test_etc2();
-
-	if (!etc_error.is_empty()) {
-		valid = false;
-		err += etc_error;
-	}
-
 	if (!err.is_empty()) {
 		r_error = err;
 	}

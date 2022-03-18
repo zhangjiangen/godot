@@ -71,6 +71,7 @@ Node::Data::Data() {
 
 	display_folded = false;
 	editable_instance = false;
+	load_form_avatar_resource = false;
 }
 int Node::orphan_node_count = 0;
 

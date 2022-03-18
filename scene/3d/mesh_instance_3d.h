@@ -33,11 +33,75 @@
 
 #include "core/templates/local_vector.h"
 #include "scene/3d/visual_instance_3d.h"
+#include "scene/resources/animation.h"
+#include "scene/resources/packed_scene.h"
 class Skin;
 class SkinReference;
+class PackedScene;
+class AvatarResource3D : public Resource {
+	GDCLASS(AvatarResource3D, Resource);
 
+protected:
+	struct MeshData {
+		String name;
+		Ref<Mesh> mesh;
+		NodePath attach_node;
+		Ref<Skin> skin;
+		Transform3D globle_trans;
+	};
+	Vector<MeshData> mesh_data;
+	Ref<PackedScene> skeleton;
+	// 动画信息
+	Map<StringName, Ref<Animation>> animations;
+
+protected:
+	void _get_property_list(List<PropertyInfo> *p_list) const;
+
+	void _notification(int p_what);
+	void _resource_change();
+	static void _bind_methods();
+
+public:
+	const Map<StringName, Ref<Animation>> &_get_animations() {
+		return animations;
+	}
+
+	const Vector<MeshData> &_get_mesh() const;
+
+public:
+	void set_mesh(const Array &p_mesh);
+	Array get_mesh() const;
+
+	void set_skeleton(const Ref<PackedScene> &p_skeleton);
+	Ref<PackedScene> get_skeleton();
+
+	void set_animations(Dictionary p_animations);
+	Dictionary get_animations();
+};
+class AvatarInstance3D : public Node3D {
+	GDCLASS(AvatarInstance3D, Node3D);
+
+protected:
+	Ref<AvatarResource3D> avatar_resource;
+
+protected:
+	bool _set(const StringName &p_name, const Variant &p_value);
+	bool _get(const StringName &p_name, Variant &r_ret) const;
+	void _get_property_list(List<PropertyInfo> *p_list) const;
+
+	void _notification(int p_what);
+	void _mesh_changed();
+	static void _bind_methods();
+
+	void on_change_resource();
+	void _resolve_skeleton_path();
+
+public:
+	AvatarInstance3D();
+};
 class MeshInstance3D : public GeometryInstance3D {
 	GDCLASS(MeshInstance3D, GeometryInstance3D);
+	friend class AvatarInstance3D;
 
 protected:
 	Ref<Mesh> mesh;
