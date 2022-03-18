@@ -26,7 +26,7 @@ public:
 			_data[i] = v;
 		}
 	}
-	void operator=(const FixedArray<T, N> &p_from) {
+	void operator=(const FixedArray<T, N> &other) {
 		for (unsigned int i = 0; i < N; ++i) {
 			_data[i] = other._data[i];
 		}
