@@ -9,7 +9,7 @@ if env["use_lto"]:
     # Need to either produce an error, fallback on Scalar, or turn off support entirely?
     pass
 
-#env_voxel.Append(CPPPATH=["thirdparty/fast_noise_2/include"])
+# env_voxel.Append(CPPPATH=["thirdparty/fast_noise_2/include"])
 env_voxel.Append(CPPPATH=["include"])
 env_voxel.Append(CPPDEFINES=["VOXEL_ENABLE_FAST_NOISE_2"])
 env_voxel.Append(CPPDEFINES=["FASTNOISE_STATIC_LIB"])
@@ -56,8 +56,7 @@ if not env.msvc:
     # We compile with `-Wall`, but FastNoise2 does not, so a lot of pedantic things show up treated as errors
     env_fn2.Append(CXXFLAGS=["-Wno-parentheses"])
     # This one might be legitimate in SmartNode.cpp but we assume the devs got the `memset` right
-    env_fn2.Append(CXXFLAGS=["-Wno-error=class-memaccess"]) 
-    env_fn2.Append(CXXFLAGS=["-Wno-error=extra"]) 
+    # env_fn2.Append(CXXFLAGS=["-Wno-error=class-memaccess"])
 
 env_fn2_scalar = env_fn2.Clone()
 env_fn2_sse2 = env_fn2.Clone()
@@ -84,7 +83,7 @@ if env.msvc:
     env_fn2_avx2.Append(CCFLAGS=["/arch:AVX2"])
     env_fn2_avx512.Append(CCFLAGS=["/arch:AVX512"])
 
-else: # Clang, GCC, AppleClang
+else:  # Clang, GCC, AppleClang
     # TODO The Cmake build script still has a big `if(MSVC)` in that section.
     # what does it mean?
 
