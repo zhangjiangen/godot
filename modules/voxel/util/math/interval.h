@@ -7,7 +7,7 @@
 namespace zylann::math {
 
 // For interval arithmetic
-struct Interval {
+struct _NO_DISCARD_ Interval {
 	// Both inclusive
 	real_t min;
 	real_t max;
