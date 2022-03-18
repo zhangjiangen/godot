@@ -21,6 +21,7 @@ public:
 	class IListener {
 	public:
 		virtual void on_library_item_changed(int id, ChangeType change) = 0;
+		virtual ~IListener() {}
 	};
 
 	void set_item_name(String name);
