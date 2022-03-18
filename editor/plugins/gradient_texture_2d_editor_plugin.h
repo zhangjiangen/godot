@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  editor_property_name_processor.h                                     */
+/*  gradient_texture_2d_editor_plugin.h                                  */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,32 +28,85 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef EDITOR_PROPERTY_NAME_PROCESSOR_H
-#define EDITOR_PROPERTY_NAME_PROCESSOR_H
+#ifndef GRADIENT_TEXTURE_2D_EDITOR
+#define GRADIENT_TEXTURE_2D_EDITOR
 
-#include "scene/main/node.h"
+#include "editor/editor_plugin.h"
+#include "editor/editor_spin_slider.h"
 
-class EditorPropertyNameProcessor : public Node {
-	GDCLASS(EditorPropertyNameProcessor, Node);
+class GradientTexture2DEditorRect : public Control {
+	GDCLASS(GradientTexture2DEditorRect, Control);
 
-	static EditorPropertyNameProcessor *singleton;
+	enum Handle {
+		HANDLE_NONE,
+		HANDLE_FILL_FROM,
+		HANDLE_FILL_TO
+	};
 
-	mutable Map<String, String> capitalize_string_cache;
-	Map<String, String> capitalize_string_remaps;
+	Ref<GradientTexture2D> texture;
+	UndoRedo *undo_redo = nullptr;
+	bool snap_enabled = false;
+	float snap_size = 0;
 
-	String _capitalize_name(const String &p_name) const;
+	TextureRect *checkerboard = nullptr;
+
+	Handle handle = HANDLE_NONE;
+	Size2 handle_size;
+	Point2 offset;
+	Size2 size;
+
+	Point2 _get_handle_position(const Handle p_handle);
+	void _update_fill_position();
+	virtual void gui_input(const Ref<InputEvent> &p_event) override;
+
+protected:
+	void _notification(int p_what);
 
 public:
-	static EditorPropertyNameProcessor *get_singleton() { return singleton; }
+	void set_texture(Ref<GradientTexture2D> &p_texture);
+	void set_snap_enabled(bool p_snap_enabled);
+	void set_snap_size(float p_snap_size);
 
-	// Capitalize & localize property path segments.
-	String process_name(const String &p_name) const;
-
-	// Make tooltip string for names processed by process_name().
-	String make_tooltip_for_name(const String &p_name) const;
-
-	EditorPropertyNameProcessor();
-	~EditorPropertyNameProcessor();
+	GradientTexture2DEditorRect();
 };
 
-#endif // EDITOR_PROPERTY_NAME_PROCESSOR_H
+class GradientTexture2DEditor : public VBoxContainer {
+	GDCLASS(GradientTexture2DEditor, VBoxContainer);
+
+	Ref<GradientTexture2D> texture;
+	UndoRedo *undo_redo = nullptr;
+
+	Button *reverse_button = nullptr;
+	Button *snap_button = nullptr;
+	EditorSpinSlider *snap_size_edit = nullptr;
+	GradientTexture2DEditorRect *texture_editor_rect = nullptr;
+
+	void _reverse_button_pressed();
+	void _set_snap_enabled(bool p_enabled);
+	void _set_snap_size(float p_snap_size);
+
+protected:
+	void _notification(int p_what);
+
+public:
+	void set_texture(Ref<GradientTexture2D> &p_texture);
+
+	GradientTexture2DEditor();
+};
+
+class EditorInspectorPluginGradientTexture2D : public EditorInspectorPlugin {
+	GDCLASS(EditorInspectorPluginGradientTexture2D, EditorInspectorPlugin);
+
+public:
+	virtual bool can_handle(Object *p_object) override;
+	virtual void parse_begin(Object *p_object) override;
+};
+
+class GradientTexture2DEditorPlugin : public EditorPlugin {
+	GDCLASS(GradientTexture2DEditorPlugin, EditorPlugin);
+
+public:
+	GradientTexture2DEditorPlugin();
+};
+
+#endif

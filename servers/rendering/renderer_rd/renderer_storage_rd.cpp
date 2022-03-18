@@ -5435,18 +5435,18 @@ bool RendererStorageRD::light_directional_get_blend_splits(RID p_light) const {
 	return light->directional_blend_splits;
 }
 
-void RendererStorageRD::light_directional_set_sky_only(RID p_light, bool p_sky_only) {
+void RendererStorageRD::light_directional_set_sky_mode(RID p_light, RS::LightDirectionalSkyMode p_mode) {
 	Light *light = light_owner.get_or_null(p_light);
 	ERR_FAIL_COND(!light);
 
-	light->directional_sky_only = p_sky_only;
+	light->directional_sky_mode = p_mode;
 }
 
-bool RendererStorageRD::light_directional_is_sky_only(RID p_light) const {
+RS::LightDirectionalSkyMode RendererStorageRD::light_directional_get_sky_mode(RID p_light) const {
 	const Light *light = light_owner.get_or_null(p_light);
-	ERR_FAIL_COND_V(!light, false);
+	ERR_FAIL_COND_V(!light, RS::LIGHT_DIRECTIONAL_SKY_MODE_LIGHT_AND_SKY);
 
-	return light->directional_sky_only;
+	return light->directional_sky_mode;
 }
 
 RS::LightDirectionalShadowMode RendererStorageRD::light_directional_get_shadow_mode(RID p_light) {
@@ -8490,7 +8490,7 @@ RendererStorageRD::RendererStorageRD() {
 
 	using_lightmap_array = true; // high end
 	if (using_lightmap_array) {
-		uint32_t textures_per_stage = RD::get_singleton()->limit_get(RD::LIMIT_MAX_TEXTURES_PER_SHADER_STAGE);
+		uint64_t textures_per_stage = RD::get_singleton()->limit_get(RD::LIMIT_MAX_TEXTURES_PER_SHADER_STAGE);
 
 		if (textures_per_stage <= 256) {
 			lightmap_textures.resize(32);
