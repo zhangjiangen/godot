@@ -46,7 +46,7 @@ class Node : public Object {
 	OBJ_CATEGORY("Nodes");
 
 public:
-	enum ProcessMode : uint8_t {
+	enum ProcessMode {
 		PROCESS_MODE_INHERIT, // same as parent node
 		PROCESS_MODE_PAUSABLE, // process only if not paused
 		PROCESS_MODE_WHEN_PAUSED, // process only if paused
@@ -54,7 +54,7 @@ public:
 		PROCESS_MODE_DISABLED, // never process
 	};
 
-	enum DuplicateFlags : uint8_t {
+	enum DuplicateFlags {
 		DUPLICATE_SIGNALS = 1,
 		DUPLICATE_GROUPS = 2,
 		DUPLICATE_SCRIPTS = 4,
@@ -64,13 +64,13 @@ public:
 #endif
 	};
 
-	enum NameCasing : uint8_t {
+	enum NameCasing {
 		NAME_CASING_PASCAL_CASE,
 		NAME_CASING_CAMEL_CASE,
 		NAME_CASING_SNAKE_CASE
 	};
 
-	enum InternalMode : uint8_t {
+	enum InternalMode {
 		INTERNAL_MODE_DISABLED,
 		INTERNAL_MODE_FRONT,
 		INTERNAL_MODE_BACK,
@@ -520,6 +520,7 @@ public:
 VARIANT_ENUM_CAST(Node::DuplicateFlags);
 VARIANT_ENUM_CAST(Node::ProcessMode);
 VARIANT_ENUM_CAST(Node::InternalMode);
+VARIANT_ENUM_CAST(Node::NameCasing);
 
 typedef Set<Node *, Node::Comparator> NodeSet;
 
