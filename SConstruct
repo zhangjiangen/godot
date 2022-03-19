@@ -624,6 +624,8 @@ if selected_platform in platform_list:
             # We often implement `operator<` for structs of pointers as a requirement
             # for putting them in `Set` or `Map`. We don't mind about unreliable ordering.
             common_warnings += ["-Wno-ordered-compare-function-pointers"]
+            common_warnings += ["-Wno-unused-variable"]
+            common_warnings += ["-Wno-unused-function"]
 
         if env["warnings"] == "extra":
             env.Append(CCFLAGS=["-Wall", "-Wextra", "-Wwrite-strings",
