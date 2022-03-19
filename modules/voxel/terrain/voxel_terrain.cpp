@@ -1072,7 +1072,7 @@ void VoxelTerrain::process_viewers() {
 							VoxelServer::get_singleton()->is_viewer_requiring_data_block_notifications(viewer.id);
 
 					// Unview blocks that just fell out of range
-					prev_data_box.difference(new_data_box, [this, &viewer](Box3i out_of_range_box) {
+					prev_data_box.difference(new_data_box, [this](Box3i out_of_range_box) {
 						out_of_range_box.for_each_cell([this](Vector3i bpos) { //
 							unview_data_block(bpos);
 						});

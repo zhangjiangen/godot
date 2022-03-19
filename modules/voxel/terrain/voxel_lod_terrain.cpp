@@ -2509,7 +2509,7 @@ const VoxelLodTerrain::Stats &VoxelLodTerrain::get_stats() const {
 Dictionary VoxelLodTerrain::_b_get_statistics() const {
 	Dictionary d;
 
-	int deferred_collision_updates = 0;
+	//int deferred_collision_updates = 0;
 	for (unsigned int lod_index = 0; lod_index < _lod_count; ++lod_index) {
 		const Lod &lod = _lods[lod_index];
 		deferred_collision_updates += lod.deferred_collision_updates.size();
