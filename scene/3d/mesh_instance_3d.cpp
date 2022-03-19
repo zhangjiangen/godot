@@ -118,7 +118,7 @@ void AvatarInstance3D::on_change_resource() {
 			remove_node.push_back(n);
 		}
 	}
-	for (int i = 0; i < remove_node.size(); ++i) {
+	for (uint32_t i = 0; i < remove_node.size(); ++i) {
 		memdelete(remove_node[i]);
 	}
 	if (avatar_resource.is_valid()) {

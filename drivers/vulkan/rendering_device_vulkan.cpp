@@ -1487,7 +1487,7 @@ Error RenderingDeviceVulkan::_buffer_allocate(Buffer *p_buffer, uint32_t p_size,
 	p_buffer->usage = p_usage;
 
 	buffer_memory += p_size;
-	DefaultAllocator::record_memory_alloc(p_buffer->buffer, p_size, file_name, line);
+	DefaultAllocator::record_memory_alloc((void *)p_buffer->buffer, p_size, file_name, line);
 
 	return OK;
 }
@@ -1530,7 +1530,7 @@ Error RenderingDeviceVulkan::_insert_staging_block() {
 	VkResult err = vmaCreateBuffer(allocator, &bufferInfo, &allocInfo, &block.buffer, &block.allocation, nullptr);
 	ERR_FAIL_COND_V_MSG(err, ERR_CANT_CREATE, "vmaCreateBuffer failed with error " + itos(err) + ".");
 
-	DefaultAllocator::record_memory_alloc(block.buffer, staging_buffer_block_size, __FILE__, __LINE__);
+	DefaultAllocator::record_memory_alloc((void *)block.buffer, staging_buffer_block_size, __FILE__, __LINE__);
 	block.frame_used = 0;
 	block.fill_amount = 0;
 
@@ -2015,7 +2015,7 @@ RID RenderingDeviceVulkan::texture_create(const TextureFormat &p_format, const T
 	texture.usage_flags = p_format.usage_bits;
 	texture.samples = p_format.samples;
 	texture.allowed_shared_formats = p_format.shareable_formats;
-	DefaultAllocator::record_memory_alloc(texture.image, texture.allocation_info.size, fn, line);
+	DefaultAllocator::record_memory_alloc((void *)texture.image, texture.allocation_info.size, fn, line);
 
 	//set base layout based on usage priority
 
