@@ -76,10 +76,11 @@ void SaveBlockDataTask::run(zylann::ThreadedTaskContext ctx) {
 		// this should not be null.
 
 		//PRINT_VERBOSE(String("Saving instance block {0} lod {1} with data {2}")
-							//  .format(varray(_position, _lod, ptr2s(_instances.get()))));
+		//  .format(varray(_position, _lod, ptr2s(_instances.get()))));
 
-							  VoxelStream::InstancesQueryData instances_query{ std::move(_instances), _position, _lod };
-							  stream->save_instance_blocks(Span<VoxelStream::InstancesQueryData>(&instances_query, 1));
+		VoxelStream::InstancesQueryData instances_query{ std::move(_instances), _position, _lod,
+			VoxelStream::RESULT_ERROR };
+		stream->save_instance_blocks(Span<VoxelStream::InstancesQueryData>(&instances_query, 1));
 	}
 
 	_has_run = true;
