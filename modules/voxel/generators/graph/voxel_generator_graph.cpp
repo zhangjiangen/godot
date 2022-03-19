@@ -803,7 +803,7 @@ static bool has_output_type(
 }
 
 VoxelGraphRuntime::CompilationResult VoxelGeneratorGraph::compile() {
-	const int64_t time_before = Time::get_singleton()->get_ticks_usec();
+	//const int64_t time_before = Time::get_singleton()->get_ticks_usec();
 
 	std::shared_ptr<Runtime> r = std::make_shared<Runtime>();
 	VoxelGraphRuntime &runtime = r->runtime;
