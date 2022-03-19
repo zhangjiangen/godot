@@ -45,8 +45,6 @@
 
 #include <stdint.h>
 
-VARIANT_ENUM_CAST(Node::ProcessMode);
-VARIANT_ENUM_CAST(Node::InternalMode);
 
 Node::Data::Data() {
 	process_mode = PROCESS_MODE_INHERIT;

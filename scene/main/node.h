@@ -519,6 +519,7 @@ public:
 
 VARIANT_ENUM_CAST(Node::DuplicateFlags);
 VARIANT_ENUM_CAST(Node::ProcessMode);
+VARIANT_ENUM_CAST(Node::InternalMode);
 
 typedef Set<Node *, Node::Comparator> NodeSet;
 
