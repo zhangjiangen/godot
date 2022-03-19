@@ -15,7 +15,7 @@ std::vector<std::vector<int>> get_neighbourhoods(Tree3DMesh &mesh) {
 	std::vector<std::vector<int>> vertex_neighbourhood;
 	vertex_neighbourhood.resize(mesh.vertices.size());
 	for (auto &polygon : mesh.polygons) {
-		for (int i = 1; i < polygon.size(); i += 1) {
+		for (size_t i = 1; i < polygon.size(); i += 1) {
 			int i1 = polygon[i];
 			int i2 = polygon[(i + 1) % polygon.size()];
 			add_index_no_duplicates(vertex_neighbourhood[i1], i2);
@@ -49,7 +49,7 @@ void smooth_mesh(Tree3DMesh &mesh, const int iterations, const float factor, std
 	std::vector<Vector3> buffer = mesh.vertices;
 	std::vector<Vector3> *result = &buffer;
 
-	for (size_t i = 0; i < iterations; i++) {
+	for (int i = 0; i < iterations; i++) {
 		smooth_mesh_once(result, previous_iteration, neighbourhoods, factor, weights);
 		auto tmp = result;
 		result = previous_iteration;
