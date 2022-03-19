@@ -1497,7 +1497,7 @@ Error RenderingDeviceVulkan::_buffer_free(Buffer *p_buffer) {
 
 	buffer_memory -= p_buffer->size;
 	vmaDestroyBuffer(allocator, p_buffer->buffer, p_buffer->allocation);
-	DefaultAllocator::record_memory_free(p_buffer->buffer, p_buffer->size);
+	DefaultAllocator::record_memory_free((void *)p_buffer->buffer, p_buffer->size);
 	p_buffer->buffer = VK_NULL_HANDLE;
 	p_buffer->allocation = nullptr;
 	p_buffer->size = 0;
@@ -2108,7 +2108,7 @@ RID RenderingDeviceVulkan::texture_create(const TextureFormat &p_format, const T
 
 	if (err) {
 		vmaDestroyImage(allocator, texture.image, texture.allocation);
-		DefaultAllocator::record_memory_free(texture.image, texture.allocation_info.size);
+		DefaultAllocator::record_memory_free((void *)texture.image, texture.allocation_info.size);
 		ERR_FAIL_V_MSG(RID(), "vkCreateImageView failed with error " + itos(err) + ".");
 	}
 
@@ -9025,7 +9025,7 @@ void RenderingDeviceVulkan::_free_pending_resources(int p_frame) {
 			//actually owns the image and the allocation too
 			image_memory -= texture->allocation_info.size;
 			vmaDestroyImage(allocator, texture->image, texture->allocation);
-			DefaultAllocator::record_memory_free(texture->image, texture->allocation_info.size);
+			DefaultAllocator::record_memory_free((void *)texture->image, texture->allocation_info.size);
 		}
 		frames[p_frame].textures_to_dispose_of.pop_front();
 	}
@@ -9623,7 +9623,7 @@ void RenderingDeviceVulkan::finalize() {
 
 	for (int i = 0; i < staging_buffer_blocks.size(); i++) {
 		vmaDestroyBuffer(allocator, staging_buffer_blocks[i].buffer, staging_buffer_blocks[i].allocation);
-		DefaultAllocator::record_memory_free(staging_buffer_blocks[i].buffer, staging_buffer_block_size);
+		DefaultAllocator::record_memory_free((void *)staging_buffer_blocks[i].buffer, staging_buffer_block_size);
 	}
 	while (small_allocs_pools.size()) {
 		Map<uint32_t, VmaPool>::Element *E = small_allocs_pools.front();
