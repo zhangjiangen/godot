@@ -680,11 +680,11 @@ void VoxelStreamRegionFiles::_convert_files(Meta new_meta) {
 			// Load block from old stream
 			Vector3i block_rpos = old_region->region.get_block_position_from_index(j);
 			Vector3i block_pos = block_rpos + region_info.position * old_region_size;
-			VoxelStream::VoxelQueryData old_block_load_query{
-				old_block, //
+			VoxelStream::VoxelQueryData old_block_load_query{ old_block, //
 				block_pos * old_block_size << region_info.lod, //
 				region_info.lod //
-			};
+				,
+				VoxelStream::RESULT_ERROR };
 			old_stream->load_voxel_block(old_block_load_query);
 
 			// Save it in the new one
@@ -692,7 +692,7 @@ void VoxelStreamRegionFiles::_convert_files(Meta new_meta) {
 				VoxelStream::VoxelQueryData old_block_save_query{ //
 					old_block, //
 					block_pos * new_block_size << region_info.lod, //
-					region_info.lod
+					region_info.lod, VoxelStream::RESULT_ERROR
 				};
 				save_voxel_block(old_block_save_query);
 
@@ -708,7 +708,7 @@ void VoxelStreamRegionFiles::_convert_files(Meta new_meta) {
 					VoxelStream::VoxelQueryData new_block_load_query{ //
 						new_block, //
 						new_block_pos * new_block_size << region_info.lod, //
-						region_info.lod
+						region_info.lod, VoxelStream::RESULT_ERROR
 					};
 					load_voxel_block(new_block_load_query);
 
@@ -723,7 +723,7 @@ void VoxelStreamRegionFiles::_convert_files(Meta new_meta) {
 					VoxelStream::VoxelQueryData new_block_save_query{ //
 						new_block, //
 						new_block_pos * new_block_size << region_info.lod, //
-						region_info.lod
+						region_info.lod, VoxelStream::RESULT_ERROR
 					};
 					save_voxel_block(new_block_save_query);
 
@@ -746,7 +746,7 @@ void VoxelStreamRegionFiles::_convert_files(Meta new_meta) {
 								VoxelStream::VoxelQueryData new_block_save_query{ //
 									new_block, //
 									(new_block_pos + rpos) * new_block_size << region_info.lod, //
-									region_info.lod
+									region_info.lod, VoxelStream::RESULT_ERROR
 								};
 								save_voxel_block(new_block_save_query);
 							}
