@@ -996,8 +996,8 @@ void VoxelLodTerrain::_notification(int p_what) {
 				break;
 			}
 
-		case NOTIFICATION_EXIT_TREE:
-			break;
+			// case NOTIFICATION_EXIT_TREE:
+			// 	break;
 
 		case NOTIFICATION_ENTER_WORLD: {
 			World3D *world = *get_world_3d();
@@ -1511,7 +1511,7 @@ void VoxelLodTerrain::process_unload_mesh_blocks_sliding_box(Vector3 p_viewer_po
 			VOXEL_PROFILE_SCOPE_NAMED("Cancel updates");
 			// Cancel block updates that are not within the new region
 			unordered_remove_if(
-					lod.blocks_pending_update, [&lod, new_box](Vector3i bpos) { return !new_box.contains(bpos); });
+					lod.blocks_pending_update, [new_box](Vector3i bpos) { return !new_box.contains(bpos); });
 		}
 
 		lod.last_viewer_mesh_block_pos = viewer_block_pos_within_lod;
@@ -1809,9 +1809,9 @@ void VoxelLodTerrain::apply_data_block_response(VoxelServer::BlockDataOutput &ob
 		if (it == lod.loading_blocks.end()) {
 			// That block was not requested, or is no longer needed. drop it...
 			//PRINT_VERBOSE(String("Ignoring block {0} lod {1}, it was not in loading blocks")
-								 // .format(varray(ob.position, ob.lod)));
-								  ++_stats.dropped_block_loads;
-								  return;
+			// .format(varray(ob.position, ob.lod)));
+			++_stats.dropped_block_loads;
+			return;
 		}
 
 		lod.loading_blocks.erase(it);
