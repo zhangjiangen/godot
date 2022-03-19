@@ -816,7 +816,7 @@ void VisualScriptEditor::_update_graph(int p_only_id) {
 			vbc->add_child(hbc2);
 			if (left_ok) {
 				Ref<Texture2D> t;
-				if (left_type >= 0 && left_type < Variant::VARIANT_MAX) {
+				if (left_type < Variant::VARIANT_MAX) {
 					t = type_icons[left_type];
 				}
 				if (t.is_valid()) {
@@ -938,7 +938,7 @@ void VisualScriptEditor::_update_graph(int p_only_id) {
 				}
 
 				Ref<Texture2D> t;
-				if (right_type >= 0 && right_type < Variant::VARIANT_MAX) {
+				if (right_type < Variant::VARIANT_MAX) {
 					t = type_icons[right_type];
 				}
 				if (t.is_valid()) {
