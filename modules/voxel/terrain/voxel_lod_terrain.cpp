@@ -993,11 +993,11 @@ void VoxelLodTerrain::_notification(int p_what) {
 				// This hack is quite miserable.
 				VoxelServerUpdater::ensure_existence(get_tree());
 				_process(get_physics_process_delta_time());
-				break;
 			}
+			break;
 
-			// case NOTIFICATION_EXIT_TREE:
-			// 	break;
+		case NOTIFICATION_EXIT_TREE:
+			break;
 
 		case NOTIFICATION_ENTER_WORLD: {
 			World3D *world = *get_world_3d();
