@@ -42,7 +42,7 @@ void get_curve_monotonic_sections(Curve &curve, std::vector<CurveMonotonicSectio
 
 			section.x_min = prev_x;
 			section.y_min = prev_y;
-			current_stationary = current_stationary;
+			current_stationary = stationary;
 			current_increasing = increasing;
 		}
 
