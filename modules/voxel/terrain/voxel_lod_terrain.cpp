@@ -2510,10 +2510,10 @@ Dictionary VoxelLodTerrain::_b_get_statistics() const {
 	Dictionary d;
 
 	//int deferred_collision_updates = 0;
-	for (unsigned int lod_index = 0; lod_index < _lod_count; ++lod_index) {
-		const Lod &lod = _lods[lod_index];
-		deferred_collision_updates += lod.deferred_collision_updates.size();
-	}
+	// for (unsigned int lod_index = 0; lod_index < _lod_count; ++lod_index) {
+	// 	const Lod &lod = _lods[lod_index];
+	// 	deferred_collision_updates += lod.deferred_collision_updates.size();
+	// }
 
 	// Breakdown of time spent in _process
 	d["time_detect_required_blocks"] = _stats.time_detect_required_blocks;
