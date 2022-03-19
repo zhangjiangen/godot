@@ -5,6 +5,7 @@
 
 struct AbstractAttribute {
 	virtual void add_data() = 0;
+	virtual ~AbstractAttribute() {}
 };
 
 template <typename T>
