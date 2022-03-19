@@ -1,4 +1,5 @@
 #include "ManifoldMesher.hpp"
+#include "core/math/math_funcs.h"
 #include "scene/3d/mtree/utilities/GeometryUtilities.hpp"
 #include "scene/3d/mtree/utilities/NodeUtilities.hpp"
 #include "smoothing.hpp"
@@ -90,14 +91,14 @@ float get_branch_angle_around_parent(const Tree3DNode &parent, const Tree3DNode 
 	Vector3 up = right.cross(parent.direction);
 	float cos_angle = projected_branch_dir.dot(right);
 	float sin_angle = projected_branch_dir.dot(up);
-	return std::fmod(std::atan2(sin_angle, cos_angle) + 2 * M_PI, 2 * M_PI);
+	return Math::fmod(Math::atan2(sin_angle, cos_angle) + 2 * M_PI, 2 * M_PI);
 }
 
 IndexRange get_branch_indices_on_circle(const int radial_n_points, const float circle_radius, const float branch_radius, const float branch_angle) {
-	float angle_delta = std::asin(std::clamp(branch_radius / circle_radius, -1.f, 1.f));
+	float angle_delta = Math::asin(Math::clamp(branch_radius / circle_radius, -1.f, 1.f));
 	float increment = 2 * M_PI / radial_n_points;
-	int min_index = (int)(std::fmod(branch_angle - angle_delta + 2 * M_PI, 2 * M_PI) / increment);
-	int max_index = (int)(std::fmod(branch_angle + angle_delta + increment + 2 * M_PI, 2 * M_PI) / increment);
+	int min_index = (int)(Math::fmod(branch_angle - angle_delta + 2 * M_PI, 2 * M_PI) / increment);
+	int max_index = (int)(Math::fmod(branch_angle + angle_delta + increment + 2 * M_PI, 2 * M_PI) / increment);
 	return IndexRange{ min_index, max_index };
 }
 
@@ -190,7 +191,7 @@ int add_child_base_uvs(float parent_uv_y, const Tree3DNode &parent, const Tree3D
 	}
 
 	Vector2 uv_circle_center{ (child_range.min_index + (child_radial_n / 4.f - .5f)) / parent_radial_n, parent_uv_y + uv_growth / 2 };
-	float uv_circle_radius = std::min((float)child_radial_n / parent_radial_n, uv_growth / 2) * .6f;
+	float uv_circle_radius = Math::min((float)child_radial_n / parent_radial_n, uv_growth / 2) * .6f;
 	for (size_t i = 0; i < child_radial_n; i++) // inner uvs
 	{
 		float angle = (float)i / (child_radial_n - 1) * 2 * M_PI + M_PI;

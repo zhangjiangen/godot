@@ -3,6 +3,7 @@
 #include "GeometryUtilities.hpp"
 #include <cmath>
 #include <iostream>
+#include "core/math/math_funcs.h"
 
 namespace Tree3DGeometry {
 
@@ -42,7 +43,7 @@ Vector3 lerp(Vector3 a, Vector3 b, float t) {
 }
 
 float lerp(float a, float b, float t) {
-	t = std::clamp(t, 0.f, 1.f);
+	t = Math::clamp(t, 0.f, 1.f);
 	return t * b + (1 - t) * a;
 }
 

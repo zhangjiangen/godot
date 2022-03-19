@@ -1,4 +1,5 @@
 #pragma once
+#include "core/math/math_funcs.h"
 #include "scene/3d/mtree/utilities/GeometryUtilities.hpp"
 #include "scene/3d/mtree/utilities/RandomGenerator.hpp"
 #include <vector>
@@ -42,9 +43,9 @@ struct SimpleCurveProperty : Property {
 			x_min(x_min), x_max(x_max), y_min(y_min), y_max(y_max), power(power){};
 
 	float execute(float x) override {
-		float factor = std::clamp((x - x_min) / std::max(0.001f, (x_max - x_min)), 0.f, 1.f);
+		float factor = Math::clamp((x - x_min) / Math::max(0.001f, (x_max - x_min)), 0.f, 1.f);
 		if (power > 0 && power != 1) {
-			factor = std::pow(factor, power);
+			factor = Math::pow(factor, power);
 		}
 		return Tree3DGeometry::lerp(y_min, y_max, factor);
 	}
