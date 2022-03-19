@@ -1072,7 +1072,7 @@ void VoxelTerrain::process_viewers() {
 							VoxelServer::get_singleton()->is_viewer_requiring_data_block_notifications(viewer.id);
 
 					// Unview blocks that just fell out of range
-					prev_data_box.difference(new_data_box, [this](Box3i out_of_range_box) {
+					prev_data_box.difference(new_data_box, [this, &viewer](Box3i out_of_range_box) {
 						out_of_range_box.for_each_cell([this](Vector3i bpos) { //
 							unview_data_block(bpos);
 						});
@@ -1099,7 +1099,7 @@ void VoxelTerrain::process_viewers() {
 					VOXEL_PROFILE_SCOPE();
 
 					// Unview blocks that just fell out of range
-					prev_mesh_box.difference(new_mesh_box, [this](Box3i out_of_range_box) {
+					prev_mesh_box.difference(new_mesh_box, [this, &viewer](Box3i out_of_range_box) {
 						out_of_range_box.for_each_cell([this, &viewer](Vector3i bpos) {
 							unview_mesh_block(
 									bpos, viewer.prev_state.requires_meshes, viewer.prev_state.requires_collisions);
@@ -1107,7 +1107,7 @@ void VoxelTerrain::process_viewers() {
 					});
 
 					// View blocks that just entered the range
-					new_mesh_box.difference(prev_mesh_box, [this](Box3i box_to_load) {
+					new_mesh_box.difference(prev_mesh_box, [this, &viewer](Box3i box_to_load) {
 						box_to_load.for_each_cell([this, &viewer](Vector3i bpos) {
 							// Load or update block
 							view_mesh_block(bpos, viewer.state.requires_meshes, viewer.state.requires_collisions);
