@@ -678,7 +678,7 @@ public:
 	static ValidatedUtilityFunction get_validated_utility_function(const StringName &p_name);
 	static PTRUtilityFunction get_ptr_utility_function(const StringName &p_name);
 
-	enum UtilityFunctionType : uint8_t {
+	enum UtilityFunctionType {
 		UTILITY_FUNC_TYPE_MATH,
 		UTILITY_FUNC_TYPE_RANDOM,
 		UTILITY_FUNC_TYPE_GENERAL,

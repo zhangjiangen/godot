@@ -47,7 +47,7 @@ class CanvasItem : public Node {
 	friend class CanvasLayer;
 
 public:
-	enum TextureFilter : uint8_t {
+	enum TextureFilter {
 		TEXTURE_FILTER_PARENT_NODE,
 		TEXTURE_FILTER_NEAREST,
 		TEXTURE_FILTER_LINEAR,
@@ -58,7 +58,7 @@ public:
 		TEXTURE_FILTER_MAX
 	};
 
-	enum TextureRepeat : uint8_t {
+	enum TextureRepeat {
 		TEXTURE_REPEAT_PARENT_NODE,
 		TEXTURE_REPEAT_DISABLED,
 		TEXTURE_REPEAT_ENABLED,

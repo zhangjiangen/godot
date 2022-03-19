@@ -39,21 +39,21 @@ class RichTextLabel : public Control {
 	GDCLASS(RichTextLabel, Control);
 
 public:
-	enum AutowrapMode : uint8_t {
+	enum AutowrapMode {
 		AUTOWRAP_OFF,
 		AUTOWRAP_ARBITRARY,
 		AUTOWRAP_WORD,
 		AUTOWRAP_WORD_SMART
 	};
 
-	enum ListType : uint8_t {
+	enum ListType {
 		LIST_NUMBERS,
 		LIST_LETTERS,
 		LIST_ROMAN,
 		LIST_DOTS
 	};
 
-	enum ItemType : uint8_t {
+	enum ItemType {
 		ITEM_FRAME,
 		ITEM_TEXT,
 		ITEM_IMAGE,
@@ -83,7 +83,7 @@ public:
 		ITEM_CUSTOMFX
 	};
 
-	enum VisibleCharactersBehavior : uint8_t {
+	enum VisibleCharactersBehavior {
 		VC_CHARS_BEFORE_SHAPING,
 		VC_CHARS_AFTER_SHAPING,
 		VC_GLYPHS_AUTO,
