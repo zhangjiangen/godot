@@ -381,12 +381,12 @@ VoxelGraphRuntime::CompilationResult VoxelGraphRuntime::_compile(const ProgramGr
 	_program.buffer_count = mem.next_address;
 
 	//PRINT_VERBOSE(String("Compiled voxel graph. Program size: {0}b, buffers: {1}")
-						  //.format(varray(SIZE_T_TO_VARIANT(_program.operations.size() * sizeof(uint16_t)),
-							//	  SIZE_T_TO_VARIANT(_program.buffer_count))));
+	//.format(varray(SIZE_T_TO_VARIANT(_program.operations.size() * sizeof(uint16_t)),
+	//	  SIZE_T_TO_VARIANT(_program.buffer_count))));
 
-						  CompilationResult result;
-						  result.success = true;
-						  return result;
+	CompilationResult result;
+	result.success = true;
+	return result;
 }
 
 static Span<const uint16_t> get_outputs_from_op_address(Span<const uint16_t> operations, uint16_t op_address) {
@@ -726,9 +726,8 @@ void VoxelGraphRuntime::generate_set(State &state, Span<float> in_x, Span<float>
 	CRASH_COND(!(in_x.size() == in_y.size() && in_y.size() == in_z.size()));
 #endif
 
-	const unsigned int buffer_size = in_x.size();
-
 #ifdef TOOLS_ENABLED
+	const unsigned int buffer_size = in_x.size();
 	ERR_FAIL_COND(state.buffers.size() < _program.buffer_count);
 	ERR_FAIL_COND(state.buffers.size() == 0);
 	ERR_FAIL_COND(state.buffer_size < buffer_size);
