@@ -600,7 +600,7 @@ struct ScheduleSaveAction {
 void VoxelTerrain::unload_data_block(Vector3i bpos) {
 	const bool save = _stream.is_valid() && (!Engine::get_singleton()->is_editor_hint() || _run_stream_in_editor);
 
-	_data_map.remove_block(bpos, [this, bpos, save](VoxelDataBlock *block) {
+	_data_map.remove_block(bpos, [this, save](VoxelDataBlock *block) {
 		emit_data_block_unloaded(block);
 		if (save) {
 			// Note: no need to copy the block because it gets removed from the map anyways
@@ -883,7 +883,7 @@ void VoxelTerrain::send_block_data_requests() {
 	} else {
 		if (_blocks_to_save.size() > 0) {
 			//PRINT_VERBOSE(String("Not saving {0} blocks because no stream is assigned")
-							//	  .format(varray(SIZE_T_TO_VARIANT(_blocks_to_save.size()))));
+			//	  .format(varray(SIZE_T_TO_VARIANT(_blocks_to_save.size()))));
 		}
 	}
 
@@ -1072,8 +1072,8 @@ void VoxelTerrain::process_viewers() {
 							VoxelServer::get_singleton()->is_viewer_requiring_data_block_notifications(viewer.id);
 
 					// Unview blocks that just fell out of range
-					prev_data_box.difference(new_data_box, [this, &viewer](Box3i out_of_range_box) {
-						out_of_range_box.for_each_cell([this, &viewer](Vector3i bpos) { //
+					prev_data_box.difference(new_data_box, [this](Box3i out_of_range_box) {
+						out_of_range_box.for_each_cell([this](Vector3i bpos) { //
 							unview_data_block(bpos);
 						});
 					});
@@ -1099,7 +1099,7 @@ void VoxelTerrain::process_viewers() {
 					VOXEL_PROFILE_SCOPE();
 
 					// Unview blocks that just fell out of range
-					prev_mesh_box.difference(new_mesh_box, [this, &viewer](Box3i out_of_range_box) {
+					prev_mesh_box.difference(new_mesh_box, [this](Box3i out_of_range_box) {
 						out_of_range_box.for_each_cell([this, &viewer](Vector3i bpos) {
 							unview_mesh_block(
 									bpos, viewer.prev_state.requires_meshes, viewer.prev_state.requires_collisions);
@@ -1107,7 +1107,7 @@ void VoxelTerrain::process_viewers() {
 					});
 
 					// View blocks that just entered the range
-					new_mesh_box.difference(prev_mesh_box, [this, &viewer](Box3i box_to_load) {
+					new_mesh_box.difference(prev_mesh_box, [this](Box3i box_to_load) {
 						box_to_load.for_each_cell([this, &viewer](Vector3i bpos) {
 							// Load or update block
 							view_mesh_block(bpos, viewer.state.requires_meshes, viewer.state.requires_collisions);
@@ -1189,12 +1189,12 @@ void VoxelTerrain::apply_data_block_response(VoxelServer::BlockDataOutput &ob) {
 		// That block was cancelled by the server, but we are still expecting it.
 		// We'll have to request it again.
 		//PRINT_VERBOSE(String("Received a block loading drop while we were still expecting it: "
-						//	 "lod{0} ({1}, {2}, {3}), re-requesting it")
-						//	  .format(varray(ob.lod, ob.position.x, ob.position.y, ob.position.z)));
-							 ++_stats.dropped_block_loads;
+		//	 "lod{0} ({1}, {2}, {3}), re-requesting it")
+		//	  .format(varray(ob.lod, ob.position.x, ob.position.y, ob.position.z)));
+		++_stats.dropped_block_loads;
 
-							 _blocks_pending_load.push_back(ob.position);
-							 return;
+		_blocks_pending_load.push_back(ob.position);
+		return;
 	}
 
 	LoadingBlock loading_block;
