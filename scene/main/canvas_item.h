@@ -297,11 +297,11 @@ public:
 
 	void force_update_transform();
 
-	virtual void set_texture_filter(TextureFilter p_texture_filter);
-	TextureFilter get_texture_filter() const;
+	virtual void set_texture_filter(int p_texture_filter);
+	int get_texture_filter() const;
 
-	virtual void set_texture_repeat(TextureRepeat p_texture_repeat);
-	TextureRepeat get_texture_repeat() const;
+	virtual void set_texture_repeat(int32_t p_texture_repeat);
+	int32_t get_texture_repeat() const;
 
 	// Used by control nodes to retrieve the parent's anchorable area
 	virtual Rect2 get_anchorable_rect() const { return Rect2(0, 0, 0, 0); };

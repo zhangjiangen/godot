@@ -1081,17 +1081,17 @@ void CanvasItem::_update_texture_filter_changed(bool p_propagate) {
 	}
 }
 
-void CanvasItem::set_texture_filter(TextureFilter p_texture_filter) {
+void CanvasItem::set_texture_filter(int32_t p_texture_filter) {
 	ERR_FAIL_INDEX(p_texture_filter, TEXTURE_FILTER_MAX);
 	if (texture_filter == p_texture_filter) {
 		return;
 	}
-	texture_filter = p_texture_filter;
+	texture_filter = (TextureFilter)p_texture_filter;
 	_update_texture_filter_changed(true);
 	notify_property_list_changed();
 }
 
-CanvasItem::TextureFilter CanvasItem::get_texture_filter() const {
+int32_t CanvasItem::get_texture_filter() const {
 	return texture_filter;
 }
 
@@ -1121,12 +1121,12 @@ void CanvasItem::_update_texture_repeat_changed(bool p_propagate) {
 	}
 }
 
-void CanvasItem::set_texture_repeat(TextureRepeat p_texture_repeat) {
+void CanvasItem::set_texture_repeat(int32_t p_texture_repeat) {
 	ERR_FAIL_INDEX(p_texture_repeat, TEXTURE_REPEAT_MAX);
 	if (texture_repeat == p_texture_repeat) {
 		return;
 	}
-	texture_repeat = p_texture_repeat;
+	texture_repeat = (TextureRepeat)p_texture_repeat;
 	_update_texture_repeat_changed(true);
 	notify_property_list_changed();
 }
@@ -1147,7 +1147,7 @@ bool CanvasItem::is_clipping_children() const {
 	return clip_children;
 }
 
-CanvasItem::TextureRepeat CanvasItem::get_texture_repeat() const {
+int32_t CanvasItem::get_texture_repeat() const {
 	return texture_repeat;
 }
 

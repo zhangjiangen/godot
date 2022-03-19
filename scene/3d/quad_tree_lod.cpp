@@ -61,7 +61,7 @@ void QuadTreeLod::create_from_sizes(int base_size, int full_size) {
 	_node_pool.resize(node_count); // e.g. ((4^6 -1) / 3 ) - 1 = 1364 excluding root
 
 	_free_indices.resize((node_count / 4)); // 1364 / 4 = 341
-	for (int i = 0; i < _free_indices.size(); i++) // i = 0 to 340, *4 = 0 to 1360
+	for (size_t i = 0; i < _free_indices.size(); i++) // i = 0 to 340, *4 = 0 to 1360
 		_free_indices[i] = 4 * i; // _node_pool[4*0 + i0] is first child, [4*340 + i3] is last
 }
 
