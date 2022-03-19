@@ -115,7 +115,7 @@ std::vector<IndexRange> get_children_ranges(const Tree3DNode &node, const int ra
 }
 
 std::vector<int> get_child_index_order(const CircleDesignator &parent_base, const int child_radial_n, const IndexRange child_range, const Tree3DNodeChild &child, const Tree3DNode &parent, const Tree3DMesh &mesh) {
-	int start = child_range.min_index + parent_base.vertex_index;
+	//int start = child_range.min_index + parent_base.vertex_index;
 	std::vector<int> child_base_indices;
 	child_base_indices.resize((size_t)child_radial_n);
 
@@ -232,7 +232,7 @@ bool has_side_branches(const Tree3DNode &node) {
 	if (node.children.size() < 2)
 		return false;
 
-	for (int i = 1; i < node.children.size(); i++) {
+	for (size_t i = 1; i < node.children.size(); i++) {
 		if (node.children[i]->node.children.size() > 0)
 			return true;
 	}
@@ -276,7 +276,7 @@ void mesh_node_rec(const Tree3DNode &node, const Vector3 &node_position, const C
 Tree3DMesh ManifoldMesher::mesh_tree(Tree3D &tree) {
 	Tree3DMesh mesh;
 	auto &smooth_attr = mesh.add_attribute<float>(AttributeNames::smooth_amount);
-	auto &radius_attr = mesh.add_attribute<float>(AttributeNames::radius);
+	//auto &radius_attr = mesh.add_attribute<float>(AttributeNames::radius);
 	//auto &direction_attr = mesh.add_attribute<Vector3>(AttributeNames::direction);
 	for (auto &stem : tree.get_stems()) {
 		//__debugbreak();
