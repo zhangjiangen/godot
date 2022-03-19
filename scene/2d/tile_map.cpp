@@ -3444,7 +3444,7 @@ void TileMap::set_use_parent_material(bool p_use_parent_material) {
 	}
 }
 
-void TileMap::set_texture_filter(TextureFilter p_texture_filter) {
+void TileMap::set_texture_filter(int32_t p_texture_filter) {
 	// Set a default texture filter for the whole tilemap
 	CanvasItem::set_texture_filter(p_texture_filter);
 	for (unsigned int layer = 0; layer < layers.size(); layer++) {
@@ -3459,7 +3459,7 @@ void TileMap::set_texture_filter(TextureFilter p_texture_filter) {
 	}
 }
 
-void TileMap::set_texture_repeat(CanvasItem::TextureRepeat p_texture_repeat) {
+void TileMap::set_texture_repeat(int32_t p_texture_repeat) {
 	// Set a default texture repeat for the whole tilemap
 	CanvasItem::set_texture_repeat(p_texture_repeat);
 	for (unsigned int layer = 0; layer < layers.size(); layer++) {
