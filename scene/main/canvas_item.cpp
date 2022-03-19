@@ -1225,19 +1225,19 @@ real_t CanvasTexture::get_specular_shininess() const {
 	return shininess;
 }
 
-void CanvasTexture::set_texture_filter(CanvasItem::TextureFilter p_filter) {
+void CanvasTexture::set_texture_filter(int32_t p_filter) {
 	texture_filter = p_filter;
 	RS::get_singleton()->canvas_texture_set_texture_filter(canvas_texture, RS::CanvasItemTextureFilter(p_filter));
 }
-CanvasItem::TextureFilter CanvasTexture::get_texture_filter() const {
+int32_t CanvasTexture::get_texture_filter() const {
 	return texture_filter;
 }
 
-void CanvasTexture::set_texture_repeat(CanvasItem::TextureRepeat p_repeat) {
+void CanvasTexture::set_texture_repeat(int32_t p_repeat) {
 	texture_repeat = p_repeat;
 	RS::get_singleton()->canvas_texture_set_texture_repeat(canvas_texture, RS::CanvasItemTextureRepeat(p_repeat));
 }
-CanvasItem::TextureRepeat CanvasTexture::get_texture_repeat() const {
+int32_t CanvasTexture::get_texture_repeat() const {
 	return texture_repeat;
 }
 

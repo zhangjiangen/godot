@@ -349,11 +349,11 @@ public:
 	void set_specular_shininess(real_t p_shininess);
 	real_t get_specular_shininess() const;
 
-	void set_texture_filter(CanvasItem::TextureFilter p_filter);
-	CanvasItem::TextureFilter get_texture_filter() const;
+	void set_texture_filter(int32_t p_filter);
+	int32_t get_texture_filter() const;
 
-	void set_texture_repeat(CanvasItem::TextureRepeat p_repeat);
-	CanvasItem::TextureRepeat get_texture_repeat() const;
+	void set_texture_repeat(int32_t p_repeat);
+	int32_t get_texture_repeat() const;
 
 	virtual int get_width() const override;
 	virtual int get_height() const override;

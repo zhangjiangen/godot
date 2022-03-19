@@ -14,6 +14,7 @@ struct Attribute : AbstractAttribute {
 
 	Attribute(std::string name) :
 			name{ name } {};
+	virtual ~Attribute() {}
 
 	virtual void add_data() {
 		data.emplace_back();
