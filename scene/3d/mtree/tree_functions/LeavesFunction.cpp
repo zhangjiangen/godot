@@ -27,7 +27,7 @@ void get_leaf_candidates(Vector3 base_pos, Tree3DNode &n, std::vector<LeavesCand
 			stems.push_back(can);
 		}
 	}
-	for (int i = 0; i < n.children.size(); ++i) {
+	for (size_t i = 0; i < n.children.size(); ++i) {
 		auto &child = n.children[i];
 		get_leaf_candidates(base_pos + child->node.direction * child->node.length, child->node, stems, max_radius);
 	}
