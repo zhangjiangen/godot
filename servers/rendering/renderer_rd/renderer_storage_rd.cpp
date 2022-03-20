@@ -8271,9 +8271,9 @@ RendererStorageRD::RendererStorageRD() {
 
 	static_assert(sizeof(GlobalVariables::Value) == 16);
 
-	global_variables.buffer_size = MAX(4096, (int)GLOBAL_GET("rendering/limits/global_shader_variables/buffer_size"));
-	global_variables.buffer_size = MIN(256, global_variables.buffer_size);
-	global_variables.buffer_size = MAX(32, global_variables.buffer_size);
+	global_variables.buffer_size = MAX(4096U, (uint32_t)GLOBAL_GET("rendering/limits/global_shader_variables/buffer_size"));
+	global_variables.buffer_size = MIN(256U, global_variables.buffer_size);
+	global_variables.buffer_size = MAX(32U, global_variables.buffer_size);
 	global_variables.buffer_values = memnew_arr(GlobalVariables::Value, global_variables.buffer_size);
 	memset(global_variables.buffer_values, 0, sizeof(GlobalVariables::Value) * global_variables.buffer_size);
 	global_variables.buffer_usage = memnew_arr(GlobalVariables::ValueUsage, global_variables.buffer_size);
@@ -8291,7 +8291,6 @@ RendererStorageRD::RendererStorageRD() {
 
 		Vector<uint8_t> pv;
 		pv.resize(16 * 4);
-
 
 		for (int i = 0; i < 16; i++) {
 			pv.set(i * 4 + 0, 0);
