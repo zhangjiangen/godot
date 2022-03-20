@@ -6,6 +6,7 @@
 
 struct Property {
 	virtual float execute(float x) = 0;
+	virtual ~Property() {}
 };
 
 struct ConstantProperty : Property {

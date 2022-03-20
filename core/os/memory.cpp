@@ -158,9 +158,9 @@ private:
 		}
 
 		Element **new_hash_table = nullptr;
-		uint64_t size = (uint64_t)(1 << new_hash_table_power);
+		uint64_t size = (uint64_t)(1ULL << (uint64_t)new_hash_table_power);
 		new_hash_table = new (MemoryHashMap_Malloc(sizeof(Element *) * size)) Element *[size];
-		memory_size = sizeof(Element *) * (uint64_t)(1 << new_hash_table_power);
+		memory_size = sizeof(Element *) * size;
 		ERR_FAIL_COND_MSG(!new_hash_table, "Out of memory.");
 
 		for (int i = 0; i < (1 << new_hash_table_power); i++) {
