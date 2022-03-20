@@ -1,4 +1,4 @@
-#pragma once
+
 #include "GrowthFunction.hpp"
 #include "./base_types/TreeFunction.hpp"
 #include "scene/3d/mtree/utilities/GeometryUtilities.hpp"
