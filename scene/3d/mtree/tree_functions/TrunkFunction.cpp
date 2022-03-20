@@ -9,7 +9,7 @@ void Tree3DTrunkFunction::execute(std::vector<Tree3DStem> &stems, int id, int pa
 	Tree3DNode firstNode{ stem_direction, Tree3DGeometry::get_orthogonal_vector(stem_direction), segment_length, start_radius, false, id };
 	Tree3DNode *current_node = &firstNode;
 	int node_count = resolution * length;
-	for (size_t i = 0; i < node_count; i++) {
+	for (int i = 0; i < node_count; i++) {
 		if (i == node_count - 1)
 			segment_length = length - i * segment_length;
 
