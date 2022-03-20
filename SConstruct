@@ -626,6 +626,7 @@ if selected_platform in platform_list:
             common_warnings += ["-Wno-ordered-compare-function-pointers"]
             common_warnings += ["-Wno-unused-variable"]
             common_warnings += ["-Wno-unused-function"]
+            common_warnings += ["-Wno-sign-compare"]
 
         if env["warnings"] == "extra":
             env.Append(CCFLAGS=["-Wall", "-Wextra", "-Wwrite-strings",

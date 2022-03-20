@@ -5607,8 +5607,8 @@ RendererSceneRenderRD::RendererSceneRenderRD(RendererStorageRD *p_storage) {
 }
 
 void RendererSceneRenderRD::init() {
-	max_cluster_elements = MIN(100, get_max_elements());
-	max_cluster_elements = MAX(16, max_cluster_elements);
+	max_cluster_elements = MIN(100U, get_max_elements());
+	max_cluster_elements = MAX(16U, max_cluster_elements);
 
 	directional_shadow.size = GLOBAL_GET("rendering/shadows/directional_shadow/size");
 	directional_shadow.use_16_bits = GLOBAL_GET("rendering/shadows/directional_shadow/16_bits");
