@@ -99,10 +99,10 @@ float ImageUtils::get_red_sum_weighted(Ref<Image> image_ref, Ref<Image> brush_re
 void ImageUtils::add_red_brush(Ref<Image> image_ref, Ref<Image> brush_ref, const Vector2 &p_pos, float factor) const {
 	ERR_FAIL_COND(image_ref.is_null());
 	ERR_FAIL_COND(brush_ref.is_null());
-	Image &image = **image_ref;
+	Image &imager = **image_ref;
 	Image &brush = **brush_ref;
 
-	generic_brush_op(image, brush, p_pos, factor, [](Image &image, int x, int y, float b) {
+	generic_brush_op(imager, brush, p_pos, factor, [](Image &image, int x, int y, float b) {
 		float r = image.get_pixel(x, y).r + b;
 		image.set_pixel(x, y, Color(r, r, r));
 	});
