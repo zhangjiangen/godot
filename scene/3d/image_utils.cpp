@@ -152,7 +152,7 @@ float ImageUtils::generate_gaussian_brush(Ref<Image> image_ref) const {
 		for (int x = 0; x < w; ++x) {
 			float d = Vector2(x, y).distance_to(center) / radius;
 			float v = Math::clamp(1.f - d * d * d, 0.f, 1.f);
-			image.set_pixel(x, y, Color(v, v, v));
+			imager.set_pixel(x, y, Color(v, v, v));
 			sum += v;
 		}
 	}
