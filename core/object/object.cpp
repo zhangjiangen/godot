@@ -781,13 +781,13 @@ void Object::call_r(Variant &ret, const StringName &p_method, const Variant **p_
 		if (Object::cast_to<RefCounted>(this)) {
 			r_error.argument = 0;
 			r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
-			ERR_FAIL_V_MSG(, "Can't 'free' a reference.");
+			ERR_FAIL_MSG("Can't 'free' a reference.");
 		}
 
 		if (_lock_index.get() > 1) {
 			r_error.argument = 0;
 			r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
-			ERR_FAIL_V_MSG(, "Object is locked and can't be freed.");
+			ERR_FAIL_MSG("Object is locked and can't be freed.");
 		}
 
 #endif
@@ -842,13 +842,13 @@ void Object::call_r(const StringName &p_method, const Variant **p_args, int p_ar
 		if (Object::cast_to<RefCounted>(this)) {
 			r_error.argument = 0;
 			r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
-			ERR_FAIL_V_MSG(, "Can't 'free' a reference.");
+			ERR_FAIL_MSG("Can't 'free' a reference.");
 		}
 
 		if (_lock_index.get() > 1) {
 			r_error.argument = 0;
 			r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
-			ERR_FAIL_V_MSG(, "Object is locked and can't be freed.");
+			ERR_FAIL_MSG("Object is locked and can't be freed.");
 		}
 
 #endif

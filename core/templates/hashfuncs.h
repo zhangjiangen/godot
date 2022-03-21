@@ -106,6 +106,10 @@ struct MemoryDebugInfo {
 		file_name = nullptr;
 		line = 0;
 	}
+	MemoryDebugInfo(const MemoryDebugInfo &other) {
+		file_name = other.file_name;
+		line = other.line;
+	}
 	bool operator==(const MemoryDebugInfo &p_info) const {
 		if (p_info.file_name == file_name && p_info.line == line) {
 			return true;

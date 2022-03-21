@@ -413,7 +413,7 @@ StringName StringName::search(const char *p_name) {
 				}
 			} else {
 				if (!is_set) {
-					is_set == true;
+					is_set = true;
 					name = p_name;
 				}
 				if (name == _data->name) {

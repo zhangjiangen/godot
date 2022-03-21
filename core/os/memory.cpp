@@ -854,12 +854,12 @@ void *MallocAllocator::alloc_memory(size_t p_memory, const char *file_name, int 
 void MallocAllocator::free_memory(void *p_ptr) {
 	uint32_t *base = (uint32_t *)p_ptr;
 	base -= 2;
+	uint32_t size = *(base + 1);
 #if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)
-	uint32_t tag, size;
+	uint32_t tag;
 	tag = *base;
-	size = *(base + 1);
 	if (tag != MEMORY_TAG_MALLOC) {
-		throw std::runtime_error("memory free error!");
+		abort();
 	}
 #endif
 	DefaultAllocator::free(base, size + sizeof(uint64_t));

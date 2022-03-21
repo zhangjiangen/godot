@@ -1647,16 +1647,16 @@ public:
 	RID spot_light_allocate() override;
 	void spot_light_initialize(RID p_light) override;
 
-	void light_set_color(RID p_light, const Color &p_color);
-	void light_set_param(RID p_light, RS::LightParam p_param, float p_value);
-	void light_set_shadow(RID p_light, bool p_enabled);
-	void light_set_projector(RID p_light, RID p_texture);
-	void light_set_negative(RID p_light, bool p_enable);
-	void light_set_cull_mask(RID p_light, uint32_t p_mask);
-	void light_set_distance_fade(RID p_light, bool p_enabled, float p_begin, float p_shadow, float p_length);
-	void light_set_reverse_cull_face_mode(RID p_light, bool p_enabled);
-	void light_set_bake_mode(RID p_light, RS::LightBakeMode p_bake_mode);
-	void light_set_max_sdfgi_cascade(RID p_light, uint32_t p_cascade);
+	void light_set_color(RID p_light, const Color &p_color) override;
+	void light_set_param(RID p_light, RS::LightParam p_param, float p_value) override;
+	void light_set_shadow(RID p_light, bool p_enabled) override;
+	void light_set_projector(RID p_light, RID p_texture) override;
+	void light_set_negative(RID p_light, bool p_enable) override;
+	void light_set_cull_mask(RID p_light, uint32_t p_mask) override;
+	void light_set_distance_fade(RID p_light, bool p_enabled, float p_begin, float p_shadow, float p_length) override;
+	void light_set_reverse_cull_face_mode(RID p_light, bool p_enabled) override;
+	void light_set_bake_mode(RID p_light, RS::LightBakeMode p_bake_mode) override;
+	void light_set_max_sdfgi_cascade(RID p_light, uint32_t p_cascade) override;
 
 	void light_omni_set_shadow_mode(RID p_light, RS::LightOmniShadowMode p_mode) override;
 
@@ -1725,7 +1725,7 @@ public:
 		return light->distance_fade_length;
 	}
 
-	_FORCE_INLINE_ bool light_has_shadow(RID p_light) const {
+	_FORCE_INLINE_ bool light_has_shadow(RID p_light) const override {
 		const Light *light = light_owner.get_or_null(p_light);
 		ERR_FAIL_COND_V(!light, RS::LIGHT_DIRECTIONAL);
 
@@ -1823,8 +1823,8 @@ public:
 	void decal_atlas_mark_dirty_on_texture(RID p_texture);
 	void decal_atlas_remove_texture(RID p_texture);
 
-	virtual void texture_add_to_decal_atlas(RID p_texture, bool p_panorama_to_dp = false);
-	virtual void texture_remove_from_decal_atlas(RID p_texture, bool p_panorama_to_dp = false);
+	virtual void texture_add_to_decal_atlas(RID p_texture, bool p_panorama_to_dp = false) override;
+	virtual void texture_remove_from_decal_atlas(RID p_texture, bool p_panorama_to_dp = false) override;
 
 	_FORCE_INLINE_ Vector3 decal_get_extents(RID p_decal) {
 		const Decal *decal = decal_owner.get_or_null(p_decal);

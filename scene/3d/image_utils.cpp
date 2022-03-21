@@ -111,10 +111,10 @@ void ImageUtils::add_red_brush(Ref<Image> image_ref, Ref<Image> brush_ref, const
 void ImageUtils::lerp_channel_brush(Ref<Image> image_ref, Ref<Image> brush_ref, const Vector2 &p_pos, float factor, float target_value, int channel) const {
 	ERR_FAIL_COND(image_ref.is_null());
 	ERR_FAIL_COND(brush_ref.is_null());
-	Image &image = **image_ref;
+	Image &imager = **image_ref;
 	Image &brush = **brush_ref;
 
-	generic_brush_op(image, brush, p_pos, factor, [target_value, channel](Image &image, int x, int y, float b) {
+	generic_brush_op(imager, brush, p_pos, factor, [target_value, channel](Image &image, int x, int y, float b) {
 		Color c = image.get_pixel(x, y);
 		c[channel] = Math::lerp(c[channel], target_value, b);
 		image.set_pixel(x, y, c);
@@ -124,10 +124,10 @@ void ImageUtils::lerp_channel_brush(Ref<Image> image_ref, Ref<Image> brush_ref, 
 void ImageUtils::lerp_color_brush(Ref<Image> image_ref, Ref<Image> brush_ref, const Vector2 &p_pos, float factor, const Color &target_value) const {
 	ERR_FAIL_COND(image_ref.is_null());
 	ERR_FAIL_COND(brush_ref.is_null());
-	Image &image = **image_ref;
+	Image &imager = **image_ref;
 	Image &brush = **brush_ref;
 
-	generic_brush_op(image, brush, p_pos, factor, [target_value](Image &image, int x, int y, float b) {
+	generic_brush_op(imager, brush, p_pos, factor, [target_value](Image &image, int x, int y, float b) {
 		const Color c = image.get_pixel(x, y).lerp(target_value, b);
 		image.set_pixel(x, y, c);
 	});
@@ -137,10 +137,10 @@ void ImageUtils::lerp_color_brush(Ref<Image> image_ref, Ref<Image> brush_ref, co
 
 float ImageUtils::generate_gaussian_brush(Ref<Image> image_ref) const {
 	ERR_FAIL_COND_V(image_ref.is_null(), 0.f);
-	Image &image = **image_ref;
+	Image &imager = **image_ref;
 
-	int w = static_cast<int>(image.get_width());
-	int h = static_cast<int>(image.get_height());
+	int w = static_cast<int>(imager.get_width());
+	int h = static_cast<int>(imager.get_height());
 	Vector2 center(w / 2, h / 2);
 	float radius = Math::min(w, h) / 2;
 
