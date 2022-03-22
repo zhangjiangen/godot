@@ -881,8 +881,8 @@ void *MallocAllocator::realloc_memory(void *p_ptr, size_t p_new_size, const char
 	uint32_t size;
 	size = *(base + 1);
 #if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)
-	tag = *base;
 	uint32_t tag;
+	tag = *base;
 	if (tag != MEMORY_TAG_MALLOC) {
 		abort();
 	}
