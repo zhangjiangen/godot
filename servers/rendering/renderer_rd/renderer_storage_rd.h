@@ -252,8 +252,6 @@ private:
 
 	void _update_decal_atlas();
 
-=======
->>>>>>> master
 	/* SHADER */
 
 	struct Material;
