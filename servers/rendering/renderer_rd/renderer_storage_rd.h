@@ -205,7 +205,6 @@ private:
 	RID custom_rd_samplers[RS::CANVAS_ITEM_TEXTURE_FILTER_MAX][RS::CANVAS_ITEM_TEXTURE_REPEAT_MAX];
 	RID default_rd_storage_buffer;
 
-<<<<<<< HEAD
 	/* DECAL ATLAS */
 
 	struct DecalAtlas {
