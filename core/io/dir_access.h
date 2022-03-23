@@ -138,6 +138,10 @@ struct DirAccessRef {
 	DirAccess *f = nullptr;
 
 	DirAccessRef(DirAccess *fa) { f = fa; }
+	DirAccessRef(DirAccessRef &&other) {
+		f = other.f;
+		other.f = nullptr;
+	}
 	~DirAccessRef() {
 		if (f) {
 			memdelete(f);

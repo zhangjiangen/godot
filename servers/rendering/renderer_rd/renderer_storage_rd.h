@@ -205,6 +205,7 @@ private:
 	RID custom_rd_samplers[RS::CANVAS_ITEM_TEXTURE_FILTER_MAX][RS::CANVAS_ITEM_TEXTURE_REPEAT_MAX];
 	RID default_rd_storage_buffer;
 
+<<<<<<< HEAD
 	/* DECAL ATLAS */
 
 	struct DecalAtlas {
@@ -252,6 +253,8 @@ private:
 
 	void _update_decal_atlas();
 
+=======
+>>>>>>> master
 	/* SHADER */
 
 	struct Material;
@@ -961,27 +964,6 @@ private:
 
 	mutable RID_Owner<ReflectionProbe, true> reflection_probe_owner;
 
-	/* DECAL */
-
-	struct Decal {
-		Vector3 extents = Vector3(1, 1, 1);
-		RID textures[RS::DECAL_TEXTURE_MAX];
-		float emission_energy = 1.0;
-		float albedo_mix = 1.0;
-		Color modulate = Color(1, 1, 1, 1);
-		uint32_t cull_mask = (1 << 20) - 1;
-		float upper_fade = 0.3;
-		float lower_fade = 0.3;
-		bool distance_fade = false;
-		float distance_fade_begin = 10;
-		float distance_fade_length = 1;
-		float normal_fade = 0.0;
-
-		Dependency dependency;
-	};
-
-	mutable RID_Owner<Decal, true> decal_owner;
-
 	/* VOXEL GI */
 
 	struct VoxelGI {
@@ -1203,17 +1185,6 @@ private:
 	EffectsRD *effects = nullptr;
 
 public:
-	RID decal_atlas_get_texture() const;
-	RID decal_atlas_get_texture_srgb() const;
-	_FORCE_INLINE_ Rect2 decal_atlas_get_texture_rect(RID p_texture) {
-		DecalAtlas::Texture *t = decal_atlas.textures.getptr(p_texture);
-		if (!t) {
-			return Rect2();
-		}
-
-		return t->uv_rect;
-	}
-
 	//internal usage
 
 	_FORCE_INLINE_ RID sampler_rd_get_default(RS::CanvasItemTextureFilter p_filter, RS::CanvasItemTextureRepeat p_repeat) {
@@ -1804,90 +1775,6 @@ public:
 
 	void base_update_dependency(RID p_base, DependencyTracker *p_instance) override;
 	void skeleton_update_dependency(RID p_skeleton, DependencyTracker *p_instance) override;
-
-	/* DECAL API */
-
-	RID decal_allocate() override;
-	void decal_initialize(RID p_decal) override;
-
-	virtual void decal_set_extents(RID p_decal, const Vector3 &p_extents) override;
-	virtual void decal_set_texture(RID p_decal, RS::DecalTexture p_type, RID p_texture) override;
-	virtual void decal_set_emission_energy(RID p_decal, float p_energy) override;
-	virtual void decal_set_albedo_mix(RID p_decal, float p_mix) override;
-	virtual void decal_set_modulate(RID p_decal, const Color &p_modulate) override;
-	virtual void decal_set_cull_mask(RID p_decal, uint32_t p_layers) override;
-	virtual void decal_set_distance_fade(RID p_decal, bool p_enabled, float p_begin, float p_length) override;
-	virtual void decal_set_fade(RID p_decal, float p_above, float p_below) override;
-	virtual void decal_set_normal_fade(RID p_decal, float p_fade) override;
-
-	void decal_atlas_mark_dirty_on_texture(RID p_texture);
-	void decal_atlas_remove_texture(RID p_texture);
-
-	virtual void texture_add_to_decal_atlas(RID p_texture, bool p_panorama_to_dp = false) override;
-	virtual void texture_remove_from_decal_atlas(RID p_texture, bool p_panorama_to_dp = false) override;
-
-	_FORCE_INLINE_ Vector3 decal_get_extents(RID p_decal) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->extents;
-	}
-
-	_FORCE_INLINE_ RID decal_get_texture(RID p_decal, RS::DecalTexture p_texture) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->textures[p_texture];
-	}
-
-	_FORCE_INLINE_ Color decal_get_modulate(RID p_decal) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->modulate;
-	}
-
-	_FORCE_INLINE_ float decal_get_emission_energy(RID p_decal) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->emission_energy;
-	}
-
-	_FORCE_INLINE_ float decal_get_albedo_mix(RID p_decal) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->albedo_mix;
-	}
-
-	_FORCE_INLINE_ uint32_t decal_get_cull_mask(RID p_decal) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->cull_mask;
-	}
-
-	_FORCE_INLINE_ float decal_get_upper_fade(RID p_decal) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->upper_fade;
-	}
-
-	_FORCE_INLINE_ float decal_get_lower_fade(RID p_decal) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->lower_fade;
-	}
-
-	_FORCE_INLINE_ float decal_get_normal_fade(RID p_decal) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->normal_fade;
-	}
-
-	_FORCE_INLINE_ bool decal_is_distance_fade_enabled(RID p_decal) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->distance_fade;
-	}
-
-	_FORCE_INLINE_ float decal_get_distance_fade_begin(RID p_decal) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->distance_fade_begin;
-	}
-
-	_FORCE_INLINE_ float decal_get_distance_fade_length(RID p_decal) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->distance_fade_length;
-	}
-
-	virtual AABB decal_get_aabb(RID p_decal) const override;
-
 	/* VOXEL GI API */
 
 	RID voxel_gi_allocate() override;
