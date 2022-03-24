@@ -300,12 +300,7 @@ void EditorSpinSlider::_draw_spin_slider() {
 	int vofs = (size.height - font->get_height(font_size)) / 2 + font->get_ascent(font_size);
 
 	Color fc = get_theme_color(is_read_only() ? SNAME("font_uneditable_color") : SNAME("font_color"), SNAME("LineEdit"));
-	Color lc;
-	if (use_custom_label_color) {
-		lc = custom_label_color;
-	} else {
-		lc = fc;
-	}
+	Color lc = get_theme_color(is_read_only() ? SNAME("read_only_label_color") : SNAME("label_color"));
 
 	if (flat && !label.is_empty()) {
 		Color label_bg_color = get_theme_color(SNAME("dark_color_3"), SNAME("Editor"));
@@ -351,7 +346,7 @@ void EditorSpinSlider::_draw_spin_slider() {
 			text_ofs.x += glyphs[i].advance;
 		}
 	}
-	TS->free(num_rid);
+	TS->free_rid(num_rid);
 
 	if (get_step() == 1) {
 		Ref<Texture2D> updown2 = get_theme_icon(is_read_only() ? SNAME("updown_disabled") : SNAME("updown"), SNAME("SpinBox"));
@@ -448,6 +443,7 @@ void EditorSpinSlider::_notification(int p_what) {
 
 		case NOTIFICATION_WM_WINDOW_FOCUS_IN:
 		case NOTIFICATION_WM_WINDOW_FOCUS_OUT:
+		case NOTIFICATION_WM_CLOSE_REQUEST:
 		case NOTIFICATION_EXIT_TREE: {
 			if (grabbing_spinner) {
 				grabber->hide();
@@ -605,11 +601,6 @@ bool EditorSpinSlider::is_flat() const {
 	return flat;
 }
 
-void EditorSpinSlider::set_custom_label_color(bool p_use_custom_label_color, Color p_custom_label_color) {
-	use_custom_label_color = p_use_custom_label_color;
-	custom_label_color = p_custom_label_color;
-}
-
 void EditorSpinSlider::_focus_entered() {
 	_ensure_input_popup();
 	Rect2 gr = get_screen_rect();
@@ -665,14 +656,10 @@ void EditorSpinSlider::_ensure_input_popup() {
 }
 
 EditorSpinSlider::EditorSpinSlider() {
-	flat = false;
-	grabbing_spinner_attempt = false;
-	grabbing_spinner = false;
 	grabbing_spinner_dist_cache = 0;
 	pre_grab_value = 0;
 	set_focus_mode(FOCUS_ALL);
 	updown_offset = -1;
-	hover_updown = false;
 	grabber = memnew(TextureRect);
 	add_child(grabber);
 	grabber->hide();
@@ -681,13 +668,5 @@ EditorSpinSlider::EditorSpinSlider() {
 	grabber->connect("mouse_entered", callable_mp(this, &EditorSpinSlider::_grabber_mouse_entered));
 	grabber->connect("mouse_exited", callable_mp(this, &EditorSpinSlider::_grabber_mouse_exited));
 	grabber->connect("gui_input", callable_mp(this, &EditorSpinSlider::_grabber_gui_input));
-	mouse_over_spin = false;
-	mouse_over_grabber = false;
-	mousewheel_over_grabber = false;
-	grabbing_grabber = false;
 	grabber_range = 1;
-	value_input_just_closed = false;
-	hide_slider = false;
-	read_only = false;
-	use_custom_label_color = false;
 }

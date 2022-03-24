@@ -5,6 +5,7 @@
 
 struct AbstractAttribute {
 	virtual void add_data() = 0;
+	virtual ~AbstractAttribute() {}
 };
 
 template <typename T>
@@ -14,6 +15,7 @@ struct Attribute : AbstractAttribute {
 
 	Attribute(std::string name) :
 			name{ name } {};
+	virtual ~Attribute() {}
 
 	virtual void add_data() {
 		data.emplace_back();

@@ -181,9 +181,12 @@ opts.Add(BoolVariable("xaudio2", "Enable the XAudio2 audio driver", False))
 opts.Add(BoolVariable("vulkan", "Enable the vulkan video driver", True))
 opts.Add(BoolVariable("opengl3", "Enable the OpenGL/GLES3 video driver", True))
 opts.Add(BoolVariable("openxr", "Enable the OpenXR driver", True))
-opts.Add("custom_modules", "A list of comma-separated directory paths containing custom modules to build.", "")
-opts.Add(BoolVariable("custom_modules_recursive", "Detect custom modules recursively for each specified path.", True))
-opts.Add(BoolVariable("use_volk", "Use the volk library to load the Vulkan loader dynamically", True))
+opts.Add("custom_modules",
+         "A list of comma-separated directory paths containing custom modules to build.", "")
+opts.Add(BoolVariable("custom_modules_recursive",
+         "Detect custom modules recursively for each specified path.", True))
+opts.Add(BoolVariable("use_volk",
+         "Use the volk library to load the Vulkan loader dynamically", True))
 
 # Advanced options
 opts.Add(BoolVariable(
@@ -218,7 +221,6 @@ opts.Add(BoolVariable("use_precise_math_checks",
          "Math checks use very precise epsilon (debug option)", False))
 
 # Thirdparty libraries
-opts.Add(BoolVariable("builtin_bullet", "Use the built-in Bullet library", True))
 opts.Add(BoolVariable("builtin_certs",
          "Use the built-in SSL certificates bundles", True))
 opts.Add(BoolVariable("builtin_embree", "Use the built-in Embree library", True))
@@ -598,7 +600,7 @@ if selected_platform in platform_list:
     if env.msvc:  # MSVC
         # Truncations, narrowing conversions, signed/unsigned comparisons...
         disable_nonessential_warnings = [
-            "/wd4267", "/wd4244", "/wd4305", "/wd4018", "/wd4800"]
+            "/wd4267", "/wd4244", "/wd4305", "/wd4018", "/wd4800", "/wd4834"]
         if env["warnings"] == "extra":
             env.Append(CCFLAGS=["/Wall"])  # Implies /W4
         elif env["warnings"] == "all":
@@ -622,6 +624,9 @@ if selected_platform in platform_list:
             # We often implement `operator<` for structs of pointers as a requirement
             # for putting them in `Set` or `Map`. We don't mind about unreliable ordering.
             common_warnings += ["-Wno-ordered-compare-function-pointers"]
+            common_warnings += ["-Wno-unused-variable"]
+            common_warnings += ["-Wno-unused-function"]
+            common_warnings += ["-Wno-sign-compare"]
 
         if env["warnings"] == "extra":
             env.Append(CCFLAGS=["-Wall", "-Wextra", "-Wwrite-strings",
@@ -661,7 +666,8 @@ if selected_platform in platform_list:
                 env.Append(CXXFLAGS=["-Wno-error=#warnings"])
         else:  # always enable those errors
             env.Append(CCFLAGS=["-Werror=return-type"])
-
+    if env['platform'] in ['osx', 'android', 'iphone']:
+        env.Append(CXXFLAGS=['-Wno-inconsistent-missing-override'])
     if hasattr(detect, "get_program_suffix"):
         suffix = "_" + detect.get_program_suffix()
     else:
@@ -784,7 +790,7 @@ if selected_platform in platform_list:
     if env["minizip"]:
         env.Append(CPPDEFINES=["MINIZIP_ENABLED"])
 
-    editor_module_list = ["freetype"]
+    editor_module_list = []
     if env["tools"] and not env.module_check_dependencies("tools", editor_module_list):
         print(
             "Build option 'module_"

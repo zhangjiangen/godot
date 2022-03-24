@@ -557,6 +557,19 @@ bool ClassDB::can_instantiate(const StringName &p_class) {
 	return (!ti->disabled && ti->creation_func != nullptr && !(ti->native_extension && !ti->native_extension->create_instance));
 }
 
+bool ClassDB::is_virtual(const StringName &p_class) {
+	OBJTYPE_RLOCK;
+
+	ClassInfo *ti = classes.getptr(p_class);
+	ERR_FAIL_COND_V_MSG(!ti, false, "Cannot get class '" + String(p_class) + "'.");
+#ifdef TOOLS_ENABLED
+	if (ti->api == API_EDITOR && !Engine::get_singleton()->is_editor_hint()) {
+		return false;
+	}
+#endif
+	return (!ti->disabled && ti->creation_func != nullptr && !(ti->native_extension && !ti->native_extension->create_instance) && ti->is_virtual);
+}
+
 void ClassDB::_add_class2(const StringName &p_class, const StringName &p_inherits) {
 	OBJTYPE_WLOCK;
 
@@ -1181,7 +1194,7 @@ bool ClassDB::set_property(Object *p_object, const StringName &p_property, const
 
 	Callable::CallError ce;
 	while (check) {
-        ce.argument = 0;
+		ce.argument = 0;
 		ce.expected = 0;
 		ce.error = Callable::CallError::CALL_OK;
 		const PropertySetGet *psg = check->property_setget.getptr(p_property);
@@ -1193,11 +1206,9 @@ bool ClassDB::set_property(Object *p_object, const StringName &p_property, const
 				return true; //return true but do nothing
 			}
 
-
 			if (psg->index >= 0) {
 				Variant index = psg->index;
 				const Variant *arg[2] = { &index, &p_value };
-				//p_object->call(psg->setter,arg,2,ce);
 				if (psg->_setptr) {
 					psg->_setptr->call(p_object, arg, 2, ce);
 				} else {
@@ -1227,61 +1238,55 @@ bool ClassDB::set_property(Object *p_object, const StringName &p_property, const
 }
 
 bool ClassDB::get_property(Object *p_object, const StringName &p_property, Variant &r_value) {
-	ERR_FAIL_NULL_V(p_object, false);
+    ERR_FAIL_NULL_V(p_object, false);
 
-	ClassInfo *type = classes.getptr(p_object->get_class_name());
-	ClassInfo *check = type;
-	Callable::CallError ce;
-	while (check) {
-		const PropertySetGet *psg = check->property_setget.getptr(p_property);
-		if (psg) {
-			if (!psg->getter) {
-				return true; //return true but do nothing
-			}
+    ClassInfo *type = classes.getptr(p_object->get_class_name());
+    ClassInfo *check = type;
+    while (check) {
+        const PropertySetGet *psg = check->property_setget.getptr(p_property);
+        if (psg) {
+            if (!psg->getter) {
+                return true; //return true but do nothing
+            }
 
-			if (psg->index >= 0) {
-                ce.argument = 0;
-				ce.expected = 0;
-				ce.error = Callable::CallError::CALL_OK;
-				Variant index = psg->index;
-				const Variant *arg[1] = { &index };
-				p_object->call_r(r_value, psg->getter, arg, 1, ce);
+            if (psg->index >= 0) {
+                Variant index = psg->index;
+                const Variant *arg[1] = { &index };
+                Callable::CallError ce;
+                r_value = p_object->callp(psg->getter, arg, 1, ce);
 
-			} else {
-                ce.argument = 0;
-				ce.expected = 0;
-                ce.error = Callable::CallError::CALL_OK;
-				if (psg->_getptr) {
-					r_value = psg->_getptr->call(p_object, nullptr, 0, ce);
-				} else {
-					p_object->call_r(r_value, psg->getter, nullptr, 0, ce);
-				}
-			}
-			return true;
-		}
+            } else {
+                Callable::CallError ce;
+                if (psg->_getptr) {
+                    r_value = psg->_getptr->call(p_object, nullptr, 0, ce);
+                } else {
+                    r_value = p_object->callp(psg->getter, nullptr, 0, ce);
+                }
+            }
+            return true;
+        }
 
-		const int *c = check->constant_map.getptr(p_property); //constants count
-		if (c) {
-			r_value = *c;
-			return true;
-		}
+        const int *c = check->constant_map.getptr(p_property); //constants count
+        if (c) {
+            r_value = *c;
+            return true;
+        }
 
-		if (check->method_map.has(p_property)) { //methods count
-			r_value = Callable(p_object, p_property);
-			return true;
-		}
+        if (check->method_map.has(p_property)) { //methods count
+            r_value = Callable(p_object, p_property);
+            return true;
+        }
 
-		if (check->signal_map.has(p_property)) { //signals count
-			r_value = Signal(p_object, p_property);
-			return true;
-		}
+        if (check->signal_map.has(p_property)) { //signals count
+            r_value = Signal(p_object, p_property);
+            return true;
+        }
 
-		check = check->inherits_ptr;
-	}
+        check = check->inherits_ptr;
+    }
 
-	return false;
+    return false;
 }
-
 int ClassDB::get_property_index(const StringName &p_class, const StringName &p_property, bool *r_is_valid) {
 	ClassInfo *type = classes.getptr(p_class);
 	ClassInfo *check = type;
@@ -1602,7 +1607,7 @@ Variant ClassDB::class_get_default_property_value(const StringName &p_class, con
 		if (Engine::get_singleton()->has_singleton(p_class)) {
 			c = Engine::get_singleton()->get_singleton_object(p_class);
 			cleanup_c = false;
-		} else if (ClassDB::can_instantiate(p_class)) {
+		} else if (ClassDB::can_instantiate(p_class) && !ClassDB::is_virtual(p_class)) {
 			c = ClassDB::instantiate(p_class);
 			cleanup_c = true;
 		}
@@ -1690,6 +1695,30 @@ void ClassDB::unregister_extension_class(const StringName &p_class) {
 	classes.erase(p_class);
 }
 
+Map<StringName, ClassDB::NativeStruct> ClassDB::native_structs;
+void ClassDB::register_native_struct(const StringName &p_name, const String &p_code, uint64_t p_current_size) {
+	NativeStruct ns;
+	ns.ccode = p_code;
+	ns.struct_size = p_current_size;
+	native_structs[p_name] = ns;
+}
+
+void ClassDB::get_native_struct_list(List<StringName> *r_names) {
+	for (const KeyValue<StringName, NativeStruct> &E : native_structs) {
+		r_names->push_back(E.key);
+	}
+}
+
+String ClassDB::get_native_struct_code(const StringName &p_name) {
+	ERR_FAIL_COND_V(!native_structs.has(p_name), String());
+	return native_structs[p_name].ccode;
+}
+
+uint64_t ClassDB::get_native_struct_size(const StringName &p_name) {
+	ERR_FAIL_COND_V(!native_structs.has(p_name), 0);
+	return native_structs[p_name].struct_size;
+}
+
 RWLock ClassDB::lock;
 
 void ClassDB::cleanup_defaults() {
@@ -1713,6 +1742,7 @@ void ClassDB::cleanup() {
 	classes.clear();
 	resource_base_extensions.clear();
 	compat_classes.clear();
+	native_structs.clear();
 }
 
 //

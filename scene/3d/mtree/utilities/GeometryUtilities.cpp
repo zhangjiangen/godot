@@ -1,6 +1,7 @@
 #define _USE_MATH_DEFINES
 
 #include "GeometryUtilities.hpp"
+#include "core/math/math_funcs.h"
 #include <cmath>
 #include <iostream>
 
@@ -11,7 +12,7 @@ void add_circle(std::vector<Vector3> &points, Vector3 position, Vector3 directio
 	// rot = Eigen::AngleAxis<float>( angle, axis );
 	rot = get_look_at_rot(direction);
 
-	for (size_t i = 0; i < n_points; i++) {
+	for (int i = 0; i < n_points; i++) {
 		float circle_angle = M_PI * (float)i / n_points * 2;
 		Vector3 position_in_circle = Vector3{ std::cos(circle_angle), std::sin(circle_angle), 0 } * radius;
 		position_in_circle = position + rot.xform(position_in_circle);
@@ -42,7 +43,7 @@ Vector3 lerp(Vector3 a, Vector3 b, float t) {
 }
 
 float lerp(float a, float b, float t) {
-	t = std::clamp(t, 0.f, 1.f);
+	t = Math::clamp(t, 0.f, 1.f);
 	return t * b + (1 - t) * a;
 }
 

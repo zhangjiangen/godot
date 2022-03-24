@@ -883,7 +883,8 @@ void ProjectExportDialog::_export_project() {
 
 	List<String> extension_list = platform->get_binary_extensions(current);
 	for (int i = 0; i < extension_list.size(); i++) {
-		export_project->add_filter("*." + extension_list[i] + " ; " + platform->get_name() + " Export");
+		// TRANSLATORS: This is the name of a project export file format. %s will be replaced by the platform name.
+		export_project->add_filter(vformat("*.%s; %s", extension_list[i], vformat(TTR("%s Export"), platform->get_name())));
 	}
 
 	if (!current->get_export_path().is_empty()) {
@@ -1055,7 +1056,6 @@ ProjectExportDialog::ProjectExportDialog() {
 	// Subsections.
 
 	sections = memnew(TabContainer);
-	sections->set_tab_alignment(TabContainer::ALIGNMENT_LEFT);
 	sections->set_use_hidden_tabs_for_min_size(true);
 	settings_vb->add_child(sections);
 	sections->set_v_size_flags(Control::SIZE_EXPAND_FILL);
@@ -1127,9 +1127,6 @@ ProjectExportDialog::ProjectExportDialog() {
 
 	// Script export parameters.
 
-	updating_script_key = false;
-	updating_enc_filters = false;
-
 	VBoxContainer *sec_vb = memnew(VBoxContainer);
 	sec_vb->set_name(TTR("Encryption"));
 
@@ -1152,7 +1149,7 @@ ProjectExportDialog::ProjectExportDialog() {
 	enc_ex_filters = memnew(LineEdit);
 	enc_ex_filters->connect("text_changed", callable_mp(this, &ProjectExportDialog::_enc_filters_changed));
 	sec_vb->add_margin_child(
-			TTR("Filters to exclude files/folders\n(comma-separated, e.g: *.stex, *.import, music/*)"),
+			TTR("Filters to exclude files/folders\n(comma-separated, e.g: *.ctex, *.import, music/*)"),
 			enc_ex_filters);
 
 	script_key = memnew(LineEdit);
@@ -1193,8 +1190,6 @@ ProjectExportDialog::ProjectExportDialog() {
 	delete_confirm->connect("confirmed", callable_mp(this, &ProjectExportDialog::_delete_preset_confirm));
 
 	// Export buttons, dialogs and errors.
-
-	updating = false;
 
 	get_cancel_button()->set_text(TTR("Close"));
 	get_ok_button()->set_text(TTR("Export PCK/ZIP..."));

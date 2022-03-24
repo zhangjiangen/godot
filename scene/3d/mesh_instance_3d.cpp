@@ -33,7 +33,148 @@
 #include "collision_shape_3d.h"
 #include "core/core_string_names.h"
 #include "physics_body_3d.h"
+#include "scene/animation/animation_player.h"
 
+///////////////////////////////////Avatar3DResource/////////////////////////////////////////////////
+void AvatarResource3D::_get_property_list(List<PropertyInfo> *p_list) const {
+}
+
+void AvatarResource3D::_resource_change() {
+	emit_changed();
+}
+void AvatarResource3D::_notification(int p_what) {
+}
+const Vector<AvatarResource3D::MeshData> &AvatarResource3D::_get_mesh() const {
+	return mesh_data;
+}
+void AvatarResource3D::set_mesh(const Array &p_mesh) {
+	mesh_data.clear();
+	mesh_data.resize(p_mesh.size());
+	for (int i = 0; i < p_mesh.size(); ++i) {
+		Dictionary d = p_mesh[i];
+		mesh_data.write[i].name = d["name"];
+		mesh_data.write[i].attach_node = d["attach_node"];
+		mesh_data.write[i].mesh = d["mesh"];
+		mesh_data.write[i].skin = d["skin"];
+	}
+
+	_resource_change();
+}
+Array AvatarResource3D::get_mesh() const {
+	Array ret;
+	ret.resize(mesh_data.size());
+	for (int i = 0; i < mesh_data.size(); ++i) {
+		Dictionary d;
+		d["name"] = mesh_data[i].name;
+		d["attach_node"] = mesh_data[i].attach_node;
+		d["mesh"] = mesh_data[i].mesh;
+		d["skin"] = mesh_data[i].skin;
+		ret[i] = d;
+	}
+	return ret;
+}
+void AvatarResource3D::set_skeleton(const Ref<PackedScene> &p_skeleton) {
+	if (skeleton.is_valid()) {
+		skeleton->disconnect(CoreStringNames::get_singleton()->changed, callable_mp(this, &AvatarResource3D::_resource_change));
+	}
+	skeleton = p_skeleton;
+	if (skeleton.is_valid()) {
+		skeleton->connect(CoreStringNames::get_singleton()->changed, callable_mp(this, &AvatarResource3D::_resource_change));
+	}
+	_resource_change();
+}
+Ref<PackedScene> AvatarResource3D::get_skeleton() {
+	return skeleton;
+}
+void AvatarResource3D::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_mesh", "mesh"), &AvatarResource3D::set_mesh);
+	ClassDB::bind_method(D_METHOD("get_mesh"), &AvatarResource3D::get_mesh);
+	ClassDB::bind_method(D_METHOD("set_skeleton", "p_skeleton"), &AvatarResource3D::set_skeleton);
+	ClassDB::bind_method(D_METHOD("get_skeleton"), &AvatarResource3D::get_skeleton);
+
+	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "mesh", PROPERTY_HINT_RESOURCE_TYPE), "set_mesh", "get_mesh");
+	ADD_GROUP("Skeleton", "");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "skeleton", PROPERTY_HINT_RESOURCE_TYPE, "PackedScene"), "set_skeleton", "get_skeleton");
+}
+///////////////////////////////////AvatarInstance3D/////////////////////////////////////////////////
+bool AvatarInstance3D::_set(const StringName &p_name, const Variant &p_value) {
+	return false;
+}
+bool AvatarInstance3D::_get(const StringName &p_name, Variant &r_ret) const {
+	return false;
+}
+void AvatarInstance3D::_get_property_list(List<PropertyInfo> *p_list) const {
+}
+
+void AvatarInstance3D::_notification(int p_what) {
+}
+
+void AvatarInstance3D::on_change_resource() {
+	// 清空以前创建的模型和骨架
+	LocalVector<Node *> remove_node;
+	for (int i = 0; i < get_child_count(); ++i) {
+		Node *n = get_child(i);
+		if (n->is_load_by_avatar_resource()) {
+			remove_node.push_back(n);
+		}
+	}
+	for (uint32_t i = 0; i < remove_node.size(); ++i) {
+		memdelete(remove_node[i]);
+	}
+	if (avatar_resource.is_valid()) {
+		// 创建骨架
+		Ref<PackedScene> skeleton = avatar_resource->get_skeleton();
+		if (skeleton.is_valid()) {
+			Node3D *instantiated_scene = Object::cast_to<Node3D>(skeleton->instantiate(PackedScene::GEN_EDIT_STATE_INSTANCE));
+			instantiated_scene->set_owner(get_owner());
+			instantiated_scene->set_load_by_avatar_resource(true);
+		}
+		// 加载模型信息
+		const Vector<AvatarResource3D::MeshData> &mesh_data = avatar_resource->_get_mesh();
+		for (int i = 0; i < mesh_data.size(); ++i) {
+			const AvatarResource3D::MeshData &data = mesh_data[i];
+			if (data.mesh.is_valid()) {
+				MeshInstance3D *meshIns = memnew(MeshInstance3D);
+				meshIns->set_mesh(data.mesh);
+				meshIns->set_load_by_avatar_resource(true);
+				meshIns->set_owner(get_owner());
+				if (data.name.size() > 0) {
+					meshIns->set_name(data.name);
+				}
+				if (!data.attach_node.is_empty()) {
+					Node *parent = get_node(data.attach_node);
+					if (parent) {
+						parent->add_child(meshIns);
+						if (data.skin.is_valid()) {
+							meshIns->set_skin(data.skin);
+						}
+					} else {
+						add_child(meshIns);
+					}
+				} else {
+					add_child(meshIns);
+				}
+			}
+		}
+	}
+
+	notify_property_list_changed();
+}
+
+void AvatarInstance3D::set_avatar_resource(const Ref<AvatarResource3D> &p_res) {
+	avatar_resource = p_res;
+}
+Ref<AvatarResource3D> AvatarInstance3D::get_avatar_resource() const {
+	return avatar_resource;
+}
+AvatarInstance3D::AvatarInstance3D() {
+}
+void AvatarInstance3D::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_avatar_resource", "p_resource"), &AvatarInstance3D::set_avatar_resource);
+	ClassDB::bind_method(D_METHOD("get_avatar_resource"), &AvatarInstance3D::get_avatar_resource);
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "avatar_resource", PROPERTY_HINT_RESOURCE_TYPE, "AvatarResource3D"), "set_avatar_resource", "get_avatar_resource");
+}
+//////////////////////////////////////MeshInstance3D//////////////////////////////////////////////
 bool MeshInstance3D::_set(const StringName &p_name, const Variant &p_value) {
 	//this is not _too_ bad performance wise, really. it only arrives here if the property was not set anywhere else.
 	//add to it that it's probably found on first call to _set anyway.
@@ -217,18 +358,6 @@ AABB MeshInstance3D::get_aabb() const {
 	}
 
 	return AABB();
-}
-
-Vector<Face3> MeshInstance3D::get_faces(uint32_t p_usage_flags) const {
-	if (!(p_usage_flags & (FACES_SOLID | FACES_ENCLOSING))) {
-		return Vector<Face3>();
-	}
-
-	if (mesh.is_null()) {
-		return Vector<Face3>();
-	}
-
-	return mesh->get_faces();
 }
 
 Node *MeshInstance3D::create_trimesh_collision_node() {

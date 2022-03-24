@@ -57,6 +57,8 @@ class FontData : public Resource {
 	TextServer::Hinting hinting = TextServer::HINTING_LIGHT;
 	TextServer::SubpixelPositioning subpixel_positioning = TextServer::SUBPIXEL_POSITIONING_AUTO;
 	real_t oversampling = 0.f;
+	real_t embolden = 0.f;
+	Transform2D transform;
 
 	// Cache.
 	mutable Vector<RID> cache;
@@ -121,6 +123,12 @@ public:
 
 	virtual void set_subpixel_positioning(TextServer::SubpixelPositioning p_subpixel);
 	virtual TextServer::SubpixelPositioning get_subpixel_positioning() const;
+
+	virtual void set_embolden(float p_strength);
+	virtual float get_embolden() const;
+
+	virtual void set_transform(Transform2D p_transform);
+	virtual Transform2D get_transform() const;
 
 	virtual void set_oversampling(real_t p_oversampling);
 	virtual real_t get_oversampling() const;
@@ -303,7 +311,7 @@ public:
 	virtual Size2 get_char_size(char32_t p_char, char32_t p_next = 0, int p_size = DEFAULT_FONT_SIZE) const;
 	virtual real_t draw_char(RID p_canvas_item, const Point2 &p_pos, char32_t p_char, char32_t p_next = 0, int p_size = DEFAULT_FONT_SIZE, const Color &p_modulate = Color(1, 1, 1), int p_outline_size = 0, const Color &p_outline_modulate = Color(1, 1, 1, 0)) const;
 
-	Vector<RID> get_rids() const;
+	Array get_rids() const;
 
 	void update_changes();
 

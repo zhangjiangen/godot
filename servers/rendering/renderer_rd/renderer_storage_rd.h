@@ -41,11 +41,12 @@
 #include "servers/rendering/renderer_rd/shaders/particles_copy.glsl.gen.h"
 #include "servers/rendering/renderer_rd/shaders/skeleton.glsl.gen.h"
 #include "servers/rendering/renderer_rd/shaders/voxel_gi_sdf.glsl.gen.h"
+#include "servers/rendering/renderer_rd/storage_rd/canvas_texture_storage.h"
+#include "servers/rendering/renderer_rd/storage_rd/texture_storage.h"
 #include "servers/rendering/renderer_scene_render.h"
 #include "servers/rendering/rendering_device.h"
 
 #include "servers/rendering/shader_compiler.h"
-class EffectsRD;
 class RendererStorageRD : public RendererStorage {
 public:
 	static _FORCE_INLINE_ void store_transform(const Transform3D &p_mtx, float *p_array) {
@@ -181,22 +182,6 @@ public:
 	typedef MaterialData *(*MaterialDataRequestFunction)(ShaderData *);
 	static void _material_uniform_set_erased(void *p_material);
 
-	enum DefaultRDTexture {
-		DEFAULT_RD_TEXTURE_WHITE,
-		DEFAULT_RD_TEXTURE_BLACK,
-		DEFAULT_RD_TEXTURE_NORMAL,
-		DEFAULT_RD_TEXTURE_ANISO,
-		DEFAULT_RD_TEXTURE_MULTIMESH_BUFFER,
-		DEFAULT_RD_TEXTURE_CUBEMAP_BLACK,
-		DEFAULT_RD_TEXTURE_CUBEMAP_ARRAY_BLACK,
-		DEFAULT_RD_TEXTURE_CUBEMAP_WHITE,
-		DEFAULT_RD_TEXTURE_3D_WHITE,
-		DEFAULT_RD_TEXTURE_3D_BLACK,
-		DEFAULT_RD_TEXTURE_2D_ARRAY_WHITE,
-		DEFAULT_RD_TEXTURE_2D_UINT,
-		DEFAULT_RD_TEXTURE_MAX
-	};
-
 	enum DefaultRDBuffer {
 		DEFAULT_RD_BUFFER_VERTEX,
 		DEFAULT_RD_BUFFER_NORMAL,
@@ -214,113 +199,8 @@ public:
 	};
 
 private:
-	/* CANVAS TEXTURE API (2D) */
-
-	struct CanvasTexture {
-		RID diffuse;
-		RID normal_map;
-		RID specular;
-		Color specular_color = Color(1, 1, 1, 1);
-		float shininess = 1.0;
-
-		RS::CanvasItemTextureFilter texture_filter = RS::CANVAS_ITEM_TEXTURE_FILTER_DEFAULT;
-		RS::CanvasItemTextureRepeat texture_repeat = RS::CANVAS_ITEM_TEXTURE_REPEAT_DEFAULT;
-		RID uniform_sets[RS::CANVAS_ITEM_TEXTURE_FILTER_MAX][RS::CANVAS_ITEM_TEXTURE_REPEAT_MAX];
-
-		Size2i size_cache = Size2i(1, 1);
-		bool use_normal_cache = false;
-		bool use_specular_cache = false;
-		bool cleared_cache = true;
-		void clear_sets();
-		~CanvasTexture();
-	};
-
-	RID_Owner<CanvasTexture, true> canvas_texture_owner;
-
 	/* TEXTURE API */
-	struct Texture {
-		enum Type {
-			TYPE_2D,
-			TYPE_LAYERED,
-			TYPE_3D
-		};
 
-		Type type;
-		RS::TextureLayeredType layered_type = RS::TEXTURE_LAYERED_2D_ARRAY;
-
-		RenderingDevice::TextureType rd_type;
-		RID rd_texture;
-		RID rd_texture_srgb;
-		RenderingDevice::DataFormat rd_format;
-		RenderingDevice::DataFormat rd_format_srgb;
-
-		RD::TextureView rd_view;
-
-		Image::Format format;
-		Image::Format validated_format;
-
-		int width;
-		int height;
-		int depth;
-		int layers;
-		int mipmaps;
-
-		int height_2d;
-		int width_2d;
-
-		struct BufferSlice3D {
-			Size2i size;
-			uint32_t offset = 0;
-			uint32_t buffer_size = 0;
-		};
-		Vector<BufferSlice3D> buffer_slices_3d;
-		uint32_t buffer_size_3d = 0;
-
-		bool is_render_target;
-		bool is_proxy;
-
-		Ref<Image> image_cache_2d;
-		String path;
-
-		RID proxy_to;
-		Vector<RID> proxies;
-		Set<RID> lightmap_users;
-
-		RS::TextureDetectCallback detect_3d_callback = nullptr;
-		void *detect_3d_callback_ud = nullptr;
-
-		RS::TextureDetectCallback detect_normal_callback = nullptr;
-		void *detect_normal_callback_ud = nullptr;
-
-		RS::TextureDetectRoughnessCallback detect_roughness_callback = nullptr;
-		void *detect_roughness_callback_ud = nullptr;
-
-		CanvasTexture *canvas_texture = nullptr;
-	};
-
-	struct TextureToRDFormat {
-		RD::DataFormat format;
-		RD::DataFormat format_srgb;
-		RD::TextureSwizzle swizzle_r;
-		RD::TextureSwizzle swizzle_g;
-		RD::TextureSwizzle swizzle_b;
-		RD::TextureSwizzle swizzle_a;
-		TextureToRDFormat() {
-			format = RD::DATA_FORMAT_MAX;
-			format_srgb = RD::DATA_FORMAT_MAX;
-			swizzle_r = RD::TEXTURE_SWIZZLE_R;
-			swizzle_g = RD::TEXTURE_SWIZZLE_G;
-			swizzle_b = RD::TEXTURE_SWIZZLE_B;
-			swizzle_a = RD::TEXTURE_SWIZZLE_A;
-		}
-	};
-
-	//textures can be created from threads, so this RID_Owner is thread safe
-	mutable RID_Owner<Texture, true> texture_owner;
-
-	Ref<Image> _validate_texture_format(const Ref<Image> &p_image, TextureToRDFormat &r_format);
-
-	RID default_rd_textures[DEFAULT_RD_TEXTURE_MAX];
 	RID default_rd_samplers[RS::CANVAS_ITEM_TEXTURE_FILTER_MAX][RS::CANVAS_ITEM_TEXTURE_REPEAT_MAX];
 	RID custom_rd_samplers[RS::CANVAS_ITEM_TEXTURE_FILTER_MAX][RS::CANVAS_ITEM_TEXTURE_REPEAT_MAX];
 	RID default_rd_storage_buffer;
@@ -1036,7 +916,6 @@ private:
 		RS::LightType type;
 		float param[RS::LIGHT_PARAM_MAX];
 		Color color = Color(1, 1, 1, 1);
-		Color shadow_color;
 		RID projector;
 		bool shadow = false;
 		bool negative = false;
@@ -1044,10 +923,14 @@ private:
 		RS::LightBakeMode bake_mode = RS::LIGHT_BAKE_DYNAMIC;
 		uint32_t max_sdfgi_cascade = 2;
 		uint32_t cull_mask = 0xFFFFFFFF;
+		bool distance_fade = false;
+		real_t distance_fade_begin = 40.0;
+		real_t distance_fade_shadow = 50.0;
+		real_t distance_fade_length = 10.0;
 		RS::LightOmniShadowMode omni_shadow_mode = RS::LIGHT_OMNI_SHADOW_DUAL_PARABOLOID;
 		RS::LightDirectionalShadowMode directional_shadow_mode = RS::LIGHT_DIRECTIONAL_SHADOW_ORTHOGONAL;
 		bool directional_blend_splits = false;
-		bool directional_sky_only = false;
+		RS::LightDirectionalSkyMode directional_sky_mode = RS::LIGHT_DIRECTIONAL_SKY_MODE_LIGHT_AND_SKY;
 		uint64_t version = 0;
 
 		Dependency dependency;
@@ -1077,27 +960,6 @@ private:
 	};
 
 	mutable RID_Owner<ReflectionProbe, true> reflection_probe_owner;
-
-	/* DECAL */
-
-	struct Decal {
-		Vector3 extents = Vector3(1, 1, 1);
-		RID textures[RS::DECAL_TEXTURE_MAX];
-		float emission_energy = 1.0;
-		float albedo_mix = 1.0;
-		Color modulate = Color(1, 1, 1, 1);
-		uint32_t cull_mask = (1 << 20) - 1;
-		float upper_fade = 0.3;
-		float lower_fade = 0.3;
-		bool distance_fade = false;
-		float distance_fade_begin = 10;
-		float distance_fade_length = 1;
-		float normal_fade = 0.0;
-
-		Dependency dependency;
-	};
-
-	mutable RID_Owner<Decal, true> decal_owner;
 
 	/* VOXEL GI */
 
@@ -1320,92 +1182,8 @@ private:
 	EffectsRD *effects = nullptr;
 
 public:
-	virtual bool can_create_resources_async() const override;
-
-	/* TEXTURE API */
-
-	virtual RID texture_allocate() override;
-
-	virtual void texture_2d_initialize(RID p_texture, const Ref<Image> &p_image) override;
-	virtual void texture_2d_layered_initialize(RID p_texture, const Vector<Ref<Image>> &p_layers, RS::TextureLayeredType p_layered_type) override;
-	virtual void texture_3d_initialize(RID p_texture, Image::Format p_format, int p_width, int p_height, int p_depth, bool p_mipmaps, const Vector<Ref<Image>> &p_data) override; //all slices, then all the mipmaps, must be coherent
-	virtual void texture_proxy_initialize(RID p_texture, RID p_base) override;
-
-	virtual void _texture_2d_update(RID p_texture, const Ref<Image> &p_image, int p_layer, bool p_immediate);
-
-	virtual void texture_2d_update(RID p_texture, const Ref<Image> &p_image, int p_layer = 0) override;
-	virtual void texture_3d_update(RID p_texture, const Vector<Ref<Image>> &p_data) override;
-	virtual void texture_proxy_update(RID p_texture, RID p_proxy_to) override;
-
-	//these two APIs can be used together or in combination with the others.
-	virtual void texture_2d_placeholder_initialize(RID p_texture) override;
-	virtual void texture_2d_layered_placeholder_initialize(RID p_texture, RenderingServer::TextureLayeredType p_layered_type) override;
-	virtual void texture_3d_placeholder_initialize(RID p_texture) override;
-
-	virtual Ref<Image> texture_2d_get(RID p_texture) const override;
-	virtual Ref<Image> texture_2d_layer_get(RID p_texture, int p_layer) const override;
-	virtual Vector<Ref<Image>> texture_3d_get(RID p_texture) const override;
-
-	virtual void texture_replace(RID p_texture, RID p_by_texture) override;
-	virtual void texture_set_size_override(RID p_texture, int p_width, int p_height) override;
-
-	virtual void texture_set_path(RID p_texture, const String &p_path) override;
-	virtual String texture_get_path(RID p_texture) const override;
-
-	virtual void texture_set_detect_3d_callback(RID p_texture, RS::TextureDetectCallback p_callback, void *p_userdata) override;
-	virtual void texture_set_detect_normal_callback(RID p_texture, RS::TextureDetectCallback p_callback, void *p_userdata) override;
-	virtual void texture_set_detect_roughness_callback(RID p_texture, RS::TextureDetectRoughnessCallback p_callback, void *p_userdata) override;
-
-	virtual void texture_debug_usage(List<RS::TextureInfo> *r_info) override;
-
-	virtual void texture_set_proxy(RID p_proxy, RID p_base);
-	virtual void texture_set_force_redraw_if_visible(RID p_texture, bool p_enable) override;
-
-	virtual Size2 texture_size_with_proxy(RID p_proxy) override;
-
-	virtual void texture_add_to_decal_atlas(RID p_texture, bool p_panorama_to_dp = false) override;
-	virtual void texture_remove_from_decal_atlas(RID p_texture, bool p_panorama_to_dp = false) override;
-
-	RID decal_atlas_get_texture() const;
-	RID decal_atlas_get_texture_srgb() const;
-	_FORCE_INLINE_ Rect2 decal_atlas_get_texture_rect(RID p_texture) {
-		DecalAtlas::Texture *t = decal_atlas.textures.getptr(p_texture);
-		if (!t) {
-			return Rect2();
-		}
-
-		return t->uv_rect;
-	}
-
 	//internal usage
 
-	_FORCE_INLINE_ RID texture_get_rd_texture(RID p_texture, bool p_srgb = false) {
-		if (p_texture.is_null()) {
-			return RID();
-		}
-		Texture *tex = texture_owner.get_or_null(p_texture);
-
-		if (!tex) {
-			return RID();
-		}
-		return (p_srgb && tex->rd_texture_srgb.is_valid()) ? tex->rd_texture_srgb : tex->rd_texture;
-	}
-
-	_FORCE_INLINE_ Size2i texture_2d_get_size(RID p_texture) {
-		if (p_texture.is_null()) {
-			return Size2i();
-		}
-		Texture *tex = texture_owner.get_or_null(p_texture);
-
-		if (!tex) {
-			return Size2i();
-		}
-		return Size2i(tex->width_2d, tex->height_2d);
-	}
-
-	_FORCE_INLINE_ RID texture_rd_get_default(DefaultRDTexture p_texture) {
-		return default_rd_textures[p_texture];
-	}
 	_FORCE_INLINE_ RID sampler_rd_get_default(RS::CanvasItemTextureFilter p_filter, RS::CanvasItemTextureRepeat p_repeat) {
 		return default_rd_samplers[p_filter][p_repeat];
 	}
@@ -1416,19 +1194,6 @@ public:
 	void sampler_rd_configure_custom(float mipmap_bias);
 
 	void sampler_rd_set_default(float p_mipmap_bias);
-
-	/* CANVAS TEXTURE API */
-
-	RID canvas_texture_allocate() override;
-	void canvas_texture_initialize(RID p_canvas_texture) override;
-
-	virtual void canvas_texture_set_channel(RID p_canvas_texture, RS::CanvasTextureChannel p_channel, RID p_texture) override;
-	virtual void canvas_texture_set_shading_parameters(RID p_canvas_texture, const Color &p_specular_color, float p_shininess) override;
-
-	virtual void canvas_texture_set_texture_filter(RID p_canvas_texture, RS::CanvasItemTextureFilter p_filter) override;
-	virtual void canvas_texture_set_texture_repeat(RID p_canvas_texture, RS::CanvasItemTextureRepeat p_repeat) override;
-
-	bool canvas_texture_get_uniform_set(RID p_texture, RS::CanvasItemTextureFilter p_base_filter, RS::CanvasItemTextureRepeat p_base_repeat, RID p_base_shader, int p_base_set, RID &r_uniform_set, Size2i &r_size, Color &r_specular_shininess, bool &r_use_normal, bool &r_use_specular);
 
 	/* SHADER API */
 
@@ -1777,7 +1542,7 @@ public:
 			RD::Uniform u;
 			u.uniform_type = RD::UNIFORM_TYPE_STORAGE_BUFFER;
 			u.binding = 0;
-			u.ids.push_back(multimesh->buffer);
+			u.append_id(multimesh->buffer);
 			uniforms.push_back(u);
 			multimesh->uniform_set_3d = RD::get_singleton()->uniform_set_create(uniforms, p_shader, p_set);
 		}
@@ -1792,7 +1557,7 @@ public:
 			RD::Uniform u;
 			u.uniform_type = RD::UNIFORM_TYPE_STORAGE_BUFFER;
 			u.binding = 0;
-			u.ids.push_back(multimesh->buffer);
+			u.append_id(multimesh->buffer);
 			uniforms.push_back(u);
 			multimesh->uniform_set_2d = RD::get_singleton()->uniform_set_create(uniforms, p_shader, p_set);
 		}
@@ -1830,7 +1595,7 @@ public:
 			RD::Uniform u;
 			u.uniform_type = RD::UNIFORM_TYPE_STORAGE_BUFFER;
 			u.binding = 0;
-			u.ids.push_back(skeleton->buffer);
+			u.append_id(skeleton->buffer);
 			uniforms.push_back(u);
 			skeleton->uniform_set_3d = RD::get_singleton()->uniform_set_create(uniforms, p_shader, p_set);
 		}
@@ -1853,10 +1618,10 @@ public:
 	void light_set_color(RID p_light, const Color &p_color) override;
 	void light_set_param(RID p_light, RS::LightParam p_param, float p_value) override;
 	void light_set_shadow(RID p_light, bool p_enabled) override;
-	void light_set_shadow_color(RID p_light, const Color &p_color) override;
 	void light_set_projector(RID p_light, RID p_texture) override;
 	void light_set_negative(RID p_light, bool p_enable) override;
 	void light_set_cull_mask(RID p_light, uint32_t p_mask) override;
+	void light_set_distance_fade(RID p_light, bool p_enabled, float p_begin, float p_shadow, float p_length) override;
 	void light_set_reverse_cull_face_mode(RID p_light, bool p_enabled) override;
 	void light_set_bake_mode(RID p_light, RS::LightBakeMode p_bake_mode) override;
 	void light_set_max_sdfgi_cascade(RID p_light, uint32_t p_cascade) override;
@@ -1866,8 +1631,8 @@ public:
 	void light_directional_set_shadow_mode(RID p_light, RS::LightDirectionalShadowMode p_mode) override;
 	void light_directional_set_blend_splits(RID p_light, bool p_enable) override;
 	bool light_directional_get_blend_splits(RID p_light) const override;
-	void light_directional_set_sky_only(RID p_light, bool p_sky_only) override;
-	bool light_directional_is_sky_only(RID p_light) const override;
+	void light_directional_set_sky_mode(RID p_light, RS::LightDirectionalSkyMode p_mode) override;
+	RS::LightDirectionalSkyMode light_directional_get_sky_mode(RID p_light) const override;
 
 	RS::LightDirectionalShadowMode light_directional_get_shadow_mode(RID p_light) override;
 	RS::LightOmniShadowMode light_omni_get_shadow_mode(RID p_light) override;
@@ -1901,18 +1666,31 @@ public:
 		return light->color;
 	}
 
-	_FORCE_INLINE_ Color light_get_shadow_color(RID p_light) {
-		const Light *light = light_owner.get_or_null(p_light);
-		ERR_FAIL_COND_V(!light, Color());
-
-		return light->shadow_color;
-	}
-
 	_FORCE_INLINE_ uint32_t light_get_cull_mask(RID p_light) {
 		const Light *light = light_owner.get_or_null(p_light);
 		ERR_FAIL_COND_V(!light, 0);
 
 		return light->cull_mask;
+	}
+
+	_FORCE_INLINE_ bool light_is_distance_fade_enabled(RID p_light) {
+		const Light *light = light_owner.get_or_null(p_light);
+		return light->distance_fade;
+	}
+
+	_FORCE_INLINE_ float light_get_distance_fade_begin(RID p_light) {
+		const Light *light = light_owner.get_or_null(p_light);
+		return light->distance_fade_begin;
+	}
+
+	_FORCE_INLINE_ float light_get_distance_fade_shadow(RID p_light) {
+		const Light *light = light_owner.get_or_null(p_light);
+		return light->distance_fade_shadow;
+	}
+
+	_FORCE_INLINE_ float light_get_distance_fade_length(RID p_light) {
+		const Light *light = light_owner.get_or_null(p_light);
+		return light->distance_fade_length;
 	}
 
 	_FORCE_INLINE_ bool light_has_shadow(RID p_light) const override {
@@ -1926,7 +1704,7 @@ public:
 		const Light *light = light_owner.get_or_null(p_light);
 		ERR_FAIL_COND_V(!light, RS::LIGHT_DIRECTIONAL);
 
-		return texture_owner.owns(light->projector);
+		return light_owner.owns(light->projector);
 	}
 
 	_FORCE_INLINE_ bool light_is_negative(RID p_light) const {
@@ -1994,84 +1772,6 @@ public:
 
 	void base_update_dependency(RID p_base, DependencyTracker *p_instance) override;
 	void skeleton_update_dependency(RID p_skeleton, DependencyTracker *p_instance) override;
-
-	/* DECAL API */
-
-	RID decal_allocate() override;
-	void decal_initialize(RID p_decal) override;
-
-	virtual void decal_set_extents(RID p_decal, const Vector3 &p_extents) override;
-	virtual void decal_set_texture(RID p_decal, RS::DecalTexture p_type, RID p_texture) override;
-	virtual void decal_set_emission_energy(RID p_decal, float p_energy) override;
-	virtual void decal_set_albedo_mix(RID p_decal, float p_mix) override;
-	virtual void decal_set_modulate(RID p_decal, const Color &p_modulate) override;
-	virtual void decal_set_cull_mask(RID p_decal, uint32_t p_layers) override;
-	virtual void decal_set_distance_fade(RID p_decal, bool p_enabled, float p_begin, float p_length) override;
-	virtual void decal_set_fade(RID p_decal, float p_above, float p_below) override;
-	virtual void decal_set_normal_fade(RID p_decal, float p_fade) override;
-
-	_FORCE_INLINE_ Vector3 decal_get_extents(RID p_decal) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->extents;
-	}
-
-	_FORCE_INLINE_ RID decal_get_texture(RID p_decal, RS::DecalTexture p_texture) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->textures[p_texture];
-	}
-
-	_FORCE_INLINE_ Color decal_get_modulate(RID p_decal) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->modulate;
-	}
-
-	_FORCE_INLINE_ float decal_get_emission_energy(RID p_decal) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->emission_energy;
-	}
-
-	_FORCE_INLINE_ float decal_get_albedo_mix(RID p_decal) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->albedo_mix;
-	}
-
-	_FORCE_INLINE_ uint32_t decal_get_cull_mask(RID p_decal) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->cull_mask;
-	}
-
-	_FORCE_INLINE_ float decal_get_upper_fade(RID p_decal) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->upper_fade;
-	}
-
-	_FORCE_INLINE_ float decal_get_lower_fade(RID p_decal) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->lower_fade;
-	}
-
-	_FORCE_INLINE_ float decal_get_normal_fade(RID p_decal) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->normal_fade;
-	}
-
-	_FORCE_INLINE_ bool decal_is_distance_fade_enabled(RID p_decal) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->distance_fade;
-	}
-
-	_FORCE_INLINE_ float decal_get_distance_fade_begin(RID p_decal) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->distance_fade_begin;
-	}
-
-	_FORCE_INLINE_ float decal_get_distance_fade_length(RID p_decal) {
-		const Decal *decal = decal_owner.get_or_null(p_decal);
-		return decal->distance_fade_length;
-	}
-
-	virtual AABB decal_get_aabb(RID p_decal) const override;
-
 	/* VOXEL GI API */
 
 	RID voxel_gi_allocate() override;
@@ -2267,7 +1967,7 @@ public:
 				RD::Uniform u;
 				u.uniform_type = RD::UNIFORM_TYPE_STORAGE_BUFFER;
 				u.binding = 0;
-				u.ids.push_back(particles->particle_instance_buffer);
+				u.append_id(particles->particle_instance_buffer);
 				uniforms.push_back(u);
 			}
 

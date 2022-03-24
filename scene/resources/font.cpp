@@ -40,7 +40,7 @@
 _FORCE_INLINE_ void FontData::_clear_cache() {
 	for (int i = 0; i < cache.size(); i++) {
 		if (cache[i].is_valid()) {
-			TS->free(cache[i]);
+			TS->free_rid(cache[i]);
 			cache.write[i] = RID();
 		}
 	}
@@ -61,6 +61,8 @@ _FORCE_INLINE_ void FontData::_ensure_rid(int p_cache_index) const {
 		TS->font_set_force_autohinter(cache[p_cache_index], force_autohinter);
 		TS->font_set_hinting(cache[p_cache_index], hinting);
 		TS->font_set_subpixel_positioning(cache[p_cache_index], subpixel_positioning);
+		TS->font_set_embolden(cache[p_cache_index], embolden);
+		TS->font_set_transform(cache[p_cache_index], transform);
 		TS->font_set_oversampling(cache[p_cache_index], oversampling);
 	}
 }
@@ -104,6 +106,12 @@ void FontData::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("set_subpixel_positioning", "subpixel_positioning"), &FontData::set_subpixel_positioning);
 	ClassDB::bind_method(D_METHOD("get_subpixel_positioning"), &FontData::get_subpixel_positioning);
+
+	ClassDB::bind_method(D_METHOD("set_embolden", "strength"), &FontData::set_embolden);
+	ClassDB::bind_method(D_METHOD("get_embolden"), &FontData::get_embolden);
+
+	ClassDB::bind_method(D_METHOD("set_transform", "transform"), &FontData::set_transform);
+	ClassDB::bind_method(D_METHOD("get_transform"), &FontData::get_transform);
 
 	ClassDB::bind_method(D_METHOD("set_oversampling", "oversampling"), &FontData::set_oversampling);
 	ClassDB::bind_method(D_METHOD("get_oversampling"), &FontData::get_oversampling);
@@ -209,6 +217,8 @@ void FontData::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "style_name", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "set_font_style_name", "get_font_style_name");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "font_style", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "set_font_style", "get_font_style");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "subpixel_positioning", PROPERTY_HINT_ENUM, "Disabled,Auto,One half of a pixel,One quarter of a pixel", PROPERTY_USAGE_STORAGE), "set_subpixel_positioning", "get_subpixel_positioning");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "embolden", PROPERTY_HINT_RANGE, "-2,2,0.01", PROPERTY_USAGE_STORAGE), "set_embolden", "get_embolden");
+	ADD_PROPERTY(PropertyInfo(Variant::TRANSFORM2D, "transform", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "set_transform", "get_transform");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "multichannel_signed_distance_field", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "set_multichannel_signed_distance_field", "is_multichannel_signed_distance_field");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "msdf_pixel_range", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "set_msdf_pixel_range", "get_msdf_pixel_range");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "msdf_size", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "set_msdf_size", "get_msdf_size");
@@ -439,6 +449,8 @@ void FontData::reset_state() {
 	msdf_pixel_range = 14;
 	msdf_size = 128;
 	fixed_size = 0;
+	embolden = 0.f;
+	transform = Transform2D();
 	oversampling = 0.f;
 }
 
@@ -1385,6 +1397,36 @@ TextServer::SubpixelPositioning FontData::get_subpixel_positioning() const {
 	return subpixel_positioning;
 }
 
+void FontData::set_embolden(float p_strength) {
+	if (embolden != p_strength) {
+		embolden = p_strength;
+		for (int i = 0; i < cache.size(); i++) {
+			_ensure_rid(i);
+			TS->font_set_embolden(cache[i], embolden);
+		}
+		emit_changed();
+	}
+}
+
+float FontData::get_embolden() const {
+	return embolden;
+}
+
+void FontData::set_transform(Transform2D p_transform) {
+	if (transform != p_transform) {
+		transform = p_transform;
+		for (int i = 0; i < cache.size(); i++) {
+			_ensure_rid(i);
+			TS->font_set_transform(cache[i], transform);
+		}
+		emit_changed();
+	}
+}
+
+Transform2D FontData::get_transform() const {
+	return transform;
+}
+
 void FontData::set_oversampling(real_t p_oversampling) {
 	if (oversampling != p_oversampling) {
 		oversampling = p_oversampling;
@@ -1457,7 +1499,7 @@ void FontData::clear_cache() {
 void FontData::remove_cache(int p_cache_index) {
 	ERR_FAIL_INDEX(p_cache_index, cache.size());
 	if (cache[p_cache_index].is_valid()) {
-		TS->free(cache.write[p_cache_index]);
+		TS->free_rid(cache.write[p_cache_index]);
 	}
 	cache.remove_at(p_cache_index);
 	emit_changed();
@@ -1882,6 +1924,8 @@ void Font::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_supported_chars"), &Font::get_supported_chars);
 
 	ClassDB::bind_method(D_METHOD("update_changes"), &Font::update_changes);
+
+	ClassDB::bind_method(D_METHOD("get_rids"), &Font::get_rids);
 }
 
 bool Font::_set(const StringName &p_name, const Variant &p_value) {
@@ -2385,11 +2429,15 @@ String Font::get_supported_chars() const {
 	return chars;
 }
 
-Vector<RID> Font::get_rids() const {
+Array Font::get_rids() const {
+	Array _rids;
 	for (int i = 0; i < data.size(); i++) {
 		_ensure_rid(i);
+		if (rids[i].is_valid()) {
+			_rids.push_back(rids[i]);
+		}
 	}
-	return rids;
+	return _rids;
 }
 
 void Font::update_changes() {

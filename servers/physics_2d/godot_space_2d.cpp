@@ -158,7 +158,7 @@ bool GodotPhysicsDirectSpaceState2D::intersect_ray(const RayParameters &p_parame
 			if (p_parameters.hit_from_inside) {
 				// Hit shape at starting point.
 				min_d = 0;
-				res_point = local_from;
+				res_point = begin;
 				res_normal = Vector2();
 				res_shape = shape_idx;
 				res_obj = col_obj;
@@ -995,11 +995,8 @@ bool GodotSpace2D::test_body_motion(GodotBody2D *p_body, const PhysicsServer2D::
 	return collided;
 }
 
+// Assumes a valid collision pair, this should have been checked beforehand in the BVH or octree.
 void *GodotSpace2D::_broadphase_pair(GodotCollisionObject2D *A, int p_subindex_A, GodotCollisionObject2D *B, int p_subindex_B, void *p_self) {
-	if (!A->interacts_with(B)) {
-		return nullptr;
-	}
-
 	GodotCollisionObject2D::Type type_A = A->get_type();
 	GodotCollisionObject2D::Type type_B = B->get_type();
 	if (type_A > type_B) {

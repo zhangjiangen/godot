@@ -45,8 +45,6 @@
 
 #include <stdint.h>
 
-VARIANT_ENUM_CAST(Node::ProcessMode);
-VARIANT_ENUM_CAST(Node::InternalMode);
 
 Node::Data::Data() {
 	process_mode = PROCESS_MODE_INHERIT;
@@ -71,6 +69,7 @@ Node::Data::Data() {
 
 	display_folded = false;
 	editable_instance = false;
+	load_form_avatar_resource = false;
 }
 int Node::orphan_node_count = 0;
 
@@ -235,7 +234,7 @@ void Node::_propagate_enter_tree() {
 	if (data.parent) {
 		Variant c = this;
 		const Variant *cptr = &c;
-		data.parent->emit_signal(SNAME("child_entered_tree"), &cptr, 1);
+		data.parent->emit_signalp(SNAME("child_entered_tree"), &cptr, 1);
 	}
 
 	data.blocked++;
@@ -311,7 +310,7 @@ void Node::_propagate_exit_tree() {
 	if (data.parent) {
 		Variant c = this;
 		const Variant *cptr = &c;
-		data.parent->emit_signal(SNAME("child_exited_tree"), &cptr, 1);
+		data.parent->emit_signalp(SNAME("child_exited_tree"), &cptr, 1);
 	}
 
 	// exit groups
@@ -605,34 +604,6 @@ uint16_t Node::rpc_config(const StringName &p_method, Multiplayer::RPCMode p_rpc
 }
 
 /***** RPC FUNCTIONS ********/
-
-void Node::rpc(const StringName &p_method, VARIANT_ARG_DECLARE) {
-	VARIANT_ARGPTRS;
-
-	int argc = 0;
-	for (int i = 0; i < VARIANT_ARG_MAX; i++) {
-		if (argptr[i]->get_type() == Variant::NIL) {
-			break;
-		}
-		argc++;
-	}
-
-	rpcp(0, p_method, argptr, argc);
-}
-
-void Node::rpc_id(int p_peer_id, const StringName &p_method, VARIANT_ARG_DECLARE) {
-	VARIANT_ARGPTRS;
-
-	int argc = 0;
-	for (int i = 0; i < VARIANT_ARG_MAX; i++) {
-		if (argptr[i]->get_type() == Variant::NIL) {
-			break;
-		}
-		argc++;
-	}
-
-	rpcp(p_peer_id, p_method, argptr, argc);
-}
 
 Variant Node::_rpc_bind(const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
 	if (p_argcount < 1) {
@@ -2439,42 +2410,6 @@ void Node::_replace_connections_target(Node *p_new_target) {
 	}
 }
 
-Vector<Variant> Node::make_binds(VARIANT_ARG_DECLARE) {
-	Vector<Variant> ret;
-
-	if (p_arg1.get_type() == Variant::NIL) {
-		return ret;
-	} else {
-		ret.push_back(p_arg1);
-	}
-
-	if (p_arg2.get_type() == Variant::NIL) {
-		return ret;
-	} else {
-		ret.push_back(p_arg2);
-	}
-
-	if (p_arg3.get_type() == Variant::NIL) {
-		return ret;
-	} else {
-		ret.push_back(p_arg3);
-	}
-
-	if (p_arg4.get_type() == Variant::NIL) {
-		return ret;
-	} else {
-		ret.push_back(p_arg4);
-	}
-
-	if (p_arg5.get_type() == Variant::NIL) {
-		return ret;
-	} else {
-		ret.push_back(p_arg5);
-	}
-
-	return ret;
-}
-
 bool Node::has_node_and_resource(const NodePath &p_path) const {
 	if (!has_node(p_path)) {
 		return false;
@@ -2862,6 +2797,9 @@ void Node::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_set_import_path", "import_path"), &Node::set_import_path);
 	ClassDB::bind_method(D_METHOD("_get_import_path"), &Node::get_import_path);
 
+	ClassDB::bind_method(D_METHOD("set_load_by_avatar_resource", "p_value"), &Node::set_load_by_avatar_resource);
+	ClassDB::bind_method(D_METHOD("is_load_by_avatar_resource"), &Node::is_load_by_avatar_resource);
+
 #ifdef TOOLS_ENABLED
 	ClassDB::bind_method(D_METHOD("_set_property_pinned", "property", "pinned"), &Node::set_property_pinned);
 #endif
@@ -2951,6 +2889,7 @@ void Node::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("child_entered_tree", PropertyInfo(Variant::OBJECT, "node", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT, "Node")));
 	ADD_SIGNAL(MethodInfo("child_exited_tree", PropertyInfo(Variant::OBJECT, "node", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT, "Node")));
 
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "load_by_avatar_resource", PROPERTY_HINT_NONE, "MultiplayerAPI", PROPERTY_USAGE_NO_EDITOR), "set_load_by_avatar_resource", "is_load_by_avatar_resource");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING_NAME, "name", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "set_name", "get_name");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "scene_file_path", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "set_scene_file_path", "get_scene_file_path");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "owner", PROPERTY_HINT_RESOURCE_TYPE, "Node", PROPERTY_USAGE_NONE), "set_owner", "get_owner");

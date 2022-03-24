@@ -9,7 +9,7 @@ public:
 		inline static std::string radius = "radius";
 		inline static std::string direction = "direction";
 	};
-
+	virtual ~ManifoldMesher() {}
 	int radial_resolution = 8;
 	int smooth_iterations = 4;
 	Tree3DMesh mesh_tree(Tree3D &tree) override;

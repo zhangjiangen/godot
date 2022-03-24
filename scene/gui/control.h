@@ -47,24 +47,24 @@ class Control : public CanvasItem {
 	OBJ_CATEGORY("GUI Nodes");
 
 public:
-	enum Anchor : uint8_t {
+	enum Anchor {
 		ANCHOR_BEGIN = 0,
 		ANCHOR_END = 1
 	};
 
-	enum GrowDirection : uint8_t {
+	enum GrowDirection {
 		GROW_DIRECTION_BEGIN,
 		GROW_DIRECTION_END,
 		GROW_DIRECTION_BOTH
 	};
 
-	enum FocusMode : uint8_t {
+	enum FocusMode {
 		FOCUS_NONE,
 		FOCUS_CLICK,
 		FOCUS_ALL
 	};
 
-	enum SizeFlags : uint8_t {
+	enum SizeFlags {
 		SIZE_SHRINK_BEGIN = 0,
 		SIZE_FILL = 1,
 		SIZE_EXPAND = 2,
@@ -74,13 +74,13 @@ public:
 		SIZE_EXPAND_FILL = SIZE_EXPAND | SIZE_FILL,
 	};
 
-	enum MouseFilter : uint8_t {
+	enum MouseFilter {
 		MOUSE_FILTER_STOP,
 		MOUSE_FILTER_PASS,
 		MOUSE_FILTER_IGNORE
 	};
 
-	enum CursorShape : uint8_t {
+	enum CursorShape {
 		CURSOR_ARROW,
 		CURSOR_IBEAM,
 		CURSOR_POINTING_HAND,
@@ -101,7 +101,7 @@ public:
 		CURSOR_MAX
 	};
 
-	enum LayoutPreset : uint8_t {
+	enum LayoutPreset {
 		PRESET_TOP_LEFT,
 		PRESET_TOP_RIGHT,
 		PRESET_BOTTOM_LEFT,
@@ -120,35 +120,35 @@ public:
 		PRESET_WIDE
 	};
 
-	enum LayoutPresetMode : uint8_t {
+	enum LayoutPresetMode {
 		PRESET_MODE_MINSIZE,
 		PRESET_MODE_KEEP_WIDTH,
 		PRESET_MODE_KEEP_HEIGHT,
 		PRESET_MODE_KEEP_SIZE
 	};
 
-	enum LayoutMode : uint8_t {
+	enum LayoutMode {
 		LAYOUT_MODE_POSITION,
 		LAYOUT_MODE_ANCHORS,
 		LAYOUT_MODE_CONTAINER,
 		LAYOUT_MODE_UNCONTROLLED,
 	};
 
-	enum LayoutDirection : uint8_t {
+	enum LayoutDirection {
 		LAYOUT_DIRECTION_INHERITED,
 		LAYOUT_DIRECTION_LOCALE,
 		LAYOUT_DIRECTION_LTR,
 		LAYOUT_DIRECTION_RTL
 	};
 
-	enum TextDirection : uint8_t {
+	enum TextDirection {
 		TEXT_DIRECTION_AUTO = TextServer::DIRECTION_AUTO,
 		TEXT_DIRECTION_LTR = TextServer::DIRECTION_LTR,
 		TEXT_DIRECTION_RTL = TextServer::DIRECTION_RTL,
 		TEXT_DIRECTION_INHERITED,
 	};
 
-	enum StructuredTextParser : uint8_t {
+	enum StructuredTextParser {
 		STRUCTURED_TEXT_DEFAULT,
 		STRUCTURED_TEXT_URI,
 		STRUCTURED_TEXT_FILE,

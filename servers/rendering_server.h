@@ -439,10 +439,10 @@ public:
 	virtual void light_set_color(RID p_light, const Color &p_color) = 0;
 	virtual void light_set_param(RID p_light, LightParam p_param, float p_value) = 0;
 	virtual void light_set_shadow(RID p_light, bool p_enabled) = 0;
-	virtual void light_set_shadow_color(RID p_light, const Color &p_color) = 0;
 	virtual void light_set_projector(RID p_light, RID p_texture) = 0;
 	virtual void light_set_negative(RID p_light, bool p_enable) = 0;
 	virtual void light_set_cull_mask(RID p_light, uint32_t p_mask) = 0;
+	virtual void light_set_distance_fade(RID p_light, bool p_enabled, float p_begin, float p_shadow, float p_length) = 0;
 	virtual void light_set_reverse_cull_face_mode(RID p_light, bool p_enabled) = 0;
 
 	enum LightBakeMode {
@@ -469,9 +469,15 @@ public:
 		LIGHT_DIRECTIONAL_SHADOW_PARALLEL_4_SPLITS,
 	};
 
+	enum LightDirectionalSkyMode {
+		LIGHT_DIRECTIONAL_SKY_MODE_LIGHT_AND_SKY,
+		LIGHT_DIRECTIONAL_SKY_MODE_LIGHT_ONLY,
+		LIGHT_DIRECTIONAL_SKY_MODE_SKY_ONLY,
+	};
+
 	virtual void light_directional_set_shadow_mode(RID p_light, LightDirectionalShadowMode p_mode) = 0;
 	virtual void light_directional_set_blend_splits(RID p_light, bool p_enable) = 0;
-	virtual void light_directional_set_sky_only(RID p_light, bool p_sky_only) = 0;
+	virtual void light_directional_set_sky_mode(RID p_light, LightDirectionalSkyMode p_mode) = 0;
 
 	virtual void directional_shadow_atlas_set_size(int p_size, bool p_16_bits = true) = 0;
 
@@ -751,7 +757,7 @@ public:
 
 	/* VIEWPORT API */
 
-	enum CanvasItemTextureFilter : uint8_t {
+	enum CanvasItemTextureFilter {
 		CANVAS_ITEM_TEXTURE_FILTER_DEFAULT, // Uses canvas item setting for draw command, uses global setting for canvas item.
 		CANVAS_ITEM_TEXTURE_FILTER_NEAREST,
 		CANVAS_ITEM_TEXTURE_FILTER_LINEAR,
@@ -762,7 +768,7 @@ public:
 		CANVAS_ITEM_TEXTURE_FILTER_MAX
 	};
 
-	enum CanvasItemTextureRepeat : uint8_t {
+	enum CanvasItemTextureRepeat {
 		CANVAS_ITEM_TEXTURE_REPEAT_DEFAULT, // Uses canvas item setting for draw command, uses global setting for canvas item.
 		CANVAS_ITEM_TEXTURE_REPEAT_DISABLED,
 		CANVAS_ITEM_TEXTURE_REPEAT_ENABLED,
@@ -1009,10 +1015,10 @@ public:
 	virtual void environment_set_ssr(RID p_env, bool p_enable, int p_max_steps, float p_fade_in, float p_fade_out, float p_depth_tolerance) = 0;
 
 	enum EnvironmentSSRRoughnessQuality {
-		ENV_SSR_ROUGNESS_QUALITY_DISABLED,
-		ENV_SSR_ROUGNESS_QUALITY_LOW,
-		ENV_SSR_ROUGNESS_QUALITY_MEDIUM,
-		ENV_SSR_ROUGNESS_QUALITY_HIGH,
+		ENV_SSR_ROUGHNESS_QUALITY_DISABLED,
+		ENV_SSR_ROUGHNESS_QUALITY_LOW,
+		ENV_SSR_ROUGHNESS_QUALITY_MEDIUM,
+		ENV_SSR_ROUGHNESS_QUALITY_HIGH,
 	};
 
 	virtual void environment_set_ssr_roughness_quality(EnvironmentSSRRoughnessQuality p_quality) = 0;
@@ -1569,6 +1575,7 @@ VARIANT_ENUM_CAST(RenderingServer::LightParam);
 VARIANT_ENUM_CAST(RenderingServer::LightBakeMode);
 VARIANT_ENUM_CAST(RenderingServer::LightOmniShadowMode);
 VARIANT_ENUM_CAST(RenderingServer::LightDirectionalShadowMode);
+VARIANT_ENUM_CAST(RenderingServer::LightDirectionalSkyMode);
 VARIANT_ENUM_CAST(RenderingServer::LightProjectorFilter);
 VARIANT_ENUM_CAST(RenderingServer::ReflectionProbeUpdateMode);
 VARIANT_ENUM_CAST(RenderingServer::ReflectionProbeAmbientMode);

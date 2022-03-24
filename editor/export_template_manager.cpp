@@ -44,7 +44,7 @@
 
 void ExportTemplateManager::_update_template_status() {
 	// Fetch installed templates from the file system.
-	DirAccess *da = DirAccess::create(DirAccess::ACCESS_FILESYSTEM);
+	DirAccessRef da = DirAccess::create(DirAccess::ACCESS_FILESYSTEM);
 	const String &templates_dir = EditorSettings::get_singleton()->get_templates_dir();
 
 	Error err = da->change_dir(templates_dir);
@@ -62,7 +62,6 @@ void ExportTemplateManager::_update_template_status() {
 		}
 	}
 	da->list_dir_end();
-	memdelete(da);
 
 	// Update the state of the current version.
 	String current_version = VERSION_FULL_CONFIG;
@@ -148,8 +147,8 @@ void ExportTemplateManager::_download_template(const String &p_url, bool p_skip_
 	download_templates->set_download_file(EditorPaths::get_singleton()->get_cache_dir().plus_file("tmp_templates.tpz"));
 	download_templates->set_use_threads(true);
 
-	const String proxy_host = EDITOR_DEF("network/http_proxy/host", "");
-	const int proxy_port = EDITOR_DEF("network/http_proxy/port", -1);
+	const String proxy_host = EDITOR_GET("network/http_proxy/host");
+	const int proxy_port = EDITOR_GET("network/http_proxy/port");
 	download_templates->set_http_proxy(proxy_host, proxy_port);
 	download_templates->set_https_proxy(proxy_host, proxy_port);
 
@@ -645,7 +644,7 @@ Error ExportTemplateManager::install_android_template_from_file(const String &p_
 	// To support custom Android builds, we install the Java source code and buildsystem
 	// from android_source.zip to the project's res://android folder.
 
-	DirAccessRef da = DirAccess::open("res://");
+	DirAccessRef da = DirAccess::create(DirAccess::ACCESS_RESOURCES);
 	ERR_FAIL_COND_V(!da, ERR_CANT_CREATE);
 
 	// Make res://android dir (if it does not exist).

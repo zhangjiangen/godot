@@ -226,6 +226,9 @@
 			The project's name. It is used both by the Project Manager and by exporters. The project name can be translated by translating its value in localization files. The window title will be set to match the project name automatically on startup.
 			[b]Note:[/b] Changing this value will also change the user data folder's path if [member application/config/use_custom_user_dir] is [code]false[/code]. After renaming the project, you will no longer be able to access existing data in [code]user://[/code] unless you rename the old folder to match the new project name. See [url=$DOCS_URL/tutorials/io/data_paths.html]Data paths[/url] in the documentation for more information.
 		</member>
+		<member name="application/config/name_localized" type="Dictionary" setter="" getter="" default="{}">
+			Translations of the project's name. This setting is used by OS tools to translate application name on Android, iOS and macOS.
+		</member>
 		<member name="application/config/project_settings_override" type="String" setter="" getter="" default="&quot;&quot;">
 			Specifies a file to override project settings. For example: [code]user://custom_settings.cfg[/code]. See "Overriding" in the [ProjectSettings] class description at the top for more information.
 			[b]Note:[/b] Regardless of this setting's value, [code]res://override.cfg[/code] will still be read to override the project settings.
@@ -1493,7 +1496,7 @@
 		</member>
 		<member name="physics/3d/physics_engine" type="String" setter="" getter="" default="&quot;DEFAULT&quot;">
 			Sets which physics engine to use for 3D physics.
-			"DEFAULT" is currently the [url=https://bulletphysics.org]Bullet[/url] physics engine. The "GodotPhysics3D" engine is still supported as an alternative.
+			"DEFAULT" and "GodotPhysics3D" are the same, as there is currently no alternative 3D physics server implemented.
 		</member>
 		<member name="physics/3d/run_on_separate_thread" type="bool" setter="" getter="" default="false">
 			If [code]true[/code], the 3D physics server runs on a separate thread, making better use of multi-core CPUs. If [code]false[/code], the 3D physics server runs on the main thread. Running the physics server on a separate thread can increase performance, but restricts API access to only physics process.
@@ -1652,11 +1655,8 @@
 		<member name="rendering/environment/ssao/fadeout_to" type="float" setter="" getter="" default="300.0">
 			Distance at which the screen-space ambient occlusion is fully faded out. Use this hide ambient occlusion at great distances.
 		</member>
-		<member name="rendering/environment/ssao/half_size" type="bool" setter="" getter="" default="false">
-			If [code]true[/code], screen-space ambient occlusion will be rendered at half size and then upscaled before being added to the scene. This is significantly faster but may miss small details.
-		</member>
-		<member name="rendering/environment/ssao/half_size.mobile" type="bool" setter="" getter="" default="true">
-			Lower-end override for [member rendering/environment/ssao/half_size] on mobile devices, due to performance concerns.
+		<member name="rendering/environment/ssao/half_size" type="bool" setter="" getter="" default="true">
+			If [code]true[/code], screen-space ambient occlusion will be rendered at half size and then upscaled before being added to the scene. This is significantly faster but may miss small details. If [code]false[/code], screen-space ambient occlusion will be rendered at full size.
 		</member>
 		<member name="rendering/environment/ssao/quality" type="int" setter="" getter="" default="2">
 			Sets the quality of the screen-space ambient occlusion effect. Higher values take more samples and so will result in better quality, at the cost of performance. Setting to [code]ULTRA[/code] will use the [member rendering/environment/ssao/adaptive_target] setting.

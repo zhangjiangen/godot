@@ -63,6 +63,7 @@ bool EditorSettings::_set(const StringName &p_name, const Variant &p_value) {
 
 	bool changed = _set_only(p_name, p_value);
 	if (changed) {
+		changed_settings.insert(p_name);
 		emit_signal(SNAME("settings_changed"));
 	}
 	return true;
@@ -403,12 +404,12 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	const String display_scale_hint_string = vformat("Auto (%d%%),75%%,100%%,125%%,150%%,175%%,200%%,Custom", Math::round(get_auto_display_scale() * 100));
 	EDITOR_SETTING_USAGE(Variant::INT, PROPERTY_HINT_ENUM, "interface/editor/display_scale", 0, display_scale_hint_string, PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_RESTART_IF_CHANGED)
 
-	_initial_set("interface/editor/enable_debugging_pseudolocalization", false);
-	set_restart_if_changed("interface/editor/enable_debugging_pseudolocalization", true);
+	_initial_set("interface/editor/debug/enable_pseudolocalization", false);
+	set_restart_if_changed("interface/editor/debug/enable_pseudolocalization", true);
 	// Use pseudolocalization in editor.
 
 	EDITOR_SETTING_USAGE(Variant::FLOAT, PROPERTY_HINT_RANGE, "interface/editor/custom_display_scale", 1.0, "0.5,3,0.01", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_RESTART_IF_CHANGED)
-	EDITOR_SETTING_USAGE(Variant::INT, PROPERTY_HINT_RANGE, "interface/editor/main_font_size", 14, "8,48,1", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_RESTART_IF_CHANGED)
+	EDITOR_SETTING(Variant::INT, PROPERTY_HINT_RANGE, "interface/editor/main_font_size", 14, "8,48,1")
 	EDITOR_SETTING(Variant::INT, PROPERTY_HINT_RANGE, "interface/editor/code_font_size", 14, "8,48,1")
 	EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "interface/editor/code_font_contextual_ligatures", 0, "Default,Disable Contextual Alternates (Coding Ligatures),Use Custom OpenType Feature Set")
 	_initial_set("interface/editor/code_font_custom_opentype_features", "");
@@ -459,9 +460,9 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	EDITOR_SETTING_USAGE(Variant::STRING, PROPERTY_HINT_GLOBAL_FILE, "interface/theme/custom_theme", "", "*.res,*.tres,*.theme", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_RESTART_IF_CHANGED)
 
 	// Scene tabs
+	EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "interface/scene_tabs/display_close_button", 1, "Never,If Tab Active,Always"); // TabBar::CloseButtonDisplayPolicy
 	_initial_set("interface/scene_tabs/show_thumbnail_on_hover", true);
-	_initial_set("interface/scene_tabs/resize_if_many_tabs", true);
-	EDITOR_SETTING_USAGE(Variant::INT, PROPERTY_HINT_RANGE, "interface/scene_tabs/minimum_width", 50, "50,500,1", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_RESTART_IF_CHANGED)
+	EDITOR_SETTING_USAGE(Variant::INT, PROPERTY_HINT_RANGE, "interface/scene_tabs/maximum_width", 350, "0,9999,1", PROPERTY_USAGE_DEFAULT)
 	_initial_set("interface/scene_tabs/show_script_button", false);
 
 	/* Filesystem */
@@ -534,7 +535,7 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	// Appearance: Whitespace
 	_initial_set("text_editor/appearance/whitespace/draw_tabs", true);
 	_initial_set("text_editor/appearance/whitespace/draw_spaces", false);
-	EDITOR_SETTING(Variant::INT, PROPERTY_HINT_RANGE, "text_editor/appearance/whitespace/line_spacing", 6, "0,50,1")
+	EDITOR_SETTING(Variant::INT, PROPERTY_HINT_RANGE, "text_editor/appearance/whitespace/line_spacing", 4, "0,50,1")
 
 	// Behavior
 	// Behavior: Navigation
@@ -553,6 +554,7 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	_initial_set("text_editor/behavior/files/autosave_interval_secs", 0);
 	_initial_set("text_editor/behavior/files/restore_scripts_on_load", true);
 	_initial_set("text_editor/behavior/files/convert_indent_on_save", true);
+	_initial_set("text_editor/behavior/files/auto_reload_scripts_on_external_change", false);
 
 	// Script list
 	_initial_set("text_editor/script_list/show_members_overview", true);
@@ -585,6 +587,9 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 
 	// Use a similar color to the 2D editor selection.
 	EDITOR_SETTING_USAGE(Variant::COLOR, PROPERTY_HINT_NONE, "editors/3d/selection_box_color", Color(1.0, 0.5, 0), "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_RESTART_IF_CHANGED)
+	_initial_set("editors/3d_gizmos/gizmo_colors/instantiated", Color(0.7, 0.7, 0.7, 0.6));
+	_initial_set("editors/3d_gizmos/gizmo_colors/joint", Color(0.5, 0.8, 1));
+	_initial_set("editors/3d_gizmos/gizmo_colors/shape", Color(0.5, 0.7, 1));
 
 	// If a line is a multiple of this, it uses the primary grid color.
 	// Use a power of 2 value by default as it's more common to use powers of 2 in level design.
@@ -707,6 +712,13 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 
 	// SSL
 	EDITOR_SETTING(Variant::STRING, PROPERTY_HINT_GLOBAL_FILE, "network/ssl/editor_ssl_certificates", _SYSTEM_CERTS_PATH, "*.crt,*.pem")
+
+	// Profiler
+	_initial_set("debugger/profiler_frame_history_size", 600);
+
+	// HTTP Proxy
+	_initial_set("network/http_proxy/host", "");
+	EDITOR_SETTING(Variant::INT, PROPERTY_HINT_RANGE, "network/http_proxy/port", 8080, "1,65535,1")
 
 	/* Extra config */
 
@@ -879,7 +891,7 @@ fail:
 }
 
 void EditorSettings::setup_language() {
-	TranslationServer::get_singleton()->set_editor_pseudolocalization(get("interface/editor/enable_debugging_pseudolocalization"));
+	TranslationServer::get_singleton()->set_editor_pseudolocalization(get("interface/editor/debug/enable_pseudolocalization"));
 	String lang = get("interface/editor/editor_language");
 	if (lang == "en") {
 		return; // Default, nothing to do.
@@ -941,8 +953,32 @@ void EditorSettings::save() {
 	if (err != OK) {
 		ERR_PRINT("Error saving editor settings to " + singleton->config_file_path);
 	} else {
+		singleton->changed_settings.clear();
 		print_verbose("EditorSettings: Save OK!");
 	}
+}
+
+Array EditorSettings::get_changed_settings() const {
+	Array arr;
+	for (const String &setting : changed_settings) {
+		arr.push_back(setting);
+	}
+
+	return arr;
+}
+
+bool EditorSettings::check_changed_settings_in_group(const String &p_setting_prefix) const {
+	for (const String &setting : changed_settings) {
+		if (setting.begins_with(p_setting_prefix)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void EditorSettings::mark_setting_changed(const String &p_setting) {
+	changed_settings.insert(p_setting);
 }
 
 void EditorSettings::destroy() {
@@ -1191,7 +1227,7 @@ bool EditorSettings::is_dark_theme() {
 void EditorSettings::list_text_editor_themes() {
 	String themes = "Default,Godot 2,Custom";
 
-	DirAccess *d = DirAccess::open(get_text_editor_themes_dir());
+	DirAccessRef d = DirAccess::open(get_text_editor_themes_dir());
 	if (d) {
 		List<String> custom_themes;
 		d->list_dir_begin();
@@ -1203,7 +1239,6 @@ void EditorSettings::list_text_editor_themes() {
 			file = d->get_next();
 		}
 		d->list_dir_end();
-		memdelete(d);
 
 		custom_themes.sort();
 		for (const String &E : custom_themes) {
@@ -1258,10 +1293,9 @@ bool EditorSettings::import_text_editor_theme(String p_file) {
 			return false;
 		}
 
-		DirAccess *d = DirAccess::open(get_text_editor_themes_dir());
+		DirAccessRef d = DirAccess::open(get_text_editor_themes_dir());
 		if (d) {
 			d->copy(p_file, get_text_editor_themes_dir().plus_file(p_file.get_file()));
-			memdelete(d);
 			return true;
 		}
 	}
@@ -1311,7 +1345,7 @@ Vector<String> EditorSettings::get_script_templates(const String &p_extension, c
 	if (!p_custom_path.is_empty()) {
 		template_dir = p_custom_path;
 	}
-	DirAccess *d = DirAccess::open(template_dir);
+	DirAccessRef d = DirAccess::open(template_dir);
 	if (d) {
 		d->list_dir_begin();
 		String file = d->get_next();
@@ -1322,7 +1356,6 @@ Vector<String> EditorSettings::get_script_templates(const String &p_extension, c
 			file = d->get_next();
 		}
 		d->list_dir_end();
-		memdelete(d);
 	}
 	return templates;
 }
@@ -1621,6 +1654,10 @@ void EditorSettings::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("set_builtin_action_override", "name", "actions_list"), &EditorSettings::set_builtin_action_override);
 
+	ClassDB::bind_method(D_METHOD("check_changed_settings_in_group", "setting_prefix"), &EditorSettings::check_changed_settings_in_group);
+	ClassDB::bind_method(D_METHOD("get_changed_settings"), &EditorSettings::get_changed_settings);
+	ClassDB::bind_method(D_METHOD("mark_setting_changed", "setting"), &EditorSettings::mark_setting_changed);
+
 	ADD_SIGNAL(MethodInfo("settings_changed"));
 
 	BIND_CONSTANT(NOTIFICATION_EDITOR_SETTINGS_CHANGED);
@@ -1630,8 +1667,6 @@ EditorSettings::EditorSettings() {
 	hints.set_debug_info(__FILE__, __LINE__);
 	props.set_debug_info(__FILE__, __LINE__);
 	last_order = 0;
-	optimize_save = true;
-	save_changed_setting = true;
 
 	_load_defaults();
 }

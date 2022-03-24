@@ -3,7 +3,8 @@ on: [push, pull_request]
 
 # Global Settings
 env:
-  GODOT_BASE_BRANCH: master
+  # Only used for the cache key. Increment version to force clean build.
+  GODOT_BASE_BRANCH: master-v2
   SCONSFLAGS: verbose=yes warnings=extra werror=yes module_text_server_fb_enabled=yes
 
 concurrency:
@@ -25,8 +26,7 @@ jobs:
             tests: false # Disabled due freeze caused by mix Mono build and CI
             sconsflags: module_mono_enabled=yes mono_static=yes mono_glue=no
             doc-test: true
-
-            bin: "./bin/godot_linuxbsd_opt_tools_64_mono"
+            bin: "./bin/godot.linuxbsd.opt.tools.64.mono"
             build-mono: true
             artifact: true
 
@@ -37,8 +37,10 @@ jobs:
             tests: true
             sconsflags: float=64 use_asan=yes use_ubsan=yes
             proj-test: true
+            # Can be turned off for PRs that intentionally break compat with godot-cpp,
+            # until both the upstream PR and the matching godot-cpp changes are merged.
             godot-cpp-test: true
-            bin: "./bin/godot_linuxbsd_double_tools_64_san"
+            bin: "./bin/godot.linuxbsd.double.tools.64.san"
             build-mono: false
             # Skip 2GiB artifact speeding up action.
             artifact: false
@@ -145,7 +147,7 @@ jobs:
       - name: Open and close editor
         if: ${{ matrix.proj-test }}
         run: |
-          VK_ICD_FILENAMES=$(pwd)/vk_swiftshader_icd.json DRI_PRIME=0 xvfb-run ${{ matrix.bin }} --audio-driver Dummy -e -q --path test_project 2>&1 | tee sanitizers_log.txt || true
+          VK_ICD_FILENAMES=$(pwd)/vk_swiftshader_icd.json DRI_PRIME=0 xvfb-run ${{ matrix.bin }} --audio-driver Dummy --editor --quit --path test_project 2>&1 | tee sanitizers_log.txt || true
           misc/scripts/check_ci_log.py sanitizers_log.txt
 
       # Run test project
@@ -198,7 +200,7 @@ jobs:
       - name: Prepare artifact
         if: ${{ matrix.artifact }}
         run: |
-          strip bin/godot.*
+          strip bin/godot_*
 
       - name: Upload artifact
         uses: ./.github/actions/upload-artifact

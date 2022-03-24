@@ -44,8 +44,8 @@
 static inline void setup_http_request(HTTPRequest *request) {
 	request->set_use_threads(EDITOR_DEF("asset_library/use_threads", true));
 
-	const String proxy_host = EDITOR_DEF("network/http_proxy/host", "");
-	const int proxy_port = EDITOR_DEF("network/http_proxy/port", -1);
+	const String proxy_host = EDITOR_GET("network/http_proxy/host");
+	const int proxy_port = EDITOR_GET("network/http_proxy/port");
 	request->set_http_proxy(proxy_host, proxy_port);
 	request->set_https_proxy(proxy_host, proxy_port);
 }
@@ -577,6 +577,7 @@ EditorAssetLibraryItemDownload::EditorAssetLibraryItemDownload() {
 void EditorAssetLibrary::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_READY: {
+			add_theme_style_override("panel", get_theme_stylebox(SNAME("bg"), SNAME("AssetLib")));
 			error_label->raise();
 		} break;
 
@@ -1145,7 +1146,7 @@ void EditorAssetLibrary::_http_request_completed(int p_status, int p_code, const
 					String name = cat["name"];
 					int id = cat["id"];
 					categories->add_item(name);
-					categories->set_item_metadata(categories->get_item_count() - 1, id);
+					categories->set_item_metadata(-1, id);
 					category_map[cat["id"]] = name;
 				}
 			}
@@ -1377,7 +1378,6 @@ EditorAssetLibrary::EditorAssetLibrary(bool p_templates_only) {
 	initial_loading = true;
 
 	VBoxContainer *library_main = memnew(VBoxContainer);
-
 	add_child(library_main);
 
 	HBoxContainer *search_hb = memnew(HBoxContainer);

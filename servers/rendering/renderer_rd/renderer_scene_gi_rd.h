@@ -45,6 +45,7 @@
 #include "servers/rendering/renderer_rd/shaders/sdfgi_preprocess.glsl.gen.h"
 #include "servers/rendering/renderer_rd/shaders/voxel_gi.glsl.gen.h"
 #include "servers/rendering/renderer_rd/shaders/voxel_gi_debug.glsl.gen.h"
+#include "servers/rendering/renderer_rd/storage_rd/texture_storage.h"
 #include "servers/rendering/renderer_scene_render.h"
 #include "servers/rendering/rendering_device.h"
 
@@ -250,8 +251,6 @@ private:
 			float cos_spot_angle;
 			float inv_spot_attenuation;
 			float radius;
-
-			float shadow_color[4];
 		};
 
 		struct DirectLightPushConstant {

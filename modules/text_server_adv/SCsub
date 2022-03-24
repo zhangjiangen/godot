@@ -49,6 +49,7 @@ if env["builtin_harfbuzz"]:
         "src/hb-aat-map.cc",
         "src/hb-blob.cc",
         "src/hb-buffer-serialize.cc",
+        "src/hb-buffer-verify.cc",
         "src/hb-buffer.cc",
         "src/hb-common.cc",
         #'src/hb-coretext.cc',
@@ -102,6 +103,7 @@ if env["builtin_harfbuzz"]:
         "src/hb-subset-cff2.cc",
         "src/hb-subset-input.cc",
         "src/hb-subset-plan.cc",
+        "src/hb-subset-repacker.cc",
         "src/hb-subset.cc",
         "src/hb-ucd.cc",
         "src/hb-unicode.cc",
@@ -454,6 +456,7 @@ if env["builtin_icu"]:
     if env_icu["tools"]:
         env_icu.Depends("#thirdparty/icu4c/icudata.gen.h", "#thirdparty/icu4c/" + icu_data_name)
         env_icu.Command("#thirdparty/icu4c/icudata.gen.h", "#thirdparty/icu4c/" + icu_data_name, make_icu_data)
+        env_text_server_adv.Append(CPPPATH=["#thirdparty/icu4c/"])
     else:
         thirdparty_sources += ["icu_data/icudata_stub.cpp"]
 

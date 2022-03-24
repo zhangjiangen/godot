@@ -816,7 +816,7 @@ void VisualScriptEditor::_update_graph(int p_only_id) {
 			vbc->add_child(hbc2);
 			if (left_ok) {
 				Ref<Texture2D> t;
-				if (left_type >= 0 && left_type < Variant::VARIANT_MAX) {
+				if (left_type < Variant::VARIANT_MAX) {
 					t = type_icons[left_type];
 				}
 				if (t.is_valid()) {
@@ -938,7 +938,7 @@ void VisualScriptEditor::_update_graph(int p_only_id) {
 				}
 
 				Ref<Texture2D> t;
-				if (right_type >= 0 && right_type < Variant::VARIANT_MAX) {
+				if (right_type < Variant::VARIANT_MAX) {
 					t = type_icons[right_type];
 				}
 				if (t.is_valid()) {
@@ -1102,6 +1102,7 @@ void VisualScriptEditor::_update_members() {
 
 	List<StringName> var_names;
 	script->get_variable_list(&var_names);
+	var_names.sort_custom<StringName::AlphCompare>();
 	for (const StringName &E : var_names) {
 		TreeItem *ti = members->create_item(variables);
 
@@ -1620,7 +1621,7 @@ void VisualScriptEditor::_remove_output_port(int p_id, int p_port) {
 	conn_map.get_key_list(&keys);
 	for (const int &E : keys) {
 		for (const Set<int>::Element *F = conn_map[E].front(); F; F = F->next()) {
-			undo_redo->add_undo_method(script.ptr(), "data_connect", p_id, p_port, E, F);
+			undo_redo->add_undo_method(script.ptr(), "data_connect", p_id, p_port, E, F->get());
 		}
 	}
 
@@ -4724,8 +4725,6 @@ VisualScriptEditor::VisualScriptEditor() {
 	add_child(select_base_type);
 
 	undo_redo = EditorNode::get_singleton()->get_undo_redo();
-
-	updating_members = false;
 
 	set_process_input(true);
 

@@ -59,35 +59,16 @@ bool CanvasItem::is_visible_in_tree() const {
 	return visible && parent_visible_in_tree;
 }
 
-void CanvasItem::_propagate_visibility_changed(bool p_visible, bool p_is_source) {
-	if (p_visible && first_draw) { // Avoid propagating it twice.
+void CanvasItem::_propagate_visibility_changed(bool p_parent_visible_in_tree) {
+	parent_visible_in_tree = p_parent_visible_in_tree;
+	if (!visible) {
+		return;
+	}
+	if (p_parent_visible_in_tree && first_draw) { // Avoid propagating it twice.
 		first_draw = false;
 	}
-	if (!p_is_source) {
-		parent_visible_in_tree = p_visible;
-	}
-	notification(NOTIFICATION_VISIBILITY_CHANGED);
 
-	if (visible && p_visible) {
-		update();
-	} else if (!p_visible && (visible || p_is_source)) {
-		emit_signal(SceneStringNames::get_singleton()->hidden);
-	}
-	_block();
-
-	for (int i = 0; i < get_child_count(); i++) {
-		CanvasItem *c = Object::cast_to<CanvasItem>(get_child(i));
-
-		if (c) { // Should the top_levels stop propagation? I think so, but...
-			if (c->visible) {
-				c->_propagate_visibility_changed(p_visible);
-			} else {
-				c->parent_visible_in_tree = p_visible;
-			}
-		}
-	}
-
-	_unblock();
+	_handle_visibility_change(p_parent_visible_in_tree);
 }
 
 void CanvasItem::set_visible(bool p_visible) {
@@ -96,14 +77,34 @@ void CanvasItem::set_visible(bool p_visible) {
 	}
 
 	visible = p_visible;
-	RenderingServer::get_singleton()->canvas_item_set_visible(canvas_item, p_visible);
 
 	if (!parent_visible_in_tree) {
 		notification(NOTIFICATION_VISIBILITY_CHANGED);
 		return;
 	}
 
-	_propagate_visibility_changed(p_visible, true);
+	_handle_visibility_change(p_visible);
+}
+
+void CanvasItem::_handle_visibility_change(bool p_visible) {
+	RenderingServer::get_singleton()->canvas_item_set_visible(canvas_item, p_visible);
+	notification(NOTIFICATION_VISIBILITY_CHANGED);
+
+	if (p_visible) {
+		update();
+	} else {
+		emit_signal(SceneStringNames::get_singleton()->hidden);
+	}
+
+	_block();
+	for (int i = 0; i < get_child_count(); i++) {
+		CanvasItem *c = Object::cast_to<CanvasItem>(get_child(i));
+
+		if (c) { // Should the top_levels stop propagation? I think so, but...
+			c->_propagate_visibility_changed(p_visible);
+		}
+	}
+	_unblock();
 }
 
 void CanvasItem::show() {
@@ -441,6 +442,25 @@ void CanvasItem::item_rect_changed(bool p_size_changed) {
 		update();
 	}
 	emit_signal(SceneStringNames::get_singleton()->item_rect_changed);
+}
+
+void CanvasItem::draw_dashed_line(const Point2 &p_from, const Point2 &p_to, const Color &p_color, real_t p_width, real_t p_dash) {
+	ERR_FAIL_COND_MSG(!drawing, "Drawing is only allowed inside NOTIFICATION_DRAW, _draw() function or 'draw' signal.");
+
+	float length = (p_to - p_from).length();
+	if (length < p_dash) {
+		RenderingServer::get_singleton()->canvas_item_add_line(canvas_item, p_from, p_to, p_color, p_width);
+		return;
+	}
+
+	Point2 off = p_from;
+	Vector2 step = p_dash * (p_to - p_from).normalized();
+	int steps = length / p_dash / 2;
+	for (int i = 0; i < steps; i++) {
+		RenderingServer::get_singleton()->canvas_item_add_line(canvas_item, off, (off + step), p_color, p_width);
+		off += 2 * step;
+	}
+	RenderingServer::get_singleton()->canvas_item_add_line(canvas_item, off, p_to, p_color, p_width);
 }
 
 void CanvasItem::draw_line(const Point2 &p_from, const Point2 &p_to, const Color &p_color, real_t p_width) {
@@ -865,9 +885,9 @@ void CanvasItem::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("_set_on_top", "on_top"), &CanvasItem::_set_on_top);
 	ClassDB::bind_method(D_METHOD("_is_on_top"), &CanvasItem::_is_on_top);
-	//ClassDB::bind_method(D_METHOD("get_transform"),&CanvasItem::get_transform);
 
 	ClassDB::bind_method(D_METHOD("draw_line", "from", "to", "color", "width"), &CanvasItem::draw_line, DEFVAL(1.0));
+	ClassDB::bind_method(D_METHOD("draw_dashed_line", "from", "to", "color", "width", "dash"), &CanvasItem::draw_dashed_line, DEFVAL(1.0), DEFVAL(2.0));
 	ClassDB::bind_method(D_METHOD("draw_polyline", "points", "color", "width", "antialiased"), &CanvasItem::draw_polyline, DEFVAL(1.0), DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("draw_polyline_colors", "points", "colors", "width", "antialiased"), &CanvasItem::draw_polyline_colors, DEFVAL(1.0), DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("draw_arc", "center", "radius", "start_angle", "end_angle", "point_count", "color", "width", "antialiased"), &CanvasItem::draw_arc, DEFVAL(1.0), DEFVAL(false));
@@ -898,6 +918,7 @@ void CanvasItem::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_viewport_transform"), &CanvasItem::get_viewport_transform);
 	ClassDB::bind_method(D_METHOD("get_viewport_rect"), &CanvasItem::get_viewport_rect);
 	ClassDB::bind_method(D_METHOD("get_canvas_transform"), &CanvasItem::get_canvas_transform);
+	ClassDB::bind_method(D_METHOD("get_screen_transform"), &CanvasItem::get_screen_transform);
 	ClassDB::bind_method(D_METHOD("get_local_mouse_position"), &CanvasItem::get_local_mouse_position);
 	ClassDB::bind_method(D_METHOD("get_global_mouse_position"), &CanvasItem::get_global_mouse_position);
 	ClassDB::bind_method(D_METHOD("get_canvas"), &CanvasItem::get_canvas);
@@ -957,6 +978,7 @@ void CanvasItem::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("item_rect_changed"));
 
 	BIND_CONSTANT(NOTIFICATION_TRANSFORM_CHANGED);
+	BIND_CONSTANT(NOTIFICATION_LOCAL_TRANSFORM_CHANGED);
 	BIND_CONSTANT(NOTIFICATION_DRAW);
 	BIND_CONSTANT(NOTIFICATION_VISIBILITY_CHANGED);
 	BIND_CONSTANT(NOTIFICATION_ENTER_CANVAS);
@@ -994,12 +1016,7 @@ Transform2D CanvasItem::get_viewport_transform() const {
 	ERR_FAIL_COND_V(!is_inside_tree(), Transform2D());
 
 	if (canvas_layer) {
-		if (get_viewport()) {
-			return get_viewport()->get_final_transform() * canvas_layer->get_transform();
-		} else {
-			return canvas_layer->get_transform();
-		}
-
+		return get_viewport()->get_final_transform() * canvas_layer->get_transform();
 	} else {
 		return get_viewport()->get_final_transform() * get_viewport()->get_canvas_transform();
 	}
@@ -1065,17 +1082,17 @@ void CanvasItem::_update_texture_filter_changed(bool p_propagate) {
 	}
 }
 
-void CanvasItem::set_texture_filter(TextureFilter p_texture_filter) {
+void CanvasItem::set_texture_filter(int32_t p_texture_filter) {
 	ERR_FAIL_INDEX(p_texture_filter, TEXTURE_FILTER_MAX);
 	if (texture_filter == p_texture_filter) {
 		return;
 	}
-	texture_filter = p_texture_filter;
+	texture_filter = (TextureFilter)p_texture_filter;
 	_update_texture_filter_changed(true);
 	notify_property_list_changed();
 }
 
-CanvasItem::TextureFilter CanvasItem::get_texture_filter() const {
+int32_t CanvasItem::get_texture_filter() const {
 	return texture_filter;
 }
 
@@ -1105,12 +1122,12 @@ void CanvasItem::_update_texture_repeat_changed(bool p_propagate) {
 	}
 }
 
-void CanvasItem::set_texture_repeat(TextureRepeat p_texture_repeat) {
+void CanvasItem::set_texture_repeat(int32_t p_texture_repeat) {
 	ERR_FAIL_INDEX(p_texture_repeat, TEXTURE_REPEAT_MAX);
 	if (texture_repeat == p_texture_repeat) {
 		return;
 	}
-	texture_repeat = p_texture_repeat;
+	texture_repeat = (TextureRepeat)p_texture_repeat;
 	_update_texture_repeat_changed(true);
 	notify_property_list_changed();
 }
@@ -1131,7 +1148,7 @@ bool CanvasItem::is_clipping_children() const {
 	return clip_children;
 }
 
-CanvasItem::TextureRepeat CanvasItem::get_texture_repeat() const {
+int32_t CanvasItem::get_texture_repeat() const {
 	return texture_repeat;
 }
 
@@ -1209,19 +1226,19 @@ real_t CanvasTexture::get_specular_shininess() const {
 	return shininess;
 }
 
-void CanvasTexture::set_texture_filter(CanvasItem::TextureFilter p_filter) {
-	texture_filter = p_filter;
+void CanvasTexture::set_texture_filter(int32_t p_filter) {
+	texture_filter = (CanvasItem::TextureFilter)p_filter;
 	RS::get_singleton()->canvas_texture_set_texture_filter(canvas_texture, RS::CanvasItemTextureFilter(p_filter));
 }
-CanvasItem::TextureFilter CanvasTexture::get_texture_filter() const {
+int32_t CanvasTexture::get_texture_filter() const {
 	return texture_filter;
 }
 
-void CanvasTexture::set_texture_repeat(CanvasItem::TextureRepeat p_repeat) {
-	texture_repeat = p_repeat;
+void CanvasTexture::set_texture_repeat(int32_t p_repeat) {
+	texture_repeat = (CanvasItem::TextureRepeat)p_repeat;
 	RS::get_singleton()->canvas_texture_set_texture_repeat(canvas_texture, RS::CanvasItemTextureRepeat(p_repeat));
 }
-CanvasItem::TextureRepeat CanvasTexture::get_texture_repeat() const {
+int32_t CanvasTexture::get_texture_repeat() const {
 	return texture_repeat;
 }
 

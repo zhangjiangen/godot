@@ -1,0 +1,3 @@
+Target dependency graph (2 targets)
+Godot_Build in Godot
+Godot_Index in Godot

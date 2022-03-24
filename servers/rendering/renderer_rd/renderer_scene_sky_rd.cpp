@@ -33,6 +33,7 @@
 #include "core/math/math_defs.h"
 #include "renderer_scene_render_rd.h"
 #include "servers/rendering/renderer_rd/renderer_compositor_rd.h"
+#include "servers/rendering/renderer_rd/storage_rd/texture_storage.h"
 #include "servers/rendering/rendering_server_default.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -362,8 +363,8 @@ void RendererSceneSkyRD::ReflectionData::update_reflection_data(RendererStorageR
 
 				layer.views.write[j] = RD::get_singleton()->texture_create_shared_from_slice(RD::TextureView(), p_base_cube, p_base_layer + i * 6, j, 1, RD::TEXTURE_SLICE_CUBEMAP);
 
-				mmw = MAX(1, mmw >> 1);
-				mmh = MAX(1, mmh >> 1);
+				mmw = MAX(1u, mmw >> 1);
+				mmh = MAX(1u, mmh >> 1);
 			}
 
 			layers.push_back(layer);
@@ -390,8 +391,8 @@ void RendererSceneSkyRD::ReflectionData::update_reflection_data(RendererStorageR
 
 			layer.views.write[j] = RD::get_singleton()->texture_create_shared_from_slice(RD::TextureView(), p_base_cube, p_base_layer, j, 1, RD::TEXTURE_SLICE_CUBEMAP);
 
-			mmw = MAX(1, mmw >> 1);
-			mmh = MAX(1, mmh >> 1);
+			mmw = MAX(1u, mmw >> 1);
+			mmh = MAX(1u, mmh >> 1);
 		}
 
 		layers.push_back(layer);
@@ -432,8 +433,8 @@ void RendererSceneSkyRD::ReflectionData::update_reflection_data(RendererStorageR
 				}
 			}
 
-			mmw = MAX(1, mmw >> 1);
-			mmh = MAX(1, mmh >> 1);
+			mmw = MAX(1u, mmw >> 1);
+			mmh = MAX(1u, mmh >> 1);
 		}
 	}
 }
@@ -621,6 +622,8 @@ void RendererSceneSkyRD::Sky::free(RendererStorageRD *p_storage) {
 }
 
 RID RendererSceneSkyRD::Sky::get_textures(RendererStorageRD *p_storage, SkyTextureSetVersion p_version, RID p_default_shader_rd) {
+	RendererRD::TextureStorage *texture_storage = RendererRD::TextureStorage::get_singleton();
+
 	if (texture_uniform_sets[p_version].is_valid() && RD::get_singleton()->uniform_set_is_valid(texture_uniform_sets[p_version])) {
 		return texture_uniform_sets[p_version];
 	}
@@ -630,9 +633,9 @@ RID RendererSceneSkyRD::Sky::get_textures(RendererStorageRD *p_storage, SkyTextu
 		u.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
 		u.binding = 0;
 		if (radiance.is_valid() && p_version <= SKY_TEXTURE_SET_QUARTER_RES) {
-			u.ids.push_back(radiance);
+			u.append_id(radiance);
 		} else {
-			u.ids.push_back(p_storage->texture_rd_get_default(RendererStorageRD::DEFAULT_RD_TEXTURE_CUBEMAP_BLACK));
+			u.append_id(texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_CUBEMAP_BLACK));
 		}
 		uniforms.push_back(u);
 	}
@@ -642,15 +645,15 @@ RID RendererSceneSkyRD::Sky::get_textures(RendererStorageRD *p_storage, SkyTextu
 		u.binding = 1; // half res
 		if (half_res_pass.is_valid() && p_version != SKY_TEXTURE_SET_HALF_RES && p_version != SKY_TEXTURE_SET_CUBEMAP_HALF_RES) {
 			if (p_version >= SKY_TEXTURE_SET_CUBEMAP) {
-				u.ids.push_back(reflection.layers[0].views[1]);
+				u.append_id(reflection.layers[0].views[1]);
 			} else {
-				u.ids.push_back(half_res_pass);
+				u.append_id(half_res_pass);
 			}
 		} else {
 			if (p_version < SKY_TEXTURE_SET_CUBEMAP) {
-				u.ids.push_back(p_storage->texture_rd_get_default(RendererStorageRD::DEFAULT_RD_TEXTURE_WHITE));
+				u.append_id(texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_WHITE));
 			} else {
-				u.ids.push_back(p_storage->texture_rd_get_default(RendererStorageRD::DEFAULT_RD_TEXTURE_CUBEMAP_BLACK));
+				u.append_id(texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_CUBEMAP_BLACK));
 			}
 		}
 		uniforms.push_back(u);
@@ -661,15 +664,15 @@ RID RendererSceneSkyRD::Sky::get_textures(RendererStorageRD *p_storage, SkyTextu
 		u.binding = 2; // quarter res
 		if (quarter_res_pass.is_valid() && p_version != SKY_TEXTURE_SET_QUARTER_RES && p_version != SKY_TEXTURE_SET_CUBEMAP_QUARTER_RES) {
 			if (p_version >= SKY_TEXTURE_SET_CUBEMAP) {
-				u.ids.push_back(reflection.layers[0].views[2]);
+				u.append_id(reflection.layers[0].views[2]);
 			} else {
-				u.ids.push_back(quarter_res_pass);
+				u.append_id(quarter_res_pass);
 			}
 		} else {
 			if (p_version < SKY_TEXTURE_SET_CUBEMAP) {
-				u.ids.push_back(p_storage->texture_rd_get_default(RendererStorageRD::DEFAULT_RD_TEXTURE_WHITE));
+				u.append_id(texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_WHITE));
 			} else {
-				u.ids.push_back(p_storage->texture_rd_get_default(RendererStorageRD::DEFAULT_RD_TEXTURE_CUBEMAP_BLACK));
+				u.append_id(texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_CUBEMAP_BLACK));
 			}
 		}
 		uniforms.push_back(u);
@@ -793,6 +796,7 @@ RendererSceneSkyRD::RendererSceneSkyRD() {
 }
 
 void RendererSceneSkyRD::init(RendererStorageRD *p_storage) {
+	RendererRD::TextureStorage *texture_storage = RendererRD::TextureStorage::get_singleton();
 	storage = p_storage;
 
 	{
@@ -918,11 +922,9 @@ void sky() {
 		Vector<RD::Uniform> uniforms;
 
 		{
-			RD::Uniform u;
-			u.uniform_type = RD::UNIFORM_TYPE_SAMPLER;
-			u.binding = 0;
-			u.ids.resize(12);
-			RID *ids_ptr = u.ids.ptr();
+			Vector<RID> ids;
+			ids.resize(12);
+			RID *ids_ptr = ids.ptrw();
 			ids_ptr[0] = storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_NEAREST, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED);
 			ids_ptr[1] = storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED);
 			ids_ptr[2] = storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_NEAREST_WITH_MIPMAPS, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED);
@@ -935,6 +937,9 @@ void sky() {
 			ids_ptr[9] = storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS, RS::CANVAS_ITEM_TEXTURE_REPEAT_ENABLED);
 			ids_ptr[10] = storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_NEAREST_WITH_MIPMAPS_ANISOTROPIC, RS::CANVAS_ITEM_TEXTURE_REPEAT_ENABLED);
 			ids_ptr[11] = storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC, RS::CANVAS_ITEM_TEXTURE_REPEAT_ENABLED);
+
+			RD::Uniform u(RD::UNIFORM_TYPE_SAMPLER, 0, ids);
+
 			uniforms.push_back(u);
 		}
 
@@ -942,7 +947,7 @@ void sky() {
 			RD::Uniform u;
 			u.uniform_type = RD::UNIFORM_TYPE_STORAGE_BUFFER;
 			u.binding = 1;
-			u.ids.push_back(storage->global_variables_get_storage_buffer());
+			u.append_id(storage->global_variables_get_storage_buffer());
 			uniforms.push_back(u);
 		}
 
@@ -950,7 +955,7 @@ void sky() {
 			RD::Uniform u;
 			u.binding = 2;
 			u.uniform_type = RD::UNIFORM_TYPE_UNIFORM_BUFFER;
-			u.ids.push_back(sky_scene_state.uniform_buffer);
+			u.append_id(sky_scene_state.uniform_buffer);
 			uniforms.push_back(u);
 		}
 
@@ -958,7 +963,7 @@ void sky() {
 			RD::Uniform u;
 			u.binding = 3;
 			u.uniform_type = RD::UNIFORM_TYPE_UNIFORM_BUFFER;
-			u.ids.push_back(sky_scene_state.directional_light_buffer);
+			u.append_id(sky_scene_state.directional_light_buffer);
 			uniforms.push_back(u);
 		}
 
@@ -971,8 +976,8 @@ void sky() {
 			RD::Uniform u;
 			u.binding = 0;
 			u.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
-			RID vfog = storage->texture_rd_get_default(RendererStorageRD::DEFAULT_RD_TEXTURE_3D_WHITE);
-			u.ids.push_back(vfog);
+			RID vfog = texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_3D_WHITE);
+			u.append_id(vfog);
 			uniforms.push_back(u);
 		}
 
@@ -1005,21 +1010,21 @@ void sky() {
 			RD::Uniform u;
 			u.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
 			u.binding = 0;
-			u.ids.push_back(storage->texture_rd_get_default(RendererStorageRD::DEFAULT_RD_TEXTURE_CUBEMAP_BLACK));
+			u.append_id(texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_CUBEMAP_BLACK));
 			uniforms.push_back(u);
 		}
 		{
 			RD::Uniform u;
 			u.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
 			u.binding = 1;
-			u.ids.push_back(storage->texture_rd_get_default(RendererStorageRD::DEFAULT_RD_TEXTURE_WHITE));
+			u.append_id(texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_WHITE));
 			uniforms.push_back(u);
 		}
 		{
 			RD::Uniform u;
 			u.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
 			u.binding = 2;
-			u.ids.push_back(storage->texture_rd_get_default(RendererStorageRD::DEFAULT_RD_TEXTURE_WHITE));
+			u.append_id(texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_WHITE));
 			uniforms.push_back(u);
 		}
 
@@ -1162,14 +1167,14 @@ void RendererSceneSkyRD::setup(RendererSceneEnvironmentRD *p_env, RID p_render_b
 				ERR_CONTINUE(base.is_null());
 
 				RS::LightType type = storage->light_get_type(base);
-				if (type == RS::LIGHT_DIRECTIONAL) {
+				if (type == RS::LIGHT_DIRECTIONAL && storage->light_directional_get_sky_mode(base) != RS::LIGHT_DIRECTIONAL_SKY_MODE_LIGHT_ONLY) {
 					SkyDirectionalLightData &sky_light_data = sky_scene_state.directional_lights[sky_scene_state.ubo.directional_light_count];
 					Transform3D light_transform = li->transform;
 					Vector3 world_direction = light_transform.basis.xform(Vector3(0, 0, 1)).normalized();
 
 					sky_light_data.direction[0] = world_direction.x;
 					sky_light_data.direction[1] = world_direction.y;
-					sky_light_data.direction[2] = -world_direction.z;
+					sky_light_data.direction[2] = world_direction.z;
 
 					float sign = storage->light_is_negative(base) ? -1 : 1;
 					sky_light_data.energy = sign * storage->light_get_param(base, RS::LIGHT_PARAM_ENERGY);

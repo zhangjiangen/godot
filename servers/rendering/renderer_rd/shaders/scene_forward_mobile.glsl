@@ -122,13 +122,13 @@ void main() {
 
 	bool is_multimesh = bool(draw_call.flags & INSTANCE_FLAGS_MULTIMESH);
 
-	mat4 world_matrix = draw_call.transform;
+	mat4 model_matrix = draw_call.transform;
 
-	mat3 world_normal_matrix;
+	mat3 model_normal_matrix;
 	if (bool(draw_call.flags & INSTANCE_FLAGS_NON_UNIFORM_SCALE)) {
-		world_normal_matrix = transpose(inverse(mat3(world_matrix)));
+		model_normal_matrix = transpose(inverse(mat3(model_matrix)));
 	} else {
-		world_normal_matrix = mat3(world_matrix);
+		model_normal_matrix = mat3(model_matrix);
 	}
 
 	if (is_multimesh) {
@@ -221,8 +221,8 @@ void main() {
 #endif
 		//transpose
 		matrix = transpose(matrix);
-		world_matrix = world_matrix * matrix;
-		world_normal_matrix = world_normal_matrix * mat3(matrix);
+		model_matrix = model_matrix * matrix;
+		model_normal_matrix = model_normal_matrix * mat3(matrix);
 	}
 
 	vec3 vertex = vertex_attrib;
@@ -259,24 +259,24 @@ void main() {
 //using world coordinates
 #if !defined(SKIP_TRANSFORM_USED) && defined(VERTEX_WORLD_COORDS_USED)
 
-	vertex = (world_matrix * vec4(vertex, 1.0)).xyz;
+	vertex = (model_matrix * vec4(vertex, 1.0)).xyz;
 
 #ifdef NORMAL_USED
-	normal = world_normal_matrix * normal;
+	normal = model_normal_matrix * normal;
 #endif
 
 #if defined(TANGENT_USED) || defined(NORMAL_MAP_USED) || defined(LIGHT_ANISOTROPY_USED)
 
-	tangent = world_normal_matrix * tangent;
-	binormal = world_normal_matrix * binormal;
+	tangent = model_normal_matrix * tangent;
+	binormal = model_normal_matrix * binormal;
 
 #endif
 #endif
 
 	float roughness = 1.0;
 
-	mat4 modelview = scene_data.inv_camera_matrix * world_matrix;
-	mat3 modelview_normal = mat3(scene_data.inv_camera_matrix) * world_normal_matrix;
+	mat4 modelview = scene_data.view_matrix * model_matrix;
+	mat3 modelview_normal = mat3(scene_data.view_matrix) * model_normal_matrix;
 
 	{
 #CODE : VERTEX
@@ -303,14 +303,14 @@ void main() {
 //using world coordinates
 #if !defined(SKIP_TRANSFORM_USED) && defined(VERTEX_WORLD_COORDS_USED)
 
-	vertex = (scene_data.inv_camera_matrix * vec4(vertex, 1.0)).xyz;
+	vertex = (scene_data.view_matrix * vec4(vertex, 1.0)).xyz;
 #ifdef NORMAL_USED
-	normal = (scene_data.inv_camera_matrix * vec4(normal, 0.0)).xyz;
+	normal = (scene_data.view_matrix * vec4(normal, 0.0)).xyz;
 #endif
 
 #if defined(TANGENT_USED) || defined(NORMAL_MAP_USED) || defined(LIGHT_ANISOTROPY_USED)
-	binormal = (scene_data.inv_camera_matrix * vec4(binormal, 0.0)).xyz;
-	tangent = (scene_data.inv_camera_matrix * vec4(tangent, 0.0)).xyz;
+	binormal = (scene_data.view_matrix * vec4(binormal, 0.0)).xyz;
+	tangent = (scene_data.view_matrix * vec4(tangent, 0.0)).xyz;
 #endif
 #endif
 
@@ -458,7 +458,7 @@ layout(location = 8) highp in float dp_clip;
 
 //defines to keep compatibility with vertex
 
-#define world_matrix draw_call.transform
+#define model_matrix draw_call.transform
 #ifdef USE_MULTIVIEW
 #define projection_matrix scene_data.projection_matrix_view[ViewIndex]
 #else
@@ -560,7 +560,7 @@ vec4 fog_process(vec3 vertex) {
 	float fog_amount = 1.0 - exp(min(0.0, -length(vertex) * scene_data.fog_density));
 
 	if (abs(scene_data.fog_height_density) >= 0.0001) {
-		float y = (scene_data.camera_matrix * vec4(vertex, 1.0)).y;
+		float y = (scene_data.inv_view_matrix * vec4(vertex, 1.0)).y;
 
 		float y_dist = y - scene_data.fog_height;
 
@@ -967,7 +967,7 @@ void main() {
 	if (bool(draw_call.flags & INSTANCE_FLAGS_USE_LIGHTMAP_CAPTURE)) { //has lightmap capture
 		uint index = draw_call.gi_offset;
 
-		vec3 wnormal = mat3(scene_data.camera_matrix) * normal;
+		vec3 wnormal = mat3(scene_data.inv_view_matrix) * normal;
 		const float c1 = 0.429043;
 		const float c2 = 0.511664;
 		const float c3 = 0.743125;
@@ -1054,6 +1054,12 @@ void main() {
 		if (reflection_accum.a > 0.0) {
 			specular_light = reflection_accum.rgb / reflection_accum.a;
 		}
+
+#if !defined(USE_LIGHTMAP)
+		if (ambient_accum.a > 0.0) {
+			ambient_light = ambient_accum.rgb / ambient_accum.a;
+		}
+#endif
 	} //Reflection probes
 
 	// finalize ambient light here
@@ -1124,7 +1130,6 @@ void main() {
 				float depth_z = -vertex.z;
 
 				vec4 pssm_coord;
-				vec3 shadow_color = vec3(0.0);
 				vec3 light_dir = directional_lights.data[i].direction;
 
 #define BIAS_FUNC(m_var, m_idx)                                                                                                                                       \
@@ -1150,9 +1155,6 @@ void main() {
 					} else {
 						shadow = sample_directional_pcf_shadow(directional_shadow_atlas, scene_data.directional_shadow_pixel_size * directional_lights.data[i].soft_shadow_scale, pssm_coord);
 					}
-
-					shadow_color = directional_lights.data[i].shadow_color1.rgb;
-
 				} else if (depth_z < directional_lights.data[i].shadow_split_offsets.y) {
 					vec4 v = vec4(vertex, 1.0);
 
@@ -1170,8 +1172,6 @@ void main() {
 					} else {
 						shadow = sample_directional_pcf_shadow(directional_shadow_atlas, scene_data.directional_shadow_pixel_size * directional_lights.data[i].soft_shadow_scale, pssm_coord);
 					}
-
-					shadow_color = directional_lights.data[i].shadow_color2.rgb;
 				} else if (depth_z < directional_lights.data[i].shadow_split_offsets.z) {
 					vec4 v = vec4(vertex, 1.0);
 
@@ -1189,9 +1189,6 @@ void main() {
 					} else {
 						shadow = sample_directional_pcf_shadow(directional_shadow_atlas, scene_data.directional_shadow_pixel_size * directional_lights.data[i].soft_shadow_scale, pssm_coord);
 					}
-
-					shadow_color = directional_lights.data[i].shadow_color3.rgb;
-
 				} else {
 					vec4 v = vec4(vertex, 1.0);
 
@@ -1209,12 +1206,9 @@ void main() {
 					} else {
 						shadow = sample_directional_pcf_shadow(directional_shadow_atlas, scene_data.directional_shadow_pixel_size * directional_lights.data[i].soft_shadow_scale, pssm_coord);
 					}
-
-					shadow_color = directional_lights.data[i].shadow_color4.rgb;
 				}
 
 				if (directional_lights.data[i].blend_splits) {
-					vec3 shadow_color_blend = vec3(0.0);
 					float pssm_blend;
 					float shadow2;
 
@@ -1235,7 +1229,6 @@ void main() {
 						}
 
 						pssm_blend = smoothstep(0.0, directional_lights.data[i].shadow_split_offsets.x, depth_z);
-						shadow_color_blend = directional_lights.data[i].shadow_color2.rgb;
 					} else if (depth_z < directional_lights.data[i].shadow_split_offsets.y) {
 						vec4 v = vec4(vertex, 1.0);
 						BIAS_FUNC(v, 2)
@@ -1253,8 +1246,6 @@ void main() {
 						}
 
 						pssm_blend = smoothstep(directional_lights.data[i].shadow_split_offsets.x, directional_lights.data[i].shadow_split_offsets.y, depth_z);
-
-						shadow_color_blend = directional_lights.data[i].shadow_color3.rgb;
 					} else if (depth_z < directional_lights.data[i].shadow_split_offsets.z) {
 						vec4 v = vec4(vertex, 1.0);
 						BIAS_FUNC(v, 3)
@@ -1271,7 +1262,6 @@ void main() {
 						}
 
 						pssm_blend = smoothstep(directional_lights.data[i].shadow_split_offsets.y, directional_lights.data[i].shadow_split_offsets.z, depth_z);
-						shadow_color_blend = directional_lights.data[i].shadow_color4.rgb;
 					} else {
 						pssm_blend = 0.0; //if no blend, same coord will be used (divide by z will result in same value, and already cached)
 					}
@@ -1279,7 +1269,6 @@ void main() {
 					pssm_blend = sqrt(pssm_blend);
 
 					shadow = mix(shadow, shadow2, pssm_blend);
-					shadow_color = mix(shadow_color, shadow_color_blend, pssm_blend);
 				}
 
 				shadow = mix(shadow, 1.0, smoothstep(directional_lights.data[i].fade_from, directional_lights.data[i].fade_to, vertex.z)); //done with negative values for performance

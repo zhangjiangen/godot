@@ -76,8 +76,7 @@ static bool _create_project_solution_if_needed() {
 		// A solution does not yet exist, create a new one
 
 		CRASH_COND(CSharpLanguage::get_singleton()->get_godotsharp_editor() == nullptr);
-		Variant ret;
-		CSharpLanguage::get_singleton()->get_godotsharp_editor()->call_r(ret, "CreateProjectSolution");
+		Variant ret = CSharpLanguage::get_singleton()->get_godotsharp_editor()->call("CreateProjectSolution");
 		return ret;
 	}
 
@@ -529,10 +528,10 @@ String CSharpLanguage::make_function(const String &, const String &, const Packe
 String CSharpLanguage::_get_indentation() const {
 #ifdef TOOLS_ENABLED
 	if (Engine::get_singleton()->is_editor_hint()) {
-		bool use_space_indentation = EDITOR_DEF("text_editor/behavior/indent/type", 0);
+		bool use_space_indentation = EDITOR_GET("text_editor/behavior/indent/type");
 
 		if (use_space_indentation) {
-			int indent_size = EDITOR_DEF("text_editor/behavior/indent/size", 4);
+			int indent_size = EDITOR_GET("text_editor/behavior/indent/size");
 
 			String space_indent = "";
 			for (int i = 0; i < indent_size; i++) {
@@ -1237,14 +1236,12 @@ void CSharpLanguage::get_recognized_extensions(List<String> *p_extensions) const
 
 #ifdef TOOLS_ENABLED
 Error CSharpLanguage::open_in_external_editor(const Ref<Script> &p_script, int p_line, int p_col) {
-	Variant ret;
-	get_godotsharp_editor()->call_r(ret, "OpenInExternalEditor", p_script, p_line, p_col);
+	Variant ret = get_godotsharp_editor()->call("OpenInExternalEditor", p_script, p_line, p_col);
 	return (Error)(int)ret;
 }
 
 bool CSharpLanguage::overrides_external_editor() {
-	Variant ret;
-	get_godotsharp_editor()->call_r(ret, "OverridesExternalEditor");
+	Variant ret = get_godotsharp_editor()->call("OverridesExternalEditor");
 	return ret;
 }
 #endif
@@ -1909,7 +1906,7 @@ void CSharpInstance::call_r(Variant &ret, const StringName &p_method, const Vari
 
 	if (!mono_object) {
 		r_error.error = Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL;
-		ERR_FAIL_V(Variant());
+		ERR_FAIL();
 	}
 
 	GDMonoClass *top = script->script_class;

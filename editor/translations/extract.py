@@ -1,7 +1,9 @@
 #!/bin/python
 
+import enum
 import fnmatch
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -31,6 +33,15 @@ for root, dirnames, filenames in os.walk("."):
 matches.sort()
 
 
+remaps = {}
+remap_re = re.compile(r'^\t*capitalize_string_remaps\["(?P<from>.+)"\] = (String::utf8\()?"(?P<to>.+)"')
+with open("editor/editor_property_name_processor.cpp") as f:
+    for line in f:
+        m = remap_re.search(line)
+        if m:
+            remaps[m.group("from")] = m.group("to")
+
+
 unique_str = []
 unique_loc = {}
 ctx_group = {}  # Store msgctx, msg, and locations.
@@ -51,6 +62,61 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\\n"
 "Content-Transfer-Encoding: 8-bit\\n"\n
 """
+
+
+class ExtractType(enum.IntEnum):
+    TEXT = 1
+    PROPERTY_PATH = 2
+    GROUP = 3
+
+
+# Regex "(?P<name>([^"\\]|\\.)*)" creates a group named `name` that matches a string.
+message_patterns = {
+    re.compile(r'RTR\("(?P<message>([^"\\]|\\.)*)"(, "(?P<context>([^"\\]|\\.)*)")?\)'): ExtractType.TEXT,
+    re.compile(r'TTR\("(?P<message>([^"\\]|\\.)*)"(, "(?P<context>([^"\\]|\\.)*)")?\)'): ExtractType.TEXT,
+    re.compile(r'TTRC\("(?P<message>([^"\\]|\\.)*)"\)'): ExtractType.TEXT,
+    re.compile(
+        r'TTRN\("(?P<message>([^"\\]|\\.)*)", "(?P<plural_message>([^"\\]|\\.)*)",[^,)]+?(, "(?P<context>([^"\\]|\\.)*)")?\)'
+    ): ExtractType.TEXT,
+    re.compile(
+        r'RTRN\("(?P<message>([^"\\]|\\.)*)", "(?P<plural_message>([^"\\]|\\.)*)",[^,)]+?(, "(?P<context>([^"\\]|\\.)*)")?\)'
+    ): ExtractType.TEXT,
+    re.compile(r'_initial_set\("(?P<message>[^"]+?)",'): ExtractType.PROPERTY_PATH,
+    re.compile(r'GLOBAL_DEF(_RST)?(_NOVAL)?\("(?P<message>[^".]+?)",'): ExtractType.PROPERTY_PATH,
+    re.compile(r'EDITOR_DEF(_RST)?\("(?P<message>[^"]+?)",'): ExtractType.PROPERTY_PATH,
+    re.compile(
+        r'(ADD_PROPERTYI?|ImportOption|ExportOption)\(PropertyInfo\(Variant::[_A-Z0-9]+, "(?P<message>[^"]+?)"[,)]'
+    ): ExtractType.PROPERTY_PATH,
+    re.compile(
+        r"(?!#define )LIMPL_PROPERTY(_RANGE)?\(Variant::[_A-Z0-9]+, (?P<message>[^,]+?),"
+    ): ExtractType.PROPERTY_PATH,
+    re.compile(r'ADD_GROUP\("(?P<message>[^"]+?)", "(?P<prefix>[^"]*?)"\)'): ExtractType.GROUP,
+}
+
+
+# See String::camelcase_to_underscore().
+capitalize_re = re.compile(r"(?<=\D)(?=\d)|(?<=\d)(?=\D([a-z]|\d))")
+
+
+def _process_editor_string(name):
+    # See EditorPropertyNameProcessor::process_string().
+    capitalized_parts = []
+    for segment in name.split("_"):
+        if not segment:
+            continue
+        remapped = remaps.get(segment)
+        if remapped:
+            capitalized_parts.append(remapped)
+        else:
+            # See String::capitalize().
+            # fmt: off
+            capitalized_parts.append(" ".join(
+                part.title()
+                for part in capitalize_re.sub("_", segment).replace("_", " ").split()
+            ))
+            # fmt: on
+
+    return " ".join(capitalized_parts)
 
 
 def _write_message(msgctx, msg, msg_plural, location):
@@ -180,16 +246,12 @@ def _extract_translator_comment(line, is_block_translator_comment):
 
 
 def process_file(f, fname):
-
-    global main_po, unique_str, unique_loc
-
-    patterns = ['RTR("', 'TTR("', 'TTRC("', 'TTRN("', 'RTRN("']
-
     l = f.readline()
     lc = 1
     reading_translator_comment = False
     is_block_translator_comment = False
     translator_comment = ""
+    current_group = ""
 
     while l:
 
@@ -207,84 +269,64 @@ def process_file(f, fname):
             if not reading_translator_comment:
                 translator_comment = translator_comment[:-1]  # Remove extra \n at the end.
 
-        idx = 0
-        pos = 0
+        if not reading_translator_comment:
+            for pattern, extract_type in message_patterns.items():
+                for m in pattern.finditer(l):
+                    location = os.path.relpath(fname).replace("\\", "/")
+                    if line_nb:
+                        location += ":" + str(lc)
 
-        while not reading_translator_comment and pos >= 0:
-            # Loop until a pattern is found. If not, next line.
-            pos = l.find(patterns[idx], pos)
-            if pos == -1:
-                if idx < len(patterns) - 1:
-                    idx += 1
-                    pos = 0
-                continue
-            pos += len(patterns[idx])
+                    captures = m.groupdict("")
+                    msg = captures.get("message", "")
+                    msg_plural = captures.get("plural_message", "")
+                    msgctx = captures.get("context", "")
 
-            # Read msg until "
-            msg = ""
-            while pos < len(l) and (l[pos] != '"' or l[pos - 1] == "\\"):
-                msg += l[pos]
-                pos += 1
-
-            # Read plural.
-            msg_plural = ""
-            if patterns[idx] in ['TTRN("', 'RTRN("']:
-                pos = l.find('"', pos + 1)
-                pos += 1
-                while pos < len(l) and (l[pos] != '"' or l[pos - 1] == "\\"):
-                    msg_plural += l[pos]
-                    pos += 1
-
-            # Read context.
-            msgctx = ""
-            pos += 1
-            read_ctx = False
-            while pos < len(l):
-                if l[pos] == ")":
-                    break
-                elif l[pos] == '"':
-                    read_ctx = True
-                    break
-                pos += 1
-
-            pos += 1
-            if read_ctx:
-                while pos < len(l) and (l[pos] != '"' or l[pos - 1] == "\\"):
-                    msgctx += l[pos]
-                    pos += 1
-
-            # File location.
-            location = os.path.relpath(fname).replace("\\", "/")
-            if line_nb:
-                location += ":" + str(lc)
-
-            # Write translator comment.
-            _write_translator_comment(msgctx, msg, translator_comment)
+                    if extract_type == ExtractType.TEXT:
+                        _add_message(msg, msg_plural, msgctx, location, translator_comment)
+                    elif extract_type == ExtractType.PROPERTY_PATH:
+                        if current_group:
+                            if msg.startswith(current_group):
+                                msg = msg[len(current_group) :]
+                            else:
+                                current_group = ""
+                        for part in msg.split("/"):
+                            _add_message(_process_editor_string(part), msg_plural, msgctx, location, translator_comment)
+                    elif extract_type == ExtractType.GROUP:
+                        _add_message(msg, msg_plural, msgctx, location, translator_comment)
+                        current_group = captures["prefix"]
             translator_comment = ""
-
-            if msgctx != "":
-                # If it's a new context or a new message within an existing context, then write new msgid.
-                # Else add location to existing msgid.
-                if not msgctx in ctx_group:
-                    _write_message(msgctx, msg, msg_plural, location)
-                    ctx_group[msgctx] = {msg: [location]}
-                elif not msg in ctx_group[msgctx]:
-                    _write_message(msgctx, msg, msg_plural, location)
-                    ctx_group[msgctx][msg] = [location]
-                elif not location in ctx_group[msgctx][msg]:
-                    _add_additional_location(msgctx, msg, location)
-                    ctx_group[msgctx][msg].append(location)
-            else:
-                if not msg in unique_str:
-                    _write_message(msgctx, msg, msg_plural, location)
-                    unique_str.append(msg)
-                    unique_loc[msg] = [location]
-                elif not location in unique_loc[msg]:
-                    _add_additional_location(msgctx, msg, location)
-                    unique_loc[msg].append(location)
 
         l = f.readline()
         lc += 1
+
+
+def _add_message(msg, msg_plural, msgctx, location, translator_comment):
+    global main_po, unique_str, unique_loc
+
+    # Write translator comment.
+    _write_translator_comment(msgctx, msg, translator_comment)
+    translator_comment = ""
+
+    if msgctx != "":
+        # If it's a new context or a new message within an existing context, then write new msgid.
+        # Else add location to existing msgid.
+        if not msgctx in ctx_group:
+            _write_message(msgctx, msg, msg_plural, location)
+            ctx_group[msgctx] = {msg: [location]}
+        elif not msg in ctx_group[msgctx]:
+            _write_message(msgctx, msg, msg_plural, location)
+            ctx_group[msgctx][msg] = [location]
+        elif not location in ctx_group[msgctx][msg]:
+            _add_additional_location(msgctx, msg, location)
+            ctx_group[msgctx][msg].append(location)
+    else:
+        if not msg in unique_str:
+            _write_message(msgctx, msg, msg_plural, location)
+            unique_str.append(msg)
+            unique_loc[msg] = [location]
+        elif not location in unique_loc[msg]:
+            _add_additional_location(msgctx, msg, location)
+            unique_loc[msg].append(location)
 
 
 print("Updating the editor.pot template...")

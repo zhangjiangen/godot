@@ -31,7 +31,7 @@ public:
 	// 转换成三角形列表
 	void build_triangle() {
 		triangles.resize(polygons.size() * 4);
-		for (int i = 0; i < polygons.size(); ++i) {
+		for (size_t i = 0; i < polygons.size(); ++i) {
 			std::array<int, 4> &a = polygons[i];
 			int index = i * 6;
 			triangles[index] = a[0];

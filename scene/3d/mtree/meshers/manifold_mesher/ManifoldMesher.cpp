@@ -1,4 +1,5 @@
 #include "ManifoldMesher.hpp"
+#include "core/math/math_funcs.h"
 #include "scene/3d/mtree/utilities/GeometryUtilities.hpp"
 #include "scene/3d/mtree/utilities/NodeUtilities.hpp"
 #include "smoothing.hpp"
@@ -33,7 +34,7 @@ CircleDesignator add_circle(const Vector3 &node_position, const Tree3DNode &node
 	auto &radius_attr = *static_cast<Attribute<float> *>(mesh.attributes[AttributeNames::radius].get());
 	float smooth_amount = get_smooth_amount(radius, node.length);
 	auto &direction_attr = *static_cast<Attribute<Vector3> *>(mesh.attributes[AttributeNames::direction].get());
-	for (size_t i = 0; i < radial_n_points; i++) {
+	for (int i = 0; i < radial_n_points; i++) {
 		float angle = (float)i / radial_n_points * 2 * M_PI;
 		Vector3 point = cos(angle) * right + sin(angle) * up;
 		point = point * radius + circle_position;
@@ -90,14 +91,14 @@ float get_branch_angle_around_parent(const Tree3DNode &parent, const Tree3DNode 
 	Vector3 up = right.cross(parent.direction);
 	float cos_angle = projected_branch_dir.dot(right);
 	float sin_angle = projected_branch_dir.dot(up);
-	return std::fmod(std::atan2(sin_angle, cos_angle) + 2 * M_PI, 2 * M_PI);
+	return Math::fmod(Math::atan2(sin_angle, cos_angle) + 2 * M_PI, 2 * M_PI);
 }
 
 IndexRange get_branch_indices_on_circle(const int radial_n_points, const float circle_radius, const float branch_radius, const float branch_angle) {
-	float angle_delta = std::asin(std::clamp(branch_radius / circle_radius, -1.f, 1.f));
+	float angle_delta = Math::asin(Math::clamp(branch_radius / circle_radius, -1.f, 1.f));
 	float increment = 2 * M_PI / radial_n_points;
-	int min_index = (int)(std::fmod(branch_angle - angle_delta + 2 * M_PI, 2 * M_PI) / increment);
-	int max_index = (int)(std::fmod(branch_angle + angle_delta + increment + 2 * M_PI, 2 * M_PI) / increment);
+	int min_index = (int)(Math::fmod(branch_angle - angle_delta + 2 * M_PI, 2 * M_PI) / increment);
+	int max_index = (int)(Math::fmod(branch_angle + angle_delta + increment + 2 * M_PI, 2 * M_PI) / increment);
 	return IndexRange{ min_index, max_index };
 }
 
@@ -114,14 +115,14 @@ std::vector<IndexRange> get_children_ranges(const Tree3DNode &node, const int ra
 }
 
 std::vector<int> get_child_index_order(const CircleDesignator &parent_base, const int child_radial_n, const IndexRange child_range, const Tree3DNodeChild &child, const Tree3DNode &parent, const Tree3DMesh &mesh) {
-	int start = child_range.min_index + parent_base.vertex_index;
+	//int start = child_range.min_index + parent_base.vertex_index;
 	std::vector<int> child_base_indices;
 	child_base_indices.resize((size_t)child_radial_n);
 
 	for (int i = 0; i < child_radial_n / 2; i++) {
 		int lower_index = (child_range.min_index + i) % parent_base.radial_n + parent_base.vertex_index;
 		int upper_index = lower_index + parent_base.radial_n;
-		int vertex_index = start + (i % (child_radial_n / 2));
+		//int vertex_index = start + (i % (child_radial_n / 2));
 
 		child_base_indices[i] = lower_index;
 		child_base_indices[(size_t)child_radial_n - i - 1] = upper_index;
@@ -178,20 +179,20 @@ float get_child_twist(const Tree3DNode &child, const Tree3DNode &parent) {
 
 int add_child_base_uvs(float parent_uv_y, const Tree3DNode &parent, const Tree3DNodeChild &child, const IndexRange child_range, const int child_radial_n, const int parent_radial_n, Tree3DMesh &mesh) {
 	float uv_growth = parent.length / (parent.radius + .001f) / (2 * M_PI);
-	for (size_t i = 0; i < 2; i++) // recreating outer uvs (but without continuous (no looping back to x=0)
+	for (int i = 0; i < 2; i++) // recreating outer uvs (but without continuous (no looping back to x=0)
 	{
 		float uv_y = parent_uv_y + i * uv_growth;
 		float x_start = child_range.min_index + i * (child_radial_n / 2.f - 1);
 		float step = i == 0 ? 1 : -1;
-		for (size_t j = 0; j < child_radial_n / 2; j++) {
+		for (int j = 0; j < child_radial_n / 2; j++) {
 			float uv_x = (x_start + j * step) / parent_radial_n;
 			mesh.uvs.emplace_back(uv_x, uv_y);
 		}
 	}
 
 	Vector2 uv_circle_center{ (child_range.min_index + (child_radial_n / 4.f - .5f)) / parent_radial_n, parent_uv_y + uv_growth / 2 };
-	float uv_circle_radius = std::min((float)child_radial_n / parent_radial_n, uv_growth / 2) * .6f;
-	for (size_t i = 0; i < child_radial_n; i++) // inner uvs
+	float uv_circle_radius = Math::min((float)child_radial_n / parent_radial_n, uv_growth / 2) * .6f;
+	for (int i = 0; i < child_radial_n; i++) // inner uvs
 	{
 		float angle = (float)i / (child_radial_n - 1) * 2 * M_PI + M_PI;
 		Vector2 uv_position = Vector2{ cos(angle), sin(angle) } * uv_circle_radius + uv_circle_center;
@@ -231,7 +232,7 @@ bool has_side_branches(const Tree3DNode &node) {
 	if (node.children.size() < 2)
 		return false;
 
-	for (int i = 1; i < node.children.size(); i++) {
+	for (size_t i = 1; i < node.children.size(); i++) {
 		if (node.children[i]->node.children.size() > 0)
 			return true;
 	}
@@ -253,7 +254,7 @@ void mesh_node_rec(const Tree3DNode &node, const Vector3 &node_position, const C
 		auto end_circle = add_circle(node_position, node, 1, base.radial_n, mesh, uv_y + uv_growth);
 		std::vector<IndexRange> children_ranges = get_children_ranges(node, base.radial_n);
 		bridge_circles(base, end_circle, base.radial_n, mesh, &children_ranges);
-		for (int i = 0; i < node.children.size(); i++) {
+		for (size_t i = 0; i < node.children.size(); i++) {
 			if (i == 0) // first child is the continuity of the branch
 			{
 				Vector3 child_pos = get_position_in_node(node_position, node, 1);
@@ -273,10 +274,10 @@ void mesh_node_rec(const Tree3DNode &node, const Vector3 &node_position, const C
 } //namespace
 
 Tree3DMesh ManifoldMesher::mesh_tree(Tree3D &tree) {
-    Tree3DMesh mesh;
+	Tree3DMesh mesh;
 	auto &smooth_attr = mesh.add_attribute<float>(AttributeNames::smooth_amount);
-	auto &radius_attr = mesh.add_attribute<float>(AttributeNames::radius);
-	auto &direction_attr = mesh.add_attribute<Vector3>(AttributeNames::direction);
+	//auto &radius_attr = mesh.add_attribute<float>(AttributeNames::radius);
+	//auto &direction_attr = mesh.add_attribute<Vector3>(AttributeNames::direction);
 	for (auto &stem : tree.get_stems()) {
 		//__debugbreak();
 

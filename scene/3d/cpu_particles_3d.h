@@ -71,6 +71,7 @@ public:
 	enum EmissionShape {
 		EMISSION_SHAPE_POINT,
 		EMISSION_SHAPE_SPHERE,
+		EMISSION_SHAPE_SPHERE_SURFACE,
 		EMISSION_SHAPE_BOX,
 		EMISSION_SHAPE_POINTS,
 		EMISSION_SHAPE_DIRECTED_POINTS,
@@ -201,7 +202,6 @@ protected:
 
 public:
 	AABB get_aabb() const override;
-	Vector<Face3> get_faces(uint32_t p_usage_flags) const override;
 
 	void set_emitting(bool p_emitting);
 	void set_amount(int p_amount);

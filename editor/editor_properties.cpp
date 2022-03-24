@@ -110,9 +110,6 @@ EditorPropertyText::EditorPropertyText() {
 	add_focusable(text);
 	text->connect("text_changed", callable_mp(this, &EditorPropertyText::_text_changed));
 	text->connect("text_submitted", callable_mp(this, &EditorPropertyText::_text_submitted));
-
-	string_name = false;
-	updating = false;
 }
 
 ///////////////////// MULTILINE TEXT /////////////////////////
@@ -500,9 +497,6 @@ EditorPropertyPath::EditorPropertyPath() {
 	add_focusable(path);
 	dialog = nullptr;
 	path_edit->connect("pressed", callable_mp(this, &EditorPropertyPath::_path_pressed));
-	folder = false;
-	global = false;
-	save_mode = false;
 }
 
 ///////////////////// CLASS NAME /////////////////////////
@@ -1209,7 +1203,7 @@ void EditorPropertyLayers::_button_pressed() {
 	}
 
 	Rect2 gp = button->get_screen_rect();
-	layers->set_as_minsize();
+	layers->reset_size();
 	Vector2 popup_pos = gp.position - Vector2(layers->get_contents_minimum_size().x, 0);
 	layers->set_position(popup_pos);
 	layers->popup();
@@ -1302,7 +1296,6 @@ EditorPropertyInteger::EditorPropertyInteger() {
 	add_child(spin);
 	add_focusable(spin);
 	spin->connect("value_changed", callable_mp(this, &EditorPropertyInteger::_value_changed));
-	setting = false;
 }
 
 ///////////////////// OBJECT ID /////////////////////////
@@ -1611,10 +1604,6 @@ EditorPropertyEasing::EditorPropertyEasing() {
 	spin->get_line_edit()->connect("focus_exited", callable_mp(this, &EditorPropertyEasing::_spin_focus_exited));
 	spin->hide();
 	add_child(spin);
-
-	dragging = false;
-	flip = false;
-	full = false;
 }
 
 ///////////////////// VECTOR2 /////////////////////////
@@ -1650,7 +1639,7 @@ void EditorPropertyVector2::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			const Color *colors = _get_property_colors();
 			for (int i = 0; i < 2; i++) {
-				spin[i]->set_custom_label_color(true, colors[i]);
+				spin[i]->add_theme_color_override("label_color", colors[i]);
 			}
 		} break;
 	}
@@ -1704,7 +1693,6 @@ EditorPropertyVector2::EditorPropertyVector2(bool p_force_wide) {
 	if (!horizontal) {
 		set_label_reference(spin[0]); //show text and buttons around this
 	}
-	setting = false;
 }
 
 ///////////////////// RECT2 /////////////////////////
@@ -1744,7 +1732,7 @@ void EditorPropertyRect2::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			const Color *colors = _get_property_colors();
 			for (int i = 0; i < 4; i++) {
-				spin[i]->set_custom_label_color(true, colors[i % 2]);
+				spin[i]->add_theme_color_override("label_color", colors[i % 2]);
 			}
 		} break;
 	}
@@ -1808,7 +1796,6 @@ EditorPropertyRect2::EditorPropertyRect2(bool p_force_wide) {
 	if (!horizontal) {
 		set_label_reference(spin[0]); //show text and buttons around this
 	}
-	setting = false;
 }
 
 ///////////////////// VECTOR3 /////////////////////////
@@ -1873,7 +1860,7 @@ void EditorPropertyVector3::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			const Color *colors = _get_property_colors();
 			for (int i = 0; i < 3; i++) {
-				spin[i]->set_custom_label_color(true, colors[i]);
+				spin[i]->add_theme_color_override("label_color", colors[i]);
 			}
 		} break;
 	}
@@ -1963,7 +1950,7 @@ void EditorPropertyVector2i::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			const Color *colors = _get_property_colors();
 			for (int i = 0; i < 2; i++) {
-				spin[i]->set_custom_label_color(true, colors[i]);
+				spin[i]->add_theme_color_override("label_color", colors[i]);
 			}
 		} break;
 	}
@@ -2017,7 +2004,6 @@ EditorPropertyVector2i::EditorPropertyVector2i(bool p_force_wide) {
 	if (!horizontal) {
 		set_label_reference(spin[0]); //show text and buttons around this
 	}
-	setting = false;
 }
 
 ///////////////////// RECT2i /////////////////////////
@@ -2057,7 +2043,7 @@ void EditorPropertyRect2i::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			const Color *colors = _get_property_colors();
 			for (int i = 0; i < 4; i++) {
-				spin[i]->set_custom_label_color(true, colors[i % 2]);
+				spin[i]->add_theme_color_override("label_color", colors[i % 2]);
 			}
 		} break;
 	}
@@ -2121,7 +2107,6 @@ EditorPropertyRect2i::EditorPropertyRect2i(bool p_force_wide) {
 	if (!horizontal) {
 		set_label_reference(spin[0]); //show text and buttons around this
 	}
-	setting = false;
 }
 
 ///////////////////// VECTOR3i /////////////////////////
@@ -2159,7 +2144,7 @@ void EditorPropertyVector3i::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			const Color *colors = _get_property_colors();
 			for (int i = 0; i < 3; i++) {
-				spin[i]->set_custom_label_color(true, colors[i]);
+				spin[i]->add_theme_color_override("label_color", colors[i]);
 			}
 		} break;
 	}
@@ -2212,7 +2197,6 @@ EditorPropertyVector3i::EditorPropertyVector3i(bool p_force_wide) {
 	if (!horizontal) {
 		set_label_reference(spin[0]); //show text and buttons around this
 	}
-	setting = false;
 }
 
 ///////////////////// PLANE /////////////////////////
@@ -2252,7 +2236,7 @@ void EditorPropertyPlane::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			const Color *colors = _get_property_colors();
 			for (int i = 0; i < 4; i++) {
-				spin[i]->set_custom_label_color(true, colors[i]);
+				spin[i]->add_theme_color_override("label_color", colors[i]);
 			}
 		} break;
 	}
@@ -2306,7 +2290,6 @@ EditorPropertyPlane::EditorPropertyPlane(bool p_force_wide) {
 	if (!horizontal) {
 		set_label_reference(spin[0]); //show text and buttons around this
 	}
-	setting = false;
 }
 
 ///////////////////// QUATERNION /////////////////////////
@@ -2346,7 +2329,7 @@ void EditorPropertyQuaternion::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			const Color *colors = _get_property_colors();
 			for (int i = 0; i < 4; i++) {
-				spin[i]->set_custom_label_color(true, colors[i]);
+				spin[i]->add_theme_color_override("label_color", colors[i]);
 			}
 		} break;
 	}
@@ -2397,7 +2380,6 @@ EditorPropertyQuaternion::EditorPropertyQuaternion() {
 	if (!horizontal) {
 		set_label_reference(spin[0]); //show text and buttons around this
 	}
-	setting = false;
 }
 
 ///////////////////// AABB /////////////////////////
@@ -2443,7 +2425,7 @@ void EditorPropertyAABB::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			const Color *colors = _get_property_colors();
 			for (int i = 0; i < 6; i++) {
-				spin[i]->set_custom_label_color(true, colors[i % 3]);
+				spin[i]->add_theme_color_override("label_color", colors[i % 3]);
 			}
 		} break;
 	}
@@ -2481,7 +2463,6 @@ EditorPropertyAABB::EditorPropertyAABB() {
 		spin[i]->connect("value_changed", callable_mp(this, &EditorPropertyAABB::_value_changed), varray(desc[i]));
 	}
 	set_bottom_editor(g);
-	setting = false;
 }
 
 ///////////////////// TRANSFORM2D /////////////////////////
@@ -2529,9 +2510,9 @@ void EditorPropertyTransform2D::_notification(int p_what) {
 			for (int i = 0; i < 6; i++) {
 				// For Transform2D, use the 4th color (cyan) for the origin vector.
 				if (i % 3 == 2) {
-					spin[i]->set_custom_label_color(true, colors[3]);
+					spin[i]->add_theme_color_override("label_color", colors[3]);
 				} else {
-					spin[i]->set_custom_label_color(true, colors[i % 3]);
+					spin[i]->add_theme_color_override("label_color", colors[i % 3]);
 				}
 			}
 		} break;
@@ -2571,7 +2552,6 @@ EditorPropertyTransform2D::EditorPropertyTransform2D(bool p_include_origin) {
 		spin[i]->connect("value_changed", callable_mp(this, &EditorPropertyTransform2D::_value_changed), varray(desc[i]));
 	}
 	set_bottom_editor(g);
-	setting = false;
 }
 
 ///////////////////// BASIS /////////////////////////
@@ -2623,7 +2603,7 @@ void EditorPropertyBasis::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			const Color *colors = _get_property_colors();
 			for (int i = 0; i < 9; i++) {
-				spin[i]->set_custom_label_color(true, colors[i % 3]);
+				spin[i]->add_theme_color_override("label_color", colors[i % 3]);
 			}
 		} break;
 	}
@@ -2660,7 +2640,6 @@ EditorPropertyBasis::EditorPropertyBasis() {
 		spin[i]->connect("value_changed", callable_mp(this, &EditorPropertyBasis::_value_changed), varray(desc[i]));
 	}
 	set_bottom_editor(g);
-	setting = false;
 }
 
 ///////////////////// TRANSFORM /////////////////////////
@@ -2720,7 +2699,7 @@ void EditorPropertyTransform3D::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			const Color *colors = _get_property_colors();
 			for (int i = 0; i < 12; i++) {
-				spin[i]->set_custom_label_color(true, colors[i % 4]);
+				spin[i]->add_theme_color_override("label_color", colors[i % 4]);
 			}
 		} break;
 	}
@@ -2757,7 +2736,6 @@ EditorPropertyTransform3D::EditorPropertyTransform3D() {
 		spin[i]->connect("value_changed", callable_mp(this, &EditorPropertyTransform3D::_value_changed), varray(desc[i]));
 	}
 	set_bottom_editor(g);
-	setting = false;
 }
 
 ////////////// COLOR PICKER //////////////////////
@@ -2993,7 +2971,6 @@ EditorPropertyNodePath::EditorPropertyNodePath() {
 	clear->set_flat(true);
 	clear->connect("pressed", callable_mp(this, &EditorPropertyNodePath::_node_clear));
 	hbc->add_child(clear);
-	use_path_from_scene_root = false;
 
 	scene_tree = nullptr; //do not allocate unnecessarily
 }
@@ -3083,7 +3060,7 @@ void EditorPropertyResource::_sub_inspector_property_keyed(const String &p_prope
 	// The second parameter could be null, causing the event to fire with less arguments, so use the pointer call which preserves it.
 	const Variant args[3] = { String(get_edited_property()) + ":" + p_property, p_value, p_advance };
 	const Variant *argp[3] = { &args[0], &args[1], &args[2] };
-	emit_signal(SNAME("property_keyed_with_value"), argp, 3);
+	emit_signalp(SNAME("property_keyed_with_value"), argp, 3);
 }
 
 void EditorPropertyResource::_sub_inspector_resource_selected(const RES &p_resource, const String &p_property) {
@@ -3769,8 +3746,13 @@ EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_
 
 		} break;
 		case Variant::DICTIONARY: {
-			EditorPropertyDictionary *editor = memnew(EditorPropertyDictionary);
-			return editor;
+			if (p_hint == PROPERTY_HINT_LOCALIZABLE_STRING) {
+				EditorPropertyLocalizableString *editor = memnew(EditorPropertyLocalizableString);
+				return editor;
+			} else {
+				EditorPropertyDictionary *editor = memnew(EditorPropertyDictionary);
+				return editor;
+			}
 		} break;
 		case Variant::ARRAY: {
 			EditorPropertyArray *editor = memnew(EditorPropertyArray);

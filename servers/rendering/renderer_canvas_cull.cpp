@@ -34,6 +34,7 @@
 #include "renderer_viewport.h"
 #include "rendering_server_default.h"
 #include "rendering_server_globals.h"
+#include "servers/rendering/storage/canvas_texture_storage.h"
 
 static const int z_range = RS::CANVAS_ITEM_Z_MAX - RS::CANVAS_ITEM_Z_MIN + 1;
 
@@ -66,7 +67,7 @@ void RendererCanvasCull::_render_canvas_item_tree(RID p_to_render_target, Canvas
 		}
 	}
 
-	RENDER_TIMESTAMP("Render Canvas Items");
+	RENDER_TIMESTAMP("Render CanvasItems");
 
 	bool sdf_flag;
 	RSG::canvas_render->canvas_render_items(p_to_render_target, list, p_modulate, p_lights, p_directional_lights, p_transform, p_default_filter, p_default_repeat, p_snap_2d_vertices_to_pixel, sdf_flag);
@@ -338,7 +339,7 @@ void RendererCanvasCull::_cull_canvas_item(Item *p_canvas_item, const Transform2
 }
 
 void RendererCanvasCull::render_canvas(RID p_render_target, Canvas *p_canvas, const Transform2D &p_transform, RendererCanvasRender::Light *p_lights, RendererCanvasRender::Light *p_directional_lights, const Rect2 &p_clip_rect, RenderingServer::CanvasItemTextureFilter p_default_filter, RenderingServer::CanvasItemTextureRepeat p_default_repeat, bool p_snap_2d_transforms_to_pixel, bool p_snap_2d_vertices_to_pixel) {
-	RENDER_TIMESTAMP(">Render Canvas");
+	RENDER_TIMESTAMP("> Render Canvas");
 
 	sdf_used = false;
 	snapping_2d_transforms_to_pixel = p_snap_2d_transforms_to_pixel;
@@ -384,7 +385,7 @@ void RendererCanvasCull::render_canvas(RID p_render_target, Canvas *p_canvas, co
 		}
 	}
 
-	RENDER_TIMESTAMP("<End Render Canvas");
+	RENDER_TIMESTAMP("< Render Canvas");
 }
 
 bool RendererCanvasCull::was_sdf_used() {
@@ -1530,26 +1531,26 @@ void RendererCanvasCull::canvas_set_shadow_texture_size(int p_size) {
 }
 
 RID RendererCanvasCull::canvas_texture_allocate() {
-	return RSG::storage->canvas_texture_allocate();
+	return RSG::canvas_texture_storage->canvas_texture_allocate();
 }
 void RendererCanvasCull::canvas_texture_initialize(RID p_rid) {
-	RSG::storage->canvas_texture_initialize(p_rid);
+	RSG::canvas_texture_storage->canvas_texture_initialize(p_rid);
 }
 
 void RendererCanvasCull::canvas_texture_set_channel(RID p_canvas_texture, RS::CanvasTextureChannel p_channel, RID p_texture) {
-	RSG::storage->canvas_texture_set_channel(p_canvas_texture, p_channel, p_texture);
+	RSG::canvas_texture_storage->canvas_texture_set_channel(p_canvas_texture, p_channel, p_texture);
 }
 
 void RendererCanvasCull::canvas_texture_set_shading_parameters(RID p_canvas_texture, const Color &p_base_color, float p_shininess) {
-	RSG::storage->canvas_texture_set_shading_parameters(p_canvas_texture, p_base_color, p_shininess);
+	RSG::canvas_texture_storage->canvas_texture_set_shading_parameters(p_canvas_texture, p_base_color, p_shininess);
 }
 
 void RendererCanvasCull::canvas_texture_set_texture_filter(RID p_canvas_texture, RS::CanvasItemTextureFilter p_filter) {
-	RSG::storage->canvas_texture_set_texture_filter(p_canvas_texture, p_filter);
+	RSG::canvas_texture_storage->canvas_texture_set_texture_filter(p_canvas_texture, p_filter);
 }
 
 void RendererCanvasCull::canvas_texture_set_texture_repeat(RID p_canvas_texture, RS::CanvasItemTextureRepeat p_repeat) {
-	RSG::storage->canvas_texture_set_texture_repeat(p_canvas_texture, p_repeat);
+	RSG::canvas_texture_storage->canvas_texture_set_texture_repeat(p_canvas_texture, p_repeat);
 }
 
 void RendererCanvasCull::canvas_item_set_default_texture_filter(RID p_item, RS::CanvasItemTextureFilter p_filter) {

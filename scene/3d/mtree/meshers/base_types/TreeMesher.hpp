@@ -5,4 +5,5 @@
 class TreeMesher {
 public:
 	virtual Tree3DMesh mesh_tree(Tree3D &tree) = 0;
+	virtual ~TreeMesher(){}
 };

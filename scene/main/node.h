@@ -46,7 +46,7 @@ class Node : public Object {
 	OBJ_CATEGORY("Nodes");
 
 public:
-	enum ProcessMode : uint8_t {
+	enum ProcessMode {
 		PROCESS_MODE_INHERIT, // same as parent node
 		PROCESS_MODE_PAUSABLE, // process only if not paused
 		PROCESS_MODE_WHEN_PAUSED, // process only if paused
@@ -54,7 +54,7 @@ public:
 		PROCESS_MODE_DISABLED, // never process
 	};
 
-	enum DuplicateFlags : uint8_t {
+	enum DuplicateFlags {
 		DUPLICATE_SIGNALS = 1,
 		DUPLICATE_GROUPS = 2,
 		DUPLICATE_SCRIPTS = 4,
@@ -64,13 +64,13 @@ public:
 #endif
 	};
 
-	enum NameCasing : uint8_t {
+	enum NameCasing {
 		NAME_CASING_PASCAL_CASE,
 		NAME_CASING_CAMEL_CASE,
 		NAME_CASING_SNAKE_CASE
 	};
 
-	enum InternalMode : uint8_t {
+	enum InternalMode {
 		INTERNAL_MODE_DISABLED,
 		INTERNAL_MODE_FRONT,
 		INTERNAL_MODE_BACK,
@@ -150,6 +150,7 @@ private:
 
 		bool display_folded : 2;
 		bool editable_instance : 2;
+		bool load_form_avatar_resource : 2;
 		Data();
 
 	} data;
@@ -424,7 +425,11 @@ public:
 	void set_scene_instance_load_placeholder(bool p_enable);
 	bool get_scene_instance_load_placeholder() const;
 
-	static Vector<Variant> make_binds(VARIANT_ARG_LIST);
+	template <typename... VarArgs>
+	Vector<Variant> make_binds(VarArgs... p_args) {
+		Vector<Variant> binds = { p_args... };
+		return binds;
+	}
 
 	void replace_by(Node *p_node, bool p_keep_data = false);
 
@@ -476,19 +481,46 @@ public:
 	uint16_t rpc_config(const StringName &p_method, Multiplayer::RPCMode p_rpc_mode, bool p_call_local = false, Multiplayer::TransferMode p_transfer_mode = Multiplayer::TRANSFER_MODE_RELIABLE, int p_channel = 0); // config a local method for RPC
 	Vector<Multiplayer::RPCConfig> get_node_rpc_methods() const;
 
-	void rpc(const StringName &p_method, VARIANT_ARG_LIST); // RPC, honors RPCMode, TransferMode, channel
-	void rpc_id(int p_peer_id, const StringName &p_method, VARIANT_ARG_LIST); // RPC to specific peer(s), honors RPCMode, TransferMode, channel
+	template <typename... VarArgs>
+	void rpc(const StringName &p_method, VarArgs... p_args) {
+		Variant args[sizeof...(p_args) + 1] = { p_args..., Variant() }; // +1 makes sure zero sized arrays are also supported.
+		const Variant *argptrs[sizeof...(p_args) + 1];
+		for (uint32_t i = 0; i < sizeof...(p_args); i++) {
+			argptrs[i] = &args[i];
+		}
+		rpcp(0, p_method, sizeof...(p_args) == 0 ? nullptr : (const Variant **)argptrs, sizeof...(p_args));
+	}
+
+	template <typename... VarArgs>
+	void rpc_id(int p_peer_id, const StringName &p_method, VarArgs... p_args) {
+		Variant args[sizeof...(p_args) + 1] = { p_args..., Variant() }; // +1 makes sure zero sized arrays are also supported.
+		const Variant *argptrs[sizeof...(p_args) + 1];
+		for (uint32_t i = 0; i < sizeof...(p_args); i++) {
+			argptrs[i] = &args[i];
+		}
+		rpcp(p_peer_id, p_method, sizeof...(p_args) == 0 ? nullptr : (const Variant **)argptrs, sizeof...(p_args));
+	}
+
 	void rpcp(int p_peer_id, const StringName &p_method, const Variant **p_arg, int p_argcount);
 
 	Ref<MultiplayerAPI> get_multiplayer() const;
 	Ref<MultiplayerAPI> get_custom_multiplayer() const;
 	void set_custom_multiplayer(Ref<MultiplayerAPI> p_multiplayer);
 
+	void set_load_by_avatar_resource(bool p_value) {
+		data.load_form_avatar_resource = p_value;
+	}
+	bool is_load_by_avatar_resource() {
+		return data.load_form_avatar_resource;
+	}
 	Node();
 	~Node();
 };
 
 VARIANT_ENUM_CAST(Node::DuplicateFlags);
+VARIANT_ENUM_CAST(Node::ProcessMode);
+VARIANT_ENUM_CAST(Node::InternalMode);
+VARIANT_ENUM_CAST(Node::NameCasing);
 
 typedef Set<Node *, Node::Comparator> NodeSet;
 

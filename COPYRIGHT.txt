@@ -130,10 +130,10 @@ Comment: Basis Universal
 Copyright: 2019, Binomial LLC.
 License: Apache-2.0
 
-Files: ./thirdparty/bullet/
-Comment: Bullet Continuous Collision Detection and Physics Library
-Copyright: 2003-2013, Erwin Coumans
-License: Zlib
+Files: ./thirdparty/brotli/
+Comment: Brotli
+Copyright: 2009, 2010, 2013-2016 by the Brotli Authors.
+License: Expat
 
 Files: ./thirdparty/certs/ca-certificates.crt
 Comment: CA certificates
@@ -399,7 +399,7 @@ License: Expat
 
 Files: ./thirdparty/thorvg/
 Comment: ThorVG
-Copyright: 2020-2021, Samsung Electronics Co., Ltd.
+Copyright: 2020-2022, Samsung Electronics Co., Ltd.
 License: Expat
 
 Files: ./thirdparty/tinyexr/

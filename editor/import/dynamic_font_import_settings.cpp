@@ -484,6 +484,14 @@ void DynamicFontImportSettings::_main_prop_changed(const String &p_edited_proper
 		if (font_preview->get_data_count() > 0) {
 			font_preview->get_data(0)->set_subpixel_positioning((TextServer::SubpixelPositioning)import_settings_data->get("subpixel_positioning").operator int());
 		}
+	} else if (p_edited_property == "embolden") {
+		if (font_preview->get_data_count() > 0) {
+			font_preview->get_data(0)->set_embolden(import_settings_data->get("embolden"));
+		}
+	} else if (p_edited_property == "transform") {
+		if (font_preview->get_data_count() > 0) {
+			font_preview->get_data(0)->set_transform(import_settings_data->get("transform"));
+		}
 	} else if (p_edited_property == "oversampling") {
 		if (font_preview->get_data_count() > 0) {
 			font_preview->get_data(0)->set_oversampling(import_settings_data->get("oversampling"));
@@ -637,7 +645,7 @@ void DynamicFontImportSettings::_glyph_text_selected() {
 				selected_glyphs.insert(gl[i].index);
 			}
 		}
-		TS->free(text_rid);
+		TS->free_rid(text_rid);
 		label_glyphs->set_text(TTR("Preloaded glyphs: ") + itos(selected_glyphs.size()));
 	}
 	_range_selected();
@@ -767,7 +775,6 @@ bool DynamicFontImportSettings::_char_update(int32_t p_char) {
 		selected_chars.insert(p_char);
 		return true;
 	}
-	label_glyphs->set_text(TTR("Preloaded glyphs: ") + itos(selected_glyphs.size()));
 }
 
 void DynamicFontImportSettings::_range_update(int32_t p_start, int32_t p_end) {
@@ -925,6 +932,8 @@ void DynamicFontImportSettings::_re_import() {
 	main_settings["force_autohinter"] = import_settings_data->get("force_autohinter");
 	main_settings["hinting"] = import_settings_data->get("hinting");
 	main_settings["subpixel_positioning"] = import_settings_data->get("subpixel_positioning");
+	main_settings["embolden"] = import_settings_data->get("embolden");
+	main_settings["transform"] = import_settings_data->get("transform");
 	main_settings["oversampling"] = import_settings_data->get("oversampling");
 	main_settings["compress"] = import_settings_data->get("compress");
 
@@ -1276,6 +1285,8 @@ void DynamicFontImportSettings::open_settings(const String &p_path) {
 		font_preview->get_data(0)->set_force_autohinter(import_settings_data->get("force_autohinter"));
 		font_preview->get_data(0)->set_hinting((TextServer::Hinting)import_settings_data->get("hinting").operator int());
 		font_preview->get_data(0)->set_subpixel_positioning((TextServer::SubpixelPositioning)import_settings_data->get("subpixel_positioning").operator int());
+		font_preview->get_data(0)->set_embolden(import_settings_data->get("embolden"));
+		font_preview->get_data(0)->set_transform(import_settings_data->get("transform"));
 		font_preview->get_data(0)->set_oversampling(import_settings_data->get("oversampling"));
 	}
 	font_preview_label->add_theme_font_override("font", font_preview);
@@ -1335,6 +1346,8 @@ DynamicFontImportSettings::DynamicFontImportSettings() {
 	options_general.push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::BOOL, "force_autohinter"), false));
 	options_general.push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::INT, "hinting", PROPERTY_HINT_ENUM, "None,Light,Normal"), 1));
 	options_general.push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::INT, "subpixel_positioning", PROPERTY_HINT_ENUM, "Disabled,Auto,One half of a pixel,One quarter of a pixel"), 1));
+	options_general.push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::FLOAT, "embolden", PROPERTY_HINT_RANGE, "-2,2,0.01"), 0.f));
+	options_general.push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::TRANSFORM2D, "transform"), Transform2D()));
 	options_general.push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::FLOAT, "oversampling", PROPERTY_HINT_RANGE, "0,10,0.1"), 0.0));
 	options_general.push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::BOOL, "compress", PROPERTY_HINT_NONE, ""), false));
 
@@ -1380,6 +1393,7 @@ DynamicFontImportSettings::DynamicFontImportSettings() {
 	add_child(root_vb);
 
 	main_pages = memnew(TabContainer);
+	main_pages->set_tab_alignment(TabBar::ALIGNMENT_CENTER);
 	main_pages->set_v_size_flags(Control::SIZE_EXPAND_FILL);
 	main_pages->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	root_vb->add_child(main_pages);
@@ -1394,7 +1408,7 @@ DynamicFontImportSettings::DynamicFontImportSettings() {
 	// Page 1 layout: Rendering Options
 
 	VBoxContainer *page1_vb = memnew(VBoxContainer);
-	page1_vb->set_meta("_tab_name", TTR("Rendering options"));
+	page1_vb->set_name(TTR("Rendering Options"));
 	main_pages->add_child(page1_vb);
 
 	page1_description = memnew(Label);
@@ -1425,7 +1439,7 @@ DynamicFontImportSettings::DynamicFontImportSettings() {
 
 	// Page 2 layout: Configurations
 	VBoxContainer *page2_vb = memnew(VBoxContainer);
-	page2_vb->set_meta("_tab_name", TTR("Sizes and variations"));
+	page2_vb->set_name(TTR("Sizes and Variations"));
 	main_pages->add_child(page2_vb);
 
 	page2_description = memnew(Label);
@@ -1477,7 +1491,7 @@ DynamicFontImportSettings::DynamicFontImportSettings() {
 
 	// Page 3 layout: Text to select glyphs
 	VBoxContainer *page3_vb = memnew(VBoxContainer);
-	page3_vb->set_meta("_tab_name", TTR("Glyphs from the text"));
+	page3_vb->set_name(TTR("Glyphs from the Text"));
 	main_pages->add_child(page3_vb);
 
 	page3_description = memnew(Label);
@@ -1534,7 +1548,7 @@ DynamicFontImportSettings::DynamicFontImportSettings() {
 
 	// Page 4 layout: Character map
 	VBoxContainer *page4_vb = memnew(VBoxContainer);
-	page4_vb->set_meta("_tab_name", TTR("Glyphs from the character map"));
+	page4_vb->set_name(TTR("Glyphs from the Character Map"));
 	main_pages->add_child(page4_vb);
 
 	page4_description = memnew(Label);
@@ -1585,7 +1599,7 @@ DynamicFontImportSettings::DynamicFontImportSettings() {
 
 	// Page 4 layout: Metadata override
 	VBoxContainer *page5_vb = memnew(VBoxContainer);
-	page5_vb->set_meta("_tab_name", TTR("Metadata override"));
+	page5_vb->set_name(TTR("Metadata Override"));
 	main_pages->add_child(page5_vb);
 
 	page5_description = memnew(Label);

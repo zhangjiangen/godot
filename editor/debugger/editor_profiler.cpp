@@ -396,6 +396,7 @@ void EditorProfiler::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_LAYOUT_DIRECTION_CHANGED:
+		case NOTIFICATION_THEME_CHANGED:
 		case NOTIFICATION_TRANSLATION_CHANGED: {
 			activate->set_icon(get_theme_icon(SNAME("Play"), SNAME("EditorIcons")));
 			clear_button->set_icon(get_theme_icon(SNAME("Clear"), SNAME("EditorIcons")));
@@ -659,7 +660,7 @@ EditorProfiler::EditorProfiler() {
 	h_split->add_child(graph);
 	graph->set_h_size_flags(SIZE_EXPAND_FILL);
 
-	int metric_size = CLAMP(int(EDITOR_DEF("debugger/profiler_frame_history_size", 600)), 60, 1024);
+	int metric_size = CLAMP(int(EDITOR_GET("debugger/profiler_frame_history_size")), 60, 1024);
 	frame_metrics.resize(metric_size);
 	total_metrics = 0;
 	last_metric = -1;

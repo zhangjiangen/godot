@@ -94,6 +94,7 @@ protected:
 
 public:
 	enum SaverFlags {
+		FLAG_NONE = 0,
 		FLAG_RELATIVE_PATHS = 1,
 		FLAG_BUNDLE_RESOURCES = 2,
 		FLAG_CHANGE_PATH = 4,
@@ -105,7 +106,7 @@ public:
 
 	static ResourceSaver *get_singleton() { return singleton; }
 
-	Error save(const String &p_path, const RES &p_resource, SaverFlags p_flags);
+	Error save(const String &p_path, const RES &p_resource, uint32_t p_flags);
 	Vector<String> get_recognized_extensions(const RES &p_resource);
 
 	ResourceSaver() { singleton = this; }
@@ -435,7 +436,7 @@ public:
 
 	void store_var(const Variant &p_var, bool p_full_objects = false);
 
-	bool file_exists(const String &p_name) const; // Return true if a file exists.
+	static bool file_exists(const String &p_name); // Return true if a file exists.
 
 	uint64_t get_modified_time(const String &p_file) const;
 

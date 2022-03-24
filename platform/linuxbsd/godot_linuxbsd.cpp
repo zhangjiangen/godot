@@ -44,13 +44,13 @@ int main(int argc, char *argv[]) {
 	// We must override main when testing is enabled
 	TEST_MAIN_OVERRIDE
 
-	char *cwd = (char *)malloc(PATH_MAX);
+	char *cwd = (char *)alloca(PATH_MAX);
 	ERR_FAIL_COND_V(!cwd, ERR_OUT_OF_MEMORY);
 	char *ret = getcwd(cwd, PATH_MAX);
 
 	Error err = Main::setup(argv[0], argc - 1, &argv[1]);
 	if (err != OK) {
-		free(cwd);
+		//free(cwd);
 		return 255;
 	}
 
@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
 			ERR_PRINT("Couldn't return to previous working directory.");
 		}
 	}
-	free(cwd);
+	//free(cwd);
 
 	return os.get_exit_code();
 }

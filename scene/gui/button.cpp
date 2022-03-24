@@ -293,7 +293,7 @@ void Button::_notification(int p_what) {
 			int text_clip = size.width - style->get_minimum_size().width - icon_ofs.width;
 			text_buf->set_width(clip_text ? text_clip : -1);
 
-			int text_width = clip_text ? MIN(text_clip, text_buf->get_size().x) : text_buf->get_size().x;
+			int text_width = MAX(1, clip_text ? MIN(text_clip, text_buf->get_size().x) : text_buf->get_size().x);
 
 			if (_internal_margin[SIDE_LEFT] > 0) {
 				text_clip -= _internal_margin[SIDE_LEFT] + get_theme_constant(SNAME("hseparation"));
@@ -584,8 +584,8 @@ Button::Button(const String &p_text) {
 	New_instantiate(text_buf);
 	text_buf->set_flags(TextServer::BREAK_MANDATORY);
 	button_color = Color(1, 1, 1);
-
 	set_mouse_filter(MOUSE_FILTER_STOP);
+
 	set_text(p_text);
 }
 

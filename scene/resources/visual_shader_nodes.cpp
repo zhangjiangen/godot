@@ -6425,7 +6425,7 @@ String VisualShaderNodeTextureUniformTriplanar::get_input_port_name(int p_port) 
 String VisualShaderNodeTextureUniformTriplanar::generate_global_per_node(Shader::Mode p_mode, int p_id) const {
 	StringBuilder code;
 
-	code + "// TRIPLANAR FUNCTION GLOBAL CODE\n";
+	code + "// " + get_caption() + "\n";
 	code + "	vec4 triplanar_texture(sampler2D p_sampler, vec3 p_weights, vec3 p_triplanar_pos) {\n";
 	code + "		vec4 samp = vec4(0.0);\n";
 	code + "		samp += texture(p_sampler, p_triplanar_pos.xy) * p_weights.z;\n";
@@ -6448,11 +6448,13 @@ String VisualShaderNodeTextureUniformTriplanar::generate_global_per_func(Shader:
 	StringBuilder code;
 
 	if (p_type == VisualShader::TYPE_VERTEX) {
-		code + "	// TRIPLANAR FUNCTION VERTEX CODE\n";
+		code + "// " + get_caption() + "\n";
+		code + "	{\n";
 		code + "		triplanar_power_normal = pow(abs(NORMAL), vec3(triplanar_sharpness));\n";
 		code + "		triplanar_power_normal /= dot(triplanar_power_normal, vec3(1.0));\n";
 		code + "		triplanar_pos = VERTEX * triplanar_scale + triplanar_offset;\n";
 		code + "		triplanar_pos *= vec3(1.0, -1.0, 1.0);\n";
+		code + "	}\n";
 	}
 
 	return code;
@@ -7622,7 +7624,6 @@ void VisualShaderNodeMultiplyAdd::_bind_methods() {
 	BIND_ENUM_CONSTANT(OP_TYPE_VECTOR_4D);
 	BIND_ENUM_CONSTANT(OP_TYPE_IVECTOR_2D);
 	BIND_ENUM_CONSTANT(OP_TYPE_IVECTOR_3D);
-	BIND_ENUM_CONSTANT(OP_TYPE_IVECTOR_2D);
 	BIND_ENUM_CONSTANT(OP_TYPE_IVECTOR_4D);
 	BIND_ENUM_CONSTANT(OP_TYPE_MAX);
 }
@@ -7669,29 +7670,29 @@ String VisualShaderNodeBillboard::generate_code(Shader::Mode p_mode, VisualShade
 	switch (billboard_type) {
 		case BILLBOARD_TYPE_ENABLED:
 			code + "	{\n";
-			code + "		mat4 __mvm = INV_CAMERA_MATRIX * mat4(CAMERA_MATRIX[0], CAMERA_MATRIX[1], CAMERA_MATRIX[2], WORLD_MATRIX[3]);\n";
+			code + "		mat4 __mvm = VIEW_MATRIX * mat4(INV_VIEW_MATRIX[0], INV_VIEW_MATRIX[1], INV_VIEW_MATRIX[2], MODEL_MATRIX[3]);\n";
 			if (keep_scale) {
-				code + "		__mvm = __mvm * mat4(vec4(length(WORLD_MATRIX[0].xyz), 0.0, 0.0, 0.0), vec4(0.0, length(WORLD_MATRIX[1].xyz), 0.0, 0.0), vec4(0.0, 0.0, length(WORLD_MATRIX[2].xyz), 0.0), vec4(0.0, 0.0, 0.0, 1.0));\n";
+				code + "		__mvm = __mvm * mat4(vec4(length(MODEL_MATRIX[0].xyz), 0.0, 0.0, 0.0), vec4(0.0, length(MODEL_MATRIX[1].xyz), 0.0, 0.0), vec4(0.0, 0.0, length(MODEL_MATRIX[2].xyz), 0.0), vec4(0.0, 0.0, 0.0, 1.0));\n";
 			}
 			code + "		" + p_output_vars[0] + " = __mvm;\n";
 			code + "	}\n";
 			break;
 		case BILLBOARD_TYPE_FIXED_Y:
 			code + "	{\n";
-			code + "		mat4 __mvm = INV_CAMERA_MATRIX * mat4(CAMERA_MATRIX[0], WORLD_MATRIX[1], vec4(normalize(cross(CAMERA_MATRIX[0].xyz, WORLD_MATRIX[1].xyz)), 0.0), WORLD_MATRIX[3]);\n";
+			code + "		mat4 __mvm = VIEW_MATRIX * mat4(INV_VIEW_MATRIX[0], MODEL_MATRIX[1], vec4(normalize(cross(INV_VIEW_MATRIX[0].xyz, MODEL_MATRIX[1].xyz)), 0.0), MODEL_MATRIX[3]);\n";
 			if (keep_scale) {
-				code + "		__mvm = __mvm * mat4(vec4(length(WORLD_MATRIX[0].xyz), 0.0, 0.0, 0.0), vec4(0.0, 1.0, 0.0, 0.0), vec4(0.0, 0.0, length(WORLD_MATRIX[2].xyz), 0.0), vec4(0.0, 0.0, 0.0, 1.0));\n";
+				code + "		__mvm = __mvm * mat4(vec4(length(MODEL_MATRIX[0].xyz), 0.0, 0.0, 0.0), vec4(0.0, 1.0, 0.0, 0.0), vec4(0.0, 0.0, length(MODEL_MATRIX[2].xyz), 0.0), vec4(0.0, 0.0, 0.0, 1.0));\n";
 			} else {
-				code + "		__mvm = __mvm * mat4(vec4(1.0, 0.0, 0.0, 0.0), vec4(0.0, 1.0 / length(WORLD_MATRIX[1].xyz), 0.0, 0.0), vec4(0.0, 0.0, 1.0, 0.0), vec4(0.0, 0.0, 0.0, 1.0));\n";
+				code + "		__mvm = __mvm * mat4(vec4(1.0, 0.0, 0.0, 0.0), vec4(0.0, 1.0 / length(MODEL_MATRIX[1].xyz), 0.0, 0.0), vec4(0.0, 0.0, 1.0, 0.0), vec4(0.0, 0.0, 0.0, 1.0));\n";
 			}
 			code + "		" + p_output_vars[0] + " = __mvm;\n";
 			code + "	}\n";
 			break;
 		case BILLBOARD_TYPE_PARTICLES:
 			code + "	{\n";
-			code + "		mat4 __wm = mat4(normalize(CAMERA_MATRIX[0]) * length(WORLD_MATRIX[0]), normalize(CAMERA_MATRIX[1]) * length(WORLD_MATRIX[0]), normalize(CAMERA_MATRIX[2]) * length(WORLD_MATRIX[2]), WORLD_MATRIX[3]);\n";
+			code + "		mat4 __wm = mat4(normalize(INV_VIEW_MATRIX[0]) * length(MODEL_MATRIX[0]), normalize(INV_VIEW_MATRIX[1]) * length(MODEL_MATRIX[0]), normalize(INV_VIEW_MATRIX[2]) * length(MODEL_MATRIX[2]), MODEL_MATRIX[3]);\n";
 			code + "		__wm = __wm * mat4(vec4(cos(INSTANCE_CUSTOM.x), -sin(INSTANCE_CUSTOM.x), 0.0, 0.0), vec4(sin(INSTANCE_CUSTOM.x), cos(INSTANCE_CUSTOM.x), 0.0, 0.0), vec4(0.0, 0.0, 1.0, 0.0), vec4(0.0, 0.0, 0.0, 1.0));\n";
-			code + "		" + p_output_vars[0] + " = INV_CAMERA_MATRIX * __wm;\n";
+			code + "		" + p_output_vars[0] + " = VIEW_MATRIX * __wm;\n";
 			code + "	}\n";
 			break;
 		default:

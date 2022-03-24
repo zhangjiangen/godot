@@ -85,11 +85,11 @@ float ImageUtils::get_red_sum(Ref<Image> image_ref, const Rect2 &rect) const {
 float ImageUtils::get_red_sum_weighted(Ref<Image> image_ref, Ref<Image> brush_ref, const Vector2 &p_pos, float factor) const {
 	ERR_FAIL_COND_V(image_ref.is_null(), 0.f);
 	ERR_FAIL_COND_V(brush_ref.is_null(), 0.f);
-	Image &image = **image_ref;
+	Image &image_r = **image_ref;
 	Image &brush = **brush_ref;
 
 	float sum = 0.f;
-	generic_brush_op(image, brush, p_pos, factor, [&sum](Image &image, int x, int y, float b) {
+	generic_brush_op(image_r, brush, p_pos, factor, [&sum](Image &image, int x, int y, float b) {
 		sum += image.get_pixel(x, y).r * b;
 	});
 
@@ -99,10 +99,10 @@ float ImageUtils::get_red_sum_weighted(Ref<Image> image_ref, Ref<Image> brush_re
 void ImageUtils::add_red_brush(Ref<Image> image_ref, Ref<Image> brush_ref, const Vector2 &p_pos, float factor) const {
 	ERR_FAIL_COND(image_ref.is_null());
 	ERR_FAIL_COND(brush_ref.is_null());
-	Image &image = **image_ref;
+	Image &imager = **image_ref;
 	Image &brush = **brush_ref;
 
-	generic_brush_op(image, brush, p_pos, factor, [](Image &image, int x, int y, float b) {
+	generic_brush_op(imager, brush, p_pos, factor, [](Image &image, int x, int y, float b) {
 		float r = image.get_pixel(x, y).r + b;
 		image.set_pixel(x, y, Color(r, r, r));
 	});
@@ -111,10 +111,10 @@ void ImageUtils::add_red_brush(Ref<Image> image_ref, Ref<Image> brush_ref, const
 void ImageUtils::lerp_channel_brush(Ref<Image> image_ref, Ref<Image> brush_ref, const Vector2 &p_pos, float factor, float target_value, int channel) const {
 	ERR_FAIL_COND(image_ref.is_null());
 	ERR_FAIL_COND(brush_ref.is_null());
-	Image &image = **image_ref;
+	Image &imager = **image_ref;
 	Image &brush = **brush_ref;
 
-	generic_brush_op(image, brush, p_pos, factor, [target_value, channel](Image &image, int x, int y, float b) {
+	generic_brush_op(imager, brush, p_pos, factor, [target_value, channel](Image &image, int x, int y, float b) {
 		Color c = image.get_pixel(x, y);
 		c[channel] = Math::lerp(c[channel], target_value, b);
 		image.set_pixel(x, y, c);
@@ -124,10 +124,10 @@ void ImageUtils::lerp_channel_brush(Ref<Image> image_ref, Ref<Image> brush_ref, 
 void ImageUtils::lerp_color_brush(Ref<Image> image_ref, Ref<Image> brush_ref, const Vector2 &p_pos, float factor, const Color &target_value) const {
 	ERR_FAIL_COND(image_ref.is_null());
 	ERR_FAIL_COND(brush_ref.is_null());
-	Image &image = **image_ref;
+	Image &imager = **image_ref;
 	Image &brush = **brush_ref;
 
-	generic_brush_op(image, brush, p_pos, factor, [target_value](Image &image, int x, int y, float b) {
+	generic_brush_op(imager, brush, p_pos, factor, [target_value](Image &image, int x, int y, float b) {
 		const Color c = image.get_pixel(x, y).lerp(target_value, b);
 		image.set_pixel(x, y, c);
 	});
@@ -137,10 +137,10 @@ void ImageUtils::lerp_color_brush(Ref<Image> image_ref, Ref<Image> brush_ref, co
 
 float ImageUtils::generate_gaussian_brush(Ref<Image> image_ref) const {
 	ERR_FAIL_COND_V(image_ref.is_null(), 0.f);
-	Image &image = **image_ref;
+	Image &imager = **image_ref;
 
-	int w = static_cast<int>(image.get_width());
-	int h = static_cast<int>(image.get_height());
+	int w = static_cast<int>(imager.get_width());
+	int h = static_cast<int>(imager.get_height());
 	Vector2 center(w / 2, h / 2);
 	float radius = Math::min(w, h) / 2;
 
@@ -152,7 +152,7 @@ float ImageUtils::generate_gaussian_brush(Ref<Image> image_ref) const {
 		for (int x = 0; x < w; ++x) {
 			float d = Vector2(x, y).distance_to(center) / radius;
 			float v = Math::clamp(1.f - d * d * d, 0.f, 1.f);
-			image.set_pixel(x, y, Color(v, v, v));
+			imager.set_pixel(x, y, Color(v, v, v));
 			sum += v;
 		}
 	}
@@ -315,6 +315,35 @@ void ImageUtils::paint_indexed_splat(Ref<Image> index_map_ref, Ref<Image> weight
 	}
 }
 
+Vector<float> ImageUtils::get_heightmap_max_spacing(Ref<Image> index_map_ref, int tile_x_count, int tile_z_count) {
+	Vector<float> ret;
+	if (index_map_ref->get_format() != Image::FORMAT_RH) {
+		return ret;
+	}
+	float t0, t1, t2, t3;
+	for (int xstart = 1; xstart < index_map_ref->get_width() - 1; xstart += tile_x_count - 1) {
+		for (int ystart = 1; ystart < index_map_ref->get_height() - 1; ystart += tile_z_count - 1) {
+			float max_range = -100.0f;
+			for (int x = xstart; x < tile_x_count; ++x) {
+				for (int y = ystart; y < tile_z_count; ++y) {
+					t0 = index_map_ref->get_pixel(x, y).r;
+					t1 = index_map_ref->get_pixel(x + 1, y).r;
+					t2 = index_map_ref->get_pixel(x, y + 1).r;
+					t3 = index_map_ref->get_pixel(x + 1, y + 1).r;
+					max_range = Math::abs(t0 - t1);
+					max_range = Math::abs(t2 - t3);
+					max_range = Math::abs(t0 - t2);
+					max_range = Math::abs(t1 - t3);
+					max_range = Math::abs(t0 - t3);
+					max_range = Math::abs(t1 - t2);
+				}
+			}
+			ret.append(max_range);
+		}
+	}
+	return ret;
+}
+
 void ImageUtils::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_red_range", "image", "rect"), &ImageUtils::get_red_range);
 	ClassDB::bind_method(D_METHOD("get_red_sum", "image", "rect"), &ImageUtils::get_red_sum);
@@ -324,5 +353,6 @@ void ImageUtils::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("lerp_color_brush", "image", "brush_image", "pos", "factor", "target_value"), &ImageUtils::lerp_color_brush);
 	ClassDB::bind_method(D_METHOD("generate_gaussian_brush", "image"), &ImageUtils::generate_gaussian_brush);
 	ClassDB::bind_method(D_METHOD("blur_red_brush", "image", "brush_image", "pos", "factor"), &ImageUtils::blur_red_brush);
+	ClassDB::bind_method(D_METHOD("get_heightmap_max_spacing", "image", "tile_x_count", "tile_z_count"), &ImageUtils::get_heightmap_max_spacing);
 	ClassDB::bind_method(D_METHOD("paint_indexed_splat", "index_map_ref", "weight_map_ref", "brush_ref", "pos", "texture_index", "actor"), &ImageUtils::paint_indexed_splat);
 }

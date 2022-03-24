@@ -1,4 +1,4 @@
-#pragma once
+
 #include "GrowthFunction.hpp"
 #include "./base_types/TreeFunction.hpp"
 #include "scene/3d/mtree/utilities/GeometryUtilities.hpp"
@@ -88,7 +88,7 @@ void Tree3DGrowthFunction::simulate_growth_rec(Tree3DNode &node, int id) {
 		node.children.push_back(std::make_shared<Tree3DNodeChild>(std::move(child)));
 		info.type = BioNodeInfo::NodeType::Branch;
 	}
-	for (size_t i = 0; i < child_count; i++) {
+	for (int i = 0; i < child_count; i++) {
 		simulate_growth_rec(node.children[i]->node, id);
 	}
 }
@@ -147,7 +147,7 @@ void Tree3DGrowthFunction::execute(std::vector<Tree3DStem> &stems, int id, int p
 	}
 
 	// 一次迭代可以看作是成长的一年
-	for (size_t i = 0; i < iterations; i++) // an iteration can be seen as a year of growth
+	for (int i = 0; i < iterations; i++) // an iteration can be seen as a year of growth
 	{
 		// 茎之间不共享能量
 		for (Tree3DStem &stem : stems) // the energy is not shared between stems

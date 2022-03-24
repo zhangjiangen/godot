@@ -859,7 +859,7 @@ Error VulkanContext::_create_physical_device(VkSurfaceKHR p_surface) {
 
 			uint32_t device_queue_family_count = 0;
 			vkGetPhysicalDeviceQueueFamilyProperties(physical_devices[i], &device_queue_family_count, nullptr);
-			VkQueueFamilyProperties *device_queue_props = (VkQueueFamilyProperties *)malloc(device_queue_family_count * sizeof(VkQueueFamilyProperties));
+			VkQueueFamilyProperties *device_queue_props = (VkQueueFamilyProperties *)alloca(device_queue_family_count * sizeof(VkQueueFamilyProperties));
 			vkGetPhysicalDeviceQueueFamilyProperties(physical_devices[i], &device_queue_family_count, device_queue_props);
 			for (uint32_t j = 0; j < device_queue_family_count; j++) {
 				VkBool32 supports;
@@ -898,7 +898,7 @@ Error VulkanContext::_create_physical_device(VkSurfaceKHR p_surface) {
 				}
 				vendor_idx++;
 			}
-			free(device_queue_props);
+			//free(device_queue_props);
 			print_verbose("  #" + itos(i) + ": " + vendor + " " + name + " - " + (present_supported ? "Supported" : "Unsupported") + ", " + dev_type);
 
 			if (present_supported) { // Select first supported device of preffered type: Discrete > Integrated > Virtual > CPU > Other.

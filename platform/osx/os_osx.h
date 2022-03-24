@@ -71,6 +71,7 @@ protected:
 
 	virtual void set_main_loop(MainLoop *p_main_loop) override;
 	virtual void delete_main_loop() override;
+	bool update_once();
 
 public:
 	String get_open_with_filename() const;

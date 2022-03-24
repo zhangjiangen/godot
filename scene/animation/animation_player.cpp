@@ -401,6 +401,22 @@ void AnimationPlayer::_ensure_node_caches(AnimationData *p_anim, Node *p_root_ov
 	}
 }
 
+static void _call_object(Object *p_object, const StringName &p_method, const Vector<Variant> &p_params, bool p_deferred) {
+	// Separate function to use alloca() more efficiently
+	const Variant **argptrs = (const Variant **)alloca(sizeof(const Variant **) * p_params.size());
+	const Variant *args = p_params.ptr();
+	uint32_t argcount = p_params.size();
+	for (uint32_t i = 0; i < argcount; i++) {
+		argptrs[i] = &args[i];
+	}
+	if (p_deferred) {
+		MessageQueue::get_singleton()->push_callp(p_object, p_method, argptrs, argcount);
+	} else {
+		Callable::CallError ce;
+		p_object->callp(p_method, argptrs, argcount, ce);
+	}
+}
+
 void AnimationPlayer::_animation_process_animation(AnimationData *p_anim, double p_time, double p_delta, float p_interp, bool p_is_current, bool p_seeked, bool p_started, int p_pingponged) {
 	_ensure_node_caches(p_anim);
 	ERR_FAIL_COND(p_anim->node_cache.size() != p_anim->animation->get_track_count());
@@ -677,41 +693,14 @@ void AnimationPlayer::_animation_process_animation(AnimationData *p_anim, double
 					StringName method = a->method_track_get_name(i, E);
 					Vector<Variant> params = a->method_track_get_params(i, E);
 
-					int s = params.size();
-
-					ERR_CONTINUE(s > VARIANT_ARG_MAX);
 #ifdef DEBUG_ENABLED
 					if (!nc->node->has_method(method)) {
 						ERR_PRINT("Invalid method call '" + method + "'. '" + a->get_name() + "' at node '" + get_path() + "'.");
 					}
 #endif
 
-					static_assert(VARIANT_ARG_MAX == 8, "This code needs to be updated if VARIANT_ARG_MAX != 8");
 					if (can_call) {
-						if (method_call_mode == ANIMATION_METHOD_CALL_DEFERRED) {
-							MessageQueue::get_singleton()->push_call(
-									nc->node,
-									method,
-									s >= 1 ? params[0] : Variant(),
-									s >= 2 ? params[1] : Variant(),
-									s >= 3 ? params[2] : Variant(),
-									s >= 4 ? params[3] : Variant(),
-									s >= 5 ? params[4] : Variant(),
-									s >= 6 ? params[5] : Variant(),
-									s >= 7 ? params[6] : Variant(),
-									s >= 8 ? params[7] : Variant());
-						} else {
-							nc->node->call_void(
-									method,
-									s >= 1 ? params[0] : Variant(),
-									s >= 2 ? params[1] : Variant(),
-									s >= 3 ? params[2] : Variant(),
-									s >= 4 ? params[3] : Variant(),
-									s >= 5 ? params[4] : Variant(),
-									s >= 6 ? params[5] : Variant(),
-									s >= 7 ? params[6] : Variant(),
-									s >= 8 ? params[7] : Variant());
-						}
+						_call_object(nc->node, method, params, method_call_mode == ANIMATION_METHOD_CALL_DEFERRED);
 					}
 				}
 
@@ -754,7 +743,7 @@ void AnimationPlayer::_animation_process_animation(AnimationData *p_anim, double
 
 					Ref<AudioStream> stream = a->audio_track_get_key_stream(i, idx);
 					if (!stream.is_valid()) {
-						nc->node->call_void("stop");
+						nc->node->call_void(SNAME("stop"));
 						nc->audio_playing = false;
 						playing_caches.erase(nc);
 					} else {
@@ -764,26 +753,23 @@ void AnimationPlayer::_animation_process_animation(AnimationData *p_anim, double
 						float len = stream->get_length();
 
 						if (start_ofs > len - end_ofs) {
-							nc->node->call_void("stop");
-							nc->audio_playing = false;
-							playing_caches.erase(nc);
+							nc->node->call_void(SNAME("stop"));
 							continue;
+
+							nc->node->call_void(SNAME("set_stream"), stream);
+							nc->node->call_void(SNAME("play"), start_ofs);
+
+							nc->audio_playing = true;
+							playing_caches.insert(nc);
+							if (len && end_ofs > 0) { //force an end at a time
+								nc->audio_len = len - start_ofs - end_ofs;
+							} else {
+								nc->audio_len = 0;
+							}
+
+							nc->audio_start = p_time;
 						}
-
-						nc->node->call_void("set_stream", stream);
-						nc->node->call_void("play", start_ofs);
-
-						nc->audio_playing = true;
-						playing_caches.insert(nc);
-						if (len && end_ofs > 0) { //force an end at a time
-							nc->audio_len = len - start_ofs - end_ofs;
-						} else {
-							nc->audio_len = 0;
-						}
-
-						nc->audio_start = p_time;
 					}
-
 				} else {
 					//find stuff to play
 					List<int> to_play;
@@ -793,7 +779,7 @@ void AnimationPlayer::_animation_process_animation(AnimationData *p_anim, double
 
 						Ref<AudioStream> stream = a->audio_track_get_key_stream(i, idx);
 						if (!stream.is_valid()) {
-							nc->node->call_void("stop");
+							nc->node->call_void(SNAME("stop"));
 							nc->audio_playing = false;
 							playing_caches.erase(nc);
 						} else {
@@ -801,8 +787,8 @@ void AnimationPlayer::_animation_process_animation(AnimationData *p_anim, double
 							float end_ofs = a->audio_track_get_key_end_offset(i, idx);
 							float len = stream->get_length();
 
-							nc->node->call_void("set_stream", stream);
-							nc->node->call_void("play", start_ofs);
+							nc->node->call_void(SNAME("set_stream"), stream);
+							nc->node->call_void(SNAME("play"), start_ofs);
 
 							nc->audio_playing = true;
 							playing_caches.insert(nc);
@@ -833,13 +819,12 @@ void AnimationPlayer::_animation_process_animation(AnimationData *p_anim, double
 
 						if (stop) {
 							//time to stop
-							nc->node->call_void("stop");
+							nc->node->call_void(SNAME("stop"));
 							nc->audio_playing = false;
 							playing_caches.erase(nc);
 						}
 					}
 				}
-
 			} break;
 			case Animation::TYPE_ANIMATION: {
 				AnimationPlayer *player = Object::cast_to<AnimationPlayer>(nc->node);
@@ -1544,7 +1529,7 @@ void AnimationPlayer::_animation_changed() {
 void AnimationPlayer::_stop_playing_caches() {
 	for (Set<TrackNodeCache *>::Element *E = playing_caches.front(); E; E = E->next()) {
 		if (E->get()->node && E->get()->audio_playing) {
-			E->get()->node->call_void("stop");
+			E->get()->node->call_void(SNAME("stop"));
 		}
 		if (E->get()->node && E->get()->animation_playing) {
 			AnimationPlayer *player = Object::cast_to<AnimationPlayer>(E->get()->node);

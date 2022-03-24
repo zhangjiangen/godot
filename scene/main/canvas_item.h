@@ -47,7 +47,7 @@ class CanvasItem : public Node {
 	friend class CanvasLayer;
 
 public:
-	enum TextureFilter : uint8_t {
+	enum TextureFilter {
 		TEXTURE_FILTER_PARENT_NODE,
 		TEXTURE_FILTER_NEAREST,
 		TEXTURE_FILTER_LINEAR,
@@ -58,7 +58,7 @@ public:
 		TEXTURE_FILTER_MAX
 	};
 
-	enum TextureRepeat : uint8_t {
+	enum TextureRepeat {
 		TEXTURE_REPEAT_PARENT_NODE,
 		TEXTURE_REPEAT_DISABLED,
 		TEXTURE_REPEAT_ENABLED,
@@ -104,7 +104,8 @@ private:
 
 	void _top_level_raise_self();
 
-	void _propagate_visibility_changed(bool p_visible, bool p_is_source = false);
+	void _propagate_visibility_changed(bool p_parent_visible_in_tree);
+	void _handle_visibility_change(bool p_visible);
 
 	void _update_callback();
 
@@ -212,6 +213,7 @@ public:
 
 	/* DRAWING API */
 
+	void draw_dashed_line(const Point2 &p_from, const Point2 &p_to, const Color &p_color, real_t p_width = 1.0, real_t p_dash = 2.0);
 	void draw_line(const Point2 &p_from, const Point2 &p_to, const Color &p_color, real_t p_width = 1.0);
 	void draw_polyline(const Vector<Point2> &p_points, const Color &p_color, real_t p_width = 1.0, bool p_antialiased = false);
 	void draw_polyline_colors(const Vector<Point2> &p_points, const Vector<Color> &p_colors, real_t p_width = 1.0, bool p_antialiased = false);
@@ -295,11 +297,11 @@ public:
 
 	void force_update_transform();
 
-	virtual void set_texture_filter(TextureFilter p_texture_filter);
-	TextureFilter get_texture_filter() const;
+	virtual void set_texture_filter(int p_texture_filter);
+	int get_texture_filter() const;
 
-	virtual void set_texture_repeat(TextureRepeat p_texture_repeat);
-	TextureRepeat get_texture_repeat() const;
+	virtual void set_texture_repeat(int32_t p_texture_repeat);
+	int32_t get_texture_repeat() const;
 
 	// Used by control nodes to retrieve the parent's anchorable area
 	virtual Rect2 get_anchorable_rect() const { return Rect2(0, 0, 0, 0); };
@@ -347,11 +349,11 @@ public:
 	void set_specular_shininess(real_t p_shininess);
 	real_t get_specular_shininess() const;
 
-	void set_texture_filter(CanvasItem::TextureFilter p_filter);
-	CanvasItem::TextureFilter get_texture_filter() const;
+	void set_texture_filter(int32_t p_filter);
+	int32_t get_texture_filter() const;
 
-	void set_texture_repeat(CanvasItem::TextureRepeat p_repeat);
-	CanvasItem::TextureRepeat get_texture_repeat() const;
+	void set_texture_repeat(int32_t p_repeat);
+	int32_t get_texture_repeat() const;
 
 	virtual int get_width() const override;
 	virtual int get_height() const override;

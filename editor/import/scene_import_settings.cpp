@@ -450,7 +450,7 @@ void SceneImportSettings::_update_camera() {
 	camera->set_orthogonal(camera_size * zoom, 0.0001, camera_size * 2);
 
 	Transform3D xf;
-	xf.basis = Basis(Vector3(0, 1, 0), rot_y) * Basis(Vector3(1, 0, 0), rot_x);
+	xf.basis = Basis(Vector3(1, 0, 0), rot_x) * Basis(Vector3(0, 1, 0), rot_y);
 	xf.origin = center;
 	xf.translate(0, 0, camera_size);
 
@@ -532,6 +532,8 @@ void SceneImportSettings::open_settings(const String &p_path) {
 	_update_scene();
 
 	base_viewport->add_child(scene);
+
+	inspector->edit(nullptr);
 
 	if (first_aabb) {
 		contents_aabb = AABB(Vector3(-1, -1, -1), Vector3(2, 2, 2));
@@ -1273,8 +1275,8 @@ SceneImportSettings::SceneImportSettings() {
 
 	item_save_path = memnew(EditorFileDialog);
 	item_save_path->set_file_mode(EditorFileDialog::FILE_MODE_SAVE_FILE);
-	item_save_path->add_filter("*.tres;Text Resource");
-	item_save_path->add_filter("*.res;Binary Resource");
+	item_save_path->add_filter("*.tres; " + TTR("Text Resource"));
+	item_save_path->add_filter("*.res; " + TTR("Binary Resource"));
 	add_child(item_save_path);
 	item_save_path->connect("file_selected", callable_mp(this, &SceneImportSettings::_save_path_changed));
 

@@ -1887,7 +1887,6 @@ ThemeItemEditorDialog::ThemeItemEditorDialog(ThemeTypeEditor *p_theme_type_edito
 	theme_type_editor = p_theme_type_editor;
 
 	tc = memnew(TabContainer);
-	tc->set_tab_alignment(TabContainer::ALIGNMENT_LEFT);
 	add_child(tc);
 
 	// Edit Items tab.
@@ -2046,6 +2045,7 @@ ThemeItemEditorDialog::ThemeItemEditorDialog(ThemeTypeEditor *p_theme_type_edito
 
 	// Import Items tab.
 	TabContainer *import_tc = memnew(TabContainer);
+	import_tc->set_tab_alignment(TabBar::ALIGNMENT_CENTER);
 	tc->add_child(import_tc);
 	tc->set_tab_title(1, TTR("Import Items"));
 
@@ -2077,7 +2077,7 @@ ThemeItemEditorDialog::ThemeItemEditorDialog(ThemeTypeEditor *p_theme_type_edito
 	List<String> ext;
 	ResourceLoader::get_recognized_extensions_for_type("Theme", &ext);
 	for (const String &E : ext) {
-		import_another_theme_dialog->add_filter("*." + E + "; Theme Resource");
+		import_another_theme_dialog->add_filter(vformat("*.%s; %s", E, TTR("Theme Resource")));
 	}
 	import_another_file_hb->add_child(import_another_theme_dialog);
 	import_another_theme_dialog->connect("file_selected", callable_mp(this, &ThemeItemEditorDialog::_select_another_theme_cbk));
@@ -3393,6 +3393,7 @@ ThemeTypeEditor::ThemeTypeEditor() {
 	add_default_items_button->connect("pressed", callable_mp(this, &ThemeTypeEditor::_add_default_type_items));
 
 	data_type_tabs = memnew(TabContainer);
+	data_type_tabs->set_tab_alignment(TabBar::ALIGNMENT_CENTER);
 	main_vb->add_child(data_type_tabs);
 	data_type_tabs->set_v_size_flags(SIZE_EXPAND_FILL);
 	data_type_tabs->set_use_hidden_tabs_for_min_size(true);
@@ -3640,7 +3641,6 @@ ThemeEditor::ThemeEditor() {
 	preview_tabs_vb->add_child(preview_tabs_content);
 
 	preview_tabs = memnew(TabBar);
-	preview_tabs->set_tab_alignment(TabBar::ALIGNMENT_LEFT);
 	preview_tabs->set_h_size_flags(SIZE_EXPAND_FILL);
 	preview_tabbar_hb->add_child(preview_tabs);
 	preview_tabs->connect("tab_changed", callable_mp(this, &ThemeEditor::_change_preview_tab));
@@ -3664,7 +3664,7 @@ ThemeEditor::ThemeEditor() {
 	List<String> ext;
 	ResourceLoader::get_recognized_extensions_for_type("PackedScene", &ext);
 	for (const String &E : ext) {
-		preview_scene_dialog->add_filter("*." + E + "; Scene");
+		preview_scene_dialog->add_filter(vformat("*.%s; %s", E, TTR("Scene")));
 	}
 	main_hs->add_child(preview_scene_dialog);
 	preview_scene_dialog->connect("file_selected", callable_mp(this, &ThemeEditor::_preview_scene_dialog_cbk));

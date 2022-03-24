@@ -1002,7 +1002,7 @@ static void register_builtin_method(const Vector<String> &p_argnames, const Vect
 	builtin_method_names[T::get_base_type()].push_back(name);
 }
 
-void Variant::call(const StringName &p_method, const Variant **p_args, int p_argcount, Variant &r_ret, Callable::CallError &r_error) {
+void Variant::callp(const StringName &p_method, const Variant **p_args, int p_argcount, Variant &r_ret, Callable::CallError &r_error) {
 	if (type == Variant::OBJECT) {
 		//call object
 		Object *obj = _get_obj().obj;
@@ -1468,6 +1468,8 @@ static void _register_variant_builtin_methods() {
 
 	bind_static_method(String, num_scientific, sarray("number"), varray());
 	bind_static_method(String, num, sarray("number", "decimals"), varray(-1));
+	bind_static_method(String, num_int64, sarray("number", "base", "capitalize_hex"), varray(10, false));
+	bind_static_method(String, num_uint64, sarray("number", "base", "capitalize_hex"), varray(10, false));
 	bind_static_method(String, chr, sarray("char"), varray());
 	bind_static_method(String, humanize_size, sarray("size"), varray());
 
@@ -1627,6 +1629,8 @@ static void _register_variant_builtin_methods() {
 	bind_method(Quaternion, is_normalized, sarray(), varray());
 	bind_method(Quaternion, is_equal_approx, sarray("to"), varray());
 	bind_method(Quaternion, inverse, sarray(), varray());
+	bind_method(Quaternion, log, sarray(), varray());
+	bind_method(Quaternion, exp, sarray(), varray());
 	bind_method(Quaternion, angle_to, sarray("to"), varray());
 	bind_method(Quaternion, dot, sarray("with"), varray());
 	bind_method(Quaternion, slerp, sarray("to", "weight"), varray());
@@ -1790,6 +1794,7 @@ static void _register_variant_builtin_methods() {
 	bind_method(Transform3D, inverse, sarray(), varray());
 	bind_method(Transform3D, affine_inverse, sarray(), varray());
 	bind_method(Transform3D, orthonormalized, sarray(), varray());
+	bind_method(Transform3D, make_scale_uniform, sarray(), varray());
 	bind_method(Transform3D, rotated, sarray("axis", "phi"), varray());
 	bind_method(Transform3D, scaled, sarray("scale"), varray());
 	bind_method(Transform3D, translated, sarray("offset"), varray());

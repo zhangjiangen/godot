@@ -321,7 +321,8 @@ public:
 	VisibilityMode get_navigation_visibility_mode();
 
 	// Cells accessors.
-	void set_cell(int p_layer, const Vector2i &p_coords, int p_source_id = -1, const Vector2i p_atlas_coords = TileSetSource::INVALID_ATLAS_COORDS, int p_alternative_tile = TileSetSource::INVALID_TILE_ALTERNATIVE);
+	void set_cell(int p_layer, const Vector2i &p_coords, int p_source_id = -1, const Vector2i p_atlas_coords = TileSetSource::INVALID_ATLAS_COORDS, int p_alternative_tile = 0);
+	void erase_cell(int p_layer, const Vector2i &p_coords);
 	int get_cell_source_id(int p_layer, const Vector2i &p_coords, bool p_use_proxies = false) const;
 	Vector2i get_cell_atlas_coords(int p_layer, const Vector2i &p_coords, bool p_use_proxies = false) const;
 	int get_cell_alternative_tile(int p_layer, const Vector2i &p_coords, bool p_use_proxies = false) const;
@@ -358,8 +359,8 @@ public:
 	virtual void set_light_mask(int p_light_mask) override;
 	virtual void set_material(const Ref<Material> &p_material) override;
 	virtual void set_use_parent_material(bool p_use_parent_material) override;
-	virtual void set_texture_filter(CanvasItem::TextureFilter p_texture_filter) override;
-	virtual void set_texture_repeat(CanvasItem::TextureRepeat p_texture_repeat) override;
+	virtual void set_texture_filter(int32_t p_texture_filter) override;
+	virtual void set_texture_repeat(int32_t p_texture_repeat) override;
 
 	// For finding tiles from collision.
 	Vector2i get_coords_for_body_rid(RID p_physics_body);
