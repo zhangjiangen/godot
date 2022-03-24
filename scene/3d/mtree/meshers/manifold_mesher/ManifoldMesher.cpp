@@ -228,16 +228,16 @@ Vector3 get_side_child_position(const Tree3DNode &parent, const Tree3DNodeChild 
 	return node_position + parent.direction * parent.length * child.position_in_parent + tangent * parent.radius;
 }
 
-bool has_side_branches(const Tree3DNode &node) {
-	if (node.children.size() < 2)
-		return false;
+// bool has_side_branches(const Tree3DNode &node) {
+// 	if (node.children.size() < 2)
+// 		return false;
 
-	for (size_t i = 1; i < node.children.size(); i++) {
-		if (node.children[i]->node.children.size() > 0)
-			return true;
-	}
-	return false;
-}
+// 	for (size_t i = 1; i < node.children.size(); i++) {
+// 		if (node.children[i]->node.children.size() > 0)
+// 			return true;
+// 	}
+// 	return false;
+// }
 
 void mesh_node_rec(const Tree3DNode &node, const Vector3 &node_position, const CircleDesignator &base, Tree3DMesh &mesh, const float uv_y) {
 	if (node.children.size() < 2) {
