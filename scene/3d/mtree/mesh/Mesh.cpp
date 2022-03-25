@@ -3,7 +3,7 @@
 std::vector<std::vector<float>> Tree3DMesh::get_vertices() {
 	auto result = std::vector<std::vector<float>>();
 	for (Vector3 &vert : this->vertices) {
-		result.push_back(std::vector<float>{ vert[0], vert[1], vert[2] });
+		result.push_back(std::vector<float>{ (float)vert[0], (float)vert[1], (float)vert[2] });
 	}
 	return result;
 }
