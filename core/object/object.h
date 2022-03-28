@@ -841,6 +841,7 @@ private:
 	ScriptInstance *script_instance = nullptr;
 	Variant script; // Reference does not exist yet, store it in a Variant.
 	OrderedHashMap<StringName, Variant> metadata;
+	Dictionary _main_property;
 	HashMap<StringName, OrderedHashMap<StringName, Variant>::Element> metadata_properties;
 	mutable StringName _class_name;
 	mutable const StringName *_class_ptr = nullptr;
@@ -1092,6 +1093,13 @@ public:
 	void remove_meta(const StringName &p_name);
 	Variant get_meta(const StringName &p_name) const;
 	void get_meta_list(List<StringName> *p_list) const;
+
+	void set_main_property(const Dictionary &pro) {
+		_main_property = pro;
+	}
+	Dictionary get_main_property() {
+		return _main_property;
+	}
 
 #ifdef TOOLS_ENABLED
 	void set_edited(bool p_edited);
