@@ -30,6 +30,12 @@
 
 #include "script_language_extension.h"
 
+void ScriptExtension::call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	ret.clear();
+}
+void ScriptExtension::call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+}
+
 void ScriptExtension::_bind_methods() {
 	GDVIRTUAL_BIND(_editor_can_reload_from_file);
 	GDVIRTUAL_BIND(_placeholder_erased, "placeholder");

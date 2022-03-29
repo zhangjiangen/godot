@@ -171,6 +171,7 @@ public:
 		}
 	}
 
+	EXBIND0RC(String, get_script_class_name)
 	EXBIND0RC(bool, is_placeholder_fallback_enabled)
 
 	GDVIRTUAL0RC(TypedArray<Dictionary>, _get_rpc_methods)
@@ -198,6 +199,10 @@ public:
 	}
 
 	ScriptExtension() {}
+	GDVIRTUAL2RC(Variant, _call_method, const StringName &, Array)
+
+	void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override;
+	void call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override;
 };
 
 typedef ScriptLanguage::ProfilingInfo ScriptLanguageExtensionProfilingInfo;
@@ -745,6 +750,26 @@ public:
 			r_error.expected = ce.expected;
 		}
 		return ret;
+	}
+	void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override {
+		ret.clear();
+		if (native_info->call_func) {
+			GDNativeCallError ce;
+			native_info->call_func(instance, (const GDNativeStringNamePtr)&p_method, (const GDNativeVariantPtr *)p_args, p_argcount, (GDNativeVariantPtr)&ret, &ce);
+			r_error.error = Callable::CallError::Error(ce.error);
+			r_error.argument = ce.argument;
+			r_error.expected = ce.expected;
+		}
+	}
+	void call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override {
+		Variant ret;
+		if (native_info->call_func) {
+			GDNativeCallError ce;
+			native_info->call_func(instance, (const GDNativeStringNamePtr)&p_method, (const GDNativeVariantPtr *)p_args, p_argcount, (GDNativeVariantPtr)&ret, &ce);
+			r_error.error = Callable::CallError::Error(ce.error);
+			r_error.argument = ce.argument;
+			r_error.expected = ce.expected;
+		}
 	}
 
 	virtual void notification(int p_notification) override {
