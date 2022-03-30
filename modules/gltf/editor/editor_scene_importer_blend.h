@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  FBXParseTools.h                                                      */
+/*  editor_scene_importer_blend.h                                        */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,84 +28,48 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef FBX_PARSE_TOOLS_H
-#define FBX_PARSE_TOOLS_H
+#ifndef EDITOR_SCENE_IMPORTER_BLEND_H
+#define EDITOR_SCENE_IMPORTER_BLEND_H
 
-#include "core/error/error_macros.h"
-#include "core/string/ustring.h"
+#ifdef TOOLS_ENABLED
 
-#include <stdint.h>
-#include <algorithm>
-#include <locale>
+#include "editor/import/resource_importer_scene.h"
 
-template <class char_t>
-inline bool IsNewLine(char_t c) {
-	return c == '\n' || c == '\r';
-}
-template <class char_t>
-inline bool IsSpace(char_t c) {
-	return (c == (char_t)' ' || c == (char_t)'\t');
-}
+class Animation;
+class Node;
 
-template <class char_t>
-inline bool IsSpaceOrNewLine(char_t c) {
-	return IsNewLine(c) || IsSpace(c);
-}
+class EditorSceneFormatImporterBlend : public EditorSceneFormatImporter {
+	GDCLASS(EditorSceneFormatImporterBlend, EditorSceneFormatImporter);
 
-template <class char_t>
-inline bool IsLineEnd(char_t c) {
-	return (c == (char_t)'\r' || c == (char_t)'\n' || c == (char_t)'\0' || c == (char_t)'\f');
-}
+public:
+	enum {
+		BLEND_VISIBLE_VISIBLE_ONLY,
+		BLEND_VISIBLE_RENDERABLE,
+		BLEND_VISIBLE_ALL
+	};
+	enum {
+		BLEND_BONE_INFLUENCES_NONE,
+		BLEND_BONE_INFLUENCES_COMPATIBLE,
+		BLEND_BONE_INFLUENCES_ALL
+	};
+	enum {
+		BLEND_MODIFIERS_NONE,
+		BLEND_MODIFIERS_ALL
+	};
 
-// ------------------------------------------------------------------------------------
-// Special version of the function, providing higher accuracy and safety
-// It is mainly used by fast_atof to prevent ugly and unwanted integer overflows.
-// ------------------------------------------------------------------------------------
-inline uint64_t strtoul10_64(const char *in, bool &errored, const char **out = nullptr, unsigned int *max_inout = nullptr) {
-	unsigned int cur = 0;
-	uint64_t value = 0;
+	virtual uint32_t get_import_flags() const override;
+	virtual void get_extensions(List<String> *r_extensions) const override;
+	virtual Node *import_scene(const String &p_path, uint32_t p_flags,
+			const Map<StringName, Variant> &p_options, int p_bake_fps,
+			List<String> *r_missing_deps, Error *r_err = nullptr) override;
+	virtual Ref<Animation> import_animation(const String &p_path, uint32_t p_flags,
+			const Map<StringName, Variant> &p_options, int p_bake_fps) override;
+	virtual void get_import_options(const String &p_path,
+			List<ResourceImporter::ImportOption> *r_options) override;
+	virtual Variant get_option_visibility(const String &p_path, const String &p_option,
+			const Map<StringName, Variant> &p_options) override;
+};
 
-	errored = *in < '0' || *in > '9';
-	ERR_FAIL_COND_V_MSG(errored, 0, "The string cannot be converted parser error");
+#endif // TOOLS_ENABLED
 
-	for (;;) {
-		if (*in < '0' || *in > '9') {
-			break;
-		}
-
-		const uint64_t new_value = (value * (uint64_t)10) + ((uint64_t)(*in - '0'));
-
-		// numeric overflow, we rely on you
-		if (new_value < value) {
-			//WARN_PRINT( "Converting the string \" " + in + " \" into a value resulted in overflow." );
-			return 0;
-		}
-
-		value = new_value;
-
-		++in;
-		++cur;
-
-		if (max_inout && *max_inout == cur) {
-			if (out) { /* skip to end */
-				while (*in >= '0' && *in <= '9') {
-					++in;
-				}
-				*out = in;
-			}
-
-			return value;
-		}
-	}
-	if (out) {
-		*out = in;
-	}
-
-	if (max_inout) {
-		*max_inout = cur;
-	}
-
-	return value;
-}
-
-#endif // FBX_PARSE_TOOLS_H
+#endif // EDITOR_SCENE_IMPORTER_BLEND_H
