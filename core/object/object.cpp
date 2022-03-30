@@ -932,7 +932,9 @@ String Object::to_string() {
 		}
 	}
 	if (_extension && _extension->to_string) {
-		return _extension->to_string(_extension_instance);
+		String ret;
+		_extension->to_string(_extension_instance, &ret);
+		return ret;
 	}
 	return "[" + get_class() + ":" + itos(get_instance_id()) + "]";
 }
@@ -1691,8 +1693,13 @@ void Object::_bind_methods() {
 
 	ClassDB::add_virtual_method("Object", MethodInfo("free"), false);
 
+	ClassDB::bind_method(D_METHOD("set_main_property", "property"), &Object::set_main_property);
+	ClassDB::bind_method(D_METHOD("get_main_property"), &Object::get_main_property);
+
 	ADD_SIGNAL(MethodInfo("script_changed"));
 	ADD_SIGNAL(MethodInfo("property_list_changed"));
+
+	//ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "main_property"), "set_main_property", "get_main_property");
 
 #define BIND_OBJ_CORE_METHOD(m_method) \
 	::ClassDB::add_virtual_method(get_class_static(), m_method, true, Vector<String>(), true);
