@@ -242,6 +242,7 @@ public:
 	void set_edit_state(const Variant &p_state);
 
 	void set_error_count(int p_error_count);
+	void get_error_pos(int &p_line, int &p_column);
 	void set_warning_count(int p_warning_count);
 
 	void update_editor_settings();
@@ -253,7 +254,7 @@ public:
 	void set_find_replace_bar(FindReplaceBar *p_bar);
 	void remove_find_replace_bar();
 	virtual void apply_code() {}
-	void goto_error();
+	virtual void goto_error();
 
 	void toggle_bookmark();
 	void goto_next_bookmark();

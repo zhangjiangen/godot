@@ -127,7 +127,7 @@ void Tree3DBranchFunction::grow_node_once(Tree3DNode &node, const int id, std::q
 		return;
 	}
 
-	Tree3DNodeChild child{ Tree3DNode{ child_direction, node.tangent, child_length, child_radius, can_spawn_leafs, id }, 1 };
+	Tree3DNodeChild child{ Tree3DNode{ child_direction, node.tangent, child_length, child_radius, can_spawn_leafs, id ,nullptr }, 1 };
 	node.children.push_back(std::make_shared<Tree3DNodeChild>(std::move(child)));
 	auto &child_node = node.children.back()->node;
 
@@ -144,15 +144,15 @@ void Tree3DBranchFunction::grow_node_once(Tree3DNode &node, const int id, std::q
 		Vector3 split_child_direction = get_split_direction(node, info.position, up_attraction, flatness, resolution, split_angle);
 		float split_child_radius = node.radius * split_radius;
 
-		Tree3DNodeChild child{ Tree3DNode{ split_child_direction, node.tangent, child_length, split_child_radius, can_spawn_leafs, id }, rand_gen.get_0_1() };
+		Tree3DNodeChild child{ Tree3DNode{ split_child_direction, node.tangent, child_length, split_child_radius, can_spawn_leafs, id ,nullptr}, rand_gen.get_0_1() };
 		node.children.push_back(std::make_shared<Tree3DNodeChild>(std::move(child)));
-		auto &child_node = node.children.back()->node;
+		auto &cn = node.children.back()->node;
 
 		Vector3 split_child_position = info.position + split_child_direction * child_length;
 		BranchGrowthInfo child_info{ info.desired_length, info.origin_radius * split_radius, split_child_position, current_length };
-		child_node.growthInfo = std::make_unique<BranchGrowthInfo>(child_info);
+		cn.growthInfo = std::make_unique<BranchGrowthInfo>(child_info);
 		if (current_length < info.desired_length) {
-			results.push(std::ref<Tree3DNode>(child_node));
+			results.push(std::ref<Tree3DNode>(cn));
 		}
 	}
 }
@@ -235,15 +235,15 @@ std::vector<std::reference_wrapper<Tree3DNode>> Tree3DBranchFunction::get_origin
 					Vector3 child_direction = Tree3DGeometry::lerp(node.direction, tangent, start_angle.execute(factor) / 90);
 					child_direction.normalize();
 					float child_radius = node.radius * start_radius.execute(factor);
-					float branch_length = length.execute(factor);
-					float node_length = std::min(branch_length, 1 / (resolution + 0.001f));
+					float branch_len = length.execute(factor);
+					float node_length = std::min(branch_len, 1 / (resolution + 0.001f));
 					Tree3DNodeChild child{ Tree3DNode{ child_direction, node.tangent, node_length, child_radius, can_spawn_leafs, id }, position_in_parent };
 					node.children.push_back(std::make_shared<Tree3DNodeChild>(std::move(child)));
 					auto &child_node = node.children.back()->node;
 					Vector3 child_position = node_position + node.direction * node.length * position_in_parent;
-					child_node.growthInfo = std::make_unique<BranchGrowthInfo>(branch_length - node_length, child_radius, child_position, child_node.length, 0);
+					child_node.growthInfo = std::make_unique<BranchGrowthInfo>(branch_len - node_length, child_radius, child_position, child_node.length, 0);
 
-					if (branch_length - node_length > 1e-3)
+					if (branch_len - node_length > 1e-3)
 						origins.push_back(std::ref(child_node));
 					position_in_parent += position_in_parent_step;
 					if (i > 0) {

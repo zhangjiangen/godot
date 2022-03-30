@@ -145,6 +145,7 @@ private:
 			bool hidden = false;
 			int height = 0;
 			int width = 0;
+			float font_color_intensity = 1.0f;
 
 			Line() {
 				New_instantiate(data_buf);
@@ -240,6 +241,8 @@ private:
 		/* Line style. */
 		void set_line_background_color(int p_line, const Color &p_color) { text.write[p_line].background_color = p_color; }
 		const Color get_line_background_color(int p_line) const { return text[p_line].background_color; }
+		void set_line_font_color_intensity(int p_line, const float p_color) { text.write[p_line].font_color_intensity = p_color; }
+		float get_line_font_color_intensity(int p_line) const { return text[p_line].font_color_intensity; }
 	};
 
 	/* Text */
@@ -919,7 +922,8 @@ public:
 	// Line style
 	void set_line_background_color(int p_line, const Color &p_color);
 	Color get_line_background_color(int p_line) const;
-
+	void set_line_font_color_intensity(int p_line, const float font_color_intensity);
+	float get_line_font_color_intensity(int p_line) const;
 	/* Syntax Highlighting. */
 	void set_syntax_highlighter(Ref<SyntaxHighlighter> p_syntax_highlighter);
 	Ref<SyntaxHighlighter> get_syntax_highlighter() const;
