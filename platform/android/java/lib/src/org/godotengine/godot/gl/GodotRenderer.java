@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  editor_scene_importer_gltf.cpp                                       */
+/*  GodotRenderer.java                                                   */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,45 +28,61 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifdef TOOLS_ENABLED
+package org.godotengine.godot.gl;
 
-#include "editor_scene_importer_gltf.h"
+import org.godotengine.godot.GodotLib;
+import org.godotengine.godot.plugin.GodotPlugin;
+import org.godotengine.godot.plugin.GodotPluginRegistry;
 
-#include "../gltf_document.h"
-#include "../gltf_state.h"
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
 
-#include "scene/main/node.h"
-#include "scene/resources/animation.h"
+/**
+ * Godot's GL renderer implementation.
+ */
+public class GodotRenderer implements GLSurfaceView.Renderer {
+	private final GodotPluginRegistry pluginRegistry;
+	private boolean activityJustResumed = false;
 
-uint32_t EditorSceneFormatImporterGLTF::get_import_flags() const {
-	return ImportFlags::IMPORT_SCENE | ImportFlags::IMPORT_ANIMATION;
-}
-
-void EditorSceneFormatImporterGLTF::get_extensions(List<String> *r_extensions) const {
-	r_extensions->push_back("gltf");
-	r_extensions->push_back("glb");
-}
-
-Node *EditorSceneFormatImporterGLTF::import_scene(const String &p_path, uint32_t p_flags,
-		const Map<StringName, Variant> &p_options, int p_bake_fps,
-		List<String> *r_missing_deps, Error *r_err) {
-	Ref<GLTFDocument> doc;
-	doc.instantiate();
-	Ref<GLTFState> state;
-	state.instantiate();
-	Error err = doc->append_from_file(p_path, state, p_flags, p_bake_fps);
-	if (err != OK) {
-		if (r_err) {
-			*r_err = err;
-		}
-		return nullptr;
+	public GodotRenderer() {
+		this.pluginRegistry = GodotPluginRegistry.getPluginRegistry();
 	}
-	return doc->generate_scene(state, p_bake_fps);
-}
 
-Ref<Animation> EditorSceneFormatImporterGLTF::import_animation(const String &p_path,
-		uint32_t p_flags, const Map<StringName, Variant> &p_options, int p_bake_fps) {
-	return Ref<Animation>();
-}
+	public boolean onDrawFrame(GL10 gl) {
+		if (activityJustResumed) {
+			GodotLib.onRendererResumed();
+			activityJustResumed = false;
+		}
 
-#endif // TOOLS_ENABLED
+		boolean swapBuffers = GodotLib.step();
+		for (GodotPlugin plugin : pluginRegistry.getAllPlugins()) {
+			plugin.onGLDrawFrame(gl);
+		}
+
+		return swapBuffers;
+	}
+
+	public void onSurfaceChanged(GL10 gl, int width, int height) {
+		GodotLib.resize(null, width, height);
+		for (GodotPlugin plugin : pluginRegistry.getAllPlugins()) {
+			plugin.onGLSurfaceChanged(gl, width, height);
+		}
+	}
+
+	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+		GodotLib.newcontext(null);
+		for (GodotPlugin plugin : pluginRegistry.getAllPlugins()) {
+			plugin.onGLSurfaceCreated(gl, config);
+		}
+	}
+
+	public void onActivityResumed() {
+		// We defer invoking GodotLib.onRendererResumed() until the first draw frame call.
+		// This ensures we have a valid GL context and surface when we do so.
+		activityJustResumed = true;
+	}
+
+	public void onActivityPaused() {
+		GodotLib.onRendererPaused();
+	}
+}

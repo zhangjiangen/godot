@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  GodotRenderer.java                                                   */
+/*  editor_scene_importer_blend.h                                        */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,61 +28,48 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-package org.godotengine.godot;
+#ifndef EDITOR_SCENE_IMPORTER_BLEND_H
+#define EDITOR_SCENE_IMPORTER_BLEND_H
 
-import org.godotengine.godot.plugin.GodotPlugin;
-import org.godotengine.godot.plugin.GodotPluginRegistry;
-import org.godotengine.godot.utils.GLUtils;
+#ifdef TOOLS_ENABLED
 
-import android.opengl.GLSurfaceView;
+#include "editor/import/resource_importer_scene.h"
 
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
+class Animation;
+class Node;
 
-/**
- * Godot's renderer implementation.
- */
-class GodotRenderer implements GLSurfaceView.Renderer {
-	private final GodotPluginRegistry pluginRegistry;
-	private boolean activityJustResumed = false;
+class EditorSceneFormatImporterBlend : public EditorSceneFormatImporter {
+	GDCLASS(EditorSceneFormatImporterBlend, EditorSceneFormatImporter);
 
-	GodotRenderer() {
-		this.pluginRegistry = GodotPluginRegistry.getPluginRegistry();
-	}
+public:
+	enum {
+		BLEND_VISIBLE_VISIBLE_ONLY,
+		BLEND_VISIBLE_RENDERABLE,
+		BLEND_VISIBLE_ALL
+	};
+	enum {
+		BLEND_BONE_INFLUENCES_NONE,
+		BLEND_BONE_INFLUENCES_COMPATIBLE,
+		BLEND_BONE_INFLUENCES_ALL
+	};
+	enum {
+		BLEND_MODIFIERS_NONE,
+		BLEND_MODIFIERS_ALL
+	};
 
-	public void onDrawFrame(GL10 gl) {
-		if (activityJustResumed) {
-			GodotLib.onRendererResumed();
-			activityJustResumed = false;
-		}
+	virtual uint32_t get_import_flags() const override;
+	virtual void get_extensions(List<String> *r_extensions) const override;
+	virtual Node *import_scene(const String &p_path, uint32_t p_flags,
+			const Map<StringName, Variant> &p_options, int p_bake_fps,
+			List<String> *r_missing_deps, Error *r_err = nullptr) override;
+	virtual Ref<Animation> import_animation(const String &p_path, uint32_t p_flags,
+			const Map<StringName, Variant> &p_options, int p_bake_fps) override;
+	virtual void get_import_options(const String &p_path,
+			List<ResourceImporter::ImportOption> *r_options) override;
+	virtual Variant get_option_visibility(const String &p_path, const String &p_option,
+			const Map<StringName, Variant> &p_options) override;
+};
 
-		GodotLib.step();
-		for (GodotPlugin plugin : pluginRegistry.getAllPlugins()) {
-			plugin.onGLDrawFrame(gl);
-		}
-	}
+#endif // TOOLS_ENABLED
 
-	public void onSurfaceChanged(GL10 gl, int width, int height) {
-		GodotLib.resize(null, width, height);
-		for (GodotPlugin plugin : pluginRegistry.getAllPlugins()) {
-			plugin.onGLSurfaceChanged(gl, width, height);
-		}
-	}
-
-	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-		GodotLib.newcontext(null);
-		for (GodotPlugin plugin : pluginRegistry.getAllPlugins()) {
-			plugin.onGLSurfaceCreated(gl, config);
-		}
-	}
-
-	void onActivityResumed() {
-		// We defer invoking GodotLib.onRendererResumed() until the first draw frame call.
-		// This ensures we have a valid GL context and surface when we do so.
-		activityJustResumed = true;
-	}
-
-	void onActivityPaused() {
-		GodotLib.onRendererPaused();
-	}
-}
+#endif // EDITOR_SCENE_IMPORTER_BLEND_H
