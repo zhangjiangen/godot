@@ -30,7 +30,6 @@
 
 #include "shader_preprocessor.h"
 #include "core/math/expression.h"
-#include "editor/property_editor.h"
 
 // static bool is_whitespace(CharType p_c) {
 // 	return (p_c == ' ') || (p_c == '\t');
