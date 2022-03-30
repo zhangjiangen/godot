@@ -61,7 +61,6 @@ class ShaderTextEditor : public CodeTextEditor {
 	Ref<Shader> shader;
 	String error_shader_path;
 	List<ShaderWarning> warnings;
-	ShaderEditor *shader_editor;
 	Error last_compile_result = Error::OK;
 
 	void _check_shader_mode();
