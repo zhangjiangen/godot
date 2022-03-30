@@ -145,6 +145,7 @@ private:
 			bool hidden = false;
 			int height = 0;
 			int width = 0;
+			float font_color_intensity = 1.0f;
 
 			Line() {
 				New_instantiate(data_buf);
