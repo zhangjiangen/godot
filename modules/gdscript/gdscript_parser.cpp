@@ -2128,7 +2128,10 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_precedence(Precedence p_pr
 		}
 		token = advance();
 		ParseFunction infix_rule = get_rule(token.type)->infix;
-		previous_operand = (this->*infix_rule)(previous_operand, p_can_assign);
+		if(infix_rule != nullptr)
+		{
+			previous_operand = (this->*infix_rule)(previous_operand, p_can_assign);
+		}
 	}
 
 	return previous_operand;
