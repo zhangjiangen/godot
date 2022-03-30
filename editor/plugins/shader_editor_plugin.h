@@ -61,12 +61,14 @@ class ShaderTextEditor : public CodeTextEditor {
 	Ref<Shader> shader;
 	String error_shader_path;
 	List<ShaderWarning> warnings;
+	class ShaderEditor *shader_editor;
 	Error last_compile_result = Error::OK;
 
 	void _check_shader_mode();
 	void _update_warning_panel();
 
 	void _clear_tree_item_backgrounds(TreeItem *p_node);
+
 protected:
 	void _notification(int p_what);
 	static void _bind_methods();

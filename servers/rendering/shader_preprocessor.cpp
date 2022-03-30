@@ -32,9 +32,9 @@
 #include "core/math/expression.h"
 #include "editor/property_editor.h"
 
-static bool is_whitespace(CharType p_c) {
-	return (p_c == ' ') || (p_c == '\t');
-}
+// static bool is_whitespace(CharType p_c) {
+// 	return (p_c == ' ') || (p_c == '\t');
+// }
 
 static String vector_to_string(const Vector<CharType> &p_v, int p_start = 0, int p_end = -1) {
 	const int stop = (p_end == -1) ? p_v.size() : p_end;

@@ -19,7 +19,7 @@ void Tree3DTrunkFunction::execute(std::vector<Tree3DStem> &stems, int id, int pa
 		direction += Vector3(0, 0, up_attraction / (resolution + .001f));
 		direction.normalize();
 		float position_in_parent = 1;
-		Tree3DNodeChild child{ Tree3DNode{ direction, firstNode.tangent, segment_length, radius, false, id }, position_in_parent };
+		Tree3DNodeChild child{ Tree3DNode(direction, firstNode.tangent, segment_length, radius, false, id), position_in_parent };
 		current_node->children.push_back(std::make_shared<Tree3DNodeChild>(std::move(child)));
 		current_node = &current_node->children.back()->node;
 	}

@@ -304,7 +304,7 @@ void ShaderTextEditor::_code_complete_script(const String &p_code, List<ScriptLa
 void ShaderTextEditor::_validate_script() {
 	_check_shader_mode();
 
-	String code = get_text_editor()->get_text();
+	//String code = get_text_editor()->get_text();
 	//List<StringName> params;
 	//shader->get_param_list(&params);
 
@@ -713,14 +713,6 @@ void ShaderEditor::_editor_settings_changed() {
 void ShaderEditor::_show_warnings_panel(bool p_show) {
 	warnings_panel->set_visible(p_show);
 }
-void ShaderEditor::_warning_clicked(Variant p_data) {
-	if (p_data.get_type() == Variant::ARRAY) {
-		// open shader path
-		Array data_array = p_data.operator Array();
-		open_path(data_array[1].operator String());
-		shader_editor->get_text_editor()->set_caret_line((data_array[0]).operator int64_t());
-	}
-}
 void ShaderEditor::_warning_clicked(Variant p_line) {
 	if (p_line.get_type() == Variant::INT) {
 		shader_editor->get_text_editor()->set_caret_line(p_line.operator int64_t());
@@ -1127,7 +1119,7 @@ ShaderEditor::ShaderEditor() {
 	view_menu->set_text(TTR("View"));
 	view_menu->set_switch_on_hover(true);
 
-	view_menu->get_popup()->add_icon_item(p_node->get_gui_base()->get_theme_icon(SNAME("Tree"), SNAME("EditorIcons")), TTR("Shader Dependencies"), VIEW_SHADER_DEPENDENCIES);
+	view_menu->get_popup()->add_icon_item(get_theme_icon(SNAME("Tree"), SNAME("EditorIcons")), TTR("Shader Dependencies"), VIEW_SHADER_DEPENDENCIES);
 	view_menu->get_popup()->connect("id_pressed", callable_mp(this, &ShaderEditor::_menu_option));
 
 	help_menu = memnew(MenuButton);
