@@ -1073,7 +1073,7 @@ public:
 	bool has_meta(const StringName &p_name) const;
 	void set_meta(const StringName &p_name, const Variant &p_value);
 	void remove_meta(const StringName &p_name);
-	Variant get_meta(const StringName &p_name) const;
+	Variant get_meta(const StringName &p_name, const Variant &p_default = Variant()) const;
 	void get_meta_list(List<StringName> *p_list) const;
 
 	void set_main_property(const Dictionary &pro) {
