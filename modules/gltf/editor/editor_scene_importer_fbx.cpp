@@ -29,7 +29,6 @@
 /*************************************************************************/
 
 #include "editor_scene_importer_fbx.h"
-
 #if TOOLS_ENABLED
 
 #include "../gltf_document.h"
