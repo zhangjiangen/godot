@@ -721,9 +721,16 @@ struct VariantUtilityFunctions {
 		Object *ret = ObjectDB::get_instance(id);
 		return ret;
 	}
+	static inline Object *instance_from_rid(ObjectID p_id) {
+		Object *ret = ObjectDB::get_instance(p_id);
+		return ret;
+	}
 
 	static inline bool is_instance_id_valid(int64_t p_id) {
 		return ObjectDB::get_instance(ObjectID((uint64_t)p_id)) != nullptr;
+	}
+	static inline bool is_instance_rid_valid(ObjectID p_id) {
+		return ObjectDB::get_instance(p_id) != nullptr;
 	}
 
 	static inline bool is_instance_valid(const Variant &p_instance) {
@@ -738,6 +745,109 @@ struct VariantUtilityFunctions {
 	}
 	static inline RID rid_from_int64(uint64_t p_base) {
 		return RID::from_uint64(p_base);
+	}
+	// 判断是否为工具模式
+	static inline bool app_flag_is_tool() {
+#ifdef TOOLS_ENABLED
+		return true;
+#endif
+		return false;
+	}
+	static inline bool app_flag_is_3d() {
+#ifndef _3D_DISABLED
+		return true;
+#endif
+		return false;
+	}
+	static inline bool app_flag_is_debug() {
+#ifdef DEBUG_ENABLED
+		return true;
+#endif
+		return false;
+	}
+	static inline bool app_flag_is_developer() {
+#ifdef DEV_ENABLED
+		return true;
+#endif
+		return false;
+	}
+	static inline bool app_flag_real_is_double() {
+#ifdef REAL_T_IS_DOUBLE
+		return true;
+#endif
+		return false;
+	}
+	static inline bool app_flag_no_debug() {
+#ifdef NDEBUG
+		return true;
+#endif
+		return false;
+	}
+	static inline bool app_flag_vulkan_enable() {
+#ifdef VULKAN_ENABLED
+		return true;
+#endif
+		return false;
+	}
+	static inline bool app_flag_gles3_enable() {
+#ifdef GLES3_ENABLED
+		return true;
+#endif
+		return false;
+	}
+	static inline bool app_flag_x11_enable() {
+#ifdef X11_ENABLED
+		return true;
+#endif
+		return false;
+	}
+	static inline bool app_flag_unix_enable() {
+#ifdef UNIX_ENABLED
+		return true;
+#endif
+		return false;
+	}
+	static inline bool app_flag_win64_enable() {
+#ifdef _WIN64
+		return true;
+#endif
+		return false;
+	}
+	static inline bool app_flag_windows_enable() {
+#ifdef WINDOWS_ENABLED
+		return true;
+#endif
+		return false;
+	}
+	static inline bool app_flag_osx_enable() {
+#ifdef OSX_ENABLED
+		return true;
+#endif
+		return false;
+	}
+	static inline bool app_flag_touch_enable() {
+#ifdef TOUCH_ENABLED
+		return true;
+#endif
+		return false;
+	}
+	static inline bool app_flag_iphone_enable() {
+#ifdef IPHONE_ENABLED
+		return true;
+#endif
+		return false;
+	}
+	static inline bool app_flag_javascript_enable() {
+#ifdef JAVASCRIPT_ENABLED
+		return true;
+#endif
+		return false;
+	}
+	static inline bool app_flag_android_enable() {
+#ifdef ANDROID_ENABLED
+		return true;
+#endif
+		return false;
 	}
 };
 
@@ -1110,16 +1220,16 @@ static _FORCE_INLINE_ Variant::Type get_ret_type_helper(void (*p_func)(P...)) {
 	register_utility_function<Func_##m_func>(#m_func, m_args)
 
 struct VariantUtilityFunctionInfo {
-    Vector<String> argnames;
+	Vector<String> argnames;
 	void (*call_utility)(Variant *r_ret, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
 	Variant::ValidatedUtilityFunction validated_call_utility;
 	Variant::PTRUtilityFunction ptr_call_utility;
 	Variant::Type (*get_arg_type)(int);
-    short argcount;
+	short argcount;
 	Variant::Type return_type;
 	Variant::UtilityFunctionType type;
-    bool is_vararg;
-    bool returns_value;
+	bool is_vararg;
+	bool returns_value;
 };
 
 static OAHashMap<StringName, VariantUtilityFunctionInfo> utility_function_table;
@@ -1275,10 +1385,32 @@ void Variant::_register_variant_utility_functions() {
 
 	FUNCBINDR(instance_from_id, sarray("instance_id"), Variant::UTILITY_FUNC_TYPE_GENERAL);
 	FUNCBINDR(is_instance_id_valid, sarray("id"), Variant::UTILITY_FUNC_TYPE_GENERAL);
+	FUNCBINDR(is_instance_rid_valid, sarray("rid"), Variant::UTILITY_FUNC_TYPE_GENERAL);
+	FUNCBINDR(instance_from_rid, sarray("instance_rid"), Variant::UTILITY_FUNC_TYPE_GENERAL);
 	FUNCBINDR(is_instance_valid, sarray("instance"), Variant::UTILITY_FUNC_TYPE_GENERAL);
 
 	FUNCBINDR(rid_allocate_id, Vector<String>(), Variant::UTILITY_FUNC_TYPE_GENERAL);
 	FUNCBINDR(rid_from_int64, sarray("base"), Variant::UTILITY_FUNC_TYPE_GENERAL);
+
+	FUNCBINDR(app_flag_is_tool, sarray(), Variant::UTILITY_FUNC_TYPE_GENERAL);
+	FUNCBINDR(app_flag_is_3d, sarray(), Variant::UTILITY_FUNC_TYPE_GENERAL);
+	FUNCBINDR(app_flag_is_debug, sarray(), Variant::UTILITY_FUNC_TYPE_GENERAL);
+	FUNCBINDR(app_flag_is_developer, sarray(), Variant::UTILITY_FUNC_TYPE_GENERAL);
+	FUNCBINDR(app_flag_real_is_double, sarray(), Variant::UTILITY_FUNC_TYPE_GENERAL);
+	FUNCBINDR(app_flag_no_debug, sarray(), Variant::UTILITY_FUNC_TYPE_GENERAL);
+	FUNCBINDR(app_flag_vulkan_enable, sarray(), Variant::UTILITY_FUNC_TYPE_GENERAL);
+	FUNCBINDR(app_flag_gles3_enable, sarray(), Variant::UTILITY_FUNC_TYPE_GENERAL);
+	FUNCBINDR(app_flag_x11_enable, sarray(), Variant::UTILITY_FUNC_TYPE_GENERAL);
+
+	FUNCBINDR(app_flag_unix_enable, sarray(), Variant::UTILITY_FUNC_TYPE_GENERAL);
+	FUNCBINDR(app_flag_win64_enable, sarray(), Variant::UTILITY_FUNC_TYPE_GENERAL);
+	FUNCBINDR(app_flag_windows_enable, sarray(), Variant::UTILITY_FUNC_TYPE_GENERAL);
+
+	FUNCBINDR(app_flag_osx_enable, sarray(), Variant::UTILITY_FUNC_TYPE_GENERAL);
+	FUNCBINDR(app_flag_touch_enable, sarray(), Variant::UTILITY_FUNC_TYPE_GENERAL);
+	FUNCBINDR(app_flag_iphone_enable, sarray(), Variant::UTILITY_FUNC_TYPE_GENERAL);
+	FUNCBINDR(app_flag_javascript_enable, sarray(), Variant::UTILITY_FUNC_TYPE_GENERAL);
+	FUNCBINDR(app_flag_android_enable, sarray(), Variant::UTILITY_FUNC_TYPE_GENERAL);
 }
 
 void Variant::_unregister_variant_utility_functions() {

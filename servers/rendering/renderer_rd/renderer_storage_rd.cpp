@@ -5353,16 +5353,7 @@ void RendererStorageRD::base_update_dependency(RID p_base, DependencyTracker *p_
 	} else if (visibility_notifier_owner.owns(p_base)) {
 		VisibilityNotifier *vn = visibility_notifier_owner.get_or_null(p_base);
 		p_instance->update_dependency(&vn->dependency);
-	} else if (material_owner.owns(p_base)) {
-		Material *mat = material_owner.get_or_null(p_base);
-		p_instance->update_dependency(&mat->dependency);
-		if (mat->next_pass.is_valid()) {
-			base_update_dependency(mat->next_pass, p_instance);
-		}
-	} else if (skeleton_owner.owns(p_base)) {
-		Skeleton *skeleton = skeleton_owner.get_or_null(p_base);
-		p_instance->update_dependency(&skeleton->dependency);
-	}
+	} 
 }
 
 void RendererStorageRD::skeleton_update_dependency(RID p_skeleton, DependencyTracker *p_instance) {
