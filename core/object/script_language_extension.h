@@ -392,6 +392,8 @@ public:
 				option.icon = op["icon"];
 				ERR_CONTINUE(!op.has("default_value"));
 				option.default_value = op["default_value"];
+				ERR_CONTINUE(!op.has("location"));
+				option.location = op["location"];
 				if (op.has("matches")) {
 					PackedInt32Array matches = op["matches"];
 					ERR_CONTINUE(matches.size() & 1);
@@ -644,6 +646,7 @@ public:
 
 VARIANT_ENUM_CAST(ScriptLanguageExtension::LookupResultType)
 VARIANT_ENUM_CAST(ScriptLanguageExtension::CodeCompletionKind)
+VARIANT_ENUM_CAST(ScriptLanguageExtension::CodeCompletionLocation)
 
 class ScriptInstanceExtension : public ScriptInstance {
 public:
