@@ -544,6 +544,7 @@ public:
 	/*********************/
 
 	struct AttachmentFormat {
+		enum { UNUSED_ATTACHMENT = 0xFFFFFFFF };
 		DataFormat format;
 		TextureSamples samples;
 		uint32_t usage_flags;
