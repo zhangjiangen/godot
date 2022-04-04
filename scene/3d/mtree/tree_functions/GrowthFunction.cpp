@@ -68,7 +68,7 @@ void Tree3DGrowthFunction::simulate_growth_rec(Tree3DNode &node, int id) {
 		Vector3 child_direction = node.direction + Vector3{ 0, 0, 1 } * gravitropism + Tree3DGeometry::random_vec() * randomness;
 		child_direction.normalize();
 		float child_radius = node.radius;
-		float child_length = branch_length * (info.vigor + .1f);
+		//float child_length = branch_length * (info.vigor + .1f);
 		Tree3DNodeChild child = Tree3DNodeChild{ Tree3DNode(child_direction, node.tangent, branch_length, child_radius, node.can_spawn_leaf, id), 1 };
 		float child_angle = split ? info.philotaxis_angle + philotaxis_angle : info.philotaxis_angle;
 		child.node.growthInfo = std::make_unique<BioNodeInfo>(BioNodeInfo::NodeType::Meristem, 0, child_angle);
