@@ -2524,10 +2524,10 @@ void RendererSceneCull::render_camera(RID p_render_buffers, RID p_camera, RID p_
 }
 
 void RendererSceneCull::_multmesh_pre_render(const RendererSceneRender::CameraData *p_camera_data) {
-	RSG::storage->_multmesh_pre_render(p_camera_data->main_transform, p_camera_data->main_projection);
+//	RSG::storage->_multmesh_pre_render(p_camera_data->main_transform, p_camera_data->main_projection);
 }
 void RendererSceneCull::_multmesh_post_render() {
-	RSG::storage->_multmesh_post_render();
+//	RSG::storage->_multmesh_post_render();
 }
 void RendererSceneCull::_visibility_cull_threaded(uint32_t p_thread, VisibilityCullData *cull_data) {
 	uint32_t total_threads = RendererThreadPool::singleton->thread_work_pool.get_thread_count();
