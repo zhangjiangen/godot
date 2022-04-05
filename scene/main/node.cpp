@@ -59,9 +59,12 @@ Node::Data::Data() {
 	physics_process_internal = false;
 	process_internal = false;
 
-	input = false;
-	unhandled_input = false;
-	unhandled_key_input = false;
+
+    input = false;
+    shortcut_input = false;
+    unhandled_input = false;
+    unhandled_key_input = false;
+
 
 	parent_owned = false;
 	in_constructor = true;

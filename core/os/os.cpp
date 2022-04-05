@@ -598,13 +598,11 @@ OS::OS() {
 	singleton = this;
 
 	Vector<Logger *> loggers;
-	_baseLog = memnew(GodetBaseLogger);
 	loggers.push_back(memnew(StdLogger));
 	_set_logger(memnew(CompositeLogger(loggers)));
 }
 
 OS::~OS() {
 	memdelete(_logger);
-	memdelete(_baseLog);
 	singleton = nullptr;
 }
