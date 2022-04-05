@@ -314,7 +314,7 @@ public:
 		bool valid;
 
 		const TKey *key;
-		TValue *value;
+		TValue *value = nullptr;
 
 	private:
 		uint32_t pos;

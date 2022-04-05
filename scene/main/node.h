@@ -140,6 +140,7 @@ private:
 		bool process_internal : 2;
 
 		bool input : 2;
+		bool shortcut_input : 2;
 		bool unhandled_input : 2;
 		bool unhandled_key_input : 2;
 
@@ -219,11 +220,13 @@ protected:
 
 	//call from SceneTree
 	void _call_input(const Ref<InputEvent> &p_event);
+	void _call_shortcut_input(const Ref<InputEvent> &p_event);
 	void _call_unhandled_input(const Ref<InputEvent> &p_event);
 	void _call_unhandled_key_input(const Ref<InputEvent> &p_event);
 
 protected:
 	virtual void input(const Ref<InputEvent> &p_event);
+	virtual void shortcut_input(const Ref<InputEvent> &p_key_event);
 	virtual void unhandled_input(const Ref<InputEvent> &p_event);
 	virtual void unhandled_key_input(const Ref<InputEvent> &p_key_event);
 
@@ -235,6 +238,7 @@ protected:
 	GDVIRTUAL0RC(Vector<String>, _get_configuration_warnings)
 
 	GDVIRTUAL1(_input, Ref<InputEvent>)
+	GDVIRTUAL1(_shortcut_input, Ref<InputEvent>)
 	GDVIRTUAL1(_unhandled_input, Ref<InputEvent>)
 	GDVIRTUAL1(_unhandled_key_input, Ref<InputEvent>)
 
@@ -399,6 +403,9 @@ public:
 
 	void set_process_input(bool p_enable);
 	bool is_processing_input() const;
+
+	void set_process_shortcut_input(bool p_enable);
+	bool is_processing_shortcut_input() const;
 
 	void set_process_unhandled_input(bool p_enable);
 	bool is_processing_unhandled_input() const;

@@ -126,21 +126,21 @@ class ShaderEditor : public PanelContainer {
 		HELP_DOCS,
 	};
 
-	MenuButton *edit_menu;
-	MenuButton *search_menu;
-	PopupMenu *bookmarks_menu;
-	MenuButton *view_menu;
-	MenuButton *help_menu;
-	PopupMenu *context_menu;
+	MenuButton *edit_menu = nullptr;
+	MenuButton *search_menu = nullptr;
+	PopupMenu *bookmarks_menu = nullptr;
+	MenuButton *view_menu = nullptr;
+	MenuButton *help_menu = nullptr;
+	PopupMenu *context_menu = nullptr;
 	RichTextLabel *warnings_panel = nullptr;
 	RichTextLabel *resource_path_panel = nullptr;
 	uint64_t idle;
 
-	GotoLineDialog *goto_line_dialog;
-	ConfirmationDialog *erase_tab_confirm;
-	ConfirmationDialog *disk_changed;
+	GotoLineDialog *goto_line_dialog = nullptr;
+	ConfirmationDialog *erase_tab_confirm = nullptr;
+	ConfirmationDialog *disk_changed = nullptr;
 
-	ShaderTextEditor *shader_editor;
+	ShaderTextEditor *shader_editor = nullptr;
 
 	// Map<String, String> shader_rolling_code;
 	// ShaderDependencyGraph shader_dependencies;
@@ -197,8 +197,8 @@ class ShaderEditorPlugin : public EditorPlugin {
 	GDCLASS(ShaderEditorPlugin, EditorPlugin);
 
 	bool _2d;
-	ShaderEditor *shader_editor;
-	Button *button;
+	ShaderEditor *shader_editor = nullptr;
+	Button *button = nullptr;
 
 public:
 	virtual String get_name() const override { return "Shader"; }

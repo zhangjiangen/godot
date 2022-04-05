@@ -3019,7 +3019,7 @@ void ScriptEditor::input(const Ref<InputEvent> &p_event) {
 	}
 }
 
-void ScriptEditor::unhandled_key_input(const Ref<InputEvent> &p_event) {
+void ScriptEditor::shortcut_input(const Ref<InputEvent> &p_event) {
 	ERR_FAIL_COND(p_event.is_null());
 
 	if (!is_visible_in_tree() || !p_event->is_pressed() || p_event->is_echo()) {
@@ -3291,15 +3291,8 @@ void ScriptEditor::_help_class_open(const String &p_class) {
 void ScriptEditor::_help_class_goto(const String &p_desc) {
 	String cname = p_desc.get_slice(":", 1);
 
-	for (int i = 0; i < tab_container->get_tab_count(); i++) {
-		EditorHelp *eh = Object::cast_to<EditorHelp>(tab_container->get_tab_control(i));
-
-		if (eh && eh->get_class() == cname) {
-			_go_to_tab(i);
-			eh->go_to_help(p_desc);
-			_update_script_names();
-			return;
-		}
+	if (_help_tab_goto(cname, p_desc)) {
+		return;
 	}
 
 	EditorHelp *eh = memnew(EditorHelp);
@@ -3313,6 +3306,22 @@ void ScriptEditor::_help_class_goto(const String &p_desc) {
 	_sort_list_on_update = true;
 	_update_script_names();
 	_save_layout();
+
+	call_deferred("_help_tab_goto", cname, p_desc);
+}
+
+bool ScriptEditor::_help_tab_goto(const String &p_name, const String &p_desc) {
+	for (int i = 0; i < tab_container->get_tab_count(); i++) {
+		EditorHelp *eh = Object::cast_to<EditorHelp>(tab_container->get_tab_control(i));
+
+		if (eh && eh->get_class() == p_name) {
+			_go_to_tab(i);
+			eh->go_to_help(p_desc);
+			_update_script_names();
+			return true;
+		}
+	}
+	return false;
 }
 
 void ScriptEditor::update_doc(const String &p_name) {
@@ -3601,6 +3610,7 @@ void ScriptEditor::_bind_methods() {
 
 	ClassDB::bind_method("_update_script_connections", &ScriptEditor::_update_script_connections);
 	ClassDB::bind_method("_help_class_open", &ScriptEditor::_help_class_open);
+	ClassDB::bind_method("_help_tab_goto", &ScriptEditor::_help_tab_goto);
 	ClassDB::bind_method("_live_auto_reload_running_scripts", &ScriptEditor::_live_auto_reload_running_scripts);
 	ClassDB::bind_method("_update_members_overview", &ScriptEditor::_update_members_overview);
 	ClassDB::bind_method("_update_recent_scripts", &ScriptEditor::_update_recent_scripts);
@@ -3740,7 +3750,7 @@ ScriptEditor::ScriptEditor() {
 	ED_SHORTCUT("script_editor/next_script", TTR("Next Script"), KeyModifierMask::CMD | KeyModifierMask::SHIFT | Key::PERIOD);
 	ED_SHORTCUT("script_editor/prev_script", TTR("Previous Script"), KeyModifierMask::CMD | KeyModifierMask::SHIFT | Key::COMMA);
 	set_process_input(true);
-	set_process_unhandled_key_input(true);
+	set_process_shortcut_input(true);
 
 	file_menu = memnew(MenuButton);
 	file_menu->set_text(TTR("File"));

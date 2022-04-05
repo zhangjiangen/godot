@@ -67,7 +67,7 @@ class ThreadWorkPool {
 		Semaphore start;
 		Semaphore completed;
 		std::atomic<bool> exit;
-		BaseWork *work;
+		BaseWork *work = nullptr;
 	};
 
 	ThreadData *threads = nullptr;

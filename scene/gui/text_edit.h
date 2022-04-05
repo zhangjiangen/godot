@@ -328,7 +328,7 @@ private:
 	List<TextOperation> undo_stack;
 	List<TextOperation>::Element *undo_stack_pos = nullptr;
 
-	Timer *idle_detect;
+	Timer *idle_detect = nullptr;
 
 	uint32_t version = 0;
 	uint32_t saved_version = 0;
@@ -383,7 +383,7 @@ private:
 	bool draw_caret = true;
 
 	bool caret_blink_enabled = false;
-	Timer *caret_blink_timer;
+	Timer *caret_blink_timer = nullptr;
 
 	bool move_caret_on_right_click = true;
 
@@ -429,7 +429,7 @@ private:
 
 	bool dragging_selection = false;
 
-	Timer *click_select_held;
+	Timer *click_select_held = nullptr;
 	uint64_t last_dblclk = 0;
 	Vector2 last_dblclk_pos;
 	void _click_selection_held();
@@ -452,8 +452,8 @@ private:
 	void _update_caret_wrap_offset();
 
 	/* Viewport. */
-	HScrollBar *h_scroll;
-	VScrollBar *v_scroll;
+	HScrollBar *h_scroll = nullptr;
+	VScrollBar *v_scroll = nullptr;
 
 	bool scroll_past_end_of_file_enabled = false;
 
@@ -626,6 +626,7 @@ protected:
 
 public:
 	/* General overrides. */
+	virtual void unhandled_key_input(const Ref<InputEvent> &p_event) override;
 	virtual void gui_input(const Ref<InputEvent> &p_gui_input) override;
 	virtual Size2 get_minimum_size() const override;
 	virtual bool is_text_field() const override;

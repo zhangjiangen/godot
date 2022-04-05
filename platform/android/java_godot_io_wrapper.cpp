@@ -54,6 +54,7 @@ GodotIOJavaWrapper::GodotIOJavaWrapper(JNIEnv *p_env, jobject p_godot_io_instanc
 		_get_locale = p_env->GetMethodID(cls, "getLocale", "()Ljava/lang/String;");
 		_get_model = p_env->GetMethodID(cls, "getModel", "()Ljava/lang/String;");
 		_get_screen_DPI = p_env->GetMethodID(cls, "getScreenDPI", "()I");
+		_get_scaled_density = p_env->GetMethodID(cls, "getScaledDensity", "()F");
 		_get_screen_refresh_rate = p_env->GetMethodID(cls, "getScreenRefreshRate", "(D)D");
 		_screen_get_usable_rect = p_env->GetMethodID(cls, "screenGetUsableRect", "()[I"),
 		_get_unique_id = p_env->GetMethodID(cls, "getUniqueID", "()Ljava/lang/String;");
@@ -138,6 +139,16 @@ int GodotIOJavaWrapper::get_screen_dpi() {
 	}
 }
 
+float GodotIOJavaWrapper::get_scaled_density() {
+	if (_get_scaled_density) {
+		JNIEnv *env = get_jni_env();
+		ERR_FAIL_COND_V(env == nullptr, 1.0f);
+		return env->CallFloatMethod(godot_io_instance, _get_scaled_density);
+	} else {
+		return 1.0f;
+	}
+}
+
 float GodotIOJavaWrapper::get_screen_refresh_rate(float fallback) {
 	if (_get_screen_refresh_rate) {
 		JNIEnv *env = get_jni_env();
@@ -198,14 +209,11 @@ void GodotIOJavaWrapper::hide_vk() {
 }
 
 void GodotIOJavaWrapper::set_screen_orientation(int p_orient) {
-	// The Godot Android Editor sets its own orientation via its AndroidManifest
-#ifndef TOOLS_ENABLED
 	if (_set_screen_orientation) {
 		JNIEnv *env = get_jni_env();
 		ERR_FAIL_COND(env == nullptr);
 		env->CallVoidMethod(godot_io_instance, _set_screen_orientation, p_orient);
 	}
-#endif
 }
 
 int GodotIOJavaWrapper::get_screen_orientation() {
