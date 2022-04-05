@@ -17,13 +17,16 @@ public:
 	std::unique_ptr<GrowthInfo> growthInfo = nullptr;
 
 	bool is_leaf() const;
-
+	Tree3DNode() {
+	}
 	Tree3DNode(Vector3 direction, Vector3 parent_tangent, float length, float radius, bool is_spawn_leaf, int creator_id);
 };
 
 struct Tree3DNodeChild {
 	Tree3DNode node;
 	float position_in_parent;
+	Tree3DNodeChild() {
+	}
 };
 
 struct Tree3DStem {

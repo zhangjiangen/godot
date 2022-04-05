@@ -69,12 +69,16 @@ void Tree3DGrowthFunction::simulate_growth_rec(Tree3DNode &node, int id) {
 		child_direction.normalize();
 		float child_radius = node.radius;
 		//float child_length = branch_length * (info.vigor + .1f);
-		Tree3DNodeChild child = Tree3DNodeChild{ Tree3DNode(child_direction, node.tangent, branch_length, child_radius, node.can_spawn_leaf, id), 1 };
+		Tree3DNodeChild child;
+		child.node = Tree3DNode(child_direction, node.tangent, branch_length, child_radius, node.can_spawn_leaf, id);
+
+		child.position_in_parent = 1;
+
 		float child_angle = split ? info.philotaxis_angle + philotaxis_angle : info.philotaxis_angle;
 		child.node.growthInfo = std::make_unique<BioNodeInfo>(BioNodeInfo::NodeType::Meristem, 0, child_angle);
 		node.children.push_back(std::make_shared<Tree3DNodeChild>(std::move(child)));
 		info.type = BioNodeInfo::NodeType::Branch;
-	}
+	};
 	if (split) {
 		info.philotaxis_angle += philotaxis_angle;
 		Vector3 tangent{ std::cos(info.philotaxis_angle), std::sin(info.philotaxis_angle), 0 };
@@ -83,7 +87,9 @@ void Tree3DGrowthFunction::simulate_growth_rec(Tree3DNode &node, int id) {
 		child_direction.normalize();
 		float child_radius = node.radius;
 		//float child_length = branch_length * (info.vigor + .1f);
-		Tree3DNodeChild child = Tree3DNodeChild{ Tree3DNode(child_direction, node.tangent, branch_length, child_radius, node.can_spawn_leaf, id), 1 };
+		Tree3DNodeChild child;
+		child.node = Tree3DNode(child_direction, node.tangent, branch_length, child_radius, node.can_spawn_leaf, id);
+		child.position_in_parent = 1;
 		child.node.growthInfo = std::make_unique<BioNodeInfo>(BioNodeInfo::NodeType::Meristem);
 		node.children.push_back(std::make_shared<Tree3DNodeChild>(std::move(child)));
 		info.type = BioNodeInfo::NodeType::Branch;
