@@ -287,7 +287,7 @@ bool GDScriptTestRunner::make_tests_for_dir(const String &p_dir) {
 bool GDScriptTestRunner::make_tests() {
 	Error err = OK;
 	DirAccessRef dir(DirAccess::open(source_dir, &err));
-
+    String work_dir = DirAccess::get_curr_work_dir();
 	ERR_FAIL_COND_V_MSG(err != OK, false, "Could not open specified test directory.");
 
 	source_dir = dir->get_current_dir() + "/"; // Make it absolute path.

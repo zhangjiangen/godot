@@ -412,9 +412,7 @@ public:
 
 	virtual void get_method_list(List<MethodInfo> *p_list) const;
 	virtual bool has_method(const StringName &p_method) const;
-	void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
-	void call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
-
+	virtual Variant callp(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
 	virtual void notification(int p_notification);
 	String to_string(bool *r_valid);
 
@@ -622,7 +620,7 @@ public:
 template <class T>
 static Ref<VisualScriptNode> create_node_generic(const String &p_name) {
 	Ref<T> node;
-	New_instantiate(node);
+	node.instantiate();
 	return node;
 }
 

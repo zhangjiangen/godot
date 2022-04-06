@@ -321,7 +321,7 @@ void UndoRedo::_process_operation_list(List<Operation>::Element *E) {
 				}
 
 				Callable::CallError ce;
-				obj->call_r(op.name, (const Variant **)argptrs.ptr(), argc, ce);
+				obj->callp(op.name, (const Variant **)argptrs.ptr(), argc, ce);
 				if (ce.error != Callable::CallError::CALL_OK) {
 					ERR_PRINT("Error calling UndoRedo method operation '" + String(op.name) + "': " + Variant::get_call_error_text(obj, op.name, (const Variant **)argptrs.ptr(), argc, ce));
 				}

@@ -773,9 +773,9 @@ public:
 				if (rpc_mode) {
 					call_rpc(object, p_inputs, input_args);
 				} else if (returns) {
-					object->call_r(*p_outputs[0], function, p_inputs, input_args, r_error);
+					*p_outputs[0] = object->callp(function, p_inputs, input_args, r_error);
 				} else {
-					object->call_r(function, p_inputs, input_args, r_error);
+					object->callp(function, p_inputs, input_args, r_error);
 				}
 			} break;
 			case VisualScriptFunctionCall::CALL_MODE_NODE_PATH: {
@@ -796,9 +796,9 @@ public:
 				if (rpc_mode) {
 					call_rpc(node, p_inputs, input_args);
 				} else if (returns) {
-					another->call_r(*p_outputs[0], function, p_inputs, input_args, r_error);
+					*p_outputs[0] = another->callp(function, p_inputs, input_args, r_error);
 				} else {
-					another->call_r(function, p_inputs, input_args, r_error);
+					another->callp(function, p_inputs, input_args, r_error);
 				}
 
 			} break;
@@ -847,9 +847,9 @@ public:
 				if (rpc_mode) {
 					call_rpc(object, p_inputs, input_args);
 				} else if (returns) {
-					object->call_r(*p_outputs[0], function, p_inputs, input_args, r_error);
+					*p_outputs[0] = object->callp(function, p_inputs, input_args, r_error);
 				} else {
-					object->call_r(function, p_inputs, input_args, r_error);
+					object->callp(function, p_inputs, input_args, r_error);
 				}
 			} break;
 		}

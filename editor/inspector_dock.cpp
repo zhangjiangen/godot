@@ -201,7 +201,7 @@ void InspectorDock::_menu_option_confirm(int p_option, bool p_confirmed) {
 				ERR_FAIL_INDEX(idx, methods.size());
 				String name = methods[idx].name;
 
-				current->call_void(name);
+				current->call(name);
 			}
 		}
 	}

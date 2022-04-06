@@ -310,12 +310,6 @@ void ScriptInstance::get_property_state(List<Pair<StringName, Variant>> &state) 
 	}
 }
 
-Variant ScriptInstance::call(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
-	Variant ret;
-	call_r(ret, p_method, p_args, p_argcount, r_error);
-	return ret;
-}
-
 void ScriptInstance::property_set_fallback(const StringName &, const Variant &, bool *r_valid) {
 	if (r_valid) {
 		*r_valid = false;

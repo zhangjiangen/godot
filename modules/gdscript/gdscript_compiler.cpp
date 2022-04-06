@@ -1154,11 +1154,9 @@ GDScriptCodeGenerator::Address GDScriptCompiler::_parse_expression(CodeGen &code
 					args.push_back(to_assign);
 					gen->write_call(GDScriptCodeGenerator::Address(), GDScriptCodeGenerator::Address(GDScriptCodeGenerator::Address::SELF), setter_function, args);
 				} else {
-					// Just assign.z
+					// Just assign.
 					if (assignment->use_conversion_assign) {
-						if (!gen->write_assign_with_conversion(target, to_assign)) {
-							ERR_PRINT(codegen.script->get_path() + " " + String::num_int64(assignment->start_line) + ":(" + String::num_int64(assignment->start_column) + ") : Compiler bug: unresolved assign.");
-						}
+						gen->write_assign_with_conversion(target, to_assign);
 					} else {
 						gen->write_assign(target, to_assign);
 					}
@@ -1870,9 +1868,7 @@ Error GDScriptCompiler::_parse_block(CodeGen &codegen, const GDScriptParser::Sui
 						return error;
 					}
 					if (lv->use_conversion_assign) {
-						if (!gen->write_assign_with_conversion(local, src_address)) {
-							ERR_PRINT(codegen.script->get_path() + " " + String::num_int64(lv->initializer->start_line) + ":(" + String::num_int64(lv->initializer->start_column) + ") : Compiler bug: unresolved assign.");
-						}
+						gen->write_assign_with_conversion(local, src_address);
 					} else {
 						gen->write_assign(local, src_address);
 					}
@@ -2009,14 +2005,12 @@ GDScriptFunction *GDScriptCompiler::_parse_function(Error &r_error, GDScript *p_
 				}
 				GDScriptCodeGenerator::Address src_address = _parse_expression(codegen, r_error, field->initializer, false, true);
 				if (r_error) {
-					memdelete(codegen.generator);
+					//memdelete(codegen.generator);
 					return nullptr;
 				}
 
 				if (field->use_conversion_assign) {
-					if (!codegen.generator->write_assign_with_conversion(dst_address, src_address)) {
-						ERR_PRINT(codegen.script->get_path() + " " + String::num_int64(field->initializer->start_line) + ":(" + String::num_int64(field->initializer->start_column) + ") : Compiler bug: unresolved assign.");
-					}
+					codegen.generator->write_assign_with_conversion(dst_address, src_address);
 				} else {
 					codegen.generator->write_assign(dst_address, src_address);
 				}
@@ -2045,7 +2039,7 @@ GDScriptFunction *GDScriptCompiler::_parse_function(Error &r_error, GDScript *p_
 				const GDScriptParser::ParameterNode *parameter = p_func->parameters[i];
 				GDScriptCodeGenerator::Address src_addr = _parse_expression(codegen, r_error, parameter->default_value);
 				if (r_error) {
-					memdelete(codegen.generator);
+					//memdelete(codegen.generator);
 					return nullptr;
 				}
 				GDScriptCodeGenerator::Address dst_addr = codegen.parameters[parameter->identifier->name];
@@ -2059,7 +2053,7 @@ GDScriptFunction *GDScriptCompiler::_parse_function(Error &r_error, GDScript *p_
 
 		r_error = _parse_block(codegen, p_func->body);
 		if (r_error) {
-			memdelete(codegen.generator);
+			//memdelete(codegen.generator);
 			return nullptr;
 		}
 	}
@@ -2133,8 +2127,7 @@ GDScriptFunction *GDScriptCompiler::_parse_function(Error &r_error, GDScript *p_
 		p_script->member_functions[func_name] = gd_function;
 	}
 
-	memdelete(codegen.generator);
-	codegen.generator = nullptr;
+	//memdelete(codegen.generator);
 
 	return gd_function;
 }
@@ -2529,8 +2522,7 @@ Error GDScriptCompiler::_parse_class_blocks(GDScript *p_script, const GDScriptPa
 					/* STEP 2, INITIALIZE AND CONSTRUCT */
 
 					Callable::CallError ce;
-					Variant ret;
-					p_script->initializer->call_r(ret, instance, nullptr, 0, ce);
+					p_script->initializer->call(instance, nullptr, 0, ce);
 
 					if (ce.error != Callable::CallError::CALL_OK) {
 						//well, tough luck, not gonna do anything here
@@ -2591,7 +2583,7 @@ void GDScriptCompiler::_make_scripts(GDScript *p_script, const GDScriptParser::C
 			if (orphan_subclass.is_valid()) {
 				subclass = orphan_subclass;
 			} else {
-				New_instantiate(subclass);
+				subclass.instantiate();
 			}
 		}
 

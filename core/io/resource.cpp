@@ -321,7 +321,7 @@ void Resource::notify_change_to_owners() {
 		Object *obj = ObjectDB::get_instance(E->get());
 		ERR_CONTINUE_MSG(!obj, "Object was deleted, while still owning a resource."); //wtf
 		//TODO store string
-		obj->call_void("resource_changed", RES(this));
+		obj->call("resource_changed", RES(this));
 	}
 }
 

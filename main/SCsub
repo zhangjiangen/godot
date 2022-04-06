@@ -11,6 +11,7 @@ env_main = env.Clone()
 env_main.add_source_files(env.main_sources, "*.cpp")
 
 if env["tests"]:
+    print("Building tests...")
     env_main.Append(CPPDEFINES=["TESTS_ENABLED"])
 
 env_main.Depends("#main/splash.gen.h", "#main/splash.png")

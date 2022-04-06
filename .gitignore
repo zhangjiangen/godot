@@ -514,3 +514,4 @@ scene/libscene_osx_tools_x86_64.a.dyX8qO
 *.msp
 *.lnk
 >>>>>>> master
+thirdparty/FBX/2018.1.1/lib/clang/release_debug/libfbxsdk.dylib

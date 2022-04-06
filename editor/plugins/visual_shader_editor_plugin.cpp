@@ -3306,7 +3306,7 @@ void VisualShaderEditor::_update_constant(VisualShader::Type p_type_id, int p_no
 	Ref<VisualShaderNode> node = visual_shader->get_node(p_type_id, p_node_id);
 	ERR_FAIL_COND(!node.is_valid());
 	ERR_FAIL_COND(!node->has_method("set_constant"));
-	node->call_void("set_constant", p_var);
+	node->call("set_constant", p_var);
 	if (p_preview_port != -1) {
 		node->set_output_port_for_preview(p_preview_port);
 	}
@@ -3321,8 +3321,8 @@ void VisualShaderEditor::_update_uniform(VisualShader::Type p_type_id, int p_nod
 	graph_plugin->set_uniform_name(p_type_id, p_node_id, valid_name);
 
 	if (uniform->has_method("set_default_value_enabled")) {
-		uniform->call_void("set_default_value_enabled", true);
-		uniform->call_void("set_default_value", p_var);
+		uniform->call("set_default_value_enabled", true);
+		uniform->call("set_default_value", p_var);
 	}
 	if (p_preview_port != -1) {
 		uniform->set_output_port_for_preview(p_preview_port);

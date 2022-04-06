@@ -368,7 +368,7 @@ Error GDScriptAnalyzer::resolve_inheritance(GDScriptParser::ClassNode *p_class, 
 			}
 
 			// TODO: Extends could use identifier nodes. That way errors can be pointed out properly and it can be used here.
-			GDScriptParser::IdentifierNode *id = parser->alloc_node(memnew(GDScriptParser::IdentifierNode));
+			GDScriptParser::IdentifierNode *id = parser->alloc_node<GDScriptParser::IdentifierNode>();
 			id->name = p_class->extends[index];
 
 			reduce_identifier_from_base(id, &base);
@@ -3085,7 +3085,7 @@ void GDScriptAnalyzer::reduce_lambda(GDScriptParser::LambdaNode *p_lambda) {
 		// Add captures as extra parameters at the beginning.
 		for (int i = 0; i < p_lambda->captures.size(); i++) {
 			GDScriptParser::IdentifierNode *capture = p_lambda->captures[i];
-			GDScriptParser::ParameterNode *capture_param = parser->alloc_node(memnew(GDScriptParser::ParameterNode));
+			GDScriptParser::ParameterNode *capture_param = parser->alloc_node<GDScriptParser::ParameterNode>();
 			capture_param->identifier = capture;
 			capture_param->usages = capture->usages;
 			capture_param->set_datatype(capture->get_datatype());

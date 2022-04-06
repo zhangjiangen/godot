@@ -76,8 +76,7 @@ static bool _create_project_solution_if_needed() {
 		// A solution does not yet exist, create a new one
 
 		CRASH_COND(CSharpLanguage::get_singleton()->get_godotsharp_editor() == nullptr);
-		Variant ret = CSharpLanguage::get_singleton()->get_godotsharp_editor()->call("CreateProjectSolution");
-		return ret;
+		return CSharpLanguage::get_singleton()->get_godotsharp_editor()->call("CreateProjectSolution");
 	}
 
 	return true;
@@ -749,7 +748,7 @@ void CSharpLanguage::reload_tool_script(const Ref<Script> &p_script, bool p_soft
 	CRASH_COND(!Engine::get_singleton()->is_editor_hint());
 
 #ifdef TOOLS_ENABLED
-	get_godotsharp_editor()->get_node(NodePath("HotReloadAssemblyWatcher"))->call_void("RestartTimer");
+	get_godotsharp_editor()->get_node(NodePath("HotReloadAssemblyWatcher"))->call("RestartTimer");
 #endif
 
 #ifdef GD_MONO_HOT_RELOAD
@@ -1899,16 +1898,16 @@ bool CSharpInstance::has_method(const StringName &p_method) const {
 	return false;
 }
 
-void CSharpInstance::call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
-	ERR_FAIL_COND(!script.is_valid());
+Variant CSharpInstance::callp(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	ERR_FAIL_COND_V(!script.is_valid(), Variant());
 
 	GD_MONO_SCOPE_THREAD_ATTACH;
-	ret.clear();
+
 	MonoObject *mono_object = get_mono_object();
 
 	if (!mono_object) {
 		r_error.error = Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL;
-		ERR_FAIL();
+		ERR_FAIL_V(Variant());
 	}
 
 	GDMonoClass *top = script->script_class;
@@ -1922,10 +1921,9 @@ void CSharpInstance::call_r(Variant &ret, const StringName &p_method, const Vari
 			r_error.error = Callable::CallError::CALL_OK;
 
 			if (return_value) {
-				ret = GDMonoMarshal::mono_object_to_variant(return_value);
-				return;
+				return GDMonoMarshal::mono_object_to_variant(return_value);
 			} else {
-				return;
+				return Variant();
 			}
 		}
 
@@ -1934,45 +1932,9 @@ void CSharpInstance::call_r(Variant &ret, const StringName &p_method, const Vari
 
 	r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
 
-	return;
+	return Variant();
 }
 
-void CSharpInstance::call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
-	ERR_FAIL_COND(!script.is_valid());
-
-	GD_MONO_SCOPE_THREAD_ATTACH;
-	MonoObject *mono_object = get_mono_object();
-
-	if (!mono_object) {
-		r_error.error = Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL;
-		ERR_FAIL();
-	}
-
-	GDMonoClass *top = script->script_class;
-
-	while (top && top != script->native) {
-		GDMonoMethod *method = top->get_method(p_method, p_argcount);
-
-		if (method) {
-			MonoObject *return_value = method->invoke(mono_object, p_args);
-
-			r_error.error = Callable::CallError::CALL_OK;
-
-			if (return_value) {
-				GDMonoMarshal::mono_object_to_variant(return_value);
-				return;
-			} else {
-				return;
-			}
-		}
-
-		top = top->get_parent_class();
-	}
-
-	r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
-
-	return;
-}
 bool CSharpInstance::_reference_owner_unsafe() {
 #ifdef DEBUG_ENABLED
 	CRASH_COND(!base_ref_counted);
@@ -2951,12 +2913,11 @@ int CSharpScript::_try_get_member_export_hint(IMonoClassMember *p_member, Manage
 }
 #endif
 
-void CSharpScript::call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
-	ret.clear();
+Variant CSharpScript::callp(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
 	if (unlikely(GDMono::get_singleton() == nullptr)) {
 		// Probably not the best error but eh.
 		r_error.error = Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL;
-		return;
+		return Variant();
 	}
 
 	GD_MONO_SCOPE_THREAD_ATTACH;
@@ -2970,10 +2931,9 @@ void CSharpScript::call_r(Variant &ret, const StringName &p_method, const Varian
 			MonoObject *result = method->invoke(nullptr, p_args);
 
 			if (result) {
-				GDMonoMarshal::mono_object_to_variant(result);
-				return;
+				return GDMonoMarshal::mono_object_to_variant(result);
 			} else {
-				return;
+				return Variant();
 			}
 		}
 
@@ -2981,33 +2941,7 @@ void CSharpScript::call_r(Variant &ret, const StringName &p_method, const Varian
 	}
 
 	// No static method found. Try regular instance calls
-	Script::call_r(ret, p_method, p_args, p_argcount, r_error);
-}
-void CSharpScript::call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
-	if (unlikely(GDMono::get_singleton() == nullptr)) {
-		// Probably not the best error but eh.
-		r_error.error = Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL;
-		return;
-	}
-
-	GD_MONO_SCOPE_THREAD_ATTACH;
-
-	GDMonoClass *top = script_class;
-
-	while (top && top != native) {
-		GDMonoMethod *method = top->get_method(p_method, p_argcount);
-
-		if (method && method->is_static()) {
-			method->invoke(nullptr, p_args);
-
-			return;
-		}
-
-		top = top->get_parent_class();
-	}
-
-	// No static method found. Try regular instance calls
-	Script::call_r(p_method, p_args, p_argcount, r_error);
+	return Script::callp(p_method, p_args, p_argcount, r_error);
 }
 
 void CSharpScript::_resource_path_changed() {

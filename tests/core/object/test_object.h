@@ -87,10 +87,8 @@ public:
 	bool has_method(const StringName &p_method) const override {
 		return false;
 	}
-	void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override {
-		ret.clear();
-	}
-	void call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override {
+	Variant callp(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override {
+		return Variant();
 	}
 	void notification(int p_notification) override {
 	}

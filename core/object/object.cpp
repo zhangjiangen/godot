@@ -782,55 +782,50 @@ Variant Object::callv(const StringName &p_method, const Array &p_args) {
 }
 
 Variant Object::callp(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
-	Variant ret;
-
-	call_r(ret, p_method, p_args, p_argcount, r_error);
-	return ret;
-}
-void Object::call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
 	r_error.error = Callable::CallError::CALL_OK;
-	ret.clear();
+
 	if (p_method == CoreStringNames::get_singleton()->_free) {
 //free must be here, before anything, always ready
 #ifdef DEBUG_ENABLED
 		if (p_argcount != 0) {
 			r_error.argument = 0;
 			r_error.error = Callable::CallError::CALL_ERROR_TOO_MANY_ARGUMENTS;
-			return;
+			return Variant();
 		}
 		if (Object::cast_to<RefCounted>(this)) {
 			r_error.argument = 0;
 			r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
-			ERR_FAIL_MSG("Can't 'free' a reference.");
+			ERR_FAIL_V_MSG(Variant(), "Can't 'free' a reference.");
 		}
 
 		if (_lock_index.get() > 1) {
 			r_error.argument = 0;
 			r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
-			ERR_FAIL_MSG("Object is locked and can't be freed.");
+			ERR_FAIL_V_MSG(Variant(), "Object is locked and can't be freed.");
 		}
 
 #endif
 		//must be here, must be before everything,
 		memdelete(this);
 		r_error.error = Callable::CallError::CALL_OK;
-		return;
+		return Variant();
 	}
 
+	Variant ret;
 	OBJ_DEBUG_LOCK
 
 	if (script_instance) {
-		script_instance->call_r(ret, p_method, p_args, p_argcount, r_error);
+		ret = script_instance->callp(p_method, p_args, p_argcount, r_error);
 		//force jumptable
 		switch (r_error.error) {
 			case Callable::CallError::CALL_OK:
-				return;
+				return ret;
 			case Callable::CallError::CALL_ERROR_INVALID_METHOD:
 				break;
 			case Callable::CallError::CALL_ERROR_INVALID_ARGUMENT:
 			case Callable::CallError::CALL_ERROR_TOO_MANY_ARGUMENTS:
 			case Callable::CallError::CALL_ERROR_TOO_FEW_ARGUMENTS:
-				return;
+				return ret;
 			case Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL: {
 			}
 		}
@@ -846,69 +841,7 @@ void Object::call_r(Variant &ret, const StringName &p_method, const Variant **p_
 		r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
 	}
 
-	return;
-}
-void Object::call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
-	r_error.error = Callable::CallError::CALL_OK;
-
-	if (p_method == CoreStringNames::get_singleton()->_free) {
-//free must be here, before anything, always ready
-#ifdef DEBUG_ENABLED
-		if (p_argcount != 0) {
-			r_error.argument = 0;
-			r_error.error = Callable::CallError::CALL_ERROR_TOO_MANY_ARGUMENTS;
-			return;
-		}
-		if (Object::cast_to<RefCounted>(this)) {
-			r_error.argument = 0;
-			r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
-			ERR_FAIL_MSG("Can't 'free' a reference.");
-		}
-
-		if (_lock_index.get() > 1) {
-			r_error.argument = 0;
-			r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
-			ERR_FAIL_MSG("Object is locked and can't be freed.");
-		}
-
-#endif
-		//must be here, must be before everything,
-		memdelete(this);
-		r_error.error = Callable::CallError::CALL_OK;
-		return;
-	}
-
-	Variant ret;
-	OBJ_DEBUG_LOCK
-
-	if (script_instance) {
-		ret = script_instance->callp(p_method, p_args, p_argcount, r_error);
-		//force jumptable
-		switch (r_error.error) {
-			case Callable::CallError::CALL_OK:
-				return;
-			case Callable::CallError::CALL_ERROR_INVALID_METHOD:
-				break;
-			case Callable::CallError::CALL_ERROR_INVALID_ARGUMENT:
-			case Callable::CallError::CALL_ERROR_TOO_MANY_ARGUMENTS:
-			case Callable::CallError::CALL_ERROR_TOO_FEW_ARGUMENTS:
-				return;
-			case Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL: {
-			}
-		}
-	}
-
-	//extension does not need this, because all methods are registered in MethodBind
-
-	MethodBind *method = ClassDB::get_method(get_class_name(), p_method);
-
-	if (method) {
-		method->call(this, p_args, p_argcount, r_error);
-	} else {
-		r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
-	}
-
-	return;
+	return ret;
 }
 
 void Object::notification(int p_notification, bool p_reversed) {

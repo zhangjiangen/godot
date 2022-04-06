@@ -1708,13 +1708,13 @@ Variant VisualScriptInstance::_call_internal(const StringName &p_method, void *p
 	return return_value;
 }
 
-void VisualScriptInstance::call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+Variant VisualScriptInstance::callp(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
 	r_error.error = Callable::CallError::CALL_OK; //ok by default
-	ret.clear();
+
 	Map<StringName, Function>::Element *F = functions.find(p_method);
 	if (!F) {
 		r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
-		return;
+		return Variant();
 	}
 
 	VSDEBUG("CALLING: " + String(p_method));
@@ -1757,7 +1757,7 @@ void VisualScriptInstance::call_r(Variant &ret, const StringName &p_method, cons
 	if (!E) {
 		r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
 
-		ERR_FAIL_MSG("No VisualScriptFunction node in function.");
+		ERR_FAIL_V_MSG(Variant(), "No VisualScriptFunction node in function.");
 	}
 
 	VisualScriptNodeInstance *node = E->get();
@@ -1772,14 +1772,14 @@ void VisualScriptInstance::call_r(Variant &ret, const StringName &p_method, cons
 		r_error.error = Callable::CallError::CALL_ERROR_TOO_FEW_ARGUMENTS;
 		r_error.argument = node->get_input_port_count();
 
-		return;
+		return Variant();
 	}
 
 	if (p_argcount > f->argument_count) {
 		r_error.error = Callable::CallError::CALL_ERROR_TOO_MANY_ARGUMENTS;
 		r_error.argument = node->get_input_port_count();
 
-		return;
+		return Variant();
 	}
 
 	// Allocate variant stack.
@@ -1792,94 +1792,7 @@ void VisualScriptInstance::call_r(Variant &ret, const StringName &p_method, cons
 		variant_stack[i] = *p_args[i];
 	}
 
-	ret = _call_internal(p_method, stack, total_stack_size, node, 0, 0, false, r_error);
-}
-
-void VisualScriptInstance::call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
-	r_error.error = Callable::CallError::CALL_OK; //ok by default
-
-	Map<StringName, Function>::Element *F = functions.find(p_method);
-	if (!F) {
-		r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
-		return;
-	}
-
-	VSDEBUG("CALLING: " + String(p_method));
-
-	Function *f = &F->get();
-
-	int total_stack_size = 0;
-
-	total_stack_size += f->max_stack * sizeof(Variant); //variants
-	total_stack_size += f->node_count * sizeof(bool);
-	total_stack_size += (max_input_args + max_output_args) * sizeof(Variant *); //arguments
-	total_stack_size += f->flow_stack_size * sizeof(int); //flow
-	total_stack_size += f->pass_stack_size * sizeof(int);
-
-	VSDEBUG("STACK SIZE: " + itos(total_stack_size));
-	VSDEBUG("STACK VARIANTS: : " + itos(f->max_stack));
-	VSDEBUG("SEQBITS: : " + itos(f->node_count));
-	VSDEBUG("MAX INPUT: " + itos(max_input_args));
-	VSDEBUG("MAX OUTPUT: " + itos(max_output_args));
-	VSDEBUG("FLOW STACK SIZE: " + itos(f->flow_stack_size));
-	VSDEBUG("PASS STACK SIZE: " + itos(f->pass_stack_size));
-
-	void *stack = alloca(total_stack_size);
-
-	Variant *variant_stack = (Variant *)stack;
-	bool *sequence_bits = (bool *)(variant_stack + f->max_stack);
-	const Variant **input_args = (const Variant **)(sequence_bits + f->node_count);
-	Variant **output_args = (Variant **)(input_args + max_input_args);
-	int flow_max = f->flow_stack_size;
-	int *flow_stack = flow_max ? (int *)(output_args + max_output_args) : (int *)nullptr;
-	int *pass_stack = flow_stack ? (int *)(flow_stack + flow_max) : (int *)nullptr;
-
-	for (int i = 0; i < f->node_count; i++) {
-		sequence_bits[i] = false; // All starts as false.
-	}
-
-	memset(pass_stack, 0, f->pass_stack_size * sizeof(int));
-
-	Map<int, VisualScriptNodeInstance *>::Element *E = instances.find(f->node);
-	if (!E) {
-		r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
-
-		ERR_FAIL_MSG("No VisualScriptFunction node in function.");
-	}
-
-	VisualScriptNodeInstance *node = E->get();
-
-	if (flow_stack) {
-		flow_stack[0] = node->get_id();
-	}
-
-	VSDEBUG("ARGUMENTS: " + itos(f->argument_count) = " RECEIVED: " + itos(p_argcount));
-
-	if (p_argcount < f->argument_count) {
-		r_error.error = Callable::CallError::CALL_ERROR_TOO_FEW_ARGUMENTS;
-		r_error.argument = node->get_input_port_count();
-
-		return;
-	}
-
-	if (p_argcount > f->argument_count) {
-		r_error.error = Callable::CallError::CALL_ERROR_TOO_MANY_ARGUMENTS;
-		r_error.argument = node->get_input_port_count();
-
-		return;
-	}
-
-	// Allocate variant stack.
-	for (int i = 0; i < f->max_stack; i++) {
-		memnew_placement(&variant_stack[i], Variant);
-	}
-
-	// Allocate function arguments (must be copied for yield to work properly).
-	for (int i = 0; i < p_argcount; i++) {
-		variant_stack[i] = *p_args[i];
-	}
-
-	_call_internal(p_method, stack, total_stack_size, node, 0, 0, false, r_error);
+	return _call_internal(p_method, stack, total_stack_size, node, 0, 0, false, r_error);
 }
 
 void VisualScriptInstance::notification(int p_notification) {

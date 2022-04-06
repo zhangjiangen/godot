@@ -270,7 +270,7 @@ void CustomPropertyEditor::_menu_option(int p_which) {
 					ERR_BREAK(!res);
 					if (owner && hint == PROPERTY_HINT_RESOURCE_TYPE && hint_text == "Script") {
 						//make visual script the right type
-						res->call_void("set_instance_base_type", owner->get_class());
+						res->call("set_instance_base_type", owner->get_class());
 					}
 
 					EditorNode::get_editor_data().instantiate_object_properties(obj);

@@ -133,11 +133,6 @@ GDScriptParser::GDScriptParser() {
 	register_annotation(MethodInfo("@export_flags_3d_render"), AnnotationInfo::VARIABLE, &GDScriptParser::export_annotations<PROPERTY_HINT_LAYERS_3D_RENDER, Variant::INT>);
 	register_annotation(MethodInfo("@export_flags_3d_physics"), AnnotationInfo::VARIABLE, &GDScriptParser::export_annotations<PROPERTY_HINT_LAYERS_3D_PHYSICS, Variant::INT>);
 	register_annotation(MethodInfo("@export_flags_3d_navigation"), AnnotationInfo::VARIABLE, &GDScriptParser::export_annotations<PROPERTY_HINT_LAYERS_3D_NAVIGATION, Variant::INT>);
-
-	// 增加一个按钮，必须是bool类型
-	register_annotation(MethodInfo("@export_button", { Variant::STRING, "hint1" }), AnnotationInfo::VARIABLE, &GDScriptParser::export_annotations<PROPERTY_HINT_BUTTON, Variant::BOOL>, 1, true);
-	register_annotation(MethodInfo("@export_preview_res", { Variant::STRING, "resource_type_name" }), AnnotationInfo::VARIABLE, &GDScriptParser::export_annotations<PROPERTY_HINT_RESOURCE_TYPE, Variant::OBJECT>, 1, true);
-
 	register_annotation(MethodInfo("@warning_ignore", { Variant::STRING, "warning" }), AnnotationInfo::CLASS | AnnotationInfo::VARIABLE | AnnotationInfo::SIGNAL | AnnotationInfo::CONSTANT | AnnotationInfo::FUNCTION | AnnotationInfo::STATEMENT, &GDScriptParser::warning_annotations, 0, true);
 	// Networking.
 	register_annotation(MethodInfo("@rpc", { Variant::STRING, "mode" }, { Variant::STRING, "sync" }, { Variant::STRING, "transfer_mode" }, { Variant::INT, "transfer_channel" }), AnnotationInfo::FUNCTION, &GDScriptParser::network_annotations<Multiplayer::RPC_MODE_AUTHORITY>, 4, true);
@@ -152,7 +147,6 @@ void GDScriptParser::clear() {
 		Node *element = list;
 		list = list->next;
 		memdelete(element);
-		--node_count;
 	}
 
 	head = nullptr;
@@ -361,7 +355,7 @@ Error GDScriptParser::parse(const String &p_source_code, const String &p_script_
 	// Warn about parsing an empty script file:
 	if (current.type == GDScriptTokenizer::Token::TK_EOF) {
 		// Create a dummy Node for the warning, pointing to the very beginning of the file
-		Node *nd = alloc_node(memnew(PassNode));
+		Node *nd = alloc_node<PassNode>();
 		nd->start_line = 1;
 		nd->start_column = 0;
 		nd->end_line = 1;
@@ -518,14 +512,14 @@ void GDScriptParser::end_statement(const String &p_context) {
 }
 
 void GDScriptParser::parse_program() {
-	head = alloc_node(memnew(ClassNode));
+	head = alloc_node<ClassNode>();
 	current_class = head;
 
 	if (match(GDScriptTokenizer::Token::ANNOTATION)) {
 		// Check for @tool annotation.
 		AnnotationNode *annotation = parse_annotation(AnnotationInfo::SCRIPT | AnnotationInfo::CLASS_LEVEL);
 		if (annotation != nullptr) {
-			if (annotation->name == "@tool") {
+			if (annotation->name == SNAME("@tool")) {
 				// TODO: don't allow @tool anywhere else. (Should all script annotations be the first thing?).
 				_is_tool = true;
 				if (previous.type != GDScriptTokenizer::Token::NEWLINE) {
@@ -579,7 +573,7 @@ void GDScriptParser::parse_program() {
 		// Check for @icon annotation.
 		AnnotationNode *annotation = parse_annotation(AnnotationInfo::SCRIPT | AnnotationInfo::CLASS_LEVEL);
 		if (annotation != nullptr) {
-			if (annotation->name == "@icon") {
+			if (annotation->name == SNAME("@icon")) {
 				if (previous.type != GDScriptTokenizer::Token::NEWLINE) {
 					push_error(R"(Expected newline after "@icon" annotation.)");
 				}
@@ -611,7 +605,7 @@ void GDScriptParser::parse_program() {
 }
 
 GDScriptParser::ClassNode *GDScriptParser::parse_class() {
-	ClassNode *n_class = alloc_node(memnew(ClassNode));
+	ClassNode *n_class = alloc_node<ClassNode>();
 
 	ClassNode *previous_class = current_class;
 	current_class = n_class;
@@ -847,7 +841,7 @@ GDScriptParser::VariableNode *GDScriptParser::parse_variable(bool p_allow_proper
 		return nullptr;
 	}
 
-	VariableNode *variable = alloc_node(memnew(VariableNode));
+	VariableNode *variable = alloc_node<VariableNode>();
 	variable->identifier = parse_identifier();
 	variable->export_info.name = variable->identifier->name;
 
@@ -991,23 +985,23 @@ void GDScriptParser::parse_property_setter(VariableNode *p_variable) {
 			consume(GDScriptTokenizer::Token::PARENTHESIS_CLOSE, R"*(Expected ")" after parameter name.)*");
 			consume(GDScriptTokenizer::Token::COLON, R"*(Expected ":" after ")".)*");
 
-			IdentifierNode *identifier = alloc_node(memnew(IdentifierNode));
+			IdentifierNode *identifier = alloc_node<IdentifierNode>();
 			identifier->name = "@" + p_variable->identifier->name + "_setter";
 
-			FunctionNode *function = alloc_node(memnew(FunctionNode));
+			FunctionNode *function = alloc_node<FunctionNode>();
 			function->identifier = identifier;
 
 			FunctionNode *previous_function = current_function;
 			current_function = function;
 
-			ParameterNode *parameter = alloc_node(memnew(ParameterNode));
+			ParameterNode *parameter = alloc_node<ParameterNode>();
 			parameter->identifier = p_variable->setter_parameter;
 
 			if (parameter->identifier != nullptr) {
 				function->parameters_indices[parameter->identifier->name] = 0;
 				function->parameters.push_back(parameter);
 
-				SuiteNode *body = alloc_node(memnew(SuiteNode));
+				SuiteNode *body = alloc_node<SuiteNode>();
 				body->add_local(parameter, function);
 
 				function->body = parse_suite("setter declaration", body);
@@ -1034,16 +1028,16 @@ void GDScriptParser::parse_property_getter(VariableNode *p_variable) {
 		case VariableNode::PROP_INLINE: {
 			consume(GDScriptTokenizer::Token::COLON, R"(Expected ":" after "get".)");
 
-			IdentifierNode *identifier = alloc_node(memnew(IdentifierNode));
+			IdentifierNode *identifier = alloc_node<IdentifierNode>();
 			identifier->name = "@" + p_variable->identifier->name + "_getter";
 
-			FunctionNode *function = alloc_node(memnew(FunctionNode));
+			FunctionNode *function = alloc_node<FunctionNode>();
 			function->identifier = identifier;
 
 			FunctionNode *previous_function = current_function;
 			current_function = function;
 
-			SuiteNode *body = alloc_node(memnew(SuiteNode));
+			SuiteNode *body = alloc_node<SuiteNode>();
 			function->body = parse_suite("getter declaration", body);
 
 			p_variable->getter = function;
@@ -1067,7 +1061,7 @@ GDScriptParser::ConstantNode *GDScriptParser::parse_constant() {
 		return nullptr;
 	}
 
-	ConstantNode *constant = alloc_node(memnew(ConstantNode));
+	ConstantNode *constant = alloc_node<ConstantNode>();
 	constant->identifier = parse_identifier();
 
 	if (match(GDScriptTokenizer::Token::COLON)) {
@@ -1102,7 +1096,7 @@ GDScriptParser::ParameterNode *GDScriptParser::parse_parameter() {
 		return nullptr;
 	}
 
-	ParameterNode *parameter = alloc_node(memnew(ParameterNode));
+	ParameterNode *parameter = alloc_node<ParameterNode>();
 	parameter->identifier = parse_identifier();
 
 	if (match(GDScriptTokenizer::Token::COLON)) {
@@ -1129,7 +1123,7 @@ GDScriptParser::SignalNode *GDScriptParser::parse_signal() {
 		return nullptr;
 	}
 
-	SignalNode *signal = alloc_node(memnew(SignalNode));
+	SignalNode *signal = alloc_node<SignalNode>();
 	signal->identifier = parse_identifier();
 
 	if (check(GDScriptTokenizer::Token::PARENTHESIS_OPEN)) {
@@ -1167,7 +1161,7 @@ GDScriptParser::SignalNode *GDScriptParser::parse_signal() {
 }
 
 GDScriptParser::EnumNode *GDScriptParser::parse_enum() {
-	EnumNode *enum_node = alloc_node(memnew(EnumNode));
+	EnumNode *enum_node = alloc_node<EnumNode>();
 	bool named = false;
 
 	if (check(GDScriptTokenizer::Token::IDENTIFIER)) {
@@ -1332,7 +1326,7 @@ GDScriptParser::FunctionNode *GDScriptParser::parse_function() {
 		_static = true;
 	}
 
-	FunctionNode *function = alloc_node(memnew(FunctionNode));
+	FunctionNode *function = alloc_node<FunctionNode>();
 	make_completion_context(COMPLETION_OVERRIDE_METHOD, function);
 
 	if (!consume(GDScriptTokenizer::Token::IDENTIFIER, R"(Expected function name after "func".)")) {
@@ -1345,7 +1339,7 @@ GDScriptParser::FunctionNode *GDScriptParser::parse_function() {
 	function->identifier = parse_identifier();
 	function->is_static = _static;
 
-	SuiteNode *body = alloc_node(memnew(SuiteNode));
+	SuiteNode *body = alloc_node<SuiteNode>();
 	SuiteNode *previous_suite = current_suite;
 	current_suite = body;
 
@@ -1361,7 +1355,7 @@ GDScriptParser::FunctionNode *GDScriptParser::parse_function() {
 }
 
 GDScriptParser::AnnotationNode *GDScriptParser::parse_annotation(uint32_t p_valid_targets) {
-	AnnotationNode *annotation = alloc_node(memnew(AnnotationNode));
+	AnnotationNode *annotation = alloc_node<AnnotationNode>();
 
 	annotation->name = previous.literal;
 
@@ -1439,7 +1433,7 @@ bool GDScriptParser::register_annotation(const MethodInfo &p_info, uint32_t p_ta
 }
 
 GDScriptParser::SuiteNode *GDScriptParser::parse_suite(const String &p_context, SuiteNode *p_suite, bool p_for_lambda) {
-	SuiteNode *suite = p_suite != nullptr ? p_suite : alloc_node(memnew(SuiteNode));
+	SuiteNode *suite = p_suite != nullptr ? p_suite : alloc_node<SuiteNode>();
 	suite->parent_block = current_suite;
 	suite->parent_function = current_function;
 	current_suite = suite;
@@ -1534,7 +1528,7 @@ GDScriptParser::Node *GDScriptParser::parse_statement() {
 	switch (current.type) {
 		case GDScriptTokenizer::Token::PASS:
 			advance();
-			result = alloc_node(memnew(PassNode));
+			result = alloc_node<PassNode>();
 			end_statement(R"("pass")");
 			break;
 		case GDScriptTokenizer::Token::VAR:
@@ -1571,7 +1565,7 @@ GDScriptParser::Node *GDScriptParser::parse_statement() {
 			break;
 		case GDScriptTokenizer::Token::RETURN: {
 			advance();
-			ReturnNode *n_return = alloc_node(memnew(ReturnNode));
+			ReturnNode *n_return = alloc_node<ReturnNode>();
 			if (!is_statement_end()) {
 				if (current_function && current_function->identifier->name == GDScriptLanguage::get_singleton()->strings._init) {
 					push_error(R"(Constructor cannot return a value.)");
@@ -1591,7 +1585,7 @@ GDScriptParser::Node *GDScriptParser::parse_statement() {
 		}
 		case GDScriptTokenizer::Token::BREAKPOINT:
 			advance();
-			result = alloc_node(memnew(BreakpointNode));
+			result = alloc_node<BreakpointNode>();
 			end_statement(R"("breakpoint")");
 			break;
 		case GDScriptTokenizer::Token::ASSERT:
@@ -1673,7 +1667,7 @@ GDScriptParser::Node *GDScriptParser::parse_statement() {
 
 GDScriptParser::AssertNode *GDScriptParser::parse_assert() {
 	// TODO: Add assert message.
-	AssertNode *assert = alloc_node(memnew(AssertNode));
+	AssertNode *assert = alloc_node<AssertNode>();
 
 	consume(GDScriptTokenizer::Token::PARENTHESIS_OPEN, R"(Expected "(" after "assert".)");
 	assert->condition = parse_expression(false);
@@ -1703,7 +1697,7 @@ GDScriptParser::BreakNode *GDScriptParser::parse_break() {
 		push_error(R"(Cannot use "break" outside of a loop.)");
 	}
 	end_statement(R"("break")");
-	return alloc_node(memnew(BreakNode));
+	return alloc_node<BreakNode>();
 }
 
 GDScriptParser::ContinueNode *GDScriptParser::parse_continue() {
@@ -1712,13 +1706,13 @@ GDScriptParser::ContinueNode *GDScriptParser::parse_continue() {
 	}
 	current_suite->has_continue = true;
 	end_statement(R"("continue")");
-	ContinueNode *cont = alloc_node(memnew(ContinueNode));
+	ContinueNode *cont = alloc_node<ContinueNode>();
 	cont->is_for_match = is_continue_match;
 	return cont;
 }
 
 GDScriptParser::ForNode *GDScriptParser::parse_for() {
-	ForNode *n_for = alloc_node(memnew(ForNode));
+	ForNode *n_for = alloc_node<ForNode>();
 
 	if (consume(GDScriptTokenizer::Token::IDENTIFIER, R"(Expected loop variable name after "for".)")) {
 		n_for->variable = parse_identifier();
@@ -1744,7 +1738,7 @@ GDScriptParser::ForNode *GDScriptParser::parse_for() {
 	can_continue = true;
 	is_continue_match = false;
 
-	SuiteNode *suite = alloc_node(memnew(SuiteNode));
+	SuiteNode *suite = alloc_node<SuiteNode>();
 	if (n_for->variable) {
 		suite->add_local(SuiteNode::Local(n_for->variable, current_function));
 	}
@@ -1761,7 +1755,7 @@ GDScriptParser::ForNode *GDScriptParser::parse_for() {
 }
 
 GDScriptParser::IfNode *GDScriptParser::parse_if(const String &p_token) {
-	IfNode *n_if = alloc_node(memnew(IfNode));
+	IfNode *n_if = alloc_node<IfNode>();
 
 	n_if->condition = parse_expression(false);
 	if (n_if->condition == nullptr) {
@@ -1780,7 +1774,7 @@ GDScriptParser::IfNode *GDScriptParser::parse_if(const String &p_token) {
 	if (match(GDScriptTokenizer::Token::ELIF)) {
 		IfNode *elif = parse_if("elif");
 
-		SuiteNode *else_block = alloc_node(memnew(SuiteNode));
+		SuiteNode *else_block = alloc_node<SuiteNode>();
 		else_block->statements.push_back(elif);
 		n_if->false_block = else_block;
 	} else if (match(GDScriptTokenizer::Token::ELSE)) {
@@ -1799,7 +1793,7 @@ GDScriptParser::IfNode *GDScriptParser::parse_if(const String &p_token) {
 }
 
 GDScriptParser::MatchNode *GDScriptParser::parse_match() {
-	MatchNode *match = alloc_node(memnew(MatchNode));
+	MatchNode *match = alloc_node<MatchNode>();
 
 	match->test = parse_expression(false);
 	if (match->test == nullptr) {
@@ -1860,7 +1854,7 @@ GDScriptParser::MatchNode *GDScriptParser::parse_match() {
 }
 
 GDScriptParser::MatchBranchNode *GDScriptParser::parse_match_branch() {
-	MatchBranchNode *branch = alloc_node(memnew(MatchBranchNode));
+	MatchBranchNode *branch = alloc_node<MatchBranchNode>();
 
 	bool has_bind = false;
 
@@ -1898,7 +1892,7 @@ GDScriptParser::MatchBranchNode *GDScriptParser::parse_match_branch() {
 	can_continue = true;
 	is_continue_match = true;
 
-	SuiteNode *suite = alloc_node(memnew(SuiteNode));
+	SuiteNode *suite = alloc_node<SuiteNode>();
 	if (branch->patterns.size() > 0) {
 		List<StringName> binds;
 		branch->patterns[0]->binds.get_key_list(&binds);
@@ -1919,7 +1913,7 @@ GDScriptParser::MatchBranchNode *GDScriptParser::parse_match_branch() {
 }
 
 GDScriptParser::PatternNode *GDScriptParser::parse_match_pattern(PatternNode *p_root_pattern) {
-	PatternNode *pattern = alloc_node(memnew(PatternNode));
+	PatternNode *pattern = alloc_node<PatternNode>();
 
 	switch (current.type) {
 		case GDScriptTokenizer::Token::VAR: {
@@ -1993,7 +1987,7 @@ GDScriptParser::PatternNode *GDScriptParser::parse_match_pattern(PatternNode *p_
 					if (pattern->rest_used) {
 						push_error(R"(The ".." pattern must be the last element in the pattern dictionary.)");
 					} else {
-						PatternNode *sub_pattern = alloc_node(memnew(PatternNode));
+						PatternNode *sub_pattern = alloc_node<PatternNode>();
 						sub_pattern->pattern_type = PatternNode::PT_REST;
 						pattern->dictionary.push_back({ nullptr, sub_pattern });
 						pattern->rest_used = true;
@@ -2055,7 +2049,7 @@ GDScriptParser::IdentifierNode *GDScriptParser::PatternNode::get_bind(const Stri
 }
 
 GDScriptParser::WhileNode *GDScriptParser::parse_while() {
-	WhileNode *n_while = alloc_node(memnew(WhileNode));
+	WhileNode *n_while = alloc_node<WhileNode>();
 
 	n_while->condition = parse_expression(false);
 	if (n_while->condition == nullptr) {
@@ -2113,7 +2107,7 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_precedence(Precedence p_pr
 	ExpressionNode *previous_operand = (this->*prefix_rule)(nullptr, p_can_assign);
 
 	while (p_precedence <= get_rule(current.type)->precedence) {
-		if (p_stop_on_assign && current.type == GDScriptTokenizer::Token::EQUAL) {
+		if (previous_operand == nullptr || (p_stop_on_assign && current.type == GDScriptTokenizer::Token::EQUAL)) {
 			return previous_operand;
 		}
 		// Also switch multiline mode on here for infix operators.
@@ -2128,10 +2122,7 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_precedence(Precedence p_pr
 		}
 		token = advance();
 		ParseFunction infix_rule = get_rule(token.type)->infix;
-		if(infix_rule != nullptr)
-		{
-			previous_operand = (this->*infix_rule)(previous_operand, p_can_assign);
-		}
+		previous_operand = (this->*infix_rule)(previous_operand, p_can_assign);
 	}
 
 	return previous_operand;
@@ -2149,7 +2140,7 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_identifier(ExpressionNode 
 	if (!previous.is_identifier()) {
 		ERR_FAIL_V_MSG(nullptr, "Parser bug: parsing literal node without literal token.");
 	}
-	IdentifierNode *identifier = alloc_node(memnew(IdentifierNode));
+	IdentifierNode *identifier = alloc_node<IdentifierNode>();
 	identifier->name = previous.get_identifier();
 
 	if (current_suite != nullptr && current_suite->has_local(identifier->name)) {
@@ -2200,7 +2191,7 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_literal(ExpressionNode *p_
 		ERR_FAIL_V_MSG(nullptr, "Parser bug: parsing literal node without literal token.");
 	}
 
-	LiteralNode *literal = alloc_node(memnew(LiteralNode));
+	LiteralNode *literal = alloc_node<LiteralNode>();
 	literal->value = previous.literal;
 	return literal;
 }
@@ -2212,14 +2203,14 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_self(ExpressionNode *p_pre
 	if (in_lambda) {
 		push_error(R"(Cannot use "self" inside a lambda.)");
 	}
-	SelfNode *self = alloc_node(memnew(SelfNode));
+	SelfNode *self = alloc_node<SelfNode>();
 	self->current_class = current_class;
 	return self;
 }
 
 GDScriptParser::ExpressionNode *GDScriptParser::parse_builtin_constant(ExpressionNode *p_previous_operand, bool p_can_assign) {
 	GDScriptTokenizer::Token::Type op_type = previous.type;
-	LiteralNode *constant = alloc_node(memnew(LiteralNode));
+	LiteralNode *constant = alloc_node<LiteralNode>();
 
 	switch (op_type) {
 		case GDScriptTokenizer::Token::CONST_PI:
@@ -2243,7 +2234,7 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_builtin_constant(Expressio
 
 GDScriptParser::ExpressionNode *GDScriptParser::parse_unary_operator(ExpressionNode *p_previous_operand, bool p_can_assign) {
 	GDScriptTokenizer::Token::Type op_type = previous.type;
-	UnaryOpNode *operation = alloc_node(memnew(UnaryOpNode));
+	UnaryOpNode *operation = alloc_node<UnaryOpNode>();
 
 	switch (op_type) {
 		case GDScriptTokenizer::Token::MINUS:
@@ -2290,7 +2281,7 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_binary_not_in_operator(Exp
 	// check that NOT is followed by IN by consuming it before calling parse_binary_operator which will only receive a plain IN
 	consume(GDScriptTokenizer::Token::IN, R"(Expected "in" after "not" in content-test operator.)");
 	ExpressionNode *in_operation = parse_binary_operator(p_previous_operand, p_can_assign);
-	UnaryOpNode *operation = alloc_node(memnew(UnaryOpNode));
+	UnaryOpNode *operation = alloc_node<UnaryOpNode>();
 	operation->operation = UnaryOpNode::OP_LOGIC_NOT;
 	operation->variant_op = Variant::OP_NOT;
 	operation->operand = in_operation;
@@ -2299,7 +2290,7 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_binary_not_in_operator(Exp
 
 GDScriptParser::ExpressionNode *GDScriptParser::parse_binary_operator(ExpressionNode *p_previous_operand, bool p_can_assign) {
 	GDScriptTokenizer::Token op = previous;
-	BinaryOpNode *operation = alloc_node(memnew(BinaryOpNode));
+	BinaryOpNode *operation = alloc_node<BinaryOpNode>();
 
 	Precedence precedence = (Precedence)(get_rule(op.type)->precedence + 1);
 	operation->left_operand = p_previous_operand;
@@ -2401,7 +2392,7 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_binary_operator(Expression
 
 GDScriptParser::ExpressionNode *GDScriptParser::parse_ternary_operator(ExpressionNode *p_previous_operand, bool p_can_assign) {
 	// Only one ternary operation exists, so no abstraction here.
-	TernaryOpNode *operation = alloc_node(memnew(TernaryOpNode));
+	TernaryOpNode *operation = alloc_node<TernaryOpNode>();
 	operation->true_expr = p_previous_operand;
 
 	operation->condition = parse_precedence(PREC_TERNARY, false);
@@ -2424,6 +2415,9 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_ternary_operator(Expressio
 GDScriptParser::ExpressionNode *GDScriptParser::parse_assignment(ExpressionNode *p_previous_operand, bool p_can_assign) {
 	if (!p_can_assign) {
 		push_error("Assignment is not allowed inside an expression.");
+		return parse_expression(false); // Return the following expression.
+	}
+	if (p_previous_operand == nullptr) {
 		return parse_expression(false); // Return the following expression.
 	}
 
@@ -2466,7 +2460,7 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_assignment(ExpressionNode 
 			return parse_expression(false); // Return the following expression.
 	}
 
-	AssignmentNode *assignment = alloc_node(memnew(AssignmentNode));
+	AssignmentNode *assignment = alloc_node<AssignmentNode>();
 	make_completion_context(COMPLETION_ASSIGN, assignment);
 #ifdef DEBUG_ENABLED
 	bool has_operator = true;
@@ -2542,7 +2536,7 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_assignment(ExpressionNode 
 }
 
 GDScriptParser::ExpressionNode *GDScriptParser::parse_await(ExpressionNode *p_previous_operand, bool p_can_assign) {
-	AwaitNode *await = alloc_node(memnew(AwaitNode));
+	AwaitNode *await = alloc_node<AwaitNode>();
 	ExpressionNode *element = parse_precedence(PREC_AWAIT, false);
 	if (element == nullptr) {
 		push_error(R"(Expected signal or coroutine after "await".)");
@@ -2557,7 +2551,7 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_await(ExpressionNode *p_pr
 }
 
 GDScriptParser::ExpressionNode *GDScriptParser::parse_array(ExpressionNode *p_previous_operand, bool p_can_assign) {
-	ArrayNode *array = alloc_node(memnew(ArrayNode));
+	ArrayNode *array = alloc_node<ArrayNode>();
 
 	if (!check(GDScriptTokenizer::Token::BRACKET_CLOSE)) {
 		do {
@@ -2581,7 +2575,7 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_array(ExpressionNode *p_pr
 }
 
 GDScriptParser::ExpressionNode *GDScriptParser::parse_dictionary(ExpressionNode *p_previous_operand, bool p_can_assign) {
-	DictionaryNode *dictionary = alloc_node(memnew(DictionaryNode));
+	DictionaryNode *dictionary = alloc_node<DictionaryNode>();
 
 	bool decided_style = false;
 	if (!check(GDScriptTokenizer::Token::BRACE_CLOSE)) {
@@ -2683,7 +2677,7 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_grouping(ExpressionNode *p
 }
 
 GDScriptParser::ExpressionNode *GDScriptParser::parse_attribute(ExpressionNode *p_previous_operand, bool p_can_assign) {
-	SubscriptNode *attribute = alloc_node(memnew(SubscriptNode));
+	SubscriptNode *attribute = alloc_node<SubscriptNode>();
 
 	if (for_completion) {
 		bool is_builtin = false;
@@ -2713,7 +2707,7 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_attribute(ExpressionNode *
 }
 
 GDScriptParser::ExpressionNode *GDScriptParser::parse_subscript(ExpressionNode *p_previous_operand, bool p_can_assign) {
-	SubscriptNode *subscript = alloc_node(memnew(SubscriptNode));
+	SubscriptNode *subscript = alloc_node<SubscriptNode>();
 
 	make_completion_context(COMPLETION_SUBSCRIPT, subscript);
 
@@ -2731,7 +2725,7 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_subscript(ExpressionNode *
 }
 
 GDScriptParser::ExpressionNode *GDScriptParser::parse_cast(ExpressionNode *p_previous_operand, bool p_can_assign) {
-	CastNode *cast = alloc_node(memnew(CastNode));
+	CastNode *cast = alloc_node<CastNode>();
 
 	cast->operand = p_previous_operand;
 	cast->cast_type = parse_type();
@@ -2745,7 +2739,7 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_cast(ExpressionNode *p_pre
 }
 
 GDScriptParser::ExpressionNode *GDScriptParser::parse_call(ExpressionNode *p_previous_operand, bool p_can_assign) {
-	CallNode *call = alloc_node(memnew(CallNode));
+	CallNode *call = alloc_node<CallNode>();
 
 	if (previous.type == GDScriptTokenizer::Token::SUPER) {
 		// Super call.
@@ -2834,12 +2828,12 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_get_node(ExpressionNode *p
 			push_error(R"(Expect node path as string or identifier after "$".)");
 			return nullptr;
 		}
-		GetNodeNode *get_node = alloc_node(memnew(GetNodeNode));
+		GetNodeNode *get_node = alloc_node<GetNodeNode>();
 		make_completion_context(COMPLETION_GET_NODE, get_node);
 		get_node->string = parse_literal();
 		return get_node;
 	} else if (current.is_node_name()) {
-		GetNodeNode *get_node = alloc_node(memnew(GetNodeNode));
+		GetNodeNode *get_node = alloc_node<GetNodeNode>();
 		int chain_position = 0;
 		do {
 			make_completion_context(COMPLETION_GET_NODE, get_node, chain_position++);
@@ -2848,14 +2842,14 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_get_node(ExpressionNode *p
 				return nullptr;
 			}
 			advance();
-			IdentifierNode *identifier = alloc_node(memnew(IdentifierNode));
+			IdentifierNode *identifier = alloc_node<IdentifierNode>();
 			identifier->name = previous.get_identifier();
 			get_node->chain.push_back(identifier);
 		} while (match(GDScriptTokenizer::Token::SLASH));
 		return get_node;
 	} else if (match(GDScriptTokenizer::Token::SLASH)) {
-		GetNodeNode *get_node = alloc_node(memnew(GetNodeNode));
-		IdentifierNode *identifier_root = alloc_node(memnew(IdentifierNode));
+		GetNodeNode *get_node = alloc_node<GetNodeNode>();
+		IdentifierNode *identifier_root = alloc_node<IdentifierNode>();
 		get_node->chain.push_back(identifier_root);
 		int chain_position = 0;
 		do {
@@ -2865,7 +2859,7 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_get_node(ExpressionNode *p
 				return nullptr;
 			}
 			advance();
-			IdentifierNode *identifier = alloc_node(memnew(IdentifierNode));
+			IdentifierNode *identifier = alloc_node<IdentifierNode>();
 			identifier->name = previous.get_identifier();
 			get_node->chain.push_back(identifier);
 		} while (match(GDScriptTokenizer::Token::SLASH));
@@ -2877,7 +2871,7 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_get_node(ExpressionNode *p
 }
 
 GDScriptParser::ExpressionNode *GDScriptParser::parse_preload(ExpressionNode *p_previous_operand, bool p_can_assign) {
-	PreloadNode *preload = alloc_node(memnew(PreloadNode));
+	PreloadNode *preload = alloc_node<PreloadNode>();
 	preload->resolved_path = "<missing path>";
 
 	push_multiline(true);
@@ -2901,9 +2895,9 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_preload(ExpressionNode *p_
 }
 
 GDScriptParser::ExpressionNode *GDScriptParser::parse_lambda(ExpressionNode *p_previous_operand, bool p_can_assign) {
-	LambdaNode *lambda = alloc_node(memnew(LambdaNode));
+	LambdaNode *lambda = alloc_node<LambdaNode>();
 	lambda->parent_function = current_function;
-	FunctionNode *function = alloc_node(memnew(FunctionNode));
+	FunctionNode *function = alloc_node<FunctionNode>();
 	function->source_lambda = lambda;
 
 	function->is_static = current_function != nullptr ? current_function->is_static : false;
@@ -2930,7 +2924,7 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_lambda(ExpressionNode *p_p
 	FunctionNode *previous_function = current_function;
 	current_function = function;
 
-	SuiteNode *body = alloc_node(memnew(SuiteNode));
+	SuiteNode *body = alloc_node<SuiteNode>();
 	SuiteNode *previous_suite = current_suite;
 	current_suite = body;
 
@@ -2981,12 +2975,12 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_invalid_token(ExpressionNo
 }
 
 GDScriptParser::TypeNode *GDScriptParser::parse_type(bool p_allow_void) {
-	TypeNode *type = alloc_node(memnew(TypeNode));
+	TypeNode *type = alloc_node<TypeNode>();
 	make_completion_context(p_allow_void ? COMPLETION_TYPE_NAME_OR_VOID : COMPLETION_TYPE_NAME, type);
 	if (!match(GDScriptTokenizer::Token::IDENTIFIER)) {
 		if (match(GDScriptTokenizer::Token::VOID)) {
 			if (p_allow_void) {
-				TypeNode *void_type = alloc_node(memnew(TypeNode));
+				TypeNode *void_type = alloc_node<TypeNode>();
 				return void_type;
 			} else {
 				push_error(R"("void" is only allowed for a function return type.)");
@@ -3404,7 +3398,6 @@ bool GDScriptParser::validate_annotation_arguments(AnnotationNode *p_annotation)
 		return false;
 	}
 
-	Callable::CallError error;
 	const List<PropertyInfo>::Element *E = info.arguments.front();
 	for (int i = 0; i < p_annotation->arguments.size(); i++) {
 		ExpressionNode *argument = p_annotation->arguments[i];
@@ -3421,9 +3414,7 @@ bool GDScriptParser::validate_annotation_arguments(AnnotationNode *p_annotation)
 				// Allow "quote-less strings", as long as they are recognized as identifiers.
 				if (argument->type == Node::IDENTIFIER) {
 					IdentifierNode *string = static_cast<IdentifierNode *>(argument);
-					error.argument = 0;
-					error.expected = 0;
-					error.error = Callable::CallError::CALL_OK;
+					Callable::CallError error;
 					Vector<Variant> args = varray(string->name);
 					const Variant *name = args.ptr();
 					Variant r;
@@ -3448,9 +3439,7 @@ bool GDScriptParser::validate_annotation_arguments(AnnotationNode *p_annotation)
 					push_error(vformat(R"(Expected %s as argument %d of annotation "%s".)", Variant::get_type_name(parameter.type), i + 1, p_annotation->name));
 					return false;
 				}
-				error.argument = 0;
-				error.expected = 0;
-				error.error = Callable::CallError::CALL_OK;
+				Callable::CallError error;
 				const Variant *args = &value;
 				Variant r;
 				Variant::construct(parameter.type, r, &(args), 1, error);
@@ -3529,11 +3518,8 @@ bool GDScriptParser::export_annotations(const AnnotationNode *p_annotation, Node
 
 	// This is called after the analyzer is done finding the type, so this should be set here.
 	DataType export_type = variable->get_datatype();
-	if (p_annotation->name == "@export_preview_res") {
-		variable->export_info.usage = PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_EDITOR_INSTANTIATE_OBJECT;
-	}
 
-	else if (p_annotation->name == "@export") {
+	if (p_annotation->name == SNAME("@export")) {
 		if (variable->datatype_specifier == nullptr && variable->initializer == nullptr) {
 			push_error(R"(Cannot use simple "@export" annotation with variable without type or initializer, since type can't be inferred.)", p_annotation);
 			return false;
@@ -3558,7 +3544,7 @@ bool GDScriptParser::export_annotations(const AnnotationNode *p_annotation, Node
 				variable->export_info.hint_string = Variant::get_type_name(export_type.builtin_type);
 				break;
 			case GDScriptParser::DataType::NATIVE:
-				if (ClassDB::is_parent_class(export_type.native_type, "Resource")) {
+				if (ClassDB::is_parent_class(export_type.native_type, SNAME("Resource"))) {
 					variable->export_info.type = Variant::OBJECT;
 					variable->export_info.hint = PROPERTY_HINT_RESOURCE_TYPE;
 					variable->export_info.hint_string = export_type.native_type;
@@ -3584,20 +3570,9 @@ bool GDScriptParser::export_annotations(const AnnotationNode *p_annotation, Node
 
 				variable->export_info.hint_string = enum_hint_string;
 			} break;
-			case GDScriptParser::DataType::CLASS:
-				if (ClassDB::is_parent_class(export_type.native_type, "Resource")) {
-					variable->export_info.type = Variant::OBJECT;
-					variable->export_info.hint = PROPERTY_HINT_RESOURCE_TYPE;
-					variable->export_info.hint_string = export_type.native_type;
-					variable->export_info.usage |= PROPERTY_USAGE_SCRIPT_VARIABLE;
-				} else {
-					push_error(R"(Export type can only be built-in, a resource, or an enum.)" + itos(export_type.kind), variable);
-					return false;
-				}
-				break;
 			default:
 				// TODO: Allow custom user resources.
-				push_error(R"(Export type can only be built-in, a resource, or an enum.)" + itos(export_type.kind), variable);
+				push_error(R"(Export type can only be built-in, a resource, or an enum.)", variable);
 				break;
 		}
 
@@ -3781,8 +3756,6 @@ String GDScriptParser::DataType::to_string() const {
 		}
 		case ENUM:
 			return enum_type.operator String() + " (enum)";
-		// case ENUM_VALUE:
-		// 	return enum_type.operator String() + " (enum value)";
 		case UNRESOLVED:
 			return "<unresolved type>";
 	}

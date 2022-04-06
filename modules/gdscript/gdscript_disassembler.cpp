@@ -36,31 +36,31 @@
 #include "gdscript.h"
 
 static String _get_variant_string(const Variant &p_variant) {
-	StringBuilder txt;
+	String txt;
 	if (p_variant.get_type() == Variant::STRING) {
-		txt + "\"" + String(p_variant) + "\"";
+		txt = "\"" + String(p_variant) + "\"";
 	} else if (p_variant.get_type() == Variant::STRING_NAME) {
-		txt + "&\"" + String(p_variant) + "\"";
+		txt = "&\"" + String(p_variant) + "\"";
 	} else if (p_variant.get_type() == Variant::NODE_PATH) {
-		txt + "^\"" + String(p_variant) + "\"";
+		txt = "^\"" + String(p_variant) + "\"";
 	} else if (p_variant.get_type() == Variant::OBJECT) {
 		Object *obj = p_variant;
 		if (!obj) {
-			txt + "null";
+			txt = "null";
 		} else {
 			GDScriptNativeClass *cls = Object::cast_to<GDScriptNativeClass>(obj);
 			if (cls) {
 				txt += cls->get_name();
 				txt += " (class)";
 			} else {
-				txt + obj->get_class();
+				txt = obj->get_class();
 				if (obj->get_script_instance()) {
-					txt + "(" + obj->get_script_instance()->get_script()->get_path() + ")";
+					txt += "(" + obj->get_script_instance()->get_script()->get_path() + ")";
 				}
 			}
 		}
 	} else {
-		txt + (String)p_variant;
+		txt = p_variant;
 	}
 	return txt;
 }

@@ -26657,7 +26657,7 @@
 /* Begin PBXLegacyTarget section */
 		544CBA3727FB4C6800007A89 /* godot4 */ = {
 			isa = PBXLegacyTarget;
-			buildArgumentsString = "platform=osx platform=osx arch=x86_64 vulkan=yes driver=Vulkan --jobs=8";
+			buildArgumentsString = "platform=osx platform=osx arch=x86_64 vulkan=yes driver=Vulkan --jobs=8 tests=yes target=release_debug";
 			buildConfigurationList = 544CBA3A27FB4C6800007A89 /* Build configuration list for PBXLegacyTarget "godot4" */;
 			buildPhases = (
 			);

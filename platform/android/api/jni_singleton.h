@@ -52,12 +52,7 @@ class JNISingleton : public Object {
 #endif
 
 public:
-	virtual void call_r(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override {
-		Variant ret;
-		call_r(ret, p_method, p_args, p_argcount, r_error);
-	}
-	virtual void call_r(Variant &ret, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override {
-		ret.clear();
+	virtual Variant callp(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override {
 #ifdef ANDROID_ENABLED
 		Map<StringName, MethodData>::Element *E = method_map.find(p_method);
 
@@ -75,11 +70,10 @@ public:
 
 		if (call_error) {
 			// The method is not in this map, defaulting to the regular instance calls.
-			Object::call_r(ret, p_method, p_args, p_argcount, r_error);
-			return;
+			return Object::callp(p_method, p_args, p_argcount, r_error);
 		}
 
-		ERR_FAIL_COND(!instance);
+		ERR_FAIL_COND_V(!instance, Variant());
 
 		r_error.error = Callable::CallError::CALL_OK;
 
@@ -93,7 +87,7 @@ public:
 
 		int res = env->PushLocalFrame(16);
 
-		ERR_FAIL_COND(res != 0);
+		ERR_FAIL_COND_V(res != 0, Variant());
 
 		List<jobject> to_erase;
 		for (int i = 0; i < p_argcount; i++) {
@@ -103,6 +97,8 @@ public:
 				to_erase.push_back(vr.obj);
 			}
 		}
+
+		Variant ret;
 
 		switch (E->get().ret_type) {
 			case Variant::NIL: {
@@ -165,7 +161,7 @@ public:
 			} break;
 			default: {
 				env->PopLocalFrame(nullptr);
-				ERR_FAIL();
+				ERR_FAIL_V(Variant());
 			} break;
 		}
 
@@ -176,11 +172,11 @@ public:
 
 		env->PopLocalFrame(nullptr);
 
-		return;
+		return ret;
 #else // ANDROID_ENABLED
 
 		// Defaulting to the regular instance calls.
-		Object::call_r(ret, p_method, p_args, p_argcount, r_error);
+		return Object::callp(p_method, p_args, p_argcount, r_error);
 #endif
 	}
 

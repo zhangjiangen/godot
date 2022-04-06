@@ -450,7 +450,7 @@ public:
 	virtual void write_set_member(const Address &p_value, const StringName &p_name) override;
 	virtual void write_get_member(const Address &p_target, const StringName &p_name) override;
 	virtual void write_assign(const Address &p_target, const Address &p_source) override;
-	virtual bool write_assign_with_conversion(const Address &p_target, const Address &p_source) override;
+	virtual void write_assign_with_conversion(const Address &p_target, const Address &p_source) override;
 	virtual void write_assign_true(const Address &p_target) override;
 	virtual void write_assign_false(const Address &p_target) override;
 	virtual void write_assign_default_parameter(const Address &p_dst, const Address &p_src) override;
@@ -495,9 +495,6 @@ public:
 	virtual void write_newline(int p_line) override;
 	virtual void write_return(const Address &p_return_value) override;
 	virtual void write_assert(const Address &p_test, const Address &p_message) override;
-	GDScriptByteCodeGenerator() {
-		constant_map.set_debug_info(__FILE__, __LINE__);
-	}
 
 	virtual ~GDScriptByteCodeGenerator();
 };

@@ -149,7 +149,7 @@ Array GDScriptTextDocument::documentSymbol(const Dictionary &p_params) {
 	String uri = params["uri"];
 	String path = GDScriptLanguageProtocol::get_singleton()->get_workspace()->get_file_path(uri);
 	Array arr;
-	if (const Map<String, SharedPtr<ExtendGDScriptParser>>::Element *parser = GDScriptLanguageProtocol::get_singleton()->get_workspace()->scripts.find(path)) {
+	if (const Map<String, ExtendGDScriptParser *>::Element *parser = GDScriptLanguageProtocol::get_singleton()->get_workspace()->scripts.find(path)) {
 		Vector<lsp::DocumentedSymbolInformation> list;
 		parser->get()->get_symbols().symbol_tree_as_list(uri, list);
 		for (int i = 0; i < list.size(); i++) {
@@ -219,8 +219,8 @@ Array GDScriptTextDocument::completion(const Dictionary &p_params) {
 	} else if (GDScriptLanguageProtocol::get_singleton()->is_smart_resolve_enabled()) {
 		arr = native_member_completions.duplicate();
 
-		for (KeyValue<String, SharedPtr<ExtendGDScriptParser>> &E : GDScriptLanguageProtocol::get_singleton()->get_workspace()->scripts) {
-			SharedPtr<ExtendGDScriptParser> script = E.value;
+		for (KeyValue<String, ExtendGDScriptParser *> &E : GDScriptLanguageProtocol::get_singleton()->get_workspace()->scripts) {
+			ExtendGDScriptParser *script = E.value;
 			const Array &items = script->get_member_completions();
 
 			const int start_size = arr.size();
@@ -275,7 +275,7 @@ Dictionary GDScriptTextDocument::resolve(const Dictionary &p_params) {
 			}
 
 			if (!symbol) {
-				if (const Map<String, SharedPtr<ExtendGDScriptParser>>::Element *E = GDScriptLanguageProtocol::get_singleton()->get_workspace()->scripts.find(class_name)) {
+				if (const Map<String, ExtendGDScriptParser *>::Element *E = GDScriptLanguageProtocol::get_singleton()->get_workspace()->scripts.find(class_name)) {
 					symbol = E->get()->get_member_symbol(member_name, inner_class_name);
 				}
 			}

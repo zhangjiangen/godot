@@ -585,8 +585,6 @@ public:
 #endif // TOOLS_ENABLED
 
 	Variant call(GDScriptInstance *p_instance, const Variant **p_args, int p_argcount, Callable::CallError &r_err, CallState *p_state = nullptr);
-	void call_r(Variant &ret, GDScriptInstance *p_instance, const Variant **p_args, int p_argcount, Callable::CallError &r_err, CallState *p_state = nullptr);
-	void call_r(GDScriptInstance *p_instance, const Variant **p_args, int p_argcount, Callable::CallError &r_err, CallState *p_state = nullptr);
 
 #ifdef DEBUG_ENABLED
 	void disassemble(const Vector<String> &p_code_lines) const;

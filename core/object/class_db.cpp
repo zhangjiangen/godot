@@ -1206,13 +1206,16 @@ bool ClassDB::set_property(Object *p_object, const StringName &p_property, const
 				return true; //return true but do nothing
 			}
 
+			Callable::CallError ce;
+
 			if (psg->index >= 0) {
 				Variant index = psg->index;
 				const Variant *arg[2] = { &index, &p_value };
+				//p_object->call(psg->setter,arg,2,ce);
 				if (psg->_setptr) {
 					psg->_setptr->call(p_object, arg, 2, ce);
 				} else {
-					p_object->call_r(psg->setter, arg, 2, ce);
+					p_object->callp(psg->setter, arg, 2, ce);
 				}
 
 			} else {
@@ -1220,7 +1223,7 @@ bool ClassDB::set_property(Object *p_object, const StringName &p_property, const
 				if (psg->_setptr) {
 					psg->_setptr->call(p_object, arg, 1, ce);
 				} else {
-					p_object->call_r(psg->setter, arg, 1, ce);
+					p_object->callp(psg->setter, arg, 1, ce);
 				}
 			}
 
@@ -1238,54 +1241,54 @@ bool ClassDB::set_property(Object *p_object, const StringName &p_property, const
 }
 
 bool ClassDB::get_property(Object *p_object, const StringName &p_property, Variant &r_value) {
-    ERR_FAIL_NULL_V(p_object, false);
+	ERR_FAIL_NULL_V(p_object, false);
 
-    ClassInfo *type = classes.getptr(p_object->get_class_name());
-    ClassInfo *check = type;
-    while (check) {
-        const PropertySetGet *psg = check->property_setget.getptr(p_property);
-        if (psg) {
-            if (!psg->getter) {
-                return true; //return true but do nothing
-            }
+	ClassInfo *type = classes.getptr(p_object->get_class_name());
+	ClassInfo *check = type;
+	while (check) {
+		const PropertySetGet *psg = check->property_setget.getptr(p_property);
+		if (psg) {
+			if (!psg->getter) {
+				return true; //return true but do nothing
+			}
 
-            if (psg->index >= 0) {
-                Variant index = psg->index;
-                const Variant *arg[1] = { &index };
-                Callable::CallError ce;
-                r_value = p_object->callp(psg->getter, arg, 1, ce);
+			if (psg->index >= 0) {
+				Variant index = psg->index;
+				const Variant *arg[1] = { &index };
+				Callable::CallError ce;
+				r_value = p_object->callp(psg->getter, arg, 1, ce);
 
-            } else {
-                Callable::CallError ce;
-                if (psg->_getptr) {
-                    r_value = psg->_getptr->call(p_object, nullptr, 0, ce);
-                } else {
-                    r_value = p_object->callp(psg->getter, nullptr, 0, ce);
-                }
-            }
-            return true;
-        }
+			} else {
+				Callable::CallError ce;
+				if (psg->_getptr) {
+					r_value = psg->_getptr->call(p_object, nullptr, 0, ce);
+				} else {
+					r_value = p_object->callp(psg->getter, nullptr, 0, ce);
+				}
+			}
+			return true;
+		}
 
-        const int *c = check->constant_map.getptr(p_property); //constants count
-        if (c) {
-            r_value = *c;
-            return true;
-        }
+		const int *c = check->constant_map.getptr(p_property); //constants count
+		if (c) {
+			r_value = *c;
+			return true;
+		}
 
-        if (check->method_map.has(p_property)) { //methods count
-            r_value = Callable(p_object, p_property);
-            return true;
-        }
+		if (check->method_map.has(p_property)) { //methods count
+			r_value = Callable(p_object, p_property);
+			return true;
+		}
 
-        if (check->signal_map.has(p_property)) { //signals count
-            r_value = Signal(p_object, p_property);
-            return true;
-        }
+		if (check->signal_map.has(p_property)) { //signals count
+			r_value = Signal(p_object, p_property);
+			return true;
+		}
 
-        check = check->inherits_ptr;
-    }
+		check = check->inherits_ptr;
+	}
 
-    return false;
+	return false;
 }
 int ClassDB::get_property_index(const StringName &p_class, const StringName &p_property, bool *r_is_valid) {
 	ClassInfo *type = classes.getptr(p_class);
