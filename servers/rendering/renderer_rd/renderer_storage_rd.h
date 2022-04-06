@@ -890,7 +890,7 @@ public:
 	Color reflection_probe_get_ambient_color(RID p_probe) const;
 	float reflection_probe_get_ambient_color_energy(RID p_probe) const;
 
-	void base_update_dependency(RID p_base, DependencyTracker *p_instance);
+	void base_update_dependency(RID p_base, DependencyTracker *p_instance) override;
 
 	/* VOXEL GI API */
 
