@@ -139,7 +139,7 @@ def configure(env):
         env["AS"] = basecmd + "as"
 
     if env["use_ubsan"] or env["use_asan"] or env["use_tsan"]:
-        env.extra_suffix += ".san"
+        env.extra_suffix += "_san"
         env.Append(CCFLAGS=["-DSANITIZERS_ENABLED"])
 
         if env["use_ubsan"]:

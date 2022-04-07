@@ -1192,7 +1192,6 @@ bool ClassDB::set_property(Object *p_object, const StringName &p_property, const
 	ClassInfo *type = classes.getptr(p_object->get_class_name());
 	ClassInfo *check = type;
 
-	Callable::CallError ce;
 	while (check) {
 		ce.argument = 0;
 		ce.expected = 0;

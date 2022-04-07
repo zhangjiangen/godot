@@ -173,7 +173,7 @@ def configure(env):
         env.Append(LINKFLAGS=["-ftest-coverage", "-fprofile-arcs"])
 
     if env["use_ubsan"] or env["use_asan"] or env["use_lsan"] or env["use_tsan"] or env["use_msan"]:
-        env.extra_suffix += ".san"
+        env.extra_suffix += "_san"
         env.Append(CCFLAGS=["-DSANITIZERS_ENABLED"])
 
         if env["use_ubsan"]:

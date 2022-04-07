@@ -26,7 +26,7 @@ jobs:
             tests: false # Disabled due freeze caused by mix Mono build and CI
             sconsflags: module_mono_enabled=yes mono_static=yes mono_glue=no
             doc-test: true
-            bin: "./bin/godot.linuxbsd.opt.tools.64.mono"
+            bin: "./bin/godot_linuxbsd_opt_tools_64_mono"
             build-mono: true
             artifact: true
 
@@ -40,7 +40,7 @@ jobs:
             # Can be turned off for PRs that intentionally break compat with godot-cpp,
             # until both the upstream PR and the matching godot-cpp changes are merged.
             godot-cpp-test: true
-            bin: "./bin/godot.linuxbsd.double.tools.64.san"
+            bin: "./bin/godot_linuxbsd_double_tools_64_san"
             build-mono: false
             # Skip 2GiB artifact speeding up action.
             artifact: false
@@ -51,7 +51,7 @@ jobs:
             tools: true
             tests: true
             sconsflags: use_asan=yes use_ubsan=yes use_llvm=yes
-            bin: "./bin/godot.linuxbsd.tools.64.llvm.san"
+            bin: "./bin/godot_linuxbsd_tools_64_llvm_san"
             build-mono: false
             # Skip 2GiB artifact speeding up action.
             artifact: false
