@@ -481,6 +481,7 @@ bool JavaClass::_call_method(JavaObject *p_instance, const StringName &p_method,
 	for (jobject &E : to_free) {
 		env->DeleteLocalRef(E);
 	}
+	return success;
 }
 Variant JavaClass::callp(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
 	Variant ret;
