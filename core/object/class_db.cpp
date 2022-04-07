@@ -1193,9 +1193,6 @@ bool ClassDB::set_property(Object *p_object, const StringName &p_property, const
 	ClassInfo *check = type;
 
 	while (check) {
-		ce.argument = 0;
-		ce.expected = 0;
-		ce.error = Callable::CallError::CALL_OK;
 		const PropertySetGet *psg = check->property_setget.getptr(p_property);
 		if (psg) {
 			if (!psg->setter) {
