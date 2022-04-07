@@ -4069,6 +4069,12 @@ static Vector<String> _get_bezier_subindices_for_type(Variant::Type p_type, bool
 			subindices.push_back(":y");
 			subindices.push_back(":z");
 		} break;
+		case Variant::VECTOR4: {
+			subindices.push_back(":x");
+			subindices.push_back(":y");
+			subindices.push_back(":z");
+			subindices.push_back(":w");
+		} break;
 		case Variant::QUATERNION: {
 			subindices.push_back(":x");
 			subindices.push_back(":y");
@@ -4134,6 +4140,7 @@ AnimationTrackEditor::TrackIndices AnimationTrackEditor::_confirm_insert(InsertD
 						h.type == Variant::VECTOR2 ||
 						h.type == Variant::RECT2 ||
 						h.type == Variant::VECTOR3 ||
+						h.type == Variant::VECTOR4 ||
 						h.type == Variant::AABB ||
 						h.type == Variant::QUATERNION ||
 						h.type == Variant::COLOR ||
@@ -4639,6 +4646,7 @@ void AnimationTrackEditor::_new_track_node_selected(NodePath p_path) {
 			filter.push_back(Variant::FLOAT);
 			filter.push_back(Variant::VECTOR2);
 			filter.push_back(Variant::VECTOR3);
+			filter.push_back(Variant::VECTOR4);
 			filter.push_back(Variant::QUATERNION);
 			filter.push_back(Variant::PLANE);
 			filter.push_back(Variant::COLOR);
@@ -4709,6 +4717,7 @@ void AnimationTrackEditor::_new_track_property_selected(String p_name) {
 					h.type == Variant::VECTOR2 ||
 					h.type == Variant::RECT2 ||
 					h.type == Variant::VECTOR3 ||
+					h.type == Variant::VECTOR4 ||
 					h.type == Variant::AABB ||
 					h.type == Variant::QUATERNION ||
 					h.type == Variant::COLOR ||

@@ -480,13 +480,20 @@ _FORCE_INLINE_ static void _fill_std140_variant_ubo_value(ShaderLanguage::DataTy
 					gui[1] = v.y;
 					gui[2] = v.z;
 					gui[3] = v.w;
-				} else {
+				} else if (value.get_type() == Variant::PLANE) {
 					Plane v = value;
 
 					gui[0] = v.normal.x;
 					gui[1] = v.normal.y;
 					gui[2] = v.normal.z;
 					gui[3] = v.d;
+				} else {
+					Vector4 v = value;
+
+					gui[0] = v.x;
+					gui[1] = v.y;
+					gui[2] = v.z;
+					gui[3] = v.y;
 				}
 			}
 		} break;
