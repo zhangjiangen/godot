@@ -228,10 +228,11 @@ void FileSystemDock::_update_tree(const Vector<String> &p_uncollapsed_paths, boo
 	DirAccessRef da = DirAccess::create(DirAccess::ACCESS_RESOURCES);
 	bool fav_changed = false;
 	for (int i = favorite_paths.size() - 1; i >= 0; i--) {
-		if (!da->dir_exists(favorite_paths[i])) {
-			favorite_paths.remove_at(i);
-			fav_changed = true;
+		if (da->dir_exists(favorite_paths[i]) || da->file_exists(favorite_paths[i])) {
+			continue;
 		}
+		favorite_paths.remove_at(i);
+		fav_changed = true;
 	}
 	if (fav_changed) {
 		EditorSettings::get_singleton()->set_favorites(favorite_paths);
@@ -1432,7 +1433,7 @@ void FileSystemDock::_make_dir_confirm() {
 	Error err = da->change_dir(directory);
 	ERR_FAIL_COND_MSG(err != OK, "Cannot open directory '" + directory + "'.");
 
-	if (da->dir_exists(directory)) {
+	if (da->dir_exists(dir_name)) {
 		EditorNode::get_singleton()->show_warning(TTR("Could not create folder. File with that name already exists."));
 		return;
 	}
