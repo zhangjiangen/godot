@@ -676,7 +676,7 @@ if selected_platform in platform_list:
         suffix = "_" + selected_platform
 
     if env_base["float"] == "64":
-        suffix += ".double"
+        suffix += "_double"
 
     if env["target"] == "release":
         if env["tools"]:
