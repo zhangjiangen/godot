@@ -307,7 +307,7 @@ public:
 	bool is_empty() const;
 
 	Vector<uint8_t> get_data() const;
-	uint8_t *get_data_ptrw() const {
+	uint8_t *get_data_ptrw() {
 		return data.ptrw();
 	}
 
