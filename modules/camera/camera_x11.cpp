@@ -99,8 +99,7 @@ private:
 	int fd = -1;
 	// the v4l2 functions (either libv4l2 or normal v4l2)
 	struct v4l2_funcs *funcs;
-	// the image data
-	Vector<uint8_t> img_data;
+	Ref<Image> img;
 	// whether device is initialized
 	// access type and used pixelformat
 	IOType type = TYPE_IO_NONE;
@@ -653,8 +652,12 @@ void V4l2_Device::stream_image(Ref<CameraFeed> feed) {
 }
 
 void V4l2_Device::get_image(Ref<CameraFeed> feed, uint8_t *buffer) {
-	Ref<Image> img;
-	img.instantiate();
+	if (img.is_null()) {
+		img.instantiate();
+	}
+	if (img->get_width() != width || img->get_height() != height || img->get_format() != Image::FORMAT_RGB8) {
+		img->create(width, height, 0, Image::FORMAT_RGB8);
+	}
 
 	if (xioctl(fd, VIDIOC_G_FMT, &fmt) == -1) {
 		return;
@@ -670,11 +673,11 @@ void V4l2_Device::get_image(Ref<CameraFeed> feed, uint8_t *buffer) {
 				img_data.resize(width * height * 3);
 			}
 
-			uint8_t *w = img_data.ptrw();
+			uint8_t *w = img->get_data_ptrw();
 			// TODO: Buffer is 1024 Byte longer?
 			memcpy(w, buffer, width * height * 3);
 
-			img->create(width, height, 0, Image::FORMAT_RGB8, img_data);
+			//img->create(width, height, 0, Image::FORMAT_RGB8, img_data);
 			feed->set_RGB_img(img);
 			break;
 		}

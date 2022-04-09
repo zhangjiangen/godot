@@ -307,6 +307,9 @@ public:
 	bool is_empty() const;
 
 	Vector<uint8_t> get_data() const;
+	uint8_t *get_data_ptrw() const {
+		return data.ptrw();
+	}
 
 	Error load(const String &p_path);
 	Error save_png(const String &p_path) const;
@@ -389,14 +392,14 @@ public:
 		COMPRESS_SOURCE_NORMAL,
 		COMPRESS_SOURCE_MAX,
 	};
-	static void (*_image_compress_astc_func)(Image *, float, CompressMode, Image::UsedChannels,Image::CompressSource);
+	static void (*_image_compress_astc_func)(Image *, float, CompressMode, Image::UsedChannels, Image::CompressSource);
 	bool astc_a = true;
 	bool astc_r = true;
 	bool astc_g = true;
 	bool astc_b = true;
 
 	Error compress(CompressMode p_mode, CompressSource p_source = COMPRESS_SOURCE_GENERIC, float p_lossy_quality = 0.7);
-	Error compress_from_channels(CompressMode p_mode, UsedChannels p_channels, float p_lossy_quality = 0.7,Image::CompressSource csource = COMPRESS_SOURCE_GENERIC);
+	Error compress_from_channels(CompressMode p_mode, UsedChannels p_channels, float p_lossy_quality = 0.7, Image::CompressSource csource = COMPRESS_SOURCE_GENERIC);
 	Error decompress();
 	bool is_compressed() const;
 

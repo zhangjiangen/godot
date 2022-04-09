@@ -1031,23 +1031,21 @@ protected:
 		}
 		void onCaptureYUY2(uint8_t *p_data, int64_t p_stride, int64_t p_width, int64_t p_height) {
 			bool data_valid = p_width * p_height % 2 == 0 && p_width * p_height > 0;
-			int64_t y_bytes = 0;
-			int64_t uv_bytes = 0;
-			if (p_width != last_width || p_height != last_height) {
-				last_width = p_width;
-				last_height = p_height;
-				if (data_valid) {
-					y_bytes = (p_width * p_height);
-					uv_bytes = (p_width * p_height); // Half of Y's horizontal sampling period, but two bytes for each sample
-					img_data.resize(y_bytes);
-					img_data2.resize(uv_bytes);
-				}
+			if (!img[0].is_valid()) {
+				img[0].instance();
+			}
+			if (!img[1].is_valid()) {
+				img[1].instance();
+			}
+			if (img[0]->width() != p_width || img[0]->height() != p_height || img[0]->format() != Image::FORMAT_R8) {
+				img[0]->create(p_width, p_height, false, Image::FORMAT_R8);
+			}
+			if (img[1]->width() != p_width || img[1]->height() != p_height || img[1]->format() != Image::FORMAT_RG8) {
+				img[1]->create(p_width / 2, p_height, false, Image::FORMAT_RG8, img_data2);
 			}
 			if (data_valid) {
-				PoolVector<uint8_t>::Write y_write = img_data.write();
-				uint8_t *y_dst = y_write.ptr();
-				PoolVector<uint8_t>::Write uv_write = img_data2.write();
-				uint8_t *uv_dst = uv_write.ptr();
+				uint8_t *y_dst = img[0]->get_data_ptrw();
+				uint8_t *uv_dst = img[1].get_data_ptrw();
 				uint8_t *row_src = p_data;
 				for (int64_t row = 0; row < p_height; row++) {
 					uint8_t *src = row_src;
@@ -1059,32 +1057,27 @@ protected:
 					}
 					row_src += p_stride;
 				}
-				// Make images
-				img[0].instance();
-				img[0]->create(p_width, p_height, false, Image::FORMAT_R8, img_data);
-				img[1].instance();
-				img[1]->create(p_width / 2, p_height, false, Image::FORMAT_RG8, img_data2);
+
 				camera_feed->set_YCbCr_imgs(img[0], img[1]);
 			}
 		}
 		void onCaptureNV12(uint8_t *p_data, int64_t p_stride, int64_t p_width, int64_t p_height) {
 			bool data_valid = p_width * p_height % 2 == 0 && p_width * p_height > 0;
-			int64_t y_bytes = 0;
-			int64_t uv_bytes = 0;
-			if (p_width != last_width || p_height != last_height) {
-				last_width = p_width;
-				last_height = p_height;
-				if (data_valid) {
-					y_bytes = (p_width * p_height);
-					uv_bytes = (p_width * p_height) / 2;
-					img_data.resize(y_bytes);
-					img_data2.resize(uv_bytes);
-				}
+			if (!img[0].is_valid()) {
+				img[0].instance();
+			}
+			if (!img[1].is_valid()) {
+				img[1].instance();
+			}
+			if (img[0]->width() != p_width || img[0]->height() != p_height || img[0]->format() != Image::FORMAT_R8) {
+				img[0]->create(p_width, p_height, false, Image::FORMAT_R8);
+			}
+			if (img[1]->width() != p_width || img[1]->height() != p_height || img[1]->format() != Image::FORMAT_RG8) {
+				img[1]->create(p_width / 2, p_height, false, Image::FORMAT_RG8, img_data2);
 			}
 			if (data_valid) {
 				// First 2 thirds of data are Y
-				PoolVector<uint8_t>::Write y_write = img_data.write();
-				uint8_t *y_dst = y_write.ptr();
+				uint8_t *y_dst = img[0]->get_data_ptrw();
 				uint8_t *src = p_data;
 				for (int64_t i = 0; i < p_height; i += 1) {
 					memcpy((void *)y_dst, (void *)src, p_width);
@@ -1092,31 +1085,26 @@ protected:
 					y_dst += p_width;
 				}
 				// Last third of data is interleaved UV
-				PoolVector<uint8_t>::Write uv_write = img_data2.write();
-				uint8_t *uv_dst = uv_write.ptr();
+				uint8_t *uv_dst = img[1]->get_data_ptrw();
 				for (int64_t i = 0; i < img_data2.size(); i += p_width) {
 					memcpy((void *)uv_dst, (void *)src, p_width);
 					src += p_stride;
 					uv_dst += p_width;
 				}
 				// Make images
-				img[0].instance();
-				img[0]->create(p_width, p_height, false, Image::FORMAT_R8, img_data);
-				img[1].instance();
-				img[1]->create(p_width / 2, p_height / 2, false, Image::FORMAT_RG8, img_data2);
 				camera_feed->set_YCbCr_imgs(img[0], img[1]);
 			}
 		}
 		void onCaptureRgb24(uint8_t *p_rgb, int64_t p_stride, int64_t p_width, int64_t p_height) {
 			const uint64_t dst_color_channels = 3;
-			if (p_width != last_width || p_height != last_height) {
-				last_width = p_width;
-				last_height = p_height;
-				img_data.resize(p_width * p_height * dst_color_channels);
+			if (!img[0].is_valid()) {
+				img[0].instance();
+			}
+			if (img[0]->width() != p_width || img[0]->height() != p_height || img[0]->format() != Image::FORMAT_RGB8) {
+				img[0]->create(p_width, p_height, false, Image::FORMAT_RGB8);
 			}
 			if (p_width > 0 && p_height > 0) {
-				PoolVector<uint8_t>::Write w = img_data.write();
-				uint8_t *raw_dst = w.ptr();
+				uint8_t *raw_dst = img[0]->get_data_ptrw();
 				uint8_t *raw_src = p_rgb;
 				for (DWORD y = 0; y < p_height; y++) {
 					uint8_t *src_row = raw_src;
@@ -1130,22 +1118,20 @@ protected:
 					raw_src += p_stride;
 					raw_dst += p_width * dst_color_channels;
 				}
-				img[0].instance();
-				img[0]->create(p_width, p_height, false, Image::FORMAT_RGB8, img_data);
 				camera_feed->set_RGB_img(img[0]);
 			}
 		}
 		void onCaptureRgba32(uint8_t *p_rgb, int64_t p_stride, int64_t p_width, int64_t p_height) {
 			// Camera feed doesn't accept image formats with alpha channel, so convert to RGB24
 			const uint64_t dst_color_channels = 3;
-			if (p_width != last_width || p_height != last_height) {
-				last_width = p_width;
-				last_height = p_height;
-				img_data.resize(p_width * p_height * dst_color_channels);
+			if (!img[0].is_valid()) {
+				img[0].instance();
+			}
+			if (img[0]->width() != p_width || img[0]->height() != p_height || img[0]->format() != Image::FORMAT_RGB8) {
+				img[0]->create(p_width, p_height, false, Image::FORMAT_RGB8);
 			}
 			if (p_width > 0 && p_height > 0) {
-				PoolVector<uint8_t>::Write w = img_data.write();
-				uint8_t *raw_dst = w.ptr();
+				uint8_t *raw_dst = img[0]->get_data_ptrw();
 				uint8_t *raw_src = p_rgb;
 				for (DWORD y = 0; y < p_height; y++) {
 					RGBTRIPLE *src_pel = (RGBTRIPLE *)raw_src;
@@ -1158,8 +1144,6 @@ protected:
 					raw_src += p_stride;
 					raw_dst += p_width * dst_color_channels;
 				}
-				img[0].instance();
-				img[0]->create(p_width, p_height, false, Image::FORMAT_RGB8, img_data);
 				camera_feed->set_RGB_img(img[0]);
 			}
 		}
@@ -1169,8 +1153,6 @@ protected:
 		CameraFeedWindows *camera_feed;
 		int last_width = -1;
 		int last_height = -1;
-		PoolVector<uint8_t> img_data;
-		PoolVector<uint8_t> img_data2;
 		Ref<Image> img[2];
 	};
 	FrameReader frame_reader;
