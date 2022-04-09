@@ -987,8 +987,8 @@ protected:
 	public:
 		FrameReader(CameraFeedWindows *owner) :
 				camera_feed(owner) {
-			img[0].instance();
-			img[1].instance();
+			// img[0].instance();
+			// img[1].instance();
 		}
 		void prepareToCapture(MediaFoundationCapture::OutputFormat format) {
 			outputFormat = format;
@@ -1032,16 +1032,16 @@ protected:
 		void onCaptureYUY2(uint8_t *p_data, int64_t p_stride, int64_t p_width, int64_t p_height) {
 			bool data_valid = p_width * p_height % 2 == 0 && p_width * p_height > 0;
 			if (!img[0].is_valid()) {
-				img[0].instance();
+				img[0].instantiate();
 			}
 			if (!img[1].is_valid()) {
-				img[1].instance();
+				img[1].instantiate();
 			}
-			if (img[0]->width() != p_width || img[0]->height() != p_height || img[0]->format() != Image::FORMAT_R8) {
+			if (img[0]->get_width() != p_width || img[0]->get_height() != p_height || img[0]->get_format() != Image::FORMAT_R8) {
 				img[0]->create(p_width, p_height, false, Image::FORMAT_R8);
 			}
-			if (img[1]->width() != p_width || img[1]->height() != p_height || img[1]->format() != Image::FORMAT_RG8) {
-				img[1]->create(p_width / 2, p_height, false, Image::FORMAT_RG8, img_data2);
+			if (img[1]->get_width() != p_width || img[1]->get_height() != p_height || img[1]->get_format() != Image::FORMAT_RG8) {
+				img[1]->create(p_width / 2, p_height, false, Image::FORMAT_RG8);
 			}
 			if (data_valid) {
 				uint8_t *y_dst = img[0]->get_data_ptrw();
@@ -1064,15 +1064,15 @@ protected:
 		void onCaptureNV12(uint8_t *p_data, int64_t p_stride, int64_t p_width, int64_t p_height) {
 			bool data_valid = p_width * p_height % 2 == 0 && p_width * p_height > 0;
 			if (!img[0].is_valid()) {
-				img[0].instance();
+				img[0].instantiate();
 			}
 			if (!img[1].is_valid()) {
-				img[1].instance();
+				img[1].instantiate();
 			}
-			if (img[0]->width() != p_width || img[0]->height() != p_height || img[0]->format() != Image::FORMAT_R8) {
+			if (img[0]->get_width() != p_width || img[0]->get_height() != p_height || img[0]->get_format() != Image::FORMAT_R8) {
 				img[0]->create(p_width, p_height, false, Image::FORMAT_R8);
 			}
-			if (img[1]->width() != p_width || img[1]->height() != p_height || img[1]->format() != Image::FORMAT_RG8) {
+			if (img[1]->get_width() != p_width || img[1]->get_height() != p_height || img[1]->get_format() != Image::FORMAT_RG8) {
 				img[1]->create(p_width / 2, p_height, false, Image::FORMAT_RG8, img_data2);
 			}
 			if (data_valid) {
@@ -1098,9 +1098,9 @@ protected:
 		void onCaptureRgb24(uint8_t *p_rgb, int64_t p_stride, int64_t p_width, int64_t p_height) {
 			const uint64_t dst_color_channels = 3;
 			if (!img[0].is_valid()) {
-				img[0].instance();
+				img[0].instantiate();
 			}
-			if (img[0]->width() != p_width || img[0]->height() != p_height || img[0]->format() != Image::FORMAT_RGB8) {
+			if (img[0]->get_width() != p_width || img[0]->get_height() != p_height || img[0]->get_format() != Image::FORMAT_RGB8) {
 				img[0]->create(p_width, p_height, false, Image::FORMAT_RGB8);
 			}
 			if (p_width > 0 && p_height > 0) {
@@ -1125,9 +1125,9 @@ protected:
 			// Camera feed doesn't accept image formats with alpha channel, so convert to RGB24
 			const uint64_t dst_color_channels = 3;
 			if (!img[0].is_valid()) {
-				img[0].instance();
+				img[0].instantiate();
 			}
-			if (img[0]->width() != p_width || img[0]->height() != p_height || img[0]->format() != Image::FORMAT_RGB8) {
+			if (img[0]->get_width() != p_width || img[0]->get_height() != p_height || img[0]->get_format() != Image::FORMAT_RGB8) {
 				img[0]->create(p_width, p_height, false, Image::FORMAT_RGB8);
 			}
 			if (p_width > 0 && p_height > 0) {
