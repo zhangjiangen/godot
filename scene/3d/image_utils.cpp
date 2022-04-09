@@ -353,6 +353,8 @@ void ImageUtils::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("lerp_color_brush", "image", "brush_image", "pos", "factor", "target_value"), &ImageUtils::lerp_color_brush);
 	ClassDB::bind_method(D_METHOD("generate_gaussian_brush", "image"), &ImageUtils::generate_gaussian_brush);
 	ClassDB::bind_method(D_METHOD("blur_red_brush", "image", "brush_image", "pos", "factor"), &ImageUtils::blur_red_brush);
-	ClassDB::bind_method(D_METHOD("get_heightmap_max_spacing", "image", "tile_x_count", "tile_z_count"), &ImageUtils::get_heightmap_max_spacing);
 	ClassDB::bind_method(D_METHOD("paint_indexed_splat", "index_map_ref", "weight_map_ref", "brush_ref", "pos", "texture_index", "actor"), &ImageUtils::paint_indexed_splat);
+
+	//
+	ClassDB::bind_static_method("ImageUtils", D_METHOD("get_heightmap_max_spacing", "image", "tile_x_count", "tile_z_count"), &ImageUtils::get_heightmap_max_spacing);
 }

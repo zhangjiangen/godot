@@ -633,6 +633,7 @@ void register_scene_types() {
 	GDREGISTER_CLASS(VisualShaderNodeVec2Uniform);
 	GDREGISTER_CLASS(VisualShaderNodeVec3Uniform);
 	GDREGISTER_CLASS(VisualShaderNodeVec4Uniform);
+	GDREGISTER_CLASS(VisualShaderNodeVec2IUniform);
 	GDREGISTER_CLASS(VisualShaderNodeVec3IUniform);
 	GDREGISTER_CLASS(VisualShaderNodeVec4IUniform);
 	GDREGISTER_CLASS(VisualShaderNodeTransformUniform);

@@ -27,7 +27,7 @@ public:
 	void blur_red_brush(Ref<Image> image_ref, Ref<Image> brush_ref, const Vector2 &p_pos, float factor);
 	void paint_indexed_splat(Ref<Image> index_map_ref, Ref<Image> weight_map_ref, Ref<Image> brush_ref, const Vector2 &p_pos, int texture_index, float factor);
 	//void erode_red_brush(Ref<Image> image_ref, Ref<Image> brush_ref, Vector2 p_pos, float factor);
-	Vector<float> get_heightmap_max_spacing(Ref<Image> index_map_ref, int tile_x_count, int tile_z_count);
+	static Vector<float> get_heightmap_max_spacing(Ref<Image> index_map_ref, int tile_x_count, int tile_z_count);
 
 private:
 	LocalVector<float> _blur_buffer;

@@ -1048,95 +1048,86 @@ void VisualShaderGraphPlugin::add_node(VisualShader::Type p_type, int p_id) {
 
 					expanded_type = VisualShaderNode::PORT_TYPE_IVECTOR_4D;
 				} break;
-					valid_left = (i + 4) < vsnode->get_input_port_count();
-					port_left = VisualShaderNode::PORT_TYPE_SCALAR;
-					if (valid_left) {
-						port_left = vsnode->get_input_port_type(i + 4);
-					}
-					node->set_slot(i + port_offset, valid_left, port_left, type_color[port_left], true, VisualShaderNode::PORT_TYPE_SCALAR, vector_expanded_color[3]);
 
-					expanded_type = VisualShaderNode::PORT_TYPE_VECTOR_4D;
+				default:
+					break;
 			}
-			break;
-			default:
-				break;
-		}
-	}
-}
-
-if (vsnode->get_output_port_for_preview() >= 0) {
-	show_port_preview(p_type, p_id, vsnode->get_output_port_for_preview());
-}
-
-offset = memnew(Control);
-offset->set_custom_minimum_size(Size2(0, 4 * EDSCALE));
-node->add_child(offset);
-
-String error = vsnode->get_warning(mode, p_type);
-if (!error.is_empty()) {
-	Label *error_label = memnew(Label);
-	error_label->add_theme_color_override("font_color", editor->get_theme_color(SNAME("error_color"), SNAME("Editor")));
-	error_label->set_text(error);
-	node->add_child(error_label);
-}
-
-if (is_expression) {
-	CodeEdit *expression_box = memnew(CodeEdit);
-	Ref<CodeHighlighter> expression_syntax_highlighter;
-	New_instantiate(expression_syntax_highlighter);
-	expression_node->set_ctrl_pressed(expression_box, 0);
-	node->add_child(expression_box);
-	register_expression_edit(p_id, expression_box);
-
-	Color background_color = EDITOR_GET("text_editor/theme/highlighting/background_color");
-	Color text_color = EDITOR_GET("text_editor/theme/highlighting/text_color");
-	Color keyword_color = EDITOR_GET("text_editor/theme/highlighting/keyword_color");
-	Color control_flow_keyword_color = EDITOR_GET("text_editor/theme/highlighting/control_flow_keyword_color");
-	Color comment_color = EDITOR_GET("text_editor/theme/highlighting/comment_color");
-	Color symbol_color = EDITOR_GET("text_editor/theme/highlighting/symbol_color");
-	Color function_color = EDITOR_GET("text_editor/theme/highlighting/function_color");
-	Color number_color = EDITOR_GET("text_editor/theme/highlighting/number_color");
-	Color members_color = EDITOR_GET("text_editor/theme/highlighting/member_variable_color");
-
-	expression_box->set_syntax_highlighter(expression_syntax_highlighter);
-	expression_box->add_theme_color_override("background_color", background_color);
-
-	for (const String &E : editor->keyword_list) {
-		if (ShaderLanguage::is_control_flow_keyword(E)) {
-			expression_syntax_highlighter->add_keyword_color(E, control_flow_keyword_color);
-		} else {
-			expression_syntax_highlighter->add_keyword_color(E, keyword_color);
 		}
 	}
 
-	expression_box->add_theme_font_override("font", editor->get_theme_font(SNAME("expression"), SNAME("EditorFonts")));
-	expression_box->add_theme_font_size_override("font_size", editor->get_theme_font_size(SNAME("expression_size"), SNAME("EditorFonts")));
-	expression_box->add_theme_color_override("font_color", text_color);
-	expression_syntax_highlighter->set_number_color(number_color);
-	expression_syntax_highlighter->set_symbol_color(symbol_color);
-	expression_syntax_highlighter->set_function_color(function_color);
-	expression_syntax_highlighter->set_member_variable_color(members_color);
-	expression_syntax_highlighter->add_color_region("/*", "*/", comment_color, false);
-	expression_syntax_highlighter->add_color_region("//", "", comment_color, true);
-
-	expression_box->clear_comment_delimiters();
-	expression_box->add_comment_delimiter("/*", "*/", false);
-	expression_box->add_comment_delimiter("//", "", true);
-
-	if (!expression_box->has_auto_brace_completion_open_key("/*")) {
-		expression_box->add_auto_brace_completion_pair("/*", "*/");
+	if (vsnode->get_output_port_for_preview() >= 0) {
+		show_port_preview(p_type, p_id, vsnode->get_output_port_for_preview());
 	}
 
-	expression_box->set_text(expression);
-	expression_box->set_context_menu_enabled(false);
-	expression_box->set_draw_line_numbers(true);
+	offset = memnew(Control);
+	offset->set_custom_minimum_size(Size2(0, 4 * EDSCALE));
+	node->add_child(offset);
 
-	expression_box->connect("focus_exited", callable_mp(editor, &VisualShaderEditor::_expression_focus_out), varray(expression_box, p_id));
-}
+	String error = vsnode->get_warning(mode, p_type);
+	if (!error.is_empty()) {
+		Label *error_label = memnew(Label);
+		error_label->add_theme_color_override("font_color", editor->get_theme_color(SNAME("error_color"), SNAME("Editor")));
+		error_label->set_text(error);
+		node->add_child(error_label);
+	}
 
-if (is_comment) {
-	graph->move_child(node, 0); // to prevents a bug where comment node overlaps its content
-}
+	if (is_expression) {
+		CodeEdit *expression_box = memnew(CodeEdit);
+		Ref<CodeHighlighter> expression_syntax_highlighter;
+		New_instantiate(expression_syntax_highlighter);
+		expression_node->set_ctrl_pressed(expression_box, 0);
+		node->add_child(expression_box);
+		register_expression_edit(p_id, expression_box);
+
+		Color background_color = EDITOR_GET("text_editor/theme/highlighting/background_color");
+		Color text_color = EDITOR_GET("text_editor/theme/highlighting/text_color");
+		Color keyword_color = EDITOR_GET("text_editor/theme/highlighting/keyword_color");
+		Color control_flow_keyword_color = EDITOR_GET("text_editor/theme/highlighting/control_flow_keyword_color");
+		Color comment_color = EDITOR_GET("text_editor/theme/highlighting/comment_color");
+		Color symbol_color = EDITOR_GET("text_editor/theme/highlighting/symbol_color");
+		Color function_color = EDITOR_GET("text_editor/theme/highlighting/function_color");
+		Color number_color = EDITOR_GET("text_editor/theme/highlighting/number_color");
+		Color members_color = EDITOR_GET("text_editor/theme/highlighting/member_variable_color");
+
+		expression_box->set_syntax_highlighter(expression_syntax_highlighter);
+		expression_box->add_theme_color_override("background_color", background_color);
+
+		for (const String &E : editor->keyword_list) {
+			if (ShaderLanguage::is_control_flow_keyword(E)) {
+				expression_syntax_highlighter->add_keyword_color(E, control_flow_keyword_color);
+			} else {
+				expression_syntax_highlighter->add_keyword_color(E, keyword_color);
+			}
+		}
+
+		expression_box->add_theme_font_override("font", editor->get_theme_font(SNAME("expression"), SNAME("EditorFonts")));
+		expression_box->add_theme_font_size_override("font_size", editor->get_theme_font_size(SNAME("expression_size"), SNAME("EditorFonts")));
+		expression_box->add_theme_color_override("font_color", text_color);
+		expression_syntax_highlighter->set_number_color(number_color);
+		expression_syntax_highlighter->set_symbol_color(symbol_color);
+		expression_syntax_highlighter->set_function_color(function_color);
+		expression_syntax_highlighter->set_member_variable_color(members_color);
+		expression_syntax_highlighter->add_color_region("/*", "*/", comment_color, false);
+		expression_syntax_highlighter->add_color_region("//", "", comment_color, true);
+
+		expression_box->clear_comment_delimiters();
+		expression_box->add_comment_delimiter("/*", "*/", false);
+		expression_box->add_comment_delimiter("//", "", true);
+
+		if (!expression_box->has_auto_brace_completion_open_key("/*")) {
+			expression_box->add_auto_brace_completion_pair("/*", "*/");
+		}
+
+		expression_box->set_text(expression);
+		expression_box->set_context_menu_enabled(false);
+		expression_box->set_draw_line_numbers(true);
+
+		expression_box->connect("focus_exited", callable_mp(editor, &VisualShaderEditor::_expression_focus_out), varray(expression_box, p_id));
+	}
+
+	if (is_comment) {
+		graph->move_child(node, 0); // to prevents a bug where comment node overlaps its content
+	}
 }
 
 void VisualShaderGraphPlugin::remove_node(VisualShader::Type p_type, int p_id) {
@@ -1765,6 +1756,9 @@ void VisualShaderEditor::_update_uniforms(bool p_update_refs) {
 				Ref<VisualShaderNodeVec2Uniform> vec2_uniform = vsnode;
 				Ref<VisualShaderNodeVec3Uniform> vec3_uniform = vsnode;
 				Ref<VisualShaderNodeVec4Uniform> vec4_uniform = vsnode;
+				Ref<VisualShaderNodeVec2IUniform> ivec2_uniform = vsnode;
+				Ref<VisualShaderNodeVec3IUniform> ivec3_uniform = vsnode;
+				Ref<VisualShaderNodeVec4IUniform> ivec4_uniform = vsnode;
 				Ref<VisualShaderNodeColorUniform> color_uniform = vsnode;
 				Ref<VisualShaderNodeBooleanUniform> bool_uniform = vsnode;
 				Ref<VisualShaderNodeTransformUniform> transform_uniform = vsnode;
@@ -1779,9 +1773,19 @@ void VisualShaderEditor::_update_uniforms(bool p_update_refs) {
 				} else if (vec2_uniform.is_valid()) {
 					uniform_type = VisualShaderNodeUniformRef::UniformType::UNIFORM_TYPE_VECTOR_2D;
 				} else if (vec3_uniform.is_valid()) {
-					uniform_type = VisualShaderNodeUniformRef::UniformType::UNIFORM_TYPE_VECTOR3;
+					uniform_type = VisualShaderNodeUniformRef::UniformType::UNIFORM_TYPE_VECTOR_3D;
 				} else if (vec4_uniform.is_valid()) {
-					uniform_type = VisualShaderNodeUniformRef::UniformType::UNIFORM_TYPE_VECTOR4;
+					uniform_type = VisualShaderNodeUniformRef::UniformType::UNIFORM_TYPE_VECTOR_4D;
+				} else if (ivec2_uniform.is_valid()) {
+					uniform_type = VisualShaderNodeUniformRef::UniformType::UNIFORM_TYPE_IVECTOR_2D;
+				} else if (ivec3_uniform.is_valid()) {
+					uniform_type = VisualShaderNodeUniformRef::UniformType::UNIFORM_TYPE_IVECTOR_3D;
+				} else if (ivec4_uniform.is_valid()) {
+					uniform_type = VisualShaderNodeUniformRef::UniformType::UNIFORM_TYPE_IVECTOR_4D;
+				} else if (color_uniform.is_valid()) {
+					uniform_type = VisualShaderNodeUniformRef::UniformType::UNIFORM_TYPE_COLOR;
+				} else if (transform_uniform.is_valid()) {
+					uniform_type = VisualShaderNodeUniformRef::UniformType::UNIFORM_TYPE_TRANSFORM;
 				} else if (transform_uniform.is_valid()) {
 					uniform_type = VisualShaderNodeUniformRef::UniformType::UNIFORM_TYPE_TRANSFORM;
 				} else if (color_uniform.is_valid()) {

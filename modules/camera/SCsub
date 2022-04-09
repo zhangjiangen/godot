@@ -9,6 +9,10 @@ if env["platform"] == "windows":
     env_camera.add_source_files(env.modules_sources, "register_types.cpp")
     env_camera.add_source_files(env.modules_sources, "camera_win.cpp")
 
-elif env["platform"] == "osx":
+# elif env["platform"] == "osx":
+elif env["platform"] == "osx" or env["platform"] == "iphone":
     env_camera.add_source_files(env.modules_sources, "register_types.cpp")
     env_camera.add_source_files(env.modules_sources, "camera_osx.mm")
+elif env["platform"] in ["linux", "bsd", "x11"]:
+    env_camera.add_source_files(env.modules_sources, "register_types.cpp")
+    env_camera.add_source_files(env.modules_sources, "camera_x11.cpp")

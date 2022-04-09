@@ -88,7 +88,6 @@ struct _NO_DISCARD_ Plane {
 	_FORCE_INLINE_ Plane(const Vector3 &p_normal, const Vector3 &p_point);
 	_FORCE_INLINE_ Plane(const Vector3 &p_point1, const Vector3 &p_point2, const Vector3 &p_point3, ClockDirection p_dir = CLOCKWISE);
 };
-#define Vector4 Plane
 bool Plane::is_point_over(const Vector3 &p_point) const {
 	return (normal.dot(p_point) > d);
 }

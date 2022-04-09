@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  camera_win.h                                                         */
+/*  camera_x11.h                                                         */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,18 +28,31 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef CAMERAWIN_H
-#define CAMERAWIN_H
+#ifndef CAMERAX11_H
+#define CAMERAX11_H
+
+#include <stdint.h>
+#include <string>
+#include <thread>
+#include <vector>
 
 #include "servers/camera/camera_feed.h"
 #include "servers/camera_server.h"
 
-class CameraWindows : public CameraServer {
+
+class CameraX11 : public CameraServer {
+private:
+	struct v4l2_funcs funcs;
+	void *libv4l2;
+	bool alive = false;
+	std::thread hotplug_thread;
+	void check_change();
+
 public:
-	CameraWindows();
-	~CameraWindows();
+	CameraX11();
+	~CameraX11();
 
 	void update_feeds();
 };
 
-#endif /* CAMERAWIN_H */
+#endif /* CAMERAX11_H */
