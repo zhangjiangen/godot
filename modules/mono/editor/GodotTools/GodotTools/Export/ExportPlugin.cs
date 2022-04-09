@@ -335,7 +335,7 @@ namespace GodotTools.Export
             // However, this may change in the future if we add arm linux or windows desktop templates.
             string bits = features.Contains("64") ? "64" : "32";
 
-            string TemplateDirName() => $"data.mono.{platform}.{bits}.{target}";
+            string TemplateDirName() => $"data_mono_{platform}_{bits}_{target}";
 
             string templateDirPath = Path.Combine(Internal.FullTemplatesDir, TemplateDirName());
             bool validTemplatePathFound = true;

@@ -1015,19 +1015,19 @@ Error EditorExportPlatformOSX::export_project(const Ref<EditorExportPreset> &p_p
 		}
 
 		if (data.size() > 0) {
-			if (file.find("/data.mono.osx.64.release_debug/") != -1) {
+			if (file.find("/data_mono_osx_64_release_debug/") != -1) {
 				if (!p_debug) {
 					ret = unzGoToNextFile(src_pkg_zip);
 					continue; // skip
 				}
-				file = file.replace("/data.mono.osx.64.release_debug/", "/GodotSharp/");
+				file = file.replace("/data_mono_osx_64_release_debug/", "/GodotSharp/");
 			}
-			if (file.find("/data.mono.osx.64.release/") != -1) {
+			if (file.find("/data_mono_osx_64_release/") != -1) {
 				if (p_debug) {
 					ret = unzGoToNextFile(src_pkg_zip);
 					continue; // skip
 				}
-				file = file.replace("/data.mono.osx.64.release/", "/GodotSharp/");
+				file = file.replace("/data_mono_osx_64_release/", "/GodotSharp/");
 			}
 
 			if (file.ends_with(".dylib")) {
