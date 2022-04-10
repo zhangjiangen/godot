@@ -102,10 +102,12 @@ GDScriptParserRef::~GDScriptParserRef() {
 	if (analyzer != nullptr) {
 		memdelete(analyzer);
 	}
-	MutexLock lock(GDScriptCache::singleton->lock);
-	GDScriptCache::singleton->parser_map.erase(path);
+	// MutexLock lock(GDScriptCache::singleton->lock);
+	// GDScriptCache::singleton->parser_map.erase(path);
 }
 
+void GDScriptParserRef::_bind_methods() {
+}
 GDScriptCache *GDScriptCache::singleton = nullptr;
 
 void GDScriptCache::remove_script(const String &p_path) {
@@ -135,7 +137,7 @@ Ref<GDScriptParserRef> GDScriptCache::get_parser(const String &p_path, GDScriptP
 		New_instantiate(ref);
 		ref->parser = parser;
 		ref->path = p_path;
-		singleton->parser_map[p_path] = ref.ptr();
+		singleton->parser_map[p_path] = ref;
 	}
 	r_error = ref->raise_status(p_status);
 

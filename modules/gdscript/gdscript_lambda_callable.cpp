@@ -63,12 +63,18 @@ CallableCustom::CompareLessFunc GDScriptLambdaCallable::get_compare_less_func() 
 }
 
 ObjectID GDScriptLambdaCallable::get_object() const {
+	if (script.is_null()) {
+		return ObjectID();
+	}
 	return script->get_instance_id();
 }
 
 void GDScriptLambdaCallable::call(const Variant **p_arguments, int p_argcount, Variant &r_return_value, Callable::CallError &r_call_error) const {
 	int captures_amount = captures.size();
-
+	if (script.is_null()) {
+		r_call_error.error = Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL;
+		return;
+	}
 	if (captures_amount > 0) {
 		Vector<const Variant *> args;
 		args.resize(p_argcount + captures_amount);

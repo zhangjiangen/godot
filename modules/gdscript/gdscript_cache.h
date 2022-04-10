@@ -41,6 +41,8 @@ class GDScriptAnalyzer;
 class GDScriptParser;
 
 class GDScriptParserRef : public RefCounted {
+	GDCLASS(GDScriptParserRef, RefCounted);
+
 public:
 	enum Status {
 		EMPTY,
@@ -59,6 +61,9 @@ private:
 
 	friend class GDScriptCache;
 
+protected:
+	static void _bind_methods();
+
 public:
 	bool is_valid() const;
 	Status get_status() const;
@@ -71,7 +76,7 @@ public:
 
 class GDScriptCache {
 	// String key is full path.
-	HashMap<String, GDScriptParserRef *> parser_map;
+	HashMap<String, Ref<GDScriptParserRef>> parser_map;
 	HashMap<String, GDScript *> shallow_gdscript_cache;
 	HashMap<String, GDScript *> full_gdscript_cache;
 	HashMap<String, Set<String>> dependencies;

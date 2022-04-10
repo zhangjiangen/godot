@@ -239,6 +239,118 @@ public:
 #define New_instantiate(ins) ins.instantiate(__FILE__, __LINE__)
 
 typedef Ref<RefCounted> REF;
+template <class T>
+class WeakPtr {
+	ObjectID ref;
+	T *reference = nullptr;
+
+	void set(T *p_ptr) {
+		if (p_ptr) {
+			ref = p_ptr->get_instance_id();
+		} else {
+            ref = ObjectID();
+		}
+		reference = p_ptr;
+	}
+    void set(const T *p_ptr) {
+        if (p_ptr) {
+            ref = p_ptr->get_instance_id();
+        } else {
+            ref = ObjectID();
+        }
+        reference = (T*)p_ptr;
+    }
+
+	template <class T_Other>
+	void set(T_Other *p_ptr) {
+		if (!p_ptr) {
+			reference = nullptr;
+            ref = ObjectID();
+			return;
+		}
+		reference = Object::cast_to<T>(p_ptr);
+		ref = reference->get_instance_id();
+	}
+    template <class T_Other>
+    void set(const T_Other *p_ptr) {
+        if (!p_ptr) {
+            reference = nullptr;
+            ref = ObjectID();
+            return;
+        }
+        reference = (T*)Object::cast_to<T>(p_ptr);
+        ref = reference->get_instance_id();
+    }
+
+public:
+	_FORCE_INLINE_ T *operator->() {
+		if (ptr() != nullptr)
+			return reference;
+		return reference;
+	}
+	_FORCE_INLINE_ const T *operator->() const {
+		if (ptr() != nullptr)
+			return reference;
+		return reference;
+	}
+	_FORCE_INLINE_ T *ptr() {
+		if (reference != nullptr && (ObjectDB::get_instance(ref) == reference))
+			return reference;
+		return nullptr;
+	}
+	_FORCE_INLINE_ const T *ptr() const {
+		if (reference != nullptr && (ObjectDB::get_instance(ref) == reference))
+			return reference;
+		return nullptr;
+	}
+
+	inline bool is_valid() const { return ptr() != nullptr; }
+	inline bool is_null() const { return ptr() == nullptr; }
+	void operator=(const Ref<T> &p_from) {
+		set(p_from.ptr());
+	}
+	void operator=(T *p_from) {
+		set(p_from);
+	}
+	template <class T_Other>
+	void operator=(T_Other *p_from) {
+		set(p_from);
+	}
+	void operator=(const WeakPtr<T> &p_from) {
+		set(p_from.ptr());
+	}
+	template <class T_Other>
+	void operator=(const Ref<T_Other> &p_from) {
+		set(p_from.ptr());
+	}
+	template <class T_Other>
+	void operator=(const WeakPtr<T_Other> &p_from) {
+		set(p_from.ptr());
+	}
+	operator Ref<T>() {
+		return Ref<T>(ptr());
+	}
+
+	WeakPtr() {}
+	WeakPtr(T *object) {
+		set(object);
+	}
+	template <class T_Other>
+	WeakPtr(T_Other *object) {
+		set(object);
+	}
+	WeakPtr(const Variant &p_variant) {
+		Object *object = p_variant.get_validated_object();
+		set(object);
+	}
+
+	WeakPtr(const WeakPtr<T> &p_from) {
+		set(p_from.ptr());
+	}
+	WeakPtr(const Ref<T> &p_from) {
+		set(p_from.ptr());
+	}
+};
 
 class WeakRef : public RefCounted {
 	GDCLASS(WeakRef, RefCounted);

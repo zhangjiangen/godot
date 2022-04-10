@@ -2062,9 +2062,9 @@ void ObjectDB::cleanup() {
 					if (obj->is_class("Resource")) {
 						extra_info = " - Resource path: " + String(resource_get_path->call(obj, nullptr, 0, call_error));
 					}
-
+					const char *type_name = typeid(*obj).name();
 					uint64_t id = uint64_t(i) | (uint64_t(object_slots[i].validator) << OBJECTDB_VALIDATOR_BITS) | (object_slots[i].is_ref_counted ? OBJECTDB_REFERENCE_BIT : 0);
-					print_line("Leaked instance: " + String(obj->get_class()) + ":" + itos(id) + extra_info);
+					print_line("Leaked instance: " + String(obj->get_class()) + ":" + "class_name" + type_name + itos(id) + extra_info);
 
 					count--;
 				}
