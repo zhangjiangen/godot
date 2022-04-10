@@ -310,6 +310,9 @@ public:
 	uint8_t *get_data_ptrw() {
 		return data.ptrw();
 	}
+	int get_data_size() const {
+		return data.size();
+	}
 
 	Error load(const String &p_path);
 	Error save_png(const String &p_path) const;

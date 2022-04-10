@@ -1073,7 +1073,7 @@ protected:
 				img[0]->create(p_width, p_height, false, Image::FORMAT_R8);
 			}
 			if (img[1]->get_width() != p_width || img[1]->get_height() != p_height || img[1]->get_format() != Image::FORMAT_RG8) {
-				img[1]->create(p_width / 2, p_height, false, Image::FORMAT_RG8, img_data2);
+				img[1]->create(p_width / 2, p_height, false, Image::FORMAT_RG8);
 			}
 			if (data_valid) {
 				// First 2 thirds of data are Y
@@ -1085,8 +1085,9 @@ protected:
 					y_dst += p_width;
 				}
 				// Last third of data is interleaved UV
+				int size = img[1]->get_data_size();
 				uint8_t *uv_dst = img[1]->get_data_ptrw();
-				for (int64_t i = 0; i < img_data2.size(); i += p_width) {
+				for (int64_t i = 0; i < size; i += p_width) {
 					memcpy((void *)uv_dst, (void *)src, p_width);
 					src += p_stride;
 					uv_dst += p_width;
