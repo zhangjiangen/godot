@@ -1045,7 +1045,7 @@ protected:
 			}
 			if (data_valid) {
 				uint8_t *y_dst = img[0]->get_data_ptrw();
-				uint8_t *uv_dst = img[1].get_data_ptrw();
+				uint8_t *uv_dst = img[1]->get_data_ptrw();
 				uint8_t *row_src = p_data;
 				for (int64_t row = 0; row < p_height; row++) {
 					uint8_t *src = row_src;
