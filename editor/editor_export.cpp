@@ -343,7 +343,8 @@ Error EditorExportPlatform::_save_pack_file(void *p_userdata, const String &p_pa
 	ftmp->store_buffer(p_data.ptr(), p_data.size());
 
 	if (fae.is_valid()) {
-		fae->release();
+		ftmp.unref();
+		fae.unref();
 	}
 
 	int pad = _get_pad(PCK_PADDING, pd->f->get_position());
@@ -1142,6 +1143,10 @@ Error EditorExportPlatform::save_pack(const Ref<EditorExportPreset> &p_preset, b
 
 	Error err = export_project_files(p_preset, p_debug, _save_pack_file, &pd, _add_shared_object);
 
+	// Close temp file.
+	pd.f.unref();
+	ftmp.unref();
+
 	if (err != OK) {
 		DirAccess::remove_file_or_error(tmppath);
 		ERR_PRINT("Failed to export project files");
@@ -1269,7 +1274,8 @@ Error EditorExportPlatform::save_pack(const Ref<EditorExportPreset> &p_preset, b
 	}
 
 	if (fae.is_valid()) {
-		fae->release();
+		fhead.unref();
+		fae.unref();
 	}
 
 	int header_padding = _get_pad(PCK_PADDING, f->get_position());
@@ -1300,6 +1306,8 @@ Error EditorExportPlatform::save_pack(const Ref<EditorExportPreset> &p_preset, b
 		}
 		f->store_buffer(buf, got);
 	}
+
+	ftmp.unref(); // Close temp file.
 
 	if (p_embed) {
 		// Ensure embedded data ends at a 64-bit multiple
