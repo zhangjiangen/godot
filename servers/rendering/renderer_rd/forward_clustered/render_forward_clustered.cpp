@@ -2276,7 +2276,7 @@ RID RenderForwardClustered::_setup_render_pass_uniform_set(RenderListType p_rend
 			texture = shadow_atlas_get_texture(p_render_data->shadow_atlas);
 		}
 		if (!texture.is_valid()) {
-			texture = texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_WHITE);
+			texture = texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_DEPTH);
 		}
 		u.append_id(texture);
 		uniforms.push_back(u);
@@ -2288,7 +2288,7 @@ RID RenderForwardClustered::_setup_render_pass_uniform_set(RenderListType p_rend
 		if (p_use_directional_shadow_atlas && directional_shadow_get_texture().is_valid()) {
 			u.append_id(directional_shadow_get_texture());
 		} else {
-			u.append_id(texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_WHITE));
+			u.append_id(texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_DEPTH));
 		}
 		uniforms.push_back(u);
 	}
@@ -2345,7 +2345,7 @@ RID RenderForwardClustered::_setup_render_pass_uniform_set(RenderListType p_rend
 		u.binding = 9;
 		u.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
 		RID dbt = rb ? render_buffers_get_back_depth_texture(p_render_data->render_buffers) : RID();
-		RID texture = (dbt.is_valid()) ? dbt : texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_WHITE);
+		RID texture = (dbt.is_valid()) ? dbt : texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_DEPTH);
 		u.append_id(texture);
 		uniforms.push_back(u);
 	}
@@ -2506,7 +2506,7 @@ RID RenderForwardClustered::_setup_sdfgi_render_pass_uniform_set(RID p_albedo_te
 		RD::Uniform u;
 		u.binding = 4;
 		u.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
-		RID texture = texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_WHITE);
+		RID texture = texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_DEPTH);
 		u.append_id(texture);
 		uniforms.push_back(u);
 	}
@@ -2516,7 +2516,7 @@ RID RenderForwardClustered::_setup_sdfgi_render_pass_uniform_set(RID p_albedo_te
 		RD::Uniform u;
 		u.binding = 5;
 		u.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
-		RID texture = texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_WHITE);
+		RID texture = texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_DEPTH);
 		u.append_id(texture);
 		uniforms.push_back(u);
 	}

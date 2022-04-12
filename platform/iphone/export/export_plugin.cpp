@@ -1572,13 +1572,15 @@ Error EditorExportPlatformIOS::export_project(const Ref<EditorExportPreset> &p_p
 			}
 
 			/* write the file */
-			Ref<FileAccess> f = FileAccess::open(file, FileAccess::WRITE);
-			if (f.is_null()) {
-				ERR_PRINT("Can't write '" + file + "'.");
-				unzClose(src_pkg_zip);
-				return ERR_CANT_CREATE;
-			};
-			f->store_buffer(data.ptr(), data.size());
+			{
+				Ref<FileAccess> f = FileAccess::open(file, FileAccess::WRITE);
+				if (f.is_null()) {
+					ERR_PRINT("Can't write '" + file + "'.");
+					unzClose(src_pkg_zip);
+					return ERR_CANT_CREATE;
+				};
+				f->store_buffer(data.ptr(), data.size());
+			}
 
 #if defined(OSX_ENABLED) || defined(X11_ENABLED)
 			if (is_execute) {
@@ -1716,12 +1718,14 @@ Error EditorExportPlatformIOS::export_project(const Ref<EditorExportPreset> &p_p
 	_export_additional_assets(dest_dir + binary_name, libraries, assets);
 	_add_assets_to_project(p_preset, project_file_data, assets);
 	String project_file_name = dest_dir + binary_name + ".xcodeproj/project.pbxproj";
-	Ref<FileAccess> f = FileAccess::open(project_file_name, FileAccess::WRITE);
-	if (f.is_null()) {
-		ERR_PRINT("Can't write '" + project_file_name + "'.");
-		return ERR_CANT_CREATE;
-	};
-	f->store_buffer(project_file_data.ptr(), project_file_data.size());
+	{
+		Ref<FileAccess> f = FileAccess::open(project_file_name, FileAccess::WRITE);
+		if (f.is_null()) {
+			ERR_PRINT("Can't write '" + project_file_name + "'.");
+			return ERR_CANT_CREATE;
+		};
+		f->store_buffer(project_file_data.ptr(), project_file_data.size());
+	}
 
 #ifdef OSX_ENABLED
 	{
