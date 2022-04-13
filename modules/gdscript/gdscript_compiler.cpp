@@ -622,6 +622,7 @@ GDScriptCodeGenerator::Address GDScriptCompiler::_parse_expression(CodeGen &code
 							return GDScriptCodeGenerator::Address();
 						}
 					} else {
+						_set_error("Cannot call something that isn't :" + itos(callee->type), call->callee);
 						r_error = ERR_COMPILATION_FAILED;
 						return GDScriptCodeGenerator::Address();
 					}
@@ -2248,6 +2249,7 @@ Error GDScriptCompiler::_parse_class_level(GDScript *p_script, const GDScriptPar
 						return err;
 					}
 					if (base.is_null() || !base->is_valid()) {
+						_set_error("base class is not fund :  '" + p_class->base_type.script_path + "'.", p_class);
 						return ERR_COMPILATION_FAILED;
 					}
 				}

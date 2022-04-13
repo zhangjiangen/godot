@@ -4129,16 +4129,10 @@ bool GDScriptAnalyzer::class_exists(const StringName &p_class) const {
 
 Ref<GDScriptParserRef> GDScriptAnalyzer::get_parser_for(const String &p_path) {
 	Ref<GDScriptParserRef> ref;
-	Error err = OK;
 	if (depended_parsers.has(p_path)) {
 		ref = depended_parsers[p_path];
-		if (ref.is_null()) {
-			ref = GDScriptCache::get_parser(p_path, GDScriptParserRef::EMPTY, err, parser->script_path);
-			if (ref.is_valid()) {
-				depended_parsers[p_path] = ref;
-			}
-		}
 	} else {
+		Error err = OK;
 		ref = GDScriptCache::get_parser(p_path, GDScriptParserRef::EMPTY, err, parser->script_path);
 		if (ref.is_valid()) {
 			depended_parsers[p_path] = ref;
@@ -4166,19 +4160,11 @@ Error GDScriptAnalyzer::resolve_program() {
 	resolve_class_interface(parser->head);
 	resolve_class_body(parser->head);
 
-	Error err = OK;
 	List<String> parser_keys;
-	Ref<GDScriptParserRef> ref;
 	depended_parsers.get_key_list(&parser_keys);
 	for (const String &E : parser_keys) {
 		if (depended_parsers[E].is_null()) {
-			ref = GDScriptCache::get_parser(E, GDScriptParserRef::EMPTY, err, parser->script_path);
-			if (ref.is_valid()) {
-				depended_parsers[E] = ref;
-			}
-			if (ref.is_null()) {
-				return ERR_PARSE_ERROR;
-			}
+			return ERR_PARSE_ERROR;
 		}
 		depended_parsers[E]->raise_status(GDScriptParserRef::FULLY_SOLVED);
 	}

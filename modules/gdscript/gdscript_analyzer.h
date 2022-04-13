@@ -39,7 +39,7 @@
 
 class GDScriptAnalyzer {
 	GDScriptParser *parser = nullptr;
-	HashMap<String, WeakPtr<GDScriptParserRef>> depended_parsers;
+	HashMap<String, Ref<GDScriptParserRef>> depended_parsers;
 
 	const GDScriptParser::EnumNode *current_enum = nullptr;
 	List<const GDScriptParser::LambdaNode *> lambda_stack;

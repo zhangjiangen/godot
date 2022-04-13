@@ -102,8 +102,8 @@ GDScriptParserRef::~GDScriptParserRef() {
 	if (analyzer != nullptr) {
 		memdelete(analyzer);
 	}
-	// MutexLock lock(GDScriptCache::singleton->lock);
-	// GDScriptCache::singleton->parser_map.erase(path);
+	MutexLock lock(GDScriptCache::singleton->lock);
+	GDScriptCache::singleton->parser_map.erase(path);
 }
 
 void GDScriptParserRef::_bind_methods() {
@@ -134,10 +134,10 @@ Ref<GDScriptParserRef> GDScriptCache::get_parser(const String &p_path, GDScriptP
 			return ref;
 		}
 		GDScriptParser *parser = memnew(GDScriptParser);
-		New_instantiate(ref);
+		ref.instantiate();
 		ref->parser = parser;
 		ref->path = p_path;
-		singleton->parser_map[p_path] = ref;
+		singleton->parser_map[p_path] = ref.ptr();
 	}
 	r_error = ref->raise_status(p_status);
 
@@ -178,7 +178,7 @@ Ref<GDScript> GDScriptCache::get_shallow_script(const String &p_path, const Stri
 	}
 
 	Ref<GDScript> script;
-	New_instantiate(script);
+	script.instantiate();
 	script->set_path(p_path, true);
 	script->set_script_path(p_path);
 	script->load_source_code(p_path);
@@ -244,10 +244,6 @@ Error GDScriptCache::finish_compiling(const String &p_owner) {
 }
 
 GDScriptCache::GDScriptCache() {
-	parser_map.set_debug_info(__FILE__, __LINE__);
-	shallow_gdscript_cache.set_debug_info(__FILE__, __LINE__);
-	full_gdscript_cache.set_debug_info(__FILE__, __LINE__);
-	dependencies.set_debug_info(__FILE__, __LINE__);
 	singleton = this;
 }
 
