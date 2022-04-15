@@ -189,15 +189,20 @@ class SceneImportSettings : public ConfirmationDialog {
 
     void _load_default_subresource_settings(Map<StringName, Variant> &settings, const String &p_type, const String &p_import_id, ResourceImporterScene::InternalImportCategory p_category);
 
+	bool editing_animation = false;
+
+	Timer *update_view_timer;
+
 protected:
     void _notification(int p_what);
 
 public:
-    void update_view();
-    void open_settings(const String &p_path);
-    static SceneImportSettings *get_singleton();
-    SceneImportSettings();
-    ~SceneImportSettings();
+	bool is_editing_animation() const { return editing_animation; }
+	void update_view();
+	void open_settings(const String &p_path, bool p_for_animation = false);
+	static SceneImportSettings *get_singleton();
+	SceneImportSettings();
+	~SceneImportSettings();
 };
 
 #endif // SCENEIMPORTSETTINGS_H

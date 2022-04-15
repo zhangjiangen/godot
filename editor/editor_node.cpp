@@ -6039,18 +6039,22 @@ EditorNode::EditorNode() {
 		New_instantiate(import_scene);
 		ResourceFormatImporter::get_singleton()->add_importer(import_scene);
 
+		Ref<ResourceImporterScene> import_animation;
+		import_animation = Ref<ResourceImporterScene>(memnew(ResourceImporterScene(true)));
+		ResourceFormatImporter::get_singleton()->add_importer(import_animation);
+
 		{
 			Ref<EditorSceneFormatImporterCollada> import_collada;
 			New_instantiate(import_collada);
-			import_scene->add_importer(import_collada);
+			ResourceImporterScene::add_importer(import_collada);
 
 			Ref<EditorOBJImporter> import_obj2;
-			New_instantiate(import_obj2);
-			import_scene->add_importer(import_obj2);
+			New_instantiate(import_collada);
+			ResourceImporterScene::add_importer(import_obj2);
 
 			Ref<EditorSceneFormatImporterESCN> import_escn;
-			New_instantiate(import_escn);
-			import_scene->add_importer(import_escn);
+			New_instantiate(import_collada);
+			ResourceImporterScene::add_importer(import_escn);
 		}
 
 		Ref<ResourceImporterBitMap> import_bitmap;
@@ -7287,6 +7291,7 @@ EditorNode::EditorNode() {
 EditorNode::~EditorNode() {
 	EditorInspector::cleanup_plugins();
 	EditorTranslationParser::get_singleton()->clean_parsers();
+	ResourceImporterScene::clean_up_importer_plugins();
 
 	remove_print_handler(&print_handler);
 	EditorHelp::cleanup_doc();
