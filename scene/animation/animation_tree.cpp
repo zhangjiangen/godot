@@ -634,8 +634,7 @@ bool AnimationTree::_update_caches(AnimationPlayer *player) {
 								track_xform->bone_idx = bone_idx;
 								Transform3D rest = sk->get_bone_rest(bone_idx);
 								track_xform->init_loc = rest.origin;
-								track_xform->ref_rot = rest.basis.get_rotation_quaternion();
-								track_xform->init_rot = track_xform->ref_rot.log();
+								track_xform->init_rot = rest.basis.get_rotation_quaternion();
 								track_xform->init_scale = rest.basis.get_scale();
 							}
 						}
@@ -668,8 +667,7 @@ bool AnimationTree::_update_caches(AnimationPlayer *player) {
 										track_xform->init_loc = reset_anim->track_get_key_value(rt, 0);
 									} break;
 									case Animation::TYPE_ROTATION_3D: {
-										track_xform->ref_rot = reset_anim->track_get_key_value(rt, 0);
-										track_xform->init_rot = track_xform->ref_rot.log();
+										track_xform->init_rot = reset_anim->track_get_key_value(rt, 0);
 									} break;
 									case Animation::TYPE_SCALE_3D: {
 										track_xform->init_scale = reset_anim->track_get_key_value(rt, 0);
@@ -1145,7 +1143,7 @@ void AnimationTree::_process_graph(double p_delta) {
 										continue;
 									}
 									a->rotation_track_interpolate(i, (double)a->get_length(), &rot[1]);
-									t->rot += (rot[1].log() - rot[0].log()) * blend;
+									t->rot = (t->rot * Quaternion().slerp(rot[0].inverse() * rot[1], blend)).normalized();
 									prev_time = 0;
 								}
 							} else {
@@ -1155,7 +1153,7 @@ void AnimationTree::_process_graph(double p_delta) {
 										continue;
 									}
 									a->rotation_track_interpolate(i, 0, &rot[1]);
-									t->rot += (rot[1].log() - rot[0].log()) * blend;
+									t->rot = (t->rot * Quaternion().slerp(rot[0].inverse() * rot[1], blend)).normalized();
 									prev_time = 0;
 								}
 							}
@@ -1166,7 +1164,7 @@ void AnimationTree::_process_graph(double p_delta) {
 							}
 
 							a->rotation_track_interpolate(i, time, &rot[1]);
-							t->rot += (rot[1].log() - rot[0].log()) * blend;
+							t->rot = (t->rot * Quaternion().slerp(rot[0].inverse() * rot[1], blend)).normalized();
 							prev_time = !backward ? 0 : (double)a->get_length();
 
 						} else {
@@ -1183,10 +1181,7 @@ void AnimationTree::_process_graph(double p_delta) {
 								continue;
 							}
 
-							if (signbit(rot.dot(t->ref_rot))) {
-								rot = -rot;
-							}
-							t->rot += (rot.log() - t->init_rot) * blend;
+							t->rot = (t->rot * Quaternion().slerp(t->init_rot.inverse() * rot, blend)).normalized();
 						}
 #endif // _3D_DISABLED
 					} break;
@@ -1586,7 +1581,6 @@ void AnimationTree::_process_graph(double p_delta) {
 				case Animation::TYPE_POSITION_3D: {
 #ifndef _3D_DISABLED
 					TrackCacheTransform *t = static_cast<TrackCacheTransform *>(track);
-					t->rot = t->rot.exp();
 
 					if (t->root_motion) {
 						Transform3D xform;
