@@ -16,10 +16,16 @@ class RDHeaderStruct:
         self.tesc_lines = []
         self.tese_lines = []
         self.compute_lines = []
+        self.task_lines = []
+        self.mesh_lines = []
 
         self.vertex_included_files = []
         self.fragment_included_files = []
         self.compute_included_files = []
+        self.tesc_included_files = []
+        self.tese_included_files = []
+        self.task_included_files = []
+        self.mesh_included_files = []
 
         self.reading = ""
         self.line_offset = 0
@@ -27,6 +33,8 @@ class RDHeaderStruct:
         self.fragment_offset = 0
         self.tesc_offset = 0
         self.tese_offset = 0
+        self.task_offset = 0
+        self.mesh_offset = 0
         self.compute_offset = 0
 
 
@@ -73,6 +81,18 @@ def include_file_in_rd_header(filename, header_data, depth):
             header_data.line_offset += 1
             header_data.tese_offset = header_data.line_offset
             continue
+        if line.find("#[task]") != -1:
+            header_data.reading = "task"
+            line = fs.readline()
+            header_data.line_offset += 1
+            header_data.task_offset = header_data.line_offset
+            continue
+        if line.find("#[mesh]") != -1:
+            header_data.reading = "mesh"
+            line = fs.readline()
+            header_data.line_offset += 1
+            header_data.mesh_offset = header_data.line_offset
+            continue
 
         while line.find("#include ") != -1:
             includeline = line.replace("#include ", "").strip()[1:-1]
@@ -103,6 +123,26 @@ def include_file_in_rd_header(filename, header_data, depth):
                 if include_file_in_rd_header(included_file, header_data, depth + 1) is None:
                     print("Error in file '" + filename + "': #include " +
                           includeline + "could not be found!")
+            elif not included_file in header_data.tesc_included_files and header_data.reading == "tesc":
+                header_data.tesc_included_files += [included_file]
+                if include_file_in_rd_header(included_file, header_data, depth + 1) is None:
+                    print("Error in file '" + filename + "': #include " +
+                          includeline + "could not be found!")
+            elif not included_file in header_data.tese_included_files and header_data.reading == "tese":
+                header_data.tese_included_files += [included_file]
+                if include_file_in_rd_header(included_file, header_data, depth + 1) is None:
+                    print("Error in file '" + filename + "': #include " +
+                          includeline + "could not be found!")
+            elif not included_file in header_data.task_included_files and header_data.reading == "task":
+                header_data.task_included_files += [included_file]
+                if include_file_in_rd_header(included_file, header_data, depth + 1) is None:
+                    print("Error in file '" + filename + "': #include " +
+                          includeline + "could not be found!")
+            elif not included_file in header_data.mesh_included_files and header_data.reading == "mesh":
+                header_data.mesh_included_files += [included_file]
+                if include_file_in_rd_header(included_file, header_data, depth + 1) is None:
+                    print("Error in file '" + filename + "': #include " +
+                          includeline + "could not be found!")
 
             line = fs.readline()
 
@@ -125,6 +165,10 @@ def include_file_in_rd_header(filename, header_data, depth):
             header_data.tesc_lines += [line]
         if header_data.reading == "tese":
             header_data.tese_lines += [line]
+        if header_data.reading == "task":
+            header_data.task_lines += [line]
+        if header_data.reading == "mesh":
+            header_data.mesh_lines += [line]
 
         line = fs.readline()
         header_data.line_offset += 1
@@ -211,9 +255,12 @@ def build_rd_header(filename):
         # 解析曲面细分
         use_tesc = 0
         use_tese = 0
+        use_task = 0
+        use_mesh = 0
         if len(header_data.tesc_lines):
             curr_line = 0
             curr_index = 0
+            use_tesc = 1
             fd.write("\t\tstatic const char _tesc_code[] = {\n")
             for x in header_data.tesc_lines:
                 curr_line += 1
@@ -233,6 +280,7 @@ def build_rd_header(filename):
             fd.write("\t\tstatic const char _tese_code[] = {\n")
             curr_line = 0
             curr_index = 0
+            use_tese = 1
             for x in header_data.tese_lines:
                 curr_line += 1
                 curr_index = 0
@@ -247,13 +295,58 @@ def build_rd_header(filename):
                     fd.write(str(code) + ",")
                 fd.write(str(ord("\n")) + ",")
             fd.write("\t\t0};\n\n")
+        if len(header_data.task_lines):
+            fd.write("\tstatic const char _task_code[] = {\n")
+            curr_line = 0
+            curr_index = 0
+            use_task = 1
+            for x in header_data.task_lines:
+                for c in x:
+                    curr_index += 1
+                    code = ord(c)
+                    # 检查是否存在错误编码
+                    if code > 255:
+                        print("shader error : task shader :" + filename + ":(" +
+                              str(curr_line) + ") index:" + str(curr_index) + " code error， code :" + str(code) + "  char :" + c + "line:" + x)
+                    fd.write(str(ord(c)) + ",")
+                fd.write(str(ord("\n")) + ",")
+            fd.write("\t\t0};\n\n")
+            fd.write("\t\tsetup_task(_task_code);\n")
+        if len(header_data.mesh_lines):
+            fd.write("\tstatic const char _mesh_code[] = {\n")
+            curr_line = 0
+            curr_index = 0
+            use_mesh = 1
+            for x in header_data.mesh_lines:
+                for c in x:
+                    curr_index += 1
+                    code = ord(c)
+                    # 检查是否存在错误编码
+                    if code > 255:
+                        print("shader error : mesh shader :" + filename + ":(" +
+                              str(curr_line) + ") index:" + str(curr_index) + " code error， code :" + str(code) + "  char :" + c + "line:" + x)
+                    fd.write(str(ord(c)) + ",")
+                fd.write(str(ord("\n")) + ",")
+            fd.write("\t\t0};\n\n")
+            fd.write("\t\tsetup_mesh(_mesh_code);\n")
         if use_tesc and use_tese:
             fd.write(
                 '\t\tsetup(_vertex_code, _fragment_code, nullptr, "' + out_file_class + '", _tesc_code, _tese_code);\n')
+        elif use_task or use_mesh:
+            task_name = "nullptr"
+            mesh_name = "nullptr"
+            if use_task:
+                task_name = "_task_code"
+            if use_mesh:
+                mesh_name = "_mesh_code"
+            fd.write(
+                '\t\tsetup(_vertex_code, _fragment_code, nullptr, "' + out_file_class + ", nullptr, nullptr," + task_name + "," + mesh_name + ");\n")
+        
         else:
             fd.write(
                 '\t\tsetup(_vertex_code, _fragment_code, nullptr, "' + out_file_class + '");\n')
         fd.write("\t}\n")
+
 
     fd.write("};\n\n")
 

@@ -114,7 +114,9 @@ void RendererSceneSkyRD::SkyShaderData::set_code(const String &p_code) {
 	print_line("\n**light_code:\n" + gen_code.light);
 #endif
 
-	scene_singleton->sky.sky_shader.shader.version_set_code(version, gen_code.code, gen_code.uniforms, gen_code.stage_globals[ShaderCompiler::STAGE_VERTEX], gen_code.stage_globals[ShaderCompiler::STAGE_FRAGMENT], gen_code.defines);
+	scene_singleton->sky.sky_shader.shader.version_set_code(version, gen_code.code, gen_code.uniforms, gen_code.stage_globals[ShaderCompiler::STAGE_VERTEX], gen_code.stage_globals[ShaderCompiler::STAGE_FRAGMENT], gen_code.defines
+                                                            , gen_code.stage_globals[ShaderCompiler::STAGE_TESSELATION_CONTROL],
+                                                            gen_code.stage_globals[ShaderCompiler::STAGE_TESSELATION_EVALUATION], gen_code.stage_globals[ShaderCompiler::STAGE_TASK], gen_code.stage_globals[ShaderCompiler::STAGE_MESH]);
 	ERR_FAIL_COND(!scene_singleton->sky.sky_shader.shader.version_is_valid(version));
 
 	ubo_size = gen_code.uniform_total_size;

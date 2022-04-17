@@ -53,6 +53,8 @@ class ShaderRD {
 		CharString fragment_globals;
 		CharString tesc_globals;
 		CharString tese_globals;
+		CharString task_globals;
+		CharString mesh_globals;
 		Map<StringName, CharString> code_sections;
 		Vector<CharString> custom_defines;
 		String GetString() {
@@ -105,7 +107,9 @@ class ShaderRD {
 				TYPE_TESSELLATION_EVALUATION_GLOBALS,
 				TYPE_COMPUTE_GLOBALS,
 				TYPE_CODE,
-				TYPE_TEXT
+				TYPE_TEXT,
+				TYPE_TASK_GLOBALS,
+				TYPE_MESH_GLOBALS
 			};
 
 			Type type;
@@ -131,6 +135,8 @@ class ShaderRD {
 	bool shader_cache_dir_valid = false;
 
 	bool use_tess = false;
+	bool use_task_shading = false;
+	bool use_mesh_shading = false;
 
 	enum StageType {
 		STAGE_TYPE_VERTEX,
@@ -138,6 +144,8 @@ class ShaderRD {
 		STAGE_TYPE_TESSELATION_CONTROL,
 		STAGE_TYPE_TESSELLATION_EVALUATION,
 		STAGE_TYPE_COMPUTE,
+		STAGE_TYPE_TASK,
+		STAGE_TYPE_MESH,
 		STAGE_TYPE_MAX,
 	};
 
@@ -153,12 +161,12 @@ class ShaderRD {
 
 protected:
 	ShaderRD();
-	void setup(const char *p_vertex_code, const char *p_fragment_code, const char *p_compute_code, const char *p_name, const char *p_tesc_code = nullptr, const char *p_tese_code = nullptr);
+	void setup(const char *p_vertex_code, const char *p_fragment_code, const char *p_compute_code, const char *p_name, const char *p_tesc_code = nullptr, const char *p_tese_code = nullptr, const char *p_task_code = nullptr, const char *p_mesh_code = nullptr);
 
 public:
 	RID version_create();
 
-	void version_set_code(RID p_version, const Map<String, String> &p_code, const String &p_uniforms, const String &p_vertex_globals, const String &p_fragment_globals, const Vector<String> &p_custom_defines);
+	void version_set_code(RID p_version, const Map<String, String> &p_code, const String &p_uniforms, const String &p_vertex_globals, const String &p_fragment_globals,  const Vector<String> &p_custom_defines, const String &p_tessc_globle, const String &p_tesse_globle, const String &p_task_globle, const String &p_mesh_globle);
 	void version_set_compute_code(RID p_version, const Map<String, String> &p_code, const String &p_uniforms, const String &p_compute_globals, const Vector<String> &p_custom_defines);
 
 	_FORCE_INLINE_ RID version_get_shader(RID p_version, int p_variant) {

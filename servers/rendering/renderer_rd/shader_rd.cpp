@@ -68,6 +68,12 @@ void ShaderRD::_add_stage(const char *p_code, StageType p_stage_type) {
 				case STAGE_TYPE_COMPUTE:
 					chunk.type = StageTemplate::Chunk::TYPE_COMPUTE_GLOBALS;
 					break;
+				case STAGE_TYPE_TASK:
+					chunk.type = StageTemplate::Chunk::TYPE_TASK_GLOBALS;
+					break;
+				case STAGE_TYPE_MESH:
+					chunk.type = StageTemplate::Chunk::TYPE_MESH_GLOBALS;
+					break;
 				default: {
 				}
 			}
@@ -105,7 +111,7 @@ void ShaderRD::_add_stage(const char *p_code, StageType p_stage_type) {
 	}
 }
 
-void ShaderRD::setup(const char *p_vertex_code, const char *p_fragment_code, const char *p_compute_code, const char *p_name, const char *p_tesc_code, const char *p_tese_code) {
+void ShaderRD::setup(const char *p_vertex_code, const char *p_fragment_code, const char *p_compute_code, const char *p_name, const char *p_tesc_code, const char *p_tese_code, const char *p_task_code, const char *p_mesh_code) {
 	name = p_name;
 
 	if (p_compute_code) {
@@ -118,6 +124,18 @@ void ShaderRD::setup(const char *p_vertex_code, const char *p_fragment_code, con
 		}
 		if (p_fragment_code) {
 			_add_stage(p_fragment_code, STAGE_TYPE_FRAGMENT);
+		}
+		if (p_tesc_code) {
+			_add_stage(p_tesc_code, STAGE_TYPE_TESSELATION_CONTROL);
+		}
+		if (p_tese_code) {
+			_add_stage(p_tese_code, STAGE_TYPE_TESSELLATION_EVALUATION);
+		}
+		if (p_task_code) {
+			_add_stage(p_task_code, STAGE_TYPE_TASK);
+		}
+		if (p_mesh_code) {
+			_add_stage(p_mesh_code, STAGE_TYPE_MESH);
 		}
 	}
 
@@ -210,6 +228,12 @@ void ShaderRD::_build_variant_code(StringBuilder &builder, uint32_t p_variant, c
 			case StageTemplate::Chunk::TYPE_COMPUTE_GLOBALS: {
 				builder.append(p_version->compute_globals.get_data()); // compute globals
 			} break;
+			case StageTemplate::Chunk::TYPE_TASK_GLOBALS: {
+				builder.append(p_version->task_globals.get_data()); // task globals
+			} break;
+			case StageTemplate::Chunk::TYPE_MESH_GLOBALS: {
+				builder.append(p_version->mesh_globals.get_data()); // mesh globals
+			} break;
 			case StageTemplate::Chunk::TYPE_CODE: {
 				if (p_version->code_sections.has(chunk.code)) {
 					builder.append(p_version->code_sections[chunk.code].get_data());
@@ -269,7 +293,7 @@ void ShaderRD::_compile_variant(uint32_t p_variant, Version *p_version) {
 		}
 	}
 	// 细分代码编译
-	if (!is_compute && use_tess && RD::get_singleton()->get_tessellation_shader_is_supported()) {
+	if (!is_compute && use_tess && RD::get_singleton()->get_device_capabilities()->is_supper_tess_control() && build_ok) {
 		if (build_ok) {
 			//TESSELATION CONTROL stage
 			current_stage = RD::SHADER_STAGE_TESSELATION_CONTROL;
@@ -287,9 +311,9 @@ void ShaderRD::_compile_variant(uint32_t p_variant, Version *p_version) {
 				stages.push_back(stage);
 			}
 		}
-		if (build_ok) {
+		if (build_ok && RD::get_singleton()->get_device_capabilities()->is_supper_tess_evaluation()) {
 			//TESSELATION CONTROL stage
-			current_stage = RD::SHADER_STAGE_TESSELATION_CONTROL;
+			current_stage = RD::SHADER_STAGE_TESSELATION_EVALUATION;
 
 			StringBuilder builder;
 			_build_variant_code(builder, p_variant, p_version, stage_templates[STAGE_TYPE_TESSELLATION_EVALUATION]);
@@ -406,6 +430,30 @@ RS::ShaderNativeSourceCode ShaderRD::version_get_native_source_code(RID p_versio
 
 			source_code.versions.write[i].stages.push_back(stage);
 		}
+		if (!is_compute && use_mesh_shading && RD::get_singleton()->get_mesh_shader_is_supported()) {
+			//tese stage
+
+			StringBuilder builder;
+			_build_variant_code(builder, i, version, stage_templates[STAGE_TYPE_MESH]);
+
+			RS::ShaderNativeSourceCode::Version::Stage stage;
+			stage.name = "mesh";
+			stage.code = builder.as_string();
+
+			source_code.versions.write[i].stages.push_back(stage);
+		}
+		if (!is_compute && use_task_shading && RD::get_singleton()->get_mesh_shader_is_supported()) {
+			//tese stage
+
+			StringBuilder builder;
+			_build_variant_code(builder, i, version, stage_templates[STAGE_TYPE_TASK]);
+
+			RS::ShaderNativeSourceCode::Version::Stage stage;
+			stage.name = "task";
+			stage.code = builder.as_string();
+
+			source_code.versions.write[i].stages.push_back(stage);
+		}
 		if (is_compute) {
 			//compute stage
 
@@ -438,6 +486,10 @@ String ShaderRD::_version_get_sha1(Version *p_version) const {
 	hash_build.append(p_version->tesc_globals.get_data());
 	hash_build.append("[tese_globals]");
 	hash_build.append(p_version->tese_globals.get_data());
+	hash_build.append("[task_globals]");
+	hash_build.append(p_version->task_globals.get_data());
+	hash_build.append("[mesh_globals]");
+	hash_build.append(p_version->mesh_globals.get_data());
 
 	Vector<StringName> code_sections;
 	for (const KeyValue<StringName, CharString> &E : p_version->code_sections) {
@@ -614,13 +666,17 @@ void ShaderRD::_compile_version(Version *p_version) {
 	p_version->valid = true;
 }
 
-void ShaderRD::version_set_code(RID p_version, const Map<String, String> &p_code, const String &p_uniforms, const String &p_vertex_globals, const String &p_fragment_globals, const Vector<String> &p_custom_defines) {
+void ShaderRD::version_set_code(RID p_version, const Map<String, String> &p_code, const String &p_uniforms, const String &p_vertex_globals, const String &p_fragment_globals, const Vector<String> &p_custom_defines, const String &p_tessc_globle, const String &p_tesse_globle, const String &p_task_globle, const String &p_mesh_globle) {
 	ERR_FAIL_COND(is_compute);
 
 	Version *version = version_owner.get_or_null(p_version);
 	ERR_FAIL_COND(!version);
 	version->vertex_globals = p_vertex_globals.utf8();
 	version->fragment_globals = p_fragment_globals.utf8();
+	version->tesc_globals = p_tessc_globle.utf8();
+	version->tese_globals = p_tesse_globle.utf8();
+	version->task_globals = p_task_globle.utf8();
+	version->mesh_globals = p_mesh_globle.utf8();
 	version->uniforms = p_uniforms.utf8();
 	version->code_sections.clear();
 	for (const KeyValue<String, String> &E : p_code) {

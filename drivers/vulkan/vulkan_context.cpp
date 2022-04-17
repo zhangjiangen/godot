@@ -377,6 +377,12 @@ uint32_t VulkanContext::SubgroupCapabilities::supported_stages_flags_rd() const 
 	if (supportedStages & VK_SHADER_STAGE_COMPUTE_BIT) {
 		flags += RenderingDevice::ShaderStage::SHADER_STAGE_COMPUTE_BIT;
 	}
+	if (supportedStages & 0x00000040 /* VK_SHADER_STAGE_TASK_BIT_NV */) {
+		flags += RenderingDevice::ShaderStage::SHADER_STAGE_TASK_BIT;
+	}
+	if (supportedStages & 0x00000080 /* VK_SHADER_STAGE_MESH_BIT_NV */) {
+		flags += RenderingDevice::ShaderStage::SHADER_STAGE_MESH_BIT;
+	}
 
 	return flags;
 }

@@ -166,7 +166,9 @@ void SceneShaderForwardMobile::ShaderData::set_code(const String &p_code) {
 	print_line("\n**fragment_globals:\n" + gen_code.stage_globals[ShaderCompiler::STAGE_FRAGMENT]);
 #endif
 
-	shader_singleton->shader.version_set_code(version, gen_code.code, gen_code.uniforms, gen_code.stage_globals[ShaderCompiler::STAGE_VERTEX], gen_code.stage_globals[ShaderCompiler::STAGE_FRAGMENT], gen_code.defines);
+	shader_singleton->shader.version_set_code(version, gen_code.code, gen_code.uniforms, gen_code.stage_globals[ShaderCompiler::STAGE_VERTEX], gen_code.stage_globals[ShaderCompiler::STAGE_FRAGMENT], gen_code.defines
+                                              , gen_code.stage_globals[ShaderCompiler::STAGE_TESSELATION_CONTROL],
+                                              gen_code.stage_globals[ShaderCompiler::STAGE_TESSELATION_EVALUATION], gen_code.stage_globals[ShaderCompiler::STAGE_TASK], gen_code.stage_globals[ShaderCompiler::STAGE_MESH]);
 	ERR_FAIL_COND(!shader_singleton->shader.version_is_valid(version));
 
 	ubo_size = gen_code.uniform_total_size;

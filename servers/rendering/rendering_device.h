@@ -104,12 +104,17 @@ public:
 		SHADER_STAGE_TESSELATION_CONTROL,
 		SHADER_STAGE_TESSELATION_EVALUATION,
 		SHADER_STAGE_COMPUTE,
+		SHADER_STAGE_TASK,
+		SHADER_STAGE_MESH,
 		SHADER_STAGE_MAX,
 		SHADER_STAGE_VERTEX_BIT = (1 << SHADER_STAGE_VERTEX),
 		SHADER_STAGE_FRAGMENT_BIT = (1 << SHADER_STAGE_FRAGMENT),
 		SHADER_STAGE_TESSELATION_CONTROL_BIT = (1 << SHADER_STAGE_TESSELATION_CONTROL),
 		SHADER_STAGE_TESSELATION_EVALUATION_BIT = (1 << SHADER_STAGE_TESSELATION_EVALUATION),
 		SHADER_STAGE_COMPUTE_BIT = (1 << SHADER_STAGE_COMPUTE),
+		SHADER_STAGE_TASK_BIT = (1 << SHADER_STAGE_TASK),
+		SHADER_STAGE_MESH_BIT = (1 << SHADER_STAGE_MESH),
+		
 	};
 
 	enum ShaderLanguage {
@@ -137,6 +142,13 @@ public:
 		// subgroup capabilities
 		uint32_t subgroup_size = 0;
 		uint32_t subgroup_in_shaders = 0; // Set flags using SHADER_STAGE_VERTEX_BIT, SHADER_STAGE_FRAGMENT_BIT, etc.
+		bool is_supper_vertex() const { return subgroup_in_shaders & 1 << SHADER_STAGE_VERTEX_BIT; }
+		bool is_supper_fragment() const { return subgroup_in_shaders & (1 << SHADER_STAGE_FRAGMENT); }
+		bool is_supper_compute() const { return subgroup_in_shaders & (1 << SHADER_STAGE_COMPUTE); }
+		bool is_supper_tess_control() const { return subgroup_in_shaders & (1 << SHADER_STAGE_TESSELATION_CONTROL); }
+		bool is_supper_tess_evaluation() const { return subgroup_in_shaders & (1 << SHADER_STAGE_TESSELATION_EVALUATION); }
+		bool is_supper_mesh() const { return subgroup_in_shaders & (1 << SHADER_STAGE_MESH); }
+		bool is_supper_task() const { return subgroup_in_shaders & (1 << SHADER_STAGE_TASK); }
 		uint32_t subgroup_operations = 0; // Set flags, using SubgroupOperations
 
 		// features
@@ -515,6 +527,15 @@ public:
 		return false;
 	}
 	virtual bool get_tessellation_shader_is_supported() {
+		if(get_device_capabilities() != nullptr && get_device_capabilities()->is_supper_tess_control()) {
+			return true;
+		}
+		return false;
+	}
+	virtual bool get_mesh_shader_is_supported() {
+		if(get_device_capabilities() != nullptr && get_device_capabilities()->is_supper_mesh()) {
+			return true;
+		}
 		return false;
 	}
 
@@ -865,6 +886,25 @@ public:
 	};
 	virtual String _shader_uniform_debug(RID p_shader, int p_set = -1) = 0;
 	virtual void uniform_info_set_get(RID p_shader, Vector<Vector<UniformInfo>> &p_out_uniform_set_info) = 0;
+	Array shader_uniform_set_get(RID p_shader)
+	{
+		Array set_array;
+		Vector<Vector<UniformInfo>> out_uniform_set_info;
+		uniform_info_set_get(p_shader, out_uniform_set_info);
+		for(int i = 0; i < out_uniform_set_info.size(); i++) {
+			Array set_array_set;
+			for(int j = 0; j < out_uniform_set_info[i].size(); j++) {
+				Dictionary set_array_set_item;
+				set_array_set_item["type"] = out_uniform_set_info[i][j].type;
+				set_array_set_item["binding"] = out_uniform_set_info[i][j].binding;
+				set_array_set_item["stages"] = out_uniform_set_info[i][j].stages;
+				set_array_set_item["length"] = out_uniform_set_info[i][j].length;
+				set_array_set.push_back(set_array_set_item);
+			}
+			set_array.push_back(set_array_set);
+		}
+		return set_array;
+	}
 	virtual RID uniform_set_create(const Vector<Uniform> &p_uniforms, RID p_shader, uint32_t p_shader_set) = 0;
 	virtual bool uniform_set_is_valid(RID p_uniform_set) = 0;
 	typedef void (*UniformSetInvalidatedCallback)(void *);
