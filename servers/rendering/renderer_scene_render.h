@@ -34,7 +34,25 @@
 #include "core/math/camera_matrix.h"
 #include "core/templates/paged_array.h"
 #include "servers/rendering/renderer_scene.h"
-
+class RenderingListener : public Reference {
+	GDCLASS(RenderingListener, Reference);
+	protected:
+		static void _bind_methods();
+	protected:	
+		GDVIRTUAL0(_pre_render)
+		GDVIRTUAL0(_pre_render_scene)
+		GDVIRTUAL0(_post_render_scene)
+		GDVIRTUAL0(_pre_post_process)
+		GDVIRTUAL0(_post_render_process)
+		GDVIRTUAL0(_post_render)
+	public:
+		virtual void pre_render() {GDVIRTUAL_CALL(_pre_render);}
+		virtual void pre_render_scene() { GDVIRTUAL_CALL(_pre_render_scene);}
+		virtual void post_render_scene() { GDVIRTUAL_CALL(_post_render_scene);}
+		virtual void pre_post_process() {	GDVIRTUAL_CALL(_pre_post_process);}
+		virtual void post_render_process() { GDVIRTUAL_CALL(_post_render_process);}
+		virtual void post_render() { GDVIRTUAL_CALL(_post_render);}
+}
 class RendererSceneRender {
 public:
 	enum {
@@ -42,7 +60,7 @@ public:
 		MAX_DIRECTIONAL_LIGHT_CASCADES = 4,
 		MAX_RENDER_VIEWS = 2
 	};
-
+	Ref<RenderingListener> rendering_listener;
 	struct GeometryInstance {
 		virtual ~GeometryInstance() {}
 	};

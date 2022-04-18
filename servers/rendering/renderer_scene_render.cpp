@@ -30,6 +30,16 @@
 
 #include "renderer_scene_render.h"
 
+ void RenderingListener::_bind_methods()
+ {
+	 GDVIRTUAL_BIND(_pre_render);
+	 GDVIRTUAL_BIND(_pre_render_scene);
+	 GDVIRTUAL_BIND(_post_render_scene);
+	 GDVIRTUAL_BIND(_pre_post_process);
+	 GDVIRTUAL_BIND(_post_render_process);
+	 GDVIRTUAL_BIND(_post_render);
+ }
+
 void RendererSceneRender::CameraData::set_camera(const Transform3D p_transform, const CameraMatrix p_projection, bool p_is_ortogonal, bool p_vaspect) {
 	view_count = 1;
 	is_ortogonal = p_is_ortogonal;

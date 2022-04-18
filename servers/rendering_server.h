@@ -100,6 +100,10 @@ public:
 		CUBEMAP_LAYER_FRONT,
 		CUBEMAP_LAYER_BACK
 	};
+	void set_rendering_listener(Ref<RenderingListener> p_listener)
+	{
+		RSG::rasterizer->get_scene()->rendering_listener = p_listener;
+	}
 
 	virtual RID texture_2d_create(const Ref<Image> &p_image) = 0;
 	virtual RID texture_2d_layered_create(const Vector<Ref<Image>> &p_layers, TextureLayeredType p_layered_type) = 0;
