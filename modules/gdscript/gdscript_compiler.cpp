@@ -35,6 +35,7 @@
 #include "gdscript_cache.h"
 #include "gdscript_utility_functions.h"
 
+#include "core/config/engine.h"
 #include "core/config/project_settings.h"
 
 bool GDScriptCompiler::_is_class_member_property(CodeGen &codegen, const StringName &p_name) {
@@ -575,7 +576,8 @@ GDScriptCodeGenerator::Address GDScriptCompiler::_parse_expression(CodeGen &code
 							// May be static built-in method call.
 							if (!call->is_super && subscript->base->type == GDScriptParser::Node::IDENTIFIER && GDScriptParser::get_builtin_type(static_cast<GDScriptParser::IdentifierNode *>(subscript->base)->name) < Variant::VARIANT_MAX) {
 								gen->write_call_builtin_type_static(result, GDScriptParser::get_builtin_type(static_cast<GDScriptParser::IdentifierNode *>(subscript->base)->name), subscript->attribute->name, arguments);
-							} else if (!call->is_super && subscript->base->type == GDScriptParser::Node::IDENTIFIER && call->function_name != SNAME("new") && ClassDB::class_exists(static_cast<GDScriptParser::IdentifierNode *>(subscript->base)->name)) {
+							} else if (!call->is_super && subscript->base->type == GDScriptParser::Node::IDENTIFIER && call->function_name != SNAME("new") &&
+									ClassDB::class_exists(static_cast<GDScriptParser::IdentifierNode *>(subscript->base)->name) && !Engine::get_singleton()->has_singleton(static_cast<GDScriptParser::IdentifierNode *>(subscript->base)->name)) {
 								// It's a static native method call.
 								gen->write_call_native_static(result, static_cast<GDScriptParser::IdentifierNode *>(subscript->base)->name, subscript->attribute->name, arguments);
 							} else {
@@ -620,6 +622,7 @@ GDScriptCodeGenerator::Address GDScriptCompiler::_parse_expression(CodeGen &code
 							return GDScriptCodeGenerator::Address();
 						}
 					} else {
+						_set_error("Cannot call something that isn't :" + itos(callee->type), call->callee);
 						r_error = ERR_COMPILATION_FAILED;
 						return GDScriptCodeGenerator::Address();
 					}
@@ -2246,6 +2249,7 @@ Error GDScriptCompiler::_parse_class_level(GDScript *p_script, const GDScriptPar
 						return err;
 					}
 					if (base.is_null() || !base->is_valid()) {
+						_set_error("base class is not fund :  '" + p_class->base_type.script_path + "'.", p_class);
 						return ERR_COMPILATION_FAILED;
 					}
 				}

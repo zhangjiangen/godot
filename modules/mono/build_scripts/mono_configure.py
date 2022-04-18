@@ -406,7 +406,7 @@ def make_template_dir(env, mono_root):
 
     assert is_desktop(platform)
 
-    template_dir_name = "data.mono.%s.%s.%s" % (platform, env["bits"], target)
+    template_dir_name = "data_mono_%s_%s_%s" % (platform, env["bits"], target)
 
     output_dir = Dir("#bin").abspath
     template_dir = os.path.join(output_dir, template_dir_name)

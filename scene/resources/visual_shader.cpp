@@ -80,13 +80,17 @@ void VisualShaderNode::set_input_port_default_value(int p_port, const Variant &p
 						Vector2i pv = p_prev_value;
 						value = (float)pv.x;
 					} break;
-					case Variant::PLANE: {
-						Plane pv = p_prev_value;
-						value = (float)pv.normal.x;
+					case Variant::VECTOR3I: {
+						Vector3i pv = p_prev_value;
+						value = (float)pv.x;
 					} break;
 					case Variant::RECT2I: {
 						Rect2i pv = p_prev_value;
 						value = (float)pv.position.x;
+					} break;
+					case Variant::VECTOR4: {
+						Vector4 pv = p_prev_value;
+						value = pv.x;
 					} break;
 					default:
 						break;
@@ -108,13 +112,17 @@ void VisualShaderNode::set_input_port_default_value(int p_port, const Variant &p
 						Vector3 pv = p_prev_value;
 						value = (int)pv.x;
 					} break;
+					case Variant::VECTOR4: {
+						Vector4 pv = p_prev_value;
+						value = (int)pv.x;
+					} break;
 					case Variant::VECTOR2I: {
 						Vector2i pv = p_prev_value;
 						value = (int)pv.x;
 					} break;
-					case Variant::PLANE: {
-						Plane pv = p_prev_value;
-						value = (int)pv.normal.x;
+					case Variant::VECTOR3I: {
+						Vector3i pv = p_prev_value;
+						value = (int)pv.x;
 					} break;
 					case Variant::RECT2I: {
 						Rect2i pv = p_prev_value;
@@ -124,210 +132,7 @@ void VisualShaderNode::set_input_port_default_value(int p_port, const Variant &p
 						break;
 				}
 			} break;
-			case Variant::VECTOR2: {
-				switch (p_prev_value.get_type()) {
-					case Variant::INT: {
-						float pv = (float)(int)p_prev_value;
-						value = Vector2(pv, pv);
-					} break;
-					case Variant::FLOAT: {
-						float pv = p_prev_value;
-						value = Vector2(pv, pv);
-					} break;
-					case Variant::VECTOR2: {
-						value = p_prev_value;
-					} break;
-					case Variant::VECTOR3: {
-						Vector3 pv = p_prev_value;
-						value = Vector2(pv.x, pv.y);
-					} break;
-					case Variant::VECTOR2I: {
-						Vector2i pv = p_prev_value;
-						value = Vector2((float)pv.x, (float)pv.y);
-					} break;
-					case Variant::PLANE: {
-						Plane pv = p_prev_value;
-						value = Vector2(pv.normal.x, pv.normal.y);
-					} break;
-					case Variant::RECT2I: {
-						Rect2i pv = p_prev_value;
-						value = Vector2((float)pv.position.x, (float)pv.position.y);
-					} break;
-					default:
-						break;
-				}
-			} break;
-			case Variant::VECTOR3: {
-				switch (p_prev_value.get_type()) {
-					case Variant::INT: {
-						float pv = (float)(int)p_prev_value;
-						value = Vector3(pv, pv, pv);
-					} break;
-					case Variant::FLOAT: {
-						float pv = p_prev_value;
-						value = Vector3(pv, pv, pv);
-					} break;
-					case Variant::VECTOR2: {
-						Vector2 pv = p_prev_value;
-						value = Vector3(pv.x, pv.y, pv.y);
-					} break;
-					case Variant::VECTOR3: {
-						value = p_prev_value;
-					} break;
-					case Variant::VECTOR2I: {
-						Vector2i pv = p_prev_value;
-						value = Vector3((float)pv.x, (float)pv.y, 0);
-					} break;
-					case Variant::PLANE: {
-						Plane pv = p_prev_value;
-						value = Vector3(pv.normal.x, pv.normal.y, pv.normal.z);
-					} break;
-					case Variant::RECT2I: {
-						Rect2i pv = p_prev_value;
-						value = Vector3((float)pv.position.x, (float)pv.position.y, (float)pv.size.x);
-					} break;
-					default:
-						break;
-				}
-			} break;
-			case Variant::PLANE: {
-				switch (p_prev_value.get_type()) {
-					case Variant::INT: {
-						float pv = (float)(int)p_prev_value;
-						value = Plane(pv, pv, pv, pv);
-					} break;
-					case Variant::FLOAT: {
-						float pv = p_prev_value;
-						value = Plane(pv, pv, pv, pv);
-					} break;
-					case Variant::VECTOR2: {
-						Vector2 pv = p_prev_value;
-						value = Plane(pv.x, pv.y, 0.0, 0.0);
-					} break;
-					case Variant::VECTOR3: {
-						Vector3 pv = p_prev_value;
-						value = Plane(pv.x, pv.y, pv.z, 0.0);
-					} break;
-					case Variant::VECTOR2I: {
-						Vector2i pv = p_prev_value;
-						value = Plane((float)pv.x, (float)pv.y, 0, 0);
-					} break;
-					case Variant::PLANE: {
-						Plane pv = p_prev_value;
-						value = Plane(pv.normal.x, pv.normal.y, pv.normal.z, pv.d);
-					} break;
-					case Variant::RECT2I: {
-						Rect2i pv = p_prev_value;
-						value = Plane((float)pv.position.x, (float)pv.position.y, (float)pv.size.x, (float)pv.size.y);
-					} break;
-					default:
-						break;
-				}
-			} break;
 
-			case Variant::VECTOR2I: {
-				switch (p_prev_value.get_type()) {
-					case Variant::INT: {
-						float pv = (float)(int)p_prev_value;
-						value = Vector2i(pv, pv);
-					} break;
-					case Variant::FLOAT: {
-						float pv = p_prev_value;
-						value = Vector2i(pv, pv);
-					} break;
-					case Variant::VECTOR2: {
-						Vector2 pv = p_prev_value;
-						value = Vector2i(pv.x, pv.y);
-					} break;
-					case Variant::VECTOR3: {
-						Vector3 pv = p_prev_value;
-						value = Vector2i(pv.x, pv.y);
-					} break;
-					case Variant::VECTOR2I: {
-						Vector2i pv = p_prev_value;
-						value = Vector2i(pv.x, pv.y);
-					} break;
-					case Variant::PLANE: {
-						Plane pv = p_prev_value;
-						value = Vector2i(pv.normal.x, pv.normal.y);
-					} break;
-					case Variant::RECT2I: {
-						Rect2i pv = p_prev_value;
-						value = Vector2i(pv.position.x, pv.position.y);
-					} break;
-					default:
-						break;
-				}
-			} break;
-
-			case Variant::VECTOR3I: {
-				switch (p_prev_value.get_type()) {
-					case Variant::INT: {
-						float pv = (float)(int)p_prev_value;
-						value = Vector3i(pv, pv, pv);
-					} break;
-					case Variant::FLOAT: {
-						float pv = p_prev_value;
-						value = Vector3i(pv, pv, pv);
-					} break;
-					case Variant::VECTOR2: {
-						Vector2 pv = p_prev_value;
-						value = Vector3i(pv.x, pv.y, 0);
-					} break;
-					case Variant::VECTOR3: {
-						Vector3 pv = p_prev_value;
-						value = Vector3i(pv.x, pv.y, pv.z);
-					} break;
-					case Variant::VECTOR2I: {
-						Vector2i pv = p_prev_value;
-						value = Vector3i(pv.x, pv.y, 0);
-					} break;
-					case Variant::PLANE: {
-						Plane pv = p_prev_value;
-						value = Vector3i(pv.normal.x, pv.normal.y, pv.normal.z);
-					} break;
-					case Variant::RECT2I: {
-						Rect2i pv = p_prev_value;
-						value = Vector3i(pv.position.x, pv.position.y, pv.size.x);
-					} break;
-					default:
-						break;
-				}
-			} break;
-			case Variant::RECT2I: {
-				switch (p_prev_value.get_type()) {
-					case Variant::INT: {
-						float pv = (float)(int)p_prev_value;
-						value = Rect2i(pv, pv, pv, pv);
-					} break;
-					case Variant::FLOAT: {
-						float pv = p_prev_value;
-						value = Rect2i(pv, pv, pv, pv);
-					} break;
-					case Variant::VECTOR2: {
-						Vector2 pv = p_prev_value;
-						value = Rect2i(pv.x, pv.y, 0, 0);
-					} break;
-					case Variant::VECTOR3: {
-						Vector3 pv = p_prev_value;
-						value = Rect2i(pv.x, pv.y, pv.z, 0);
-					} break;
-					case Variant::VECTOR2I: {
-						Vector2i pv = p_prev_value;
-						value = Rect2i(pv.x, pv.y, 0, 0);
-					} break;
-					case Variant::PLANE: {
-						Plane pv = p_prev_value;
-						value = Rect2i(pv.normal.x, pv.normal.y, pv.normal.z, pv.d);
-					} break;
-					case Variant::RECT2I: {
-						Rect2i pv = p_prev_value;
-						value = Rect2i(pv.position.x, pv.position.y, pv.size.x, pv.size.y);
-					} break;
-					default:
-						break;
-				}
-			} break;
 			default:
 				break;
 		}
@@ -440,6 +245,9 @@ int VisualShaderNode::get_expanded_output_port_count() const {
 				} break;
 				case PORT_TYPE_VECTOR_3D: {
 					count2 += 3;
+				} break;
+				case PORT_TYPE_VECTOR_4D: {
+					count2 += 4;
 				} break;
 				default:
 					break;
@@ -1397,6 +1205,9 @@ String VisualShader::generate_preview_shader(Type p_type, int p_node, int p_port
 		case VisualShaderNode::PORT_TYPE_VECTOR_3D: {
 			code += "	COLOR.rgb = n_out" + itos(p_node) + "p" + itos(p_port) + ";\n";
 		} break;
+		case VisualShaderNode::PORT_TYPE_VECTOR_4D: {
+			code += "	COLOR.rgb = n_out" + itos(p_node) + "p" + itos(p_port) + ".xyz;\n";
+		} break;
 		default: {
 			code += "	COLOR.rgb = vec3(0.0);\n";
 		} break;
@@ -1881,10 +1692,13 @@ Error VisualShader::_write_node(Type type, StringBuilder *global_code, StringBui
 								inputs[i] = "(" + src_var + " ? 1.0 : 0.0)";
 							} break;
 							case VisualShaderNode::PORT_TYPE_VECTOR_2D: {
-								inputs[i] = "dot(" + src_var + ", vec2(0.333333, 0.333333))";
+								inputs[i] = "dot(" + src_var + ", vec2(0.5, 0.5))";
 							} break;
 							case VisualShaderNode::PORT_TYPE_VECTOR_3D: {
 								inputs[i] = "dot(" + src_var + ", vec3(0.333333, 0.333333, 0.333333))";
+							} break;
+							case VisualShaderNode::PORT_TYPE_VECTOR_4D: {
+								inputs[i] = "dot(" + src_var + ", vec4(0.25, 0.25, 0.25, 0.25))";
 							} break;
 							default:
 								break;
@@ -1899,10 +1713,13 @@ Error VisualShader::_write_node(Type type, StringBuilder *global_code, StringBui
 								inputs[i] = "(" + src_var + " ? 1 : 0)";
 							} break;
 							case VisualShaderNode::PORT_TYPE_VECTOR_2D: {
-								inputs[i] = "dot(float(" + src_var + "), vec2(0.333333, 0.333333))";
+								inputs[i] = "dot(float(" + src_var + "), vec2(0.5, 0.5))";
 							} break;
 							case VisualShaderNode::PORT_TYPE_VECTOR_3D: {
 								inputs[i] = "dot(float(" + src_var + "), vec3(0.333333, 0.333333, 0.333333))";
+							} break;
+							case VisualShaderNode::PORT_TYPE_VECTOR_4D: {
+								inputs[i] = "dot(float(" + src_var + "), vec4(0.25, 0.25, 0.25, 0.25))";
 							} break;
 							default:
 								break;
@@ -1922,6 +1739,9 @@ Error VisualShader::_write_node(Type type, StringBuilder *global_code, StringBui
 							case VisualShaderNode::PORT_TYPE_VECTOR_3D: {
 								inputs[i] = "all(bvec3(" + src_var + "))";
 							} break;
+							case VisualShaderNode::PORT_TYPE_VECTOR_4D: {
+								inputs[i] = "all(bvec4(" + src_var + "))";
+							} break;
 							default:
 								break;
 						}
@@ -1937,7 +1757,8 @@ Error VisualShader::_write_node(Type type, StringBuilder *global_code, StringBui
 							case VisualShaderNode::PORT_TYPE_BOOLEAN: {
 								inputs[i] = "vec2(" + src_var + " ? 1.0 : 0.0)";
 							} break;
-							case VisualShaderNode::PORT_TYPE_VECTOR_3D: {
+							case VisualShaderNode::PORT_TYPE_VECTOR_3D:
+							case VisualShaderNode::PORT_TYPE_VECTOR_4D: {
 								inputs[i] = "vec2(" + src_var + ".xy)";
 							} break;
 							default:
@@ -1958,6 +1779,30 @@ Error VisualShader::_write_node(Type type, StringBuilder *global_code, StringBui
 							} break;
 							case VisualShaderNode::PORT_TYPE_VECTOR_2D: {
 								inputs[i] = "vec3(" + src_var + ", 0.0)";
+							} break;
+							case VisualShaderNode::PORT_TYPE_VECTOR_4D: {
+								inputs[i] = "vec3(" + src_var + ".xyz)";
+							} break;
+							default:
+								break;
+						}
+					} break;
+					case VisualShaderNode::PORT_TYPE_VECTOR_4D: {
+						switch (out_type) {
+							case VisualShaderNode::PORT_TYPE_SCALAR: {
+								inputs[i] = "vec4(" + src_var + ")";
+							} break;
+							case VisualShaderNode::PORT_TYPE_SCALAR_INT: {
+								inputs[i] = "vec4(float(" + src_var + "))";
+							} break;
+							case VisualShaderNode::PORT_TYPE_BOOLEAN: {
+								inputs[i] = "vec4(" + src_var + " ? 1.0 : 0.0)";
+							} break;
+							case VisualShaderNode::PORT_TYPE_VECTOR_2D: {
+								inputs[i] = "vec4(" + src_var + ", 0.0, 0.0)";
+							} break;
+							case VisualShaderNode::PORT_TYPE_VECTOR_3D: {
+								inputs[i] = "vec4(" + src_var + ", 0.0)";
 							} break;
 							default:
 								break;
@@ -1993,6 +1838,10 @@ Error VisualShader::_write_node(Type type, StringBuilder *global_code, StringBui
 				Vector3 val = defval;
 				inputs[i] = "n_in" + itos(node) + "p" + itos(i);
 				node_code += "	vec3 " + inputs[i] + " = " + vformat("vec3(%.5f, %.5f, %.5f);\n", val.x, val.y, val.z);
+			} else if (defval.get_type() == Variant::VECTOR4) {
+				Vector4 val = defval;
+				inputs[i] = "n_in" + itos(node) + "p" + itos(i);
+				node_code += "	vec4 " + inputs[i] + " = " + vformat("vec4(%.5f, %.5f, %.5f, %.5f);\n", val.x, val.y, val.z, val.w);
 			} else if (defval.get_type() == Variant::TRANSFORM3D) {
 				Transform3D val = defval;
 				val.basis.transpose();
@@ -2032,6 +1881,9 @@ Error VisualShader::_write_node(Type type, StringBuilder *global_code, StringBui
 				case VisualShaderNode::PORT_TYPE_VECTOR_3D: {
 					output_count += 3;
 				} break;
+				case VisualShaderNode::PORT_TYPE_VECTOR_4D: {
+					output_count += 4;
+				} break;
 				default:
 					break;
 			}
@@ -2062,12 +1914,6 @@ Error VisualShader::_write_node(Type type, StringBuilder *global_code, StringBui
 				case VisualShaderNode::PORT_TYPE_VECTOR_4D:
 					outputs[i] = "vec4 " + var_name;
 					break;
-				case VisualShaderNode::PORT_TYPE_IVECTOR_3D:
-					outputs[i] = "ivec3 " + var_name;
-					break;
-				case VisualShaderNode::PORT_TYPE_IVECTOR_4D:
-					outputs[i] = "ivec4 " + var_name;
-					break;
 				case VisualShaderNode::PORT_TYPE_BOOLEAN:
 					outputs[i] = "bool " + var_name;
 					break;
@@ -2084,6 +1930,9 @@ Error VisualShader::_write_node(Type type, StringBuilder *global_code, StringBui
 					} break;
 					case VisualShaderNode::PORT_TYPE_VECTOR_3D: {
 						j += 3;
+					} break;
+					case VisualShaderNode::PORT_TYPE_VECTOR_4D: {
+						j += 4;
 					} break;
 					default:
 						break;
@@ -2132,6 +1981,9 @@ Error VisualShader::_write_node(Type type, StringBuilder *global_code, StringBui
 					} break;
 					case VisualShaderNode::PORT_TYPE_VECTOR_3D: {
 						j += 3;
+					} break;
+					case VisualShaderNode::PORT_TYPE_VECTOR_4D: {
+						j += 4;
 					} break;
 					default:
 						break;
@@ -2206,6 +2058,49 @@ Error VisualShader::_write_node(Type type, StringBuilder *global_code, StringBui
 					}
 
 					i += 3;
+				} break;
+				case VisualShaderNode::PORT_TYPE_VECTOR_4D: {
+					if (vsnode->is_output_port_connected(i + 1) || (for_preview && vsnode->get_output_port_for_preview() == (i + 1))) { // red-component
+						if (!new_line_inserted) {
+							code += "\n";
+							new_line_inserted = true;
+						}
+						String r = "n_out" + itos(node) + "p" + itos(i + 1);
+						code += "	float " + r + " = n_out" + itos(node) + "p" + itos(i) + ".r;\n";
+						outputs[i + 1] = r;
+					}
+
+					if (vsnode->is_output_port_connected(i + 2) || (for_preview && vsnode->get_output_port_for_preview() == (i + 2))) { // green-component
+						if (!new_line_inserted) {
+							code += "\n";
+							new_line_inserted = true;
+						}
+						String g = "n_out" + itos(node) + "p" + itos(i + 2);
+						code += "	float " + g + " = n_out" + itos(node) + "p" + itos(i) + ".g;\n";
+						outputs[i + 2] = g;
+					}
+
+					if (vsnode->is_output_port_connected(i + 3) || (for_preview && vsnode->get_output_port_for_preview() == (i + 3))) { // blue-component
+						if (!new_line_inserted) {
+							code += "\n";
+							new_line_inserted = true;
+						}
+						String b = "n_out" + itos(node) + "p" + itos(i + 3);
+						code += "	float " + b + " = n_out" + itos(node) + "p" + itos(i) + ".b;\n";
+						outputs[i + 3] = b;
+					}
+
+					if (vsnode->is_output_port_connected(i + 4) || (for_preview && vsnode->get_output_port_for_preview() == (i + 4))) { // alpha-component
+						if (!new_line_inserted) {
+							code += "\n";
+							new_line_inserted = true;
+						}
+						String b = "n_out" + itos(node) + "p" + itos(i + 3);
+						code += "	float " + b + " = n_out" + itos(node) + "p" + itos(i) + ".a;\n";
+						outputs[i + 4] = b;
+					}
+
+					i += 4;
 				} break;
 				default:
 					break;
@@ -2359,6 +2254,9 @@ void VisualShader::_update_shader() const {
 				case VaryingType::VARYING_TYPE_VECTOR_3D:
 					global_code += "vec3 ";
 					break;
+				case VaryingType::VARYING_TYPE_VECTOR_4D:
+					global_code += "vec4 ";
+					break;
 				case VaryingType::VARYING_TYPE_COLOR:
 					global_code += "vec4 ";
 					break;
@@ -2420,6 +2318,9 @@ void VisualShader::_update_shader() const {
 								break;
 							case VaryingType::VARYING_TYPE_VECTOR_3D:
 								code2 += "vec3(0.0)";
+								break;
+							case VaryingType::VARYING_TYPE_VECTOR_4D:
+								code2 += "vec4(0.0)";
 								break;
 							case VaryingType::VARYING_TYPE_COLOR:
 								code2 += "vec4(0.0)";
@@ -3184,6 +3085,9 @@ String VisualShaderNodeInput::generate_code(Shader::Mode p_mode, VisualShader::T
 				case PORT_TYPE_VECTOR_3D: {
 					code = "	" + p_output_vars[0] + " = vec3(0.0);\n";
 				} break;
+				case PORT_TYPE_VECTOR_4D: {
+					code = "	" + p_output_vars[0] + " = vec4(0.0);\n";
+				} break;
 				case PORT_TYPE_BOOLEAN: {
 					code = "	" + p_output_vars[0] + " = false;\n";
 				} break;
@@ -3400,6 +3304,14 @@ int VisualShaderNodeUniformRef::get_output_port_count() const {
 			return 1;
 		case UniformType::UNIFORM_TYPE_VECTOR_3D:
 			return 1;
+		case UniformType::UNIFORM_TYPE_VECTOR_4D:
+			return 1;
+		case UniformType::UNIFORM_TYPE_IVECTOR_2D:
+			return 1;
+		case UniformType::UNIFORM_TYPE_IVECTOR_3D:
+			return 1;
+		case UniformType::UNIFORM_TYPE_IVECTOR_4D:
+			return 1;
 		case UniformType::UNIFORM_TYPE_TRANSFORM:
 			return 1;
 		case UniformType::UNIFORM_TYPE_COLOR:
@@ -3424,6 +3336,8 @@ VisualShaderNodeUniformRef::PortType VisualShaderNodeUniformRef::get_output_port
 			return PortType::PORT_TYPE_VECTOR_2D;
 		case UniformType::UNIFORM_TYPE_VECTOR_3D:
 			return PortType::PORT_TYPE_VECTOR_3D;
+		case UniformType::UNIFORM_TYPE_VECTOR_4D:
+			return PortType::PORT_TYPE_VECTOR_4D;
 		case UniformType::UNIFORM_TYPE_TRANSFORM:
 			return PortType::PORT_TYPE_TRANSFORM;
 		case UniformType::UNIFORM_TYPE_COLOR:
@@ -3452,6 +3366,8 @@ String VisualShaderNodeUniformRef::get_output_port_name(int p_port) const {
 		case UniformType::UNIFORM_TYPE_VECTOR_2D:
 			return "";
 		case UniformType::UNIFORM_TYPE_VECTOR_3D:
+			return "";
+		case UniformType::UNIFORM_TYPE_VECTOR_4D:
 			return "";
 		case UniformType::UNIFORM_TYPE_TRANSFORM:
 			return "";
@@ -3527,12 +3443,6 @@ VisualShaderNodeUniformRef::PortType VisualShaderNodeUniformRef::get_port_type_b
 				return PORT_TYPE_VECTOR_3D;
 			case UniformType::UNIFORM_TYPE_VECTOR_4D:
 				return PORT_TYPE_VECTOR_4D;
-            case UniformType::UNIFORM_TYPE_IVECTOR_2D:
-                return PORT_TYPE_IVECTOR_2D;
-			case UniformType::UNIFORM_TYPE_IVECTOR_3D:
-				return PORT_TYPE_IVECTOR_3D;
-			case UniformType::UNIFORM_TYPE_IVECTOR_4D:
-				return PORT_TYPE_IVECTOR_4D;
 			case UniformType::UNIFORM_TYPE_TRANSFORM:
 				return PORT_TYPE_TRANSFORM;
 			case UniformType::UNIFORM_TYPE_COLOR:
@@ -3921,16 +3831,6 @@ String VisualShaderNodeUniform::get_warning(Shader::Mode p_mode, VisualShader::T
 			} break;
 			case RS::GLOBAL_VAR_TYPE_VEC4: {
 				if (!Object::cast_to<VisualShaderNodeVec4Uniform>(this)) {
-					incompatible_type = true;
-				}
-			} break;
-			case RS::GLOBAL_VAR_TYPE_IVEC3: {
-				if (!Object::cast_to<VisualShaderNodeVec3IUniform>(this)) {
-					incompatible_type = true;
-				}
-			} break;
-			case RS::GLOBAL_VAR_TYPE_IVEC4: {
-				if (!Object::cast_to<VisualShaderNodeVec4IUniform>(this)) {
 					incompatible_type = true;
 				}
 			} break;
@@ -4641,6 +4541,9 @@ String VisualShaderNodeExpression::generate_code(Shader::Mode p_mode, VisualShad
 			case PORT_TYPE_VECTOR_3D:
 				tk = "vec3(0.0, 0.0, 0.0)";
 				break;
+			case PORT_TYPE_VECTOR_4D:
+				tk = "vec4(0.0, 0.0, 0.0, 0.0)";
+				break;
 			case PORT_TYPE_BOOLEAN:
 				tk = "false";
 				break;
@@ -4779,6 +4682,8 @@ String VisualShaderNodeVarying::get_type_str() const {
 			return "vec2";
 		case VisualShader::VARYING_TYPE_VECTOR_3D:
 			return "vec3";
+		case VisualShader::VARYING_TYPE_VECTOR_4D:
+			return "vec4";
 		case VisualShader::VARYING_TYPE_COLOR:
 			return "vec4";
 		case VisualShader::VARYING_TYPE_TRANSFORM:
@@ -4954,6 +4859,9 @@ String VisualShaderNodeVaryingGetter::generate_code(Shader::Mode p_mode, VisualS
 				break;
 			case VisualShader::VARYING_TYPE_VECTOR_3D:
 				from = "vec3(0.0)";
+				break;
+			case VisualShader::VARYING_TYPE_VECTOR_4D:
+				from = "vec4(0.0)";
 				break;
 			case VisualShader::VARYING_TYPE_COLOR:
 				from = "vec3(0.0)";

@@ -139,6 +139,7 @@
 #include "scene/multiplayer/scene_cache_interface.h"
 #include "scene/multiplayer/scene_replication_interface.h"
 #include "scene/multiplayer/scene_rpc_interface.h"
+#include "scene/resources/animation_library.h"
 #include "scene/resources/audio_stream_sample.h"
 #include "scene/resources/bit_map.h"
 #include "scene/resources/box_shape_3d.h"
@@ -633,6 +634,7 @@ void register_scene_types() {
 	GDREGISTER_CLASS(VisualShaderNodeVec2Uniform);
 	GDREGISTER_CLASS(VisualShaderNodeVec3Uniform);
 	GDREGISTER_CLASS(VisualShaderNodeVec4Uniform);
+	GDREGISTER_CLASS(VisualShaderNodeVec2IUniform);
 	GDREGISTER_CLASS(VisualShaderNodeVec3IUniform);
 	GDREGISTER_CLASS(VisualShaderNodeVec4IUniform);
 	GDREGISTER_CLASS(VisualShaderNodeTransformUniform);
@@ -850,6 +852,7 @@ void register_scene_types() {
 	GDREGISTER_CLASS(CompressedTexture2DArray);
 
 	GDREGISTER_CLASS(Animation);
+	GDREGISTER_CLASS(AnimationLibrary);
 	GDREGISTER_CLASS(FontData);
 	GDREGISTER_CLASS(Font);
 	GDREGISTER_CLASS(Curve);

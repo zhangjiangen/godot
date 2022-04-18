@@ -73,7 +73,7 @@ def force_optimization_on_debug(self):
 
 
 def add_module_version_string(self, s):
-    self.module_version_string += "." + s
+    self.module_version_string += "_" + s
 
 
 def update_version(module_version_string=""):

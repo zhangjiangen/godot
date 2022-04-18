@@ -422,7 +422,7 @@ _FORCE_INLINE_ static void _fill_std140_variant_ubo_value(ShaderLanguage::DataTy
 						if (i < s) {
 							Color color = a[i];
 							if (p_linear_color) {
-								color = color.to_linear();
+								color = color.srgb_to_linear();
 							}
 							gui[j] = color.r;
 							gui[j + 1] = color.g;
@@ -459,7 +459,7 @@ _FORCE_INLINE_ static void _fill_std140_variant_ubo_value(ShaderLanguage::DataTy
 					Color v = value;
 
 					if (p_linear_color) {
-						v = v.to_linear();
+						v = v.srgb_to_linear();
 					}
 
 					gui[0] = v.r;
@@ -480,13 +480,22 @@ _FORCE_INLINE_ static void _fill_std140_variant_ubo_value(ShaderLanguage::DataTy
 					gui[1] = v.y;
 					gui[2] = v.z;
 					gui[3] = v.w;
-				} else {
+				} else if (value.get_type() == Variant::PLANE) {
 					Plane v = value;
 
 					gui[0] = v.normal.x;
 					gui[1] = v.normal.y;
 					gui[2] = v.normal.z;
 					gui[3] = v.d;
+				} else if (value.get_type() == Variant::VECTOR4) {
+					Vector4 v = value;
+
+					gui[0] = v.x;
+					gui[1] = v.y;
+					gui[2] = v.z;
+					gui[3] = v.y;
+				} else {
+					ERR_FAIL_MSG("Invalid variant type for VEC4");
 				}
 			}
 		} break;
@@ -1498,7 +1507,7 @@ void MaterialStorage::_global_variable_store_in_buffer(int32_t p_index, RS::Glob
 			bv.w = v.a;
 
 			GlobalVariables::Value &bv_linear = global_variables.buffer_values[p_index + 1];
-			v = v.to_linear();
+			v = v.srgb_to_linear();
 			bv_linear.x = v.r;
 			bv_linear.y = v.g;
 			bv_linear.z = v.b;

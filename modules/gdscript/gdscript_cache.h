@@ -41,6 +41,8 @@ class GDScriptAnalyzer;
 class GDScriptParser;
 
 class GDScriptParserRef : public RefCounted {
+	GDCLASS(GDScriptParserRef, RefCounted);
+
 public:
 	enum Status {
 		EMPTY,
@@ -58,6 +60,9 @@ private:
 	String path;
 
 	friend class GDScriptCache;
+
+protected:
+	static void _bind_methods();
 
 public:
 	bool is_valid() const;

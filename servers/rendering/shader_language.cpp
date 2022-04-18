@@ -3468,7 +3468,7 @@ Variant ShaderLanguage::constant_value_to_variant(const Vector<ShaderLanguage::C
 					}
 					value = Variant(array);
 				} else {
-					value = Variant(Plane(p_value[0].sint, p_value[1].sint, p_value[2].sint, p_value[3].sint));
+					value = Variant(Vector4(p_value[0].sint, p_value[1].sint, p_value[2].sint, p_value[3].sint));
 				}
 				break;
 			case ShaderLanguage::TYPE_UINT:
@@ -3518,7 +3518,7 @@ Variant ShaderLanguage::constant_value_to_variant(const Vector<ShaderLanguage::C
 					}
 					value = Variant(array);
 				} else {
-					value = Variant(Plane(p_value[0].uint, p_value[1].uint, p_value[2].uint, p_value[3].uint));
+					value = Variant(Vector4(p_value[0].uint, p_value[1].uint, p_value[2].uint, p_value[3].uint));
 				}
 				break;
 			case ShaderLanguage::TYPE_FLOAT:
@@ -3582,7 +3582,7 @@ Variant ShaderLanguage::constant_value_to_variant(const Vector<ShaderLanguage::C
 					if (p_hint == ShaderLanguage::ShaderNode::Uniform::HINT_COLOR) {
 						value = Variant(Color(p_value[0].real, p_value[1].real, p_value[2].real, p_value[3].real));
 					} else {
-						value = Variant(Plane(p_value[0].real, p_value[1].real, p_value[2].real, p_value[3].real));
+						value = Variant(Vector4(p_value[0].real, p_value[1].real, p_value[2].real, p_value[3].real));
 					}
 				}
 				break;
@@ -3777,7 +3777,7 @@ PropertyInfo ShaderLanguage::uniform_to_property_info(const ShaderNode::Uniform 
 				if (p_uniform.hint == ShaderLanguage::ShaderNode::Uniform::HINT_COLOR) {
 					pi.type = Variant::COLOR;
 				} else {
-					pi.type = Variant::PLANE;
+					pi.type = Variant::VECTOR4;
 				}
 			}
 		} break;
@@ -5145,7 +5145,6 @@ ShaderLanguage::Node *ShaderLanguage::_parse_expression(BlockNode *p_block, cons
 						if (!call_expression) {
 							return nullptr;
 						}
-						data_type = call_expression->get_datatype();
 					} else if (tk.type == TK_BRACKET_OPEN) { // indexing
 						index_expression = _parse_and_reduce_expression(p_block, p_function_info);
 						if (!index_expression) {
@@ -5599,15 +5598,13 @@ ShaderLanguage::Node *ShaderLanguage::_parse_expression(BlockNode *p_block, cons
 						if (p_block != nullptr) {
 							p_block->block_tag = SubClassTag::TAG_ARRAY;
 						}
-						Node *call_expression = _parse_and_reduce_expression(p_block, p_function_info);
+						mn->call_expression = _parse_and_reduce_expression(p_block, p_function_info);
 						if (p_block != nullptr) {
 							p_block->block_tag = SubClassTag::TAG_GLOBAL;
 						}
-						if (!call_expression) {
+						if (!mn->call_expression) {
 							return nullptr;
 						}
-						mn->datatype = call_expression->get_datatype();
-						mn->call_expression = call_expression;
 					} else if (tk.type == TK_BRACKET_OPEN) {
 						Node *index_expression = _parse_and_reduce_expression(p_block, p_function_info);
 						if (!index_expression) {

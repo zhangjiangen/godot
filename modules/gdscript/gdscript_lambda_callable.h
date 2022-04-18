@@ -42,7 +42,7 @@ class GDScriptInstance;
 
 class GDScriptLambdaCallable : public CallableCustom {
 	GDScriptFunction *function = nullptr;
-	Ref<GDScript> script;
+	WeakPtr<GDScript> script;
 	uint32_t h;
 
 	Vector<Variant> captures;

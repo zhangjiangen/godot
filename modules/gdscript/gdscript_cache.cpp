@@ -106,6 +106,8 @@ GDScriptParserRef::~GDScriptParserRef() {
 	GDScriptCache::singleton->parser_map.erase(path);
 }
 
+void GDScriptParserRef::_bind_methods() {
+}
 GDScriptCache *GDScriptCache::singleton = nullptr;
 
 void GDScriptCache::remove_script(const String &p_path) {
@@ -132,7 +134,7 @@ Ref<GDScriptParserRef> GDScriptCache::get_parser(const String &p_path, GDScriptP
 			return ref;
 		}
 		GDScriptParser *parser = memnew(GDScriptParser);
-		New_instantiate(ref);
+		ref.instantiate();
 		ref->parser = parser;
 		ref->path = p_path;
 		singleton->parser_map[p_path] = ref.ptr();
@@ -145,7 +147,7 @@ Ref<GDScriptParserRef> GDScriptCache::get_parser(const String &p_path, GDScriptP
 String GDScriptCache::get_source_code(const String &p_path) {
 	Vector<uint8_t> source_file;
 	Error err;
-	FileAccessRef f = FileAccess::open(p_path, FileAccess::READ, &err);
+	Ref<FileAccess> f = FileAccess::open(p_path, FileAccess::READ, &err);
 	if (err) {
 		ERR_FAIL_COND_V(err, "");
 	}
@@ -153,7 +155,6 @@ String GDScriptCache::get_source_code(const String &p_path) {
 	uint64_t len = f->get_length();
 	source_file.resize(len + 1);
 	uint64_t r = f->get_buffer(source_file.ptrw(), len);
-	f->close();
 	ERR_FAIL_COND_V(r != len, "");
 	source_file.write[len] = 0;
 
@@ -177,7 +178,7 @@ Ref<GDScript> GDScriptCache::get_shallow_script(const String &p_path, const Stri
 	}
 
 	Ref<GDScript> script;
-	New_instantiate(script);
+	script.instantiate();
 	script->set_path(p_path, true);
 	script->set_script_path(p_path);
 	script->load_source_code(p_path);
@@ -243,10 +244,6 @@ Error GDScriptCache::finish_compiling(const String &p_owner) {
 }
 
 GDScriptCache::GDScriptCache() {
-	parser_map.set_debug_info(__FILE__, __LINE__);
-	shallow_gdscript_cache.set_debug_info(__FILE__, __LINE__);
-	full_gdscript_cache.set_debug_info(__FILE__, __LINE__);
-	dependencies.set_debug_info(__FILE__, __LINE__);
 	singleton = this;
 }
 

@@ -1871,6 +1871,13 @@ Object::Object() {
 	_construct_object(false);
 }
 
+void Object::detach_from_objectdb() {
+	if (_instance_id != ObjectID()) {
+		ObjectDB::remove_instance(this);
+		_instance_id = ObjectID();
+	}
+}
+
 Object::~Object() {
 	if (script_instance) {
 		memdelete(script_instance);
@@ -1910,8 +1917,10 @@ Object::~Object() {
 		c.signal.get_object()->_disconnect(c.signal.get_name(), c.callable, true);
 	}
 
-	ObjectDB::remove_instance(this);
-	_instance_id = ObjectID();
+	if (_instance_id != ObjectID()) {
+		ObjectDB::remove_instance(this);
+		_instance_id = ObjectID();
+	}
 	_predelete_ok = 2;
 
 	if (_instance_bindings != nullptr) {
@@ -2043,7 +2052,7 @@ void ObjectDB::cleanup() {
 		spin_lock.lock();
 
 		WARN_PRINT("ObjectDB instances leaked at exit (run with --verbose for details).");
-		if (OS::get_singleton()->is_stdout_verbose()) {
+		if (true || OS::get_singleton()->is_stdout_verbose()) {
 			// Ensure calling the native classes because if a leaked instance has a script
 			// that overrides any of those methods, it'd not be OK to call them at this point,
 			// now the scripting languages have already been terminated.
@@ -2062,9 +2071,9 @@ void ObjectDB::cleanup() {
 					if (obj->is_class("Resource")) {
 						extra_info = " - Resource path: " + String(resource_get_path->call(obj, nullptr, 0, call_error));
 					}
-
+					const char *type_name = typeid(*obj).name();
 					uint64_t id = uint64_t(i) | (uint64_t(object_slots[i].validator) << OBJECTDB_VALIDATOR_BITS) | (object_slots[i].is_ref_counted ? OBJECTDB_REFERENCE_BIT : 0);
-					print_line("Leaked instance: " + String(obj->get_class()) + ":" + itos(id) + extra_info);
+					print_line("Leaked instance: " + String(obj->get_class()) + ":" + "class_name" + type_name + itos(id) + extra_info);
 
 					count--;
 				}

@@ -44,6 +44,7 @@ public:
 	enum OpType {
 		OP_TYPE_VECTOR_2D,
 		OP_TYPE_VECTOR_3D,
+		OP_TYPE_VECTOR_4D,
 		OP_TYPE_MAX,
 	};
 
@@ -277,35 +278,6 @@ public:
 
 	VisualShaderNodeVec3Constant();
 };
-///////////////////////////////////////
-
-class VisualShaderNodeVec4Constant : public VisualShaderNodeConstant {
-	GDCLASS(VisualShaderNodeVec4Constant, VisualShaderNodeConstant);
-	Plane constant;
-
-protected:
-	static void _bind_methods();
-
-public:
-	virtual String get_caption() const override;
-
-	virtual int get_input_port_count() const override;
-	virtual PortType get_input_port_type(int p_port) const override;
-	virtual String get_input_port_name(int p_port) const override;
-
-	virtual int get_output_port_count() const override;
-	virtual PortType get_output_port_type(int p_port) const override;
-	virtual String get_output_port_name(int p_port) const override;
-
-	virtual String generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview = false) const override;
-
-	void set_constant(const Plane &p_constant);
-	Plane get_constant() const;
-
-	virtual Vector<StringName> get_editable_properties() const override;
-
-	VisualShaderNodeVec4Constant();
-};
 
 ///////////////////////////////////////
 
@@ -336,6 +308,37 @@ public:
 
 	VisualShaderNodeVec3IConstant();
 };
+
+///////////////////////////////////////
+
+class VisualShaderNodeVec4Constant : public VisualShaderNodeConstant {
+	GDCLASS(VisualShaderNodeVec4Constant, VisualShaderNodeConstant);
+	Vector4 constant;
+
+protected:
+	static void _bind_methods();
+
+public:
+	virtual String get_caption() const override;
+
+	virtual int get_input_port_count() const override;
+	virtual PortType get_input_port_type(int p_port) const override;
+	virtual String get_input_port_name(int p_port) const override;
+
+	virtual int get_output_port_count() const override;
+	virtual PortType get_output_port_type(int p_port) const override;
+	virtual String get_output_port_name(int p_port) const override;
+
+	virtual String generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview = false) const override;
+
+	void set_constant(const Vector4 &p_constant);
+	Vector4 get_constant() const;
+
+	virtual Vector<StringName> get_editable_properties() const override;
+
+	VisualShaderNodeVec4Constant();
+};
+
 ///////////////////////////////////////
 
 class VisualShaderNodeVec4IConstant : public VisualShaderNodeConstant {
@@ -1416,6 +1419,7 @@ public:
 		OP_TYPE_SCALAR,
 		OP_TYPE_VECTOR_2D,
 		OP_TYPE_VECTOR_3D,
+		OP_TYPE_VECTOR_4D,
 		OP_TYPE_MAX,
 	};
 
@@ -1519,6 +1523,8 @@ public:
 		OP_TYPE_VECTOR_2D_SCALAR,
 		OP_TYPE_VECTOR_3D,
 		OP_TYPE_VECTOR_3D_SCALAR,
+		OP_TYPE_VECTOR_4D,
+		OP_TYPE_VECTOR_4D_SCALAR,
 		OP_TYPE_MAX,
 	};
 
@@ -1563,6 +1569,8 @@ public:
 		OP_TYPE_VECTOR_2D_SCALAR,
 		OP_TYPE_VECTOR_3D,
 		OP_TYPE_VECTOR_3D_SCALAR,
+		OP_TYPE_VECTOR_4D,
+		OP_TYPE_VECTOR_4D_SCALAR,
 		OP_TYPE_MAX,
 	};
 
@@ -1653,6 +1661,8 @@ public:
 		OP_TYPE_VECTOR_2D_SCALAR,
 		OP_TYPE_VECTOR_3D,
 		OP_TYPE_VECTOR_3D_SCALAR,
+		OP_TYPE_VECTOR_4D,
+		OP_TYPE_VECTOR_4D_SCALAR,
 		OP_TYPE_MAX,
 	};
 
@@ -2129,7 +2139,7 @@ class VisualShaderNodeVec4Uniform : public VisualShaderNodeUniform {
 
 private:
 	bool default_value_enabled = false;
-	Plane default_value;
+	Vector4 default_value;
 
 protected:
 	static void _bind_methods();
@@ -2154,8 +2164,8 @@ public:
 	void set_default_value_enabled(bool p_enabled);
 	bool is_default_value_enabled() const;
 
-	void set_default_value(const Plane &p_value);
-	Plane get_default_value() const;
+	void set_default_value(const Vector4 &p_value);
+	Vector4 get_default_value() const;
 
 	bool is_qualifier_supported(Qualifier p_qual) const override;
 	bool is_convertible_to_constant() const override;
@@ -2163,6 +2173,49 @@ public:
 	virtual Vector<StringName> get_editable_properties() const override;
 
 	VisualShaderNodeVec4Uniform();
+};
+
+///////////////////////////////////////
+
+class VisualShaderNodeVec2IUniform : public VisualShaderNodeUniform {
+	GDCLASS(VisualShaderNodeVec2IUniform, VisualShaderNodeUniform);
+
+private:
+	bool default_value_enabled = false;
+	Vector2i default_value;
+
+protected:
+	static void _bind_methods();
+
+public:
+	virtual String get_caption() const override;
+
+	virtual int get_input_port_count() const override;
+	virtual PortType get_input_port_type(int p_port) const override;
+	virtual String get_input_port_name(int p_port) const override;
+
+	virtual int get_output_port_count() const override;
+	virtual PortType get_output_port_type(int p_port) const override;
+	virtual String get_output_port_name(int p_port) const override;
+
+	virtual String generate_global(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const override;
+	virtual String generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview = false) const override;
+
+	virtual bool is_show_prop_names() const override;
+	virtual bool is_use_prop_slots() const override;
+
+	void set_default_value_enabled(bool p_enabled);
+	bool is_default_value_enabled() const;
+
+	void set_default_value(const Vector2i &p_value);
+	Vector2i get_default_value() const;
+
+	bool is_qualifier_supported(Qualifier p_qual) const override;
+	bool is_convertible_to_constant() const override;
+
+	virtual Vector<StringName> get_editable_properties() const override;
+
+	VisualShaderNodeVec2IUniform();
 };
 
 ///////////////////////////////////////
