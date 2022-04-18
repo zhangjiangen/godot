@@ -865,6 +865,7 @@ public:
 		UniformType type = UniformType::UNIFORM_TYPE_MAX;
 		int binding = 0;
 		uint32_t stages = 0;
+		String name;
 		int length = 0; //size of arrays (in total elements), or ubos (in bytes * total elements)
 
 		bool operator!=(const UniformInfo &p_info) const {

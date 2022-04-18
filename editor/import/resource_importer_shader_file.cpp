@@ -105,8 +105,9 @@ Error ResourceImporterShaderFile::import(const String &p_source_file, const Stri
 
 	if (err != OK) {
 		if (!ShaderFileEditor::singleton->is_visible_in_tree()) {
-			EditorNode::get_singleton()->add_io_error(vformat(TTR("Error importing GLSL shader file: '%s'. Open the file in the filesystem dock in order to see the reason."), p_source_file));
+			ERR_PRINT(vformat(TTR("Error importing GLSL shader file: " + p_source_file + ". Open the file in the filesystem dock in order to see the reason.")));
 		}
+		shader_file->print_errors(p_source_file);
 	}
 
 	ResourceSaver::save(p_save_path + ".res", shader_file);

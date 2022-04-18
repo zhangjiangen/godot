@@ -623,6 +623,7 @@ public:
 		};
 
 		IdentifierNode *identifier = nullptr;
+		String identifier_name;
 		String icon_path;
 		Vector<Member> members;
 		HashMap<StringName, int> members_indices;

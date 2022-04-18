@@ -4694,6 +4694,7 @@ struct RenderingDeviceVulkanShaderBinaryDataBinding {
 	uint32_t binding;
 	uint32_t stages;
 	uint32_t length; //size of arrays (in total elements), or ubos (in bytes * total elements)
+	char name[24];
 };
 
 struct RenderingDeviceVulkanShaderBinarySpecializationConstant {
@@ -4779,8 +4780,12 @@ Vector<uint8_t> RenderingDeviceVulkan::shader_compile_binary_from_spirv(const Ve
 					const SpvReflectDescriptorBinding &binding = *bindings[j];
 
 					RenderingDeviceVulkanShaderBinaryDataBinding info;
-					ShaderInfo::UniformInfo uniform_log_info;
-					uniform_log_info.name = binding.name;
+					//ShaderInfo::UniformInfo uniform_log_info;
+					//uniform_log_info.name = binding.name;
+					int name_count = Math::min(strlen(binding.name), 23);
+					//info.name = binding.name;
+					strncpy(info.name, binding.name, name_count + 1);
+					info.name[23] = 0;
 
 					bool need_array_dimensions = false;
 					bool need_block_size = false;
@@ -4835,7 +4840,6 @@ Vector<uint8_t> RenderingDeviceVulkan::shader_compile_binary_from_spirv(const Ve
 							continue;
 						} break;
 					}
-					uniform_log_info.type = info.type;
 					if (need_array_dimensions) {
 						if (binding.array.dims_count == 0) {
 							info.length = 1;
@@ -4856,8 +4860,6 @@ Vector<uint8_t> RenderingDeviceVulkan::shader_compile_binary_from_spirv(const Ve
 					}
 
 					info.binding = binding.binding;
-					uniform_log_info.binding = info.binding;
-					uniform_log_info.length = info.length;
 					uint32_t set = binding.set;
 
 					ERR_FAIL_COND_V_MSG(set >= MAX_UNIFORM_SETS, Vector<uint8_t>(),
@@ -4889,16 +4891,13 @@ Vector<uint8_t> RenderingDeviceVulkan::shader_compile_binary_from_spirv(const Ve
 							continue; //merged
 						}
 					}
-					uniform_log_info.set = set;
 					info.stages = 1 << stage;
-					uniform_log_info.stages = info.stages;
 
 					if (set >= (uint32_t)uniform_info.size()) {
 						uniform_info.resize(set + 1);
 					}
 
 					uniform_info.write[set].push_back(info);
-					p_shader_info.uniform_info[stage].push_back(uniform_log_info);
 				}
 			}
 
@@ -5229,6 +5228,7 @@ RID RenderingDeviceVulkan::shader_create_from_bytecode(const Vector<uint8_t> &p_
 			info.length = set_ptr[j].length;
 			info.binding = set_ptr[j].binding;
 			info.stages = set_ptr[j].stages;
+			info.name = set_ptr[j].name;
 
 			VkDescriptorSetLayoutBinding layout_binding;
 			layout_binding.pImmutableSamplers = nullptr;

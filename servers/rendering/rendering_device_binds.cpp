@@ -42,6 +42,8 @@ Error RDShaderFile::parse_versions_from_text(const String &p_text, const String 
 		"tesselation_control",
 		"tesselation_evaluation",
 		"compute",
+		"task",
+		"mesh"
 	};
 	String stage_code[RD::SHADER_STAGE_MAX];
 	int stages_found = 0;
@@ -92,6 +94,9 @@ Error RDShaderFile::parse_versions_from_text(const String &p_text, const String 
 		if (stage == RD::SHADER_STAGE_MAX && !line.strip_edges().is_empty()) {
 			line = line.strip_edges();
 			if (line.begins_with("//") || line.begins_with("/*")) {
+				if (line.begins_with("//")) {
+					line = "//";
+				}
 				continue; //assuming comment (single line)
 			}
 		}
