@@ -2898,6 +2898,10 @@ void RendererSceneCull::_render_scene(const RendererSceneRender::CameraData *p_c
 
 	scene_render->set_scene_pass(render_pass);
 
+	if(scene_render->rendering_listener.is_valid())
+	{
+		scene_render->rendering_listener->pre_render();
+	}
 	if (p_render_buffers.is_valid()) {
 		//no rendering code here, this is only to set up what needs to be done, request regions, etc.
 		scene_render->sdfgi_update(p_render_buffers, p_environment, p_camera_data->main_transform.origin); //update conditions for SDFGI (whether its used or not)
@@ -3241,6 +3245,10 @@ void RendererSceneCull::_render_scene(const RendererSceneRender::CameraData *p_c
 	for (uint32_t i = 0; i < cull.sdfgi.region_count; i++) {
 		render_sdfgi_data[i].instances.clear();
 	}
+	if(scene_render->rendering_listener.is_valid())
+	{
+		scene_render->rendering_listener->post_render();
+	}
 
 	//	virtual void render_scene(RID p_render_buffers, const Transform3D &p_cam_transform, const CameraMatrix &p_cam_projection, bool p_cam_ortogonal, const PagedArray<GeometryInstance *> &p_instances, const PagedArray<RID> &p_lights, const PagedArray<RID> &p_reflection_probes, const PagedArray<RID> &p_voxel_gi_instances, const PagedArray<RID> &p_decals, const PagedArray<RID> &p_lightmaps, RID p_environment, RID p_camera_effects, RID p_shadow_atlas, RID p_reflection_atlas, RID p_reflection_probe, int p_reflection_probe_pass, float p_screen_mesh_lod_threshold,const RenderShadowData *p_render_shadows,int p_render_shadow_count,const RenderSDFGIData *p_render_sdfgi_regions,int p_render_sdfgi_region_count,const RenderSDFGIStaticLightData *p_render_sdfgi_static_lights=nullptr) = 0;
 }
@@ -3268,6 +3276,11 @@ RID RendererSceneCull::_render_get_environment(RID p_camera, RID p_scenario) {
 
 void RendererSceneCull::render_empty_scene(RID p_render_buffers, RID p_scenario, RID p_shadow_atlas) {
 #ifndef _3D_DISABLED
+	if(scene_render->rendering_listener.is_valid())
+	{
+		scene_render->rendering_listener->pre_render();
+		scene_render->rendering_listener->post_render_scene();
+	}
 	Scenario *scenario = scenario_owner.get_or_null(p_scenario);
 
 	RID environment;
@@ -3282,6 +3295,11 @@ void RendererSceneCull::render_empty_scene(RID p_render_buffers, RID p_scenario,
 	camera_data.set_camera(Transform3D(), CameraMatrix(), true, false);
 
 	scene_render->render_scene(p_render_buffers, &camera_data, PagedArray<RendererSceneRender::GeometryInstance *>(), PagedArray<RID>(), PagedArray<RID>(), PagedArray<RID>(), PagedArray<RID>(), PagedArray<RID>(), PagedArray<RID>(), RID(), RID(), p_shadow_atlas, RID(), scenario->reflection_atlas, RID(), 0, 0, nullptr, 0, nullptr, 0, nullptr);
+	if(scene_render->rendering_listener.is_valid())
+	{
+		scene_render->rendering_listener->post_render_scene();
+		scene_render->rendering_listener->post_render();
+	}
 #endif
 }
 

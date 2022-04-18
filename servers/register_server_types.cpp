@@ -242,6 +242,9 @@ void register_server_types() {
 	GDREGISTER_CLASS(PhysicsTestMotionParameters3D);
 	GDREGISTER_CLASS(PhysicsTestMotionResult3D);
 
+	
+	GDREGISTER_CLASS(RenderingListener);
+
 	ServersDebugger::initialize();
 
 	// Physics 2D
