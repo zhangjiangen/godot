@@ -32,6 +32,8 @@
 
 #include "core/config/project_settings.h"
 #include "servers/rendering/renderer_rd/renderer_scene_render_rd.h"
+#include "servers/rendering/renderer_rd/storage_rd/material_storage.h"
+#include "servers/rendering/renderer_rd/storage_rd/texture_storage.h"
 #include "servers/rendering/rendering_server_default.h"
 
 const Vector3i RendererSceneGIRD::SDFGI::Cascade::DIRTY_ALL = Vector3i(0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF);
@@ -41,6 +43,8 @@ const Vector3i RendererSceneGIRD::SDFGI::Cascade::DIRTY_ALL = Vector3i(0x7FFFFFF
 
 void RendererSceneGIRD::SDFGI::create(RendererSceneEnvironmentRD *p_env, const Vector3 &p_world_position, uint32_t p_requested_history_size, RendererSceneGIRD *p_gi) {
 	RendererRD::TextureStorage *texture_storage = RendererRD::TextureStorage::get_singleton();
+	RendererRD::MaterialStorage *material_storage = RendererRD::MaterialStorage::get_singleton();
+
 	storage = p_gi->storage;
 	gi = p_gi;
 	num_cascades = p_env->sdfgi_cascades;
@@ -398,7 +402,7 @@ void RendererSceneGIRD::SDFGI::create(RendererSceneEnvironmentRD *p_env, const V
 			RD::Uniform u;
 			u.binding = 2;
 			u.uniform_type = RD::UNIFORM_TYPE_SAMPLER;
-			u.append_id(storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
+			u.append_id(material_storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
 			uniforms.push_back(u);
 		}
 		{
@@ -680,7 +684,7 @@ void RendererSceneGIRD::SDFGI::create(RendererSceneEnvironmentRD *p_env, const V
 			RD::Uniform u;
 			u.uniform_type = RD::UNIFORM_TYPE_SAMPLER;
 			u.binding = 6;
-			u.append_id(storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
+			u.append_id(material_storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
 			uniforms.push_back(u);
 		}
 
@@ -962,7 +966,7 @@ void RendererSceneGIRD::SDFGI::update_probes(RendererSceneEnvironmentRD *p_env, 
 						RD::Uniform u;
 						u.uniform_type = RD::UNIFORM_TYPE_SAMPLER;
 						u.binding = 1;
-						u.append_id(storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
+						u.append_id(RendererRD::MaterialStorage::get_singleton()->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
 						uniforms.push_back(u);
 					}
 
@@ -1125,6 +1129,7 @@ void RendererSceneGIRD::SDFGI::update_cascades() {
 
 void RendererSceneGIRD::SDFGI::debug_draw(const CameraMatrix &p_projection, const Transform3D &p_transform, int p_width, int p_height, RID p_render_target, RID p_texture) {
 	RendererRD::TextureStorage *texture_storage = RendererRD::TextureStorage::get_singleton();
+	RendererRD::MaterialStorage *material_storage = RendererRD::MaterialStorage::get_singleton();
 
 	if (!debug_uniform_set.is_valid() || !RD::get_singleton()->uniform_set_is_valid(debug_uniform_set)) {
 		Vector<RD::Uniform> uniforms;
@@ -1199,7 +1204,7 @@ void RendererSceneGIRD::SDFGI::debug_draw(const CameraMatrix &p_projection, cons
 			RD::Uniform u;
 			u.binding = 8;
 			u.uniform_type = RD::UNIFORM_TYPE_SAMPLER;
-			u.append_id(storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
+			u.append_id(material_storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
 			uniforms.push_back(u);
 		}
 		{
@@ -1268,11 +1273,13 @@ void RendererSceneGIRD::SDFGI::debug_draw(const CameraMatrix &p_projection, cons
 	RD::get_singleton()->compute_list_dispatch_threads(compute_list, p_width, p_height, 1);
 	RD::get_singleton()->compute_list_end();
 
-	Size2 rtsize = storage->render_target_get_size(p_render_target);
-	storage->get_effects()->copy_to_fb_rect(p_texture, storage->render_target_get_rd_framebuffer(p_render_target), Rect2(Vector2(), rtsize), true);
+	Size2 rtsize = texture_storage->render_target_get_size(p_render_target);
+	storage->get_effects()->copy_to_fb_rect(p_texture, texture_storage->render_target_get_rd_framebuffer(p_render_target), Rect2(Vector2(), rtsize), true);
 }
 
 void RendererSceneGIRD::SDFGI::debug_probes(RD::DrawListID p_draw_list, RID p_framebuffer, const CameraMatrix &p_camera_with_transform) {
+	RendererRD::MaterialStorage *material_storage = RendererRD::MaterialStorage::get_singleton();
+
 	SDFGIShader::DebugProbesPushConstant push_constant;
 
 	for (int i = 0; i < 4; i++) {
@@ -1319,7 +1326,7 @@ void RendererSceneGIRD::SDFGI::debug_probes(RD::DrawListID p_draw_list, RID p_fr
 			RD::Uniform u;
 			u.binding = 3;
 			u.uniform_type = RD::UNIFORM_TYPE_SAMPLER;
-			u.append_id(storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
+			u.append_id(material_storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
 			uniforms.push_back(u);
 		}
 		{
@@ -1481,7 +1488,7 @@ void RendererSceneGIRD::SDFGI::pre_process_gi(const Transform3D &p_transform, Re
 			RendererSceneRenderRD::LightInstance *li = p_scene_render->light_instance_owner.get_or_null(p_scene_render->render_state.sdfgi_update_data->directional_lights->get(j));
 			ERR_CONTINUE(!li);
 
-			if (storage->light_directional_get_sky_mode(li->light) == RS::LIGHT_DIRECTIONAL_SKY_MODE_SKY_ONLY) {
+			if (RSG::light_storage->light_directional_get_sky_mode(li->light) == RS::LIGHT_DIRECTIONAL_SKY_MODE_SKY_ONLY) {
 				continue;
 			}
 
@@ -1491,14 +1498,14 @@ void RendererSceneGIRD::SDFGI::pre_process_gi(const Transform3D &p_transform, Re
 			lights[idx].direction[0] = dir.x;
 			lights[idx].direction[1] = dir.y;
 			lights[idx].direction[2] = dir.z;
-			Color color = storage->light_get_color(li->light);
+			Color color = RSG::light_storage->light_get_color(li->light);
 			color = color.srgb_to_linear();
 			lights[idx].color[0] = color.r;
 			lights[idx].color[1] = color.g;
 			lights[idx].color[2] = color.b;
 			lights[idx].type = RS::LIGHT_DIRECTIONAL;
-			lights[idx].energy = storage->light_get_param(li->light, RS::LIGHT_PARAM_ENERGY) * storage->light_get_param(li->light, RS::LIGHT_PARAM_INDIRECT_ENERGY);
-			lights[idx].has_shadow = storage->light_has_shadow(li->light);
+			lights[idx].energy = RSG::light_storage->light_get_param(li->light, RS::LIGHT_PARAM_ENERGY) * RSG::light_storage->light_get_param(li->light, RS::LIGHT_PARAM_INDIRECT_ENERGY);
+			lights[idx].has_shadow = RSG::light_storage->light_has_shadow(li->light);
 
 			idx++;
 		}
@@ -1515,7 +1522,7 @@ void RendererSceneGIRD::SDFGI::pre_process_gi(const Transform3D &p_transform, Re
 			RendererSceneRenderRD::LightInstance *li = p_scene_render->light_instance_owner.get_or_null(p_scene_render->render_state.sdfgi_update_data->positional_light_instances[j]);
 			ERR_CONTINUE(!li);
 
-			uint32_t max_sdfgi_cascade = storage->light_get_max_sdfgi_cascade(li->light);
+			uint32_t max_sdfgi_cascade = RSG::light_storage->light_get_max_sdfgi_cascade(li->light);
 			if (i > max_sdfgi_cascade) {
 				continue;
 			}
@@ -1536,18 +1543,18 @@ void RendererSceneGIRD::SDFGI::pre_process_gi(const Transform3D &p_transform, Re
 			lights[idx].position[0] = pos.x;
 			lights[idx].position[1] = pos.y;
 			lights[idx].position[2] = pos.z;
-			Color color = storage->light_get_color(li->light);
+			Color color = RSG::light_storage->light_get_color(li->light);
 			color = color.srgb_to_linear();
 			lights[idx].color[0] = color.r;
 			lights[idx].color[1] = color.g;
 			lights[idx].color[2] = color.b;
-			lights[idx].type = storage->light_get_type(li->light);
-			lights[idx].energy = storage->light_get_param(li->light, RS::LIGHT_PARAM_ENERGY) * storage->light_get_param(li->light, RS::LIGHT_PARAM_INDIRECT_ENERGY);
-			lights[idx].has_shadow = storage->light_has_shadow(li->light);
-			lights[idx].attenuation = storage->light_get_param(li->light, RS::LIGHT_PARAM_ATTENUATION);
-			lights[idx].radius = storage->light_get_param(li->light, RS::LIGHT_PARAM_RANGE);
-			lights[idx].cos_spot_angle = Math::cos(Math::deg2rad(storage->light_get_param(li->light, RS::LIGHT_PARAM_SPOT_ANGLE)));
-			lights[idx].inv_spot_attenuation = 1.0f / storage->light_get_param(li->light, RS::LIGHT_PARAM_SPOT_ATTENUATION);
+			lights[idx].type = RSG::light_storage->light_get_type(li->light);
+			lights[idx].energy = RSG::light_storage->light_get_param(li->light, RS::LIGHT_PARAM_ENERGY) * RSG::light_storage->light_get_param(li->light, RS::LIGHT_PARAM_INDIRECT_ENERGY);
+			lights[idx].has_shadow = RSG::light_storage->light_has_shadow(li->light);
+			lights[idx].attenuation = RSG::light_storage->light_get_param(li->light, RS::LIGHT_PARAM_ATTENUATION);
+			lights[idx].radius = RSG::light_storage->light_get_param(li->light, RS::LIGHT_PARAM_RANGE);
+			lights[idx].cos_spot_angle = Math::cos(Math::deg2rad(RSG::light_storage->light_get_param(li->light, RS::LIGHT_PARAM_SPOT_ANGLE)));
+			lights[idx].inv_spot_attenuation = 1.0f / RSG::light_storage->light_get_param(li->light, RS::LIGHT_PARAM_SPOT_ATTENUATION);
 
 			idx++;
 		}
@@ -1952,7 +1959,7 @@ void RendererSceneGIRD::SDFGI::render_static_lights(RID p_render_buffers, uint32
 				RendererSceneRenderRD::LightInstance *li = p_scene_render->light_instance_owner.get_or_null(p_positional_light_cull_result[i][j]);
 				ERR_CONTINUE(!li);
 
-				uint32_t max_sdfgi_cascade = storage->light_get_max_sdfgi_cascade(li->light);
+				uint32_t max_sdfgi_cascade = RSG::light_storage->light_get_max_sdfgi_cascade(li->light);
 				if (p_cascade_indices[i] > max_sdfgi_cascade) {
 					continue;
 				}
@@ -1961,7 +1968,7 @@ void RendererSceneGIRD::SDFGI::render_static_lights(RID p_render_buffers, uint32
 					continue;
 				}
 
-				lights[idx].type = storage->light_get_type(li->light);
+				lights[idx].type = RSG::light_storage->light_get_type(li->light);
 
 				Vector3 dir = -li->transform.basis.get_axis(Vector3::AXIS_Z);
 				if (lights[idx].type == RS::LIGHT_DIRECTIONAL) {
@@ -1976,17 +1983,17 @@ void RendererSceneGIRD::SDFGI::render_static_lights(RID p_render_buffers, uint32
 				lights[idx].position[0] = pos.x;
 				lights[idx].position[1] = pos.y;
 				lights[idx].position[2] = pos.z;
-				Color color = storage->light_get_color(li->light);
+				Color color = RSG::light_storage->light_get_color(li->light);
 				color = color.srgb_to_linear();
 				lights[idx].color[0] = color.r;
 				lights[idx].color[1] = color.g;
 				lights[idx].color[2] = color.b;
-				lights[idx].energy = storage->light_get_param(li->light, RS::LIGHT_PARAM_ENERGY) * storage->light_get_param(li->light, RS::LIGHT_PARAM_INDIRECT_ENERGY);
-				lights[idx].has_shadow = storage->light_has_shadow(li->light);
-				lights[idx].attenuation = storage->light_get_param(li->light, RS::LIGHT_PARAM_ATTENUATION);
-				lights[idx].radius = storage->light_get_param(li->light, RS::LIGHT_PARAM_RANGE);
-				lights[idx].cos_spot_angle = Math::cos(Math::deg2rad(storage->light_get_param(li->light, RS::LIGHT_PARAM_SPOT_ANGLE)));
-				lights[idx].inv_spot_attenuation = 1.0f / storage->light_get_param(li->light, RS::LIGHT_PARAM_SPOT_ATTENUATION);
+				lights[idx].energy = RSG::light_storage->light_get_param(li->light, RS::LIGHT_PARAM_ENERGY) * RSG::light_storage->light_get_param(li->light, RS::LIGHT_PARAM_INDIRECT_ENERGY);
+				lights[idx].has_shadow = RSG::light_storage->light_has_shadow(li->light);
+				lights[idx].attenuation = RSG::light_storage->light_get_param(li->light, RS::LIGHT_PARAM_ATTENUATION);
+				lights[idx].radius = RSG::light_storage->light_get_param(li->light, RS::LIGHT_PARAM_RANGE);
+				lights[idx].cos_spot_angle = Math::cos(Math::deg2rad(RSG::light_storage->light_get_param(li->light, RS::LIGHT_PARAM_SPOT_ANGLE)));
+				lights[idx].inv_spot_attenuation = 1.0f / RSG::light_storage->light_get_param(li->light, RS::LIGHT_PARAM_SPOT_ATTENUATION);
 
 				idx++;
 			}
@@ -2043,6 +2050,8 @@ void RendererSceneGIRD::SDFGI::render_static_lights(RID p_render_buffers, uint32
 // VoxelGIInstance
 
 void RendererSceneGIRD::VoxelGIInstance::update(bool p_update_light_instances, const Vector<RID> &p_light_instances, const PagedArray<RendererSceneRender::GeometryInstance *> &p_dynamic_objects, RendererSceneRenderRD *p_scene_render) {
+	RendererRD::MaterialStorage *material_storage = RendererRD::MaterialStorage::get_singleton();
+
 	uint32_t data_version = storage->voxel_gi_get_data_version(probe);
 
 	// (RE)CREATE IF NEEDED
@@ -2135,7 +2144,7 @@ void RendererSceneGIRD::VoxelGIInstance::update(bool p_update_light_instances, c
 					RD::Uniform u;
 					u.uniform_type = RD::UNIFORM_TYPE_SAMPLER;
 					u.binding = 10;
-					u.append_id(storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
+					u.append_id(material_storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
 					uniforms.push_back(u);
 				}
 
@@ -2289,7 +2298,7 @@ void RendererSceneGIRD::VoxelGIInstance::update(bool p_update_light_instances, c
 								RD::Uniform u;
 								u.uniform_type = RD::UNIFORM_TYPE_SAMPLER;
 								u.binding = 10;
-								u.append_id(storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
+								u.append_id(material_storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
 								uniforms.push_back(u);
 							}
 							{
@@ -2358,7 +2367,7 @@ void RendererSceneGIRD::VoxelGIInstance::update(bool p_update_light_instances, c
 							RD::Uniform u;
 							u.uniform_type = RD::UNIFORM_TYPE_SAMPLER;
 							u.binding = 10;
-							u.append_id(storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
+							u.append_id(material_storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
 							uniforms.push_back(u);
 						}
 
@@ -2411,22 +2420,22 @@ void RendererSceneGIRD::VoxelGIInstance::update(bool p_update_light_instances, c
 				RID light_instance = p_light_instances[i];
 				RID light = p_scene_render->light_instance_get_base_light(light_instance);
 
-				l.type = storage->light_get_type(light);
-				if (l.type == RS::LIGHT_DIRECTIONAL && storage->light_directional_get_sky_mode(light) == RS::LIGHT_DIRECTIONAL_SKY_MODE_SKY_ONLY) {
+				l.type = RSG::light_storage->light_get_type(light);
+				if (l.type == RS::LIGHT_DIRECTIONAL && RSG::light_storage->light_directional_get_sky_mode(light) == RS::LIGHT_DIRECTIONAL_SKY_MODE_SKY_ONLY) {
 					light_count--;
 					continue;
 				}
 
-				l.attenuation = storage->light_get_param(light, RS::LIGHT_PARAM_ATTENUATION);
-				l.energy = storage->light_get_param(light, RS::LIGHT_PARAM_ENERGY) * storage->light_get_param(light, RS::LIGHT_PARAM_INDIRECT_ENERGY);
-				l.radius = to_cell.basis.xform(Vector3(storage->light_get_param(light, RS::LIGHT_PARAM_RANGE), 0, 0)).length();
-				Color color = storage->light_get_color(light).srgb_to_linear();
+				l.attenuation = RSG::light_storage->light_get_param(light, RS::LIGHT_PARAM_ATTENUATION);
+				l.energy = RSG::light_storage->light_get_param(light, RS::LIGHT_PARAM_ENERGY) * RSG::light_storage->light_get_param(light, RS::LIGHT_PARAM_INDIRECT_ENERGY);
+				l.radius = to_cell.basis.xform(Vector3(RSG::light_storage->light_get_param(light, RS::LIGHT_PARAM_RANGE), 0, 0)).length();
+				Color color = RSG::light_storage->light_get_color(light).srgb_to_linear();
 				l.color[0] = color.r;
 				l.color[1] = color.g;
 				l.color[2] = color.b;
 
-				l.cos_spot_angle = Math::cos(Math::deg2rad(storage->light_get_param(light, RS::LIGHT_PARAM_SPOT_ANGLE)));
-				l.inv_spot_attenuation = 1.0f / storage->light_get_param(light, RS::LIGHT_PARAM_SPOT_ATTENUATION);
+				l.cos_spot_angle = Math::cos(Math::deg2rad(RSG::light_storage->light_get_param(light, RS::LIGHT_PARAM_SPOT_ANGLE)));
+				l.inv_spot_attenuation = 1.0f / RSG::light_storage->light_get_param(light, RS::LIGHT_PARAM_SPOT_ATTENUATION);
 
 				Transform3D xform = p_scene_render->light_instance_get_base_transform(light_instance);
 
@@ -2441,7 +2450,7 @@ void RendererSceneGIRD::VoxelGIInstance::update(bool p_update_light_instances, c
 				l.direction[1] = dir.y;
 				l.direction[2] = dir.z;
 
-				l.has_shadow = storage->light_has_shadow(light);
+				l.has_shadow = RSG::light_storage->light_has_shadow(light);
 			}
 
 			RD::get_singleton()->buffer_update(gi->voxel_gi_lights_uniform, 0, sizeof(VoxelGILight) * light_count, gi->voxel_gi_lights);
@@ -2746,6 +2755,8 @@ void RendererSceneGIRD::VoxelGIInstance::update(bool p_update_light_instances, c
 }
 
 void RendererSceneGIRD::VoxelGIInstance::debug(RD::DrawListID p_draw_list, RID p_framebuffer, const CameraMatrix &p_camera_with_transform, bool p_lighting, bool p_emission, float p_alpha) {
+	RendererRD::MaterialStorage *material_storage = RendererRD::MaterialStorage::get_singleton();
+
 	if (mipmaps.size() == 0) {
 		return;
 	}
@@ -2794,7 +2805,7 @@ void RendererSceneGIRD::VoxelGIInstance::debug(RD::DrawListID p_draw_list, RID p
 		RD::Uniform u;
 		u.uniform_type = RD::UNIFORM_TYPE_SAMPLER;
 		u.binding = 3;
-		u.append_id(storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_NEAREST, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
+		u.append_id(material_storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_NEAREST, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
 		uniforms.push_back(u);
 	}
 
@@ -2835,6 +2846,7 @@ RendererSceneGIRD::~RendererSceneGIRD() {
 
 void RendererSceneGIRD::init(RendererStorageRD *p_storage, RendererSceneSkyRD *p_sky) {
 	RendererRD::TextureStorage *texture_storage = RendererRD::TextureStorage::get_singleton();
+	RendererRD::MaterialStorage *material_storage = RendererRD::MaterialStorage::get_singleton();
 
 	storage = p_storage;
 
@@ -2971,7 +2983,7 @@ void RendererSceneGIRD::init(RendererStorageRD *p_storage, RendererSceneSkyRD *p
 				RD::Uniform u;
 				u.uniform_type = RD::UNIFORM_TYPE_SAMPLER;
 				u.binding = 1;
-				u.append_id(storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
+				u.append_id(material_storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
 				uniforms.push_back(u);
 			}
 
@@ -3164,6 +3176,7 @@ void RendererSceneGIRD::setup_voxel_gi_instances(RID p_render_buffers, const Tra
 
 void RendererSceneGIRD::process_gi(RID p_render_buffers, RID p_normal_roughness_buffer, RID p_voxel_gi_buffer, RID p_environment, const CameraMatrix &p_projection, const Transform3D &p_transform, const PagedArray<RID> &p_voxel_gi_instances, RendererSceneRenderRD *p_scene_render) {
 	RendererRD::TextureStorage *texture_storage = RendererRD::TextureStorage::get_singleton();
+	RendererRD::MaterialStorage *material_storage = RendererRD::MaterialStorage::get_singleton();
 
 	RD::get_singleton()->draw_command_begin_label("GI Render");
 
@@ -3289,14 +3302,14 @@ void RendererSceneGIRD::process_gi(RID p_render_buffers, RID p_normal_roughness_
 			RD::Uniform u;
 			u.uniform_type = RD::UNIFORM_TYPE_SAMPLER;
 			u.binding = 6;
-			u.append_id(storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
+			u.append_id(material_storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
 			uniforms.push_back(u);
 		}
 		{
 			RD::Uniform u;
 			u.uniform_type = RD::UNIFORM_TYPE_SAMPLER;
 			u.binding = 7;
-			u.append_id(storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
+			u.append_id(material_storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
 			uniforms.push_back(u);
 		}
 
