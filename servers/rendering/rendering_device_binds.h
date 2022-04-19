@@ -436,12 +436,16 @@ class RDUniform : public RefCounted {
 	GDCLASS(RDUniform, RefCounted)
 	friend class RenderingDevice;
 	RD::Uniform base;
+	String name;
 
 public:
 	RD_SETGET(RD::UniformType, uniform_type)
 	RD_SETGET(int32_t, binding)
+	void set_name(const String &p_name) { name = p_name; }
+	String get_name() const { return name; }
 
 	void add_id(const RID &p_id) { base.append_id(p_id); }
+
 	void clear_ids() { base.clear_ids(); }
 	Array get_ids() const {
 		Array ids;
@@ -463,6 +467,7 @@ protected:
 	static void _bind_methods() {
 		RD_BIND(Variant::INT, RDUniform, uniform_type);
 		RD_BIND(Variant::INT, RDUniform, binding);
+		RD_BIND(Variant::STRING, RDUniform, name);
 		ClassDB::bind_method(D_METHOD("add_id", "id"), &RDUniform::add_id);
 		ClassDB::bind_method(D_METHOD("clear_ids"), &RDUniform::clear_ids);
 		ClassDB::bind_method(D_METHOD("_set_ids", "ids"), &RDUniform::_set_ids);

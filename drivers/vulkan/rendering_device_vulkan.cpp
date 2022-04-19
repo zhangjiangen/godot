@@ -4227,6 +4227,9 @@ RID RenderingDeviceVulkan::sampler_create(const SamplerState &p_state) {
 
 	return sampler_owner.make_rid(sampler);
 }
+bool RenderingDeviceVulkan::sampler_is_valid(RID p_id) {
+	return sampler_owner.get_or_null(p_id) != nullptr;
+}
 
 /**********************/
 /**** VERTEX ARRAY ****/
@@ -5611,6 +5614,12 @@ RID RenderingDeviceVulkan::texture_buffer_create(uint32_t p_size_elements, DataF
 	return texture_buffer_owner.make_rid(texture_buffer);
 }
 
+bool RenderingDeviceVulkan::uniform_buffer_is_valid(RID p_id) {
+	return texture_buffer_owner.get_or_null(p_id) == nullptr;
+}
+bool RenderingDeviceVulkan::storage_buffer_is_valid(RID p_id) {
+	return storage_buffer_owner.get_or_null(p_id) == nullptr;
+}
 RenderingDeviceVulkan::DescriptorPool *RenderingDeviceVulkan::_descriptor_pool_allocate(const DescriptorPoolKey &p_key) {
 	if (!descriptor_pools.has(p_key)) {
 		descriptor_pools[p_key] = Set<DescriptorPool *>();

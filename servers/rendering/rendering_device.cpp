@@ -41,6 +41,7 @@ void MultMeshUserDataBase::PreRender(const Transform3D *p_transform, const Camer
 }
 void MultMeshUserDataBase::EndRender() {
 }
+
 /****************************************************************************/
 RenderingDevice *RenderingDevice::singleton = nullptr;
 
@@ -378,6 +379,119 @@ void RenderingDevice::_compute_list_set_push_constant(ComputeListID p_list, cons
 	compute_list_set_push_constant(p_list, p_data.ptr(), p_data_size);
 }
 
+bool RenderingDevice::is_rid_type_valid(const RID &p_id, UniformType type) {
+	if (p_id.is_null())
+		return false;
+	switch (type) {
+		case UNIFORM_TYPE_SAMPLER:
+			return sampler_is_valid(p_id);
+		case UNIFORM_TYPE_SAMPLER_WITH_TEXTURE:
+			return texture_is_valid(p_id) || sampler_is_valid(p_id);
+		case UNIFORM_TYPE_TEXTURE:
+			return texture_is_valid(p_id);
+		case UNIFORM_TYPE_IMAGE:
+			return texture_is_valid(p_id);
+		case UNIFORM_TYPE_TEXTURE_BUFFER:
+			return texture_is_valid(p_id);
+		case UNIFORM_TYPE_SAMPLER_WITH_TEXTURE_BUFFER:
+			return texture_is_valid(p_id) || sampler_is_valid(p_id);
+		case UNIFORM_TYPE_IMAGE_BUFFER:
+			return texture_is_valid(p_id);
+		case UNIFORM_TYPE_UNIFORM_BUFFER:
+			return uniform_buffer_is_valid(p_id);
+		case UNIFORM_TYPE_STORAGE_BUFFER:
+			return storage_buffer_is_valid(p_id);
+		case UNIFORM_TYPE_INPUT_ATTACHMENT:
+			return texture_is_valid(p_id);
+		default:
+			return false;
+	}
+	return false;
+}
+bool RenderingDevice::is_rid_valid(const RID &p_id, UniformType type, int index) {
+	if (p_id.is_null())
+		return false;
+	switch (type) {
+		case UNIFORM_TYPE_SAMPLER:
+			return sampler_is_valid(p_id);
+		case UNIFORM_TYPE_SAMPLER_WITH_TEXTURE:
+			if (index == 0) {
+				return sampler_is_valid(p_id);
+			} else if (index == 1) {
+				return texture_is_valid(p_id);
+			} else
+				return false;
+
+		case UNIFORM_TYPE_TEXTURE:
+			return texture_is_valid(p_id);
+		case UNIFORM_TYPE_IMAGE:
+			return texture_is_valid(p_id);
+		case UNIFORM_TYPE_TEXTURE_BUFFER:
+			return texture_is_valid(p_id);
+		case UNIFORM_TYPE_SAMPLER_WITH_TEXTURE_BUFFER:
+			if (index == 0) {
+				return sampler_is_valid(p_id);
+			} else if (index == 1) {
+				return texture_is_valid(p_id);
+			} else
+				return false;
+		case UNIFORM_TYPE_IMAGE_BUFFER:
+			return texture_is_valid(p_id);
+		case UNIFORM_TYPE_UNIFORM_BUFFER:
+			return uniform_buffer_is_valid(p_id);
+		case UNIFORM_TYPE_STORAGE_BUFFER:
+			return storage_buffer_is_valid(p_id);
+		case UNIFORM_TYPE_INPUT_ATTACHMENT:
+			return texture_is_valid(p_id);
+
+		default:
+			break;
+	}
+    return false;
+}
+Array RenderingDevice::shader_uniform_set_get(RID p_shader) {
+	Array set_array;
+	Vector<Vector<UniformInfo>> out_uniform_set_info;
+	uniform_info_set_get(p_shader, out_uniform_set_info);
+	for (int i = 0; i < out_uniform_set_info.size(); i++) {
+		Array set_array_set;
+		for (int j = 0; j < out_uniform_set_info[i].size(); j++) {
+			Dictionary set_array_set_item;
+			set_array_set_item["type"] = out_uniform_set_info[i][j].type;
+			set_array_set_item["binding"] = out_uniform_set_info[i][j].binding;
+			set_array_set_item["stages"] = out_uniform_set_info[i][j].stages;
+			set_array_set_item["length"] = out_uniform_set_info[i][j].length;
+			set_array_set_item["name"] = out_uniform_set_info[i][j].name;
+			set_array_set.push_back(set_array_set_item);
+		}
+		set_array.push_back(set_array_set);
+	}
+	return set_array;
+}
+void info_2_uniform(const RenderingDevice::UniformInfo &source, Ref<RDUniform> &info) {
+	info.instantiate();
+	info->set_uniform_type(source.type);
+	info->set_binding(source.binding);
+}
+Array RenderingDevice::uniform_set_build(RID p_shader) {
+	if (!p_shader.is_valid())
+		return Array();
+	Array uniforms;
+	Vector<Vector<UniformInfo>> out_uniform_set_info;
+	uniform_info_set_get(p_shader, out_uniform_set_info);
+	uniforms.resize(out_uniform_set_info.size());
+	for (int i = 0; i < out_uniform_set_info.size(); i++) {
+		Array set_array_set;
+		set_array_set.resize(out_uniform_set_info[i].size());
+		for (int j = 0; j < out_uniform_set_info[i].size(); j++) {
+			Ref<RDUniform> info;
+			info_2_uniform(out_uniform_set_info[i][j], info);
+			set_array_set[j] = info;
+		}
+		uniforms[i] = set_array_set;
+	}
+	return uniforms;
+}
 void RenderingDevice::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("texture_create", "format", "view", "data"), &RenderingDevice::_texture_create, DEFVAL(Array()));
 	ClassDB::bind_method(D_METHOD("texture_create_shared", "view", "with_texture"), &RenderingDevice::_texture_create_shared);
@@ -421,9 +535,12 @@ void RenderingDevice::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("uniform_buffer_create", "size_bytes", "data"), &RenderingDevice::uniform_buffer_create, DEFVAL(Vector<uint8_t>()));
 	ClassDB::bind_method(D_METHOD("storage_buffer_create", "size_bytes", "data", "usage"), &RenderingDevice::storage_buffer_create, DEFVAL(Vector<uint8_t>()), DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("texture_buffer_create", "size_bytes", "format", "data"), &RenderingDevice::texture_buffer_create, DEFVAL(Vector<uint8_t>()));
+	ClassDB::bind_method(D_METHOD("is_rid_type_valid", "type"), &RenderingDevice::is_rid_type_valid);
+	ClassDB::bind_method(D_METHOD("is_rid_valid", "rid"), &RenderingDevice::is_rid_valid);
 
 	ClassDB::bind_method(D_METHOD("uniform_set_create", "uniforms", "shader", "shader_set"), &RenderingDevice::_uniform_set_create);
 	ClassDB::bind_method(D_METHOD("shader_uniform_set_get", "shader_set"), &RenderingDevice::shader_uniform_set_get);
+	ClassDB::bind_method(D_METHOD("uniform_set_build", "shader_set"), &RenderingDevice::uniform_set_build);
 	ClassDB::bind_method(D_METHOD("uniform_set_is_valid", "uniform_set"), &RenderingDevice::uniform_set_is_valid);
 
 	ClassDB::bind_method(D_METHOD("buffer_update", "buffer", "offset", "size_bytes", "data", "post_barrier"), &RenderingDevice::_buffer_update, DEFVAL(BARRIER_MASK_ALL));

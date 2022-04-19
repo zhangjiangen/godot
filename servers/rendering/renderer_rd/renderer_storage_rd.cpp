@@ -246,7 +246,7 @@ void RendererStorageRD::voxel_gi_allocate_data(RID p_voxel_gi, const Transform3D
 			{
 				RD::TextureView tv;
 				tv.format_override = RD::DATA_FORMAT_R8_UINT;
-				shared_tex = RD::get_singleton()->texture_create_shared(tv, voxel_gi->sdf_texture);
+				shared_tex = RD::get_singleton()->texture_create_shared(tv, voxel_gi->sdf_texture,true);
 			}
 			//update SDF texture
 			Vector<RD::Uniform> uniforms;

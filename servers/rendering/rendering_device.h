@@ -666,6 +666,7 @@ public:
 	};
 
 	virtual RID sampler_create(const SamplerState &p_state) = 0;
+	virtual bool sampler_is_valid(RID p_id) = 0;
 
 	/**********************/
 	/**** VERTEX ARRAY ****/
@@ -797,6 +798,8 @@ public:
 	virtual RID storage_buffer_create(uint32_t p_size, const Vector<uint8_t> &p_data = Vector<uint8_t>(), uint32_t p_usage = 0) = 0;
 	virtual RID texture_buffer_create(uint32_t p_size_elements, DataFormat p_format, const Vector<uint8_t> &p_data = Vector<uint8_t>()) = 0;
 
+	virtual bool uniform_buffer_is_valid(RID p_id) = 0;
+	virtual bool storage_buffer_is_valid(RID p_id) = 0;
 	struct Uniform {
 		UniformType uniform_type;
 		int binding; // Binding index as specified in shader.
@@ -887,26 +890,13 @@ public:
 	};
 	virtual String _shader_uniform_debug(RID p_shader, int p_set = -1) = 0;
 	virtual void uniform_info_set_get(RID p_shader, Vector<Vector<UniformInfo>> &p_out_uniform_set_info) = 0;
-	Array shader_uniform_set_get(RID p_shader) {
-		Array set_array;
-		Vector<Vector<UniformInfo>> out_uniform_set_info;
-		uniform_info_set_get(p_shader, out_uniform_set_info);
-		for (int i = 0; i < out_uniform_set_info.size(); i++) {
-			Array set_array_set;
-			for (int j = 0; j < out_uniform_set_info[i].size(); j++) {
-				Dictionary set_array_set_item;
-				set_array_set_item["type"] = out_uniform_set_info[i][j].type;
-				set_array_set_item["binding"] = out_uniform_set_info[i][j].binding;
-				set_array_set_item["stages"] = out_uniform_set_info[i][j].stages;
-				set_array_set_item["length"] = out_uniform_set_info[i][j].length;
-				set_array_set_item["name"] = out_uniform_set_info[i][j].name;
-				set_array_set.push_back(set_array_set_item);
-			}
-			set_array.push_back(set_array_set);
-		}
-		return set_array;
-	}
+	Array shader_uniform_set_get(RID p_shader);
+
 	virtual RID uniform_set_create(const Vector<Uniform> &p_uniforms, RID p_shader, uint32_t p_shader_set) = 0;
+	Array uniform_set_build(RID p_shader);
+
+	bool is_rid_type_valid(const RID &p_id, UniformType type);
+	bool is_rid_valid(const RID &p_id, UniformType type, int index);
 	virtual bool uniform_set_is_valid(RID p_uniform_set) = 0;
 	typedef void (*UniformSetInvalidatedCallback)(void *);
 	virtual void uniform_set_set_invalidation_callback(RID p_uniform_set, UniformSetInvalidatedCallback p_callback, void *p_userdata) = 0;
