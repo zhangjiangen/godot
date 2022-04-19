@@ -41,7 +41,26 @@
 #include "servers/display_server.h"
 #include "servers/rendering/renderer_thread_pool.h"
 #include "servers/rendering/rendering_device.h"
+class RenderingListener : public RefCounted {
+	GDCLASS(RenderingListener, RefCounted)
+protected:
+	static void _bind_methods();
 
+protected:
+	GDVIRTUAL0(_pre_render)
+	GDVIRTUAL0(_pre_render_scene)
+	GDVIRTUAL0(_post_render_scene)
+	GDVIRTUAL0(_pre_post_process)
+	GDVIRTUAL0(_post_render_process)
+	GDVIRTUAL0(_post_render)
+public:
+	virtual void pre_render() { GDVIRTUAL_CALL(_pre_render); }
+	virtual void pre_render_scene() { GDVIRTUAL_CALL(_pre_render_scene); }
+	virtual void post_render_scene() { GDVIRTUAL_CALL(_post_render_scene); }
+	virtual void pre_post_process() { GDVIRTUAL_CALL(_pre_post_process); }
+	virtual void post_render_process() { GDVIRTUAL_CALL(_post_render_process); }
+	virtual void post_render() { GDVIRTUAL_CALL(_post_render); }
+};
 class RenderingServer : public Object {
 	GDCLASS(RenderingServer, Object);
 
@@ -68,6 +87,9 @@ protected:
 
 	static RenderingServer *(*create_func)();
 	static void _bind_methods();
+
+public:
+	Ref<RenderingListener> rendering_listener;
 
 public:
 	static RenderingServer *get_singleton();
@@ -100,10 +122,7 @@ public:
 		CUBEMAP_LAYER_FRONT,
 		CUBEMAP_LAYER_BACK
 	};
-	void set_rendering_listener(Ref<RenderingListener> p_listener)
-	{
-		RSG::rasterizer->get_scene()->rendering_listener = p_listener;
-	}
+	void set_rendering_listener(const Ref<RenderingListener> &p_listener);
 
 	virtual RID texture_2d_create(const Ref<Image> &p_image) = 0;
 	virtual RID texture_2d_layered_create(const Vector<Ref<Image>> &p_layers, TextureLayeredType p_layered_type) = 0;

@@ -40,6 +40,9 @@ void RenderCallback::_bind_methods() {
 RenderingServer *RenderingServer::singleton = nullptr;
 RenderingServer *(*RenderingServer::create_func)() = nullptr;
 
+void RenderingServer::set_rendering_listener(const Ref<RenderingListener> &p_listener) {
+	rendering_listener = p_listener;
+}
 RenderingServer *RenderingServer::get_singleton() {
 	return singleton;
 }

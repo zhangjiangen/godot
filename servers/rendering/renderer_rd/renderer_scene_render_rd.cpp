@@ -2364,8 +2364,8 @@ void RendererSceneRenderRD::_render_buffers_post_process_and_tonemap(const Rende
 	RendererRD::TextureStorage *texture_storage = RendererRD::TextureStorage::get_singleton();
 	RenderBuffers *rb = render_buffers_owner.get_or_null(p_render_data->render_buffers);
 	ERR_FAIL_COND(!rb);
-	if(rendering_listener.is_valid()) {
-		rendering_listener->pre_post_process();
+	if(RS::get_singleton()->rendering_listener.is_valid()) {
+        RS::get_singleton()->rendering_listener->pre_post_process();
 	}
 	RendererSceneEnvironmentRD *env = environment_owner.get_or_null(p_render_data->environment);
 	// Glow and override exposure (if enabled).
@@ -2574,8 +2574,8 @@ void RendererSceneRenderRD::_render_buffers_post_process_and_tonemap(const Rende
 
 	storage->render_target_disable_clear_request(rb->render_target);
 	
-	if(rendering_listener.is_valid()) {
-		rendering_listener->post_render_process();
+	if(RS::get_singleton()->rendering_listener.is_valid()) {
+        RS::get_singleton()->rendering_listener->post_render_process();
 	}
 }
 

@@ -114,7 +114,7 @@ public:
 		SHADER_STAGE_COMPUTE_BIT = (1 << SHADER_STAGE_COMPUTE),
 		SHADER_STAGE_TASK_BIT = (1 << SHADER_STAGE_TASK),
 		SHADER_STAGE_MESH_BIT = (1 << SHADER_STAGE_MESH),
-		
+
 	};
 
 	enum ShaderLanguage {
@@ -527,13 +527,13 @@ public:
 		return false;
 	}
 	virtual bool get_tessellation_shader_is_supported() {
-		if(get_device_capabilities() != nullptr && get_device_capabilities()->is_supper_tess_control()) {
+		if (get_device_capabilities() != nullptr && get_device_capabilities()->is_supper_tess_control()) {
 			return true;
 		}
 		return false;
 	}
 	virtual bool get_mesh_shader_is_supported() {
-		if(get_device_capabilities() != nullptr && get_device_capabilities()->is_supper_mesh()) {
+		if (get_device_capabilities() != nullptr && get_device_capabilities()->is_supper_mesh()) {
 			return true;
 		}
 		return false;
@@ -887,19 +887,19 @@ public:
 	};
 	virtual String _shader_uniform_debug(RID p_shader, int p_set = -1) = 0;
 	virtual void uniform_info_set_get(RID p_shader, Vector<Vector<UniformInfo>> &p_out_uniform_set_info) = 0;
-	Array shader_uniform_set_get(RID p_shader)
-	{
+	Array shader_uniform_set_get(RID p_shader) {
 		Array set_array;
 		Vector<Vector<UniformInfo>> out_uniform_set_info;
 		uniform_info_set_get(p_shader, out_uniform_set_info);
-		for(int i = 0; i < out_uniform_set_info.size(); i++) {
+		for (int i = 0; i < out_uniform_set_info.size(); i++) {
 			Array set_array_set;
-			for(int j = 0; j < out_uniform_set_info[i].size(); j++) {
+			for (int j = 0; j < out_uniform_set_info[i].size(); j++) {
 				Dictionary set_array_set_item;
 				set_array_set_item["type"] = out_uniform_set_info[i][j].type;
 				set_array_set_item["binding"] = out_uniform_set_info[i][j].binding;
 				set_array_set_item["stages"] = out_uniform_set_info[i][j].stages;
 				set_array_set_item["length"] = out_uniform_set_info[i][j].length;
+				set_array_set_item["name"] = out_uniform_set_info[i][j].name;
 				set_array_set.push_back(set_array_set_item);
 			}
 			set_array.push_back(set_array_set);
