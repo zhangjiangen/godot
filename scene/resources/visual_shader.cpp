@@ -74,8 +74,8 @@ void VisualShaderNode::set_input_port_default_value(int p_port, const Variant &p
 						Vector3 pv = p_prev_value;
 						value = pv.x;
 					} break;
-					case Variant::VECTOR4: {
-						Vector4 pv = p_prev_value;
+					case Variant::QUATERNION: {
+						Quaternion pv = p_prev_value;
 						value = pv.x;
 					} break;
 					default:
@@ -98,8 +98,8 @@ void VisualShaderNode::set_input_port_default_value(int p_port, const Variant &p
 						Vector3 pv = p_prev_value;
 						value = (int)pv.x;
 					} break;
-					case Variant::VECTOR4: {
-						Vector4 pv = p_prev_value;
+					case Variant::QUATERNION: {
+						Quaternion pv = p_prev_value;
 						value = (int)pv.x;
 					} break;
 					default:
@@ -123,8 +123,8 @@ void VisualShaderNode::set_input_port_default_value(int p_port, const Variant &p
 						Vector3 pv = p_prev_value;
 						value = Vector2(pv.x, pv.y);
 					} break;
-					case Variant::VECTOR4: {
-						Vector4 pv = p_prev_value;
+					case Variant::QUATERNION: {
+						Quaternion pv = p_prev_value;
 						value = Vector2(pv.x, pv.y);
 					} break;
 					default:
@@ -148,33 +148,33 @@ void VisualShaderNode::set_input_port_default_value(int p_port, const Variant &p
 					case Variant::VECTOR3: {
 						value = p_prev_value;
 					} break;
-					case Variant::VECTOR4: {
-						Vector4 pv = p_prev_value;
+					case Variant::QUATERNION: {
+						Quaternion pv = p_prev_value;
 						value = Vector3(pv.x, pv.y, pv.z);
 					} break;
 					default:
 						break;
 				}
 			} break;
-			case Variant::VECTOR4: {
+			case Variant::QUATERNION: {
 				switch (p_prev_value.get_type()) {
 					case Variant::INT: {
 						float pv = (float)(int)p_prev_value;
-						value = Vector4(pv, pv, pv, pv);
+						value = Quaternion(pv, pv, pv, pv);
 					} break;
 					case Variant::FLOAT: {
 						float pv = p_prev_value;
-						value = Vector4(pv, pv, pv, pv);
+						value = Quaternion(pv, pv, pv, pv);
 					} break;
 					case Variant::VECTOR2: {
 						Vector2 pv = p_prev_value;
-						value = Vector4(pv.x, pv.y, pv.y, pv.y);
+						value = Quaternion(pv.x, pv.y, pv.y, pv.y);
 					} break;
 					case Variant::VECTOR3: {
 						Vector3 pv = p_prev_value;
-						value = Vector4(pv.x, pv.y, pv.z, pv.z);
+						value = Quaternion(pv.x, pv.y, pv.z, pv.z);
 					} break;
-					case Variant::VECTOR4: {
+					case Variant::QUATERNION: {
 						value = p_prev_value;
 					} break;
 					default:
@@ -1881,8 +1881,8 @@ Error VisualShader::_write_node(Type type, StringBuilder *global_code, StringBui
 				Vector3 val = defval;
 				inputs[i] = "n_in" + itos(node) + "p" + itos(i);
 				node_code += "	vec3 " + inputs[i] + " = " + vformat("vec3(%.5f, %.5f, %.5f);\n", val.x, val.y, val.z);
-			} else if (defval.get_type() == Variant::VECTOR4) {
-				Vector4 val = defval;
+			} else if (defval.get_type() == Variant::QUATERNION) {
+				Quaternion val = defval;
 				inputs[i] = "n_in" + itos(node) + "p" + itos(i);
 				node_code += "	vec4 " + inputs[i] + " = " + vformat("vec4(%.5f, %.5f, %.5f, %.5f);\n", val.x, val.y, val.z, val.w);
 			} else if (defval.get_type() == Variant::TRANSFORM3D) {
@@ -2677,6 +2677,7 @@ void VisualShader::_bind_methods() {
 	BIND_ENUM_CONSTANT(VARYING_TYPE_FLOAT);
 	BIND_ENUM_CONSTANT(VARYING_TYPE_VECTOR_2D);
 	BIND_ENUM_CONSTANT(VARYING_TYPE_VECTOR_3D);
+	BIND_ENUM_CONSTANT(VARYING_TYPE_VECTOR_4D);
 	BIND_ENUM_CONSTANT(VARYING_TYPE_COLOR);
 	BIND_ENUM_CONSTANT(VARYING_TYPE_TRANSFORM);
 	BIND_ENUM_CONSTANT(VARYING_TYPE_MAX);
@@ -4729,6 +4730,8 @@ VisualShaderNodeVarying::PortType VisualShaderNodeVarying::get_port_type(VisualS
 			return PORT_TYPE_VECTOR_2D;
 		case VisualShader::VARYING_TYPE_VECTOR_3D:
 			return PORT_TYPE_VECTOR_3D;
+		case VisualShader::VARYING_TYPE_VECTOR_4D:
+			return PORT_TYPE_VECTOR_4D;
 		case VisualShader::VARYING_TYPE_COLOR:
 			if (p_port == 1) {
 				break; // scalar

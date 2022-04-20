@@ -214,6 +214,8 @@
 		</constant>
 		<constant name="VARYING_TYPE_VECTOR_3D" value="2" enum="VaryingType">
 		</constant>
+		<constant name="VARYING_TYPE_VECTOR_4D" value="3" enum="VaryingType">
+		</constant>
 		<constant name="VARYING_TYPE_COLOR" value="4" enum="VaryingType">
 		</constant>
 		<constant name="VARYING_TYPE_TRANSFORM" value="5" enum="VaryingType">
