@@ -1471,9 +1471,11 @@ RasterizerCanvasGLES3 *RasterizerCanvasGLES3::get_singleton() {
 	return singleton;
 }
 
-RasterizerCanvasGLES3::RasterizerCanvasGLES3() {
+RasterizerCanvasGLES3::RasterizerCanvasGLES3(RasterizerStorageGLES3 *p_storage) {
 	singleton = this;
 	polygon_buffers.polygons.set_debug_info(__FILE__, __LINE__);
+	storage = p_storage;
+	initialize();
 }
 
 RasterizerCanvasGLES3::~RasterizerCanvasGLES3() {

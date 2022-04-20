@@ -211,8 +211,8 @@ void VisualShaderGraphPlugin::set_input_port_default_value(VisualShader::Type p_
 			Vector3 v = p_value;
 			button->set_text(String::num(v.x, 3) + "," + String::num(v.y, 3) + "," + String::num(v.z, 3));
 		} break;
-		case Variant::VECTOR4: {
-			Vector4 v = p_value;
+		case Variant::QUATERNION: {
+			Quaternion v = p_value;
 			button->set_text(String::num(v.x, 3) + "," + String::num(v.y, 3) + "," + String::num(v.z, 3) + "," + String::num(v.w, 3));
 		} break;
 		default: {
@@ -4894,30 +4894,42 @@ VisualShaderEditor::VisualShaderEditor() {
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_SCALAR, VisualShaderNode::PORT_TYPE_VECTOR_3D);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_SCALAR, VisualShaderNode::PORT_TYPE_VECTOR_4D);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_SCALAR, VisualShaderNode::PORT_TYPE_BOOLEAN);
+
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_SCALAR_INT, VisualShaderNode::PORT_TYPE_SCALAR_INT);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_SCALAR_INT, VisualShaderNode::PORT_TYPE_SCALAR);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_SCALAR_INT, VisualShaderNode::PORT_TYPE_VECTOR_2D);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_SCALAR_INT, VisualShaderNode::PORT_TYPE_VECTOR_3D);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_SCALAR_INT, VisualShaderNode::PORT_TYPE_VECTOR_4D);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_SCALAR_INT, VisualShaderNode::PORT_TYPE_BOOLEAN);
+
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_VECTOR_2D, VisualShaderNode::PORT_TYPE_SCALAR);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_VECTOR_2D, VisualShaderNode::PORT_TYPE_SCALAR_INT);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_VECTOR_2D, VisualShaderNode::PORT_TYPE_VECTOR_2D);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_VECTOR_2D, VisualShaderNode::PORT_TYPE_VECTOR_3D);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_VECTOR_2D, VisualShaderNode::PORT_TYPE_VECTOR_4D);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_VECTOR_2D, VisualShaderNode::PORT_TYPE_BOOLEAN);
+
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_VECTOR_3D, VisualShaderNode::PORT_TYPE_SCALAR);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_VECTOR_3D, VisualShaderNode::PORT_TYPE_SCALAR_INT);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_VECTOR_3D, VisualShaderNode::PORT_TYPE_VECTOR_2D);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_VECTOR_3D, VisualShaderNode::PORT_TYPE_VECTOR_3D);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_VECTOR_3D, VisualShaderNode::PORT_TYPE_VECTOR_4D);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_VECTOR_3D, VisualShaderNode::PORT_TYPE_BOOLEAN);
+
+	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_VECTOR_4D, VisualShaderNode::PORT_TYPE_SCALAR);
+	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_VECTOR_4D, VisualShaderNode::PORT_TYPE_SCALAR_INT);
+	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_VECTOR_4D, VisualShaderNode::PORT_TYPE_VECTOR_2D);
+	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_VECTOR_4D, VisualShaderNode::PORT_TYPE_VECTOR_3D);
+	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_VECTOR_4D, VisualShaderNode::PORT_TYPE_VECTOR_4D);
+	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_VECTOR_4D, VisualShaderNode::PORT_TYPE_BOOLEAN);
+
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_BOOLEAN, VisualShaderNode::PORT_TYPE_SCALAR);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_BOOLEAN, VisualShaderNode::PORT_TYPE_SCALAR_INT);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_BOOLEAN, VisualShaderNode::PORT_TYPE_VECTOR_2D);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_BOOLEAN, VisualShaderNode::PORT_TYPE_VECTOR_3D);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_BOOLEAN, VisualShaderNode::PORT_TYPE_VECTOR_4D);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_BOOLEAN, VisualShaderNode::PORT_TYPE_BOOLEAN);
+
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_TRANSFORM, VisualShaderNode::PORT_TYPE_TRANSFORM);
 	graph->add_valid_connection_type(VisualShaderNode::PORT_TYPE_SAMPLER, VisualShaderNode::PORT_TYPE_SAMPLER);
 
@@ -5628,15 +5640,15 @@ VisualShaderEditor::VisualShaderEditor() {
 
 	add_options.push_back(AddOption("VectorFunc", "Vector", "Common", "VisualShaderNodeVectorFunc", TTR("Vector function."), {}, VisualShaderNode::PORT_TYPE_VECTOR_3D));
 	add_options.push_back(AddOption("VectorOp", "Vector", "Common", "VisualShaderNodeVectorOp", TTR("Vector operator."), {}, VisualShaderNode::PORT_TYPE_VECTOR_3D));
-	add_options.push_back(AddOption("VectorCompose", "Vector", "Common", "VisualShaderNodeVectorCompose", TTR("Composes vector from three scalars.")));
-	add_options.push_back(AddOption("VectorDecompose", "Vector", "Common", "VisualShaderNodeVectorDecompose", TTR("Decomposes vector to three scalars.")));
+	add_options.push_back(AddOption("VectorCompose", "Vector", "Common", "VisualShaderNodeVectorCompose", TTR("Composes vector from scalars.")));
+	add_options.push_back(AddOption("VectorDecompose", "Vector", "Common", "VisualShaderNodeVectorDecompose", TTR("Decomposes vector to scalars.")));
 
 	add_options.push_back(AddOption("Vector2Compose", "Vector", "Composition", "VisualShaderNodeVectorCompose", TTR("Composes 2D vector from three scalars."), { VisualShaderNodeVectorCompose::OP_TYPE_VECTOR_2D }, VisualShaderNode::PORT_TYPE_VECTOR_2D));
-	add_options.push_back(AddOption("Vector2Decompose", "Vector", "Composition", "VisualShaderNodeVectorDecompose", TTR("Decomposes 2D vector to three scalars."), { VisualShaderNodeVectorCompose::OP_TYPE_VECTOR_2D }));
+	add_options.push_back(AddOption("Vector2Decompose", "Vector", "Composition", "VisualShaderNodeVectorDecompose", TTR("Decomposes 2D vector to three scalars."), { VisualShaderNodeVectorDecompose::OP_TYPE_VECTOR_2D }));
 	add_options.push_back(AddOption("Vector3Compose", "Vector", "Composition", "VisualShaderNodeVectorCompose", TTR("Composes 3D vector from three scalars."), { VisualShaderNodeVectorCompose::OP_TYPE_VECTOR_3D }, VisualShaderNode::PORT_TYPE_VECTOR_3D));
-	add_options.push_back(AddOption("Vector3Decompose", "Vector", "Composition", "VisualShaderNodeVectorDecompose", TTR("Decomposes 3D vector to three scalars."), { VisualShaderNodeVectorCompose::OP_TYPE_VECTOR_3D }));
-	add_options.push_back(AddOption("Vector4Compose", "Vector", "Composition", "VisualShaderNodeVectorCompose", TTR("Composes 4D vector from three scalars."), { VisualShaderNodeVectorCompose::OP_TYPE_VECTOR_4D }, VisualShaderNode::PORT_TYPE_VECTOR_4D));
-	add_options.push_back(AddOption("Vector4Decompose", "Vector", "Composition", "VisualShaderNodeVectorDecompose", TTR("Decomposes 4D vector to three scalars."), { VisualShaderNodeVectorCompose::OP_TYPE_VECTOR_4D }));
+	add_options.push_back(AddOption("Vector3Decompose", "Vector", "Composition", "VisualShaderNodeVectorDecompose", TTR("Decomposes 3D vector to three scalars."), { VisualShaderNodeVectorDecompose::OP_TYPE_VECTOR_3D }));
+	add_options.push_back(AddOption("Vector4DCompose", "Vector", "Composition", "VisualShaderNodeVectorCompose", TTR("Composes 4D vector from three scalars."), { VisualShaderNodeVectorCompose::OP_TYPE_VECTOR_4D }, VisualShaderNode::PORT_TYPE_VECTOR_4D));
+	add_options.push_back(AddOption("Vector4DDecompose", "Vector", "Composition", "VisualShaderNodeVectorDecompose", TTR("Decomposes 4D vector to three scalars."), { VisualShaderNodeVectorDecompose::OP_TYPE_VECTOR_4D }));
 
 	add_options.push_back(AddOption("Abs", "Vector", "Functions", "VisualShaderNodeVectorFunc", TTR("Returns the absolute value of the parameter."), { VisualShaderNodeVectorFunc::FUNC_ABS, VisualShaderNodeVectorFunc::OP_TYPE_VECTOR_2D }, VisualShaderNode::PORT_TYPE_VECTOR_2D));
 	add_options.push_back(AddOption("Abs", "Vector", "Functions", "VisualShaderNodeVectorFunc", TTR("Returns the absolute value of the parameter."), { VisualShaderNodeVectorFunc::FUNC_ABS, VisualShaderNodeVectorFunc::OP_TYPE_VECTOR_3D }, VisualShaderNode::PORT_TYPE_VECTOR_3D));
@@ -6267,7 +6279,7 @@ Control *VisualShaderNodePluginDefault::create_editor(const Ref<Resource> &p_par
 			prop->set_custom_minimum_size(Size2(100 * EDSCALE, 0));
 		} else if (Object::cast_to<EditorPropertyTransform3D>(prop) || Object::cast_to<EditorPropertyVector3>(prop)) {
 			prop->set_custom_minimum_size(Size2(250 * EDSCALE, 0));
-		} else if (Object::cast_to<EditorPropertyVector4>(prop)) {
+		} else if (Object::cast_to<EditorPropertyQuaternion>(prop)) {
 			prop->set_custom_minimum_size(Size2(320 * EDSCALE, 0));
 		} else if (Object::cast_to<EditorPropertyFloat>(prop)) {
 			prop->set_custom_minimum_size(Size2(100 * EDSCALE, 0));
