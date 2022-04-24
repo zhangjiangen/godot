@@ -1000,7 +1000,7 @@ void AnimationTree::_process_graph(double p_delta) {
 							if (t->process_pass != process_pass) {
 								t->process_pass = process_pass;
 								t->loc = Vector3(0, 0, 0);
-								t->rot = Quaternion(0, 0, 0, 0);
+								t->rot = Quaternion(0, 0, 0, 1);
 								t->scale = Vector3(0, 0, 0);
 							}
 							double prev_time = time - delta;
@@ -1096,7 +1096,7 @@ void AnimationTree::_process_graph(double p_delta) {
 							if (t->process_pass != process_pass) {
 								t->process_pass = process_pass;
 								t->loc = Vector3(0, 0, 0);
-								t->rot = Quaternion(0, 0, 0, 0);
+								t->rot = Quaternion(0, 0, 0, 1);
 								t->scale = Vector3(0, 0, 0);
 							}
 							double prev_time = time - delta;
@@ -1192,7 +1192,7 @@ void AnimationTree::_process_graph(double p_delta) {
 							if (t->process_pass != process_pass) {
 								t->process_pass = process_pass;
 								t->loc = Vector3(0, 0, 0);
-								t->rot = Quaternion(0, 0, 0, 0);
+								t->rot = Quaternion(0, 0, 0, 1);
 								t->scale = Vector3(0, 0, 0);
 							}
 							double prev_time = time - delta;
