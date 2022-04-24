@@ -692,6 +692,7 @@ public:
 		}
 	};
 	virtual RID vertex_buffer_create(uint32_t p_size_bytes, const Vector<uint8_t> &p_data = Vector<uint8_t>(), bool p_use_as_storage = false) = 0;
+	virtual bool vertex_buffer_is_valid(RID p_id) = 0;
 
 	typedef int64_t VertexFormatID;
 
@@ -706,6 +707,7 @@ public:
 
 	virtual RID index_buffer_create(uint32_t p_size_indices, IndexBufferFormat p_format, const Vector<uint8_t> &p_data = Vector<uint8_t>(), bool p_use_restart_indices = false) = 0;
 	virtual RID index_array_create(RID p_index_buffer, uint32_t p_index_offset, uint32_t p_index_count) = 0;
+	virtual bool index_buffer_is_valid(RID p_id) = 0;
 
 	/****************/
 	/**** SHADER ****/
@@ -769,6 +771,7 @@ public:
 
 	virtual RID shader_create_from_spirv(const Vector<ShaderStageSPIRVData> &p_spirv, ShaderInfo &p_shader_info, const String &p_shader_name = "");
 	virtual RID shader_create_from_bytecode(const Vector<uint8_t> &p_shader_binary) = 0;
+	virtual bool shader_is_valid(RID p_shader) = 0;
 
 	virtual uint32_t shader_get_vertex_input_attribute_mask(RID p_shader) = 0;
 
@@ -897,6 +900,8 @@ public:
 
 	bool is_rid_type_valid(const RID &p_id, UniformType type);
 	bool is_rid_valid(const RID &p_id, UniformType type, int index);
+	String get_rid_type_name(const RID &p_id);
+
 	virtual bool uniform_set_is_valid(RID p_uniform_set) = 0;
 	typedef void (*UniformSetInvalidatedCallback)(void *);
 	virtual void uniform_set_set_invalidation_callback(RID p_uniform_set, UniformSetInvalidatedCallback p_callback, void *p_userdata) = 0;
@@ -1249,7 +1254,9 @@ public:
 	virtual void draw_list_disable_scissor(DrawListID p_list) = 0;
 
 	virtual uint32_t draw_list_get_current_pass() = 0;
+	// 开始一个subpass
 	virtual DrawListID draw_list_switch_to_next_pass() = 0;
+	// 开始一个subpass，多线程渲染版本
 	virtual Error draw_list_switch_to_next_pass_split(uint32_t p_splits, DrawListID *r_split_ids) = 0;
 
 	virtual void draw_list_end(uint32_t p_post_barrier = BARRIER_MASK_ALL) = 0;
@@ -1414,6 +1421,7 @@ VARIANT_ENUM_CAST(RenderingDevice::CompareOperator)
 VARIANT_ENUM_CAST(RenderingDevice::DataFormat)
 VARIANT_ENUM_CAST(RenderingDevice::TextureType)
 VARIANT_ENUM_CAST(RenderingDevice::TextureSamples)
+VARIANT_ENUM_CAST(RenderingDevice::BarrierMask)
 VARIANT_ENUM_CAST(RenderingDevice::TextureUsageBits)
 VARIANT_ENUM_CAST(RenderingDevice::TextureSwizzle)
 VARIANT_ENUM_CAST(RenderingDevice::TextureSliceType)

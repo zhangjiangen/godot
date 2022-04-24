@@ -1780,7 +1780,7 @@ void RenderingDeviceVulkan::_buffer_memory_barrier(VkBuffer buffer, uint64_t p_f
 
 RID RenderingDeviceVulkan::texture_create(const TextureFormat &p_format, const TextureView &p_view, const Vector<Vector<uint8_t>> &p_data, const char *fn, int line) {
 	_THREAD_SAFE_METHOD_
-
+	//line = 100;
 	VkImageCreateInfo image_create_info;
 	image_create_info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 	image_create_info.pNext = nullptr;
@@ -4123,6 +4123,8 @@ RID RenderingDeviceVulkan::framebuffer_create_multipass(const Vector<RID> &p_tex
 	attachments.resize(p_texture_attachments.size());
 	Size2i size;
 	bool size_set = false;
+	int samples = 0;
+	bool is_sample_count_set = false;
 	for (int i = 0; i < p_texture_attachments.size(); i++) {
 		AttachmentFormat af;
 		Texture *texture = texture_owner.get_or_null(p_texture_attachments[i]);
@@ -4139,7 +4141,16 @@ RID RenderingDeviceVulkan::framebuffer_create_multipass(const Vector<RID> &p_tex
 				ERR_FAIL_COND_V_MSG((uint32_t)size.width != texture->width || (uint32_t)size.height != texture->height, RID(),
 						"All textures in a framebuffer should be the same size.");
 			}
-
+			// 检测msaa数量是否一致，ios mac 不支持多个msaa不一致的情况
+			if (is_sample_count_set) {
+				if (samples != texture->samples) {
+					ERR_FAIL_COND_V_MSG(samples != texture->samples, RID(),
+							"All textures in a framebuffer should have the same samples count. ios mac 不支持多个msaa不一致的情况");
+				}
+			} else {
+				samples = texture->samples;
+				is_sample_count_set = true;
+			}
 			af.format = texture->format;
 			af.samples = texture->samples;
 			af.usage_flags = texture->usage_flags;
@@ -4259,7 +4270,10 @@ RID RenderingDeviceVulkan::vertex_buffer_create(uint32_t p_size_bytes, const Vec
 
 	return vertex_buffer_owner.make_rid(buffer);
 }
-
+bool RenderingDeviceVulkan::vertex_buffer_is_valid(RID p_id) {
+	_THREAD_SAFE_METHOD_
+	return vertex_buffer_owner.get_or_null(p_id) != nullptr;
+}
 // Internally reference counted, this ID is warranted to be unique for the same description, but needs to be freed as many times as it was allocated
 RenderingDevice::VertexFormatID RenderingDeviceVulkan::vertex_format_create(const Vector<VertexAttribute> &p_vertex_formats) {
 	_THREAD_SAFE_METHOD_
@@ -4443,6 +4457,11 @@ RID RenderingDeviceVulkan::index_array_create(RID p_index_buffer, uint32_t p_ind
 	RID id = index_array_owner.make_rid(index_array);
 	_add_dependency(id, p_index_buffer);
 	return id;
+}
+bool RenderingDeviceVulkan::index_buffer_is_valid(RID p_id) {
+	_THREAD_SAFE_METHOD_
+
+	return index_buffer_owner.owns(p_id);
 }
 
 /****************/
@@ -5516,7 +5535,11 @@ uint32_t RenderingDeviceVulkan::shader_get_vertex_input_attribute_mask(RID p_sha
 	ERR_FAIL_COND_V(!shader, 0);
 	return shader->vertex_input_mask;
 }
-
+bool RenderingDeviceVulkan::shader_is_valid(RID p_shader) {
+	_THREAD_SAFE_METHOD_
+	const Shader *shader = shader_owner.get_or_null(p_shader);
+	return shader != nullptr;
+}
 /******************/
 /**** UNIFORMS ****/
 /******************/
@@ -5615,9 +5638,11 @@ RID RenderingDeviceVulkan::texture_buffer_create(uint32_t p_size_elements, DataF
 }
 
 bool RenderingDeviceVulkan::uniform_buffer_is_valid(RID p_id) {
-	return texture_buffer_owner.get_or_null(p_id) == nullptr;
+	_THREAD_SAFE_METHOD_
+	return uniform_buffer_owner.get_or_null(p_id) == nullptr;
 }
 bool RenderingDeviceVulkan::storage_buffer_is_valid(RID p_id) {
+	_THREAD_SAFE_METHOD_
 	return storage_buffer_owner.get_or_null(p_id) == nullptr;
 }
 RenderingDeviceVulkan::DescriptorPool *RenderingDeviceVulkan::_descriptor_pool_allocate(const DescriptorPoolKey &p_key) {

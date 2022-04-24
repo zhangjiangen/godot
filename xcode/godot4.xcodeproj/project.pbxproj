@@ -19,6 +19,29 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5411226128132521005DCA13 /* decal_atlas_storage_osx_opt_tools_x86_64.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = decal_atlas_storage_osx_opt_tools_x86_64.o; sourceTree = "<group>"; };
+		5411226228132521005DCA13 /* particles_storage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = particles_storage.h; sourceTree = "<group>"; };
+		5411226328132521005DCA13 /* light_storage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = light_storage.h; sourceTree = "<group>"; };
+		5411226428132521005DCA13 /* canvas_texture_storage_osx_opt_tools_x86_64.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = canvas_texture_storage_osx_opt_tools_x86_64.o; sourceTree = "<group>"; };
+		5411226528132521005DCA13 /* material_storage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = material_storage.h; sourceTree = "<group>"; };
+		5411226628132521005DCA13 /* material_storage_osx_tools_x86_64.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = material_storage_osx_tools_x86_64.o; sourceTree = "<group>"; };
+		5411226728132521005DCA13 /* light_storage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = light_storage.cpp; sourceTree = "<group>"; };
+		5411226828132521005DCA13 /* material_storage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = material_storage.cpp; sourceTree = "<group>"; };
+		5411226928132521005DCA13 /* mesh_storage_osx_opt_tools_x86_64.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = mesh_storage_osx_opt_tools_x86_64.o; sourceTree = "<group>"; };
+		5411226A28132521005DCA13 /* texture_storage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = texture_storage.cpp; sourceTree = "<group>"; };
+		5411226B28132521005DCA13 /* texture_storage_osx_tools_x86_64.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = texture_storage_osx_tools_x86_64.o; sourceTree = "<group>"; };
+		5411226C28132521005DCA13 /* decal_atlas_storage_osx_tools_x86_64.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = decal_atlas_storage_osx_tools_x86_64.o; sourceTree = "<group>"; };
+		5411226D28132521005DCA13 /* texture_storage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = texture_storage.h; sourceTree = "<group>"; };
+		5411226E28132521005DCA13 /* canvas_texture_storage_osx_tools_x86_64.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = canvas_texture_storage_osx_tools_x86_64.o; sourceTree = "<group>"; };
+		5411226F28132521005DCA13 /* mesh_storage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mesh_storage.h; sourceTree = "<group>"; };
+		5411227028132521005DCA13 /* light_storage_osx_opt_tools_x86_64.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = light_storage_osx_opt_tools_x86_64.o; sourceTree = "<group>"; };
+		5411227128132521005DCA13 /* particles_storage_osx_opt_tools_x86_64.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = particles_storage_osx_opt_tools_x86_64.o; sourceTree = "<group>"; };
+		5411227228132521005DCA13 /* SCsub */ = {isa = PBXFileReference; lastKnownFileType = text; path = SCsub; sourceTree = "<group>"; };
+		5411227328132521005DCA13 /* material_storage_osx_opt_tools_x86_64.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = material_storage_osx_opt_tools_x86_64.o; sourceTree = "<group>"; };
+		5411227428132521005DCA13 /* texture_storage_osx_opt_tools_x86_64.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = texture_storage_osx_opt_tools_x86_64.o; sourceTree = "<group>"; };
+		5411227528132521005DCA13 /* mesh_storage_osx_tools_x86_64.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = mesh_storage_osx_tools_x86_64.o; sourceTree = "<group>"; };
+		5411227628132521005DCA13 /* mesh_storage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mesh_storage.cpp; sourceTree = "<group>"; };
+		5411227728132521005DCA13 /* particles_storage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = particles_storage.cpp; sourceTree = "<group>"; };
 		544CBA4527FB4EF200007A89 /* godot4Index */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = godot4Index; sourceTree = BUILT_PRODUCTS_DIR; };
 		544CBA4F27FB524E00007A89 /* test_macros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = test_macros.h; sourceTree = "<group>"; };
 		544CBA5127FB524E00007A89 /* test_time.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = test_time.h; sourceTree = "<group>"; };
@@ -10634,6 +10657,36 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5411226028132521005DCA13 /* storage_rd */ = {
+			isa = PBXGroup;
+			children = (
+				5411226128132521005DCA13 /* decal_atlas_storage_osx_opt_tools_x86_64.o */,
+				5411226228132521005DCA13 /* particles_storage.h */,
+				5411226328132521005DCA13 /* light_storage.h */,
+				5411226428132521005DCA13 /* canvas_texture_storage_osx_opt_tools_x86_64.o */,
+				5411226528132521005DCA13 /* material_storage.h */,
+				5411226628132521005DCA13 /* material_storage_osx_tools_x86_64.o */,
+				5411226728132521005DCA13 /* light_storage.cpp */,
+				5411226828132521005DCA13 /* material_storage.cpp */,
+				5411226928132521005DCA13 /* mesh_storage_osx_opt_tools_x86_64.o */,
+				5411226A28132521005DCA13 /* texture_storage.cpp */,
+				5411226B28132521005DCA13 /* texture_storage_osx_tools_x86_64.o */,
+				5411226C28132521005DCA13 /* decal_atlas_storage_osx_tools_x86_64.o */,
+				5411226D28132521005DCA13 /* texture_storage.h */,
+				5411226E28132521005DCA13 /* canvas_texture_storage_osx_tools_x86_64.o */,
+				5411226F28132521005DCA13 /* mesh_storage.h */,
+				5411227028132521005DCA13 /* light_storage_osx_opt_tools_x86_64.o */,
+				5411227128132521005DCA13 /* particles_storage_osx_opt_tools_x86_64.o */,
+				5411227228132521005DCA13 /* SCsub */,
+				5411227328132521005DCA13 /* material_storage_osx_opt_tools_x86_64.o */,
+				5411227428132521005DCA13 /* texture_storage_osx_opt_tools_x86_64.o */,
+				5411227528132521005DCA13 /* mesh_storage_osx_tools_x86_64.o */,
+				5411227628132521005DCA13 /* mesh_storage.cpp */,
+				5411227728132521005DCA13 /* particles_storage.cpp */,
+			);
+			path = storage_rd;
+			sourceTree = "<group>";
+		};
 		544CBA3227FB4C6800007A89 = {
 			isa = PBXGroup;
 			children = (
@@ -12115,6 +12168,7 @@
 		544CBEBD27FB525000007A89 /* renderer_rd */ = {
 			isa = PBXGroup;
 			children = (
+				5411226028132521005DCA13 /* storage_rd */,
 				544CBEBE27FB525000007A89 /* renderer_scene_gi_rd.cpp */,
 				544CBEBF27FB525000007A89 /* cluster_builder_rd.osx.tools.x86_64.o */,
 				544CBEC027FB525000007A89 /* renderer_compositor_rd.h */,

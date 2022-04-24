@@ -37,8 +37,10 @@
 #include "core/templates/hashfuncs.h"
 
 //#include "core/os/tcmalloc/tcmalloc.cc"
+#include "core/object/object.h"
 #include <stdio.h>
 #include <stdlib.h>
+#define RECORD_MEMORY 0
 struct MemmoryInfo {
 	size_t size;
 	size_t count;
@@ -627,7 +629,7 @@ public:
 		return *instance;
 	}
 	void record_memory_alloc(void *ptr, size_t p_memory, const char *file_name, int file_lne) {
-		return;
+#if RECORD_MEMORY
 		MemoryDebugInfo key;
 		key.file_name = file_name;
 		key.line = file_lne;
@@ -653,10 +655,11 @@ public:
 			TestCount = 0;
 			log_memory_info();
 		}
+#endif
 	}
 
 	void record_memory_free(void *ptr, size_t size) {
-		return;
+#if RECORD_MEMORY
 		if (ptr == nullptr)
 			return;
 		MemoryDebugInfo *key = nullptr;
@@ -680,6 +683,7 @@ public:
 			printf("error : not fund ptr!!\n");
 			point_map.try_get(ptr, key);
 		}
+#endif
 	}
 	struct MemoryLog {
 		const char *file_name;

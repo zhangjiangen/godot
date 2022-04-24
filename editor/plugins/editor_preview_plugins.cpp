@@ -131,6 +131,7 @@ Ref<Texture2D> EditorTexturePreviewPlugin::generate(const RES &p_from, const Siz
 	post_process_preview(img);
 
 	Ref<ImageTexture> ptex = Ref<ImageTexture>(memnew(ImageTexture));
+	ptex->set_name("texture_preview/" + p_from->get_name());
 
 	ptex->create_from_image(img);
 	return ptex;
@@ -243,6 +244,7 @@ Ref<Texture2D> EditorBitmapPreviewPlugin::generate(const RES &p_from, const Size
 	post_process_preview(img);
 
 	Ref<ImageTexture> ptex = Ref<ImageTexture>(memnew(ImageTexture));
+	ptex->set_name("bitmap_preview/" + p_from->get_name());
 
 	ptex->create_from_image(img);
 	return ptex;
@@ -337,6 +339,8 @@ Ref<Texture2D> EditorMaterialPreviewPlugin::generate(const RES &p_from, const Si
 		img->resize(thumbnail_size, thumbnail_size, Image::INTERPOLATE_CUBIC);
 		post_process_preview(img);
 		Ref<ImageTexture> ptex = Ref<ImageTexture>(memnew(ImageTexture));
+
+		ptex->set_name("material_preview/" + p_from->get_name());
 		ptex->create_from_image(img);
 		return ptex;
 	}
@@ -595,6 +599,7 @@ Ref<Texture2D> EditorScriptPreviewPlugin::generate(const RES &p_from, const Size
 	post_process_preview(img);
 
 	Ref<ImageTexture> ptex = Ref<ImageTexture>(memnew(ImageTexture));
+	ptex->set_name("script_preview/" + p_from->get_name());
 
 	ptex->create_from_image(img);
 	return ptex;
@@ -677,6 +682,7 @@ Ref<Texture2D> EditorAudioStreamPreviewPlugin::generate(const RES &p_from, const
 	//post_process_preview(img);
 
 	Ref<ImageTexture> ptex = Ref<ImageTexture>(memnew(ImageTexture));
+	ptex->set_name("audio_preview/" + p_from->get_name());
 	Ref<Image> image;
 	New_instantiate(image);
 	image->create(w, h, false, Image::FORMAT_RGB8, img);
@@ -750,6 +756,7 @@ Ref<Texture2D> EditorMeshPreviewPlugin::generate(const RES &p_from, const Size2 
 	post_process_preview(img);
 
 	Ref<ImageTexture> ptex = Ref<ImageTexture>(memnew(ImageTexture));
+	ptex->set_name("mesh_preview/" + p_from->get_name());
 	ptex->create_from_image(img);
 	return ptex;
 }
@@ -872,6 +879,7 @@ Ref<Texture2D> EditorFontPreviewPlugin::generate_from_path(const String &p_path,
 	post_process_preview(img);
 
 	Ref<ImageTexture> ptex = Ref<ImageTexture>(memnew(ImageTexture));
+	ptex->set_name("font_preview/" + res->get_name());
 	ptex->create_from_image(img);
 
 	return ptex;

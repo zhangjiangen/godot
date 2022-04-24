@@ -31,6 +31,7 @@
 #include "editor_log.h"
 
 #include "core/os/keyboard.h"
+#include "core/os/os.h"
 #include "core/version.h"
 #include "editor/editor_node.h"
 #include "editor/editor_scale.h"
@@ -91,6 +92,9 @@ void EditorLog::_update_theme() {
 
 	clear_button->set_icon(get_theme_icon(SNAME("Clear"), SNAME("EditorIcons")));
 	copy_button->set_icon(get_theme_icon(SNAME("ActionCopy"), SNAME("EditorIcons")));
+	log_node_button->set_icon(get_theme_icon(SNAME("Node"), SNAME("EditorIcons")));
+	log_resource_button->set_icon(get_theme_icon(SNAME("Object"), SNAME("EditorIcons")));
+
 	collapse_button->set_icon(get_theme_icon(SNAME("CombineLines"), SNAME("EditorIcons")));
 	show_search_button->set_icon(get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
 	search_box->set_right_icon(get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
@@ -167,6 +171,16 @@ void EditorLog::_clear_request() {
 	_reset_message_counts();
 	tool_button->set_icon(Ref<Texture2D>());
 }
+void EditorLog::_log_all_node() {
+	is_start_log = true;
+	Node::print_orphan_nodes();
+	is_start_log = false;
+}
+void EditorLog::_log_all_resource() {
+	is_start_log = true;
+	OS::get_singleton()->print_all_resources();
+	is_start_log = false;
+}
 
 void EditorLog::_copy_request() {
 	String text = log->get_selected_text();
@@ -185,6 +199,8 @@ void EditorLog::clear() {
 }
 
 void EditorLog::_process_message(const String &p_msg, MessageType p_type) {
+	if (is_start_log)
+		return;
 	if (messages.size() > 0 && messages[messages.size() - 1].text == p_msg) {
 		// If previous message is the same as the new one, increase previous count rather than adding another
 		// instance to the messages list.
@@ -388,6 +404,26 @@ EditorLog::EditorLog() {
 	copy_button->set_shortcut_context(this);
 	copy_button->connect("pressed", callable_mp(this, &EditorLog::_copy_request));
 	hb_tools->add_child(copy_button);
+
+	HBoxContainer *hb_log_tools = memnew(HBoxContainer);
+	hb_log_tools->set_h_size_flags(SIZE_SHRINK_CENTER);
+	vb_right->add_child(hb_log_tools);
+
+	log_node_button = memnew(Button);
+	log_node_button->set_flat(true);
+	log_node_button->set_focus_mode(FOCUS_NONE);
+	//log_node_button->set_shortcut(ED_SHORTCUT("editor/clear_output", TTR("Clear Output"), KeyModifierMask::CMD | KeyModifierMask::SHIFT | Key::K));
+	log_node_button->set_shortcut_context(this);
+	log_node_button->connect("pressed", callable_mp(this, &EditorLog::_log_all_node));
+	hb_log_tools->add_child(log_node_button);
+
+	log_resource_button = memnew(Button);
+	log_resource_button->set_flat(true);
+	log_resource_button->set_focus_mode(FOCUS_NONE);
+	//log_node_button->set_shortcut(ED_SHORTCUT("editor/clear_output", TTR("Clear Output"), KeyModifierMask::CMD | KeyModifierMask::SHIFT | Key::K));
+	log_resource_button->set_shortcut_context(this);
+	log_resource_button->connect("pressed", callable_mp(this, &EditorLog::_log_all_resource));
+	hb_log_tools->add_child(log_resource_button);
 
 	// A second hbox to make a 2x2 grid of buttons.
 	HBoxContainer *hb_tools2 = memnew(HBoxContainer);

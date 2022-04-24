@@ -443,6 +443,14 @@ public:
 	RD_SETGET(int32_t, binding)
 	void set_name(const String &p_name) { name = p_name; }
 	String get_name() const { return name; }
+	String get_uniform_type_name() {
+		static const char *shader_uniform_names[RenderingDevice::UNIFORM_TYPE_MAX] = {
+			"Sampler", "CombinedSampler", "Texture", "Image", "TextureBuffer", "SamplerTextureBuffer", "ImageBuffer", "UniformBuffer", "StorageBuffer", "InputAttachment"
+		};
+		if (get_uniform_type() < RenderingDevice::UNIFORM_TYPE_MAX)
+			return shader_uniform_names[get_uniform_type()];
+		return "invalid uniform type";
+	}
 
 	void add_id(const RID &p_id) { base.append_id(p_id); }
 
@@ -472,6 +480,7 @@ protected:
 		ClassDB::bind_method(D_METHOD("clear_ids"), &RDUniform::clear_ids);
 		ClassDB::bind_method(D_METHOD("_set_ids", "ids"), &RDUniform::_set_ids);
 		ClassDB::bind_method(D_METHOD("get_ids"), &RDUniform::get_ids);
+		ClassDB::bind_method(D_METHOD("get_uniform_type_name"), &RDUniform::get_uniform_type_name);
 		ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "_ids", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_INTERNAL), "_set_ids", "get_ids");
 	}
 };

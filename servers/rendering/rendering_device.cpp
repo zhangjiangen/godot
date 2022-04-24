@@ -447,7 +447,36 @@ bool RenderingDevice::is_rid_valid(const RID &p_id, UniformType type, int index)
 		default:
 			break;
 	}
-    return false;
+	return false;
+}
+
+String RenderingDevice::get_rid_type_name(const RID &p_id) {
+	if (p_id.is_null())
+		return "";
+	if (texture_is_valid(p_id)) {
+		return "Texture";
+	} else if (sampler_is_valid(p_id)) {
+		return "Sampler";
+	} else if (uniform_buffer_is_valid(p_id)) {
+		return "UniformBuffer";
+	} else if (storage_buffer_is_valid(p_id)) {
+		return "StorageBuffer";
+	} else if (render_pipeline_is_valid(p_id)) {
+		return "RenderPipeline";
+	} else if (compute_pipeline_is_valid(p_id)) {
+		return "ComputePipeline";
+	} else if (uniform_set_is_valid(p_id)) {
+		return "UniformSet";
+	} else if (shader_is_valid(p_id)) {
+		return "Shader";
+	} else if (vertex_buffer_is_valid(p_id)) {
+		return "VertexBuffer";
+	} else if (index_buffer_is_valid(p_id)) {
+		return "IndexBuffer";
+	} else {
+		return "";
+	}
+	return "";
 }
 Array RenderingDevice::shader_uniform_set_get(RID p_shader) {
 	Array set_array;
@@ -537,6 +566,9 @@ void RenderingDevice::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("texture_buffer_create", "size_bytes", "format", "data"), &RenderingDevice::texture_buffer_create, DEFVAL(Vector<uint8_t>()));
 	ClassDB::bind_method(D_METHOD("is_rid_type_valid", "type"), &RenderingDevice::is_rid_type_valid);
 	ClassDB::bind_method(D_METHOD("is_rid_valid", "rid"), &RenderingDevice::is_rid_valid);
+	ClassDB::bind_method(D_METHOD("get_rid_type_name", "type"), &RenderingDevice::get_rid_type_name);
+	ClassDB::bind_method(D_METHOD("uniform_buffer_is_valid", "uniform_buffer"), &RenderingDevice::uniform_buffer_is_valid);
+	ClassDB::bind_method(D_METHOD("storage_buffer_is_valid", "storage_buffer"), &RenderingDevice::storage_buffer_is_valid);
 
 	ClassDB::bind_method(D_METHOD("uniform_set_create", "uniforms", "shader", "shader_set"), &RenderingDevice::_uniform_set_create);
 	ClassDB::bind_method(D_METHOD("shader_uniform_set_get", "shader_set"), &RenderingDevice::shader_uniform_set_get);
@@ -618,12 +650,6 @@ void RenderingDevice::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_memory_usage", "type"), &RenderingDevice::get_memory_usage);
 
 	ClassDB::bind_method(D_METHOD("get_driver_resource", "resource", "rid", "index"), &RenderingDevice::get_driver_resource);
-
-	BIND_CONSTANT(BARRIER_MASK_RASTER);
-	BIND_CONSTANT(BARRIER_MASK_COMPUTE);
-	BIND_CONSTANT(BARRIER_MASK_TRANSFER);
-	BIND_CONSTANT(BARRIER_MASK_ALL);
-	BIND_CONSTANT(BARRIER_MASK_NO_BARRIER);
 
 	BIND_ENUM_CONSTANT(DEVICE_TYPE_OTHER);
 	BIND_ENUM_CONSTANT(DEVICE_TYPE_INTEGRATED_GPU);
@@ -1110,6 +1136,12 @@ void RenderingDevice::_bind_methods() {
 	BIND_ENUM_CONSTANT(MEMORY_TEXTURES);
 	BIND_ENUM_CONSTANT(MEMORY_BUFFERS);
 	BIND_ENUM_CONSTANT(MEMORY_TOTAL);
+
+	BIND_ENUM_CONSTANT(BARRIER_MASK_RASTER);
+	BIND_ENUM_CONSTANT(BARRIER_MASK_COMPUTE);
+	BIND_ENUM_CONSTANT(BARRIER_MASK_TRANSFER);
+	BIND_ENUM_CONSTANT(BARRIER_MASK_NO_BARRIER);
+	BIND_ENUM_CONSTANT(BARRIER_MASK_ALL);
 
 	BIND_CONSTANT(INVALID_ID);
 	BIND_CONSTANT(INVALID_FORMAT_ID);

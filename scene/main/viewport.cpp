@@ -1004,6 +1004,9 @@ void Viewport::set_world_2d(const Ref<World2D> &p_world_2d) {
 }
 
 Ref<World2D> Viewport::find_world_2d() const {
+	if (world_2d.is_null()) {
+		world_2d = Ref<World2D>(memnew(World2D));
+	}
 	if (world_2d.is_valid()) {
 		return world_2d;
 	} else if (parent) {
@@ -1025,6 +1028,9 @@ void Viewport::_propagate_viewport_notification(Node *p_node, int p_what) {
 }
 
 Ref<World2D> Viewport::get_world_2d() const {
+	if (world_2d.is_null()) {
+		world_2d = Ref<World2D>(memnew(World2D));
+	}
 	return world_2d;
 }
 
@@ -1057,6 +1063,7 @@ void Viewport::_update_canvas_items(Node *p_node) {
 }
 
 Ref<ViewportTexture> Viewport::get_texture() const {
+	_auto_init_world();
 	return default_texture;
 }
 
@@ -3860,15 +3867,7 @@ void Viewport::_bind_methods() {
 }
 
 Viewport::Viewport() {
-	world_2d = Ref<World2D>(memnew(World2D));
-
 	viewport = RenderingServer::get_singleton()->viewport_create();
-	texture_rid = RenderingServer::get_singleton()->viewport_get_texture(viewport);
-
-	New_instantiate(default_texture);
-	default_texture->vp = const_cast<Viewport *>(this);
-	viewport_textures.insert(default_texture.ptr());
-	default_texture->proxy = RS::get_singleton()->texture_proxy_create(texture_rid);
 
 	canvas_layers.insert(nullptr); // This eases picking code (interpreted as the canvas of the Viewport).
 
@@ -3911,7 +3910,21 @@ Viewport::Viewport() {
 	set_sdf_oversize(sdf_oversize); // Set to server.
 }
 
+void Viewport::_auto_init_world() const {
+	if (texture_rid.is_valid()) {
+		return;
+	}
+	texture_rid = RenderingServer::get_singleton()->viewport_get_texture(viewport);
+
+	New_instantiate(default_texture);
+	default_texture->vp = const_cast<Viewport *>(this);
+	viewport_textures.insert(default_texture.ptr());
+	default_texture->proxy = RS::get_singleton()->texture_proxy_create(texture_rid);
+}
 Viewport::~Viewport() {
+	if (texture_rid.is_valid()) {
+		RenderingServer::get_singleton()->free(texture_rid);
+	}
 	// Erase itself from viewport textures.
 	for (Set<ViewportTexture *>::Element *E = viewport_textures.front(); E; E = E->next()) {
 		E->get()->vp = nullptr;

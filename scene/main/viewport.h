@@ -265,7 +265,7 @@ private:
 	// Cleans up colliders corresponding to old frames or all of them.
 	void _cleanup_mouseover_colliders(bool p_clean_all_frames, bool p_paused_only, uint64_t p_frame_reference = 0);
 
-	Ref<World2D> world_2d;
+	mutable Ref<World2D> world_2d;
 
 	Rect2i to_screen_rect;
 	StringName input_group;
@@ -282,7 +282,7 @@ private:
 
 	void _update_global_transform();
 
-	RID texture_rid;
+	mutable RID texture_rid;
 
 	DebugDraw debug_draw = DEBUG_DRAW_DISABLED;
 
@@ -301,8 +301,8 @@ private:
 	float mesh_lod_threshold = 1.0;
 	bool use_occlusion_culling = false;
 
-	Ref<ViewportTexture> default_texture;
-	Set<ViewportTexture *> viewport_textures;
+	mutable Ref<ViewportTexture> default_texture;
+	mutable Set<ViewportTexture *> viewport_textures;
 
 	SDFOversize sdf_oversize = SDF_OVERSIZE_120_PERCENT;
 	SDFScale sdf_scale = SDF_SCALE_50_PERCENT;
@@ -464,6 +464,7 @@ protected:
 	void _notification(int p_what);
 	void _process_picking();
 	static void _bind_methods();
+	void _auto_init_world() const;
 
 public:
 	uint64_t get_processed_events_count() const { return event_count; }

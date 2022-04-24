@@ -134,8 +134,14 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	// Convert the generated icon sources to a dictionary for easier access.
 	// Unlike the editor icons, there is no central repository of icons in the Theme resource itself to keep it tidy.
 	Dictionary icons;
+	String name;
+	String base_name("theme_image/");
+	Ref<ImageTexture> icon;
 	for (int i = 0; i < default_theme_icons_count; i++) {
-		icons[default_theme_icons_names[i]] = generate_icon(i);
+		name = default_theme_icons_names[i];
+		icon = generate_icon(i);
+		icon->set_name(base_name + name);
+		icons[name] = icon;
 	}
 
 	// Panel

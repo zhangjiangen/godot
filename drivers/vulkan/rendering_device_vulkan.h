@@ -1098,6 +1098,7 @@ public:
 	/**********************/
 
 	virtual RID vertex_buffer_create(uint32_t p_size_bytes, const Vector<uint8_t> &p_data = Vector<uint8_t>(), bool p_use_as_storage = false);
+	virtual bool vertex_buffer_is_valid(RID p_id);
 
 	// Internally reference counted, this ID is warranted to be unique for the same description, but needs to be freed as many times as it was allocated
 	virtual VertexFormatID vertex_format_create(const Vector<VertexAttribute> &p_vertex_formats);
@@ -1106,6 +1107,7 @@ public:
 	virtual RID index_buffer_create(uint32_t p_size_indices, IndexBufferFormat p_format, const Vector<uint8_t> &p_data = Vector<uint8_t>(), bool p_use_restart_indices = false);
 
 	virtual RID index_array_create(RID p_index_buffer, uint32_t p_index_offset, uint32_t p_index_count);
+	virtual bool index_buffer_is_valid(RID p_id);
 
 	/****************/
 	/**** SHADER ****/
@@ -1117,6 +1119,7 @@ public:
 	virtual RID shader_create_from_bytecode(const Vector<uint8_t> &p_shader_binary);
 
 	virtual uint32_t shader_get_vertex_input_attribute_mask(RID p_shader);
+	virtual bool shader_is_valid(RID p_shader);
 
 	/*****************/
 	/**** UNIFORM ****/

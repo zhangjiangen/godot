@@ -441,6 +441,7 @@ public:
 	bool is_valid_html_color() const;
 	bool is_valid_ip_address() const;
 	bool is_valid_filename() const;
+	String remove_commentary() const;
 
 	/**
 	 * The constructors must not depend on other overloads

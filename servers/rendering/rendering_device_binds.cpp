@@ -31,7 +31,7 @@
 #include "rendering_device_binds.h"
 
 Error RDShaderFile::parse_versions_from_text(const String &p_text, const String p_defines, OpenIncludeFunction p_include_func, void *p_include_func_userdata) {
-	Vector<String> lines = p_text.split("\n");
+	Vector<String> lines = p_text.remove_commentary().split("\n");
 
 	bool reading_versions = false;
 	bool stage_found[RD::SHADER_STAGE_MAX] = { false, false, false, false, false };
@@ -144,7 +144,7 @@ Error RDShaderFile::parse_versions_from_text(const String &p_text, const String 
 							break;
 						}
 						include = include.substr(1, include.length() - 2).strip_edges();
-						String include_text = p_include_func(include, p_include_func_userdata);
+						String include_text = p_include_func(include, p_include_func_userdata).remove_commentary();
 						if (!include_text.is_empty()) {
 							stage_code[stage] += "\n" + include_text + "\n";
 						} else {

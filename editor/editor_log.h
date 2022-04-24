@@ -122,6 +122,9 @@ private:
 	Button *clear_button = nullptr;
 	Button *copy_button = nullptr;
 
+	Button *log_node_button = nullptr;
+	Button *log_resource_button = nullptr;
+
 	Button *collapse_button = nullptr;
 	bool collapse = false;
 
@@ -144,6 +147,9 @@ private:
 	//void _dragged(const Point2& p_ofs);
 	void _clear_request();
 	void _copy_request();
+	bool is_start_log = false;
+	void _log_all_node();
+	void _log_all_resource();
 	static void _undo_redo_cbk(void *p_self, const String &p_name);
 
 	void _rebuild_log();
