@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // ----------------------------------------------------------------------------
-// Copyright 2011-2021 Arm Limited
+// Copyright 2011-2022 Arm Limited
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy
@@ -25,12 +25,14 @@
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
+#include <vector>
 
 #include "astcenccli_internal.h"
 
 #include "stb_image.h"
 #include "stb_image_write.h"
 #include "tinyexr.h"
+#include "wuffs-v0.3.c"
 
 /* ============================================================================
   Image load and store through the stb_iamge and tinyexr libraries
@@ -70,6 +72,103 @@ static astcenc_image* load_image_with_tinyexr(
 	is_hdr = true;
 	component_count = 4;
 	return res_img;
+}
+
+/**
+ * @brief Load an image using Wuffs to provide the loader.
+ *
+ * @param      filename          The name of the file to load.
+ * @param      y_flip            Should the image be vertically flipped?
+ * @param[out] is_hdr            Is this an HDR image load?
+ * @param[out] component_count   The number of components in the data.
+ *
+ * @return The loaded image data in a canonical 4 channel format, or @c nullptr on error.
+ */
+static astcenc_image* load_png_with_wuffs(
+	const char* filename,
+	bool y_flip,
+	bool& is_hdr,
+	unsigned int& component_count
+) {
+	is_hdr = false;
+	component_count = 4;
+
+	std::ifstream file(filename, std::ios::binary | std::ios::ate);
+	std::streamsize size = file.tellg();
+	file.seekg(0, std::ios::beg);
+
+	std::vector<uint8_t> buffer(size);
+	file.read((char*)buffer.data(), size);
+
+	wuffs_png__decoder *dec = wuffs_png__decoder__alloc();
+	if (!dec)
+	{
+		return nullptr;
+	}
+
+	wuffs_base__image_config ic;
+	wuffs_base__io_buffer src = wuffs_base__ptr_u8__reader(buffer.data(), size, true);
+	wuffs_base__status status = wuffs_png__decoder__decode_image_config(dec, &ic, &src);
+	if (status.repr)
+	{
+		return nullptr;
+	}
+
+	uint32_t dim_x = wuffs_base__pixel_config__width(&ic.pixcfg);
+	uint32_t dim_y = wuffs_base__pixel_config__height(&ic.pixcfg);
+	size_t num_pixels = dim_x * dim_y;
+	if (num_pixels > (SIZE_MAX / 4))
+	{
+		return nullptr;
+	}
+
+	// Override the image's native pixel format to be RGBA_NONPREMUL
+	wuffs_base__pixel_config__set(
+	    &ic.pixcfg,
+	    WUFFS_BASE__PIXEL_FORMAT__RGBA_NONPREMUL,
+	    WUFFS_BASE__PIXEL_SUBSAMPLING__NONE,
+	    dim_x, dim_y);
+
+	// Configure the work buffer
+	size_t workbuf_len = wuffs_png__decoder__workbuf_len(dec).max_incl;
+	if (workbuf_len > SIZE_MAX)
+	{
+		return nullptr;
+	}
+
+	wuffs_base__slice_u8 workbuf_slice = wuffs_base__make_slice_u8((uint8_t*)malloc(workbuf_len), workbuf_len);
+	if (!workbuf_slice.ptr)
+	{
+		return nullptr;
+	}
+
+	wuffs_base__slice_u8 pixbuf_slice = wuffs_base__make_slice_u8((uint8_t*)malloc(num_pixels * 4), num_pixels * 4);
+	if (!pixbuf_slice.ptr)
+	{
+		return nullptr;
+	}
+
+	wuffs_base__pixel_buffer pb;
+	status = wuffs_base__pixel_buffer__set_from_slice(&pb, &ic.pixcfg, pixbuf_slice);
+	if (status.repr)
+	{
+		return nullptr;
+	}
+
+	// Decode the pixels
+	status = wuffs_png__decoder__decode_frame(dec, &pb, &src, WUFFS_BASE__PIXEL_BLEND__SRC, workbuf_slice, NULL);
+	if (status.repr)
+	{
+		return nullptr;
+	}
+
+	astcenc_image* img = astc_img_from_unorm8x4_array(pixbuf_slice.ptr, dim_x, dim_y, y_flip);
+
+	free(pixbuf_slice.ptr);
+	free(workbuf_slice.ptr);
+	free(dec);
+
+	return img;
 }
 
 /**
@@ -778,17 +877,17 @@ static unsigned int get_format(
 struct ktx_header
 {
 	uint8_t magic[12];
-	uint32_t endianness;		// should be 0x04030201; if it is instead 0x01020304, then the endianness of everything must be switched.
-	uint32_t gl_type;			// 0 for compressed textures, otherwise value from table 3.2 (page 162) of OpenGL 4.0 spec
-	uint32_t gl_type_size;		// size of data elements to do endianness swap on (1=endian-neutral data)
-	uint32_t gl_format;			// 0 for compressed textures, otherwise value from table 3.3 (page 163) of OpenGLl spec
-	uint32_t gl_internal_format;	// sized-internal-format, corresponding to table 3.12 to 3.14 (pages 182-185) of OpenGL spec
+	uint32_t endianness;				// should be 0x04030201; if it is instead 0x01020304, then the endianness of everything must be switched.
+	uint32_t gl_type;					// 0 for compressed textures, otherwise value from table 3.2 (page 162) of OpenGL 4.0 spec
+	uint32_t gl_type_size;				// size of data elements to do endianness swap on (1=endian-neutral data)
+	uint32_t gl_format;					// 0 for compressed textures, otherwise value from table 3.3 (page 163) of OpenGL spec
+	uint32_t gl_internal_format;		// sized-internal-format, corresponding to table 3.12 to 3.14 (pages 182-185) of OpenGL spec
 	uint32_t gl_base_internal_format;	// unsized-internal-format: corresponding to table 3.11 (page 179) of OpenGL spec
-	uint32_t pixel_width;		// texture dimensions; not rounded up to block size for compressed.
-	uint32_t pixel_height;		// must be 0 for 1D textures.
-	uint32_t pixel_depth;		// must be 0 for 1D, 2D and cubemap textures.
+	uint32_t pixel_width;				// texture dimensions; not rounded up to block size for compressed.
+	uint32_t pixel_height;				// must be 0 for 1D textures.
+	uint32_t pixel_depth;				// must be 0 for 1D, 2D and cubemap textures.
 	uint32_t number_of_array_elements;	// 0 if not a texture array
-	uint32_t number_of_faces;	// 6 for cubemaps, 1 for non-cubemaps
+	uint32_t number_of_faces;			// 6 for cubemaps, 1 for non-cubemaps
 	uint32_t number_of_mipmap_levels;	// 0 or 1 for non-mipmapped textures; 0 indicates that auto-mipmap-gen should be done at load time.
 	uint32_t bytes_of_key_value_data;	// size in bytes of the key-and-value area immediately following the header.
 };
@@ -2190,6 +2289,8 @@ static const struct
 	const char* ending2;
 	astcenc_image* (*loader_func)(const char*, bool, bool&, unsigned int&);
 } loader_descs[] {
+	// LDR formats
+	{".png",   ".PNG",  load_png_with_wuffs},
 	// HDR formats
 	{".exr",   ".EXR",  load_image_with_tinyexr },
 	// Container formats
@@ -2367,7 +2468,7 @@ int load_cimage(
 	unsigned int dim_y = unpack_bytes(hdr.dim_y[0], hdr.dim_y[1], hdr.dim_y[2], 0);
 	unsigned int dim_z = unpack_bytes(hdr.dim_z[0], hdr.dim_z[1], hdr.dim_z[2], 0);
 
-	if (dim_x == 0 || dim_z == 0 || dim_z == 0)
+	if (dim_x == 0 || dim_y == 0 || dim_z == 0)
 	{
 		printf("ERROR: File corrupt '%s'\n", filename);
 		return 1;

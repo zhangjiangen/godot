@@ -1,8 +1,8 @@
 # Effective ASTC Encoding
 
 Most texture compression schemes encode a single color format at single
-bitrate, so there are relatively few configuration options available to
-content creators beyond selecting which compressed format to use.
+bitrate, so there are relatively few configuration options available to content
+creators beyond selecting which compressed format to use.
 
 ASTC on the other hand is an extremely flexible container format which can
 compress multiple color formats at multiple bit rates. Inevitably this
@@ -169,12 +169,7 @@ vector rather than for absolute color error in the data, which improves the
 perceptual quality of the image.
 
 Both the encoding swizzle and the angular error function are enabled by using
-the `-normal` command line option. Normal map compression additionally supports
-a dedicated perceptual error mode, enabled with the `-perceptual` switch, which
-also optimizes for variance in the normal vector over a small neighborhood.
-This can improve perceived visual quality by reducing variability that is
-amplified by specular lighting calculations, but it will reduce the apparent
-PSNR of the image.
+the `-normal` command line option.
 
 ## Encoding sRGB data
 
@@ -206,3 +201,7 @@ A channel as LDR.
 For other use cases the alpha channel is simply a fourth data channel which is
 also storing an HDR value. For these cases use the `-cH` compressor option
 which will treat all channels as HDR data.
+
+- - -
+
+_Copyright © 2019-2022, Arm Limited and contributors. All rights reserved._

@@ -1,6 +1,6 @@
 #  SPDX-License-Identifier: Apache-2.0
 #  ----------------------------------------------------------------------------
-#  Copyright 2020-2021 Arm Limited
+#  Copyright 2020-2022 Arm Limited
 #
 #  Licensed under the Apache License, Version 2.0 (the "License"); you may not
 #  use this file except in compliance with the License. You may obtain a copy
@@ -89,6 +89,12 @@ macro(astcenc_set_properties NAME)
                 ASTCENC_DECOMPRESS_ONLY)
     endif()
 
+    if(${BLOCK_MAX_TEXELS})
+        target_compile_definitions(${NAME}
+            PRIVATE
+                ASTCENC_BLOCK_MAX_TEXELS=${BLOCK_MAX_TEXELS})
+    endif()
+
     if(${DIAGNOSTICS})
         target_compile_definitions(${NAME}
             PUBLIC
@@ -118,6 +124,7 @@ macro(astcenc_set_properties NAME)
             $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-c++98-c++11-compat-pedantic>
             $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-float-equal>
             $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-deprecated-declarations>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-atomic-implicit-seq-cst>
 
             # Clang 10 also throws up warnings we need to investigate (ours)
             $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-old-style-cast>
@@ -126,14 +133,25 @@ macro(astcenc_set_properties NAME)
             $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-implicit-int-conversion>
             $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-shift-sign-overflow>
             $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-format-nonliteral>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-reserved-identifier>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-cast-function-type>
 
             $<$<CXX_COMPILER_ID:Clang>:-Wdocumentation>)
-
 
     target_link_options(${NAME}
         PRIVATE
             # Use pthreads on Linux/macOS
             $<$<PLATFORM_ID:Linux,Darwin>:-pthread>)
+
+    if(${ENABLE_ASAN})
+        target_compile_options(${NAME}
+            PRIVATE
+                $<$<CXX_COMPILER_ID:${CLANG_LIKE}>:-fsanitize=address>)
+
+        target_link_options(${NAME}
+            PRIVATE
+                $<$<CXX_COMPILER_ID:${CLANG_LIKE}>:-fsanitize=address>)
+    endif()
 
     if(${CLI})
         # Enable LTO on release builds
@@ -240,6 +258,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
             " $<$<NOT:$<CXX_COMPILER_ID:MSVC>>: -Wno-implicit-fallthrough>"
             " $<$<NOT:$<CXX_COMPILER_ID:MSVC>>: -Wno-tautological-type-limit-compare>"
             " $<$<NOT:$<CXX_COMPILER_ID:MSVC>>: -Wno-cast-qual>"
+            " $<$<CXX_COMPILER_ID:Clang>: -Wno-reserved-identifier>"
             " $<$<CXX_COMPILER_ID:Clang>: -Wno-missing-prototypes>")
 
     set_source_files_properties(astcenccli_image_external.cpp

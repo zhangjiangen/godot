@@ -58,15 +58,11 @@ from 0.89 bits/pixel up to 8 bits/pixel.
 Release build binaries for the `astcenc` stable releases are provided in the
 [GitHub Releases page][3].
 
-**Latest 3.x stable release:** 3.2
+**Latest 3.x stable release:** 3.6
 * Change log: [3.x series](./Docs/ChangeLog-3x.md)
 
 **Latest 2.x stable release:** 2.5
 * Change log: [2.x series](./Docs/ChangeLog-2x.md)
-
-**Latest development release:** 3.3-develop
-* Change log: [3.x series](./Docs/ChangeLog-3x.md)
-* Roadmap: [Ideas ...](./Docs/Roadmap.md)
 
 Binaries are provided for 64-bit builds on Windows, macOS, and Linux. The
 builds of the astcenc are provided as multiple binaries, each tuned for a
@@ -195,9 +191,9 @@ help message for more details.
 
 # Documentation
 
-The [ASTC Format Overview](./Docs/FormatOverview.md) provides a high level
-introduction to the ASTC data format, how it encodes data, and why it is both
-flexible and efficient.
+The [ASTC Format Overview](./Docs/FormatOverview.md) page provides a high level
+introduction to the ASTC texture format, how it encodes data, and why it is
+both flexible and efficient.
 
 The [Effective ASTC Encoding](./Docs/Encoding.md) page looks at some of the
 guidelines that should be followed when compressing data using `astcenc`.
@@ -206,6 +202,9 @@ It covers:
 * How to efficiently encode data with fewer than 4 channels.
 * How to efficiently encode normal maps, sRGB data, and HDR data.
 * Coding equivalents to other compression formats.
+
+The [.astc File Format](./Docs/FileFormat.md) page provides a light-weight
+specification for the `.astc` file format and how to read or write it.
 
 The [Building ASTC Encoder](./Docs/Building.md) page provides instructions on
 how to build `astcenc` from the sources in this repository.
@@ -224,7 +223,7 @@ Graphics forums](https://community.arm.com/graphics/).
 
 - - -
 
-_Copyright © 2013-2021, Arm Limited and contributors. All rights reserved._
+_Copyright © 2013-2022, Arm Limited and contributors. All rights reserved._
 
 [1]: ./Docs/FormatOverview.md
 [2]: https://www.khronos.org/registry/DataFormat/specs/1.3/dataformat.1.3.html#ASTC

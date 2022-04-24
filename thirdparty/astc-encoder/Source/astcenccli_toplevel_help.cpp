@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // ----------------------------------------------------------------------------
-// Copyright 2011-2021 Arm Limited
+// Copyright 2011-2022 Arm Limited
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy
@@ -161,14 +161,13 @@ COMPRESSION
        -mask
            The input texture is a mask texture with unrelated data stored
            in the various color components, so enable error heuristics that
-           aim to improve perceptual quality by minimizing the effect of
-           error cross-talk across the color components.
+           aim to improve quality by minimizing the effect of error
+           cross-talk across the color components.
 
        -normal
            The input texture is a three component linear LDR normal map
            storing unit length normals as (R=X, G=Y, B=Z). The output will
-           be a two component X+Y normal map stored as (RGB=X, A=Y),
-           optimized for angular error instead of simple PSNR. The Z
+           be a two component X+Y normal map stored as (RGB=X, A=Y). The Z
            component can be recovered programmatically in shader code by
            using the equation:
 
@@ -218,17 +217,8 @@ R"(
 COMPRESSION TIPS & TRICKS
        ASTC is a block-based format that can be prone to block artifacts.
        If block artifacts are a problem when compressing a given texture,
-       adding some or all of following command-line options may help:
-
-           -b 1.8
-           -v 2 1 1 0 25 0.1
-           -va 1 1 0 25
-           -dblimit 60
-
-       The -b option is a general-purpose block-artifact reduction option.
-       The -v and -va option settings will concentrate effort where smooth
-       regions lie next to regions with high detail, which are particularly
-       prone to block artifacts.
+       increasing the compressor quality preset can help to alleviate the
+       problem.
 
        If a texture exhibits severe block artifacts in only some of the
        color components, which is a common problem for mask textures, then
@@ -242,34 +232,6 @@ ADVANCED COMPRESSION
 
        These options provide low-level control of the codec error metric
        computation, used to determine what good compression looks like.
-
-       -v <radius> <power> <base> <mean> <stdev> <mix>
-           Compute the per-texel relative error weighting for the RGB color
-           components as follows:
-
-           weight = 1 / (<base> + <mean> * mean^2 + <stdev> * stdev^2)
-
-           The <radius> argument specifies the texel radius of the
-           neighborhood over which the average and standard deviation are
-           computed.
-
-           The <mix> parameter is used to control the degree of mixing of
-           the average and stddev error values across the color components.
-           Setting this parameter to 0 causes the computation to be done
-           separately for each color component; setting it to 1 causes the
-           results from the RGB components to be combined and applied to
-           all three components. Intermediate values between these two
-           settings do a linear mix of the two.
-
-           The <power> argument is a power used to raise the values of the
-           input texels before computing average and standard deviation;
-           e.g. a power of 0.5 causes the codec to take the square root
-           of every input texel value.
-
-       -va <power> <base> <mean> <stdev>
-           Compute the per-texel relative error weighting for the alpha
-           component, when used in conjunction with -v. See documentation
-           of -v for individual parameter documentation.
 
        -a <radius>
            For textures with alpha component, scale per-texel weights by
@@ -290,12 +252,6 @@ ADVANCED COMPRESSION
            significance, and values below 1 to decrease it. Set to 0 to
            exclude a component from error computation.
 
-       -b <weight>
-           Assign an additional weight scaling for texels at compression
-           block edges and corners. Setting this to a value above 1
-           increases the significance of texels closer to the edges of a
-           block, and can help to reduce block artifacts.
-
        -mpsnr <low> <high>
            Set the low and high f-stop values for the mPSNR error metric.
            The mPSNR error metric only applies to HDR textures.
@@ -314,7 +270,7 @@ ADVANCED COMPRESSION
            Higher numbers give better quality, as more complex blocks can
            be encoded, but will increase search time. Preset defaults are:
 
-               -fastest    : 3
+               -fastest    : 2
                -fast       : 3
                -medium     : 4
                -thorough   : 4
@@ -326,10 +282,10 @@ ADVANCED COMPRESSION
            diminishing returns especially for smaller block sizes. Preset
            defaults are:
 
-               -fastest    :    2
+               -fastest    :    8
                -fast       :   12
-               -medium     :   25
-               -thorough   :   75
+               -medium     :   26
+               -thorough   :   76
                -exhaustive : 1024
 
        -blockmodelimit <number>
@@ -337,28 +293,28 @@ ADVANCED COMPRESSION
            determined distribution of block mode frequency. This option is
            ineffective for 3D textures. Preset defaults are:
 
-               -fastest    :  30
+               -fastest    :  40
                -fast       :  55
-               -medium     :  75
-               -thorough   :  92
+               -medium     :  76
+               -thorough   :  93
                -exhaustive : 100
 
        -refinementlimit <value>
            Iterate only <value> refinement iterations on colors and
            weights. Minimum value is 1. Preset defaults are:
 
-               -fastest    : 1
+               -fastest    : 2
                -fast       : 3
-               -medium     : 2
+               -medium     : 3
                -thorough   : 4
                -exhaustive : 4
 
        -candidatelimit <value>
            Trial only <value> candidate encodings for each block mode:
 
-               -fastest    : 1
-               -fast       : 2
-               -medium     : 2
+               -fastest    : 2
+               -fast       : 3
+               -medium     : 3
                -thorough   : 4
                -exhaustive : 4
 
@@ -368,7 +324,7 @@ ADVANCED COMPRESSION
            ineffective for HDR textures. Preset defaults, where N is the
            number of texels in a block, are:
 
-               -fastest    : MAX(57-19*log10(N),  79-35*log10(N))
+               -fastest    : MAX(63-19*log10(N),  85-35*log10(N))
                -fast       : MAX(63-19*log10(N),  85-35*log10(N))
                -medium     : MAX(70-19*log10(N),  95-35*log10(N))
                -thorough   : MAX(77-19*log10(N), 105-35*log10(N))
@@ -376,20 +332,20 @@ ADVANCED COMPRESSION
 
        -2partitionlimitfactor <factor>
            Stop compression work on a block after only testing blocks with
-           up to two partions and one plane of weights, unless the two
+           up to two partitions and one plane of weights, unless the two
            partition error term is lower than the error term from encoding
            with one partition by more than the specified factor. Preset
            defaults are:
 
-               -fastest    :  1.00
-               -fast       :  1.00
-               -medium     :  1.20
-               -thorough   :  2.50
-               -exhaustive : 10.00
+               -fastest    :  1.0
+               -fast       :  1.0
+               -medium     :  1.2
+               -thorough   :  2.5
+               -exhaustive : 10.0
 
        -3partitionlimitfactor <factor>
            Stop compression work on a block after only testing blocks with
-           up to three partions and one plane of weights, unless the three
+           up to three partitions and one plane of weights, unless the three
            partition error term is lower than the error term from encoding
            with two partitions by more than the specified factor. Preset
            defaults are:
@@ -407,8 +363,8 @@ ADVANCED COMPRESSION
            normal maps. Preset defaults are:
 
                -fastest    : 0.50
-               -fast       : 0.50
-               -medium     : 0.75
+               -fast       : 0.65
+               -medium     : 0.85
                -thorough   : 0.95
                -exhaustive : 0.99
 

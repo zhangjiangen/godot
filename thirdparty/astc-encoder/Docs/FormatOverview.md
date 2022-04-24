@@ -105,8 +105,8 @@ example a red ball sitting on green grass. In these scenarios a single color
 gradient will not be able to accurately represent all of the texels' values. To
 support this ASTC allows a block to define up to four distinct color gradients,
 known as partitions, and can assign each texel to a single partition. For our
-example we require two partitions, one for our ball texels and one our grass
-texels.
+example we require two partitions, one for our ball texels and one for our
+grass texels.
 
 ![Two partition gradient storage](./FormatOverviewImg/gradient-2p.svg)
 
@@ -482,3 +482,7 @@ which allow applications to reduce the intermediate precision to either UNORM8
 [astc_3d]: https://www.khronos.org/registry/OpenGL/extensions/KHR/KHR_texture_compression_astc_sliced_3d.txt
 [astc_full]: https://www.khronos.org/registry/OpenGL/extensions/OES/OES_texture_compression_astc.txt
 [astc_decode]: https://www.khronos.org/registry/OpenGL/extensions/EXT/EXT_texture_compression_astc_decode_mode.txt
+
+- - -
+
+_Copyright © 2019-2022, Arm Limited and contributors. All rights reserved._

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // ----------------------------------------------------------------------------
-// Copyright 2019-2021 Arm Limited
+// Copyright 2019-2022 Arm Limited
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy
@@ -38,9 +38,7 @@
 #endif
 
 #include <cstdio>
-#if defined(__arm__)
-	#include "astcenc_vecmathlib_neon_armv7_4.h"
-#endif
+
 // ============================================================================
 // vfloat4 data type
 // ============================================================================
@@ -53,7 +51,7 @@ struct vfloat4
 	/**
 	 * @brief Construct from zero-initialized value.
 	 */
-	ASTCENC_SIMD_INLINE vfloat4() {}
+	ASTCENC_SIMD_INLINE vfloat4() = default;
 
 	/**
 	 * @brief Construct from 4 values loaded from an unaligned address.
@@ -186,7 +184,7 @@ struct vint4
 	/**
 	 * @brief Construct from zero-initialized value.
 	 */
-	ASTCENC_SIMD_INLINE vint4() {}
+	ASTCENC_SIMD_INLINE vint4() = default;
 
 	/**
 	 * @brief Construct from 4 values loaded from an unaligned address.
@@ -277,7 +275,7 @@ struct vint4
 	 */
 	static ASTCENC_SIMD_INLINE vint4 loada(const int* p)
 	{
-		return vint4(*p);
+		return vint4(p);
 	}
 
 	/**

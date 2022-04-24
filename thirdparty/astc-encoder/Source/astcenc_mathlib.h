@@ -68,7 +68,7 @@
 #endif
 
 #ifndef ASTCENC_NEON
-  #if defined(__aarch64__) || defined(__arm__)
+  #if defined(__aarch64__)
     #define ASTCENC_NEON 1
   #else
     #define ASTCENC_NEON 0
@@ -458,21 +458,18 @@ struct processed_line2
 {
 	vfloat4 amod;
 	vfloat4 bs;
-	vfloat4 bis;
 };
 
 struct processed_line3
 {
 	vfloat4 amod;
 	vfloat4 bs;
-	vfloat4 bis;
 };
 
 struct processed_line4
 {
 	vfloat4 amod;
 	vfloat4 bs;
-	vfloat4 bis;
 };
 
 #endif

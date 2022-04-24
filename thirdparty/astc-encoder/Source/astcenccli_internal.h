@@ -91,7 +91,7 @@ struct cli_config_options
 };
 
 /**
- * Functions to load image from file.
+ * @brief Load uncompressed image.
  *
  * @param filename               The file path on disk.
  * @param y_flip                 Should this image be Y flipped?
@@ -107,7 +107,7 @@ astcenc_image* load_ncimage(
 	unsigned int& component_count);
 
 /**
- * @brief Save a DDS uncompressed image using a local store routine.
+ * @brief Save an uncompressed image.
  *
  * @param img        The source data for the image.
  * @param filename   The name of the file to save.
@@ -304,15 +304,17 @@ void astcenc_print_longhelp();
 /**
  * @brief Compute error metrics comparing two images.
  *
- * @param compute_hdr_metrics Non-zero if HDR metrics should be computed.
- * @param input_components    The number of input color components.
- * @param img1                The original image.
- * @param img2                The compressed image.
- * @param fstop_lo            The low exposure fstop (HDR only).
- * @param fstop_hi            The high exposure fstop (HDR only).
+ * @param compute_hdr_metrics      True if HDR metrics should be computed.
+ * @param compute_normal_metrics   True if normal map metrics should be computed.
+ * @param input_components         The number of input color components.
+ * @param img1                     The original image.
+ * @param img2                     The compressed image.
+ * @param fstop_lo                 The low exposure fstop (HDR only).
+ * @param fstop_hi                 The high exposure fstop (HDR only).
  */
 void compute_error_metrics(
-	int compute_hdr_metrics,
+	bool compute_hdr_metrics,
+	bool compute_normal_metrics,
 	int input_components,
 	const astcenc_image* img1,
 	const astcenc_image* img2,
