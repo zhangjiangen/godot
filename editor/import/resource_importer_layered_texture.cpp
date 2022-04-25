@@ -494,6 +494,8 @@ void ResourceImporterLayeredTexture::_check_compress_ctex(Ref<LayeredTextureImpo
 	bool is_hdr = (r_texture_import->image->get_format() >= Image::FORMAT_RF && r_texture_import->image->get_format() <= Image::FORMAT_RGBE9995);
 	bool is_ldr = (r_texture_import->image->get_format() >= Image::FORMAT_L8 && r_texture_import->image->get_format() <= Image::FORMAT_RGB565);
 	bool can_s3tc = ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_s3tc");
+
+	const bool can_astc = ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_astc");
 	ERR_FAIL_NULL(r_texture_import->slices);
 	// Can compress hdr, but hdr with alpha is not compressible.
 	if (r_texture_import->hdr_compression == 2) {
@@ -535,6 +537,11 @@ void ResourceImporterLayeredTexture::_check_compress_ctex(Ref<LayeredTextureImpo
 			_save_tex(*r_texture_import->slices, r_texture_import->save_path + ".etc2." + extension, r_texture_import->compress_mode, r_texture_import->lossy, Image::COMPRESS_ETC2, *r_texture_import->csource, r_texture_import->used_channels, r_texture_import->mipmaps, true);
 			r_texture_import->platform_variants->push_back("etc2");
 			r_texture_import->formats_imported.push_back("etc2");
+		}
+		if (ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_astc")) {
+			_save_tex(*r_texture_import->slices, r_texture_import->save_path + ".astc." + extension, r_texture_import->compress_mode, r_texture_import->lossy, Image::COMPRESS_ETC2, *r_texture_import->csource, r_texture_import->used_channels, r_texture_import->mipmaps, true);
+			r_texture_import->platform_variants->push_back("astc");
+			r_texture_import->formats_imported.push_back("astc");
 		}
 
 		if (can_bptc || can_s3tc) {

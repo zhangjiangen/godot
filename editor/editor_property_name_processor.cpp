@@ -130,6 +130,7 @@ EditorPropertyNameProcessor::EditorPropertyNameProcessor() {
 	capitalize_string_remaps["erp"] = "ERP";
 	capitalize_string_remaps["etc"] = "ETC";
 	capitalize_string_remaps["etc2"] = "ETC2";
+	capitalize_string_remaps["astc"] = "ASTC";
 	capitalize_string_remaps["fbx"] = "FBX";
 	capitalize_string_remaps["fbx2gltf"] = "FBX2glTF";
 	capitalize_string_remaps["fft"] = "FFT";

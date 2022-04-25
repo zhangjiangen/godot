@@ -70,6 +70,7 @@ public:
 	bool rgtc_supported;
 	bool bptc_supported;
 	bool etc_supported;
+	bool astc_supported = false;
 	bool etc2_supported;
 	bool srgb_decode_supported;
 

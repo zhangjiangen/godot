@@ -542,6 +542,9 @@ bool RasterizerStorageGLES3::has_os_feature(const String &p_feature) const {
 	if (p_feature == "etc") {
 		return config->etc_supported;
 	}
+	if (p_feature == "astc") {
+		return config->astc_supported;
+	}
 
 	if (p_feature == "skinning_fallback") {
 		return config->use_skeleton_software;

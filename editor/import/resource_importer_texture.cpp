@@ -423,6 +423,7 @@ Error ResourceImporterTexture::import(const String &p_source_file, const String 
 	CompressMode compress_mode = CompressMode(int(p_options["compress/mode"]));
 	const float lossy = p_options["compress/lossy_quality"];
 	const int pack_channels = p_options["compress/channel_pack"];
+	const int astc_level = p_options["compress/astc_level"];
 	const bool mipmaps = p_options["mipmaps/generate"];
 	const uint32_t mipmap_limit = mipmaps ? uint32_t(p_options["mipmaps/limit"]) : uint32_t(-1);
 	const bool fix_alpha_border = p_options["process/fix_alpha_border"];
@@ -522,7 +523,7 @@ Error ResourceImporterTexture::import(const String &p_source_file, const String 
 		bool is_ldr = (image->get_format() >= Image::FORMAT_L8 && image->get_format() <= Image::FORMAT_RGB565);
 		const bool can_bptc = ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_bptc");
 		const bool can_s3tc = ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_s3tc");
-		//const bool can_astc = ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_astc");
+		const bool can_astc = ProjectSettings::get_singleton()->get("rendering/textures/vram_compression/import_astc");
 
 		if (can_bptc) {
 			//add to the list anyway
@@ -578,13 +579,27 @@ Error ResourceImporterTexture::import(const String &p_source_file, const String 
 			r_platform_variants->push_back("etc");
 			formats_imported.push_back("etc");
 		}
-		//		if (can_astc) {
-		//			int level = p_options["compress/astc_level"];
-		//			level += Image::COMPRESS_ASTC_4x4;
-		//			_save_astc_stex(image, p_save_path + ".astc.stex", compress_mode, lossy, (Image::CompressMode)level, mipmaps, stream, detect_3d, detect_roughness, detect_normal, force_normal, srgb_friendly_pack, true, mipmap_limit, normal_image, roughness_channel);
-		//			r_platform_variants->push_back("astc");
-		//			formats_imported.push_back("astc");
-		//		}
+		if (can_astc) {
+			Image::CompressMode mode[] = { Image::COMPRESS_ASTC_4x4,
+				Image::COMPRESS_ASTC_5x4,
+				Image::COMPRESS_ASTC_5x5,
+				Image::COMPRESS_ASTC_6x5,
+				Image::COMPRESS_ASTC_6x6,
+				Image::COMPRESS_ASTC_8x5,
+				Image::COMPRESS_ASTC_8x6,
+				Image::COMPRESS_ASTC_8x8,
+				Image::COMPRESS_ASTC_10x5,
+				Image::COMPRESS_ASTC_10x6,
+				Image::COMPRESS_ASTC_10x8,
+				Image::COMPRESS_ASTC_10x10,
+				Image::COMPRESS_ASTC_12x10,
+				Image::COMPRESS_ASTC_12x12 };
+			//			int level = p_options["compress/astc_level"];
+			//			level += Image::COMPRESS_ASTC_4x4;
+			_save_ctex(image, p_save_path + ".astc.stex", compress_mode, lossy, (Image::CompressMode)mode[astc_level], mipmaps, stream, detect_3d, detect_roughness, detect_normal, force_normal, srgb_friendly_pack, true, mipmap_limit, normal_image, roughness_channel);
+			r_platform_variants->push_back("astc");
+			formats_imported.push_back("astc");
+		}
 
 		if (!ok_on_pc) {
 			EditorNode::add_io_error(TTR("Warning, no suitable PC VRAM compression enabled in Project Settings. This texture will not display correctly on PC."));
@@ -610,6 +625,7 @@ const char *ResourceImporterTexture::compression_formats[] = {
 	"s3tc",
 	"etc",
 	"etc2",
+	"astc",
 	nullptr
 };
 String ResourceImporterTexture::get_import_settings_string() const {

@@ -1672,229 +1672,447 @@ Ref<Image> TextureStorage::_validate_texture_format(const Ref<Image> &p_image, T
 			r_format.swizzle_a = RD::TEXTURE_SWIZZLE_ONE;
 		} break;
 		case Image::FORMAT_RGBA_ASTC_4x4: {
-			r_format.format = RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_4x4_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_4x4_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_RGBA_ASTC_5x4: {
-			r_format.format = RD::DATA_FORMAT_ASTC_5x4_UNORM_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_5x4_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				r_format.format = RD::DATA_FORMAT_ETC2_R8G8B8A8_UNORM_BLOCK;
+				r_format.format_srgb = RD::DATA_FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK;
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_5x4_UNORM_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_5x4_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 
 		case Image::FORMAT_RGBA_ASTC_5x5: {
-			r_format.format = RD::DATA_FORMAT_ASTC_5x5_UNORM_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_5x5_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_5x5_UNORM_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_5x5_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_RGBA_ASTC_6x5: {
-			r_format.format = RD::DATA_FORMAT_ASTC_6x5_UNORM_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_6x5_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_6x5_UNORM_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_6x5_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_RGBA_ASTC_6x6: {
-			r_format.format = RD::DATA_FORMAT_ASTC_6x6_UNORM_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_6x6_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_6x6_UNORM_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_6x6_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_RGBA_ASTC_8x5: {
-			r_format.format = RD::DATA_FORMAT_ASTC_8x5_UNORM_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_8x5_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_8x5_UNORM_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_8x5_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_RGBA_ASTC_8x6: {
-			r_format.format = RD::DATA_FORMAT_ASTC_8x6_UNORM_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_8x6_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_8x6_UNORM_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_8x6_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_RGBA_ASTC_8x8: {
-			r_format.format = RD::DATA_FORMAT_ASTC_8x8_UNORM_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_8x8_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_8x8_UNORM_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_8x8_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_RGBA_ASTC_10x5: {
-			r_format.format = RD::DATA_FORMAT_ASTC_10x5_UNORM_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_10x5_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_10x5_UNORM_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_10x5_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_RGBA_ASTC_10x6: {
-			r_format.format = RD::DATA_FORMAT_ASTC_10x6_UNORM_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_10x6_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				r_format.format = RD::DATA_FORMAT_ETC2_R8G8B8A8_UNORM_BLOCK;
+				r_format.format_srgb = RD::DATA_FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK;
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_10x6_UNORM_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_10x6_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_RGBA_ASTC_10x8: {
-			r_format.format = RD::DATA_FORMAT_ASTC_10x8_UNORM_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_10x8_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_10x8_UNORM_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_10x8_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_RGBA_ASTC_10x10: {
-			r_format.format = RD::DATA_FORMAT_ASTC_10x10_UNORM_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_10x10_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_10x10_UNORM_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_10x10_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_RGBA_ASTC_12x10: {
-			r_format.format = RD::DATA_FORMAT_ASTC_12x10_UNORM_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_12x10_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_12x10_UNORM_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_12x10_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_RGBA_ASTC_12x12: {
-			r_format.format = RD::DATA_FORMAT_ASTC_12x12_UNORM_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_12x12_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_12x12_UNORM_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_12x12_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_SRGB8_ALPHA8_ASTC_4x4: {
-			r_format.format = RD::DATA_FORMAT_ASTC_4x4_SRGB_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_4x4_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_4x4_SRGB_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_4x4_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_SRGB8_ALPHA8_ASTC_5x4: {
-			r_format.format = RD::DATA_FORMAT_ASTC_5x4_SRGB_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_5x4_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_5x4_SRGB_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_5x4_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_SRGB8_ALPHA8_ASTC_5x5: {
-			r_format.format = RD::DATA_FORMAT_ASTC_5x5_SRGB_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_5x5_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_5x5_SRGB_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_5x5_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_SRGB8_ALPHA8_ASTC_6x5: {
-			r_format.format = RD::DATA_FORMAT_ASTC_6x5_SRGB_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_6x5_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_6x5_SRGB_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_6x5_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_SRGB8_ALPHA8_ASTC_6x6: {
-			r_format.format = RD::DATA_FORMAT_ASTC_6x6_SRGB_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_6x6_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_6x6_SRGB_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_6x6_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_SRGB8_ALPHA8_ASTC_8x5: {
-			r_format.format = RD::DATA_FORMAT_ASTC_8x5_SRGB_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_8x5_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_8x5_SRGB_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_8x5_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_SRGB8_ALPHA8_ASTC_8x6: {
-			r_format.format = RD::DATA_FORMAT_ASTC_8x6_SRGB_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_8x6_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_8x6_SRGB_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_8x6_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_SRGB8_ALPHA8_ASTC_8x8: {
-			r_format.format = RD::DATA_FORMAT_ASTC_8x8_SRGB_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_8x8_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_8x8_SRGB_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_8x8_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_SRGB8_ALPHA8_ASTC_10x5: {
-			r_format.format = RD::DATA_FORMAT_ASTC_10x5_SRGB_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_10x5_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_10x5_SRGB_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_10x5_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_SRGB8_ALPHA8_ASTC_10x6: {
-			r_format.format = RD::DATA_FORMAT_ASTC_10x6_SRGB_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_10x6_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_10x6_SRGB_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_10x6_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_SRGB8_ALPHA8_ASTC_10x8: {
-			r_format.format = RD::DATA_FORMAT_ASTC_10x8_SRGB_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_10x8_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_10x8_SRGB_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_10x8_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_SRGB8_ALPHA8_ASTC_10x10: {
-			r_format.format = RD::DATA_FORMAT_ASTC_10x10_SRGB_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_10x10_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_10x10_SRGB_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_10x10_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_SRGB8_ALPHA8_ASTC_12x10: {
-			r_format.format = RD::DATA_FORMAT_ASTC_12x10_SRGB_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_12x10_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_12x10_SRGB_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_12x10_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		case Image::FORMAT_SRGB8_ALPHA8_ASTC_12x12: {
-			r_format.format = RD::DATA_FORMAT_ASTC_12x12_SRGB_BLOCK;
-			//r_format.format_srgb = RD::DATA_FORMAT_ASTC_12x12_SRGB_BLOCK;
-			r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
-			r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			if (!RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_ASTC_4x4_UNORM_BLOCK, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
+				r_format.format_srgb = RD::DATA_FORMAT_R8G8B8A8_SRGB;
+				image->decompress();
+				image->convert(Image::FORMAT_RGBA8);
+			} else {
+				r_format.format = RD::DATA_FORMAT_ASTC_12x12_SRGB_BLOCK;
+				//r_format.format_srgb = RD::DATA_FORMAT_ASTC_12x12_SRGB_BLOCK;
+				r_format.swizzle_r = p_image->astc_r ? RD::TEXTURE_SWIZZLE_R : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_g = p_image->astc_g ? RD::TEXTURE_SWIZZLE_G : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_b = p_image->astc_b ? RD::TEXTURE_SWIZZLE_B : RD::TEXTURE_SWIZZLE_ZERO;
+				r_format.swizzle_a = p_image->astc_a ? RD::TEXTURE_SWIZZLE_A : RD::TEXTURE_SWIZZLE_ONE;
+			}
 		} break;
 		default: {
 		}
