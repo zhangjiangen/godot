@@ -99,6 +99,14 @@ private:
 		Node *parent = nullptr;
 		Node *owner = nullptr;
 		Vector<Node *> children;
+		HashMap<StringName, Node *> owned_unique_nodes;
+		bool unique_name_in_owner = false;
+
+		int internal_children_front = 0;
+		int internal_children_back = 0;
+		int pos = -1;
+		int depth = -1;
+		int blocked = 0; // Safeguard that throws an error when attempting to modify the tree in a harmful way while being traversed.
 		StringName name;
 		SceneTree *tree = nullptr;
 #ifdef TOOLS_ENABLED
@@ -114,12 +122,7 @@ private:
 		List<Node *> owned;
 
 		Node *process_owner = nullptr;
-		int internal_children_front = 0;
-		int internal_children_back = 0;
-		int pos = -1;
-		int depth = -1;
-		int blocked = 0; // Safeguard that throws an error when attempting to modify the tree in a harmful way while being traversed.
-		// 排序权重
+        // 排序权重
 		int sort_weight = 0;
 
 		int multiplayer_authority = 1; // Server by default.
@@ -196,6 +199,9 @@ private:
 
 	_FORCE_INLINE_ bool _can_process(bool p_paused) const;
 	_FORCE_INLINE_ bool _is_enabled() const;
+
+	void _release_unique_name_in_owner();
+	void _acquire_unique_name_in_owner();
 
 protected:
 	void _block() { data.blocked++; }
@@ -349,6 +355,9 @@ public:
 	void set_owner(Node *p_owner);
 	Node *get_owner() const;
 	void get_owned_by(Node *p_by, List<Node *> *p_owned);
+
+	void set_unique_name_in_owner(bool p_enabled);
+	bool is_unique_name_in_owner() const;
 
 	void remove_and_skip();
 	int get_index(bool p_include_internal = true) const;
