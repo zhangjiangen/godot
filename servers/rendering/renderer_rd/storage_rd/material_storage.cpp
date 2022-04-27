@@ -339,7 +339,7 @@ _FORCE_INLINE_ static void _fill_std140_variant_ubo_value(ShaderLanguage::DataTy
 			}
 		} break;
 		case ShaderLanguage::TYPE_FLOAT: {
-			float *gui = (float *)data;
+			float *gui = reinterpret_cast<float *>(data);
 
 			if (p_array_size > 0) {
 				const PackedFloat32Array &a = value;
@@ -361,7 +361,7 @@ _FORCE_INLINE_ static void _fill_std140_variant_ubo_value(ShaderLanguage::DataTy
 			}
 		} break;
 		case ShaderLanguage::TYPE_VEC2: {
-			float *gui = (float *)data;
+			float *gui = reinterpret_cast<float *>(data);
 
 			if (p_array_size > 0) {
 				const PackedVector2Array &a = value;
@@ -385,7 +385,7 @@ _FORCE_INLINE_ static void _fill_std140_variant_ubo_value(ShaderLanguage::DataTy
 			}
 		} break;
 		case ShaderLanguage::TYPE_VEC3: {
-			float *gui = (float *)data;
+			float *gui = reinterpret_cast<float *>(data);
 
 			if (p_array_size > 0) {
 				const PackedVector3Array &a = value;
@@ -411,7 +411,7 @@ _FORCE_INLINE_ static void _fill_std140_variant_ubo_value(ShaderLanguage::DataTy
 			}
 		} break;
 		case ShaderLanguage::TYPE_VEC4: {
-			float *gui = (float *)data;
+			float *gui = reinterpret_cast<float *>(data);
 
 			if (p_array_size > 0) {
 				if (value.get_type() == Variant::PACKED_COLOR_ARRAY) {
@@ -500,7 +500,7 @@ _FORCE_INLINE_ static void _fill_std140_variant_ubo_value(ShaderLanguage::DataTy
 			}
 		} break;
 		case ShaderLanguage::TYPE_MAT2: {
-			float *gui = (float *)data;
+			float *gui = reinterpret_cast<float *>(data);
 
 			if (p_array_size > 0) {
 				const PackedFloat32Array &a = value;
@@ -541,7 +541,7 @@ _FORCE_INLINE_ static void _fill_std140_variant_ubo_value(ShaderLanguage::DataTy
 			}
 		} break;
 		case ShaderLanguage::TYPE_MAT3: {
-			float *gui = (float *)data;
+			float *gui = reinterpret_cast<float *>(data);
 
 			if (p_array_size > 0) {
 				const PackedFloat32Array &a = value;
@@ -596,7 +596,7 @@ _FORCE_INLINE_ static void _fill_std140_variant_ubo_value(ShaderLanguage::DataTy
 			}
 		} break;
 		case ShaderLanguage::TYPE_MAT4: {
-			float *gui = (float *)data;
+			float *gui = reinterpret_cast<float *>(data);
 
 			if (p_array_size > 0) {
 				const PackedFloat32Array &a = value;
@@ -757,12 +757,12 @@ _FORCE_INLINE_ static void _fill_std140_ubo_value(ShaderLanguage::DataType type,
 			}
 		} break;
 		case ShaderLanguage::TYPE_FLOAT: {
-			float *gui = (float *)data;
+			float *gui = reinterpret_cast<float *>(data);
 			gui[0] = value[0].real;
 
 		} break;
 		case ShaderLanguage::TYPE_VEC2: {
-			float *gui = (float *)data;
+			float *gui = reinterpret_cast<float *>(data);
 
 			for (int i = 0; i < 2; i++) {
 				gui[i] = value[i].real;
@@ -770,7 +770,7 @@ _FORCE_INLINE_ static void _fill_std140_ubo_value(ShaderLanguage::DataType type,
 
 		} break;
 		case ShaderLanguage::TYPE_VEC3: {
-			float *gui = (float *)data;
+			float *gui = reinterpret_cast<float *>(data);
 
 			for (int i = 0; i < 3; i++) {
 				gui[i] = value[i].real;
@@ -778,14 +778,14 @@ _FORCE_INLINE_ static void _fill_std140_ubo_value(ShaderLanguage::DataType type,
 
 		} break;
 		case ShaderLanguage::TYPE_VEC4: {
-			float *gui = (float *)data;
+			float *gui = reinterpret_cast<float *>(data);
 
 			for (int i = 0; i < 4; i++) {
 				gui[i] = value[i].real;
 			}
 		} break;
 		case ShaderLanguage::TYPE_MAT2: {
-			float *gui = (float *)data;
+			float *gui = reinterpret_cast<float *>(data);
 
 			//in std140 members of mat2 are treated as vec4s
 			gui[0] = value[0].real;
@@ -798,7 +798,7 @@ _FORCE_INLINE_ static void _fill_std140_ubo_value(ShaderLanguage::DataType type,
 			gui[7] = 0;
 		} break;
 		case ShaderLanguage::TYPE_MAT3: {
-			float *gui = (float *)data;
+			float *gui = reinterpret_cast<float *>(data);
 
 			gui[0] = value[0].real;
 			gui[1] = value[1].real;
@@ -814,7 +814,7 @@ _FORCE_INLINE_ static void _fill_std140_ubo_value(ShaderLanguage::DataType type,
 			gui[11] = 0;
 		} break;
 		case ShaderLanguage::TYPE_MAT4: {
-			float *gui = (float *)data;
+			float *gui = reinterpret_cast<float *>(data);
 
 			for (int i = 0; i < 16; i++) {
 				gui[i] = value[i].real;
@@ -1894,7 +1894,7 @@ void MaterialStorage::global_variable_remove(const StringName &p_name) {
 	if (!global_variables.variables.has(p_name)) {
 		return;
 	}
-	GlobalVariables::Variable &gv = global_variables.variables[p_name];
+	const GlobalVariables::Variable &gv = global_variables.variables[p_name];
 
 	if (gv.buffer_index >= 0) {
 		global_variables.buffer_usage[gv.buffer_index].elements = 0;
@@ -2119,7 +2119,7 @@ void MaterialStorage::global_variables_instance_update(RID p_instance, int p_ind
 	ERR_FAIL_INDEX(p_index, ShaderLanguage::MAX_INSTANCE_UNIFORM_INDICES);
 	ERR_FAIL_COND_MSG(p_value.get_type() > Variant::COLOR, "Unsupported variant type for instance parameter: " + Variant::get_type_name(p_value.get_type())); //anything greater not supported
 
-	ShaderLanguage::DataType datatype_from_value[Variant::COLOR + 1] = {
+	const ShaderLanguage::DataType datatype_from_value[Variant::COLOR + 1] = {
 		ShaderLanguage::TYPE_MAX, //nil
 		ShaderLanguage::TYPE_BOOL, //bool
 		ShaderLanguage::TYPE_INT, //int
