@@ -520,8 +520,6 @@ public:
 	void rpcp(int p_peer_id, const StringName &p_method, const Variant **p_arg, int p_argcount);
 
 	Ref<MultiplayerAPI> get_multiplayer() const;
-	Ref<MultiplayerAPI> get_custom_multiplayer() const;
-	void set_custom_multiplayer(Ref<MultiplayerAPI> p_multiplayer);
 
 	void set_load_by_avatar_resource(bool p_value) {
 		data.load_form_avatar_resource = p_value;

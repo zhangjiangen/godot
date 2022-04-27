@@ -429,7 +429,7 @@ Error RenderingServer::_surface_set_data(Array p_arrays, uint32_t p_format, uint
 						value |= CLAMP(int((src[i * 4 + 1] * 0.5 + 0.5) * 1023.0), 0, 1023) << 10;
 						value |= CLAMP(int((src[i * 4 + 2] * 0.5 + 0.5) * 1023.0), 0, 1023) << 20;
 						if (src[i * 4 + 3] > 0) {
-							value |= 3 << 30;
+							value |= 3UL << 30;
 						}
 
 						memcpy(&vw[p_offsets[ai] + i * p_vertex_stride], &value, 4);
@@ -445,7 +445,7 @@ Error RenderingServer::_surface_set_data(Array p_arrays, uint32_t p_format, uint
 						value |= CLAMP(int((src[i * 4 + 1] * 0.5 + 0.5) * 1023.0), 0, 1023) << 10;
 						value |= CLAMP(int((src[i * 4 + 2] * 0.5 + 0.5) * 1023.0), 0, 1023) << 20;
 						if (src[i * 4 + 3] > 0) {
-							value |= 3 << 30;
+							value |= 3UL << 30;
 						}
 						memcpy(&vw[p_offsets[ai] + i * p_vertex_stride], &value, 4);
 					}
@@ -1098,7 +1098,7 @@ Array RenderingServer::_get_array_from_surface(uint32_t p_format, Vector<uint8_t
 						Vector2 *w = arr_2d.ptrw();
 
 						for (int j = 0; j < p_vertex_len; j++) {
-							const float *v = (const float *)&r[j * vertex_elem_size + offsets[i]];
+							const float *v = reinterpret_cast<const float *>(&r[j * vertex_elem_size + offsets[i]]);
 							w[j] = Vector2(v[0], v[1]);
 						}
 					}
@@ -1112,7 +1112,7 @@ Array RenderingServer::_get_array_from_surface(uint32_t p_format, Vector<uint8_t
 						Vector3 *w = arr_3d.ptrw();
 
 						for (int j = 0; j < p_vertex_len; j++) {
-							const float *v = (const float *)&r[j * vertex_elem_size + offsets[i]];
+							const float *v = reinterpret_cast<const float *>(&r[j * vertex_elem_size + offsets[i]]);
 							w[j] = Vector3(v[0], v[1], v[2]);
 						}
 					}
@@ -1161,7 +1161,7 @@ Array RenderingServer::_get_array_from_surface(uint32_t p_format, Vector<uint8_t
 				Color *w = arr.ptrw();
 
 				for (int32_t j = 0; j < p_vertex_len; j++) {
-					const uint8_t *v = (const uint8_t *)&ar[j * attrib_elem_size + offsets[i]];
+					const uint8_t *v = reinterpret_cast<const uint8_t *>(&ar[j * attrib_elem_size + offsets[i]]);
 
 					w[j] = Color(v[0] / 255.0, v[1] / 255.0, v[2] / 255.0, v[3] / 255.0);
 				}
@@ -1175,7 +1175,7 @@ Array RenderingServer::_get_array_from_surface(uint32_t p_format, Vector<uint8_t
 				Vector2 *w = arr.ptrw();
 
 				for (int j = 0; j < p_vertex_len; j++) {
-					const float *v = (const float *)&ar[j * attrib_elem_size + offsets[i]];
+					const float *v = reinterpret_cast<const float *>(&ar[j * attrib_elem_size + offsets[i]]);
 					w[j] = Vector2(v[0], v[1]);
 				}
 
@@ -1189,7 +1189,7 @@ Array RenderingServer::_get_array_from_surface(uint32_t p_format, Vector<uint8_t
 				Vector2 *w = arr.ptrw();
 
 				for (int j = 0; j < p_vertex_len; j++) {
-					const float *v = (const float *)&ar[j * attrib_elem_size + offsets[i]];
+					const float *v = reinterpret_cast<const float *>(&ar[j * attrib_elem_size + offsets[i]]);
 					w[j] = Vector2(v[0], v[1]);
 				}
 
@@ -1214,7 +1214,7 @@ Array RenderingServer::_get_array_from_surface(uint32_t p_format, Vector<uint8_t
 						uint8_t *w = arr.ptrw();
 
 						for (int j = 0; j < p_vertex_len; j++) {
-							const uint8_t *v = (const uint8_t *)&ar[j * attrib_elem_size + offsets[i]];
+							const uint8_t *v = reinterpret_cast<const uint8_t *>(&ar[j * attrib_elem_size + offsets[i]]);
 							memcpy(&w[j * s], v, s);
 						}
 
@@ -1233,7 +1233,7 @@ Array RenderingServer::_get_array_from_surface(uint32_t p_format, Vector<uint8_t
 						float *w = arr.ptrw();
 
 						for (int j = 0; j < p_vertex_len; j++) {
-							const float *v = (const float *)&ar[j * attrib_elem_size + offsets[i]];
+							const float *v = reinterpret_cast<const float *>(&ar[j * attrib_elem_size + offsets[i]]);
 							memcpy(&w[j * s], v, s * sizeof(float));
 						}
 						ret[i] = arr;

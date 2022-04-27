@@ -768,6 +768,7 @@ public:
 			LOCAL_BIND, // Pattern bind.
 			MEMBER_VARIABLE,
 			MEMBER_CONSTANT,
+			INHERITED_VARIABLE,
 		};
 		Source source = UNDEFINED_SOURCE;
 
@@ -801,6 +802,7 @@ public:
 		FunctionNode *parent_function = nullptr;
 		Vector<IdentifierNode *> captures;
 		Map<StringName, int> captures_indices;
+		bool use_self = false;
 
 		bool has_name() const {
 			return function && function->identifier;
