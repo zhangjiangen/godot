@@ -301,6 +301,7 @@ void EditorResourcePreview::_iterate() {
 						} else {
 							New_instantiate(texture);
 							texture->create_from_image(img);
+							texture->set_name("priview/" + cache_base + ".png");
 
 							if (has_small_texture) {
 								if (small_img->load(cache_base + "_small.png") != OK) {

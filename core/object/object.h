@@ -34,6 +34,7 @@
 #include "core/extension/gdnative_interface.h"
 #include "core/object/message_queue.h"
 #include "core/object/object_id.h"
+#include "core/os/mutex.h"
 #include "core/os/rw_lock.h"
 #include "core/os/spin_lock.h"
 #include "core/templates/hash_map.h"
@@ -1173,7 +1174,7 @@ class ObjectDB {
 		Object *object = nullptr;
 	};
 
-	static SpinLock spin_lock;
+	static Mutex spin_lock;
 	static uint32_t slot_count;
 	static uint32_t slot_max;
 	static ObjectSlot *object_slots;

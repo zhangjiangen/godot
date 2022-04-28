@@ -4042,6 +4042,7 @@ Ref<ImageTexture> EditorNode::_load_custom_class_icon(const String &p_path) cons
 		if (err == OK) {
 			Ref<ImageTexture> icon = memnew(ImageTexture);
 			img->resize(16 * EDSCALE, 16 * EDSCALE, Image::INTERPOLATE_LANCZOS);
+			icon->set_name("custom/class/icon/" + p_path);
 			icon->create_from_image(img);
 			return icon;
 		}
@@ -5419,6 +5420,7 @@ Variant EditorNode::drag_resource(const Ref<Resource> &p_res, Control *p_from) {
 		img->resize(48, 48); // meh
 		Ref<ImageTexture> resized_pic = Ref<ImageTexture>(memnew(ImageTexture));
 		resized_pic->create_from_image(img);
+		resized_pic->set_name("drag/bigicon/" + p_res->get_name());
 		preview = resized_pic;
 	}
 

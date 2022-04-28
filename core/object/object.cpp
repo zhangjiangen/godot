@@ -1956,7 +1956,7 @@ void ObjectDB::debug_objects(DebugFunc p_func) {
 void Object::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
 }
 
-SpinLock ObjectDB::spin_lock;
+Mutex ObjectDB::spin_lock;
 uint32_t ObjectDB::slot_count = 0;
 uint32_t ObjectDB::slot_max = 0;
 ObjectDB::ObjectSlot *ObjectDB::object_slots = nullptr;

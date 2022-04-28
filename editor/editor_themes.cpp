@@ -108,6 +108,7 @@ static Ref<Texture2D> flip_icon(Ref<Texture2D> p_texture, bool p_flip_y = false,
 	}
 
 	texture->create_from_image(img);
+	texture->set_name("flip/" + p_texture->get_name());
 	return texture;
 }
 
@@ -116,6 +117,7 @@ static Ref<Texture2D> flip_icon(Ref<Texture2D> p_texture, bool p_flip_y = false,
 static Ref<ImageTexture> editor_generate_icon(int p_index, bool p_convert_color, float p_scale = EDSCALE, float p_saturation = 1.0, Dictionary p_convert_colors = Dictionary()) {
 	Ref<ImageTexture> icon = memnew(ImageTexture);
 	Ref<Image> img = memnew(Image);
+	icon->set_name("icon/themes/" + itos(p_index));
 
 	// Upsample icon generation only if the editor scale isn't an integer multiplier.
 	// Generating upsampled icons is slower, and the benefit is hardly visible
@@ -1283,6 +1285,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 
 	// HScrollBar
 	Ref<Texture2D> empty_icon = memnew(ImageTexture);
+	empty_icon->set_name(SNAME("GuiHscrollEmpty"));
 
 	theme->set_stylebox("scroll", "HScrollBar", make_stylebox(theme->get_icon(SNAME("GuiScrollBg"), SNAME("EditorIcons")), 5, 5, 5, 5, 0, 0, 0, 0));
 	theme->set_stylebox("scroll_focus", "HScrollBar", make_stylebox(theme->get_icon(SNAME("GuiScrollBg"), SNAME("EditorIcons")), 5, 5, 5, 5, 0, 0, 0, 0));

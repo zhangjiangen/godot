@@ -169,6 +169,7 @@ void EditorAssetLibraryItemDescription::set_image(int p_type, int p_index, const
 
 						Ref<ImageTexture> tex;
 						New_instantiate(tex);
+						tex->set_name("Asset/Library/" + p_image->get_name());
 						tex->create_from_image(thumbnail);
 
 						preview_images[i].button->set_icon(tex);
@@ -783,6 +784,7 @@ void EditorAssetLibrary::_image_update(bool use_cache, bool final, const PackedB
 			}
 
 			Ref<ImageTexture> tex;
+			tex->set_name("asset/image");
 			New_instantiate(tex);
 			tex->create_from_image(image);
 

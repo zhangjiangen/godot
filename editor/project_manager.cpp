@@ -1167,6 +1167,7 @@ void ProjectList::load_project_icon(int p_index) {
 		if (err == OK) {
 			img->resize(default_icon->get_width(), default_icon->get_height(), Image::INTERPOLATE_LANCZOS);
 			Ref<ImageTexture> it = memnew(ImageTexture);
+			it->set_name("project/icon/" + item.project_key);
 			it->create_from_image(img);
 			icon = it;
 		}

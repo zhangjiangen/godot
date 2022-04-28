@@ -4419,6 +4419,7 @@ void TileSetAtlasSource::_update_padded_texture() {
 	}
 	padded_texture_needs_update = false;
 	padded_texture = Ref<ImageTexture>();
+	padded_texture->set_name("padded_texture");
 
 	if (!texture.is_valid()) {
 		return;

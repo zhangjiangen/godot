@@ -135,6 +135,7 @@ Vector<Ref<Texture2D>> EditorInterface::make_mesh_previews(const Vector<Ref<Mesh
 		ERR_CONTINUE(!img.is_valid() || img->is_empty());
 		Ref<ImageTexture> it(memnew(ImageTexture));
 		it->create_from_image(img);
+		it->set_name("mesh/previews/" + mesh->get_name());
 
 		RS::get_singleton()->free(inst);
 

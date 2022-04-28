@@ -177,6 +177,7 @@ Ref<Texture2D> EditorImagePreviewPlugin::generate(const RES &p_from, const Size2
 
 	Ref<ImageTexture> ptex;
 	New_instantiate(ptex);
+	ptex->set_name("image_preview/" + p_from->get_name());
 
 	ptex->create_from_image(img);
 	return ptex;
@@ -288,6 +289,7 @@ Ref<Texture2D> EditorPackedScenePreviewPlugin::generate_from_path(const String &
 
 		post_process_preview(img);
 		ptex->create_from_image(img);
+		ptex->set_name("packed_scene_preview/" + p_path);
 		return ptex;
 
 	} else {
@@ -936,6 +938,7 @@ Ref<Texture2D> EditorGradientPreviewPlugin::generate(const RES &p_from, const Si
 		Ref<ImageTexture> itex;
 		itex.instantiate();
 		itex->create_from_image(ptex->get_image());
+		itex->set_name("gradient/preview/" + p_from->get_name());
 		return itex;
 	}
 	return Ref<Texture2D>();

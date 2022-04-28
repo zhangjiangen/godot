@@ -1467,6 +1467,7 @@ void TextServerFallback::font_set_texture_image(const RID &p_font_rid, const Vec
 	}
 
 	tex.texture = Ref<ImageTexture>();
+	tex.texture->set_name("font/texture");
 	New_instantiate(tex.texture);
 	tex.texture->create_from_image(img);
 	tex.dirty = false;
@@ -1761,6 +1762,7 @@ RID TextServerFallback::font_get_glyph_texture_rid(const RID &p_font_rid, const 
 				}
 				if (tex.texture.is_null()) {
 					tex.texture.instantiate();
+					tex.texture.set_name("Font Texture");
 					tex.texture->create_from_image(img);
 				} else {
 					tex.texture->update(img);
@@ -1801,6 +1803,7 @@ Size2 TextServerFallback::font_get_glyph_texture_size(const RID &p_font_rid, con
 				}
 				if (tex.texture.is_null()) {
 					tex.texture.instantiate();
+					tex.texture.set_name("Font Texture");
 					tex.texture->create_from_image(img);
 				} else {
 					tex.texture->update(img);
@@ -2107,6 +2110,7 @@ void TextServerFallback::font_draw_glyph(const RID &p_font_rid, const RID &p_can
 					}
 					if (tex.texture.is_null()) {
 						tex.texture.instantiate();
+						tex.texture.set_name("Font Texture");
 						tex.texture->create_from_image(img);
 					} else {
 						tex.texture->update(img);
@@ -2186,6 +2190,7 @@ void TextServerFallback::font_draw_glyph_outline(const RID &p_font_rid, const RI
 					}
 					if (tex.texture.is_null()) {
 						tex.texture.instantiate();
+						tex.texture.set_name("Font Texture");
 						tex.texture->create_from_image(img);
 					} else {
 						tex.texture->update(img);

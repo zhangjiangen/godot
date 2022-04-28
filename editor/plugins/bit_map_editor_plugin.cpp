@@ -35,6 +35,7 @@
 void BitMapEditor::setup(const Ref<BitMap> &p_bitmap) {
 	Ref<ImageTexture> texture;
 	texture.instantiate();
+	texture->set_name("BitMapEditor/texture");
 	texture->create_from_image(p_bitmap->convert_to_image());
 	texture_rect->set_texture(texture);
 

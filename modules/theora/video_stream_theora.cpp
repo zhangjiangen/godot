@@ -642,7 +642,7 @@ void VideoStreamPlaybackTheora::_streaming_thread(void *ud) {
 
 VideoStreamPlaybackTheora::VideoStreamPlaybackTheora() {
 	texture = Ref<ImageTexture>(memnew(ImageTexture));
-
+	texture->set_name("theora_texture");
 #ifdef THEORA_USE_THREAD_STREAMING
 	int rb_power = nearest_shift(RB_SIZE_KB * 1024);
 	ring_buffer.resize(rb_power);

@@ -303,6 +303,7 @@ void GPUParticles2DEditorPlugin::_generate_emission_mask() {
 	Ref<ImageTexture> imgt;
 	New_instantiate(imgt);
 	imgt->create_from_image(img);
+	imgt->set_name("Particles2D/Emission/Texture");
 
 	pm->set_emission_point_texture(imgt);
 	pm->set_emission_point_count(vpc);

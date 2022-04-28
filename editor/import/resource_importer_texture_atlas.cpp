@@ -91,6 +91,7 @@ Error ResourceImporterTextureAtlas::import(const String &p_source_file, const St
 	Ref<ImageTexture> broken_texture;
 	broken_texture.instantiate();
 	broken_texture->create_from_image(broken);
+	broken_texture->set_name("broken_texture");
 
 	String target_file = p_save_path + ".tex";
 
@@ -313,6 +314,7 @@ Error ResourceImporterTextureAtlas::import_group_file(const String &p_group_file
 		New_instantiate(res_cache);
 		res_cache->create_from_image(new_atlas);
 		res_cache->set_path(p_group_file);
+		res_cache->set_name("group/" + p_group_file);
 		cache = res_cache;
 	}
 

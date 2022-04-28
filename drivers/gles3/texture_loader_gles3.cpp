@@ -61,6 +61,7 @@ RES ResourceFormatGLES2Texture::load(const String &p_path, const String &p_origi
 
 	Ref<ImageTexture> texture = memnew(ImageTexture);
 	texture->create_from_image(img);
+	texture->set_name(p_path);
 
 	if (r_error) {
 		*r_error = OK;

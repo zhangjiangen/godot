@@ -51,6 +51,7 @@ void EditorRunNative::_notification(int p_what) {
 						im->resize(16 * EDSCALE, 16 * EDSCALE);
 						Ref<ImageTexture> small_icon;
 						New_instantiate(small_icon);
+						small_icon->set_name("RunNative/" + icon->get_name());
 						small_icon->create_from_image(im);
 						MenuButton *mb = memnew(MenuButton);
 						mb->get_popup()->connect("id_pressed", callable_mp(this, &EditorRunNative::run_native), varray(i));

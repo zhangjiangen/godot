@@ -78,6 +78,7 @@ static Ref<StyleBoxFlat> sb_expand(Ref<StyleBoxFlat> p_sbox, float p_left, float
 static Ref<ImageTexture> generate_icon(int p_index) {
 	Ref<ImageTexture> icon = memnew(ImageTexture);
 	Ref<Image> img = memnew(Image);
+	icon->set_name(String("svg/icon/") + default_theme_icons_sources[p_index]);
 
 #ifdef MODULE_SVG_ENABLED
 	// Upsample icon generation only if the scale isn't an integer multiplier.
@@ -501,6 +502,7 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	theme->set_constant("outline_size", "CodeEdit", 0);
 
 	Ref<Texture2D> empty_icon = memnew(ImageTexture);
+	empty_icon->set_name("empty_icon");
 
 	const Ref<StyleBoxFlat> style_scrollbar = make_flat_stylebox(style_normal_color, 4, 4, 4, 4, 10);
 	Ref<StyleBoxFlat> style_scrollbar_grabber = make_flat_stylebox(style_progress_color, 4, 4, 4, 4, 10);

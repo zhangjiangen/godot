@@ -312,6 +312,7 @@ void EditorProfiler::_update_plot() {
 		if (graph_texture.is_null()) {
 			New_instantiate(graph_texture);
 		}
+		graph_texture->set_name("ProfilerGraph");
 		graph_texture->create_from_image(img);
 	}
 

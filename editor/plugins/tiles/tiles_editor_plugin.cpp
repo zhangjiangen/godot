@@ -124,6 +124,7 @@ void TilesEditorPlugin::_thread() {
 				Ref<ImageTexture> image_texture;
 				New_instantiate(image_texture);
 				image_texture->create_from_image(image);
+				image_texture->set_name("tile/" + item.pattern->get_name());
 
 				// Find the index for the given pattern. TODO: optimize.
 				Variant args[] = { item.pattern, image_texture };
