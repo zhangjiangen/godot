@@ -83,6 +83,8 @@ def get_opts():
         BoolVariable(
             "dbus", "Detect and use D-Bus to handle screensaver", True),
         BoolVariable(
+            "speechd", "Detect and use Speech Dispatcher for Text-to-Speech support", True),
+        BoolVariable(
             "udev", "Use udev for gamepad connection callbacks", True),
         BoolVariable("x11", "Enable X11 display", True),
         BoolVariable(
@@ -335,14 +337,16 @@ def configure(env):
     if os.system("pkg-config --exists alsa") == 0:  # 0 means found
         env["alsa"] = True
         env.Append(CPPDEFINES=["ALSA_ENABLED", "ALSAMIDI_ENABLED"])
-        env.ParseConfig("pkg-config alsa --cflags")  # Only cflags, we dlopen the library.
+        # Only cflags, we dlopen the library.
+        env.ParseConfig("pkg-config alsa --cflags")
     else:
         print("Warning: ALSA libraries not found. Disabling the ALSA audio driver.")
 
     if env["pulseaudio"]:
         if os.system("pkg-config --exists libpulse") == 0:  # 0 means found
             env.Append(CPPDEFINES=["PULSEAUDIO_ENABLED"])
-            env.ParseConfig("pkg-config libpulse --cflags")  # Only cflags, we dlopen the library.
+            # Only cflags, we dlopen the library.
+            env.ParseConfig("pkg-config libpulse --cflags")
         else:
             print(
                 "Warning: PulseAudio development libraries not found. Disabling the PulseAudio audio driver.")
@@ -355,12 +359,22 @@ def configure(env):
             print(
                 "Warning: D-Bus development libraries not found. Disabling screensaver prevention.")
 
+    if env["speechd"]:
+        if os.system("pkg-config --exists speech-dispatcher") == 0:  # 0 means found
+            env.Append(CPPDEFINES=["SPEECHD_ENABLED"])
+            # Only cflags, we dlopen the library.
+            env.ParseConfig("pkg-config speech-dispatcher --cflags")
+        else:
+            print(
+                "Warning: Speech Dispatcher development libraries not found. Disabling Text-to-Speech support.")
+
     if platform.system() == "Linux":
         env.Append(CPPDEFINES=["JOYDEV_ENABLED"])
         if env["udev"]:
             if os.system("pkg-config --exists libudev") == 0:  # 0 means found
                 env.Append(CPPDEFINES=["UDEV_ENABLED"])
-                env.ParseConfig("pkg-config libudev --cflags")  # Only cflags, we dlopen the library.
+                # Only cflags, we dlopen the library.
+                env.ParseConfig("pkg-config libudev --cflags")
             else:
                 print(
                     "Warning: libudev development libraries not found. Disabling controller hotplugging support.")
