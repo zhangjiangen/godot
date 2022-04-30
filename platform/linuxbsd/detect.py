@@ -348,6 +348,7 @@ def configure(env):
             # Only cflags, we dlopen the library.
             env.ParseConfig("pkg-config libpulse --cflags")
         else:
+            env["pulseaudio"] = False
             print(
                 "Warning: PulseAudio development libraries not found. Disabling the PulseAudio audio driver.")
 
@@ -365,6 +366,7 @@ def configure(env):
             # Only cflags, we dlopen the library.
             env.ParseConfig("pkg-config speech-dispatcher --cflags")
         else:
+            env["speechd"] = False
             print(
                 "Warning: Speech Dispatcher development libraries not found. Disabling Text-to-Speech support.")
 
@@ -376,6 +378,7 @@ def configure(env):
                 # Only cflags, we dlopen the library.
                 env.ParseConfig("pkg-config libudev --cflags")
             else:
+                env["udev"] = False
                 print(
                     "Warning: libudev development libraries not found. Disabling controller hotplugging support.")
     else:
