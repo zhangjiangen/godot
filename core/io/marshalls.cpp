@@ -317,7 +317,7 @@ Error decode_variant(Variant &r_variant, const uint8_t *p_buffer, int p_len, int
 				ERR_FAIL_COND_V((size_t)len < sizeof(double) * 6, ERR_INVALID_DATA);
 				for (int i = 0; i < 3; i++) {
 					for (int j = 0; j < 2; j++) {
-						val.elements[i][j] = decode_double(&buf[(i * 2 + j) * sizeof(double)]);
+						val.columns[i][j] = decode_double(&buf[(i * 2 + j) * sizeof(double)]);
 					}
 				}
 
@@ -328,7 +328,7 @@ Error decode_variant(Variant &r_variant, const uint8_t *p_buffer, int p_len, int
 				ERR_FAIL_COND_V((size_t)len < sizeof(float) * 6, ERR_INVALID_DATA);
 				for (int i = 0; i < 3; i++) {
 					for (int j = 0; j < 2; j++) {
-						val.elements[i][j] = decode_float(&buf[(i * 2 + j) * sizeof(float)]);
+						val.columns[i][j] = decode_float(&buf[(i * 2 + j) * sizeof(float)]);
 					}
 				}
 
@@ -427,7 +427,7 @@ Error decode_variant(Variant &r_variant, const uint8_t *p_buffer, int p_len, int
 				ERR_FAIL_COND_V((size_t)len < sizeof(double) * 9, ERR_INVALID_DATA);
 				for (int i = 0; i < 3; i++) {
 					for (int j = 0; j < 3; j++) {
-						val.elements[i][j] = decode_double(&buf[(i * 3 + j) * sizeof(double)]);
+						val.rows[i][j] = decode_double(&buf[(i * 3 + j) * sizeof(double)]);
 					}
 				}
 
@@ -438,7 +438,7 @@ Error decode_variant(Variant &r_variant, const uint8_t *p_buffer, int p_len, int
 				ERR_FAIL_COND_V((size_t)len < sizeof(float) * 9, ERR_INVALID_DATA);
 				for (int i = 0; i < 3; i++) {
 					for (int j = 0; j < 3; j++) {
-						val.elements[i][j] = decode_float(&buf[(i * 3 + j) * sizeof(float)]);
+						val.rows[i][j] = decode_float(&buf[(i * 3 + j) * sizeof(float)]);
 					}
 				}
 
@@ -455,7 +455,7 @@ Error decode_variant(Variant &r_variant, const uint8_t *p_buffer, int p_len, int
 				ERR_FAIL_COND_V((size_t)len < sizeof(double) * 12, ERR_INVALID_DATA);
 				for (int i = 0; i < 3; i++) {
 					for (int j = 0; j < 3; j++) {
-						val.basis.elements[i][j] = decode_double(&buf[(i * 3 + j) * sizeof(double)]);
+						val.basis.rows[i][j] = decode_double(&buf[(i * 3 + j) * sizeof(double)]);
 					}
 				}
 				val.origin[0] = decode_double(&buf[sizeof(double) * 9]);
@@ -469,7 +469,7 @@ Error decode_variant(Variant &r_variant, const uint8_t *p_buffer, int p_len, int
 				ERR_FAIL_COND_V((size_t)len < sizeof(float) * 12, ERR_INVALID_DATA);
 				for (int i = 0; i < 3; i++) {
 					for (int j = 0; j < 3; j++) {
-						val.basis.elements[i][j] = decode_float(&buf[(i * 3 + j) * sizeof(float)]);
+						val.basis.rows[i][j] = decode_float(&buf[(i * 3 + j) * sizeof(float)]);
 					}
 				}
 				val.origin[0] = decode_float(&buf[sizeof(float) * 9]);
@@ -627,7 +627,7 @@ Error decode_variant(Variant &r_variant, const uint8_t *p_buffer, int p_len, int
 					}
 
 					if (Object::cast_to<RefCounted>(obj)) {
-						REF ref = REF(Object::cast_to<RefCounted>(obj));
+						Ref<RefCounted> ref = Ref<RefCounted>(Object::cast_to<RefCounted>(obj));
 						r_variant = ref;
 					} else {
 						r_variant = obj;
@@ -1300,7 +1300,7 @@ Error encode_variant(const Variant &p_variant, uint8_t *r_buffer, int &r_len, bo
 				Transform2D val = p_variant;
 				for (int i = 0; i < 3; i++) {
 					for (int j = 0; j < 2; j++) {
-						memcpy(&buf[(i * 2 + j) * sizeof(real_t)], &val.elements[i][j], sizeof(real_t));
+						memcpy(&buf[(i * 2 + j) * sizeof(real_t)], &val.columns[i][j], sizeof(real_t));
 					}
 				}
 			}
@@ -1351,7 +1351,7 @@ Error encode_variant(const Variant &p_variant, uint8_t *r_buffer, int &r_len, bo
 				Basis val = p_variant;
 				for (int i = 0; i < 3; i++) {
 					for (int j = 0; j < 3; j++) {
-						memcpy(&buf[(i * 3 + j) * sizeof(real_t)], &val.elements[i][j], sizeof(real_t));
+						memcpy(&buf[(i * 3 + j) * sizeof(real_t)], &val.rows[i][j], sizeof(real_t));
 					}
 				}
 			}
@@ -1364,7 +1364,7 @@ Error encode_variant(const Variant &p_variant, uint8_t *r_buffer, int &r_len, bo
 				Transform3D val = p_variant;
 				for (int i = 0; i < 3; i++) {
 					for (int j = 0; j < 3; j++) {
-						memcpy(&buf[(i * 3 + j) * sizeof(real_t)], &val.basis.elements[i][j], sizeof(real_t));
+						memcpy(&buf[(i * 3 + j) * sizeof(real_t)], &val.basis.rows[i][j], sizeof(real_t));
 					}
 				}
 

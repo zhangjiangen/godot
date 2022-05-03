@@ -452,7 +452,7 @@ struct VariantUtilityFunctions {
 			r_error.error = Callable::CallError::CALL_OK;
 			if (obj.is_ref_counted()) {
 				Ref<WeakRef> wref = memnew(WeakRef);
-				REF r = obj;
+				Ref<RefCounted> r = obj;
 				if (r.is_valid()) {
 					wref->set_ref(r);
 				}
@@ -1237,16 +1237,16 @@ static _FORCE_INLINE_ Variant::Type get_ret_type_helper(void (*p_func)(P...)) {
 	register_utility_function<Func_##m_func>(#m_func, m_args)
 
 struct VariantUtilityFunctionInfo {
+	void (*call_utility)(Variant *r_ret, const Variant **p_args, int p_argcount, Callable::CallError &r_error) = nullptr;
+	Variant::ValidatedUtilityFunction validated_call_utility = nullptr;
+	Variant::PTRUtilityFunction ptr_call_utility = nullptr;
 	Vector<String> argnames;
-	void (*call_utility)(Variant *r_ret, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
-	Variant::ValidatedUtilityFunction validated_call_utility;
-	Variant::PTRUtilityFunction ptr_call_utility;
-	Variant::Type (*get_arg_type)(int);
-	short argcount;
+	bool is_vararg = false;
+	bool returns_value = false;
+	int argcount = 0;
+	Variant::Type (*get_arg_type)(int) = nullptr;
 	Variant::Type return_type;
 	Variant::UtilityFunctionType type;
-	bool is_vararg;
-	bool returns_value;
 };
 
 static OAHashMap<StringName, VariantUtilityFunctionInfo> utility_function_table;
@@ -1371,8 +1371,8 @@ void Variant::_register_variant_utility_functions() {
 	FUNCBINDR(randi_range, sarray("from", "to"), Variant::UTILITY_FUNC_TYPE_RANDOM);
 	FUNCBINDR(randf_range, sarray("from", "to"), Variant::UTILITY_FUNC_TYPE_RANDOM);
 	FUNCBINDR(randfn, sarray("mean", "deviation"), Variant::UTILITY_FUNC_TYPE_RANDOM);
-	FUNCBIND(random_vec_on_unit_sphere, sarray(), Variant::UTILITY_FUNC_TYPE_RANDOM);
-	FUNCBIND(random_vec, sarray(), Variant::UTILITY_FUNC_TYPE_RANDOM);
+    FUNCBINDR(random_vec_on_unit_sphere, sarray(), Variant::UTILITY_FUNC_TYPE_RANDOM);
+    FUNCBINDR(random_vec, sarray(), Variant::UTILITY_FUNC_TYPE_RANDOM);
 	FUNCBIND(seed, sarray("base"), Variant::UTILITY_FUNC_TYPE_RANDOM);
 	FUNCBINDR(rand_from_seed, sarray("seed"), Variant::UTILITY_FUNC_TYPE_RANDOM);
 

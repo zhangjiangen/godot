@@ -40,7 +40,7 @@ struct _CoreConstant {
 #ifdef DEBUG_METHODS_ENABLED
 	StringName enum_name;
 #endif
-	const char *name;
+	const char *name = nullptr;
 	int value = 0;
 #ifdef DEBUG_METHODS_ENABLED
 	bool ignore_value_in_docs = false;

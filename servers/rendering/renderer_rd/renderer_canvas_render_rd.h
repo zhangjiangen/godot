@@ -164,7 +164,7 @@ class RendererCanvasRenderRD : public RendererCanvasRender {
 			BLEND_MODE_DISABLED,
 		};
 
-		bool valid;
+		bool valid = false;
 		RID version;
 		PipelineVariants pipeline_variants;
 		String path;
@@ -173,7 +173,7 @@ class RendererCanvasRenderRD : public RendererCanvasRender {
 		Vector<ShaderCompiler::GeneratedCode::Texture> texture_uniforms;
 
 		Vector<uint32_t> ubo_offsets;
-		uint32_t ubo_size;
+		uint32_t ubo_size = 0;
 
 		String code;
 		Map<StringName, Map<int, RID>> default_texture_params;
@@ -193,7 +193,7 @@ class RendererCanvasRenderRD : public RendererCanvasRender {
 		virtual Variant get_default_parameter(const StringName &p_parameter) const;
 		virtual RS::ShaderNativeSourceCode get_native_source_code() const;
 
-		CanvasShaderData();
+		CanvasShaderData() {}
 		virtual ~CanvasShaderData();
 	};
 

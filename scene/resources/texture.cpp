@@ -1068,7 +1068,7 @@ CompressedTexture2D::~CompressedTexture2D() {
 	}
 }
 
-RES ResourceFormatLoaderCompressedTexture2D::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
+Ref<Resource> ResourceFormatLoaderCompressedTexture2D::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
 	Ref<CompressedTexture2D> st;
 	New_instantiate(st);
 	Error err = st->load(p_path);
@@ -1076,7 +1076,7 @@ RES ResourceFormatLoaderCompressedTexture2D::load(const String &p_path, const St
 		*r_error = err;
 	}
 	if (err != OK) {
-		return RES();
+		return Ref<Resource>();
 	}
 
 	return st;
@@ -1426,7 +1426,7 @@ CompressedTexture3D::~CompressedTexture3D() {
 
 /////////////////////////////
 
-RES ResourceFormatLoaderCompressedTexture3D::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
+Ref<Resource> ResourceFormatLoaderCompressedTexture3D::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
 	Ref<CompressedTexture3D> st;
     New_instantiate(st);
 	Error err = st->load(p_path);
@@ -1434,7 +1434,7 @@ RES ResourceFormatLoaderCompressedTexture3D::load(const String &p_path, const St
 		*r_error = err;
 	}
 	if (err != OK) {
-		return RES();
+		return Ref<Resource>();
 	}
 
 	return st;
@@ -1727,8 +1727,8 @@ void MeshTexture::draw(RID p_canvas_item, const Point2 &p_pos, const Color &p_mo
 	Transform2D xform;
 	xform.set_origin(p_pos);
 	if (p_transpose) {
-		SWAP(xform.elements[0][1], xform.elements[1][0]);
-		SWAP(xform.elements[0][0], xform.elements[1][1]);
+		SWAP(xform.columns[0][1], xform.columns[1][0]);
+		SWAP(xform.columns[0][0], xform.columns[1][1]);
 	}
 	RenderingServer::get_singleton()->canvas_item_add_mesh(p_canvas_item, mesh->get_rid(), xform, p_modulate, base_texture->get_rid());
 }
@@ -1749,8 +1749,8 @@ void MeshTexture::draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool p_tile,
 	xform.set_scale(p_rect.size / size);
 
 	if (p_transpose) {
-		SWAP(xform.elements[0][1], xform.elements[1][0]);
-		SWAP(xform.elements[0][0], xform.elements[1][1]);
+		SWAP(xform.columns[0][1], xform.columns[1][0]);
+		SWAP(xform.columns[0][0], xform.columns[1][1]);
 	}
 	RenderingServer::get_singleton()->canvas_item_add_mesh(p_canvas_item, mesh->get_rid(), xform, p_modulate, base_texture->get_rid());
 }
@@ -1771,8 +1771,8 @@ void MeshTexture::draw_rect_region(RID p_canvas_item, const Rect2 &p_rect, const
 	xform.set_scale(p_rect.size / size);
 
 	if (p_transpose) {
-		SWAP(xform.elements[0][1], xform.elements[1][0]);
-		SWAP(xform.elements[0][0], xform.elements[1][1]);
+		SWAP(xform.columns[0][1], xform.columns[1][0]);
+		SWAP(xform.columns[0][0], xform.columns[1][1]);
 	}
 	RenderingServer::get_singleton()->canvas_item_add_mesh(p_canvas_item, mesh->get_rid(), xform, p_modulate, base_texture->get_rid());
 }
@@ -3253,7 +3253,7 @@ CompressedTextureLayered::~CompressedTextureLayered() {
 
 /////////////////////////////////////////////////
 
-RES ResourceFormatLoaderCompressedTextureLayered::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
+Ref<Resource> ResourceFormatLoaderCompressedTextureLayered::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
 	Ref<CompressedTextureLayered> ct;
 	if (p_path.get_extension().to_lower() == "ctexarray") {
 		Ref<CompressedTexture2DArray> c;
@@ -3271,14 +3271,14 @@ RES ResourceFormatLoaderCompressedTextureLayered::load(const String &p_path, con
 		if (r_error) {
 			*r_error = ERR_FILE_UNRECOGNIZED;
 		}
-		return RES();
+		return Ref<Resource>();
 	}
 	Error err = ct->load(p_path);
 	if (r_error) {
 		*r_error = err;
 	}
 	if (err != OK) {
-		return RES();
+		return Ref<Resource>();
 	}
 
 	return ct;

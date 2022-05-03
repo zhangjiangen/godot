@@ -663,9 +663,6 @@ EditorProfiler::EditorProfiler() {
 
 	int metric_size = CLAMP(int(EDITOR_GET("debugger/profiler_frame_history_size")), 60, 1024);
 	frame_metrics.resize(metric_size);
-	total_metrics = 0;
-	last_metric = -1;
-	hover_metric = -1;
 
 	EDITOR_DEF("debugger/profiler_frame_max_functions", 64);
 
@@ -683,7 +680,4 @@ EditorProfiler::EditorProfiler() {
 
 	plot_sigs.insert("physics_frame_time");
 	plot_sigs.insert("category_frame_time");
-
-	seeking = false;
-	graph_height = 1;
 }

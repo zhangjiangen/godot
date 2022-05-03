@@ -248,39 +248,39 @@ class WeakPtr {
 		if (p_ptr) {
 			ref = p_ptr->get_instance_id();
 		} else {
-            ref = ObjectID();
+			ref = ObjectID();
 		}
 		reference = p_ptr;
 	}
-    void set(const T *p_ptr) {
-        if (p_ptr) {
-            ref = p_ptr->get_instance_id();
-        } else {
-            ref = ObjectID();
-        }
-        reference = (T*)p_ptr;
-    }
+	void set(const T *p_ptr) {
+		if (p_ptr) {
+			ref = p_ptr->get_instance_id();
+		} else {
+			ref = ObjectID();
+		}
+		reference = (T *)p_ptr;
+	}
 
 	template <class T_Other>
 	void set(T_Other *p_ptr) {
 		if (!p_ptr) {
 			reference = nullptr;
-            ref = ObjectID();
+			ref = ObjectID();
 			return;
 		}
 		reference = Object::cast_to<T>(p_ptr);
 		ref = reference->get_instance_id();
 	}
-    template <class T_Other>
-    void set(const T_Other *p_ptr) {
-        if (!p_ptr) {
-            reference = nullptr;
-            ref = ObjectID();
-            return;
-        }
-        reference = (T*)Object::cast_to<T>(p_ptr);
-        ref = reference->get_instance_id();
-    }
+	template <class T_Other>
+	void set(const T_Other *p_ptr) {
+		if (!p_ptr) {
+			reference = nullptr;
+			ref = ObjectID();
+			return;
+		}
+		reference = (T *)Object::cast_to<T>(p_ptr);
+		ref = reference->get_instance_id();
+	}
 
 public:
 	_FORCE_INLINE_ T *operator->() {
@@ -363,11 +363,10 @@ protected:
 public:
 	Variant get_ref() const;
 	void set_obj(Object *p_object);
-	void set_ref(const REF &p_ref);
+	void set_ref(const Ref<RefCounted> &p_ref);
 	ObjectID get_obj_id() {
 		return ref;
 	}
-
 	WeakRef() {}
 };
 
