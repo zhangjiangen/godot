@@ -420,6 +420,17 @@ struct VariantUtilityFunctions {
 	static inline double randf_range(double from, double to) {
 		return Math::random(from, to);
 	}
+	static inline Vector3 random_vec_on_unit_sphere() {
+		auto vec = Vector3(Math::randf(), Math::randf(), Math::randf());
+		vec.normalize();
+		return vec;
+	}
+
+	static inline Vector3 random_vec(float flatness) {
+		auto vec = Vector3(Math::randf(), Math::randf(), Math::randf());
+		vec.z *= (1 - flatness);
+		return vec;
+	}
 
 	static inline void seed(int64_t s) {
 		return Math::seed(s);
@@ -1360,6 +1371,8 @@ void Variant::_register_variant_utility_functions() {
 	FUNCBINDR(randi_range, sarray("from", "to"), Variant::UTILITY_FUNC_TYPE_RANDOM);
 	FUNCBINDR(randf_range, sarray("from", "to"), Variant::UTILITY_FUNC_TYPE_RANDOM);
 	FUNCBINDR(randfn, sarray("mean", "deviation"), Variant::UTILITY_FUNC_TYPE_RANDOM);
+	FUNCBIND(random_vec_on_unit_sphere, sarray(), Variant::UTILITY_FUNC_TYPE_RANDOM);
+	FUNCBIND(random_vec, sarray(), Variant::UTILITY_FUNC_TYPE_RANDOM);
 	FUNCBIND(seed, sarray("base"), Variant::UTILITY_FUNC_TYPE_RANDOM);
 	FUNCBINDR(rand_from_seed, sarray("seed"), Variant::UTILITY_FUNC_TYPE_RANDOM);
 

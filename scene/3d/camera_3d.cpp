@@ -362,6 +362,16 @@ Point2 Camera3D::unproject_position(const Vector3 &p_pos) const {
 	return res;
 }
 
+Vector4 Camera3D::get_gpu_mull_add() const {
+	CameraMatrix cm;
+
+	if (mode == PROJECTION_ORTHOGONAL) {
+		cm.set_orthogonal(size, viewport_size.aspect(), p_z_depth, far, keep_aspect == KEEP_WIDTH);
+	} else {
+		cm.set_perspective(fov, viewport_size.aspect(), p_z_depth, far, keep_aspect == KEEP_WIDTH);
+	}
+	return cm.get_gpu_mull_add();
+}
 Vector3 Camera3D::project_position(const Point2 &p_point, real_t p_z_depth) const {
 	ERR_FAIL_COND_V_MSG(!is_inside_tree(), Vector3(), "Camera is not inside scene.");
 
@@ -494,6 +504,7 @@ void Camera3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("is_sphere_in_frustum"), &Camera3D::is_sphere_in_frustum);
 	ClassDB::bind_method(D_METHOD("get_camera_rid"), &Camera3D::get_camera);
 	ClassDB::bind_method(D_METHOD("get_pyramid_shape_rid"), &Camera3D::get_pyramid_shape_rid);
+	ClassDB::bind_method(D_METHOD("get_gpu_mull_add"), &Camera3D::get_gpu_mull_add);
 
 	ClassDB::bind_method(D_METHOD("set_cull_mask_value", "layer_number", "value"), &Camera3D::set_cull_mask_value);
 	ClassDB::bind_method(D_METHOD("get_cull_mask_value", "layer_number"), &Camera3D::get_cull_mask_value);

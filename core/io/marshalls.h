@@ -52,6 +52,19 @@ union MarshallFloat {
 	uint32_t i; ///< int
 	float f; ///< float
 };
+union MarshallInt16 {
+	uint16_t ui; ///< uint16_t
+	int16_t i; ///< int16_t
+};
+
+union MarshallInt32 {
+	uint32_t ui; ///< uint32_t
+	int32_t i; ///< int32_t
+};
+union MarshallInt64 {
+	uint64_t ui; ///< uint64_t
+	int64_t i; ///< int64_t
+};
 
 union MarshallDouble {
 	uint64_t l; ///< long long
@@ -74,6 +87,11 @@ static inline unsigned int encode_uint16(uint16_t p_uint, uint8_t *p_arr) {
 	return sizeof(uint16_t);
 }
 
+static inline unsigned int encode_int16(int16_t p_int, uint8_t *p_arr) {
+	MarshallInt16 mi;
+	mi.i = p_int;
+	return encode_uint16(mi.ui, p_arr);
+}
 static inline unsigned int encode_uint32(uint32_t p_uint, uint8_t *p_arr) {
 	for (int i = 0; i < 4; i++) {
 		*p_arr = p_uint & 0xFF;
@@ -82,6 +100,11 @@ static inline unsigned int encode_uint32(uint32_t p_uint, uint8_t *p_arr) {
 	}
 
 	return sizeof(uint32_t);
+}
+static inline unsigned int encode_int32(int32_t p_int, uint8_t *p_arr) {
+	MarshallInt32 mi;
+	mi.i = p_int;
+	return encode_uint32(mi.ui, p_arr);
 }
 
 static inline unsigned int encode_float(float p_float, uint8_t *p_arr) {
@@ -100,6 +123,11 @@ static inline unsigned int encode_uint64(uint64_t p_uint, uint8_t *p_arr) {
 	}
 
 	return sizeof(uint64_t);
+}
+static inline unsigned int encode_int64(int64_t p_int, uint8_t *p_arr) {
+	MarshallInt64 mi;
+	mi.i = p_int;
+	return encode_uint64(mi.ui, p_arr);
 }
 
 static inline unsigned int encode_double(double p_double, uint8_t *p_arr) {
@@ -158,6 +186,18 @@ static inline uint16_t decode_uint16(const uint8_t *p_arr) {
 
 	return u;
 }
+static inline int16_t decode_int16(const uint8_t *p_arr) {
+	MarshallInt16 mi;
+
+	for (int i = 0; i < 2; i++) {
+		uint16_t b = *p_arr;
+		b <<= (i * 8);
+		mi.ui |= b;
+		p_arr++;
+	}
+
+	return mi.i;
+}
 
 static inline uint32_t decode_uint32(const uint8_t *p_arr) {
 	uint32_t u = 0;
@@ -170,6 +210,18 @@ static inline uint32_t decode_uint32(const uint8_t *p_arr) {
 	}
 
 	return u;
+}
+static inline int32_t decode_int32(const uint8_t *p_arr) {
+	MarshallInt32 mi;
+
+	for (int i = 0; i < 4; i++) {
+		uint32_t b = *p_arr;
+		b <<= (i * 8);
+		mi.ui |= b;
+		p_arr++;
+	}
+
+	return mi.i;
 }
 
 static inline float decode_float(const uint8_t *p_arr) {
@@ -189,6 +241,18 @@ static inline uint64_t decode_uint64(const uint8_t *p_arr) {
 	}
 
 	return u;
+}
+static inline int64_t decode_int64(const uint8_t *p_arr) {
+	MarshallInt64 mi;
+
+	for (int i = 0; i < 8; i++) {
+		uint64_t b = (*p_arr) & 0xFF;
+		b <<= (i * 8);
+		mi.ui |= b;
+		p_arr++;
+	}
+
+	return mi.i;
 }
 
 static inline double decode_double(const uint8_t *p_arr) {

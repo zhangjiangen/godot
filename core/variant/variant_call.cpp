@@ -35,6 +35,13 @@
 #include "core/debugger/engine_debugger.h"
 #include "core/io/compression.h"
 #include "core/io/marshalls.h"
+#include "core/math/quaternion.h"
+#include "core/math/rect2i.h"
+#include "core/math/vector2.h"
+#include "core/math/vector2i.h"
+#include "core/math/vector3.h"
+#include "core/math/vector3i.h"
+#include "core/math/vector4.h"
 #include "core/object/class_db.h"
 #include "core/os/os.h"
 #include "core/templates/local_vector.h"
@@ -670,7 +677,7 @@ struct _VariantCall {
 		uint64_t size = p_instance->size();
 		ERR_FAIL_COND_V(p_offset < 0 || p_offset > (int64_t(size) - 2), 0);
 		const uint8_t *r = p_instance->ptr();
-		return (int16_t)decode_uint16(&r[p_offset]);
+		return (int16_t)decode_int16(&r[p_offset]);
 	}
 	static int64_t func_PackedByteArray_decode_u32(PackedByteArray *p_instance, int64_t p_offset) {
 		uint64_t size = p_instance->size();
@@ -682,7 +689,7 @@ struct _VariantCall {
 		uint64_t size = p_instance->size();
 		ERR_FAIL_COND_V(p_offset < 0 || p_offset > (int64_t(size) - 4), 0);
 		const uint8_t *r = p_instance->ptr();
-		return (int32_t)decode_uint32(&r[p_offset]);
+		return (int32_t)decode_int32(&r[p_offset]);
 	}
 	static int64_t func_PackedByteArray_decode_u64(PackedByteArray *p_instance, int64_t p_offset) {
 		uint64_t size = p_instance->size();
@@ -694,7 +701,7 @@ struct _VariantCall {
 		uint64_t size = p_instance->size();
 		ERR_FAIL_COND_V(p_offset < 0 || p_offset > (int64_t(size) - 8), 0);
 		const uint8_t *r = p_instance->ptr();
-		return (int64_t)decode_uint64(&r[p_offset]);
+		return (int64_t)decode_int64(&r[p_offset]);
 	}
 	static double func_PackedByteArray_decode_half(PackedByteArray *p_instance, int64_t p_offset) {
 		uint64_t size = p_instance->size();
@@ -813,7 +820,7 @@ struct _VariantCall {
 		uint64_t size = p_instance->size();
 		ERR_FAIL_COND(p_offset < 0 || p_offset > int64_t(size) - 2);
 		uint8_t *w = p_instance->ptrw();
-		encode_uint16((int16_t)p_value, &w[p_offset]);
+		encode_int16((int16_t)p_value, &w[p_offset]);
 	}
 
 	static void func_PackedByteArray_encode_u32(PackedByteArray *p_instance, int64_t p_offset, int64_t p_value) {
@@ -826,20 +833,20 @@ struct _VariantCall {
 		uint64_t size = p_instance->size();
 		ERR_FAIL_COND(p_offset < 0 || p_offset > int64_t(size) - 4);
 		uint8_t *w = p_instance->ptrw();
-		encode_uint32((int32_t)p_value, &w[p_offset]);
+		encode_int32(p_value, &w[p_offset]);
 	}
 
 	static void func_PackedByteArray_encode_u64(PackedByteArray *p_instance, int64_t p_offset, int64_t p_value) {
 		uint64_t size = p_instance->size();
 		ERR_FAIL_COND(p_offset < 0 || p_offset > int64_t(size) - 8);
 		uint8_t *w = p_instance->ptrw();
-		encode_uint64((uint64_t)p_value, &w[p_offset]);
+		encode_uint64((uint64_t &)p_value, &w[p_offset]);
 	}
 	static void func_PackedByteArray_encode_s64(PackedByteArray *p_instance, int64_t p_offset, int64_t p_value) {
 		uint64_t size = p_instance->size();
 		ERR_FAIL_COND(p_offset < 0 || p_offset > int64_t(size) - 8);
 		uint8_t *w = p_instance->ptrw();
-		encode_uint64((int64_t)p_value, &w[p_offset]);
+		encode_int64(p_value, &w[p_offset]);
 	}
 
 	static void func_PackedByteArray_encode_half(PackedByteArray *p_instance, int64_t p_offset, double p_value) {
@@ -854,6 +861,707 @@ struct _VariantCall {
 		uint8_t *w = p_instance->ptrw();
 		encode_float(p_value, &w[p_offset]);
 	}
+
+	static int64_t func_PackedByteArray_gup_datatype_byte_size(PackedByteArray *p_instance, int p_value_type) {
+		switch (p_value_type) {
+			case Variant::FLOAT:
+				return 4;
+			case Variant::INT:
+				return 4;
+			case Variant::VECTOR2:
+				return 8;
+			case Variant::VECTOR3:
+				return 12;
+			case Variant::VECTOR4:
+				return 16;
+			case Variant::QUATERNION:
+				return 16;
+			case Variant::VECTOR2I:
+				return 8;
+			case Variant::VECTOR3I:
+				return 12;
+			case Variant::RECT2I:
+				return 16;
+			case Variant::COLOR:
+				return 16;
+			case Variant::TRANSFORM3D:
+				return 64;
+			case Variant::BASIS:
+				return 36;
+		}
+		// 不支持的类型直接返回0
+		return 0;
+	}
+
+	static bool func_PackedByteArray_encode_gpu_value(PackedByteArray *p_instance, int p_offset, int p_value_type, const Variant &p_prev_value) {
+		uint8_t *w = p_instance->ptrw();
+		int size = p_instance->size();
+		switch (p_value_type) {
+			case Variant::FLOAT: {
+				if (size < p_offset + 4) {
+					p_instance->resize(p_offset + 4);
+					w = p_instance->ptrw();
+				}
+				switch (p_prev_value.get_type()) {
+					case Variant::INT: {
+						int value = p_prev_value;
+						encode_float((float)value, &w[p_offset]);
+					} break;
+					case Variant::FLOAT: {
+						float value = p_prev_value;
+						encode_float((float)value, &w[p_offset]);
+					} break;
+					case Variant::VECTOR2: {
+						Vector2 value = p_prev_value;
+						encode_float((float)value.x, &w[p_offset]);
+					} break;
+					case Variant::VECTOR3: {
+						Vector3 value = p_prev_value;
+						encode_float((float)value.x, &w[p_offset]);
+					} break;
+					case Variant::VECTOR4: {
+						Vector4 value = p_prev_value;
+						encode_float((float)value.x, &w[p_offset]);
+					} break;
+					case Variant::QUATERNION: {
+						Quaternion value = p_prev_value;
+						encode_float((float)value.x, &w[p_offset]);
+					} break;
+					case Variant::VECTOR2I: {
+						Vector2i value = p_prev_value;
+						encode_float((float)value.x, &w[p_offset]);
+					} break;
+					case Variant::VECTOR3I: {
+						Vector3i value = p_prev_value;
+						encode_float((float)value.x, &w[p_offset]);
+					} break;
+					case Variant::RECT2I: {
+						Rect2i value = p_prev_value;
+						encode_float((float)value.position.x, &w[p_offset]);
+					} break;
+					case Variant::COLOR: {
+						Color value = p_prev_value;
+						encode_float((float)value.r / 255.0f, &w[p_offset]);
+					} break;
+					default:
+						return false;
+						break;
+				}
+			} break;
+			case Variant::INT: {
+				if (size < p_offset + 4) {
+					p_instance->resize(p_offset + 4);
+					w = p_instance->ptrw();
+				}
+				switch (p_prev_value.get_type()) {
+					case Variant::INT: {
+						int value = p_prev_value;
+						encode_int32((int)value, &w[p_offset]);
+					} break;
+					case Variant::FLOAT: {
+						float value = p_prev_value;
+						encode_int32((int)value, &w[p_offset]);
+					} break;
+					case Variant::VECTOR2: {
+						Vector2 value = p_prev_value;
+						encode_int32((int)value.x, &w[p_offset]);
+					} break;
+					case Variant::VECTOR3: {
+						Vector3 value = p_prev_value;
+						encode_int32((int)value.x, &w[p_offset]);
+					} break;
+					case Variant::VECTOR4: {
+						Vector4 value = p_prev_value;
+						encode_int32((int)value.x, &w[p_offset]);
+					} break;
+					case Variant::QUATERNION: {
+						Quaternion value = p_prev_value;
+						encode_int32((int)value.x, &w[p_offset]);
+					} break;
+					case Variant::VECTOR2I: {
+						Vector2i value = p_prev_value;
+						encode_int32((int)value.x, &w[p_offset]);
+					} break;
+					case Variant::VECTOR3I: {
+						Vector3i value = p_prev_value;
+						encode_int32((int)value.x, &w[p_offset]);
+					} break;
+					case Variant::RECT2I: {
+						Rect2i value = p_prev_value;
+						encode_int32((int)value.position.x, &w[p_offset]);
+					} break;
+					case Variant::COLOR: {
+						Color value = p_prev_value;
+						encode_int32((int)value.r, &w[p_offset]);
+					} break;
+					default:
+						return false;
+						break;
+				}
+			}
+
+			break;
+			case Variant::VECTOR2: {
+				if (size < p_offset + 8) {
+					p_instance->resize(p_offset + 8);
+					w = p_instance->ptrw();
+				}
+				switch (p_prev_value.get_type()) {
+					case Variant::INT: {
+						int value = p_prev_value;
+						encode_float((float)value, &w[p_offset]);
+						encode_float((float)value, &w[p_offset + 4]);
+					} break;
+					case Variant::FLOAT: {
+						float value = p_prev_value;
+						encode_float((float)value, &w[p_offset]);
+						encode_float((float)value, &w[p_offset + 4]);
+					} break;
+					case Variant::VECTOR2: {
+						Vector2 pv = p_prev_value;
+						encode_int32((float)pv.x, &w[p_offset]);
+						encode_float((float)pv.y, &w[p_offset + 4]);
+					} break;
+					case Variant::VECTOR3: {
+						Vector3 pv = p_prev_value;
+						encode_float((float)pv.x, &w[p_offset]);
+						encode_float((float)pv.y, &w[p_offset + 4]);
+					} break;
+					case Variant::VECTOR4: {
+						Vector4 pv = p_prev_value;
+						encode_float((float)pv.x, &w[p_offset]);
+						encode_float((float)pv.y, &w[p_offset + 4]);
+					} break;
+					case Variant::QUATERNION: {
+						Quaternion pv = p_prev_value;
+						encode_float((float)pv.x, &w[p_offset]);
+						encode_float((float)pv.y, &w[p_offset + 4]);
+					} break;
+					case Variant::VECTOR2I: {
+						Vector2i pv = p_prev_value;
+						encode_float((float)pv.x, &w[p_offset]);
+						encode_float((float)pv.y, &w[p_offset + 4]);
+					} break;
+					case Variant::VECTOR3I: {
+						Vector3i pv = p_prev_value;
+						encode_float((float)pv.x, &w[p_offset]);
+						encode_float((float)pv.y, &w[p_offset + 4]);
+					} break;
+					case Variant::RECT2I: {
+						Rect2i pv = p_prev_value;
+						encode_float((float)pv.position.x, &w[p_offset]);
+						encode_float((float)pv.position.y, &w[p_offset + 4]);
+					} break;
+					case Variant::COLOR: {
+						Color pv = p_prev_value;
+						encode_float((float)pv.r / 255.0f, &w[p_offset]);
+						encode_float((float)pv.g / 255.0f, &w[p_offset + 4]);
+					} break;
+					default:
+						return false;
+						break;
+				}
+			} break;
+			case Variant::VECTOR3: {
+				if (size < p_offset + 12) {
+					p_instance->resize(p_offset + 12);
+					w = p_instance->ptrw();
+				}
+				switch (p_prev_value.get_type()) {
+					case Variant::INT: {
+						int pv = p_prev_value;
+						encode_float((float)pv, &w[p_offset]);
+						encode_float((float)pv, &w[p_offset + 4]);
+						encode_float((float)pv, &w[p_offset + 8]);
+					} break;
+					case Variant::FLOAT: {
+						float pv = p_prev_value;
+						encode_float((float)pv, &w[p_offset]);
+						encode_float((float)pv, &w[p_offset + 4]);
+						encode_float((float)pv, &w[p_offset + 8]);
+					} break;
+					case Variant::VECTOR2: {
+						Vector2 pv = p_prev_value;
+						encode_float((float)pv.x, &w[p_offset]);
+						encode_float((float)pv.y, &w[p_offset + 4]);
+						encode_float((float)pv.y, &w[p_offset + 8]);
+					} break;
+					case Variant::VECTOR3: {
+						Vector3 pv = p_prev_value;
+						encode_float((float)pv.x, &w[p_offset]);
+						encode_float((float)pv.y, &w[p_offset + 4]);
+						encode_float((float)pv.z, &w[p_offset + 8]);
+					} break;
+					case Variant::QUATERNION: {
+						Quaternion pv = p_prev_value;
+						encode_float((float)pv.x, &w[p_offset]);
+						encode_float((float)pv.y, &w[p_offset + 4]);
+						encode_float((float)pv.z, &w[p_offset + 8]);
+					} break;
+					case Variant::VECTOR4: {
+						Vector4 pv = p_prev_value;
+						encode_float((float)pv.x, &w[p_offset]);
+						encode_float((float)pv.y, &w[p_offset + 4]);
+						encode_float((float)pv.z, &w[p_offset + 8]);
+					} break;
+					case Variant::VECTOR2I: {
+						Vector2i pv = p_prev_value;
+						encode_float((float)pv.x, &w[p_offset]);
+						encode_float((float)pv.y, &w[p_offset + 4]);
+						encode_float((float)pv.y, &w[p_offset + 8]);
+					} break;
+					case Variant::VECTOR3I: {
+						Vector3i pv = p_prev_value;
+						encode_float((float)pv.x, &w[p_offset]);
+						encode_float((float)pv.y, &w[p_offset + 4]);
+						encode_float((float)pv.z, &w[p_offset + 8]);
+					} break;
+					case Variant::RECT2I: {
+						Rect2i pv = p_prev_value;
+						encode_float((float)pv.position.x, &w[p_offset]);
+						encode_float((float)pv.position.y, &w[p_offset + 4]);
+						encode_float((float)pv.size.x, &w[p_offset + 8]);
+					} break;
+
+					case Variant::COLOR: {
+						Color pv = p_prev_value;
+						encode_float((float)pv.r / 255.0f, &w[p_offset]);
+						encode_float((float)pv.g / 255.0f, &w[p_offset + 4]);
+						encode_float((float)pv.b / 255.0f, &w[p_offset + 8]);
+					} break;
+					default:
+						return false;
+						break;
+				}
+			} break;
+
+			case Variant::VECTOR4:
+			case Variant::QUATERNION:
+			case Variant::COLOR: {
+				if (size < p_offset + 16) {
+					p_instance->resize(p_offset + 16);
+					w = p_instance->ptrw();
+				}
+				switch (p_prev_value.get_type()) {
+					case Variant::INT: {
+						float pv = (float)(int)p_prev_value;
+						encode_float((float)pv, &w[p_offset]);
+						encode_float((float)pv, &w[p_offset + 4]);
+						encode_float((float)pv, &w[p_offset + 8]);
+						encode_float((float)pv, &w[p_offset + 12]);
+					} break;
+					case Variant::FLOAT: {
+						float pv = p_prev_value;
+						encode_float((float)pv, &w[p_offset]);
+						encode_float((float)pv, &w[p_offset + 4]);
+						encode_float((float)pv, &w[p_offset + 8]);
+						encode_float((float)pv, &w[p_offset + 12]);
+					} break;
+					case Variant::VECTOR2: {
+						Vector2 pv = p_prev_value;
+						encode_float((float)pv.x, &w[p_offset]);
+						encode_float((float)pv.y, &w[p_offset + 4]);
+						encode_float((float)pv.y, &w[p_offset + 8]);
+						encode_float((float)pv.y, &w[p_offset + 12]);
+					} break;
+					case Variant::VECTOR3: {
+						Vector3 pv = p_prev_value;
+						encode_float((float)pv.x, &w[p_offset]);
+						encode_float((float)pv.y, &w[p_offset + 4]);
+						encode_float((float)pv.z, &w[p_offset + 8]);
+						encode_float((float)pv.z, &w[p_offset + 12]);
+					} break;
+					case Variant::VECTOR4: {
+						Vector4 pv = p_prev_value;
+						encode_float((float)pv.x, &w[p_offset]);
+						encode_float((float)pv.y, &w[p_offset + 4]);
+						encode_float((float)pv.z, &w[p_offset + 8]);
+						encode_float((float)pv.w, &w[p_offset + 12]);
+					} break;
+					case Variant::QUATERNION: {
+						Quaternion pv = p_prev_value;
+						encode_float((float)pv.x, &w[p_offset]);
+						encode_float((float)pv.y, &w[p_offset + 4]);
+						encode_float((float)pv.z, &w[p_offset + 8]);
+						encode_float((float)pv.w, &w[p_offset + 12]);
+					} break;
+					case Variant::VECTOR2I: {
+						Vector2i pv = p_prev_value;
+						encode_float((float)pv.x, &w[p_offset]);
+						encode_float((float)pv.y, &w[p_offset + 4]);
+						encode_float((float)pv.y, &w[p_offset + 8]);
+						encode_float((float)pv.y, &w[p_offset + 12]);
+					} break;
+					case Variant::VECTOR3I: {
+						Vector3i pv = p_prev_value;
+						encode_float((float)pv.x, &w[p_offset]);
+						encode_float((float)pv.y, &w[p_offset + 4]);
+						encode_float((float)pv.z, &w[p_offset + 8]);
+						encode_float((float)pv.z, &w[p_offset + 12]);
+					} break;
+					case Variant::RECT2I: {
+						Rect2i pv = p_prev_value;
+						encode_float((float)pv.position.x, &w[p_offset]);
+						encode_float((float)pv.position.y, &w[p_offset + 4]);
+						encode_float((float)pv.size.x, &w[p_offset + 8]);
+						encode_float((float)pv.size.y, &w[p_offset + 12]);
+					} break;
+					default:
+						break;
+				}
+			} break;
+			case Variant::VECTOR2I: {
+				if (size < p_offset + 8) {
+					p_instance->resize(p_offset + 8);
+					w = p_instance->ptrw();
+				}
+				switch (p_prev_value.get_type()) {
+					case Variant::INT: {
+						float pv = (float)(int)p_prev_value;
+						encode_int32((int)pv, &w[p_offset]);
+						encode_int32((int)pv, &w[p_offset + 4]);
+					} break;
+					case Variant::FLOAT: {
+						float pv = p_prev_value;
+						encode_int32((int)pv, &w[p_offset]);
+						encode_int32((int)pv, &w[p_offset + 4]);
+					} break;
+					case Variant::VECTOR2: {
+						Vector2 pv = p_prev_value;
+						encode_int32((int)pv.x, &w[p_offset]);
+						encode_int32((int)pv.y, &w[p_offset + 4]);
+					} break;
+					case Variant::VECTOR3: {
+						Vector3 pv = p_prev_value;
+						encode_int32((int)pv.x, &w[p_offset]);
+						encode_int32((int)pv.y, &w[p_offset + 4]);
+					} break;
+					case Variant::VECTOR4: {
+						Vector4 pv = p_prev_value;
+						encode_int32((int)pv.x, &w[p_offset]);
+						encode_int32((int)pv.y, &w[p_offset + 4]);
+					} break;
+					case Variant::QUATERNION: {
+						Quaternion pv = p_prev_value;
+						encode_int32((int)pv.x, &w[p_offset]);
+						encode_int32((int)pv.y, &w[p_offset + 4]);
+					} break;
+					case Variant::VECTOR2I: {
+						Vector2i pv = p_prev_value;
+						encode_int32((int)pv.x, &w[p_offset]);
+						encode_int32((int)pv.y, &w[p_offset + 4]);
+					} break;
+					case Variant::VECTOR3I: {
+						Vector3i pv = p_prev_value;
+						encode_int32((int)pv.x, &w[p_offset]);
+						encode_int32((int)pv.y, &w[p_offset + 4]);
+					} break;
+					case Variant::RECT2I: {
+						Rect2i pv = p_prev_value;
+						encode_int32((int)pv.position.x, &w[p_offset]);
+						encode_int32((int)pv.position.y, &w[p_offset + 4]);
+					} break;
+					case Variant::COLOR: {
+						Color pv = p_prev_value;
+						encode_int32((int)pv.r, &w[p_offset]);
+						encode_int32((int)pv.g, &w[p_offset + 4]);
+					} break;
+					default:
+						return false;
+						break;
+				}
+			} break;
+
+			case Variant::VECTOR3I: {
+				if (size < p_offset + 12) {
+					p_instance->resize(p_offset + 12);
+					w = p_instance->ptrw();
+				}
+				switch (p_prev_value.get_type()) {
+					case Variant::INT: {
+						float pv = (float)(int)p_prev_value;
+						encode_int32((int)pv, &w[p_offset]);
+						encode_int32((int)pv, &w[p_offset + 4]);
+						encode_int32((int)pv, &w[p_offset + 8]);
+					} break;
+					case Variant::FLOAT: {
+						float pv = p_prev_value;
+						encode_int32((int)pv, &w[p_offset]);
+						encode_int32((int)pv, &w[p_offset + 4]);
+						encode_int32((int)pv, &w[p_offset + 8]);
+					} break;
+					case Variant::VECTOR2: {
+						Vector2 pv = p_prev_value;
+						encode_int32((int)pv.x, &w[p_offset]);
+						encode_int32((int)pv.y, &w[p_offset + 4]);
+						encode_int32((int)pv.y, &w[p_offset + 8]);
+					} break;
+					case Variant::VECTOR3: {
+						Vector3 pv = p_prev_value;
+						encode_int32((int)pv.x, &w[p_offset]);
+						encode_int32((int)pv.y, &w[p_offset + 4]);
+						encode_int32((int)pv.z, &w[p_offset + 8]);
+					} break;
+					case Variant::VECTOR4: {
+						Vector4 pv = p_prev_value;
+						encode_int32((int)pv.x, &w[p_offset]);
+						encode_int32((int)pv.y, &w[p_offset + 4]);
+						encode_int32((int)pv.z, &w[p_offset + 8]);
+					} break;
+					case Variant::QUATERNION: {
+						Quaternion pv = p_prev_value;
+						encode_int32((int)pv.x, &w[p_offset]);
+						encode_int32((int)pv.y, &w[p_offset + 4]);
+						encode_int32((int)pv.z, &w[p_offset + 8]);
+					} break;
+					case Variant::VECTOR2I: {
+						Vector2i pv = p_prev_value;
+						encode_int32((int)pv.x, &w[p_offset]);
+						encode_int32((int)pv.y, &w[p_offset + 4]);
+						encode_int32((int)pv.y, &w[p_offset + 8]);
+					} break;
+					case Variant::VECTOR3I: {
+						Vector3i pv = p_prev_value;
+						encode_int32((int)pv.x, &w[p_offset]);
+						encode_int32((int)pv.y, &w[p_offset + 4]);
+						encode_int32((int)pv.z, &w[p_offset + 8]);
+					} break;
+					case Variant::RECT2I: {
+						Rect2i pv = p_prev_value;
+						encode_int32((int)pv.position.x, &w[p_offset]);
+						encode_int32((int)pv.position.y, &w[p_offset + 4]);
+						encode_int32((int)pv.size.x, &w[p_offset + 8]);
+					} break;
+					case Variant::COLOR: {
+						Color pv = p_prev_value;
+						encode_int32((int)pv.r, &w[p_offset]);
+						encode_int32((int)pv.g, &w[p_offset + 4]);
+						encode_int32((int)pv.b, &w[p_offset + 8]);
+					} break;
+					default:
+						return false;
+						break;
+				}
+			} break;
+			case Variant::RECT2I: {
+				if (size < p_offset + 16) {
+					p_instance->resize(p_offset + 16);
+					w = p_instance->ptrw();
+				}
+				switch (p_prev_value.get_type()) {
+					case Variant::INT: {
+						float pv = (float)(int)p_prev_value;
+						encode_int32((int)pv, &w[p_offset]);
+						encode_int32((int)pv, &w[p_offset + 4]);
+						encode_int32((int)pv, &w[p_offset + 8]);
+						encode_int32((int)pv, &w[p_offset + 12]);
+					} break;
+					case Variant::FLOAT: {
+						float pv = p_prev_value;
+						encode_int32((int)pv, &w[p_offset]);
+						encode_int32((int)pv, &w[p_offset + 4]);
+						encode_int32((int)pv, &w[p_offset + 8]);
+						encode_int32((int)pv, &w[p_offset + 12]);
+					} break;
+					case Variant::VECTOR2: {
+						Vector2 pv = p_prev_value;
+						encode_int32((int)pv.x, &w[p_offset]);
+						encode_int32((int)pv.y, &w[p_offset + 4]);
+						encode_int32((int)pv.y, &w[p_offset + 8]);
+						encode_int32((int)pv.y, &w[p_offset + 12]);
+					} break;
+					case Variant::VECTOR3: {
+						Vector3 pv = p_prev_value;
+						encode_int32((int)pv.x, &w[p_offset]);
+						encode_int32((int)pv.y, &w[p_offset + 4]);
+						encode_int32((int)pv.z, &w[p_offset + 8]);
+						encode_int32((int)pv.z, &w[p_offset + 12]);
+					} break;
+					case Variant::VECTOR4: {
+						Vector4 pv = p_prev_value;
+						encode_int32((int)pv.x, &w[p_offset]);
+						encode_int32((int)pv.y, &w[p_offset + 4]);
+						encode_int32((int)pv.z, &w[p_offset + 8]);
+						encode_int32((int)pv.w, &w[p_offset + 12]);
+					} break;
+					case Variant::QUATERNION: {
+						Quaternion pv = p_prev_value;
+						encode_int32((int)pv.x, &w[p_offset]);
+						encode_int32((int)pv.y, &w[p_offset + 4]);
+						encode_int32((int)pv.z, &w[p_offset + 8]);
+						encode_int32((int)pv.w, &w[p_offset + 12]);
+					} break;
+					case Variant::VECTOR2I: {
+						Vector2i pv = p_prev_value;
+						encode_int32((int)pv.x, &w[p_offset]);
+						encode_int32((int)pv.y, &w[p_offset + 4]);
+						encode_int32((int)pv.y, &w[p_offset + 8]);
+						encode_int32((int)pv.y, &w[p_offset + 12]);
+					} break;
+					case Variant::VECTOR3I: {
+						Vector3i pv = p_prev_value;
+						encode_int32((int)pv.x, &w[p_offset]);
+						encode_int32((int)pv.y, &w[p_offset + 4]);
+						encode_int32((int)pv.z, &w[p_offset + 8]);
+						encode_int32((int)pv.z, &w[p_offset + 12]);
+					} break;
+					case Variant::RECT2I: {
+						Rect2i pv = p_prev_value;
+						encode_int32((int)pv.position.x, &w[p_offset]);
+						encode_int32((int)pv.position.y, &w[p_offset + 4]);
+						encode_int32((int)pv.size.x, &w[p_offset + 8]);
+						encode_int32((int)pv.size.y, &w[p_offset + 12]);
+					} break;
+					case Variant::COLOR: {
+						Color pv = p_prev_value;
+						encode_int32((int)pv.r, &w[p_offset]);
+						encode_int32((int)pv.g, &w[p_offset + 4]);
+						encode_int32((int)pv.b, &w[p_offset + 8]);
+						encode_int32((int)pv.a, &w[p_offset + 12]);
+					} break;
+					default:
+						return false;
+
+						break;
+				}
+			} break;
+			case Variant::TRANSFORM3D: {
+				switch (p_prev_value.get_type()) {
+					case Variant::TRANSFORM3D: {
+						Transform3D pv = p_prev_value;
+						encode_float(pv.basis[0].x, &w[p_offset]);
+						encode_float(pv.basis[0].y, &w[p_offset + 4]);
+						encode_float(pv.basis[0].z, &w[p_offset + 8]);
+						encode_float(0.0f, &w[p_offset + 12]);
+
+						encode_float(pv.basis[1].x, &w[p_offset + 16]);
+						encode_float(pv.basis[1].y, &w[p_offset + 20]);
+						encode_float(pv.basis[1].z, &w[p_offset + 24]);
+						encode_float(0.0f, &w[p_offset + 28]);
+
+						encode_float(pv.basis[2].x, &w[p_offset + 32]);
+						encode_float(pv.basis[2].y, &w[p_offset + 36]);
+						encode_float(pv.basis[2].z, &w[p_offset + 40]);
+						encode_float(0.0f, &w[p_offset + 44]);
+
+						encode_float(pv.origin.x, &w[p_offset + 48]);
+						encode_float(pv.origin.y, &w[p_offset + 52]);
+						encode_float(pv.origin.z, &w[p_offset + 56]);
+						encode_float(1.0f, &w[p_offset + 60]);
+
+					} break;
+					case Variant::BASIS: {
+						Basis pv = p_prev_value;
+						encode_float(pv[0].x, &w[p_offset]);
+						encode_float(pv[0].y, &w[p_offset + 4]);
+						encode_float(pv[0].z, &w[p_offset + 8]);
+						encode_float(0.0f, &w[p_offset + 12]);
+
+						encode_float(pv[1].x, &w[p_offset + 16]);
+						encode_float(pv[1].y, &w[p_offset + 20]);
+						encode_float(pv[1].z, &w[p_offset + 24]);
+						encode_float(0.0f, &w[p_offset + 28]);
+
+						encode_float(pv[2].x, &w[p_offset + 32]);
+						encode_float(pv[2].y, &w[p_offset + 36]);
+						encode_float(pv[2].z, &w[p_offset + 40]);
+						encode_float(0.0f, &w[p_offset + 44]);
+
+						encode_float(0, &w[p_offset + 48]);
+						encode_float(0, &w[p_offset + 52]);
+						encode_float(0, &w[p_offset + 56]);
+						encode_float(1.0f, &w[p_offset + 60]);
+					} break;
+					case Variant::QUATERNION: {
+						Quaternion qua = p_prev_value;
+						Basis pv = Basis(qua);
+
+						encode_float(pv[0].x, &w[p_offset]);
+						encode_float(pv[0].y, &w[p_offset + 4]);
+						encode_float(pv[0].z, &w[p_offset + 8]);
+						encode_float(0.0f, &w[p_offset + 12]);
+
+						encode_float(pv[1].x, &w[p_offset + 16]);
+						encode_float(pv[1].y, &w[p_offset + 20]);
+						encode_float(pv[1].z, &w[p_offset + 24]);
+						encode_float(0.0f, &w[p_offset + 28]);
+
+						encode_float(pv[2].x, &w[p_offset + 32]);
+						encode_float(pv[2].y, &w[p_offset + 36]);
+						encode_float(pv[2].z, &w[p_offset + 40]);
+						encode_float(0.0f, &w[p_offset + 44]);
+
+						encode_float(0, &w[p_offset + 48]);
+						encode_float(0, &w[p_offset + 52]);
+						encode_float(0, &w[p_offset + 56]);
+						encode_float(1.0f, &w[p_offset + 60]);
+
+					} break;
+					default:
+						return false;
+						break;
+				}
+			} break;
+
+			case Variant::BASIS: {
+				switch (p_prev_value.get_type()) {
+					case Variant::TRANSFORM3D: {
+						Transform3D pv = p_prev_value;
+						encode_float(pv.basis[0].x, &w[p_offset]);
+						encode_float(pv.basis[0].y, &w[p_offset + 4]);
+						encode_float(pv.basis[0].z, &w[p_offset + 8]);
+
+						encode_float(pv.basis[1].x, &w[p_offset + 12]);
+						encode_float(pv.basis[1].y, &w[p_offset + 16]);
+						encode_float(pv.basis[1].z, &w[p_offset + 20]);
+
+						encode_float(pv.basis[2].x, &w[p_offset + 24]);
+						encode_float(pv.basis[2].y, &w[p_offset + 28]);
+						encode_float(pv.basis[2].z, &w[p_offset + 32]);
+
+					} break;
+					case Variant::BASIS: {
+						Basis pv = p_prev_value;
+						encode_float(pv[0].x, &w[p_offset]);
+						encode_float(pv[0].y, &w[p_offset + 4]);
+						encode_float(pv[0].z, &w[p_offset + 8]);
+
+						encode_float(pv[1].x, &w[p_offset + 12]);
+						encode_float(pv[1].y, &w[p_offset + 16]);
+						encode_float(pv[1].z, &w[p_offset + 20]);
+
+						encode_float(pv[2].x, &w[p_offset + 24]);
+						encode_float(pv[2].y, &w[p_offset + 28]);
+						encode_float(pv[2].z, &w[p_offset + 32]);
+
+					} break;
+					case Variant::QUATERNION: {
+						Quaternion pv = p_prev_value;
+						Basis b = Basis(pv);
+						encode_float(b[0].x, &w[p_offset]);
+						encode_float(b[0].y, &w[p_offset + 4]);
+						encode_float(b[0].z, &w[p_offset + 8]);
+
+						encode_float(b[1].x, &w[p_offset + 12]);
+						encode_float(b[1].y, &w[p_offset + 16]);
+						encode_float(b[1].z, &w[p_offset + 20]);
+
+						encode_float(b[2].x, &w[p_offset + 24]);
+						encode_float(b[2].y, &w[p_offset + 28]);
+						encode_float(b[2].z, &w[p_offset + 32]);
+					} break;
+					default:
+						return false;
+						break;
+				}
+			} break;
+			default:
+				return false;
+				break;
+		}
+		return true;
+	}
+
 	static void func_PackedByteArray_encode_double(PackedByteArray *p_instance, int64_t p_offset, double p_value) {
 		uint64_t size = p_instance->size();
 		ERR_FAIL_COND(p_offset < 0 || p_offset > int64_t(size) - 8);
@@ -1946,6 +2654,8 @@ static void _register_variant_builtin_methods() {
 	bind_functionnc(PackedByteArray, encode_s64, _VariantCall::func_PackedByteArray_encode_s64, sarray("byte_offset", "value"), varray());
 	bind_functionnc(PackedByteArray, encode_half, _VariantCall::func_PackedByteArray_encode_half, sarray("byte_offset", "value"), varray());
 	bind_functionnc(PackedByteArray, encode_float, _VariantCall::func_PackedByteArray_encode_float, sarray("byte_offset", "value"), varray());
+	bind_functionnc(PackedByteArray, gup_datatype_byte_size, _VariantCall::func_PackedByteArray_gup_datatype_byte_size, sarray("type"), varray());
+	bind_functionnc(PackedByteArray, encode_gpu_value, _VariantCall::func_PackedByteArray_encode_gpu_value, sarray("byte_offset", "type", "value"), varray());
 	bind_functionnc(PackedByteArray, encode_double, _VariantCall::func_PackedByteArray_encode_double, sarray("byte_offset", "value"), varray());
 	bind_functionnc(PackedByteArray, encode_var, _VariantCall::func_PackedByteArray_encode_var, sarray("byte_offset", "value", "allow_objects"), varray(false));
 

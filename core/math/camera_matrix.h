@@ -35,6 +35,7 @@
 #include "core/math/rect2.h"
 #include "core/math/transform_3d.h"
 #include "core/math/vector3.h"
+#include "core/math/vector4.h"
 #include "core/templates/local_vector.h"
 
 struct AABB;
@@ -120,6 +121,7 @@ struct CameraMatrix {
 	}
 
 	float get_lod_multiplier() const;
+	Vector4 get_gpu_mull_add() const;
 
 	CameraMatrix();
 	CameraMatrix(const Transform3D &p_transform);
