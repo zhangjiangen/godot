@@ -994,7 +994,7 @@ void EditorResourcePicker::_button_set_resource() {
 	String file_type = EditorFileSystem::get_singleton()->get_file_type(file_path);
 
 	String file = file_path;
-	RES dropped_resource = ResourceLoader::load(file);
+	Ref<Resource> dropped_resource = ResourceLoader::load(file);
 
 	if (dropped_resource.is_valid()) {
 		Set<String> allowed_types;

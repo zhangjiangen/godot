@@ -236,6 +236,7 @@ uint32_t PackedDataContainer::_pack(const Variant &p_data, Vector<uint8_t> &tmpd
 		case Variant::AABB:
 		case Variant::BASIS:
 		case Variant::TRANSFORM3D:
+		case Variant::CAMERA_MATRIX:
 		case Variant::PACKED_BYTE_ARRAY:
 		case Variant::PACKED_INT32_ARRAY:
 		case Variant::PACKED_INT64_ARRAY:

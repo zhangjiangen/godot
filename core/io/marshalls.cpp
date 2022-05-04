@@ -483,6 +483,35 @@ Error decode_variant(Variant &r_variant, const uint8_t *p_buffer, int p_len, int
 			r_variant = val;
 
 		} break;
+
+		case Variant::CAMERA_MATRIX: {
+			CameraMatrix val;
+			if (type & ENCODE_FLAG_64) {
+				ERR_FAIL_COND_V((size_t)len < sizeof(double) * 16, ERR_INVALID_DATA);
+				for (int i = 0; i < 4; i++) {
+					for (int j = 0; j < 4; j++) {
+						val.matrix[i][j] = decode_double(&buf[(i * 4 + j) * sizeof(double)]);
+					}
+				}
+
+				if (r_len) {
+					(*r_len) += sizeof(double) * 16;
+				}
+			} else {
+				ERR_FAIL_COND_V((size_t)len < sizeof(float) * 16, ERR_INVALID_DATA);
+				for (int i = 0; i < 4; i++) {
+					for (int j = 0; j < 4; j++) {
+						val.matrix[i][j] = decode_float(&buf[(i * 4 + j) * sizeof(float)]);
+					}
+				}
+
+				if (r_len) {
+					(*r_len) += sizeof(float) * 16;
+				}
+			}
+			r_variant = val;
+
+		} break;
 		// misc types
 		case Variant::COLOR: {
 			ERR_FAIL_COND_V(len < 4 * 4, ERR_INVALID_DATA);
@@ -1102,6 +1131,7 @@ Error encode_variant(const Variant &p_variant, uint8_t *r_buffer, int &r_len, bo
 		case Variant::PACKED_VECTOR3_ARRAY:
 		case Variant::TRANSFORM2D:
 		case Variant::TRANSFORM3D:
+		case Variant::CAMERA_MATRIX:
 		case Variant::QUATERNION:
 		case Variant::PLANE:
 		case Variant::BASIS:
@@ -1374,6 +1404,19 @@ Error encode_variant(const Variant &p_variant, uint8_t *r_buffer, int &r_len, bo
 			}
 
 			r_len += 12 * sizeof(real_t);
+
+		} break;
+		case Variant::CAMERA_MATRIX: {
+			if (buf) {
+				CameraMatrix val = p_variant;
+				for (int i = 0; i < 4; i++) {
+					for (int j = 0; j < 4; j++) {
+						memcpy(&buf[(i * 4 + j) * sizeof(real_t)], &val.matrix[i][j], sizeof(real_t));
+					}
+				}
+			}
+
+			r_len += 16 * sizeof(real_t);
 
 		} break;
 

@@ -1555,6 +1555,36 @@ struct _VariantCall {
 						break;
 				}
 			} break;
+			case Variant::CAMERA_MATRIX: {
+				switch (p_prev_value.get_type()) {
+					case Variant::CAMERA_MATRIX: {
+						CameraMatrix pv = p_prev_value;
+						encode_float(pv.q[0].x, &w[p_offset]);
+						encode_float(pv.q[0].y, &w[p_offset + 4]);
+						encode_float(pv.q[0].z, &w[p_offset + 8]);
+						encode_float(pv.q[0].w, &w[p_offset + 12]);
+
+						encode_float(pv.q[1].x, &w[p_offset + 16]);
+						encode_float(pv.q[1].y, &w[p_offset + 20]);
+						encode_float(pv.q[1].z, &w[p_offset + 24]);
+						encode_float(pv.q[1].w, &w[p_offset + 28]);
+
+						encode_float(pv.q[2].x, &w[p_offset + 32]);
+						encode_float(pv.q[2].y, &w[p_offset + 36]);
+						encode_float(pv.q[2].z, &w[p_offset + 40]);
+						encode_float(pv.q[2].w, &w[p_offset + 44]);
+
+						encode_float(pv.q[3].x, &w[p_offset + 48]);
+						encode_float(pv.q[3].y, &w[p_offset + 52]);
+						encode_float(pv.q[3].z, &w[p_offset + 56]);
+						encode_float(pv.q[3].w, &w[p_offset + 60]);
+
+					} break;
+					default:
+						return false;
+						break;
+				}
+			} break;
 			default:
 				return false;
 				break;
@@ -2545,6 +2575,26 @@ static void _register_variant_builtin_methods() {
 	bind_method(Transform3D, interpolate_with, sarray("xform", "weight"), varray());
 	bind_method(Transform3D, is_equal_approx, sarray("xform"), varray());
 
+	/* CameraMatrix */
+	bind_method(CameraMatrix, inverse, sarray(), varray());
+	bind_method(CameraMatrix, set_identity, sarray(), varray());
+	bind_method(CameraMatrix, set_transform, sarray("transform3d"), varray());
+
+	bind_method(CameraMatrix, get_z_far, sarray(), varray());
+	bind_method(CameraMatrix, get_z_near, sarray(), varray());
+	bind_method(CameraMatrix, get_aspect, sarray(), varray());
+	bind_method(CameraMatrix, get_fov, sarray(), varray());
+	bind_method(CameraMatrix, is_orthogonal, sarray(), varray());
+	bind_method(CameraMatrix, get_gpu_mull_add, sarray(), varray());
+	bind_method(CameraMatrix, flip_y, sarray(), varray());
+	bind_method(CameraMatrix, xform4, sarray("plane"), varray());
+	bind_method(CameraMatrix, xform3, sarray("vec3"), varray());
+	bind_method(CameraMatrix, multiply, sarray("other"), varray());
+	bind_method(CameraMatrix, project_local_ray_normal, sarray("point"), varray());
+
+	bind_method(CameraMatrix, _set_perspective, sarray("fov", "aspect", "z_near", "z_far"), varray());
+	bind_method(CameraMatrix, _set_orthogonal, sarray("left", "right", "bottom", "top", "z_near", "z_far"), varray());
+	bind_method(CameraMatrix, lerp, sarray("to", "weight"), varray());
 	/* Dictionary */
 
 	bind_method(Dictionary, size, sarray(), varray());

@@ -58,6 +58,9 @@ public:
 			case Variant::TRANSFORM3D:
 				init_transform(v);
 				break;
+			case Variant::CAMERA_MATRIX:
+				init_camera_matrix(v);
+				break;
 			case Variant::STRING_NAME:
 				init_string_name(v);
 				break;
@@ -152,6 +155,8 @@ public:
 	_FORCE_INLINE_ static const Basis *get_basis(const Variant *v) { return v->_data._basis; }
 	_FORCE_INLINE_ static Transform3D *get_transform(Variant *v) { return v->_data._transform3d; }
 	_FORCE_INLINE_ static const Transform3D *get_transform(const Variant *v) { return v->_data._transform3d; }
+	_FORCE_INLINE_ static CameraMatrix *get_camera_matrix(Variant *v) { return v->_data._camera_matrix; }
+	_FORCE_INLINE_ static const CameraMatrix *get_camera_matrix(const Variant *v) { return v->_data._camera_matrix; }
 
 	// Misc types.
 	_FORCE_INLINE_ static Color *get_color(Variant *v) { return reinterpret_cast<Color *>(v->_data._mem); }
@@ -225,6 +230,10 @@ public:
 	_FORCE_INLINE_ static void init_transform(Variant *v) {
 		v->_data._transform3d = memnew_allocator(Transform3D, DefaultAllocator);
 		v->type = Variant::TRANSFORM3D;
+	}
+	_FORCE_INLINE_ static void init_camera_matrix(Variant *v) {
+		v->_data._camera_matrix = memnew_allocator(CameraMatrix, DefaultAllocator);
+		v->type = Variant::CAMERA_MATRIX;
 	}
 	_FORCE_INLINE_ static void init_string_name(Variant *v) {
 		memnew_placement(v->_data._mem, StringName);
@@ -334,6 +343,8 @@ public:
 				return get_rect2i(v);
 			case Variant::TRANSFORM3D:
 				return get_transform(v);
+			case Variant::CAMERA_MATRIX:
+				return get_camera_matrix(v);
 			case Variant::TRANSFORM2D:
 				return get_transform2d(v);
 			case Variant::QUATERNION:
@@ -414,6 +425,8 @@ public:
 				return get_rect2i(v);
 			case Variant::TRANSFORM3D:
 				return get_transform(v);
+			case Variant::CAMERA_MATRIX:
+				return get_camera_matrix(v);
 			case Variant::TRANSFORM2D:
 				return get_transform2d(v);
 			case Variant::QUATERNION:
@@ -613,6 +626,11 @@ template <>
 struct VariantGetInternalPtr<Transform3D> {
 	static Transform3D *get_ptr(Variant *v) { return VariantInternal::get_transform(v); }
 	static const Transform3D *get_ptr(const Variant *v) { return VariantInternal::get_transform(v); }
+};
+template <>
+struct VariantGetInternalPtr<CameraMatrix> {
+	static CameraMatrix *get_ptr(Variant *v) { return VariantInternal::get_camera_matrix(v); }
+	static const CameraMatrix *get_ptr(const Variant *v) { return VariantInternal::get_camera_matrix(v); }
 };
 
 template <>
@@ -861,6 +879,12 @@ template <>
 struct VariantInternalAccessor<Transform3D> {
 	static _FORCE_INLINE_ const Transform3D &get(const Variant *v) { return *VariantInternal::get_transform(v); }
 	static _FORCE_INLINE_ void set(Variant *v, const Transform3D &p_value) { *VariantInternal::get_transform(v) = p_value; }
+};
+
+template <>
+struct VariantInternalAccessor<CameraMatrix> {
+	static _FORCE_INLINE_ const CameraMatrix &get(const Variant *v) { return *VariantInternal::get_camera_matrix(v); }
+	static _FORCE_INLINE_ void set(Variant *v, const CameraMatrix &p_value) { *VariantInternal::get_camera_matrix(v) = p_value; }
 };
 
 template <>
@@ -1134,6 +1158,10 @@ template <>
 struct VariantInitializer<Transform3D> {
 	static _FORCE_INLINE_ void init(Variant *v) { VariantInternal::init_transform(v); }
 };
+template <>
+struct VariantInitializer<CameraMatrix> {
+	static _FORCE_INLINE_ void init(Variant *v) { VariantInternal::init_camera_matrix(v); }
+};
 
 template <>
 struct VariantInitializer<Color> {
@@ -1317,6 +1345,11 @@ struct VariantZeroAssigner<Basis> {
 template <>
 struct VariantZeroAssigner<Transform3D> {
 	static _FORCE_INLINE_ void zero(Variant *v) { *VariantInternal::get_transform(v) = Transform3D(); }
+};
+
+template <>
+struct VariantZeroAssigner<CameraMatrix> {
+	static _FORCE_INLINE_ void zero(Variant *v) { *VariantInternal::get_camera_matrix(v) = CameraMatrix(); }
 };
 
 template <>

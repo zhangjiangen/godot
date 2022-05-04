@@ -90,6 +90,7 @@ uint32_t GDScriptByteCodeGenerator::add_temporary(const GDScriptDataType &p_type
 				case Variant::AABB:
 				case Variant::BASIS:
 				case Variant::TRANSFORM3D:
+				case Variant::CAMERA_MATRIX:
 				case Variant::COLOR:
 				case Variant::STRING_NAME:
 				case Variant::NODE_PATH:
@@ -473,6 +474,9 @@ void GDScriptByteCodeGenerator::write_type_adjust(const Address &p_target, Varia
 			break;
 		case Variant::TRANSFORM3D:
 			append(GDScriptFunction::OPCODE_TYPE_ADJUST_TRANSFORM3D, 1);
+			break;
+		case Variant::CAMERA_MATRIX:
+			append(GDScriptFunction::OPCODE_TYPE_ADJUST_CAMERA_MATRIX, 1);
 			break;
 		case Variant::COLOR:
 			append(GDScriptFunction::OPCODE_TYPE_ADJUST_COLOR, 1);
@@ -1141,6 +1145,7 @@ void GDScriptByteCodeGenerator::write_call_ptrcall(const Address &p_target, cons
 			CASE_TYPE(AABB);
 			CASE_TYPE(BASIS);
 			CASE_TYPE(TRANSFORM3D);
+			CASE_TYPE(CAMERA_MATRIX);
 			CASE_TYPE(COLOR);
 			CASE_TYPE(STRING_NAME);
 			CASE_TYPE(NODE_PATH);

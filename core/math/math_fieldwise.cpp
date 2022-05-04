@@ -170,6 +170,29 @@ Variant fieldwise_assign(const Variant &p_target, const Variant &p_source, const
 
 			return target;
 		}
+		case Variant::CAMERA_MATRIX: {
+			SETUP_TYPE(CameraMatrix)
+
+			/**/ TRY_TRANSFER_FIELD("xx", matrix[0][0])
+			else TRY_TRANSFER_FIELD("xy", matrix[0][1])
+			else TRY_TRANSFER_FIELD("xz", matrix[0][2])
+			else TRY_TRANSFER_FIELD("xw", matrix[0][3])
+			else TRY_TRANSFER_FIELD("yx", matrix[1][0])
+			else TRY_TRANSFER_FIELD("yy", matrix[1][1])
+			else TRY_TRANSFER_FIELD("yz", matrix[1][2])
+			else TRY_TRANSFER_FIELD("yw", matrix[1][3])
+			else TRY_TRANSFER_FIELD("zx", matrix[2][0])
+			else TRY_TRANSFER_FIELD("zy", matrix[2][1])
+			else TRY_TRANSFER_FIELD("zz", matrix[2][2])
+			else TRY_TRANSFER_FIELD("zw", matrix[2][3])
+			else TRY_TRANSFER_FIELD("wx", matrix[3][0])
+			else TRY_TRANSFER_FIELD("wy", matrix[3][1])
+			else TRY_TRANSFER_FIELD("wz", matrix[3][2])
+			else TRY_TRANSFER_FIELD("ww", matrix[3][3])
+			
+
+			return target;
+		}
 
 		default: {
 			ERR_FAIL_V(p_target);

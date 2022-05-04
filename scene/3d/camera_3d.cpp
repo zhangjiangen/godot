@@ -149,6 +149,18 @@ Transform3D Camera3D::get_camera_transform() const {
 	return tr;
 }
 
+CameraMatrix Camera3D::get_project_matrix() const {
+	CameraMatrix cm;
+
+	Size2 viewport_size = get_viewport()->get_camera_rect_size();
+	if (mode == PROJECTION_ORTHOGONAL) {
+		cm.set_orthogonal(size, viewport_size.aspect(), near, far, keep_aspect == KEEP_WIDTH);
+	} else {
+		cm.set_perspective(fov, viewport_size.aspect(), near, far, keep_aspect == KEEP_WIDTH);
+	}
+	return cm;
+}
+
 void Camera3D::set_perspective(real_t p_fovy_degrees, real_t p_z_near, real_t p_z_far) {
 	if (!force_change && fov == p_fovy_degrees && p_z_near == near && p_z_far == far && mode == PROJECTION_PERSPECTIVE) {
 		return;
@@ -364,11 +376,12 @@ Point2 Camera3D::unproject_position(const Vector3 &p_pos) const {
 
 Vector4 Camera3D::get_gpu_mull_add() const {
 	CameraMatrix cm;
+	Size2 viewport_size = get_viewport()->get_visible_rect().size;
 
 	if (mode == PROJECTION_ORTHOGONAL) {
-		cm.set_orthogonal(size, viewport_size.aspect(), p_z_depth, far, keep_aspect == KEEP_WIDTH);
+		cm.set_orthogonal(size, viewport_size.aspect(), near, far, keep_aspect == KEEP_WIDTH);
 	} else {
-		cm.set_perspective(fov, viewport_size.aspect(), p_z_depth, far, keep_aspect == KEEP_WIDTH);
+		cm.set_perspective(fov, viewport_size.aspect(), near, far, keep_aspect == KEEP_WIDTH);
 	}
 	return cm.get_gpu_mull_add();
 }
@@ -473,6 +486,7 @@ void Camera3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_current", "enabled"), &Camera3D::set_current);
 	ClassDB::bind_method(D_METHOD("is_current"), &Camera3D::is_current);
 	ClassDB::bind_method(D_METHOD("get_camera_transform"), &Camera3D::get_camera_transform);
+	ClassDB::bind_method(D_METHOD("get_project_matrix"), &Camera3D::get_project_matrix);
 	ClassDB::bind_method(D_METHOD("get_fov"), &Camera3D::get_fov);
 	ClassDB::bind_method(D_METHOD("get_frustum_offset"), &Camera3D::get_frustum_offset);
 	ClassDB::bind_method(D_METHOD("get_size"), &Camera3D::get_size);

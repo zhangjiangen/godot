@@ -279,6 +279,7 @@ public:
 		OPCODE_CALL_PTRCALL_AABB,
 		OPCODE_CALL_PTRCALL_BASIS,
 		OPCODE_CALL_PTRCALL_TRANSFORM3D,
+		OPCODE_CALL_PTRCALL_CAMERA_MATRIX,
 		OPCODE_CALL_PTRCALL_COLOR,
 		OPCODE_CALL_PTRCALL_STRING_NAME,
 		OPCODE_CALL_PTRCALL_NODE_PATH,
@@ -369,6 +370,7 @@ public:
 		OPCODE_TYPE_ADJUST_AABB,
 		OPCODE_TYPE_ADJUST_BASIS,
 		OPCODE_TYPE_ADJUST_TRANSFORM3D,
+		OPCODE_TYPE_ADJUST_CAMERA_MATRIX,
 		OPCODE_TYPE_ADJUST_COLOR,
 		OPCODE_TYPE_ADJUST_STRING_NAME,
 		OPCODE_TYPE_ADJUST_NODE_PATH,
@@ -550,7 +552,9 @@ public:
 		Variant result;
 	};
 
-	_FORCE_INLINE_ bool is_static() const { return _static; }
+	_FORCE_INLINE_ bool is_static() const {
+		return _static;
+	}
 
 	const int *get_code() const; //used for debug
 	int get_code_size() const;
@@ -562,14 +566,22 @@ public:
 	int get_default_argument_addr(int p_idx) const;
 	GDScriptDataType get_return_type() const;
 	GDScriptDataType get_argument_type(int p_idx) const;
-	GDScript *get_script() const { return _script; }
-	StringName get_source() const { return source; }
+	GDScript *get_script() const {
+		return _script;
+	}
+	StringName get_source() const {
+		return source;
+	}
 
 	void debug_get_stack_member_state(int p_line, List<Pair<StringName, int>> *r_stackvars) const;
 
-	_FORCE_INLINE_ bool is_empty() const { return _code_size == 0; }
+	_FORCE_INLINE_ bool is_empty() const {
+		return _code_size == 0;
+	}
 
-	int get_argument_count() const { return _argument_count; }
+	int get_argument_count() const {
+		return _argument_count;
+	}
 	StringName get_argument_name(int p_idx) const {
 #ifdef TOOLS_ENABLED
 		ERR_FAIL_INDEX_V(p_idx, arg_names.size(), StringName());
@@ -594,7 +606,9 @@ public:
 	void disassemble(const Vector<String> &p_code_lines) const;
 #endif
 
-	_FORCE_INLINE_ Multiplayer::RPCConfig get_rpc_config() const { return rpc_config; }
+	_FORCE_INLINE_ Multiplayer::RPCConfig get_rpc_config() const {
+		return rpc_config;
+	}
 	GDScriptFunction();
 	~GDScriptFunction();
 };

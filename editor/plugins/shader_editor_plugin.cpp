@@ -971,7 +971,7 @@ void ShaderEditor::_make_context_menu(bool p_selection, Vector2 p_position) {
 }
 
 void ShaderEditor::open_path(String p_path) {
-	RES res = ResourceLoader::load(p_path);
+    Ref<Resource> res = ResourceLoader::load(p_path);
 	if (!res.is_null()) {
 		Ref<Shader> shader = Object::cast_to<Shader>(*res);
 		if (!shader.is_null()) {
@@ -1131,12 +1131,12 @@ ShaderEditor::ShaderEditor() {
 	add_child(main_container);
 	main_container->add_child(hbc);
 
-	// 资源目录
-	resource_path_panel = memnew(RichTextLabel);
-	resource_path_panel->set_custom_minimum_size(Size2(10, 40));
-	resource_path_panel->set_h_size_flags(Control::SIZE_FILL);
-	main_container->add_child(resource_path_panel);
-	shader_editor->set_resource_path_panel(resource_path_panel);
+//	// 资源目录
+//	resource_path_panel = memnew(RichTextLabel);
+//	resource_path_panel->set_custom_minimum_size(Size2(10, 40));
+//	resource_path_panel->set_h_size_flags(Control::SIZE_FILL);
+//	main_container->add_child(resource_path_panel);
+//	shader_editor->set_resource_path_panel(resource_path_panel);
 
 	hbc->add_child(search_menu);
 	hbc->add_child(edit_menu);

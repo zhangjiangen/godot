@@ -35,6 +35,7 @@
 #include "core/io/ip_address.h"
 #include "core/math/aabb.h"
 #include "core/math/basis.h"
+#include "core/math/camera_matrix.h"
 #include "core/math/color.h"
 #include "core/math/face3.h"
 #include "core/math/plane.h"
@@ -98,6 +99,7 @@ public:
 		AABB,
 		BASIS,
 		TRANSFORM3D,
+		CAMERA_MATRIX,
 
 		// misc types
 		COLOR,
@@ -212,6 +214,7 @@ private:
 		::AABB *_aabb;
 		Basis *_basis;
 		Transform3D *_transform3d;
+		CameraMatrix *_camera_matrix;
 		PackedArrayRefBase *packed_array;
 		void *_ptr; //generic pointer
 		uint8_t _mem[sizeof(ObjData) > (sizeof(real_t) * 4) ? sizeof(ObjData) : (sizeof(real_t) * 4)]{ 0 };
@@ -350,6 +353,7 @@ public:
 	operator Basis() const;
 	operator Transform2D() const;
 	operator Transform3D() const;
+	operator CameraMatrix() const;
 
 	operator Color() const;
 	operator NodePath() const;
@@ -422,6 +426,7 @@ public:
 	Variant(const Basis &p_matrix);
 	Variant(const Transform2D &p_transform);
 	Variant(const Transform3D &p_transform);
+	Variant(const CameraMatrix &p_matrix);
 	Variant(const Color &p_color);
 	Variant(const NodePath &p_node_path);
 	Variant(const ::RID &p_rid);

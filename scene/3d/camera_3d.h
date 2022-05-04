@@ -137,6 +137,7 @@ public:
 	void set_frustum_offset(Vector2 p_offset);
 
 	virtual Transform3D get_camera_transform() const;
+	CameraMatrix get_project_matrix() const;
 
 	virtual Vector3 project_ray_normal(const Point2 &p_pos) const;
 	virtual Vector3 project_ray_origin(const Point2 &p_pos) const;

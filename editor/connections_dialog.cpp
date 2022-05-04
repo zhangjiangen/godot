@@ -227,6 +227,9 @@ void ConnectDialog::_add_bind() {
 		case Variant::TRANSFORM3D:
 			value = Transform3D();
 			break;
+		case Variant::CAMERA_MATRIX:
+			value = CameraMatrix();
+			break;
 		case Variant::COLOR:
 			value = Color();
 			break;
@@ -486,6 +489,7 @@ ConnectDialog::ConnectDialog() {
 	type_list->add_item("AABB", Variant::AABB);
 	type_list->add_item("Basis", Variant::BASIS);
 	type_list->add_item("Transform3D", Variant::TRANSFORM3D);
+	type_list->add_item("CameraMatrix", Variant::CAMERA_MATRIX);
 	type_list->add_item("Color", Variant::COLOR);
 	type_list->select(0);
 	bind_controls.push_back(type_list);

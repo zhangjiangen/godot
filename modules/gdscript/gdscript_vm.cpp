@@ -203,6 +203,7 @@ void (*type_init_function_table[])(Variant *) = {
 	&VariantInitializer<AABB>::init, // AABB.
 	&VariantInitializer<Basis>::init, // BASIS.
 	&VariantInitializer<Transform3D>::init, // TRANSFORM3D.
+	&VariantInitializer<CameraMatrix>::init, // CAMERA_MATRIX.
 	&VariantInitializer<Color>::init, // COLOR.
 	&VariantInitializer<StringName>::init, // STRING_NAME.
 	&VariantInitializer<NodePath>::init, // NODE_PATH.
@@ -287,6 +288,7 @@ void (*type_init_function_table[])(Variant *) = {
 		&&OPCODE_CALL_PTRCALL_AABB,                  \
 		&&OPCODE_CALL_PTRCALL_BASIS,                 \
 		&&OPCODE_CALL_PTRCALL_TRANSFORM3D,           \
+		&&OPCODE_CALL_PTRCALL_CAMERA_MATRIX,         \
 		&&OPCODE_CALL_PTRCALL_COLOR,                 \
 		&&OPCODE_CALL_PTRCALL_STRING_NAME,           \
 		&&OPCODE_CALL_PTRCALL_NODE_PATH,             \
@@ -377,6 +379,7 @@ void (*type_init_function_table[])(Variant *) = {
 		&&OPCODE_TYPE_ADJUST_AABB,                   \
 		&&OPCODE_TYPE_ADJUST_BASIS,                  \
 		&&OPCODE_TYPE_ADJUST_TRANSFORM3D,            \
+		&&OPCODE_TYPE_ADJUST_CAMERA_MATRIX,          \
 		&&OPCODE_TYPE_ADJUST_COLOR,                  \
 		&&OPCODE_TYPE_ADJUST_STRING_NAME,            \
 		&&OPCODE_TYPE_ADJUST_NODE_PATH,              \
@@ -456,6 +459,7 @@ void (*type_init_function_table[])(Variant *) = {
 #define OP_GET_PACKED_VECTOR3_ARRAY get_vector3_array
 #define OP_GET_PACKED_COLOR_ARRAY get_color_array
 #define OP_GET_TRANSFORM3D get_transform
+#define OP_GET_CAMERA_MATRIX get_camera_matrix
 #define OP_GET_TRANSFORM2D get_transform2d
 #define OP_GET_PLANE get_plane
 #define OP_GET_AABB get_aabb
@@ -1839,6 +1843,7 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 			OPCODE_CALL_PTR(AABB);
 			OPCODE_CALL_PTR(BASIS);
 			OPCODE_CALL_PTR(TRANSFORM3D);
+			OPCODE_CALL_PTR(CAMERA_MATRIX);
 			OPCODE_CALL_PTR(COLOR);
 			OPCODE_CALL_PTR(STRING_NAME);
 			OPCODE_CALL_PTR(NODE_PATH);
@@ -3306,6 +3311,7 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 			OPCODE_TYPE_ADJUST(AABB, AABB);
 			OPCODE_TYPE_ADJUST(BASIS, Basis);
 			OPCODE_TYPE_ADJUST(TRANSFORM3D, Transform3D);
+			OPCODE_TYPE_ADJUST(CAMERA_MATRIX, CameraMatrix);
 			OPCODE_TYPE_ADJUST(COLOR, Color);
 			OPCODE_TYPE_ADJUST(STRING_NAME, StringName);
 			OPCODE_TYPE_ADJUST(NODE_PATH, NodePath);

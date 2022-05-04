@@ -665,7 +665,7 @@ void ShaderPreprocessor::process_include(PreprocessorTokenizer *p_tokenizer) {
 		return;
 	}
 
-	RES res = ResourceLoader::load(path);
+	Ref<Resource> res = ResourceLoader::load(path);
 	if (res.is_null()) {
 		set_error("Shader include load failed. Does the shader exist? Is there a cyclic dependency?", line);
 		return;
@@ -1082,7 +1082,7 @@ void ShaderDependencyGraph::populate(ShaderDependencyNode *p_node) {
 					path = path.substr(0, path.length() - 1);
 					p_tokenizer.skip_whitespace();
 					if (!path.is_empty()) {
-						RES res = ResourceLoader::load(path);
+                        Ref<Resource> res = ResourceLoader::load(path);
 						ERR_FAIL_COND_MSG(res.is_null(), vformat("Could not load included shader %s. Does the shader exist? Is there a cyclic dependency?", path));
 						if (!res.is_null()) {
 							Ref<Shader> shader_reference = Object::cast_to<Shader>(*res);

@@ -106,6 +106,11 @@ String Variant::get_type_name(Variant::Type p_type) {
 
 		} break;
 
+		case CAMERA_MATRIX: {
+			return "CameraMatrix";
+
+		} break;
+
 		// misc types
 		case COLOR: {
 			return "Color";
@@ -324,6 +329,15 @@ bool Variant::can_convert(Variant::Type p_type_from, Variant::Type p_type_to) {
 				TRANSFORM2D,
 				QUATERNION,
 				BASIS,
+				NIL
+			};
+
+			valid_types = valid;
+
+		} break;
+		case CAMERA_MATRIX: {
+			static const Type valid[] = {
+				CAMERA_MATRIX,
 				NIL
 			};
 
@@ -635,6 +649,15 @@ bool Variant::can_convert_strict(Variant::Type p_type_from, Variant::Type p_type
 			valid_types = valid;
 
 		} break;
+		case CAMERA_MATRIX: {
+			static const Type valid[] = {
+				CAMERA_MATRIX,
+				NIL
+			};
+
+			valid_types = valid;
+
+		} break;
 
 		case COLOR: {
 			static const Type valid[] = {
@@ -882,6 +905,10 @@ bool Variant::is_zero() const {
 			return *_data._transform3d == Transform3D();
 
 		} break;
+		case CAMERA_MATRIX: {
+			return *_data._camera_matrix == CameraMatrix();
+
+		} break;
 
 		// misc types
 		case COLOR: {
@@ -1114,6 +1141,9 @@ void Variant::reference(const Variant &p_variant) {
 		case TRANSFORM3D: {
 			_data._transform3d = memnew_allocator(Transform3D(*p_variant._data._transform3d), DefaultAllocator);
 		} break;
+		case CAMERA_MATRIX: {
+			_data._camera_matrix = memnew_allocator(CameraMatrix(*p_variant._data._camera_matrix), DefaultAllocator);
+		} break;
 
 		// misc types
 		case COLOR: {
@@ -1306,6 +1336,9 @@ void Variant::_clear_internal() {
 		} break;
 		case TRANSFORM3D: {
 			memdelete_allocator<Transform3D, DefaultAllocator>(_data._transform3d);
+		} break;
+		case CAMERA_MATRIX: {
+			memdelete_allocator<CameraMatrix, DefaultAllocator>(_data._camera_matrix);
 		} break;
 
 			// misc types
@@ -1687,6 +1720,8 @@ String Variant::stringify(int recursion_count) const {
 			return operator Basis();
 		case TRANSFORM3D:
 			return operator Transform3D();
+		case CAMERA_MATRIX:
+			return operator CameraMatrix();
 		case STRING_NAME:
 			return operator StringName();
 		case NODE_PATH:
@@ -1952,6 +1987,12 @@ Variant::operator Transform3D() const {
 	} else {
 		return Transform3D();
 	}
+}
+Variant::operator CameraMatrix() const {
+	if (type == CAMERA_MATRIX) {
+		return *_data._camera_matrix;
+	}
+	return CameraMatrix();
 }
 
 Variant::operator Transform2D() const {
@@ -2456,6 +2497,10 @@ Variant::Variant(const Transform2D &p_transform) {
 	type = TRANSFORM2D;
 	_data._transform2d = memnew_allocator(Transform2D(p_transform), DefaultAllocator);
 }
+Variant::Variant(const CameraMatrix &p_matrx) {
+	type = CAMERA_MATRIX;
+	_data._camera_matrix = memnew_allocator(CameraMatrix(p_matrx), DefaultAllocator);
+}
 
 Variant::Variant(const Color &p_color) {
 	type = COLOR;
@@ -2698,6 +2743,9 @@ void Variant::operator=(const Variant &p_variant) {
 		case TRANSFORM3D: {
 			*_data._transform3d = *(p_variant._data._transform3d);
 		} break;
+		case CAMERA_MATRIX: {
+			*_data._camera_matrix = *(p_variant._data._camera_matrix);
+		} break;
 
 		// misc types
 		case COLOR: {
@@ -2901,6 +2949,17 @@ uint32_t Variant::recursive_hash(int recursion_count) const {
 					hash = hash_djb2_one_float(_data._transform3d->basis.rows[i][j], hash);
 				}
 				hash = hash_djb2_one_float(_data._transform3d->origin[i], hash);
+			}
+
+			return hash;
+
+		} break;
+		case CAMERA_MATRIX: {
+			uint32_t hash = 5831;
+			for (int i = 0; i < 4; i++) {
+				for (int j = 0; j < 4; j++) {
+					hash = hash_djb2_one_float(_data._camera_matrix->matrix[i][j], hash);
+				}
 			}
 
 			return hash;
@@ -3240,6 +3299,19 @@ bool Variant::hash_compare(const Variant &p_variant, int recursion_count) const 
 			}
 
 			return hash_compare_vector3(l->origin, r->origin);
+		} break;
+
+		case CAMERA_MATRIX: {
+			const CameraMatrix *l = _data._camera_matrix;
+			const CameraMatrix *r = p_variant._data._camera_matrix;
+
+			for (int i = 0; i < 4; i++) {
+				if (!(hash_compare_vector4(l->q[i], r->q[i]))) {
+					return false;
+				}
+			}
+
+			return true;
 		} break;
 
 		case COLOR: {

@@ -827,6 +827,31 @@ bool CustomPropertyEditor::edit(Object *p_owner, const String &p_name, Variant::
 			value_editor[11]->set_text(String::num(tr.origin.z));
 
 		} break;
+		case Variant::CAMERA_MATRIX: {
+			field_names.push_back("xx");
+			field_names.push_back("xy");
+			field_names.push_back("xz");
+			field_names.push_back("xw");
+			field_names.push_back("yx");
+			field_names.push_back("yy");
+			field_names.push_back("yz");
+			field_names.push_back("yw");
+			field_names.push_back("zx");
+			field_names.push_back("zy");
+			field_names.push_back("zz");
+			field_names.push_back("zw");
+			field_names.push_back("wx");
+			field_names.push_back("wy");
+			field_names.push_back("wz");
+			field_names.push_back("ww");
+			config_value_editors(16, 4, 16, field_names);
+
+			CameraMatrix basis = v;
+			for (int i = 0; i < 16; i++) {
+				value_editor[i]->set_text(String::num(basis.matrix[i / 4][i % 4]));
+			}
+
+		} break;
 		case Variant::COLOR: {
 			if (!color_picker) {
 				//late init for performance
@@ -1631,6 +1656,18 @@ void CustomPropertyEditor::_modified(String p_string) {
 			}
 
 		} break;
+		case Variant::CAMERA_MATRIX: {
+			CameraMatrix m;
+			for (int i = 0; i < 16; i++) {
+				m.matrix[i / 3][i % 3] = _parse_real_expression(value_editor[i]->get_text());
+			}
+
+			v = m;
+			if (v != prev_v) {
+				_emit_changed_whole_or_field();
+			}
+
+		} break;
 		case Variant::COLOR: {
 		} break;
 
@@ -1700,7 +1737,8 @@ void CustomPropertyEditor::_focus_enter() {
 		case Variant::AABB:
 		case Variant::TRANSFORM2D:
 		case Variant::BASIS:
-		case Variant::TRANSFORM3D: {
+		case Variant::TRANSFORM3D:
+		case Variant::CAMERA_MATRIX: {
 			for (int i = 0; i < MAX_VALUE_EDITORS; ++i) {
 				if (value_editor[i]->has_focus()) {
 					focused_value_editor = i;

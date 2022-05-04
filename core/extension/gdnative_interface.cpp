@@ -346,6 +346,9 @@ static GDNativeVariantFromTypeConstructorFunc gdnative_get_variant_from_type_con
 			return VariantTypeConstructor<Basis>::variant_from_type;
 		case GDNATIVE_VARIANT_TYPE_TRANSFORM3D:
 			return VariantTypeConstructor<Transform3D>::variant_from_type;
+
+		case GDNATIVE_VARIANT_TYPE_CAMERA_MATRIX:
+			return VariantTypeConstructor<CameraMatrix>::variant_from_type;
 		case GDNATIVE_VARIANT_TYPE_COLOR:
 			return VariantTypeConstructor<Color>::variant_from_type;
 		case GDNATIVE_VARIANT_TYPE_STRING_NAME:
@@ -425,6 +428,8 @@ static GDNativeTypeFromVariantConstructorFunc gdnative_get_type_from_variant_con
 			return VariantTypeConstructor<Basis>::type_from_variant;
 		case GDNATIVE_VARIANT_TYPE_TRANSFORM3D:
 			return VariantTypeConstructor<Transform3D>::type_from_variant;
+		case GDNATIVE_VARIANT_TYPE_CAMERA_MATRIX:
+			return VariantTypeConstructor<CameraMatrix>::type_from_variant;
 		case GDNATIVE_VARIANT_TYPE_COLOR:
 			return VariantTypeConstructor<Color>::type_from_variant;
 		case GDNATIVE_VARIANT_TYPE_STRING_NAME:

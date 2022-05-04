@@ -81,6 +81,7 @@ enum {
 	VARIANT_PACKED_INT64_ARRAY = 48,
 	VARIANT_PACKED_FLOAT64_ARRAY = 49,
 	VARIANT_VECTOR4 = 50,
+	VARIANT_CAMERA_MATRIX = 51,
 	OBJECT_EMPTY = 0,
 	OBJECT_EXTERNAL_RESOURCE = 1,
 	OBJECT_INTERNAL_RESOURCE = 2,
@@ -312,6 +313,31 @@ Error ResourceLoaderBinary::parse_variant(Variant &r_v) {
 			v.origin.x = f->get_real();
 			v.origin.y = f->get_real();
 			v.origin.z = f->get_real();
+			r_v = v;
+		} break;
+
+		case VARIANT_CAMERA_MATRIX: {
+			CameraMatrix v;
+			v.q[0].x = f->get_real();
+			v.q[0].y = f->get_real();
+			v.q[0].z = f->get_real();
+			v.q[0].w = f->get_real();
+
+			v.q[1].x = f->get_real();
+			v.q[1].y = f->get_real();
+			v.q[1].z = f->get_real();
+			v.q[1].w = f->get_real();
+
+			v.q[2].x = f->get_real();
+			v.q[2].y = f->get_real();
+			v.q[2].z = f->get_real();
+			v.q[2].w = f->get_real();
+
+			v.q[3].x = f->get_real();
+			v.q[3].y = f->get_real();
+			v.q[3].z = f->get_real();
+			v.q[3].w = f->get_real();
+
 			r_v = v;
 		} break;
 		case VARIANT_COLOR: {
@@ -1529,6 +1555,30 @@ void ResourceFormatSaverBinaryInstance::write_variant(Ref<FileAccess> f, const V
 			f->store_real(val.origin.x);
 			f->store_real(val.origin.y);
 			f->store_real(val.origin.z);
+
+		} break;
+		case Variant::CAMERA_MATRIX: {
+			f->store_32(VARIANT_CAMERA_MATRIX);
+			CameraMatrix val = p_property;
+			f->store_real(val.q[0].x);
+			f->store_real(val.q[0].y);
+			f->store_real(val.q[0].z);
+			f->store_real(val.q[0].w);
+
+			f->store_real(val.q[1].x);
+			f->store_real(val.q[1].y);
+			f->store_real(val.q[1].z);
+			f->store_real(val.q[1].w);
+
+			f->store_real(val.q[2].x);
+			f->store_real(val.q[2].y);
+			f->store_real(val.q[2].z);
+			f->store_real(val.q[2].w);
+
+			f->store_real(val.q[3].x);
+			f->store_real(val.q[3].y);
+			f->store_real(val.q[3].z);
+			f->store_real(val.q[3].w);
 
 		} break;
 		case Variant::COLOR: {

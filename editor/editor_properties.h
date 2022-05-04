@@ -687,6 +687,22 @@ public:
 	void setup(double p_min, double p_max, double p_step, bool p_no_slider, const String &p_suffix = String());
 	EditorPropertyTransform3D();
 };
+class EditorPropertyCameraMatrix : public EditorProperty {
+	GDCLASS(EditorPropertyCameraMatrix, EditorProperty);
+	EditorSpinSlider *spin[16];
+	bool setting = false;
+	void _value_changed(double p_val, const String &p_name);
+
+protected:
+	virtual void _set_read_only(bool p_read_only) override;
+	void _notification(int p_what);
+	static void _bind_methods();
+
+public:
+	virtual void update_property() override;
+	void setup(double p_min, double p_max, double p_step, bool p_no_slider, const String &p_suffix = String());
+    EditorPropertyCameraMatrix();
+};
 
 class EditorPropertyColor : public EditorProperty {
 	GDCLASS(EditorPropertyColor, EditorProperty);

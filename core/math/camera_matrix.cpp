@@ -349,6 +349,7 @@ LocalVector<Plane> CameraMatrix::get_projection_planes(const Transform3D &p_tran
 	 * https://web.archive.org/web/20061020020112/https://www2.ravensoft.com/users/ggribb/plane%20extraction.pdf
 	 */
 
+	LocalVector<Plane> planes;
 	planes.resize(6);
 
 	const real_t *matrix = (const real_t *)this->matrix;
@@ -743,6 +744,9 @@ Vector4 CameraMatrix::get_gpu_mull_add() const {
 }
 
 CameraMatrix::CameraMatrix(const Transform3D &p_transform) {
+	set_transform(p_transform);
+}
+void CameraMatrix::set_transform(const Transform3D &p_transform) {
 	const Transform3D &tr = p_transform;
 	real_t *m = &matrix[0][0];
 
@@ -763,6 +767,18 @@ CameraMatrix::CameraMatrix(const Transform3D &p_transform) {
 	m[14] = tr.origin.z;
 	m[15] = 1.0;
 }
+Vector3 CameraMatrix::project_local_ray_normal(const Vector2 &p_pos) const {
+	Vector3 ray;
+
+	if (is_orthogonal()) {
+		ray = Vector3(0, 0, -1);
+	} else {
+		Vector2 screen_he = get_viewport_half_extents();
+		ray = Vector3(((p_pos.x) * 2.0 - 1.0) * screen_he.x, ((1.0 - (p_pos.y)) * 2.0 - 1.0) * screen_he.y, -get_z_near()).normalized();
+	}
+
+	return ray;
+};
 
 CameraMatrix::~CameraMatrix() {
 }

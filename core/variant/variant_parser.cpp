@@ -743,6 +743,19 @@ Error VariantParser::parse_value(Token &token, Variant &value, Stream *p_stream,
 			}
 
 			value = Transform3D(Basis(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]), Vector3(args[9], args[10], args[11]));
+		} else if (id == "CameraMatrix") {
+			Vector<real_t> args;
+			Error err = _parse_construct<real_t>(p_stream, args, line, r_err_str);
+			if (err) {
+				return err;
+			}
+
+			if (args.size() != 16) {
+				r_err_str = "Expected 16 arguments for constructor";
+				return ERR_PARSE_ERROR;
+			}
+
+			value = CameraMatrix(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11], args[12], args[13], args[14], args[15]);
 		} else if (id == "Color") {
 			Vector<float> args;
 			Error err = _parse_construct<float>(p_stream, args, line, r_err_str);
@@ -1608,6 +1621,20 @@ Error VariantWriter::write(const Variant &p_variant, StoreStringFunc p_store_str
 			}
 
 			s = s + ", " + rtos_fix(t.origin.x) + ", " + rtos_fix(t.origin.y) + ", " + rtos_fix(t.origin.z);
+
+			p_store_string_func(p_store_string_ud, s + ")");
+		} break;
+		case Variant::CAMERA_MATRIX: {
+			String s = "CameraMatrix(";
+			CameraMatrix cm = p_variant;
+			for (int i = 0; i < 4; i++) {
+				for (int j = 0; j < 4; j++) {
+					if (i != 0 || j != 0) {
+						s += ", ";
+					}
+					s += rtos_fix(cm.matrix[i][j]);
+				}
+			}
 
 			p_store_string_func(p_store_string_ud, s + ")");
 		} break;

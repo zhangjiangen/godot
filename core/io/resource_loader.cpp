@@ -526,7 +526,7 @@ Ref<Resource> ResourceLoader::load(const String &p_path, const String &p_type_hi
 			}
 			thread_load_mutex->unlock();
 
-			RES res = load_threaded_get(p_path, r_error);
+			Ref<Resource> res = load_threaded_get(p_path, r_error);
 
 			return res;
 		}
@@ -570,7 +570,7 @@ Ref<Resource> ResourceLoader::load(const String &p_path, const String &p_type_hi
 
 		_thread_load_function(&thread_load_tasks[local_path]);
 
-		RES res = load_threaded_get(p_path, r_error);
+        Ref<Resource> res = load_threaded_get(p_path, r_error);
 
 		if (!res.is_null()) {
 			res->_on_post_load();

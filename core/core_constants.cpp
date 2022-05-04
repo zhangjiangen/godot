@@ -51,9 +51,9 @@ struct _CoreConstant {
 #ifdef DEBUG_METHODS_ENABLED
 	_CoreConstant(const StringName &p_enum_name, const char *p_name, int p_value, bool p_ignore_value_in_docs = false) :
 			enum_name(p_enum_name),
-            name(p_name),
-            value(p_value),
-			ignore_value_in_docs(p_ignore_value_in_docs){
+			name(p_name),
+			value(p_value),
+			ignore_value_in_docs(p_ignore_value_in_docs) {
 	}
 #else
 	_CoreConstant(const char *p_name, int p_value) :
@@ -671,6 +671,7 @@ void register_global_constants() {
 	BIND_CORE_ENUM_CONSTANT_CUSTOM("TYPE_AABB", Variant::AABB);
 	BIND_CORE_ENUM_CONSTANT_CUSTOM("TYPE_BASIS", Variant::BASIS);
 	BIND_CORE_ENUM_CONSTANT_CUSTOM("TYPE_TRANSFORM3D", Variant::TRANSFORM3D);
+	BIND_CORE_ENUM_CONSTANT_CUSTOM("TYPE_CAMERA_MATRIX", Variant::CAMERA_MATRIX);
 	BIND_CORE_ENUM_CONSTANT_CUSTOM("TYPE_COLOR", Variant::COLOR);
 	BIND_CORE_ENUM_CONSTANT_CUSTOM("TYPE_STRING_NAME", Variant::STRING_NAME);
 	BIND_CORE_ENUM_CONSTANT_CUSTOM("TYPE_NODE_PATH", Variant::NODE_PATH);

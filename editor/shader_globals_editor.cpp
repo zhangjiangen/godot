@@ -203,6 +203,9 @@ protected:
 				case RS::GLOBAL_VAR_TYPE_TRANSFORM: {
 					pinfo.type = Variant::TRANSFORM3D;
 				} break;
+				case RS::GLOBAL_VAR_TYPE_CAMERA_MATRIX: {
+					pinfo.type = Variant::CAMERA_MATRIX;
+				} break;
 				case RS::GLOBAL_VAR_TYPE_MAT4: {
 					pinfo.type = Variant::PACKED_INT32_ARRAY;
 				} break;
@@ -329,6 +332,9 @@ static Variant create_var(RS::GlobalVariableType p_type) {
 		}
 		case RS::GLOBAL_VAR_TYPE_TRANSFORM: {
 			return Transform3D();
+		}
+		case RS::GLOBAL_VAR_TYPE_CAMERA_MATRIX: {
+			return CameraMatrix();
 		}
 		case RS::GLOBAL_VAR_TYPE_MAT4: {
 			Vector<real_t> xform;

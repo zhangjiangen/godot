@@ -135,6 +135,7 @@ Dictionary NativeExtensionAPIDump::generate_extension_api() {
 			{ Variant::AABB, (vec3_elems * 2) * sizeof(float), (vec3_elems * 2) * sizeof(float), (vec3_elems * 2) * sizeof(double), (vec3_elems * 2) * sizeof(double) },
 			{ Variant::BASIS, (vec3_elems * 3) * sizeof(float), (vec3_elems * 3) * sizeof(float), (vec3_elems * 3) * sizeof(double), (vec3_elems * 3) * sizeof(double) },
 			{ Variant::TRANSFORM3D, (vec3_elems * 4) * sizeof(float), (vec3_elems * 4) * sizeof(float), (vec3_elems * 4) * sizeof(double), (vec3_elems * 4) * sizeof(double) },
+			{ Variant::CAMERA_MATRIX, (vec4_elems * 4) * sizeof(float), (vec4_elems * 4) * sizeof(float), (vec4_elems * 4) * sizeof(double), (vec4_elems * 4) * sizeof(double) },
 			{ Variant::COLOR, 4 * sizeof(float), 4 * sizeof(float), 4 * sizeof(float), 4 * sizeof(float) },
 			{ Variant::STRING_NAME, ptrsize_32, ptrsize_64, ptrsize_32, ptrsize_64 },
 			{ Variant::NODE_PATH, ptrsize_32, ptrsize_64, ptrsize_32, ptrsize_64 },
@@ -174,6 +175,7 @@ Dictionary NativeExtensionAPIDump::generate_extension_api() {
 		static_assert(type_size_array[Variant::AABB][sizeof(void *)] == sizeof(AABB), "Size of AABB mismatch");
 		static_assert(type_size_array[Variant::BASIS][sizeof(void *)] == sizeof(Basis), "Size of Basis mismatch");
 		static_assert(type_size_array[Variant::TRANSFORM3D][sizeof(void *)] == sizeof(Transform3D), "Size of Transform3D mismatch");
+		static_assert(type_size_array[Variant::CAMERA_MATRIX][sizeof(void *)] == sizeof(CameraMatrix), "Size of CameraMatrix mismatch");
 		static_assert(type_size_array[Variant::COLOR][sizeof(void *)] == sizeof(Color), "Size of Color mismatch");
 		static_assert(type_size_array[Variant::STRING_NAME][sizeof(void *)] == sizeof(StringName), "Size of StringName mismatch");
 		static_assert(type_size_array[Variant::NODE_PATH][sizeof(void *)] == sizeof(NodePath), "Size of NodePath mismatch");

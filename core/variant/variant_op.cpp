@@ -354,6 +354,7 @@ void Variant::_register_variant_operators() {
 	register_op<OperatorEvaluatorStringModT<::AABB>>(Variant::OP_MODULE, Variant::STRING, Variant::AABB);
 	register_op<OperatorEvaluatorStringModT<Basis>>(Variant::OP_MODULE, Variant::STRING, Variant::BASIS);
 	register_op<OperatorEvaluatorStringModT<Transform3D>>(Variant::OP_MODULE, Variant::STRING, Variant::TRANSFORM3D);
+	register_op<OperatorEvaluatorStringModT<Transform3D>>(Variant::OP_MODULE, Variant::STRING, Variant::CAMERA_MATRIX);
 
 	register_op<OperatorEvaluatorStringModT<Color>>(Variant::OP_MODULE, Variant::STRING, Variant::COLOR);
 	register_op<OperatorEvaluatorStringModT<StringName>>(Variant::OP_MODULE, Variant::STRING, Variant::STRING_NAME);
@@ -425,6 +426,7 @@ void Variant::_register_variant_operators() {
 	register_op<OperatorEvaluatorEqual<::AABB, ::AABB>>(Variant::OP_EQUAL, Variant::AABB, Variant::AABB);
 	register_op<OperatorEvaluatorEqual<Basis, Basis>>(Variant::OP_EQUAL, Variant::BASIS, Variant::BASIS);
 	register_op<OperatorEvaluatorEqual<Transform3D, Transform3D>>(Variant::OP_EQUAL, Variant::TRANSFORM3D, Variant::TRANSFORM3D);
+	register_op<OperatorEvaluatorEqual<CameraMatrix, CameraMatrix>>(Variant::OP_EQUAL, Variant::CAMERA_MATRIX, Variant::CAMERA_MATRIX);
 	register_op<OperatorEvaluatorEqual<Color, Color>>(Variant::OP_EQUAL, Variant::COLOR, Variant::COLOR);
 
 	register_op<OperatorEvaluatorEqual<StringName, String>>(Variant::OP_EQUAL, Variant::STRING_NAME, Variant::STRING);
@@ -469,6 +471,7 @@ void Variant::_register_variant_operators() {
 	register_op<OperatorEvaluatorAlwaysFalse<Variant::OP_EQUAL, Variant::AABB, Variant::NIL>>(Variant::OP_EQUAL, Variant::AABB, Variant::NIL);
 	register_op<OperatorEvaluatorAlwaysFalse<Variant::OP_EQUAL, Variant::BASIS, Variant::NIL>>(Variant::OP_EQUAL, Variant::BASIS, Variant::NIL);
 	register_op<OperatorEvaluatorAlwaysFalse<Variant::OP_EQUAL, Variant::TRANSFORM3D, Variant::NIL>>(Variant::OP_EQUAL, Variant::TRANSFORM3D, Variant::NIL);
+	register_op<OperatorEvaluatorAlwaysFalse<Variant::OP_EQUAL, Variant::CAMERA_MATRIX, Variant::NIL>>(Variant::OP_EQUAL, Variant::CAMERA_MATRIX, Variant::NIL);
 	register_op<OperatorEvaluatorAlwaysFalse<Variant::OP_EQUAL, Variant::COLOR, Variant::NIL>>(Variant::OP_EQUAL, Variant::COLOR, Variant::NIL);
 	register_op<OperatorEvaluatorAlwaysFalse<Variant::OP_EQUAL, Variant::STRING_NAME, Variant::NIL>>(Variant::OP_EQUAL, Variant::STRING_NAME, Variant::NIL);
 	register_op<OperatorEvaluatorAlwaysFalse<Variant::OP_EQUAL, Variant::NODE_PATH, Variant::NIL>>(Variant::OP_EQUAL, Variant::NODE_PATH, Variant::NIL);
@@ -504,6 +507,7 @@ void Variant::_register_variant_operators() {
 	register_op<OperatorEvaluatorAlwaysFalse<Variant::OP_EQUAL, Variant::NIL, Variant::AABB>>(Variant::OP_EQUAL, Variant::NIL, Variant::AABB);
 	register_op<OperatorEvaluatorAlwaysFalse<Variant::OP_EQUAL, Variant::NIL, Variant::BASIS>>(Variant::OP_EQUAL, Variant::NIL, Variant::BASIS);
 	register_op<OperatorEvaluatorAlwaysFalse<Variant::OP_EQUAL, Variant::NIL, Variant::TRANSFORM3D>>(Variant::OP_EQUAL, Variant::NIL, Variant::TRANSFORM3D);
+	register_op<OperatorEvaluatorAlwaysFalse<Variant::OP_EQUAL, Variant::NIL, Variant::CAMERA_MATRIX>>(Variant::OP_EQUAL, Variant::NIL, Variant::CAMERA_MATRIX);
 	register_op<OperatorEvaluatorAlwaysFalse<Variant::OP_EQUAL, Variant::NIL, Variant::COLOR>>(Variant::OP_EQUAL, Variant::NIL, Variant::COLOR);
 	register_op<OperatorEvaluatorAlwaysFalse<Variant::OP_EQUAL, Variant::NIL, Variant::STRING_NAME>>(Variant::OP_EQUAL, Variant::NIL, Variant::STRING_NAME);
 	register_op<OperatorEvaluatorAlwaysFalse<Variant::OP_EQUAL, Variant::NIL, Variant::NODE_PATH>>(Variant::OP_EQUAL, Variant::NIL, Variant::NODE_PATH);
@@ -542,6 +546,7 @@ void Variant::_register_variant_operators() {
 	register_op<OperatorEvaluatorNotEqual<::AABB, ::AABB>>(Variant::OP_NOT_EQUAL, Variant::AABB, Variant::AABB);
 	register_op<OperatorEvaluatorNotEqual<Basis, Basis>>(Variant::OP_NOT_EQUAL, Variant::BASIS, Variant::BASIS);
 	register_op<OperatorEvaluatorNotEqual<Transform3D, Transform3D>>(Variant::OP_NOT_EQUAL, Variant::TRANSFORM3D, Variant::TRANSFORM3D);
+	register_op<OperatorEvaluatorNotEqual<Transform3D, Transform3D>>(Variant::OP_NOT_EQUAL, Variant::CAMERA_MATRIX, Variant::CAMERA_MATRIX);
 	register_op<OperatorEvaluatorNotEqual<Color, Color>>(Variant::OP_NOT_EQUAL, Variant::COLOR, Variant::COLOR);
 
 	register_op<OperatorEvaluatorNotEqual<StringName, String>>(Variant::OP_NOT_EQUAL, Variant::STRING_NAME, Variant::STRING);
@@ -586,6 +591,7 @@ void Variant::_register_variant_operators() {
 	register_op<OperatorEvaluatorAlwaysTrue<Variant::OP_NOT_EQUAL, Variant::AABB, Variant::NIL>>(Variant::OP_NOT_EQUAL, Variant::AABB, Variant::NIL);
 	register_op<OperatorEvaluatorAlwaysTrue<Variant::OP_NOT_EQUAL, Variant::BASIS, Variant::NIL>>(Variant::OP_NOT_EQUAL, Variant::BASIS, Variant::NIL);
 	register_op<OperatorEvaluatorAlwaysTrue<Variant::OP_NOT_EQUAL, Variant::TRANSFORM3D, Variant::NIL>>(Variant::OP_NOT_EQUAL, Variant::TRANSFORM3D, Variant::NIL);
+	register_op<OperatorEvaluatorAlwaysTrue<Variant::OP_NOT_EQUAL, Variant::CAMERA_MATRIX, Variant::NIL>>(Variant::OP_NOT_EQUAL, Variant::CAMERA_MATRIX, Variant::NIL);
 	register_op<OperatorEvaluatorAlwaysTrue<Variant::OP_NOT_EQUAL, Variant::COLOR, Variant::NIL>>(Variant::OP_NOT_EQUAL, Variant::COLOR, Variant::NIL);
 	register_op<OperatorEvaluatorAlwaysTrue<Variant::OP_NOT_EQUAL, Variant::STRING_NAME, Variant::NIL>>(Variant::OP_NOT_EQUAL, Variant::STRING_NAME, Variant::NIL);
 	register_op<OperatorEvaluatorAlwaysTrue<Variant::OP_NOT_EQUAL, Variant::NODE_PATH, Variant::NIL>>(Variant::OP_NOT_EQUAL, Variant::NODE_PATH, Variant::NIL);
@@ -621,6 +627,7 @@ void Variant::_register_variant_operators() {
 	register_op<OperatorEvaluatorAlwaysTrue<Variant::OP_NOT_EQUAL, Variant::NIL, Variant::AABB>>(Variant::OP_NOT_EQUAL, Variant::NIL, Variant::AABB);
 	register_op<OperatorEvaluatorAlwaysTrue<Variant::OP_NOT_EQUAL, Variant::NIL, Variant::BASIS>>(Variant::OP_NOT_EQUAL, Variant::NIL, Variant::BASIS);
 	register_op<OperatorEvaluatorAlwaysTrue<Variant::OP_NOT_EQUAL, Variant::NIL, Variant::TRANSFORM3D>>(Variant::OP_NOT_EQUAL, Variant::NIL, Variant::TRANSFORM3D);
+	register_op<OperatorEvaluatorAlwaysTrue<Variant::OP_NOT_EQUAL, Variant::NIL, Variant::CAMERA_MATRIX>>(Variant::OP_NOT_EQUAL, Variant::NIL, Variant::CAMERA_MATRIX);
 	register_op<OperatorEvaluatorAlwaysTrue<Variant::OP_NOT_EQUAL, Variant::NIL, Variant::COLOR>>(Variant::OP_NOT_EQUAL, Variant::NIL, Variant::COLOR);
 	register_op<OperatorEvaluatorAlwaysTrue<Variant::OP_NOT_EQUAL, Variant::NIL, Variant::STRING_NAME>>(Variant::OP_NOT_EQUAL, Variant::NIL, Variant::STRING_NAME);
 	register_op<OperatorEvaluatorAlwaysTrue<Variant::OP_NOT_EQUAL, Variant::NIL, Variant::NODE_PATH>>(Variant::OP_NOT_EQUAL, Variant::NIL, Variant::NODE_PATH);
@@ -815,6 +822,7 @@ void Variant::_register_variant_operators() {
 	register_op<OperatorEvaluatorInDictionaryHas<::AABB>>(Variant::OP_IN, Variant::AABB, Variant::DICTIONARY);
 	register_op<OperatorEvaluatorInDictionaryHas<Basis>>(Variant::OP_IN, Variant::BASIS, Variant::DICTIONARY);
 	register_op<OperatorEvaluatorInDictionaryHas<Transform3D>>(Variant::OP_IN, Variant::TRANSFORM3D, Variant::DICTIONARY);
+	register_op<OperatorEvaluatorInDictionaryHas<CameraMatrix>>(Variant::OP_IN, Variant::CAMERA_MATRIX, Variant::DICTIONARY);
 
 	register_op<OperatorEvaluatorInDictionaryHas<Color>>(Variant::OP_IN, Variant::COLOR, Variant::DICTIONARY);
 	register_op<OperatorEvaluatorInDictionaryHas<StringName>>(Variant::OP_IN, Variant::STRING_NAME, Variant::DICTIONARY);
@@ -853,6 +861,7 @@ void Variant::_register_variant_operators() {
 	register_op<OperatorEvaluatorInArrayFind<::AABB, Array>>(Variant::OP_IN, Variant::AABB, Variant::ARRAY);
 	register_op<OperatorEvaluatorInArrayFind<Basis, Array>>(Variant::OP_IN, Variant::BASIS, Variant::ARRAY);
 	register_op<OperatorEvaluatorInArrayFind<Transform3D, Array>>(Variant::OP_IN, Variant::TRANSFORM3D, Variant::ARRAY);
+	register_op<OperatorEvaluatorInArrayFind<CameraMatrix, Array>>(Variant::OP_IN, Variant::CAMERA_MATRIX, Variant::ARRAY);
 
 	register_op<OperatorEvaluatorInArrayFind<Color, Array>>(Variant::OP_IN, Variant::COLOR, Variant::ARRAY);
 	register_op<OperatorEvaluatorInArrayFind<StringName, Array>>(Variant::OP_IN, Variant::STRING_NAME, Variant::ARRAY);

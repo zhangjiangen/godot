@@ -966,6 +966,12 @@ void EditorPropertyDictionary::update_property() {
 					prop = editor;
 
 				} break;
+				case Variant::CAMERA_MATRIX: {
+					EditorPropertyCameraMatrix *editor = memnew(EditorPropertyCameraMatrix);
+					editor->setup(-100000, 100000, default_float_step, true);
+					prop = editor;
+
+				} break;
 
 				// Miscellaneous types.
 				case Variant::COLOR: {

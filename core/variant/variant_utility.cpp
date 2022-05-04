@@ -394,7 +394,36 @@ struct VariantUtilityFunctions {
 	static inline int64_t nearest_po2(int64_t x) {
 		return nearest_power_of_2_templated(uint64_t(x));
 	}
-
+	static int64_t gup_datatype_byte_size(int p_value_type) {
+		switch (p_value_type) {
+			case Variant::FLOAT:
+				return 4;
+			case Variant::INT:
+				return 4;
+			case Variant::VECTOR2:
+				return 8;
+			case Variant::VECTOR3:
+				return 12;
+			case Variant::VECTOR4:
+				return 16;
+			case Variant::QUATERNION:
+				return 16;
+			case Variant::VECTOR2I:
+				return 8;
+			case Variant::VECTOR3I:
+				return 12;
+			case Variant::RECT2I:
+				return 16;
+			case Variant::COLOR:
+				return 16;
+			case Variant::TRANSFORM3D:
+				return 64;
+			case Variant::BASIS:
+				return 36;
+		}
+		// 不支持的类型直接返回0
+		return 0;
+	}
 	// Random
 
 	static inline void randomize() {
@@ -1371,8 +1400,8 @@ void Variant::_register_variant_utility_functions() {
 	FUNCBINDR(randi_range, sarray("from", "to"), Variant::UTILITY_FUNC_TYPE_RANDOM);
 	FUNCBINDR(randf_range, sarray("from", "to"), Variant::UTILITY_FUNC_TYPE_RANDOM);
 	FUNCBINDR(randfn, sarray("mean", "deviation"), Variant::UTILITY_FUNC_TYPE_RANDOM);
-    FUNCBINDR(random_vec_on_unit_sphere, sarray(), Variant::UTILITY_FUNC_TYPE_RANDOM);
-    FUNCBINDR(random_vec, sarray(), Variant::UTILITY_FUNC_TYPE_RANDOM);
+	FUNCBINDR(random_vec_on_unit_sphere, sarray(), Variant::UTILITY_FUNC_TYPE_RANDOM);
+	FUNCBINDR(random_vec, sarray(), Variant::UTILITY_FUNC_TYPE_RANDOM);
 	FUNCBIND(seed, sarray("base"), Variant::UTILITY_FUNC_TYPE_RANDOM);
 	FUNCBINDR(rand_from_seed, sarray("seed"), Variant::UTILITY_FUNC_TYPE_RANDOM);
 
@@ -1380,6 +1409,7 @@ void Variant::_register_variant_utility_functions() {
 
 	FUNCBINDVR(weakref, sarray("obj"), Variant::UTILITY_FUNC_TYPE_GENERAL);
 	FUNCBINDR(_typeof, sarray("variable"), Variant::UTILITY_FUNC_TYPE_GENERAL);
+	FUNCBINDVR(gup_datatype_byte_size, sarray("variant_data_type"), Variant::UTILITY_FUNC_TYPE_GENERAL);
 	FUNCBINDVARARGS(str, sarray(), Variant::UTILITY_FUNC_TYPE_GENERAL);
 	FUNCBINDR(error_string, sarray("error"), Variant::UTILITY_FUNC_TYPE_GENERAL);
 	FUNCBINDVARARGV(print, sarray(), Variant::UTILITY_FUNC_TYPE_GENERAL);

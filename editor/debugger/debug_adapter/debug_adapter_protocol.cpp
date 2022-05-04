@@ -416,6 +416,36 @@ int DebugAdapterProtocol::parse_variant(const Variant &p_var) {
 			variable_list.insert(id, arr);
 			return id;
 		}
+		case Variant::CAMERA_MATRIX: {
+			int id = variable_id++;
+			CameraMatrix basis = p_var;
+			const String type_quat = Variant::get_type_name(Variant::QUATERNION);
+			DAP::Variable x, y, z, w;
+			x.name = "x";
+			y.name = "y";
+			z.name = "z";
+			w.name = "w";
+			x.type = type_quat;
+			y.type = type_quat;
+			z.type = type_quat;
+			w.type = type_quat;
+			x.value = basis.x;
+			y.value = basis.y;
+			z.value = basis.z;
+			w.value = basis.w;
+			x.variablesReference = parse_variant(basis.x);
+			y.variablesReference = parse_variant(basis.y);
+			z.variablesReference = parse_variant(basis.z);
+			w.variablesReference = parse_variant(basis.w);
+
+			Array arr;
+			arr.push_back(x.to_json());
+			arr.push_back(y.to_json());
+			arr.push_back(z.to_json());
+			arr.push_back(w.to_json());
+			variable_list.insert(id, arr);
+			return id;
+		}
 		case Variant::COLOR: {
 			int id = variable_id++;
 			Color color = p_var;

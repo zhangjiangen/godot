@@ -2844,6 +2844,108 @@ EditorPropertyTransform3D::EditorPropertyTransform3D() {
 	set_bottom_editor(g);
 }
 
+///////////////////// CAMERA_MATRIX /////////////////////////
+
+void EditorPropertyCameraMatrix::_set_read_only(bool p_read_only) {
+	for (int i = 0; i < 16; i++) {
+		spin[i]->set_read_only(p_read_only);
+	}
+};
+
+void EditorPropertyCameraMatrix::_value_changed(double val, const String &p_name) {
+	if (setting) {
+		return;
+	}
+
+	CameraMatrix p;
+	p.matrix[0][0] = spin[0]->get_value();
+	p.matrix[0][1] = spin[1]->get_value();
+	p.matrix[0][2] = spin[2]->get_value();
+	p.matrix[0][3] = spin[2]->get_value();
+	p.matrix[1][0] = spin[3]->get_value();
+	p.matrix[1][1] = spin[4]->get_value();
+	p.matrix[1][2] = spin[5]->get_value();
+	p.matrix[1][3] = spin[5]->get_value();
+	p.matrix[2][0] = spin[6]->get_value();
+	p.matrix[2][1] = spin[7]->get_value();
+	p.matrix[2][2] = spin[8]->get_value();
+	p.matrix[2][3] = spin[8]->get_value();
+	p.matrix[3][0] = spin[6]->get_value();
+	p.matrix[3][1] = spin[7]->get_value();
+	p.matrix[3][2] = spin[8]->get_value();
+	p.matrix[3][3] = spin[8]->get_value();
+
+	emit_changed(get_edited_property(), p, p_name);
+}
+
+void EditorPropertyCameraMatrix::update_property() {
+	CameraMatrix val = get_edited_object()->get(get_edited_property());
+	setting = true;
+	spin[0]->set_value(val.matrix[0][0]);
+	spin[1]->set_value(val.matrix[0][1]);
+	spin[2]->set_value(val.matrix[0][2]);
+	spin[3]->set_value(val.matrix[0][3]);
+	spin[4]->set_value(val.matrix[1][0]);
+	spin[5]->set_value(val.matrix[1][1]);
+	spin[6]->set_value(val.matrix[1][2]);
+	spin[7]->set_value(val.matrix[1][3]);
+	spin[8]->set_value(val.matrix[2][0]);
+	spin[9]->set_value(val.matrix[2][1]);
+	spin[10]->set_value(val.matrix[2][2]);
+	spin[11]->set_value(val.matrix[2][3]);
+	spin[12]->set_value(val.matrix[3][0]);
+	spin[13]->set_value(val.matrix[3][1]);
+	spin[14]->set_value(val.matrix[3][2]);
+	spin[15]->set_value(val.matrix[3][3]);
+
+	setting = false;
+}
+
+void EditorPropertyCameraMatrix::_notification(int p_what) {
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE:
+		case NOTIFICATION_THEME_CHANGED: {
+			const Color *colors = _get_property_colors();
+			for (int i = 0; i < 16; i++) {
+				spin[i]->add_theme_color_override("label_color", colors[i % 3]);
+			}
+		} break;
+	}
+}
+
+void EditorPropertyCameraMatrix::_bind_methods() {
+}
+
+void EditorPropertyCameraMatrix::setup(double p_min, double p_max, double p_step, bool p_no_slider, const String &p_suffix) {
+	for (int i = 0; i < 16; i++) {
+		spin[i]->set_min(p_min);
+		spin[i]->set_max(p_max);
+		spin[i]->set_step(p_step);
+		spin[i]->set_hide_slider(p_no_slider);
+		spin[i]->set_allow_greater(true);
+		spin[i]->set_allow_lesser(true);
+		spin[i]->set_suffix(p_suffix);
+	}
+}
+
+EditorPropertyCameraMatrix::EditorPropertyCameraMatrix() {
+	GridContainer *g = memnew(GridContainer);
+	g->set_columns(4);
+	add_child(g);
+
+	static const char *desc[16] = { "xx", "xy", "xz", "xw", "yx", "yy", "yz", "yw", "zx", "zy", "zz", "zw", "wx", "wy", "wz", "ww" };
+	for (int i = 0; i < 16; i++) {
+		spin[i] = memnew(EditorSpinSlider);
+		spin[i]->set_label(desc[i]);
+		spin[i]->set_flat(true);
+		g->add_child(spin[i]);
+		spin[i]->set_h_size_flags(SIZE_EXPAND_FILL);
+		add_focusable(spin[i]);
+		spin[i]->connect("value_changed", callable_mp(this, &EditorPropertyCameraMatrix::_value_changed), varray(desc[i]));
+	}
+	set_bottom_editor(g);
+}
+
 ////////////// COLOR PICKER //////////////////////
 
 void EditorPropertyColor::_set_read_only(bool p_read_only) {
@@ -3808,6 +3910,13 @@ EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_
 		} break;
 		case Variant::TRANSFORM3D: {
 			EditorPropertyTransform3D *editor = memnew(EditorPropertyTransform3D);
+			EditorPropertyRangeHint hint = _parse_range_hint(p_hint, p_hint_text, default_float_step);
+			editor->setup(hint.min, hint.max, hint.step, hint.hide_slider, hint.suffix);
+			return editor;
+
+		} break;
+		case Variant::CAMERA_MATRIX: {
+			EditorPropertyCameraMatrix *editor = memnew(EditorPropertyCameraMatrix);
 			EditorPropertyRangeHint hint = _parse_range_hint(p_hint, p_hint_text, default_float_step);
 			editor->setup(hint.min, hint.max, hint.step, hint.hide_slider, hint.suffix);
 			return editor;
