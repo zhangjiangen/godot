@@ -888,6 +888,8 @@ struct _VariantCall {
 				return 64;
 			case Variant::BASIS:
 				return 36;
+			case Variant::CAMERA_MATRIX:
+				return 64;
 		}
 		// 不支持的类型直接返回0
 		return 0;
@@ -2588,7 +2590,7 @@ static void _register_variant_builtin_methods() {
 	bind_method(CameraMatrix, get_gpu_mull_add, sarray(), varray());
 	bind_method(CameraMatrix, flip_y, sarray(), varray());
 	bind_method(CameraMatrix, xform4, sarray("plane"), varray());
-	bind_method(CameraMatrix, xform3, sarray("vec3"), varray());
+	bind_method(CameraMatrix, xform, sarray("vec3"), varray());
 	bind_method(CameraMatrix, multiply, sarray("other"), varray());
 	bind_method(CameraMatrix, project_local_ray_normal, sarray("point"), varray());
 

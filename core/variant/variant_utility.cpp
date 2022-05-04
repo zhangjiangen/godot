@@ -420,6 +420,8 @@ struct VariantUtilityFunctions {
 				return 64;
 			case Variant::BASIS:
 				return 36;
+			case Variant::CAMERA_MATRIX:
+				return 64;
 		}
 		// 不支持的类型直接返回0
 		return 0;
@@ -1409,7 +1411,7 @@ void Variant::_register_variant_utility_functions() {
 
 	FUNCBINDVR(weakref, sarray("obj"), Variant::UTILITY_FUNC_TYPE_GENERAL);
 	FUNCBINDR(_typeof, sarray("variable"), Variant::UTILITY_FUNC_TYPE_GENERAL);
-	FUNCBINDVR(gup_datatype_byte_size, sarray("variant_data_type"), Variant::UTILITY_FUNC_TYPE_GENERAL);
+    FUNCBINDR(gup_datatype_byte_size, sarray("variant_data_type"), Variant::UTILITY_FUNC_TYPE_GENERAL);
 	FUNCBINDVARARGS(str, sarray(), Variant::UTILITY_FUNC_TYPE_GENERAL);
 	FUNCBINDR(error_string, sarray("error"), Variant::UTILITY_FUNC_TYPE_GENERAL);
 	FUNCBINDVARARGV(print, sarray(), Variant::UTILITY_FUNC_TYPE_GENERAL);
