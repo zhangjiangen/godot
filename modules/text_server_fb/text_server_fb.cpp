@@ -1762,7 +1762,7 @@ RID TextServerFallback::font_get_glyph_texture_rid(const RID &p_font_rid, const 
 				}
 				if (tex.texture.is_null()) {
 					tex.texture.instantiate();
-					tex.texture.set_name("Font Texture");
+					tex.texture->set_name("Font Texture");
 					tex.texture->create_from_image(img);
 				} else {
 					tex.texture->update(img);
@@ -2110,7 +2110,7 @@ void TextServerFallback::font_draw_glyph(const RID &p_font_rid, const RID &p_can
 					}
 					if (tex.texture.is_null()) {
 						tex.texture.instantiate();
-						tex.texture.set_name("Font Texture");
+						tex.texture->set_name("Font Texture");
 						tex.texture->create_from_image(img);
 					} else {
 						tex.texture->update(img);
@@ -2190,7 +2190,7 @@ void TextServerFallback::font_draw_glyph_outline(const RID &p_font_rid, const RI
 					}
 					if (tex.texture.is_null()) {
 						tex.texture.instantiate();
-						tex.texture.set_name("Font Texture");
+						tex.texture->set_name("Font Texture");
 						tex.texture->create_from_image(img);
 					} else {
 						tex.texture->update(img);
