@@ -1636,6 +1636,27 @@ Variant::operator String() const {
 	return stringify(0);
 }
 
+String stringify_variant_clean(const Variant p_variant, int recursion_count) {
+	String s = p_variant.stringify(recursion_count);
+
+	// Wrap strings in quotes to avoid ambiguity.
+	switch (p_variant.get_type()) {
+		case Variant::STRING: {
+			s = s.c_escape().quote();
+		} break;
+		case Variant::STRING_NAME: {
+			s = "&" + s.c_escape().quote();
+		} break;
+		case Variant::NODE_PATH: {
+			s = "^" + s.c_escape().quote();
+		} break;
+		default: {
+		} break;
+	}
+
+	return s;
+}
+
 template <class T>
 String stringify_vector(const T &vec, int recursion_count) {
 	String str("[");
@@ -1643,7 +1664,8 @@ String stringify_vector(const T &vec, int recursion_count) {
 		if (i > 0) {
 			str += ", ";
 		}
-		str = str + Variant(vec[i]).stringify(recursion_count);
+
+		str += stringify_variant_clean(vec[i], recursion_count);
 	}
 	str += "]";
 	return str;
@@ -1709,8 +1731,8 @@ String Variant::stringify(int recursion_count) const {
 			recursion_count++;
 			for (List<Variant>::Element *E = keys.front(); E; E = E->next()) {
 				_VariantStrPair sp;
-				sp.key = E->get().stringify(recursion_count);
-				sp.value = d[E->get()].stringify(recursion_count);
+				sp.key = stringify_variant_clean(E->get(), recursion_count);
+				sp.value = stringify_variant_clean(d[E->get()], recursion_count);
 
 				pairs.push_back(sp);
 			}
@@ -1759,8 +1781,7 @@ String Variant::stringify(int recursion_count) const {
 				return "[...]";
 			}
 
-			String str = stringify_vector(arr, recursion_count);
-			return str;
+			return stringify_vector(arr, recursion_count);
 
 		} break;
 		case OBJECT: {
