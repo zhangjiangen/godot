@@ -52,7 +52,6 @@
 #include "tests/core/math/test_vector2i.h"
 #include "tests/core/math/test_vector3.h"
 #include "tests/core/math/test_vector3i.h"
-#include "tests/core/math/test_vector4.h"
 #include "tests/core/object/test_class_db.h"
 #include "tests/core/object/test_method_bind.h"
 #include "tests/core/object/test_object.h"

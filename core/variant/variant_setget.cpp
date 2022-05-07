@@ -77,11 +77,6 @@ void register_named_setters_getters() {
 	REGISTER_MEMBER(Vector3i, y);
 	REGISTER_MEMBER(Vector3i, z);
 
-	REGISTER_MEMBER(Vector4, x);
-	REGISTER_MEMBER(Vector4, y);
-	REGISTER_MEMBER(Vector4, z);
-	REGISTER_MEMBER(Vector4, w);
-
 	REGISTER_MEMBER(Rect2, position);
 	REGISTER_MEMBER(Rect2, size);
 	REGISTER_MEMBER(Rect2, end);
@@ -791,7 +786,6 @@ INDEXED_SETGET_STRUCT_BULTIN_NUMERIC(Vector2, double, real_t, 2)
 INDEXED_SETGET_STRUCT_BULTIN_NUMERIC(Vector2i, int64_t, int32_t, 2)
 INDEXED_SETGET_STRUCT_BULTIN_NUMERIC(Vector3, double, real_t, 3)
 INDEXED_SETGET_STRUCT_BULTIN_NUMERIC(Vector3i, int64_t, int32_t, 3)
-INDEXED_SETGET_STRUCT_BULTIN_NUMERIC(Vector4, double, real_t, 4)
 INDEXED_SETGET_STRUCT_BULTIN_NUMERIC(Quaternion, double, real_t, 4)
 INDEXED_SETGET_STRUCT_BULTIN_NUMERIC(Color, double, float, 4)
 
@@ -855,7 +849,6 @@ void register_indexed_setters_getters() {
 	REGISTER_INDEXED_MEMBER(Vector2i);
 	REGISTER_INDEXED_MEMBER(Vector3);
 	REGISTER_INDEXED_MEMBER(Vector3i);
-	REGISTER_INDEXED_MEMBER(Vector4);
 	REGISTER_INDEXED_MEMBER(Quaternion);
 	REGISTER_INDEXED_MEMBER(Color);
 	REGISTER_INDEXED_MEMBER(Transform2D);
@@ -1264,20 +1257,6 @@ bool Variant::iter_init(Variant &r_iter, bool &valid) const {
 			}
 			return step < 0;
 		} break;
-		// case VECTOR4: {
-		// 	double from = reinterpret_cast<const Vector4 *>(_data._mem)->x;
-		// 	double to = reinterpret_cast<const Vector4 *>(_data._mem)->y;
-		// 	double step = reinterpret_cast<const Vector4 *>(_data._mem)->z;
-
-		// 	r_iter = from;
-
-		// 	if (from == to) {
-		// 		return false;
-		// 	} else if (from < to) {
-		// 		return step > 0;
-		// 	}
-		// 	return step < 0;
-		// } break;
 		case OBJECT: {
 			if (!_get_obj().obj) {
 				valid = false;
@@ -2070,10 +2049,6 @@ void Variant::blend(const Variant &a, const Variant &b, float c, Variant &r_dst)
 			r_dst = Vector3i(int32_t(vax + vbx * c + 0.5), int32_t(vay + vby * c + 0.5), int32_t(vaz + vbz * c + 0.5));
 		}
 			return;
-		case VECTOR4: {
-			r_dst = *reinterpret_cast<const Vector4 *>(a._data._mem) + *reinterpret_cast<const Vector4 *>(b._data._mem) * c;
-		}
-			return;
 		case AABB: {
 			const ::AABB *ra = reinterpret_cast<const ::AABB *>(a._data._mem);
 			const ::AABB *rb = reinterpret_cast<const ::AABB *>(b._data._mem);
@@ -2231,10 +2206,7 @@ void Variant::interpolate(const Variant &a, const Variant &b, float c, Variant &
 			r_dst = Vector3i(int32_t(vax + vbx * c + 0.5), int32_t(vay + vby * c + 0.5), int32_t(vaz + vbz * c + 0.5));
 		}
 			return;
-		case VECTOR4: {
-			r_dst = reinterpret_cast<const Vector4 *>(a._data._mem)->lerp(*reinterpret_cast<const Vector4 *>(b._data._mem), c);
-		}
-			return;
+
 		case TRANSFORM2D: {
 			r_dst = a._data._transform2d->interpolate_with(*b._data._transform2d, c);
 		}
