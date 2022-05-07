@@ -157,6 +157,11 @@ void GDMonoField::set_value_from_variant(MonoObject *p_object, const Variant &p_
 				mono_field_set_value(p_object, mono_field, &from);
 				break;
 			}
+			if (tclass == CACHED_CLASS(CameraMatrix)) {
+				GDMonoMarshal::M_CameraMatrix from = MARSHALLED_OUT(CameraMatrix, p_value.operator ::CameraMatrix());
+				mono_field_set_value(p_object, mono_field, &from);
+				break;
+			}
 
 			if (tclass == CACHED_CLASS(AABB)) {
 				GDMonoMarshal::M_AABB from = MARSHALLED_OUT(AABB, p_value.operator ::AABB());
@@ -350,6 +355,10 @@ void GDMonoField::set_value_from_variant(MonoObject *p_object, const Variant &p_
 				} break;
 				case Variant::TRANSFORM3D: {
 					GDMonoMarshal::M_Transform3D from = MARSHALLED_OUT(Transform3D, p_value.operator ::Transform3D());
+					mono_field_set_value(p_object, mono_field, &from);
+				} break;
+				case Variant::CAMERA_MATRIX: {
+					GDMonoMarshal::M_CameraMatrix from = MARSHALLED_OUT(CameraMatrix, p_value.operator ::CameraMatrix());
 					mono_field_set_value(p_object, mono_field, &from);
 				} break;
 				case Variant::COLOR: {

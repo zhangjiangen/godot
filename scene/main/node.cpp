@@ -2937,6 +2937,10 @@ void Node::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_unique_name_in_owner", "enable"), &Node::set_unique_name_in_owner);
 	ClassDB::bind_method(D_METHOD("is_unique_name_in_owner"), &Node::is_unique_name_in_owner);
 
+	// 绑定脚本更新接口
+	ClassDB::bind_method(D_METHOD("pre_script_changed", "res"), &Node::pre_script_changed);
+	ClassDB::bind_method(D_METHOD("script_changed", "res"), &Node::script_changed);
+
 #ifdef TOOLS_ENABLED
 	ClassDB::bind_method(D_METHOD("_set_property_pinned", "property", "pinned"), &Node::set_property_pinned);
 #endif

@@ -487,6 +487,18 @@ struct M_Plane {
 		return ret;
 	}
 };
+struct M_CameraMatrix {
+	M_Plane x, y, z, w;
+
+	static _FORCE_INLINE_ CameraMatrix convert_to(const M_CameraMatrix &p_from) {
+		return CameraMatrix(M_Plane::convert_to(p_from.x), M_Plane::convert_to(p_from.y), M_Plane::convert_to(p_from.z), M_Plane::convert_to(p_from.w));
+	}
+
+	static _FORCE_INLINE_ M_CameraMatrix convert_from(const CameraMatrix &p_from) {
+		M_CameraMatrix ret = { M_Plane::convert_from((Plane&)p_from.x), M_Plane::convert_from((Plane&)p_from.x),M_Plane::convert_from((Plane&)p_from.y,M_Plane::convert_from((Plane&)p_from.z),M_Plane::convert_from((Plane&)p_from.w)};
+		return ret;
+	}
+};
 
 #pragma pack(pop)
 

@@ -148,6 +148,9 @@ void Variant::_register_variant_constructors() {
 	add_constructor<VariantConstructor<Transform3D, Basis, Vector3>>(sarray("basis", "origin"));
 	add_constructor<VariantConstructor<Transform3D, Vector3, Vector3, Vector3, Vector3>>(sarray("x_axis", "y_axis", "z_axis", "origin"));
 
+	add_constructor<VariantConstructNoArgs<CameraMatrix>>(sarray());
+	add_constructor<VariantConstructor<CameraMatrix, CameraMatrix>>(sarray("from"));
+
 	add_constructor<VariantConstructNoArgs<Color>>(sarray());
 	add_constructor<VariantConstructor<Color, Color>>(sarray("from"));
 	add_constructor<VariantConstructor<Color, Color, double>>(sarray("from", "alpha"));

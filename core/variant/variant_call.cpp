@@ -41,7 +41,6 @@
 #include "core/math/vector2i.h"
 #include "core/math/vector3.h"
 #include "core/math/vector3i.h"
-#include "core/math/vector4.h"
 #include "core/object/class_db.h"
 #include "core/os/os.h"
 #include "core/templates/local_vector.h"
@@ -872,7 +871,7 @@ struct _VariantCall {
 				return 8;
 			case Variant::VECTOR3:
 				return 12;
-			case Variant::VECTOR4:
+			case Variant::PLANE:
 				return 16;
 			case Variant::QUATERNION:
 				return 16;
@@ -921,8 +920,8 @@ struct _VariantCall {
 						Vector3 value = p_prev_value;
 						encode_float((float)value.x, &w[p_offset]);
 					} break;
-					case Variant::VECTOR4: {
-						Vector4 value = p_prev_value;
+					case Variant::PLANE: {
+						Plane value = p_prev_value;
 						encode_float((float)value.x, &w[p_offset]);
 					} break;
 					case Variant::QUATERNION: {
@@ -972,8 +971,8 @@ struct _VariantCall {
 						Vector3 value = p_prev_value;
 						encode_int32((int)value.x, &w[p_offset]);
 					} break;
-					case Variant::VECTOR4: {
-						Vector4 value = p_prev_value;
+					case Variant::PLANE: {
+						Plane value = p_prev_value;
 						encode_int32((int)value.x, &w[p_offset]);
 					} break;
 					case Variant::QUATERNION: {
@@ -1029,8 +1028,8 @@ struct _VariantCall {
 						encode_float((float)pv.x, &w[p_offset]);
 						encode_float((float)pv.y, &w[p_offset + 4]);
 					} break;
-					case Variant::VECTOR4: {
-						Vector4 pv = p_prev_value;
+					case Variant::PLANE: {
+						Plane pv = p_prev_value;
 						encode_float((float)pv.x, &w[p_offset]);
 						encode_float((float)pv.y, &w[p_offset + 4]);
 					} break;
@@ -1100,8 +1099,8 @@ struct _VariantCall {
 						encode_float((float)pv.y, &w[p_offset + 4]);
 						encode_float((float)pv.z, &w[p_offset + 8]);
 					} break;
-					case Variant::VECTOR4: {
-						Vector4 pv = p_prev_value;
+                    case Variant::PLANE: {
+                        Plane pv = p_prev_value;
 						encode_float((float)pv.x, &w[p_offset]);
 						encode_float((float)pv.y, &w[p_offset + 4]);
 						encode_float((float)pv.z, &w[p_offset + 8]);
@@ -1137,7 +1136,7 @@ struct _VariantCall {
 				}
 			} break;
 
-			case Variant::VECTOR4:
+			case Variant::PLANE:
 			case Variant::QUATERNION:
 			case Variant::COLOR: {
 				if (size < p_offset + 16) {
@@ -1173,8 +1172,8 @@ struct _VariantCall {
 						encode_float((float)pv.z, &w[p_offset + 8]);
 						encode_float((float)pv.z, &w[p_offset + 12]);
 					} break;
-					case Variant::VECTOR4: {
-						Vector4 pv = p_prev_value;
+                    case Variant::PLANE: {
+                        Plane pv = p_prev_value;
 						encode_float((float)pv.x, &w[p_offset]);
 						encode_float((float)pv.y, &w[p_offset + 4]);
 						encode_float((float)pv.z, &w[p_offset + 8]);
@@ -1238,8 +1237,8 @@ struct _VariantCall {
 						encode_int32((int)pv.x, &w[p_offset]);
 						encode_int32((int)pv.y, &w[p_offset + 4]);
 					} break;
-					case Variant::VECTOR4: {
-						Vector4 pv = p_prev_value;
+					case Variant::PLANE: {
+						Plane pv = p_prev_value;
 						encode_int32((int)pv.x, &w[p_offset]);
 						encode_int32((int)pv.y, &w[p_offset + 4]);
 					} break;
@@ -1304,8 +1303,8 @@ struct _VariantCall {
 						encode_int32((int)pv.y, &w[p_offset + 4]);
 						encode_int32((int)pv.z, &w[p_offset + 8]);
 					} break;
-					case Variant::VECTOR4: {
-						Vector4 pv = p_prev_value;
+                    case Variant::PLANE: {
+                        Plane pv = p_prev_value;
 						encode_int32((int)pv.x, &w[p_offset]);
 						encode_int32((int)pv.y, &w[p_offset + 4]);
 						encode_int32((int)pv.z, &w[p_offset + 8]);
@@ -1379,8 +1378,8 @@ struct _VariantCall {
 						encode_int32((int)pv.z, &w[p_offset + 8]);
 						encode_int32((int)pv.z, &w[p_offset + 12]);
 					} break;
-					case Variant::VECTOR4: {
-						Vector4 pv = p_prev_value;
+					case Variant::PLANE: {
+						Plane pv = p_prev_value;
 						encode_int32((int)pv.x, &w[p_offset]);
 						encode_int32((int)pv.y, &w[p_offset + 4]);
 						encode_int32((int)pv.z, &w[p_offset + 8]);

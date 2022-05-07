@@ -341,7 +341,7 @@ void Variant::_register_variant_operators() {
 	register_op<OperatorEvaluatorStringModT<::AABB>>(Variant::OP_MODULE, Variant::STRING, Variant::AABB);
 	register_op<OperatorEvaluatorStringModT<Basis>>(Variant::OP_MODULE, Variant::STRING, Variant::BASIS);
 	register_op<OperatorEvaluatorStringModT<Transform3D>>(Variant::OP_MODULE, Variant::STRING, Variant::TRANSFORM3D);
-	register_op<OperatorEvaluatorStringModT<Transform3D>>(Variant::OP_MODULE, Variant::STRING, Variant::CAMERA_MATRIX);
+	register_op<OperatorEvaluatorStringModT<CameraMatrix>>(Variant::OP_MODULE, Variant::STRING, Variant::CAMERA_MATRIX);
 
 	register_op<OperatorEvaluatorStringModT<Color>>(Variant::OP_MODULE, Variant::STRING, Variant::COLOR);
 	register_op<OperatorEvaluatorStringModT<StringName>>(Variant::OP_MODULE, Variant::STRING, Variant::STRING_NAME);
@@ -527,7 +527,7 @@ void Variant::_register_variant_operators() {
 	register_op<OperatorEvaluatorNotEqual<::AABB, ::AABB>>(Variant::OP_NOT_EQUAL, Variant::AABB, Variant::AABB);
 	register_op<OperatorEvaluatorNotEqual<Basis, Basis>>(Variant::OP_NOT_EQUAL, Variant::BASIS, Variant::BASIS);
 	register_op<OperatorEvaluatorNotEqual<Transform3D, Transform3D>>(Variant::OP_NOT_EQUAL, Variant::TRANSFORM3D, Variant::TRANSFORM3D);
-	register_op<OperatorEvaluatorNotEqual<Transform3D, Transform3D>>(Variant::OP_NOT_EQUAL, Variant::CAMERA_MATRIX, Variant::CAMERA_MATRIX);
+	register_op<OperatorEvaluatorNotEqual<CameraMatrix, CameraMatrix>>(Variant::OP_NOT_EQUAL, Variant::CAMERA_MATRIX, Variant::CAMERA_MATRIX);
 	register_op<OperatorEvaluatorNotEqual<Color, Color>>(Variant::OP_NOT_EQUAL, Variant::COLOR, Variant::COLOR);
 
 	register_op<OperatorEvaluatorNotEqual<StringName, String>>(Variant::OP_NOT_EQUAL, Variant::STRING_NAME, Variant::STRING);

@@ -243,6 +243,12 @@ protected:
 	virtual void shortcut_input(const Ref<InputEvent> &p_key_event);
 	virtual void unhandled_input(const Ref<InputEvent> &p_event);
 	virtual void unhandled_key_input(const Ref<InputEvent> &p_key_event);
+	void pre_script_changed(const Ref<Resource> &res) {
+		_on_script_remove();
+	}
+	void script_changed(const Ref<Resource> &res) {
+		_on_script_changed();
+	}
 	virtual void _on_script_remove() override;
 	virtual void _on_script_changed() override;
 

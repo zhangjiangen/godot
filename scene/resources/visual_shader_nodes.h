@@ -313,7 +313,7 @@ public:
 
 class VisualShaderNodeVec4Constant : public VisualShaderNodeConstant {
 	GDCLASS(VisualShaderNodeVec4Constant, VisualShaderNodeConstant);
-	Quaternion constant;
+	Plane constant;
 
 protected:
 	static void _bind_methods();
@@ -331,8 +331,8 @@ public:
 
 	virtual String generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview = false) const override;
 
-	void set_constant(const Quaternion &p_constant);
-	Quaternion get_constant() const;
+	void set_constant(const Plane &p_constant);
+	Plane get_constant() const;
 
 	virtual Vector<StringName> get_editable_properties() const override;
 
@@ -2139,7 +2139,7 @@ class VisualShaderNodeVec4Uniform : public VisualShaderNodeUniform {
 
 private:
 	bool default_value_enabled = false;
-	Quaternion default_value;
+	Plane default_value;
 
 protected:
 	static void _bind_methods();
@@ -2164,8 +2164,8 @@ public:
 	void set_default_value_enabled(bool p_enabled);
 	bool is_default_value_enabled() const;
 
-	void set_default_value(const Quaternion &p_value);
-	Quaternion get_default_value() const;
+	void set_default_value(const Plane &p_value);
+	Plane get_default_value() const;
 
 	bool is_qualifier_supported(Qualifier p_qual) const override;
 	bool is_convertible_to_constant() const override;

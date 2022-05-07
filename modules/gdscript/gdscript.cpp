@@ -824,7 +824,7 @@ Error GDScript::reload(bool p_keep_state) {
 
 		has_instances = instances.size();
 	}
-
+	notify_pre_scrip_reload_to_owners();
 	ERR_FAIL_COND_V(!p_keep_state && has_instances, ERR_ALREADY_IN_USE);
 
 	String basedir = path;
@@ -921,7 +921,7 @@ Error GDScript::reload(bool p_keep_state) {
 	}
 
 	_init_rpc_methods_properties();
-
+	notify_scrip_reload_to_owners();
 	return OK;
 }
 

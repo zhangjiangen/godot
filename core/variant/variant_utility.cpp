@@ -398,7 +398,7 @@ struct VariantUtilityFunctions {
 				return 8;
 			case Variant::VECTOR3:
 				return 12;
-			case Variant::VECTOR4:
+			case Variant::PLANE:
 				return 16;
 			case Variant::QUATERNION:
 				return 16;

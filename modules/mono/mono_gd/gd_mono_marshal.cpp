@@ -559,6 +559,10 @@ MonoObject *variant_to_mono_object(const Variant &p_var) {
 			GDMonoMarshal::M_Transform3D from = MARSHALLED_OUT(Transform3D, p_var.operator ::Transform3D());
 			return mono_value_box(mono_domain_get(), CACHED_CLASS_RAW(Transform3D), &from);
 		}
+		case Variant::CAMERA_MATRIX: {
+			GDMonoMarshal::M_CameraMatrix from = MARSHALLED_OUT(CameraMatrix, p_var.operator ::CameraMatrix());
+			return mono_value_box(mono_domain_get(), CACHED_CLASS_RAW(CameraMatrix), &from);
+		}
 		case Variant::COLOR: {
 			GDMonoMarshal::M_Color from = MARSHALLED_OUT(Color, p_var.operator ::Color());
 			return mono_value_box(mono_domain_get(), CACHED_CLASS_RAW(Color), &from);

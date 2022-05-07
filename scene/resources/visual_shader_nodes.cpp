@@ -636,7 +636,7 @@ String VisualShaderNodeVec4Constant::generate_code(Shader::Mode p_mode, VisualSh
 	return "	" + p_output_vars[0] + " = " + vformat("vec4(%.6f, %.6f, %.6f, %.6f)", constant.x, constant.y, constant.z, constant.w) + ";\n";
 }
 
-void VisualShaderNodeVec4Constant::set_constant(const Quaternion &p_constant) {
+void VisualShaderNodeVec4Constant::set_constant(const Plane &p_constant) {
 	if (constant.is_equal_approx(p_constant)) {
 		return;
 	}
@@ -644,7 +644,7 @@ void VisualShaderNodeVec4Constant::set_constant(const Quaternion &p_constant) {
 	emit_changed();
 }
 
-Quaternion VisualShaderNodeVec4Constant::get_constant() const {
+Plane VisualShaderNodeVec4Constant::get_constant() const {
 	return constant;
 }
 
@@ -2064,8 +2064,8 @@ void VisualShaderNodeVectorOp::set_op_type(OpType p_op_type) {
 			set_input_port_default_value(1, Vector3(), get_input_port_default_value(1));
 		} break;
 		case OP_TYPE_VECTOR_4D: {
-			set_input_port_default_value(0, Quaternion(), get_input_port_default_value(0));
-			set_input_port_default_value(1, Quaternion(), get_input_port_default_value(1));
+			set_input_port_default_value(0, Plane(), get_input_port_default_value(0));
+			set_input_port_default_value(1, Plane(), get_input_port_default_value(1));
 		} break;
 		default:
 			break;
@@ -2141,8 +2141,8 @@ VisualShaderNodeVectorOp::VisualShaderNodeVectorOp() {
 			set_input_port_default_value(1, Vector3());
 		} break;
 		case OP_TYPE_VECTOR_4D: {
-			set_input_port_default_value(0, Quaternion());
-			set_input_port_default_value(1, Quaternion());
+			set_input_port_default_value(0, Plane());
+			set_input_port_default_value(1, Plane());
 		} break;
 		default:
 			break;
@@ -2849,7 +2849,7 @@ void VisualShaderNodeVectorFunc::set_op_type(OpType p_op_type) {
 			set_input_port_default_value(0, Vector3(), get_input_port_default_value(0));
 		} break;
 		case OP_TYPE_VECTOR_4D: {
-			set_input_port_default_value(0, Quaternion(), get_input_port_default_value(0));
+			set_input_port_default_value(0, Plane(), get_input_port_default_value(0));
 		} break;
 		default:
 			break;
@@ -2953,7 +2953,7 @@ VisualShaderNodeVectorFunc::VisualShaderNodeVectorFunc() {
 			set_input_port_default_value(0, Vector3());
 		} break;
 		case OP_TYPE_VECTOR_4D: {
-			set_input_port_default_value(0, Quaternion());
+			set_input_port_default_value(0, Plane());
 		} break;
 		default:
 			break;
@@ -3346,7 +3346,7 @@ void VisualShaderNodeVectorLen::set_op_type(OpType p_op_type) {
 			set_input_port_default_value(0, Vector3(), get_input_port_default_value(0));
 		} break;
 		case OP_TYPE_VECTOR_4D: {
-			set_input_port_default_value(0, Quaternion(), get_input_port_default_value(0));
+			set_input_port_default_value(0, Plane(), get_input_port_default_value(0));
 		} break;
 		default:
 			break;
@@ -3479,7 +3479,7 @@ void VisualShaderNodeDerivativeFunc::set_op_type(OpType p_op_type) {
 			set_input_port_default_value(0, Vector3(), get_input_port_default_value(0));
 		} break;
 		case OP_TYPE_VECTOR_4D: {
-			set_input_port_default_value(0, Quaternion(), get_input_port_default_value(0));
+			set_input_port_default_value(0, Plane(), get_input_port_default_value(0));
 		} break;
 		default:
 			break;
@@ -3645,9 +3645,9 @@ void VisualShaderNodeClamp::set_op_type(OpType p_op_type) {
 			set_input_port_default_value(2, Vector3(), get_input_port_default_value(2));
 			break;
 		case OP_TYPE_VECTOR_4D:
-			set_input_port_default_value(0, Quaternion(), get_input_port_default_value(0));
-			set_input_port_default_value(1, Quaternion(), get_input_port_default_value(1));
-			set_input_port_default_value(2, Quaternion(), get_input_port_default_value(2));
+			set_input_port_default_value(0, Plane(), get_input_port_default_value(0));
+			set_input_port_default_value(1, Plane(), get_input_port_default_value(1));
+			set_input_port_default_value(2, Plane(), get_input_port_default_value(2));
 			break;
 		case OP_TYPE_IVECTOR_2D:
 			set_input_port_default_value(0, Vector2i(), get_input_port_default_value(0));
@@ -3663,9 +3663,9 @@ void VisualShaderNodeClamp::set_op_type(OpType p_op_type) {
 			set_input_port_default_value(0, Rect2i(), get_input_port_default_value(0));
 			set_input_port_default_value(1, Rect2i(), get_input_port_default_value(1));
 			set_input_port_default_value(2, Rect2i(), get_input_port_default_value(2));
-			set_input_port_default_value(0, Vector4(), get_input_port_default_value(0));
-			set_input_port_default_value(1, Vector4(), get_input_port_default_value(1));
-			set_input_port_default_value(2, Vector4(), get_input_port_default_value(2));
+			set_input_port_default_value(0, Plane(), get_input_port_default_value(0));
+			set_input_port_default_value(1, Plane(), get_input_port_default_value(1));
+			set_input_port_default_value(2, Plane(), get_input_port_default_value(2));
 			break;
 		default:
 			break;
@@ -3755,9 +3755,9 @@ void VisualShaderNodeFaceForward::set_op_type(OpType p_op_type) {
 			set_input_port_default_value(2, Vector3(), get_input_port_default_value(2));
 		} break;
 		case OP_TYPE_VECTOR_4D: {
-			set_input_port_default_value(0, Quaternion(), get_input_port_default_value(0));
-			set_input_port_default_value(1, Quaternion(), get_input_port_default_value(1));
-			set_input_port_default_value(2, Quaternion(), get_input_port_default_value(2));
+			set_input_port_default_value(0, Plane(), get_input_port_default_value(0));
+			set_input_port_default_value(1, Plane(), get_input_port_default_value(1));
+			set_input_port_default_value(2, Plane(), get_input_port_default_value(2));
 		} break;
 		default:
 			break;
@@ -3926,12 +3926,12 @@ void VisualShaderNodeStep::set_op_type(OpType p_op_type) {
 			set_input_port_default_value(1, Vector3(), get_input_port_default_value(1));
 		} break;
 		case OP_TYPE_VECTOR_4D: {
-			set_input_port_default_value(0, Quaternion(), get_input_port_default_value(0));
-			set_input_port_default_value(1, Quaternion(), get_input_port_default_value(1));
+			set_input_port_default_value(0, Plane(), get_input_port_default_value(0));
+			set_input_port_default_value(1, Plane(), get_input_port_default_value(1));
 		} break;
 		case OP_TYPE_VECTOR_4D_SCALAR: {
 			set_input_port_default_value(0, 0.0, get_input_port_default_value(0));
-			set_input_port_default_value(1, Quaternion(), get_input_port_default_value(1));
+			set_input_port_default_value(1, Plane(), get_input_port_default_value(1));
 		} break;
 		default:
 			break;
@@ -4086,14 +4086,14 @@ void VisualShaderNodeSmoothStep::set_op_type(OpType p_op_type) {
 			set_input_port_default_value(2, Vector3(), get_input_port_default_value(2)); // x
 			break;
 		case OP_TYPE_VECTOR_4D:
-			set_input_port_default_value(0, Quaternion(), get_input_port_default_value(0)); // edge0
-			set_input_port_default_value(1, Quaternion(), get_input_port_default_value(1)); // edge1
-			set_input_port_default_value(2, Quaternion(), get_input_port_default_value(2)); // x
+			set_input_port_default_value(0, Plane(), get_input_port_default_value(0)); // edge0
+			set_input_port_default_value(1, Plane(), get_input_port_default_value(1)); // edge1
+			set_input_port_default_value(2, Plane(), get_input_port_default_value(2)); // x
 			break;
 		case OP_TYPE_VECTOR_4D_SCALAR:
 			set_input_port_default_value(0, 0.0, get_input_port_default_value(0)); // edge0
 			set_input_port_default_value(1, 0.0, get_input_port_default_value(1)); // edge1
-			set_input_port_default_value(2, Quaternion(), get_input_port_default_value(2)); // x
+			set_input_port_default_value(2, Plane(), get_input_port_default_value(2)); // x
 			break;
 		default:
 			break;
@@ -4185,8 +4185,8 @@ void VisualShaderNodeVectorDistance::set_op_type(OpType p_op_type) {
 			set_input_port_default_value(1, Vector3(), get_input_port_default_value(1)); // b
 		} break;
 		case OP_TYPE_VECTOR_4D: {
-			set_input_port_default_value(0, Quaternion(), get_input_port_default_value(0)); // a
-			set_input_port_default_value(1, Quaternion(), get_input_port_default_value(1)); // b
+			set_input_port_default_value(0, Plane(), get_input_port_default_value(0)); // a
+			set_input_port_default_value(1, Plane(), get_input_port_default_value(1)); // b
 		} break;
 		default:
 			break;
@@ -4365,13 +4365,13 @@ void VisualShaderNodeMix::set_op_type(OpType p_op_type) {
 			set_input_port_default_value(2, 0.0, get_input_port_default_value(2)); // weight
 		} break;
 		case OP_TYPE_VECTOR_4D: {
-			set_input_port_default_value(0, Quaternion(), get_input_port_default_value(0)); // a
-			set_input_port_default_value(1, Quaternion(), get_input_port_default_value(1)); // b
-			set_input_port_default_value(2, Quaternion(), get_input_port_default_value(2)); // weight
+			set_input_port_default_value(0, Plane(), get_input_port_default_value(0)); // a
+			set_input_port_default_value(1, Plane(), get_input_port_default_value(1)); // b
+			set_input_port_default_value(2, Plane(), get_input_port_default_value(2)); // weight
 		} break;
 		case OP_TYPE_VECTOR_4D_SCALAR: {
-			set_input_port_default_value(0, Quaternion(), get_input_port_default_value(0)); // a
-			set_input_port_default_value(1, Quaternion(), get_input_port_default_value(1)); // b
+			set_input_port_default_value(0, Plane(), get_input_port_default_value(0)); // a
+			set_input_port_default_value(1, Plane(), get_input_port_default_value(1)); // b
 			set_input_port_default_value(2, 0.0, get_input_port_default_value(2)); // weight
 		} break;
 		default:
@@ -4736,7 +4736,7 @@ void VisualShaderNodeVectorDecompose::set_op_type(OpType p_op_type) {
 			set_input_port_default_value(0, Vector3(), get_input_port_default_value(0));
 		} break;
 		case OP_TYPE_VECTOR_4D: {
-			set_input_port_default_value(0, Quaternion(), get_input_port_default_value(0));
+			set_input_port_default_value(0, Plane(), get_input_port_default_value(0));
 		} break;
 		default:
 			break;
@@ -6016,12 +6016,12 @@ bool VisualShaderNodeVec4Uniform::is_default_value_enabled() const {
 	return default_value_enabled;
 }
 
-void VisualShaderNodeVec4Uniform::set_default_value(const Quaternion &p_value) {
+void VisualShaderNodeVec4Uniform::set_default_value(const Plane &p_value) {
 	default_value = p_value;
 	emit_changed();
 }
 
-Quaternion VisualShaderNodeVec4Uniform::get_default_value() const {
+Plane VisualShaderNodeVec4Uniform::get_default_value() const {
 	return default_value;
 }
 
@@ -6940,8 +6940,8 @@ void VisualShaderNodeSwitch::set_op_type(OpType p_op_type) {
 			set_input_port_default_value(1, Rect2i(1.0, 1.0, 1.0, 1.0), get_input_port_default_value(1));
 			set_input_port_default_value(2, Rect2i(0.0, 0.0, 0.0, 0.0), get_input_port_default_value(2));
 		case OP_TYPE_VECTOR_4D:
-			set_input_port_default_value(1, Quaternion(1.0, 1.0, 1.0, 1.0), get_input_port_default_value(1));
-			set_input_port_default_value(2, Quaternion(0.0, 0.0, 0.0, 0.0), get_input_port_default_value(2));
+			set_input_port_default_value(1, Plane(1.0, 1.0, 1.0, 1.0), get_input_port_default_value(1));
+			set_input_port_default_value(2, Plane(0.0, 0.0, 0.0, 0.0), get_input_port_default_value(2));
 			break;
 		case OP_TYPE_BOOLEAN:
 			set_input_port_default_value(1, true);
@@ -7399,8 +7399,8 @@ void VisualShaderNodeCompare::set_comparison_type(ComparisonType p_comparison_ty
 			set_input_port_default_value(0, Rect2i(0, 0, 0, 0), get_input_port_default_value(1));
 			set_input_port_default_value(1, Rect2i(0, 0, 0, 0), get_input_port_default_value(1));
 		case CTYPE_VECTOR_4D:
-			set_input_port_default_value(0, Quaternion(), get_input_port_default_value(0));
-			set_input_port_default_value(1, Quaternion(), get_input_port_default_value(1));
+			set_input_port_default_value(0, Plane(), get_input_port_default_value(0));
+			set_input_port_default_value(1, Plane(), get_input_port_default_value(1));
 			simple_decl = false;
 			break;
 		case CTYPE_BOOLEAN:
@@ -7615,9 +7615,9 @@ void VisualShaderNodeMultiplyAdd::set_op_type(OpType p_op_type) {
 			set_input_port_default_value(2, Rect2i(), get_input_port_default_value(2));
 		} break;
 		case OP_TYPE_VECTOR_4D: {
-			set_input_port_default_value(0, Quaternion(), get_input_port_default_value(0));
-			set_input_port_default_value(1, Quaternion(), get_input_port_default_value(1));
-			set_input_port_default_value(2, Quaternion(), get_input_port_default_value(2));
+			set_input_port_default_value(0, Plane(), get_input_port_default_value(0));
+			set_input_port_default_value(1, Plane(), get_input_port_default_value(1));
+			set_input_port_default_value(2, Plane(), get_input_port_default_value(2));
 		} break;
 		default:
 			break;

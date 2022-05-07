@@ -82,6 +82,8 @@ private:
 protected:
 	void emit_changed();
 
+	void notify_pre_scrip_reload_to_owners();
+	void notify_scrip_reload_to_owners();
 	void notify_change_to_owners();
 
 	virtual void _resource_path_changed();

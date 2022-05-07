@@ -879,6 +879,10 @@ void Object::set_script_and_instance(const Variant &p_script, ScriptInstance *p_
 
 	script = p_script;
 	script_instance = p_instance;
+	Ref<Script> scr = p_script;
+	if (scr.is_valid()) {
+		scr->register_owner(this);
+	}
 	_on_script_changed();
 }
 
@@ -888,6 +892,8 @@ void Object::set_script(const Variant &p_script) {
 	}
 
 	if (script_instance) {
+		Ref<Script> scr = script;
+		scr->unregister_owner(this);
 		// 发送脚本删除消息
 		_on_script_remove();
 		memdelete(script_instance);
@@ -898,6 +904,7 @@ void Object::set_script(const Variant &p_script) {
 	Ref<Script> s = script;
 
 	if (!s.is_null()) {
+		s->register_owner(this);
 		if (s->can_instantiate()) {
 			OBJ_DEBUG_LOCK
 			script_instance = s->instance_create(this);
@@ -918,8 +925,10 @@ void Object::set_script_instance(ScriptInstance *p_instance) {
 	}
 
 	if (script_instance) {
+		Ref<Script> scr = script;
 		// 发送脚本删除消息
 		_on_script_remove();
+		scr->unregister_owner(this);
 		memdelete(script_instance);
 	}
 
@@ -929,6 +938,11 @@ void Object::set_script_instance(ScriptInstance *p_instance) {
 		script = p_instance->get_script();
 	} else {
 		script = Variant();
+	}
+	Ref<Script> s = script;
+
+	if (!s.is_null()) {
+		s->register_owner(this);
 	}
 	_on_script_changed();
 }
@@ -1887,6 +1901,10 @@ void Object::detach_from_objectdb() {
 
 Object::~Object() {
 	if (script_instance) {
+		Ref<Script> s = script_instance->get_script();
+		if (s.is_valid()) {
+			s->unregister_owner(this);
+		}
 		_on_script_remove();
 		memdelete(script_instance);
 	}

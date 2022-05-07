@@ -732,10 +732,10 @@ CameraMatrix::operator Transform3D() const {
 
 	return tr;
 }
-Vector4 CameraMatrix::get_gpu_mull_add() const {
+Plane CameraMatrix::get_gpu_mull_add() const {
 	float tan_half_fov_x = 1.0 / matrix[0][0];
 	float tan_half_fov_y = 1.0 / matrix[1][1];
-	Vector4 ret;
+    Plane ret;
 	ret.x = tan_half_fov_x * 2.0;
 	ret.y = tan_half_fov_y * -2.0;
 	ret.z = tan_half_fov_x * -1.0;

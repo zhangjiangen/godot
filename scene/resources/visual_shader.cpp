@@ -76,8 +76,8 @@ void VisualShaderNode::set_input_port_default_value(int p_port, const Variant &p
 						Vector3 pv = p_prev_value;
 						value = pv.x;
 					} break;
-					case Variant::VECTOR4: {
-						Vector4 pv = p_prev_value;
+					case Variant::PLANE: {
+						Plane pv = p_prev_value;
 						value = pv.x;
 					} break;
 					case Variant::QUATERNION: {
@@ -116,8 +116,8 @@ void VisualShaderNode::set_input_port_default_value(int p_port, const Variant &p
 						Vector3 pv = p_prev_value;
 						value = (int)pv.x;
 					} break;
-					case Variant::VECTOR4: {
-						Vector4 pv = p_prev_value;
+					case Variant::PLANE: {
+						Plane pv = p_prev_value;
 						value = (int)(pv.x);
 					} break;
 					case Variant::QUATERNION: {
@@ -159,8 +159,8 @@ void VisualShaderNode::set_input_port_default_value(int p_port, const Variant &p
 						Vector3 pv = p_prev_value;
 						value = Vector2(pv.x, pv.y);
 					} break;
-					case Variant::VECTOR4: {
-						Vector4 pv = p_prev_value;
+					case Variant::PLANE: {
+						Plane pv = p_prev_value;
 						value = Vector2(pv.x, pv.y);
 					} break;
 					case Variant::QUATERNION: {
@@ -204,8 +204,8 @@ void VisualShaderNode::set_input_port_default_value(int p_port, const Variant &p
 						Quaternion pv = p_prev_value;
 						value = Vector3(pv.x, pv.y, pv.z);
 					} break;
-					case Variant::VECTOR4: {
-						Vector4 pv = p_prev_value;
+					case Variant::PLANE: {
+						Plane pv = p_prev_value;
 						value = Vector3(pv.x, pv.y, pv.z);
 					} break;
 					case Variant::VECTOR2I: {
@@ -242,8 +242,8 @@ void VisualShaderNode::set_input_port_default_value(int p_port, const Variant &p
 						Vector3 pv = p_prev_value;
 						value = Quaternion(pv.x, pv.y, pv.z, pv.z);
 					} break;
-					case Variant::VECTOR4: {
-						Vector4 pv = p_prev_value;
+					case Variant::PLANE: {
+						Plane pv = p_prev_value;
 						value = Quaternion(pv.x, pv.y, pv.z, pv.w);
 					} break;
 					case Variant::QUATERNION: {
@@ -265,43 +265,43 @@ void VisualShaderNode::set_input_port_default_value(int p_port, const Variant &p
 						break;
 				}
 			} break;
-			case Variant::VECTOR4: {
+			case Variant::PLANE: {
 				switch (p_prev_value.get_type()) {
 					case Variant::INT: {
 						float pv = (float)(int)p_prev_value;
-						value = Vector4(pv, pv, pv, pv);
+						value = Plane(pv, pv, pv, pv);
 					} break;
 					case Variant::FLOAT: {
 						float pv = p_prev_value;
-						value = Vector4(pv, pv, pv, pv);
+						value = Plane(pv, pv, pv, pv);
 					} break;
 					case Variant::VECTOR2: {
 						Vector2 pv = p_prev_value;
-						value = Vector4(pv.x, pv.y, pv.y, pv.y);
+						value = Plane(pv.x, pv.y, pv.y, pv.y);
 					} break;
 					case Variant::VECTOR3: {
 						Vector3 pv = p_prev_value;
-						value = Vector4(pv.x, pv.y, pv.z, pv.z);
+						value = Plane(pv.x, pv.y, pv.z, pv.z);
 					} break;
 					case Variant::QUATERNION: {
 						Quaternion pv = p_prev_value;
-						value = Vector4(pv.x, pv.y, pv.z, pv.w);
+						value = Plane(pv.x, pv.y, pv.z, pv.w);
 					} break;
-					case Variant::VECTOR4: {
-						Vector4 pv = p_prev_value;
-						value = Vector4(pv.x, pv.y, pv.z, pv.w);
+					case Variant::PLANE: {
+						Plane pv = p_prev_value;
+						value = Plane(pv.x, pv.y, pv.z, pv.w);
 					} break;
 					case Variant::VECTOR2I: {
 						Vector2i pv = p_prev_value;
-						value = Vector4(pv.x, pv.y, pv.y, pv.y);
+						value = Plane(pv.x, pv.y, pv.y, pv.y);
 					} break;
 					case Variant::VECTOR3I: {
 						Vector3i pv = p_prev_value;
-						value = Vector4(pv.x, pv.y, pv.z, pv.z);
+						value = Plane(pv.x, pv.y, pv.z, pv.z);
 					} break;
 					case Variant::RECT2I: {
 						Rect2i pv = p_prev_value;
-						value = Vector4(pv.position.x, pv.position.y, pv.size.x, pv.size.y);
+						value = Plane(pv.position.x, pv.position.y, pv.size.x, pv.size.y);
 					} break;
 					default:
 						break;
@@ -325,8 +325,8 @@ void VisualShaderNode::set_input_port_default_value(int p_port, const Variant &p
 						Vector3 pv = p_prev_value;
 						value = Vector2i(pv.x, pv.y);
 					} break;
-					case Variant::VECTOR4: {
-						Vector4 pv = p_prev_value;
+					case Variant::PLANE: {
+						Plane pv = p_prev_value;
 						value = Vector2i(pv.x, pv.y);
 					} break;
 					case Variant::QUATERNION: {
@@ -368,8 +368,8 @@ void VisualShaderNode::set_input_port_default_value(int p_port, const Variant &p
 						Vector3 pv = p_prev_value;
 						value = Vector3i(pv.x, pv.y, pv.z);
 					} break;
-					case Variant::VECTOR4: {
-						Vector4 pv = p_prev_value;
+					case Variant::PLANE: {
+						Plane pv = p_prev_value;
 						value = Vector3i(pv.x, pv.y, pv.z);
 					} break;
 					case Variant::QUATERNION: {
@@ -410,8 +410,8 @@ void VisualShaderNode::set_input_port_default_value(int p_port, const Variant &p
 						Vector3 pv = p_prev_value;
 						value = Rect2i(pv.x, pv.y, pv.z, pv.z);
 					} break;
-					case Variant::VECTOR4: {
-						Vector4 pv = p_prev_value;
+					case Variant::PLANE: {
+						Plane pv = p_prev_value;
 						value = Rect2i(pv.x, pv.y, pv.z, pv.w);
 					} break;
 					case Variant::QUATERNION: {

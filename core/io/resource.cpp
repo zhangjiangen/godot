@@ -316,6 +316,22 @@ void Resource::unregister_owner(Object *p_owner) {
 	owners.erase(p_owner->get_instance_id());
 }
 
+void Resource::notify_pre_scrip_reload_to_owners() {
+	for (Set<ObjectID>::Element *E = owners.front(); E; E = E->next()) {
+		Object *obj = ObjectDB::get_instance(E->get());
+		ERR_CONTINUE_MSG(!obj, "Object was deleted, while still owning a resource."); //wtf
+		//TODO store string
+		obj->call("pre_script_changed", Ref<Resource>(this));
+	}
+}
+void Resource::notify_scrip_reload_to_owners() {
+	for (Set<ObjectID>::Element *E = owners.front(); E; E = E->next()) {
+		Object *obj = ObjectDB::get_instance(E->get());
+		ERR_CONTINUE_MSG(!obj, "Object was deleted, while still owning a resource."); //wtf
+		//TODO store string
+		obj->call("pre_script_changed", Ref<Resource>(this));
+	}
+}
 void Resource::notify_change_to_owners() {
 	for (Set<ObjectID>::Element *E = owners.front(); E; E = E->next()) {
 		Object *obj = ObjectDB::get_instance(E->get());

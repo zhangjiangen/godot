@@ -35,7 +35,6 @@
 #include "core/math/rect2.h"
 #include "core/math/transform_3d.h"
 #include "core/math/vector3.h"
-#include "core/math/vector4.h"
 #include "core/templates/local_vector.h"
 
 struct AABB;
@@ -166,7 +165,7 @@ struct CameraMatrix {
 	}
 
 	float get_lod_multiplier() const;
-	Vector4 get_gpu_mull_add() const;
+	Plane get_gpu_mull_add() const;
 
 	inline CameraMatrix(real_t xx, real_t xy, real_t xz, real_t xw, real_t yx, real_t yy, real_t yz, real_t yw, real_t zx, real_t zy, real_t zz, real_t zw, real_t wx, real_t wy, real_t wz, real_t ww) {
 		matrix[0][0] = xx;
@@ -191,6 +190,12 @@ struct CameraMatrix {
 		q[1] = p_other.q[1];
 		q[2] = p_other.q[2];
 		q[3] = p_other.q[3];
+	}
+	inline CameraMatrix(const Plane &p_x, const Plane &p_y, const Plane &p_z, const Plane &p_w) {
+		x = (MQuat &)p_x;
+		y = (MQuat &)p_y;
+		z = (MQuat &)p_z;
+		w = (MQuat &)p_w;
 	}
 	CameraMatrix();
 	CameraMatrix(const Transform3D &p_transform);

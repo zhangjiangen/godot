@@ -828,6 +828,8 @@ void VisualScript::set_source_code(const String &p_code) {
 }
 
 Error VisualScript::reload(bool p_keep_state) {
+	notify_pre_scrip_reload_to_owners();
+	notify_scrip_reload_to_owners();
 	return OK;
 }
 

@@ -45,6 +45,7 @@ void Variant::_register_variant_destructors() {
 	add_destructor<VariantDestruct<::AABB>>();
 	add_destructor<VariantDestruct<Basis>>();
 	add_destructor<VariantDestruct<Transform3D>>();
+	add_destructor<VariantDestruct<CameraMatrix>>();
 	add_destructor<VariantDestruct<StringName>>();
 	add_destructor<VariantDestruct<NodePath>>();
 	add_destructor<VariantDestruct<::RID>>();

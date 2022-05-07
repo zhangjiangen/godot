@@ -374,7 +374,7 @@ Point2 Camera3D::unproject_position(const Vector3 &p_pos) const {
 	return res;
 }
 
-Vector4 Camera3D::get_gpu_mull_add() const {
+Plane Camera3D::get_gpu_mull_add() const {
 	CameraMatrix cm;
 	Size2 viewport_size = get_viewport()->get_visible_rect().size;
 

@@ -32,7 +32,6 @@
 #define CAMERA_3D_H
 
 #include "scene/3d/node_3d.h"
-#include "core/math/vector4.h"
 #include "scene/3d/velocity_tracker_3d.h"
 #include "scene/resources/camera_effects.h"
 #include "scene/resources/environment.h"
@@ -154,7 +153,7 @@ public:
 	void set_cull_mask_value(int p_layer_number, bool p_enable);
 	bool get_cull_mask_value(int p_layer_number) const;
 
-	Vector4 get_gpu_mull_add() const;
+	Plane get_gpu_mull_add() const;
 
 	virtual Vector<Plane> get_frustum() const;
 	bool is_position_in_frustum(const Vector3 &p_position) const;

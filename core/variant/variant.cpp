@@ -3273,7 +3273,7 @@ bool Variant::hash_compare(const Variant &p_variant, int recursion_count) const 
 			const CameraMatrix *r = p_variant._data._camera_matrix;
 
 			for (int i = 0; i < 4; i++) {
-				if (!(hash_compare_vector4(l->q[i], r->q[i]))) {
+				if (!(hash_compare_quaternion(l->q[i], r->q[i]))) {
 					return false;
 				}
 			}

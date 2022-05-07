@@ -85,6 +85,7 @@ Dictionary NativeExtensionAPIDump::generate_extension_api() {
 	}
 
 	const uint32_t vec3_elems = 3;
+	const uint32_t vec4_elems = 4;
 	const uint32_t ptrsize_32 = 4;
 	const uint32_t ptrsize_64 = 8;
 	static const char *build_config_name[4] = { "float_32", "float_64", "double_32", "double_64" };
