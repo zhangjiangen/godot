@@ -53,23 +53,34 @@ struct CameraMatrix {
 		PLANE_RIGHT,
 		PLANE_BOTTOM
 	};
+	struct MQuat {
+		real_t x, y, z, w;
+		MQuat lerp(const MQuat &p_b, real_t p_t) const {
+			MQuat r;
+			r.x = x + (p_b.x - x) * p_t;
+			r.y = y + (p_b.y - y) * p_t;
+			r.z = z + (p_b.z - z) * p_t;
+			r.w = w + (p_b.w - w) * p_t;
+			return r;
+		}
+	};
 	union {
 		struct {
-			Quaternion x;
-			Quaternion y;
-			Quaternion z;
-			Quaternion w;
+			MQuat x;
+			MQuat y;
+			MQuat z;
+			MQuat w;
 		};
-		Quaternion q[4];
+		MQuat q[4];
 		real_t matrix[4][4];
 	};
 
 	CameraMatrix lerp(const CameraMatrix &p_to, const real_t &p_weight) const {
 		CameraMatrix b;
-		b.q[0] = q[0].slerp(p_to.q[0], p_weight);
-		b.q[1] = q[1].slerp(p_to.q[1], p_weight);
-		b.q[2] = q[2].slerp(p_to.q[2], p_weight);
-		b.q[3] = q[3].slerp(p_to.q[3], p_weight);
+		b.q[0] = q[0].lerp(p_to.q[0], p_weight);
+		b.q[1] = q[1].lerp(p_to.q[1], p_weight);
+		b.q[2] = q[2].lerp(p_to.q[2], p_weight);
+		b.q[3] = q[3].lerp(p_to.q[3], p_weight);
 
 		return b;
 	}

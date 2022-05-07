@@ -38,6 +38,7 @@ CoreStringNames::CoreStringNames() :
 		_meta(StaticCString::create("__meta__")),
 		_script(StaticCString::create("script")),
 		script_changed(StaticCString::create("script_changed")),
+		script_remove(StaticCString::create("script_remove")),
 		___pdcdata(StaticCString::create("___pdcdata")),
 		__getvar(StaticCString::create("__getvar")),
 		_iter_init(StaticCString::create("_iter_init")),

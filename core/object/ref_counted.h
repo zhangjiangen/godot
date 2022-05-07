@@ -630,7 +630,9 @@ public:
 		assert(pRep);
 		return pRep;
 	}
-	inline T *get() const { return pRep; }
+	inline T *get() const {
+		return pRep;
+	}
 
 	/** Binds rep to the SharedPtr.
 			@remarks
@@ -656,7 +658,9 @@ public:
 	}
 
 	/// @deprecated use get() instead
-	T *getPointer() const { return pRep; }
+	T *getPointer() const {
+		return pRep;
+	}
 
 	static void unspecified_bool(SharedPtr ***) {
 	}
@@ -668,10 +672,14 @@ public:
 	}
 
 	/// @deprecated use SharedPtr::operator unspecified_bool_type() instead
-	bool isNull(void) const { return pRep == 0; }
+	bool isNull(void) const {
+		return pRep == 0;
+	}
 
 	/// @deprecated use reset() instead
-	void setNull() { reset(); }
+	void setNull() {
+		reset();
+	}
 
 	void reset(void) {
 		release();
@@ -840,7 +848,9 @@ public:
 		assert(pRep);
 		return pRep;
 	}
-	inline T *get() const { return pRep; }
+	inline T *get() const {
+		return pRep;
+	}
 
 	/** Binds rep to the SharedPtr.
 			@remarks
@@ -865,7 +875,9 @@ public:
 	}
 
 	/// @deprecated use get() instead
-	T *getPointer() const { return pRep; }
+	T *getPointer() const {
+		return pRep;
+	}
 
 	static void unspecified_bool(TObjectPtr ***) {
 	}
@@ -877,10 +889,14 @@ public:
 	}
 
 	/// @deprecated use SharedPtr::operator unspecified_bool_type() instead
-	bool isNull(void) const { return pRep == 0; }
+	bool isNull(void) const {
+		return pRep == 0;
+	}
 
 	/// @deprecated use reset() instead
-	void setNull() { reset(); }
+	void setNull() {
+		reset();
+	}
 
 	void reset(void) {
 		release();

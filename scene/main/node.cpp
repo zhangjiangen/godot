@@ -45,7 +45,6 @@
 
 #include <stdint.h>
 
-
 Node::Data::Data() {
 	process_mode = PROCESS_MODE_INHERIT;
 	inside_tree = false;
@@ -59,12 +58,10 @@ Node::Data::Data() {
 	physics_process_internal = false;
 	process_internal = false;
 
-
-    input = false;
-    shortcut_input = false;
-    unhandled_input = false;
-    unhandled_key_input = false;
-
+	input = false;
+	shortcut_input = false;
+	unhandled_input = false;
+	unhandled_key_input = false;
 
 	parent_owned = false;
 	in_constructor = true;
@@ -3050,6 +3047,8 @@ void Node::_bind_methods() {
 	ADD_GROUP("Editor Description", "editor_");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "editor_description", PROPERTY_HINT_MULTILINE_TEXT), "set_editor_description", "get_editor_description");
 
+	GDVIRTUAL_BIND(_on_script_remove)
+	GDVIRTUAL_BIND(_on_script_changed)
 	GDVIRTUAL_BIND(_process, "delta");
 	GDVIRTUAL_BIND(_physics_process, "delta");
 	GDVIRTUAL_BIND(_enter_tree);
@@ -3062,6 +3061,12 @@ void Node::_bind_methods() {
 	GDVIRTUAL_BIND(_unhandled_key_input, "event");
 }
 
+void Node::_on_script_remove() {
+	GDVIRTUAL_CALL(_on_script_remove);
+}
+void Node::_on_script_changed() {
+	GDVIRTUAL_CALL(_on_script_changed);
+}
 String Node::_get_name_num_separator() {
 	switch (ProjectSettings::get_singleton()->get("editor/node_naming/name_num_separator").operator int()) {
 		case 0:

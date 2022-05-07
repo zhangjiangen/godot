@@ -879,6 +879,7 @@ void Object::set_script_and_instance(const Variant &p_script, ScriptInstance *p_
 
 	script = p_script;
 	script_instance = p_instance;
+	_on_script_changed();
 }
 
 void Object::set_script(const Variant &p_script) {
@@ -887,6 +888,8 @@ void Object::set_script(const Variant &p_script) {
 	}
 
 	if (script_instance) {
+		// 发送脚本删除消息
+		_on_script_remove();
 		memdelete(script_instance);
 		script_instance = nullptr;
 	}
@@ -906,6 +909,7 @@ void Object::set_script(const Variant &p_script) {
 
 	notify_property_list_changed(); //scripts may add variables, so refresh is desired
 	emit_signal(CoreStringNames::get_singleton()->script_changed);
+	_on_script_changed();
 }
 
 void Object::set_script_instance(ScriptInstance *p_instance) {
@@ -914,6 +918,8 @@ void Object::set_script_instance(ScriptInstance *p_instance) {
 	}
 
 	if (script_instance) {
+		// 发送脚本删除消息
+		_on_script_remove();
 		memdelete(script_instance);
 	}
 
@@ -924,6 +930,7 @@ void Object::set_script_instance(ScriptInstance *p_instance) {
 	} else {
 		script = Variant();
 	}
+	_on_script_changed();
 }
 
 Variant Object::get_script() const {
@@ -1633,6 +1640,7 @@ void Object::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_main_property"), &Object::get_main_property);
 
 	ADD_SIGNAL(MethodInfo("script_changed"));
+	ADD_SIGNAL(MethodInfo("script_remove"));
 	ADD_SIGNAL(MethodInfo("property_list_changed"));
 
 	//ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "main_property"), "set_main_property", "get_main_property");
@@ -1879,6 +1887,7 @@ void Object::detach_from_objectdb() {
 
 Object::~Object() {
 	if (script_instance) {
+		_on_script_remove();
 		memdelete(script_instance);
 	}
 	script_instance = nullptr;

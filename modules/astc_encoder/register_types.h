@@ -30,8 +30,9 @@
 
 #ifndef ASTC_ENCODER_REGISTER_TYPES_H
 #define ASTC_ENCODER_REGISTER_TYPES_H
+#include "modules/register_module_types.h"
 
-void register_astc_encoder_types();
-void unregister_astc_encoder_types();
+void initialize_astc_encoder_module(ModuleInitializationLevel p_level);
+void uninitialize_astc_encoder_module(ModuleInitializationLevel p_level);
 
 #endif // BASIS_UNIVERSAL_REGISTER_TYPES_H

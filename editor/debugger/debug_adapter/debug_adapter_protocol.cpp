@@ -429,14 +429,14 @@ int DebugAdapterProtocol::parse_variant(const Variant &p_var) {
 			y.type = type_quat;
 			z.type = type_quat;
 			w.type = type_quat;
-			x.value = basis.x;
-			y.value = basis.y;
-			z.value = basis.z;
-			w.value = basis.w;
-			x.variablesReference = parse_variant(basis.x);
-			y.variablesReference = parse_variant(basis.y);
-			z.variablesReference = parse_variant(basis.z);
-			w.variablesReference = parse_variant(basis.w);
+			x.value = (Quaternion&)basis.x;
+			y.value = (Quaternion&)basis.y;
+			z.value = (Quaternion&)basis.z;
+			w.value = (Quaternion&)basis.w;
+			x.variablesReference = parse_variant((Quaternion&)basis.x);
+			y.variablesReference = parse_variant((Quaternion&)basis.y);
+			z.variablesReference = parse_variant((Quaternion&)basis.z);
+			w.variablesReference = parse_variant((Quaternion&)basis.w);
 
 			Array arr;
 			arr.push_back(x.to_json());

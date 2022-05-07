@@ -438,6 +438,8 @@ void Resource::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("duplicate", "subresources"), &Resource::duplicate, DEFVAL(false));
 	ADD_SIGNAL(MethodInfo("changed"));
 	ADD_SIGNAL(MethodInfo("setup_local_to_scene_requested"));
+	ADD_SIGNAL(MethodInfo("_script_remove"));
+	ADD_SIGNAL(MethodInfo("_script_changed"));
 
 	ADD_GROUP("Resource", "resource_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "resource_local_to_scene"), "set_local_to_scene", "is_local_to_scene");
@@ -448,6 +450,12 @@ void Resource::_bind_methods() {
 	get_rid_bind.return_val.type = Variant::RID;
 
 	::ClassDB::add_virtual_method(get_class_static(), get_rid_bind, true, Vector<String>(), true);
+}
+void Resource::_on_script_remove() {
+	emit_signal(CoreStringNames::get_singleton()->script_remove);
+}
+void Resource::_on_script_changed() {
+	emit_signal(CoreStringNames::get_singleton()->script_changed);
 }
 
 Resource::Resource() :
