@@ -48,7 +48,6 @@
 #include "core/math/vector2i.h"
 #include "core/math/vector3.h"
 #include "core/math/vector3i.h"
-#include "core/math/vector4.h"
 #include "core/object/object_id.h"
 #include "core/os/keyboard.h"
 #include "core/string/node_path.h"
@@ -92,7 +91,6 @@ public:
 		RECT2I,
 		VECTOR3,
 		VECTOR3I,
-		VECTOR4,
 		TRANSFORM2D,
 		PLANE,
 		QUATERNION,
@@ -239,7 +237,6 @@ public:
 			false, //RECT2I,
 			false, //VECTOR3,
 			false, //VECTOR3I,
-			false, //VECTOR4,
 			true, //TRANSFORM2D,
 			false, //PLANE,
 			false, //QUATERNION,
@@ -346,7 +343,6 @@ public:
 	operator Rect2i() const;
 	operator Vector3() const;
 	operator Vector3i() const;
-	operator Vector4() const;
 	operator Plane() const;
 	operator ::AABB() const;
 	operator Quaternion() const;
@@ -419,7 +415,6 @@ public:
 	Variant(const Rect2i &p_rect2i);
 	Variant(const Vector3 &p_vector3);
 	Variant(const Vector3i &p_vector3i);
-	Variant(const Vector4 &p_vector4);
 	Variant(const Plane &p_plane);
 	Variant(const ::AABB &p_aabb);
 	Variant(const Quaternion &p_quat);

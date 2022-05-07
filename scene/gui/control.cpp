@@ -1501,14 +1501,15 @@ void Control::_set_layout_mode(LayoutMode p_mode) {
 	bool list_changed = false;
 
 	if (p_mode == LayoutMode::LAYOUT_MODE_POSITION || p_mode == LayoutMode::LAYOUT_MODE_ANCHORS) {
-		if (has_meta("_edit_layout_mode") && (int)get_meta("_edit_layout_mode") != (int)p_mode) {
+		if ((int)get_meta("_edit_layout_mode", p_mode) != (int)p_mode) {
 			list_changed = true;
 		}
 
 		set_meta("_edit_layout_mode", (int)p_mode);
 
 		if (p_mode == LayoutMode::LAYOUT_MODE_POSITION) {
-			set_meta("_edit_use_custom_anchors", false);
+			remove_meta("_edit_layout_mode");
+			remove_meta("_edit_use_custom_anchors");
 			set_anchors_and_offsets_preset(LayoutPreset::PRESET_TOP_LEFT, LayoutPresetMode::PRESET_MODE_KEEP_SIZE);
 			set_grow_direction_preset(LayoutPreset::PRESET_TOP_LEFT);
 		}
@@ -1645,7 +1646,7 @@ void Control::_set_anchors_layout_preset(int p_preset) {
 
 int Control::_get_anchors_layout_preset() const {
 	// If the custom preset was selected by user, use it.
-	if (has_meta("_edit_use_custom_anchors") && (bool)get_meta("_edit_use_custom_anchors")) {
+	if ((bool)get_meta("_edit_use_custom_anchors", false)) {
 		return -1;
 	}
 

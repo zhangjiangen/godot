@@ -478,6 +478,11 @@ void EditorPropertyArray::_notification(int p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			change_type->clear();
 			for (int i = 0; i < Variant::VARIANT_MAX; i++) {
+				if (i == Variant::CALLABLE || i == Variant::SIGNAL || i == Variant::RID) {
+					// These types can't be constructed or serialized properly, so skip them.
+					continue;
+				}
+
 				String type = Variant::get_type_name(Variant::Type(i));
 				change_type->add_icon_item(get_theme_icon(type, SNAME("EditorIcons")), type, i);
 			}
@@ -924,12 +929,6 @@ void EditorPropertyDictionary::update_property() {
 					prop = editor;
 
 				} break;
-				case Variant::VECTOR4: {
-					EditorPropertyVector4 *editor = memnew(EditorPropertyVector4);
-					editor->setup(-100000, 100000, default_float_step, true);
-					prop = editor;
-
-				} break;
 				case Variant::TRANSFORM2D: {
 					EditorPropertyTransform2D *editor = memnew(EditorPropertyTransform2D);
 					editor->setup(-100000, 100000, default_float_step, true);
@@ -1139,6 +1138,11 @@ void EditorPropertyDictionary::_notification(int p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			change_type->clear();
 			for (int i = 0; i < Variant::VARIANT_MAX; i++) {
+				if (i == Variant::CALLABLE || i == Variant::SIGNAL || i == Variant::RID) {
+					// These types can't be constructed or serialized properly, so skip them.
+					continue;
+				}
+
 				String type = Variant::get_type_name(Variant::Type(i));
 				change_type->add_icon_item(get_theme_icon(type, SNAME("EditorIcons")), type, i);
 			}

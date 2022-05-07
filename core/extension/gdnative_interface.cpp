@@ -332,8 +332,6 @@ static GDNativeVariantFromTypeConstructorFunc gdnative_get_variant_from_type_con
 			return VariantTypeConstructor<Vector3>::variant_from_type;
 		case GDNATIVE_VARIANT_TYPE_VECTOR3I:
 			return VariantTypeConstructor<Vector3i>::variant_from_type;
-		case GDNATIVE_VARIANT_TYPE_VECTOR4:
-			return VariantTypeConstructor<Vector4>::variant_from_type;
 		case GDNATIVE_VARIANT_TYPE_TRANSFORM2D:
 			return VariantTypeConstructor<Transform2D>::variant_from_type;
 		case GDNATIVE_VARIANT_TYPE_PLANE:
@@ -414,8 +412,6 @@ static GDNativeTypeFromVariantConstructorFunc gdnative_get_type_from_variant_con
 			return VariantTypeConstructor<Vector3>::type_from_variant;
 		case GDNATIVE_VARIANT_TYPE_VECTOR3I:
 			return VariantTypeConstructor<Vector3i>::type_from_variant;
-		case GDNATIVE_VARIANT_TYPE_VECTOR4:
-			return VariantTypeConstructor<Vector4>::type_from_variant;
 		case GDNATIVE_VARIANT_TYPE_TRANSFORM2D:
 			return VariantTypeConstructor<Transform2D>::type_from_variant;
 		case GDNATIVE_VARIANT_TYPE_PLANE:

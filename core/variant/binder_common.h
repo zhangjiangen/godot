@@ -113,7 +113,6 @@ VARIANT_ENUM_CAST(Vector2::Axis);
 VARIANT_ENUM_CAST(Vector2i::Axis);
 VARIANT_ENUM_CAST(Vector3::Axis);
 VARIANT_ENUM_CAST(Vector3i::Axis);
-VARIANT_ENUM_CAST(Vector4::Axis);
 VARIANT_ENUM_CAST(Basis::EulerOrder);
 
 VARIANT_ENUM_CAST(Error);

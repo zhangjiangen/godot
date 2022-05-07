@@ -132,9 +132,6 @@ struct VariantUtilityFunctions {
 			case Variant::VECTOR3I: {
 				return VariantInternalAccessor<Vector3i>::get(&x).abs();
 			} break;
-			case Variant::VECTOR4: {
-				return VariantInternalAccessor<Vector4>::get(&x).abs();
-			} break;
 			default: {
 				r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
 				return Variant();
@@ -170,9 +167,6 @@ struct VariantUtilityFunctions {
 			} break;
 			case Variant::VECTOR3I: {
 				return VariantInternalAccessor<Vector3i>::get(&x).sign();
-			} break;
-			case Variant::VECTOR4: {
-				return VariantInternalAccessor<Vector4>::get(&x).sign();
 			} break;
 			default: {
 				r_error.error = Callable::CallError::CALL_ERROR_INVALID_METHOD;
