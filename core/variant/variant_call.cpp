@@ -1099,8 +1099,8 @@ struct _VariantCall {
 						encode_float((float)pv.y, &w[p_offset + 4]);
 						encode_float((float)pv.z, &w[p_offset + 8]);
 					} break;
-                    case Variant::PLANE: {
-                        Plane pv = p_prev_value;
+					case Variant::PLANE: {
+						Plane pv = p_prev_value;
 						encode_float((float)pv.x, &w[p_offset]);
 						encode_float((float)pv.y, &w[p_offset + 4]);
 						encode_float((float)pv.z, &w[p_offset + 8]);
@@ -1172,8 +1172,8 @@ struct _VariantCall {
 						encode_float((float)pv.z, &w[p_offset + 8]);
 						encode_float((float)pv.z, &w[p_offset + 12]);
 					} break;
-                    case Variant::PLANE: {
-                        Plane pv = p_prev_value;
+					case Variant::PLANE: {
+						Plane pv = p_prev_value;
 						encode_float((float)pv.x, &w[p_offset]);
 						encode_float((float)pv.y, &w[p_offset + 4]);
 						encode_float((float)pv.z, &w[p_offset + 8]);
@@ -1303,8 +1303,8 @@ struct _VariantCall {
 						encode_int32((int)pv.y, &w[p_offset + 4]);
 						encode_int32((int)pv.z, &w[p_offset + 8]);
 					} break;
-                    case Variant::PLANE: {
-                        Plane pv = p_prev_value;
+					case Variant::PLANE: {
+						Plane pv = p_prev_value;
 						encode_int32((int)pv.x, &w[p_offset]);
 						encode_int32((int)pv.y, &w[p_offset + 4]);
 						encode_int32((int)pv.z, &w[p_offset + 8]);
@@ -2178,6 +2178,8 @@ static void _register_variant_builtin_methods() {
 	bind_method(String, c_escape, sarray(), varray());
 	bind_method(String, c_unescape, sarray(), varray());
 	bind_method(String, json_escape, sarray(), varray());
+	bind_method(String, remove_commentary, sarray(), varray());
+	bind_method(String, parse_gpu_struct, sarray(), varray());
 
 	bind_method(String, validate_node_name, sarray(), varray());
 

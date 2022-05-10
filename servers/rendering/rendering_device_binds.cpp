@@ -95,7 +95,7 @@ Error RDShaderFile::parse_versions_from_text(const String &p_text, const String 
 			line = line.strip_edges();
 			if (line.begins_with("//") || line.begins_with("/*")) {
 				if (line.begins_with("//")) {
-					line = "//";
+					line = "\n";
 				}
 				continue; //assuming comment (single line)
 			}
@@ -159,6 +159,8 @@ Error RDShaderFile::parse_versions_from_text(const String &p_text, const String 
 			}
 		}
 	}
+
+	
 
 	Ref<RDShaderFile> shader_file;
 	New_instantiate(shader_file);

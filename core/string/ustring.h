@@ -306,6 +306,7 @@ public:
 	String pad_zeros(int p_digits) const;
 	String trim_prefix(const String &p_prefix) const;
 	String trim_suffix(const String &p_suffix) const;
+	String trim(const String &p_str) const;
 	String lpad(int min_length, const String &character = " ") const;
 	String rpad(int min_length, const String &character = " ") const;
 	String sprintf(const Array &values, bool *error) const;
@@ -427,6 +428,7 @@ public:
 	String json_escape() const;
 	String word_wrap(int p_chars_per_line) const;
 	Error parse_url(String &r_scheme, String &r_host, int &r_port, String &r_path) const;
+	Variant parse_gpu_struct() const;
 
 	String property_name_encode() const;
 
