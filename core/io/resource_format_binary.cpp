@@ -661,8 +661,6 @@ Error ResourceLoaderBinary::load() {
 		return error;
 	}
 
-	int stage = 0;
-
 	for (int i = 0; i < external_resources.size(); i++) {
 		String path = external_resources[i].path;
 
@@ -700,8 +698,6 @@ Error ResourceLoaderBinary::load() {
 				}
 			}
 		}
-
-		stage++;
 	}
 
 	for (int i = 0; i < internal_resources.size(); i++) {
@@ -726,7 +722,6 @@ Error ResourceLoaderBinary::load() {
 				Ref<Resource> cached = ResourceCache::get(path);
 				if (cached.is_valid()) {
 					//already loaded, don't do anything
-					stage++;
 					error = OK;
 					internal_index_cache[path] = cached;
 					continue;
@@ -843,7 +838,6 @@ Error ResourceLoaderBinary::load() {
 #ifdef TOOLS_ENABLED
 		res->set_edited(false);
 #endif
-		stage++;
 
 		if (progress) {
 			*progress = (i + 1) / float(internal_resources.size());
