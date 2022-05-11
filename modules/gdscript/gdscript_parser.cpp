@@ -2321,6 +2321,10 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_binary_operator(Expression
 			operation->operation = BinaryOpNode::OP_MODULO;
 			operation->variant_op = Variant::OP_MODULE;
 			break;
+		case GDScriptTokenizer::Token::STAR_STAR:
+			operation->operation = BinaryOpNode::OP_POWER;
+			operation->variant_op = Variant::OP_POWER;
+			break;
 		case GDScriptTokenizer::Token::LESS_LESS:
 			operation->operation = BinaryOpNode::OP_BIT_LEFT_SHIFT;
 			operation->variant_op = Variant::OP_SHIFT_LEFT;
@@ -2483,6 +2487,10 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_assignment(ExpressionNode 
 		case GDScriptTokenizer::Token::STAR_EQUAL:
 			assignment->operation = AssignmentNode::OP_MULTIPLICATION;
 			assignment->variant_op = Variant::OP_MULTIPLY;
+			break;
+		case GDScriptTokenizer::Token::STAR_STAR_EQUAL:
+			assignment->operation = AssignmentNode::OP_POWER;
+			assignment->variant_op = Variant::OP_POWER;
 			break;
 		case GDScriptTokenizer::Token::SLASH_EQUAL:
 			assignment->operation = AssignmentNode::OP_DIVISION;
@@ -3266,6 +3274,7 @@ GDScriptParser::ParseRule *GDScriptParser::get_rule(GDScriptTokenizer::Token::Ty
 		{ &GDScriptParser::parse_unary_operator,         	&GDScriptParser::parse_binary_operator,      	PREC_ADDITION_SUBTRACTION }, // PLUS,
 		{ &GDScriptParser::parse_unary_operator,         	&GDScriptParser::parse_binary_operator,      	PREC_ADDITION_SUBTRACTION }, // MINUS,
 		{ nullptr,                                          &GDScriptParser::parse_binary_operator,      	PREC_FACTOR }, // STAR,
+		{ nullptr,                                          &GDScriptParser::parse_binary_operator,      	PREC_FACTOR }, // STAR_STAR,
 		{ nullptr,                                          &GDScriptParser::parse_binary_operator,      	PREC_FACTOR }, // SLASH,
 		{ nullptr,                                          &GDScriptParser::parse_binary_operator,      	PREC_FACTOR }, // PERCENT,
 		// Assignment
@@ -3273,6 +3282,7 @@ GDScriptParser::ParseRule *GDScriptParser::get_rule(GDScriptTokenizer::Token::Ty
 		{ nullptr,                                          &GDScriptParser::parse_assignment,           	PREC_ASSIGNMENT }, // PLUS_EQUAL,
 		{ nullptr,                                          &GDScriptParser::parse_assignment,           	PREC_ASSIGNMENT }, // MINUS_EQUAL,
 		{ nullptr,                                          &GDScriptParser::parse_assignment,           	PREC_ASSIGNMENT }, // STAR_EQUAL,
+		{ nullptr,                                          &GDScriptParser::parse_assignment,           	PREC_ASSIGNMENT }, // STAR_STAR_EQUAL,
 		{ nullptr,                                          &GDScriptParser::parse_assignment,           	PREC_ASSIGNMENT }, // SLASH_EQUAL,
 		{ nullptr,                                          &GDScriptParser::parse_assignment,           	PREC_ASSIGNMENT }, // PERCENT_EQUAL,
 		{ nullptr,                                          &GDScriptParser::parse_assignment,           	PREC_ASSIGNMENT }, // LESS_LESS_EQUAL,
@@ -3907,6 +3917,9 @@ void GDScriptParser::TreePrinter::print_assignment(AssignmentNode *p_assignment)
 		case AssignmentNode::OP_MODULO:
 			push_text("%");
 			break;
+		case AssignmentNode::OP_POWER:
+			push_text("**");
+			break;
 		case AssignmentNode::OP_BIT_SHIFT_LEFT:
 			push_text("<<");
 			break;
@@ -3954,6 +3967,9 @@ void GDScriptParser::TreePrinter::print_binary_op(BinaryOpNode *p_binary_op) {
 			break;
 		case BinaryOpNode::OP_MODULO:
 			push_text(" % ");
+			break;
+		case BinaryOpNode::OP_POWER:
+			push_text(" ** ");
 			break;
 		case BinaryOpNode::OP_BIT_LEFT_SHIFT:
 			push_text(" << ");
