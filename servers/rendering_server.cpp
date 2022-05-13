@@ -2724,7 +2724,7 @@ void RenderingServer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("free_rid", "rid"), &RenderingServer::free); // Shouldn't conflict with Object::free().
 
 	/* Misc */
-	ClassDB::bind_method(D_METHOD("get_gup_struct"), &RenderingServer::get_gup_struct);
+	ClassDB::bind_method(D_METHOD("get_gpu_struct"), &RenderingServer::get_gpu_struct);
 	ClassDB::bind_method(D_METHOD("set_gpu_struct", "name", "struct"), &RenderingServer::set_gpu_struct);
 	ClassDB::bind_method(D_METHOD("request_frame_drawn_callback", "callable"), &RenderingServer::request_frame_drawn_callback);
 	ClassDB::bind_method(D_METHOD("has_changed"), &RenderingServer::has_changed);
