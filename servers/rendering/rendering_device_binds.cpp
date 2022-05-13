@@ -29,6 +29,46 @@
 /*************************************************************************/
 
 #include "rendering_device_binds.h"
+// gpu 机构提的主体模版
+static const char *gup_struct_gd_script_template = "\
+extends Resource \
+class_name %s \
+var _property_dict:Dictionary = {} \
+var _total_size:int := %d \
+# export property list start \
+%s \
+# export property list end \
+static func build_gpu_struct(): \
+	var gpu_struct = RenderingServer.get_gpu_struct() \
+	if gpu_struct != null: \
+		if gpu_struct.struct_var == get_gpu_struct_vresion(): \
+			return  \
+	gpu_struct = UniformBufferMemoberStruct.new(get_gpu_struct_name()) \
+%s\
+static func get_gpu_struct_name(): \
+	return \"%s\" \
+static func get_gpu_struct_vresion()\
+	return %d\
+static func get_gpu_struct():\
+	return RenderingServer.get_gpu_struct(\"%s\")\
+func create_gpu_struct_instance():\
+	return get_gpu_struct().instance()\
+func update_gpu_buffer(p_byte_offset:int,p_uniform_buffer: PackedByteArray): \
+";
+// gpu结构体的成员模版
+const char *gup_struct_gd_script_member_template = "\
+%s _%s : %s :\
+	get: \
+		if !_property_dict.has(\"%s\"): \
+			_property_dict[\"%s\"] = %s \
+		return _property_dict[\"%s\"] \
+	set: \
+		_property_dict[\"%s\"] = %s \
+";
+// gpu结构体的成员定义模版
+const char *gup_struct_gd_script_member_decl_template = "\
+	gup_struct.%s(%s)\
+";
 
 Error RDShaderFile::parse_versions_from_text(const String &p_text, const String p_defines, OpenIncludeFunction p_include_func, void *p_include_func_userdata) {
 	Vector<String> lines = p_text.remove_commentary().split("\n");
@@ -160,10 +200,7 @@ Error RDShaderFile::parse_versions_from_text(const String &p_text, const String 
 		}
 	}
 
-	
-
-	Ref<RDShaderFile> shader_file;
-	New_instantiate(shader_file);
+	bool is_init_struct = false;
 
 	if (base_error.is_empty()) {
 		if (stage_found[RD::SHADER_STAGE_COMPUTE] && stages_found > 1) {
@@ -200,6 +237,12 @@ Error RDShaderFile::parse_versions_from_text(const String &p_text, const String 
 					errors_found = true;
 				}
 				bytecode->set_stage_compile_error(RD::ShaderStage(i), error);
+				// 解析结构体信息
+				if (!is_init_struct && !errors_found) {
+					gpu_structs = code.parse_gpu_struct();
+					++gpu_structs_version;
+					is_init_struct = true;
+				}
 			}
 
 			set_bytecode(bytecode, E.key);

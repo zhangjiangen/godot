@@ -68,6 +68,7 @@ class RenderingServer : public Object {
 
 	int mm_policy = 0;
 	bool render_loop_enabled = true;
+	HashMap<String, Variant> gpu_structs;
 
 	Array _get_array_from_surface(uint32_t p_format, Vector<uint8_t> p_vertex_data, Vector<uint8_t> p_attrib_data, Vector<uint8_t> p_skin_data, int p_vertex_len, Vector<uint8_t> p_index_data, int p_index_len) const;
 
@@ -123,6 +124,14 @@ public:
 		CUBEMAP_LAYER_BACK
 	};
 	void set_rendering_listener(const Ref<RenderingListener> &p_listener);
+	Variant get_gpu_struct(const String &p_name) {
+		if (gpu_structs.has(p_name))
+			return gpu_structs[p_name];
+		return Variant();
+	}
+	void set_gpu_struct(const String &p_name, const Variant &p_value) {
+		gpu_structs[p_name] = p_value;
+	}
 
 	virtual RID texture_2d_create(const Ref<Image> &p_image) = 0;
 	virtual RID texture_2d_layered_create(const Vector<Ref<Image>> &p_layers, TextureLayeredType p_layered_type) = 0;

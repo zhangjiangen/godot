@@ -201,7 +201,7 @@ private:
 		if (unlikely(elements == nullptr)) {
 			// Allocate on demand to save memory.
 
-			hashes = reinterpret_cast<uint32_t *>(MallocAllocator::free_memory(sizeof(uint32_t) * capacity));
+			hashes = reinterpret_cast<uint32_t *>(MallocAllocator::alloc_memory(sizeof(uint32_t) * capacity,file_name,file_line));
 			elements = reinterpret_cast<HashMapElement<TKey, TValue> **>(MallocAllocator::alloc_memory(sizeof(HashMapElement<TKey, TValue> *) * capacity,file_name,file_line));
 
 			for (uint32_t i = 0; i < capacity; i++) {
