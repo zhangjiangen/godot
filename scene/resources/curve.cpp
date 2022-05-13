@@ -690,7 +690,8 @@ void Curve2D::_bake() const {
 	List<Vector2> pointlist;
 	List<real_t> distlist;
 
-	pointlist.push_back(position); //start always from origin
+	// Start always from origin.
+	pointlist.push_back(position);
 	distlist.push_back(0.0);
 
 	for (int i = 0; i < points.size() - 1; i++) {
@@ -737,15 +738,18 @@ void Curve2D::_bake() const {
 				p = np;
 			}
 		}
+
+		Vector2 npp = points[i + 1].position;
+		real_t d = position.distance_to(npp);
+
+		position = npp;
+		dist += d;
+
+		pointlist.push_back(position);
+		distlist.push_back(dist);
 	}
 
-	Vector2 lastpos = points[points.size() - 1].position;
-
-	real_t rem = position.distance_to(lastpos);
-	dist += rem;
 	baked_max_ofs = dist;
-	pointlist.push_back(lastpos);
-	distlist.push_back(dist);
 
 	baked_point_cache.resize(pointlist.size());
 	baked_dist_cache.resize(distlist.size());
@@ -772,7 +776,7 @@ Vector2 Curve2D::interpolate_baked(real_t p_offset, bool p_cubic) const {
 		_bake();
 	}
 
-	//validate//
+	// Validate: Curve may not have baked points.
 	int pc = baked_point_cache.size();
 	ERR_FAIL_COND_V_MSG(pc == 0, Vector2(), "No points in Curve2D.");
 
@@ -780,18 +784,19 @@ Vector2 Curve2D::interpolate_baked(real_t p_offset, bool p_cubic) const {
 		return baked_point_cache.get(0);
 	}
 
-	int bpc = baked_point_cache.size();
 	const Vector2 *r = baked_point_cache.ptr();
 
 	if (p_offset < 0) {
 		return r[0];
 	}
 	if (p_offset >= baked_max_ofs) {
-		return r[bpc - 1];
+		return r[pc - 1];
 	}
 
-	int start = 0, end = bpc, idx = (end + start) / 2;
-	// binary search to find baked points
+	int start = 0;
+	int end = pc;
+	int idx = (end + start) / 2;
+	// Binary search to find baked points.
 	while (start < idx) {
 		real_t offset = baked_dist_cache[idx];
 		if (p_offset <= offset) {
@@ -812,7 +817,7 @@ Vector2 Curve2D::interpolate_baked(real_t p_offset, bool p_cubic) const {
 
 	if (p_cubic) {
 		Vector2 pre = idx > 0 ? r[idx - 1] : r[idx];
-		Vector2 post = (idx < (bpc - 2)) ? r[idx + 2] : r[idx + 1];
+		Vector2 post = (idx < (pc - 2)) ? r[idx + 2] : r[idx + 1];
 		return r[idx].cubic_interpolate(r[idx + 1], pre, post, frac);
 	} else {
 		return r[idx].lerp(r[idx + 1], frac);
@@ -838,13 +843,13 @@ real_t Curve2D::get_bake_interval() const {
 }
 
 Vector2 Curve2D::get_closest_point(const Vector2 &p_to_point) const {
-	// Brute force method
+	// Brute force method.
 
 	if (baked_cache_dirty) {
 		_bake();
 	}
 
-	//validate//
+	// Validate: Curve may not have baked points.
 	int pc = baked_point_cache.size();
 	ERR_FAIL_COND_V_MSG(pc == 0, Vector2(), "No points in Curve2D.");
 
@@ -876,13 +881,13 @@ Vector2 Curve2D::get_closest_point(const Vector2 &p_to_point) const {
 }
 
 real_t Curve2D::get_closest_offset(const Vector2 &p_to_point) const {
-	// Brute force method
+	// Brute force method.
 
 	if (baked_cache_dirty) {
 		_bake();
 	}
 
-	//validate//
+	// Validate: Curve may not have baked points.
 	int pc = baked_point_cache.size();
 	ERR_FAIL_COND_V_MSG(pc == 0, 0.0f, "No points in Curve2D.");
 
@@ -1018,11 +1023,7 @@ void Curve2D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "_data", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL), "_set_data", "_get_data");
 }
 
-Curve2D::Curve2D() {
-	/*	add_point(Vector2(-1,0,0));
-	add_point(Vector2(0,2,0));
-	add_point(Vector2(0,3,5));*/
-}
+Curve2D::Curve2D() {}
 
 /***********************************************************************************/
 /***********************************************************************************/
@@ -1203,6 +1204,7 @@ void Curve3D::_bake() const {
 	List<Plane> pointlist;
 	List<real_t> distlist;
 
+	// Start always from origin.
 	pointlist.push_back(Plane(position, points[0].tilt));
 	distlist.push_back(0.0);
 
@@ -1253,16 +1255,22 @@ void Curve3D::_bake() const {
 				p = np;
 			}
 		}
+
+		Vector3 npp = points[i + 1].position;
+		real_t d = position.distance_to(npp);
+
+		position = npp;
+		Plane post;
+		post.normal = position;
+		post.d = points[i + 1].tilt;
+
+		dist += d;
+
+		pointlist.push_back(post);
+		distlist.push_back(dist);
 	}
 
-	Vector3 lastpos = points[points.size() - 1].position;
-	real_t lastilt = points[points.size() - 1].tilt;
-
-	real_t rem = position.distance_to(lastpos);
-	dist += rem;
 	baked_max_ofs = dist;
-	pointlist.push_back(Plane(lastpos, lastilt));
-	distlist.push_back(dist);
 
 	baked_point_cache.resize(pointlist.size());
 	Vector3 *w = baked_point_cache.ptrw();
@@ -1337,7 +1345,7 @@ Vector3 Curve3D::interpolate_baked(real_t p_offset, bool p_cubic) const {
 		_bake();
 	}
 
-	//validate//
+	// Validate: Curve may not have baked points.
 	int pc = baked_point_cache.size();
 	ERR_FAIL_COND_V_MSG(pc == 0, Vector3(), "No points in Curve3D.");
 
@@ -1345,18 +1353,19 @@ Vector3 Curve3D::interpolate_baked(real_t p_offset, bool p_cubic) const {
 		return baked_point_cache.get(0);
 	}
 
-	int bpc = baked_point_cache.size();
 	const Vector3 *r = baked_point_cache.ptr();
 
 	if (p_offset < 0) {
 		return r[0];
 	}
 	if (p_offset >= baked_max_ofs) {
-		return r[bpc - 1];
+		return r[pc - 1];
 	}
 
-	int start = 0, end = bpc, idx = (end + start) / 2;
-	// binary search to find baked points
+	int start = 0;
+	int end = pc;
+	int idx = (end + start) / 2;
+	// Binary search to find baked points.
 	while (start < idx) {
 		real_t offset = baked_dist_cache[idx];
 		if (p_offset <= offset) {
@@ -1377,7 +1386,7 @@ Vector3 Curve3D::interpolate_baked(real_t p_offset, bool p_cubic) const {
 
 	if (p_cubic) {
 		Vector3 pre = idx > 0 ? r[idx - 1] : r[idx];
-		Vector3 post = (idx < (bpc - 2)) ? r[idx + 2] : r[idx + 1];
+		Vector3 post = (idx < (pc - 2)) ? r[idx + 2] : r[idx + 1];
 		return r[idx].cubic_interpolate(r[idx + 1], pre, post, frac);
 	} else {
 		return r[idx].lerp(r[idx + 1], frac);
@@ -1389,7 +1398,7 @@ real_t Curve3D::interpolate_baked_tilt(real_t p_offset) const {
 		_bake();
 	}
 
-	//validate//
+	// Validate: Curve may not have baked tilts.
 	int pc = baked_tilt_cache.size();
 	ERR_FAIL_COND_V_MSG(pc == 0, 0, "No tilts in Curve3D.");
 
@@ -1397,28 +1406,36 @@ real_t Curve3D::interpolate_baked_tilt(real_t p_offset) const {
 		return baked_tilt_cache.get(0);
 	}
 
-	int bpc = baked_tilt_cache.size();
 	const real_t *r = baked_tilt_cache.ptr();
 
 	if (p_offset < 0) {
 		return r[0];
 	}
 	if (p_offset >= baked_max_ofs) {
-		return r[bpc - 1];
+		return r[pc - 1];
 	}
 
-	int idx = Math::floor((double)p_offset / (double)bake_interval);
-	real_t frac = Math::fmod(p_offset, bake_interval);
-
-	if (idx >= bpc - 1) {
-		return r[bpc - 1];
-	} else if (idx == bpc - 2) {
-		if (frac > 0) {
-			frac /= Math::fmod(baked_max_ofs, bake_interval);
+	int start = 0;
+	int end = pc;
+	int idx = (end + start) / 2;
+	// Binary search to find baked points.
+	while (start < idx) {
+		real_t offset = baked_dist_cache[idx];
+		if (p_offset <= offset) {
+			end = idx;
+		} else {
+			start = idx;
 		}
-	} else {
-		frac /= bake_interval;
+		idx = (end + start) / 2;
 	}
+
+	real_t offset_begin = baked_dist_cache[idx];
+	real_t offset_end = baked_dist_cache[idx + 1];
+
+	real_t idx_interval = offset_end - offset_begin;
+	ERR_FAIL_COND_V_MSG(p_offset < offset_begin || p_offset > offset_end, 0, "failed to find baked segment");
+
+	real_t frac = (p_offset - offset_begin) / idx_interval;
 
 	return Math::lerp(r[idx], r[idx + 1], (real_t)frac);
 }
@@ -1428,8 +1445,7 @@ Vector3 Curve3D::interpolate_baked_up_vector(real_t p_offset, bool p_apply_tilt)
 		_bake();
 	}
 
-	//validate//
-	// curve may not have baked up vectors
+	// Validate: Curve may not have baked up vectors.
 	int count = baked_up_vector_cache.size();
 	ERR_FAIL_COND_V_MSG(count == 0, Vector3(0, 1, 0), "No up vectors in Curve3D.");
 
@@ -1441,10 +1457,27 @@ Vector3 Curve3D::interpolate_baked_up_vector(real_t p_offset, bool p_apply_tilt)
 	const Vector3 *rp = baked_point_cache.ptr();
 	const real_t *rt = baked_tilt_cache.ptr();
 
-	real_t offset = CLAMP(p_offset, 0.0f, baked_max_ofs);
+	int start = 0;
+	int end = count;
+	int idx = (end + start) / 2;
+	// Binary search to find baked points.
+	while (start < idx) {
+		real_t offset = baked_dist_cache[idx];
+		if (p_offset <= offset) {
+			end = idx;
+		} else {
+			start = idx;
+		}
+		idx = (end + start) / 2;
+	}
 
-	int idx = Math::floor((double)offset / (double)bake_interval);
-	real_t frac = Math::fmod(offset, bake_interval) / bake_interval;
+	real_t offset_begin = baked_dist_cache[idx];
+	real_t offset_end = baked_dist_cache[idx + 1];
+
+	real_t idx_interval = offset_end - offset_begin;
+	ERR_FAIL_COND_V_MSG(p_offset < offset_begin || p_offset > offset_end, Vector3(0, 1, 0), "failed to find baked segment");
+
+	real_t frac = (p_offset - offset_begin) / idx_interval;
 
 	if (idx == count - 1) {
 		return p_apply_tilt ? r[idx].rotated((rp[idx] - rp[idx - 1]).normalized(), rt[idx]) : r[idx];
@@ -1495,13 +1528,13 @@ PackedVector3Array Curve3D::get_baked_up_vectors() const {
 }
 
 Vector3 Curve3D::get_closest_point(const Vector3 &p_to_point) const {
-	// Brute force method
+	// Brute force method.
 
 	if (baked_cache_dirty) {
 		_bake();
 	}
 
-	//validate//
+	// Validate: Curve may not have baked points.
 	int pc = baked_point_cache.size();
 	ERR_FAIL_COND_V_MSG(pc == 0, Vector3(), "No points in Curve3D.");
 
@@ -1533,13 +1566,13 @@ Vector3 Curve3D::get_closest_point(const Vector3 &p_to_point) const {
 }
 
 real_t Curve3D::get_closest_offset(const Vector3 &p_to_point) const {
-	// Brute force method
+	// Brute force method.
 
 	if (baked_cache_dirty) {
 		_bake();
 	}
 
-	//validate//
+	// Validate: Curve may not have baked points.
 	int pc = baked_point_cache.size();
 	ERR_FAIL_COND_V_MSG(pc == 0, 0.0f, "No points in Curve3D.");
 
@@ -1714,8 +1747,4 @@ void Curve3D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "up_vector_enabled"), "set_up_vector_enabled", "is_up_vector_enabled");
 }
 
-Curve3D::Curve3D() {
-	/*	add_point(Vector3(-1,0,0));
-	add_point(Vector3(0,2,0));
-	add_point(Vector3(0,3,5));*/
-}
+Curve3D::Curve3D() {}

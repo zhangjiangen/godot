@@ -431,12 +431,8 @@ void EditorResourcePreview::check_for_invalidation(const String &p_path) {
 }
 
 void EditorResourcePreview::start() {
-	if (OS::get_singleton()->get_render_main_thread_mode() == OS::RENDER_ANY_THREAD) {
-		ERR_FAIL_COND_MSG(thread.is_started(), "Thread already started.");
-		thread.start(_thread_func, this);
-	} else {
-		_mainthread_only = true;
-	}
+	ERR_FAIL_COND_MSG(thread.is_started(), "Thread already started.");
+	thread.start(_thread_func, this);
 }
 
 void EditorResourcePreview::stop() {
@@ -458,19 +454,4 @@ EditorResourcePreview::EditorResourcePreview() {
 
 EditorResourcePreview::~EditorResourcePreview() {
 	stop();
-}
-
-void EditorResourcePreview::update() {
-	if (!_mainthread_only) {
-		return;
-	}
-
-	if (!exit.is_set()) {
-		// no need to even lock the mutex if the size is zero
-		// there is no problem if queue.size() is wrong, even if
-		// there was a race condition.
-		if (queue.size()) {
-			_iterate();
-		}
-	}
 }
