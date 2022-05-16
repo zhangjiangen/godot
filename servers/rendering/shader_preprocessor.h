@@ -32,9 +32,9 @@
 #define SHADER_PREPROCESSOR_H
 
 #include "core/string/ustring.h"
+#include "core/templates/hash_map.h"
 #include "core/templates/list.h"
-#include "core/templates/map.h"
-#include "core/templates/set.h"
+#include "core/templates/rb_set.h"
 #include "core/typedefs.h"
 
 #include "core/io/resource_loader.h"
@@ -57,16 +57,16 @@ struct SkippedPreprocessorCondition {
 };
 
 struct PreprocessorState {
-	Map<String, PreprocessorDefine *> defines;
+	HashMap<String, PreprocessorDefine *> defines;
 	Vector<bool> skip_stack_else;
 	int condition_depth;
-	Set<String> includes;
+	RBSet<String> includes;
 	List<uint64_t> cyclic_include_hashes; // holds code hash of includes
 	int include_depth;
 	String current_include = "";
 	String error;
 	int error_line;
-	Map<String, Vector<SkippedPreprocessorCondition *>> skipped_conditions;
+	HashMap<String, Vector<SkippedPreprocessorCondition *>> skipped_conditions;
 	bool disabled;
 };
 
@@ -129,7 +129,7 @@ struct ShaderDependencyNode {
 	String code;
 
 	Ref<Shader> shader;
-	Set<ShaderDependencyNode *> dependencies;
+	RBSet<ShaderDependencyNode *> dependencies;
 
 	ShaderDependencyNode() = default;
 	ShaderDependencyNode(Ref<Shader> p_shader);
@@ -173,7 +173,7 @@ class ShaderDependencyGraph {
 public:
 	~ShaderDependencyGraph();
 
-	Set<ShaderDependencyNode *> nodes;
+	RBSet<ShaderDependencyNode *> nodes;
 
 	void populate(Ref<Shader> p_shader);
 	void populate(String p_code);
@@ -187,7 +187,7 @@ private:
 	List<ShaderDependencyNode *> cyclic_dep_tracker;
 	List<String> visited_shaders;
 
-	Set<ShaderDependencyNode *>::Element *find(Ref<Shader> p_shader);
+	RBSet<ShaderDependencyNode *>::Element *find(Ref<Shader> p_shader);
 	List<ShaderDependencyNode *>::Element *find(uint64_t hash);
 	void populate(ShaderDependencyNode *p_node);
 	void update_shaders(ShaderDependencyNode *p_node);

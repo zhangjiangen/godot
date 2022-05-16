@@ -763,8 +763,10 @@ String ShaderPreprocessor::expand_macros(const String &p_string, int p_line) {
 	Vector<Pair<String, PreprocessorDefine *>> active_defines;
 	active_defines.resize(state->defines.size());
 	int index = 0;
-	for (const Map<String, PreprocessorDefine *>::Element *E = state->defines.front(); E; E = E->next()) {
-		active_defines.set(index++, Pair<String, PreprocessorDefine *>(E->key(), E->get()));
+	HashMap<String, PreprocessorDefine *>::Iterator it = state->defines.begin();
+	while (it) {
+		active_defines.set(index++, Pair<String, PreprocessorDefine *>(it->key, it->value));
+		++it;
 	}
 
 	return expand_macros(p_string, p_line, active_defines);
@@ -940,14 +942,17 @@ void ShaderPreprocessor::set_error(const String &p_error, int p_line) {
 
 void ShaderPreprocessor::free_state() {
 	if (state_owner && state != nullptr) {
-		for (const Map<String, PreprocessorDefine *>::Element *E = state->defines.front(); E; E = E->next()) {
-			memdelete(E->get());
+		HashMap<String, PreprocessorDefine *>::Iterator SE = state->defines.begin();
+		while (SE) {
+			memdelete(SE->value);
+			++SE;
 		}
-
-		for (const Map<String, Vector<SkippedPreprocessorCondition *>>::Element *E = state->skipped_conditions.front(); E; E = E->next()) {
-			for (SkippedPreprocessorCondition *condition : E->get()) {
+        HashMap<String, Vector<SkippedPreprocessorCondition *>>::Iterator E = state->skipped_conditions.begin() ;
+        while (E) {
+			for (SkippedPreprocessorCondition *condition : E->value) {
 				memdelete(condition);
 			}
+			++E;
 		}
 
 		memdelete(state);
@@ -1082,7 +1087,7 @@ void ShaderDependencyGraph::populate(ShaderDependencyNode *p_node) {
 					path = path.substr(0, path.length() - 1);
 					p_tokenizer.skip_whitespace();
 					if (!path.is_empty()) {
-                        Ref<Resource> res = ResourceLoader::load(path);
+						Ref<Resource> res = ResourceLoader::load(path);
 						ERR_FAIL_COND_MSG(res.is_null(), vformat("Could not load included shader %s. Does the shader exist? Is there a cyclic dependency?", path));
 						if (!res.is_null()) {
 							Ref<Shader> shader_reference = Object::cast_to<Shader>(*res);
@@ -1112,8 +1117,8 @@ void ShaderDependencyGraph::populate(ShaderDependencyNode *p_node) {
 	cyclic_dep_tracker.erase(p_node);
 }
 
-Set<ShaderDependencyNode *>::Element *ShaderDependencyGraph::find(Ref<Shader> p_shader) {
-	for (Set<ShaderDependencyNode *>::Element *E = nodes.front(); E; E = E->next()) {
+RBSet<ShaderDependencyNode *>::Element *ShaderDependencyGraph::find(Ref<Shader> p_shader) {
+	for (RBSet<ShaderDependencyNode *>::Element *E = nodes.front(); E; E = E->next()) {
 		if (E->get()->shader == p_shader) {
 			return E;
 		}

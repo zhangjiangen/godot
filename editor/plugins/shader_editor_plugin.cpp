@@ -436,9 +436,9 @@ void ShaderTextEditor::_validate_script() {
 	}
 
 	if (!state->skipped_conditions.is_empty()) {
-		Map<String, Vector<SkippedPreprocessorCondition *>>::Element *val_elem = state->skipped_conditions.find(shader->get_path());
+		HashMap<String, Vector<SkippedPreprocessorCondition *>>::Iterator val_elem = state->skipped_conditions.find(shader->get_path());
 		if (val_elem) {
-			for (SkippedPreprocessorCondition *cond : val_elem->get()) {
+			for (SkippedPreprocessorCondition *cond : val_elem->value) {
 				int end_line = cond->end_line;
 				if (end_line < 0) {
 					// set to end of file
@@ -975,10 +975,10 @@ void ShaderEditor::open_path(String p_path) {
 	if (!res.is_null()) {
 		Ref<Shader> shader = Object::cast_to<Shader>(*res);
 		if (!shader.is_null()) {
-			Map<String, String>::Element *rolling_code = shader_rolling_code.find(shader->get_path());
+			HashMap<String, String>::Iterator rolling_code = shader_rolling_code.find(shader->get_path());
 
 			if (rolling_code) {
-				shader_editor->set_edited_shader(shader, rolling_code->get());
+				shader_editor->set_edited_shader(shader, rolling_code->value);
 			} else {
 				String included = shader->get_code();
 				shader_rolling_code[p_path] = included;

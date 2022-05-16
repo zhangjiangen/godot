@@ -171,7 +171,7 @@ protected:
 	void _bookmark_item_pressed(int p_idx);
 
 public:
-	Map<String, String> shader_rolling_code;
+	HashMap<String, String> shader_rolling_code;
 	ShaderDependencyGraph shader_dependencies;
 	void _update_shader_dependency_tree();
 
