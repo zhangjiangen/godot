@@ -497,7 +497,7 @@ private:
 	Vector<GDScriptDataType> argument_types;
 	GDScriptDataType return_type;
 
-	Map<int, Variant::Type> temporary_slots;
+	HashMap<int, Variant::Type> temporary_slots;
 
 #ifdef TOOLS_ENABLED
 	Vector<StringName> arg_names;

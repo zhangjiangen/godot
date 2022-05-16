@@ -58,7 +58,7 @@ public:
 	virtual String get_base_extension() const { return "res"; }
 
 private:
-	Set<ObjectID> owners;
+	RBSet<ObjectID> owners;
 
 	friend class ResBase;
 	friend class ResourceCache;
@@ -122,8 +122,8 @@ public:
 	String get_scene_unique_id() const;
 
 	virtual Ref<Resource> duplicate(bool p_subresources = false) const;
-	Ref<Resource> duplicate_for_local_scene(Node *p_for_scene, Map<Ref<Resource>, Ref<Resource>> &remap_cache);
-	void configure_for_local_scene(Node *p_for_scene, Map<Ref<Resource>, Ref<Resource>> &remap_cache);
+	Ref<Resource> duplicate_for_local_scene(Node *p_for_scene, HashMap<Ref<Resource>, Ref<Resource>> &remap_cache);
+	void configure_for_local_scene(Node *p_for_scene, HashMap<Ref<Resource>, Ref<Resource>> &remap_cache);
 
 	void set_local_to_scene(bool p_enable);
 	bool is_local_to_scene() const;

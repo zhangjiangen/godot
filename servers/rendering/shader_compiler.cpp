@@ -290,7 +290,7 @@ String ShaderCompiler::_get_sampler_name(ShaderLanguage::TextureFilter p_filter,
 	return actions.sampler_array_name + "[" + itos(p_filter + (p_repeat == ShaderLanguage::REPEAT_ENABLE ? ShaderLanguage::FILTER_DEFAULT : 0)) + "]";
 }
 
-void ShaderCompiler::_dump_function_deps(const ShaderLanguage::ShaderNode *p_node, const StringName &p_for_func, const Map<StringName, String> &p_func_code, StringBuilder &r_to_add, Set<StringName> &added) {
+void ShaderCompiler::_dump_function_deps(const ShaderLanguage::ShaderNode *p_node, const StringName &p_for_func, const HashMap<StringName, String> &p_func_code, StringBuilder &r_to_add, RBSet<StringName> &added) {
 	int fidx = -1;
 
 	for (int i = 0; i < p_node->functions.size(); i++) {
@@ -304,7 +304,7 @@ void ShaderCompiler::_dump_function_deps(const ShaderLanguage::ShaderNode *p_nod
 
 	Vector<StringName> uses_functions;
 
-	for (Set<StringName>::Element *E = p_node->functions[fidx].uses_function.front(); E; E = E->next()) {
+	for (RBSet<StringName>::Element *E = p_node->functions[fidx].uses_function.front(); E; E = E->next()) {
 		uses_functions.push_back(E->get());
 	}
 	uses_functions.sort_custom<StringName::AlphCompare>(); //ensure order is deterministic so the same shader is always produced
@@ -738,7 +738,7 @@ String ShaderCompiler::_dump_node_code(const SL::Node *p_node, int p_level, Gene
 				}
 			}
 
-			Map<StringName, String> function_code;
+			HashMap<StringName, String> function_code;
 
 			//code for functions
 			for (int i = 0; i < pnode->functions.size(); i++) {
@@ -751,7 +751,7 @@ String ShaderCompiler::_dump_node_code(const SL::Node *p_node, int p_level, Gene
 
 			//place functions in actual code
 
-			Set<StringName> added_funcs_per_stage[STAGE_MAX];
+			RBSet<StringName> added_funcs_per_stage[STAGE_MAX];
 
 			for (int i = 0; i < pnode->functions.size(); i++) {
 				SL::FunctionNode *fnode = pnode->functions[i].function;

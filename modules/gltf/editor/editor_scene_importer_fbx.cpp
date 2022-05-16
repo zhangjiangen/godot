@@ -29,7 +29,8 @@
 /*************************************************************************/
 
 #include "editor_scene_importer_fbx.h"
-#if TOOLS_ENABLED
+
+#ifdef TOOLS_ENABLED
 
 #include "../gltf_document.h"
 #include "../gltf_state.h"
@@ -48,7 +49,7 @@ void EditorSceneFormatImporterFBX::get_extensions(List<String> *r_extensions) co
 }
 
 Node *EditorSceneFormatImporterFBX::import_scene(const String &p_path, uint32_t p_flags,
-		const Map<StringName, Variant> &p_options, int p_bake_fps,
+		const HashMap<StringName, Variant> &p_options, int p_bake_fps,
 		List<String> *r_missing_deps, Error *r_err) {
 	// Get global paths for source and sink.
 
@@ -105,7 +106,7 @@ Node *EditorSceneFormatImporterFBX::import_scene(const String &p_path, uint32_t 
 }
 
 Variant EditorSceneFormatImporterFBX::get_option_visibility(const String &p_path, bool p_for_animation,
-		const String &p_option, const Map<StringName, Variant> &p_options) {
+		const String &p_option, const HashMap<StringName, Variant> &p_options) {
 	return true;
 }
 

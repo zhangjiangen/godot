@@ -75,8 +75,9 @@ private:
 	bool _in_physics = false;
 
 	List<Singleton> singletons;
+
 	List<CppSingleton *> cpp_singletons;
-	Map<StringName, Object *> singleton_ptrs;
+	HashMap<StringName, Object *> singleton_ptrs;
 
 	bool editor_hint = false;
 	bool project_manager_hint = false;
@@ -127,17 +128,29 @@ public:
 	bool is_singleton_user_created(const StringName &p_name) const;
 
 #ifdef TOOLS_ENABLED
-	_FORCE_INLINE_ void set_editor_hint(bool p_enabled) { editor_hint = p_enabled; }
-	_FORCE_INLINE_ bool is_editor_hint() const { return editor_hint; }
+	_FORCE_INLINE_ void set_editor_hint(bool p_enabled) {
+		editor_hint = p_enabled;
+	}
+	_FORCE_INLINE_ bool is_editor_hint() const {
+		return editor_hint;
+	}
 
-	_FORCE_INLINE_ void set_project_manager_hint(bool p_enabled) { project_manager_hint = p_enabled; }
-	_FORCE_INLINE_ bool is_project_manager_hint() const { return project_manager_hint; }
+	_FORCE_INLINE_ void set_project_manager_hint(bool p_enabled) {
+		project_manager_hint = p_enabled;
+	}
+	_FORCE_INLINE_ bool is_project_manager_hint() const {
+		return project_manager_hint;
+	}
 #else
 	_FORCE_INLINE_ void set_editor_hint(bool p_enabled) {}
-	_FORCE_INLINE_ bool is_editor_hint() const { return false; }
+	_FORCE_INLINE_ bool is_editor_hint() const {
+		return false;
+	}
 
 	_FORCE_INLINE_ void set_project_manager_hint(bool p_enabled) {}
-	_FORCE_INLINE_ bool is_project_manager_hint() const { return false; }
+	_FORCE_INLINE_ bool is_project_manager_hint() const {
+		return false;
+	}
 #endif
 
 	Dictionary get_version_info() const;

@@ -1065,7 +1065,7 @@ public:
 	void select_first_visible_project();
 	void erase_selected_projects(bool p_delete_project_contents);
 	Vector<Item> get_selected_projects() const;
-	const Set<String> &get_selected_project_keys() const;
+	const RBSet<String> &get_selected_project_keys() const;
 	void ensure_project_visible(int p_index);
 	int get_single_selected_index() const;
 	bool is_any_project_missing() const;
@@ -1091,7 +1091,7 @@ private:
 
 	String _search_term;
 	FilterOption _order_option;
-	Set<String> _selected_project_keys;
+	RBSet<String> _selected_project_keys;
 	String _last_clicked; // Project key
 	VBoxContainer *_scroll_children;
 	int _icon_load_index;
@@ -1260,7 +1260,7 @@ void ProjectList::load_projects() {
 	List<PropertyInfo> properties;
 	EditorSettings::get_singleton()->get_property_list(&properties);
 
-	Set<String> favorites;
+	RBSet<String> favorites;
 	// Find favourites...
 	for (const PropertyInfo &E : properties) {
 		String property_key = E.name;
@@ -1506,7 +1506,7 @@ void ProjectList::sort_projects() {
 	update_dock_menu();
 }
 
-const Set<String> &ProjectList::get_selected_project_keys() const {
+const RBSet<String> &ProjectList::get_selected_project_keys() const {
 	// Faster if that's all you need
 	return _selected_project_keys;
 }
@@ -2099,9 +2099,9 @@ void ProjectManager::_open_selected_projects() {
 	// This is especially important for the HTML5 project manager.
 	loading_label->set_modulate(Color(1, 1, 1));
 
-	const Set<String> &selected_list = _project_list->get_selected_project_keys();
+	const RBSet<String> &selected_list = _project_list->get_selected_project_keys();
 
-	for (const Set<String>::Element *E = selected_list.front(); E; E = E->next()) {
+	for (const RBSet<String>::Element *E = selected_list.front(); E; E = E->next()) {
 		const String &selected = E->get();
 		String path = EditorSettings::get_singleton()->get("projects/" + selected);
 		String conf = path.plus_file("project.godot");
@@ -2148,7 +2148,7 @@ void ProjectManager::_open_selected_projects() {
 }
 
 void ProjectManager::_open_selected_projects_ask() {
-	const Set<String> &selected_list = _project_list->get_selected_project_keys();
+	const RBSet<String> &selected_list = _project_list->get_selected_project_keys();
 
 	if (selected_list.size() < 1) {
 		return;
@@ -2263,7 +2263,7 @@ void ProjectManager::_run_project_confirm() {
 }
 
 void ProjectManager::_run_project() {
-	const Set<String> &selected_list = _project_list->get_selected_project_keys();
+	const RBSet<String> &selected_list = _project_list->get_selected_project_keys();
 
 	if (selected_list.size() < 1) {
 		return;
@@ -2323,13 +2323,13 @@ void ProjectManager::_import_project() {
 }
 
 void ProjectManager::_rename_project() {
-	const Set<String> &selected_list = _project_list->get_selected_project_keys();
+	const RBSet<String> &selected_list = _project_list->get_selected_project_keys();
 
 	if (selected_list.size() == 0) {
 		return;
 	}
 
-	for (Set<String>::Element *E = selected_list.front(); E; E = E->next()) {
+	for (RBSet<String>::Element *E = selected_list.front(); E; E = E->next()) {
 		const String &selected = E->get();
 		String path = EditorSettings::get_singleton()->get("projects/" + selected);
 		npdialog->set_project_path(path);
@@ -2349,7 +2349,7 @@ void ProjectManager::_erase_missing_projects_confirm() {
 }
 
 void ProjectManager::_erase_project() {
-	const Set<String> &selected_list = _project_list->get_selected_project_keys();
+	const RBSet<String> &selected_list = _project_list->get_selected_project_keys();
 
 	if (selected_list.size() == 0) {
 		return;
@@ -2406,7 +2406,7 @@ void ProjectManager::_files_dropped(PackedStringArray p_files) {
 		_install_project(p_files[0], file.substr(0, file.length() - 4).capitalize());
 		return;
 	}
-	Set<String> folders_set;
+	RBSet<String> folders_set;
 	Ref<DirAccess> da = DirAccess::create(DirAccess::ACCESS_FILESYSTEM);
 	for (int i = 0; i < p_files.size(); i++) {
 		String file = p_files[i];
@@ -2414,7 +2414,7 @@ void ProjectManager::_files_dropped(PackedStringArray p_files) {
 	}
 	if (folders_set.size() > 0) {
 		PackedStringArray folders;
-		for (Set<String>::Element *E = folders_set.front(); E; E = E->next()) {
+		for (RBSet<String>::Element *E = folders_set.front(); E; E = E->next()) {
 			folders.push_back(E->get());
 		}
 

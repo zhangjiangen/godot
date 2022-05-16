@@ -32,7 +32,7 @@
 #define NODE_H
 
 #include "core/string/node_path.h"
-#include "core/templates/map.h"
+#include "core/templates/rb_map.h"
 #include "core/variant/typed_array.h"
 #include "scene/main/scene_tree.h"
 
@@ -99,6 +99,7 @@ private:
 		Node *parent = nullptr;
 		Node *owner = nullptr;
 		Vector<Node *> children;
+		Vector<Multiplayer::RPCConfig> rpc_methods;
 		HashMap<StringName, Node *> owned_unique_nodes;
 		bool unique_name_in_owner = false;
 
@@ -116,8 +117,7 @@ private:
 
 		Viewport *viewport = nullptr;
 
-		Map<StringName, GroupData> grouped;
-		Vector<Multiplayer::RPCConfig> rpc_methods;
+		HashMap<StringName, GroupData> grouped;
 		List<Node *>::Element *OW = nullptr; // Owned element.
 		List<Node *> owned;
 
@@ -181,7 +181,7 @@ private:
 	Array _get_node_and_resource(const NodePath &p_path);
 
 	void _duplicate_signals(const Node *p_original, Node *p_copy) const;
-	Node *_duplicate(int p_flags, Map<const Node *, Node *> *r_duplimap = nullptr) const;
+	Node *_duplicate(int p_flags, HashMap<const Node *, Node *> *r_duplimap = nullptr) const;
 
 	TypedArray<Node> _get_children(bool p_include_internal = true) const;
 	Array _get_groups() const;
@@ -403,7 +403,7 @@ public:
 	bool is_property_pinned(const StringName &p_property) const;
 	virtual StringName get_property_store_alias(const StringName &p_property) const;
 #endif
-	void get_storable_properties(Set<StringName> &r_storable_properties) const;
+	void get_storable_properties(RBSet<StringName> &r_storable_properties) const;
 
 	virtual String to_string() override;
 
@@ -445,10 +445,10 @@ public:
 
 	Node *duplicate(int p_flags = DUPLICATE_GROUPS | DUPLICATE_SIGNALS | DUPLICATE_SCRIPTS) const;
 #ifdef TOOLS_ENABLED
-	Node *duplicate_from_editor(Map<const Node *, Node *> &r_duplimap) const;
-	Node *duplicate_from_editor(Map<const Node *, Node *> &r_duplimap, const Map<Ref<Resource>, Ref<Resource>> &p_resource_remap) const;
-	void remap_node_resources(Node *p_node, const Map<Ref<Resource>, Ref<Resource>> &p_resource_remap) const;
-	void remap_nested_resources(Ref<Resource> p_resource, const Map<Ref<Resource>, Ref<Resource>> &p_resource_remap) const;
+	Node *duplicate_from_editor(HashMap<const Node *, Node *> &r_duplimap) const;
+	Node *duplicate_from_editor(HashMap<const Node *, Node *> &r_duplimap, const HashMap<Ref<Resource>, Ref<Resource>> &p_resource_remap) const;
+	void remap_node_resources(Node *p_node, const HashMap<Ref<Resource>, Ref<Resource>> &p_resource_remap) const;
+	void remap_nested_resources(Ref<Resource> p_resource, const HashMap<Ref<Resource>, Ref<Resource>> &p_resource_remap) const;
 #endif
 
 	// used by editors, to save what has changed only
@@ -560,6 +560,6 @@ VARIANT_ENUM_CAST(Node::ProcessMode);
 VARIANT_ENUM_CAST(Node::InternalMode);
 VARIANT_ENUM_CAST(Node::NameCasing);
 
-typedef Set<Node *, Node::Comparator> NodeSet;
+typedef RBSet<Node *, Node::Comparator> NodeSet;
 
 #endif

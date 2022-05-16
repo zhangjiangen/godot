@@ -269,7 +269,7 @@ Array IP::_get_local_addresses() const {
 
 Array IP::_get_local_interfaces() const {
 	Array results;
-	Map<String, Interface_Info> interfaces;
+	HashMap<String, Interface_Info> interfaces;
 	get_local_interfaces(&interfaces);
 	for (KeyValue<String, Interface_Info> &E : interfaces) {
 		Interface_Info &c = E.value;
@@ -291,7 +291,7 @@ Array IP::_get_local_interfaces() const {
 }
 
 void IP::get_local_addresses(List<IPAddress> *r_addresses) const {
-	Map<String, Interface_Info> interfaces;
+	HashMap<String, Interface_Info> interfaces;
 	get_local_interfaces(&interfaces);
 	for (const KeyValue<String, Interface_Info> &E : interfaces) {
 		for (const IPAddress &F : E.value.ip_addresses) {

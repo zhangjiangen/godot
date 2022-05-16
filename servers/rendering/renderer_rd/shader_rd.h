@@ -35,7 +35,7 @@
 #include "core/string/string_builder.h"
 #include "core/templates/hash_map.h"
 #include "core/templates/local_vector.h"
-#include "core/templates/map.h"
+#include "core/templates/rb_map.h"
 #include "core/templates/rid_owner.h"
 #include "core/variant/variant.h"
 #include "servers/rendering_server.h"
@@ -55,7 +55,7 @@ class ShaderRD {
 		CharString tese_globals;
 		CharString task_globals;
 		CharString mesh_globals;
-		Map<StringName, CharString> code_sections;
+		HashMap<StringName, CharString> code_sections;
 		Vector<CharString> custom_defines;
 		String GetString() {
 			String ret;
@@ -166,8 +166,9 @@ protected:
 public:
 	RID version_create();
 
-	void version_set_code(RID p_version, const Map<String, String> &p_code, const String &p_uniforms, const String &p_vertex_globals, const String &p_fragment_globals,  const Vector<String> &p_custom_defines, const String &p_tessc_globle, const String &p_tesse_globle, const String &p_task_globle, const String &p_mesh_globle);
-	void version_set_compute_code(RID p_version, const Map<String, String> &p_code, const String &p_uniforms, const String &p_compute_globals, const Vector<String> &p_custom_defines);
+	void version_set_code(RID p_version, const HashMap<String, String> &p_code, const String &p_uniforms, const String &p_vertex_globals, const String &p_fragment_globals, const Vector<String> &p_custom_defines, const String &p_tessc_globle, const String &p_tesse_globle, const String &p_task_globle, const String &p_mesh_globle);
+	void version_set_compute_code(RID p_version, const HashMap<String, String> &p_code, const String &p_uniforms, const String &p_compute_globals, const Vector<String> &p_custom_defines);
+
 
 	_FORCE_INLINE_ RID version_get_shader(RID p_version, int p_variant) {
 		if (p_variant >= variant_defines.size()) {

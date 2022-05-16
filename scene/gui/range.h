@@ -37,7 +37,7 @@ class Range : public Control {
 	GDCLASS(Range, Control);
 
 	struct Shared {
-		Set<Range *> owners;
+        RBSet<Range *> owners;
 		double val = 0.0;
 		double min = 0.0;
 		double max = 100.0;

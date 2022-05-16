@@ -76,8 +76,8 @@ Vector<StringName> VisualShaderNodeParticleEmitter::get_editable_properties() co
 	return props;
 }
 
-Map<StringName, String> VisualShaderNodeParticleEmitter::get_editable_properties_names() const {
-	Map<StringName, String> names;
+HashMap<StringName, String> VisualShaderNodeParticleEmitter::get_editable_properties_names() const {
+	HashMap<StringName, String> names;
 	names.insert("mode_2d", RTR("2D Mode"));
 	return names;
 }
@@ -706,8 +706,8 @@ Vector<StringName> VisualShaderNodeParticleMeshEmitter::get_editable_properties(
 	return props;
 }
 
-Map<StringName, String> VisualShaderNodeParticleMeshEmitter::get_editable_properties_names() const {
-	Map<StringName, String> names = VisualShaderNodeParticleEmitter::get_editable_properties_names();
+HashMap<StringName, String> VisualShaderNodeParticleMeshEmitter::get_editable_properties_names() const {
+	HashMap<StringName, String> names = VisualShaderNodeParticleEmitter::get_editable_properties_names();
 
 	names.insert("mesh", RTR("Mesh"));
 	names.insert("use_all_surfaces", RTR("Use All Surfaces"));

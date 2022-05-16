@@ -337,7 +337,7 @@ protected:
 class RDShaderFile : public Resource {
 	GDCLASS(RDShaderFile, Resource)
 
-	Map<StringName, Ref<RDShaderSPIRV>> versions;
+	HashMap<StringName, Ref<RDShaderSPIRV>> versions;
 	String base_error;
 
 public:

@@ -240,7 +240,7 @@ void AnimationNodeBlendTreeEditor::_update_graph() {
 		}
 
 		Ref<StyleBoxFlat> sb = node->get_theme_stylebox(SNAME("frame"), SNAME("GraphNode"));
-        
+
 		Color c = sb->get_border_color();
 		Color mono_color = ((c.r + c.g + c.b) / 3) < 0.7 ? Color(1.0, 1.0, 1.0) : Color(0.0, 0.0, 0.0);
 		mono_color.a = 0.85;
@@ -558,8 +558,8 @@ bool AnimationNodeBlendTreeEditor::_update_filters(const Ref<AnimationNode> &ano
 
 	updating = true;
 
-	Set<String> paths;
-	HashMap<String, Set<String>> types(__FILE__, __LINE__);
+	RBSet<String> paths;
+	HashMap<String, RBSet<String>> types(__FILE__, __LINE__);
 	{
 		List<StringName> animations;
 		player->get_animation_list(&animations);
@@ -596,9 +596,9 @@ bool AnimationNodeBlendTreeEditor::_update_filters(const Ref<AnimationNode> &ano
 	filters->clear();
 	TreeItem *root = filters->create_item();
 
-	Map<String, TreeItem *> parenthood;
+	HashMap<String, TreeItem *> parenthood;
 
-	for (Set<String>::Element *E = paths.front(); E; E = E->next()) {
+	for (RBSet<String>::Element *E = paths.front(); E; E = E->next()) {
 		NodePath path = E->get();
 		TreeItem *ti = nullptr;
 		String accum;
@@ -693,7 +693,7 @@ bool AnimationNodeBlendTreeEditor::_update_filters(const Ref<AnimationNode> &ano
 				//just a node, not a property track
 				String types_text = "[";
 				if (types.has(path)) {
-					Set<String>::Element *F = types[path].front();
+					RBSet<String>::Element *F = types[path].front();
 					types_text += F->get();
 					while (F->next()) {
 						F = F->next();
@@ -904,8 +904,8 @@ void AnimationNodeBlendTreeEditor::_node_renamed(const String &p_text, Ref<Anima
 	}
 
 	//update animations
-	for (Map<StringName, ProgressBar *>::Element *E = animations.front(); E; E = E->next()) {
-		if (E->key() == prev_name) {
+	for (const KeyValue<StringName, ProgressBar *> &E : animations) {
+		if (E.key == prev_name) {
 			animations[new_name] = animations[prev_name];
 			animations.erase(prev_name);
 			break;
