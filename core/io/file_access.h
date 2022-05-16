@@ -153,6 +153,8 @@ public:
 	static Ref<FileAccess> open(const String &p_path, int p_mode_flags, Error *r_error = nullptr); /// Create a file access (for the current platform) this is the only portable way of accessing files.
 	static CreateFunc get_create_func(AccessType p_access);
 	static bool exists(const String &p_name); ///< return true if a file exists
+	static bool save_string(const String &p_path, const String &p_string); ///< save a string to a file
+	static void delete_file(const String &p_name); ///< delete a file
 	static uint64_t get_modified_time(const String &p_file);
 	static uint32_t get_unix_permissions(const String &p_file);
 	static Error set_unix_permissions(const String &p_file, uint32_t p_permissions);

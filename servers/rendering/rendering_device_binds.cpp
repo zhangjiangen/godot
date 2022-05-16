@@ -29,47 +29,209 @@
 /*************************************************************************/
 
 #include "rendering_device_binds.h"
+#include "core/string/string_builder.h"
+#include "core/variant/variant_parser.h"
 // gpu 机构提的主体模版
-static const char *gup_struct_gd_script_template = "\
+static const char *gpu_struct_gd_script_template = "\
+#AUTO_GENERATED_BODY_START\
 extends Resource \
 class_name %s \
 var _property_dict:Dictionary = {} \
-var _total_size:int := %d \
+var _buffer : PackedByteArray = PackedByteArray() \
+var _gpu_struct_instance:UniformBufferMemoberStructInstance = null \
 # export property list start \
 %s \
 # export property list end \
 static func build_gpu_struct(): \
 	var gpu_struct = RenderingServer.get_gpu_struct() \
 	if gpu_struct != null: \
-		if gpu_struct.struct_var == get_gpu_struct_vresion(): \
+		if gpu_struct.struct_var == get_gpu_struct_version(): \
 			return  \
-	gpu_struct = UniformBufferMemoberStruct.new(get_gpu_struct_name()) \
+	if gpu_struct == null: \
+		gpu_struct = UniformBufferMemoberStruct.new(get_gpu_struct_name()) \
+	else:\
+		gpu_struct.clear() \
 %s\
+	gpu_struct.struct_var = get_gpu_struct_version() \
+	gpu_struct.finish_decl() \
+	gpu_struct._cb_update_check = get_gpu_struct\
 static func get_gpu_struct_name(): \
 	return \"%s\" \
-static func get_gpu_struct_vresion()\
+static func get_gpu_struct_version()\
 	return %d\
 static func get_gpu_struct():\
-	return RenderingServer.get_gpu_struct(\"%s\")\
-func create_gpu_struct_instance():\
+	build_gpu_struct()\
+	return RenderingServer.get_gpu_struct(get_gpu_struct_name())\
+static func create_gpu_struct_instance():\
 	return get_gpu_struct().instance()\
+func _init():\
+	_gpu_struct_instance = create_gpu_struct_instance() \
 func update_gpu_buffer(p_byte_offset:int,p_uniform_buffer: PackedByteArray): \
-";
-// gpu结构体的成员模版
-const char *gup_struct_gd_script_member_template = "\
-%s _%s : %s :\
-	get: \
-		if !_property_dict.has(\"%s\"): \
-			_property_dict[\"%s\"] = %s \
-		return _property_dict[\"%s\"] \
-	set: \
-		_property_dict[\"%s\"] = %s \
+	_gpu_struct_instance._updata_buffer(p_byte_offset,p_uniform_buffer,_property_dict) \
+#AUTO_GENERATED_BODY_END\
 ";
 // gpu结构体的成员定义模版
-const char *gup_struct_gd_script_member_decl_template = "\
-	gup_struct.%s(%s)\
+const char *gpu_struct_gd_script_struct_member_decl_template = "\
+	gpu_struct.add_struct_member(%s,%s,%d,%s,%s) \n\
 ";
+const char *gpu_struct_gd_simple_struct_member_decl_template = "\
+	gpu_struct.add_member(%s,%s,%d,%s,%s) \n\
+";
+static void gpu_struct_member_to_gd_script_export(StringBuilder &sb, const String &name, const Variant::Type &type, const String &default_value, bool is_struct, const String &struct_name, bool is_range, const Vector2 &range) {
+	sb.append("@export");
+	if (is_range) {
+		if (type == Variant::FLOAT || type == Variant::INT) {
+			sb.append("_range(");
+			sb.append(rtos(range.x));
+			sb.append(",");
+			sb.append(rtos(range.y));
+			sb.append(")");
+		}
+	}
+	sb.append(" ");
+	sb.append(name);
+	sb.append(" : ");
+	if (is_struct) {
+		sb.append("UniformBufferMemoberStructInstance");
+	} else {
+		sb.append(Variant::get_type_name(type));
+	}
+	sb.append("\n");
+	sb.append("\tget: \n\t\t");
+	if (is_struct) {
+		sb.append("if !_property_dict.has(");
+		sb.append(name);
+		sb.append("): \n\t\t\t_property_dict[\"");
+		sb.append(name);
+		sb.append("\"] = ");
+		sb.append(struct_name);
+		sb.append(".create_gpu_struct_instance() \n");
+		sb.append("\t\treturn _property_dict[\"");
+		sb.append(name);
+		sb.append("\"] \n\t\t");
 
+		sb.append("\tset(v): \n\t\t\t");
+		sb.append("_property_dict[\"");
+		sb.append(name);
+		sb.append("\"] = v \n");
+	} else {
+		sb.append("if !_property_dict.has(");
+		sb.append(name);
+		sb.append("): \n\t\t\t_property_dict[\"");
+		sb.append(name);
+		sb.append("\"] = ");
+		sb.append(default_value);
+		sb.append("\t\t");
+		sb.append("return _property_dict[\"");
+		sb.append(name);
+		sb.append("\"] \n\t\t");
+
+		sb.append("\tset(v): \n\t\t\t");
+		sb.append("_property_dict[\"");
+		sb.append(name);
+		sb.append("\"] = v \n");
+	}
+}
+// gpu 结构体转换成gdscript
+static bool gpu_struct_to_gdscript(const String &struct_name, Dictionary gpu_struct_dict, String &p_gd_script, int version) {
+	if (gpu_struct_dict.has("error")) {
+		return false;
+	}
+	String gd_script;
+	StringBuilder gd_script_member_decl;
+	StringBuilder gd_script_member_export;
+	List<Variant> member_list;
+	char temp_str[2048];
+	gpu_struct_dict.get_key_list(&member_list);
+	for (int i = 0; i < member_list.size(); i++) {
+		Array grroup = gpu_struct_dict[member_list[i]];
+		for (int j = 0; j < grroup.size(); j++) {
+			// 处理成员定义
+			Dictionary member_dict = grroup[j];
+			int array_count = member_dict["array_count"];
+			String name = member_dict["name"];
+			Dictionary hint = member_dict["hint"];
+			bool is_globle = false;
+			bool is_single = false;
+			bool is_range = false;
+			Vector2 range;
+			if (hint.has("global")) {
+				is_globle = hint["global"];
+			}
+			if (hint.has("singgle")) {
+				is_single = hint["single"];
+			}
+			if (hint.has("range")) {
+				is_range = true;
+				range = hint["range"];
+			}
+
+			if (member_dict.has("struct_name")) {
+				String struct_name = member_dict["struct_name"];
+				// 结构体成员
+				snprintf(temp_str, sizeof(temp_str), gpu_struct_gd_simple_struct_member_decl_template, struct_name.utf8().get_data(), name.utf8().get_data(), array_count,
+						is_single ? "true" : "false", is_globle ? "true" : "false");
+				gd_script_member_decl + temp_str;
+				gpu_struct_member_to_gd_script_export(gd_script_member_export, name, Variant::NIL, "", false, struct_name, is_range, range);
+
+			} else {
+				int type = member_dict["type"];
+				// 普通成员
+				String def_value;
+				VariantWriter::write_to_string(member_dict["default_value"], def_value);
+				snprintf(temp_str, sizeof(temp_str), gpu_struct_gd_simple_struct_member_decl_template, Variant::variant_type_to_gdscriot_type( (Variant::Type &)type).utf8().get_data(), name.utf8().get_data(),
+						def_value.utf8().get_data(), array_count, is_single ? "true" : "false", is_globle ? "true" : "false");
+				gd_script_member_decl + temp_str;
+				gpu_struct_member_to_gd_script_export(gd_script_member_export, name, (Variant::Type &)type, def_value, false, "", is_range, range);
+			}
+		}
+	}
+
+	// 合并最终主体
+	snprintf(temp_str, sizeof(temp_str), gpu_struct_gd_script_template, struct_name.utf8().get_data(), gd_script_member_export.as_string().utf8().get_data(), gd_script_member_decl.as_string().utf8().get_data(), struct_name.utf8().get_data(), version);
+	gd_script = temp_str;
+	return true;
+}
+// 保存gpu结构体到gdscript脚本文件
+static void gpu_struct_saveto_gdscript_dict(const String &p_path, Dictionary gpu_struct_dict, int version) {
+	if (gpu_struct_dict.has("error")) {
+		return;
+	}
+
+	List<Variant> struct_list;
+	gpu_struct_dict.get_key_list(&struct_list);
+	for (int i = 0; i < struct_list.size(); i++) {
+		Dictionary gpu_struct = gpu_struct_dict[struct_list[i]];
+
+		Dictionary ret;
+		String gd_script;
+		if (gpu_struct_to_gdscript(struct_list[i], gpu_struct_dict, gd_script, version)) {
+            String struct_name =struct_list[i];
+			String file_path = p_path + "/" + struct_name + ".gd";
+			if (FileAccess::exists(file_path)) {
+				String old_gd_script = FileAccess::get_file_as_string(file_path);
+				int start = old_gd_script.find("#AUTO_GENERATED_BODY_START");
+				int end = old_gd_script.find("#AUTO_GENERATED_BODY_END");
+				if (start >= 0 && end >= 0) {
+					String begin_str = old_gd_script.substr(0, start);
+					String end_str = old_gd_script.substr(end + strlen("#AUTO_GENERATED_BODY_END"));
+					begin_str += gd_script;
+					begin_str += end_str;
+					// 删除旧的文件
+					FileAccess::delete_file(file_path);
+					FileAccess::save_string(file_path, begin_str);
+				} else {
+					FileAccess::save_string(file_path, gd_script);
+				}
+			}
+		}
+	}
+}
+
+void RDShaderFile::save_gpu_structs_to_gd_script(const String &p_path) {
+	Dictionary gpu_struct_dict = get_gpu_structs();
+	gpu_struct_saveto_gdscript_dict(p_path, gpu_struct_dict, get_gpu_structs_version());
+}
 Error RDShaderFile::parse_versions_from_text(const String &p_text, const String p_defines, OpenIncludeFunction p_include_func, void *p_include_func_userdata) {
 	Vector<String> lines = p_text.remove_commentary().split("\n");
 

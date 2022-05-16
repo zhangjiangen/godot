@@ -62,6 +62,21 @@ bool FileAccess::exists(const String &p_name) {
 	return true;
 }
 
+bool FileAccess::save_string(const String &p_path, const String &p_string) ///< save a string to a file
+{
+	Ref<FileAccess> f = open(p_path, WRITE);
+	if (f.is_null()) {
+		return false;
+	}
+
+	f->store_string(p_string);
+	return true;
+}
+
+void FileAccess ::delete_file(const String &p_name) ///< delete a file
+{
+	DirAccess::remove_file_or_error(p_name);
+}
 void FileAccess::_set_access_type(AccessType p_access) {
 	_access_type = p_access;
 }

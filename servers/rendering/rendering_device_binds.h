@@ -380,6 +380,7 @@ public:
 	int get_gpu_structs_version() {
 		return gpu_structs_version;
 	}
+	void save_gpu_structs_to_gd_script(const String &p_path);
 
 	void print_errors(const String &p_file) {
 		if (!base_error.is_empty()) {
@@ -444,6 +445,7 @@ protected:
 		ClassDB::bind_method(D_METHOD("_get_versions"), &RDShaderFile::_get_versions);
 		ClassDB::bind_method(D_METHOD("_get_gpu_structs"), &RDShaderFile::get_gpu_structs);
 		ClassDB::bind_method(D_METHOD("_get_gpu_structs_version"), &RDShaderFile::get_gpu_structs_version);
+		ClassDB::bind_method(D_METHOD("_save_gpu_structs_to_gd_script", "path"), &RDShaderFile::save_gpu_structs_to_gd_script);
 
 		ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "_versions", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL), "_set_versions", "_get_versions");
 		ADD_PROPERTY(PropertyInfo(Variant::STRING, "base_error"), "set_base_error", "get_base_error");

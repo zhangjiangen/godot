@@ -543,6 +543,8 @@ public:
 	static bool is_builtin_method_vararg(Variant::Type p_type, const StringName &p_method);
 	static void get_builtin_method_list(Variant::Type p_type, List<StringName> *p_list);
 	static int get_builtin_method_count(Variant::Type p_type);
+	static String variant_type_to_gdscriot_type(Variant::Type p_type);
+	static String variant_to_gdscript_string(const Variant &p_variant);
 	static uint32_t get_builtin_method_hash(Variant::Type p_type, const StringName &p_method);
 
 	void callp(const StringName &p_method, const Variant **p_args, int p_argcount, Variant &r_ret, Callable::CallError &r_error);

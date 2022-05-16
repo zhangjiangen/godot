@@ -1850,7 +1850,142 @@ String Variant::get_builtin_method_argument_name(Variant::Type p_type, const Str
 	return "arg" + itos(p_argument + 1);
 #endif
 }
+String Variant::variant_type_to_gdscriot_type(Variant::Type p_type) {
+	switch (p_type) {
+		case Variant::BOOL:
+			return "TYPE_BOOL";
 
+			break;
+		case Variant::INT:
+			return "TYPE_INT";
+
+			break;
+		case Variant::FLOAT:
+			return "TYPE_FLOAT";
+
+			break;
+		case Variant::STRING:
+			return "TYPE_STRING";
+
+			break;
+		case Variant::VECTOR2:
+			return "TYPE_VECTOR2";
+
+			break;
+		case Variant::RECT2:
+			return "TYPE_RECT2";
+
+			break;
+		case Variant::VECTOR3:
+			return "TYPE_VECTOR3";
+
+			break;
+		case Variant::TRANSFORM2D:
+			return "TYPE_TRANSFORM2D";
+
+			break;
+		case Variant::PLANE:
+			return "TYPE_PLANE";
+
+			break;
+		case Variant::QUATERNION:
+			return "TYPE_QUATERNION";
+
+			break;
+		case Variant::AABB:
+			return "TYPE_AABB";
+
+			break;
+		case Variant::BASIS:
+			return "TYPE_BASIS";
+
+			break;
+		case Variant::TRANSFORM3D:
+			return "TYPE_TRANSFORM3D";
+
+			break;
+		case Variant::CAMERA_MATRIX:
+			return "TYPE_CAMERA_MATRIX";
+
+			break;
+		case Variant::COLOR:
+			return "TYPE_COLOR";
+
+			break;
+		case Variant::STRING_NAME:
+			return "TYPE_STRING_NAME";
+
+			break;
+		case Variant::NODE_PATH:
+			return "TYPE_NODE_PATH";
+
+			break;
+		case Variant::RID:
+			return "TYPE_RID";
+
+			break;
+		case Variant::OBJECT:
+			return "TYPE_OBJECT";
+
+			break;
+		case Variant::CALLABLE:
+			return "TYPE_CALLABLE";
+
+			break;
+		case Variant::SIGNAL:
+			return "TYPE_SIGNAL";
+
+			break;
+		case Variant::DICTIONARY:
+			return "TYPE_DICTIONARY";
+
+			break;
+		case Variant::ARRAY:
+			return "TYPE_ARRAY";
+
+			break;
+		case Variant::PACKED_BYTE_ARRAY:
+			return "TYPE_PACKED_BYTE_ARRAY";
+
+			break;
+		case Variant::PACKED_INT32_ARRAY:
+			return "TYPE_PACKED_INT32_ARRAY";
+
+			break;
+		case Variant::PACKED_INT64_ARRAY:
+			return "TYPE_PACKED_INT64_ARRAY";
+
+			break;
+		case Variant::PACKED_FLOAT32_ARRAY:
+			return "TYPE_PACKED_FLOAT32_ARRAY";
+
+			break;
+		case Variant::PACKED_FLOAT64_ARRAY:
+			return "TYPE_PACKED_FLOAT64_ARRAY";
+
+			break;
+		case Variant::PACKED_STRING_ARRAY:
+			return "TYPE_PACKED_STRING_ARRAY";
+
+			break;
+		case Variant::PACKED_VECTOR2_ARRAY:
+			return "TYPE_PACKED_VECTOR2_ARRAY";
+
+			break;
+		case Variant::PACKED_VECTOR3_ARRAY:
+			return "TYPE_PACKED_VECTOR3_ARRAY";
+
+			break;
+		case Variant::PACKED_COLOR_ARRAY:
+			return "TYPE_PACKED_COLOR_ARRAY";
+
+			break;
+
+		default:
+			break;
+	}
+	return "TYPE_NIL";
+}
 Vector<Variant> Variant::get_builtin_method_default_arguments(Variant::Type p_type, const StringName &p_method) {
 	ERR_FAIL_INDEX_V(p_type, Variant::VARIANT_MAX, Vector<Variant>());
 	const VariantBuiltInMethodInfo *method = builtin_method_info[p_type].lookup_ptr(p_method);
