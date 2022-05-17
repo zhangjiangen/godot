@@ -41,6 +41,7 @@
 
 struct DictionaryPrivate {
 	SafeRefCount refcount;
+	Variant *read_only = nullptr; // If enabled, a pointer is used to a temporary value that is used to return read-only values.
 	HashMap<Variant, Variant, VariantHasher, VariantComparator> variant_map;
 	DictionaryPrivate() {
 		variant_map.set_debug_info(__FILE__, __LINE__);
@@ -86,11 +87,22 @@ Variant Dictionary::get_value_at_index(int p_index) const {
 }
 
 Variant &Dictionary::operator[](const Variant &p_key) {
-	if (p_key.get_type() == Variant::STRING_NAME) {
-		const StringName *sn = VariantInternal::get_string_name(&p_key);
-		return _p->variant_map[sn->operator String()];
+	if (unlikely(_p->read_only)) {
+		if (p_key.get_type() == Variant::STRING_NAME) {
+			const StringName *sn = VariantInternal::get_string_name(&p_key);
+			*_p->read_only = _p->variant_map[sn->operator String()];
+		} else {
+			*_p->read_only = _p->variant_map[p_key];
+		}
+
+		return *_p->read_only;
 	} else {
-		return _p->variant_map[p_key];
+		if (p_key.get_type() == Variant::STRING_NAME) {
+			const StringName *sn = VariantInternal::get_string_name(&p_key);
+			return _p->variant_map[sn->operator String()];
+		} else {
+			return _p->variant_map[p_key];
+		}
 	}
 }
 
@@ -131,7 +143,12 @@ Variant *Dictionary::getptr(const Variant &p_key) {
 	if (!E) {
 		return nullptr;
 	}
-	return &E->value;
+	if (unlikely(_p->read_only != nullptr)) {
+		*_p->read_only = E->value;
+		return _p->read_only;
+	} else {
+		return &E->value;
+	}
 }
 
 Variant Dictionary::get_valid(const Variant &p_key) const {
@@ -186,6 +203,7 @@ bool Dictionary::has_all(const Array &p_keys) const {
 }
 
 bool Dictionary::erase(const Variant &p_key) {
+	ERR_FAIL_COND_V_MSG(_p->read_only, false, "Dictionary is in read-only state.");
 	if (p_key.get_type() == Variant::STRING_NAME) {
 		const StringName *sn = VariantInternal::get_string_name(&p_key);
 		return _p->variant_map.erase(sn->operator String());
@@ -227,6 +245,16 @@ bool Dictionary::recursive_equal(const Dictionary &p_dictionary, int recursion_c
 }
 
 void Dictionary::_ref(const Dictionary &p_from) const {
+	if (unlikely(p_from._p->read_only != nullptr)) {
+		// If p_from is a read-only dictionary, just copy the contents to avoid further modification.
+		if (_p) {
+			_unref();
+		}
+		_p = memnew(DictionaryPrivate);
+		_p->refcount.init();
+		_p->variant_map = p_from._p->variant_map;
+		return;
+	}
 	//make a copy first (thread safe)
 	if (!p_from._p->refcount.ref()) {
 		return; // couldn't copy
@@ -244,12 +272,16 @@ void Dictionary::_ref(const Dictionary &p_from) const {
 }
 
 void Dictionary::clear() {
+	ERR_FAIL_COND_MSG(_p->read_only, "Dictionary is in read-only state.");
 	_p->variant_map.clear();
 }
 
 void Dictionary::_unref() const {
 	ERR_FAIL_COND(!_p);
 	if (_p->refcount.unref()) {
+		if (_p->read_only) {
+			memdelete(_p->read_only);
+		}
 		memdelete(_p);
 	}
 	_p = nullptr;
@@ -337,6 +369,21 @@ Dictionary Dictionary::duplicate(bool p_deep) const {
 	return recursive_duplicate(p_deep, 0);
 }
 
+void Dictionary::set_read_only(bool p_enable) {
+	if (p_enable == bool(_p->read_only != nullptr)) {
+		return;
+	}
+	if (p_enable) {
+		_p->read_only = memnew(Variant);
+	} else {
+		memdelete(_p->read_only);
+		_p->read_only = nullptr;
+	}
+}
+bool Dictionary::is_read_only() const {
+	return _p->read_only != nullptr;
+}
+
 Dictionary Dictionary::recursive_duplicate(bool p_deep, int recursion_count) const {
 	Dictionary n;
 
@@ -360,6 +407,9 @@ Dictionary Dictionary::recursive_duplicate(bool p_deep, int recursion_count) con
 }
 
 void Dictionary::operator=(const Dictionary &p_dictionary) {
+	if (this == &p_dictionary) {
+		return;
+	}
 	_ref(p_dictionary);
 }
 
