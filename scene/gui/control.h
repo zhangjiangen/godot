@@ -175,6 +175,9 @@ private:
 		real_t expand = 1.0;
 		Point2 custom_minimum_size;
 
+		bool force_pass_scroll_events = true;
+
+
 		Control *parent = nullptr;
 		ObjectID drag_owner;
 		Ref<Theme> theme;
@@ -372,8 +375,12 @@ public:
 
 	virtual Size2 _edit_get_minimum_size() const override;
 
-	void _edit_set_dock_slot(int p_slot) { data.edit_dock_slot = p_slot; }
-	int _edit_get_dock_slot() { return data.edit_dock_slot; }
+	void _edit_set_dock_slot(int p_slot) {
+		data.edit_dock_slot = p_slot;
+	}
+	int _edit_get_dock_slot() {
+		return data.edit_dock_slot;
+	}
 #endif
 
 	virtual void gui_input(const Ref<InputEvent> &p_event);
@@ -403,7 +410,9 @@ public:
 
 	void set_auto_translate(bool p_enable);
 	bool is_auto_translating() const;
-	_FORCE_INLINE_ String atr(const String p_string) const { return is_auto_translating() ? tr(p_string) : p_string; };
+	_FORCE_INLINE_ String atr(const String p_string) const {
+		return is_auto_translating() ? tr(p_string) : p_string;
+	};
 
 	/* POSITIONING */
 
@@ -497,6 +506,9 @@ public:
 
 	void set_mouse_filter(MouseFilter p_filter);
 	MouseFilter get_mouse_filter() const;
+
+	void set_force_pass_scroll_events(bool p_force_pass_scroll_events);
+	bool is_force_pass_scroll_events() const;
 
 	/* SKINNING */
 
