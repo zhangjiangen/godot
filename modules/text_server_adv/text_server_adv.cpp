@@ -1713,6 +1713,8 @@ hb_font_t *TextServerAdvanced::_font_get_hb_handle(const RID &p_font_rid, int64_
 }
 
 RID TextServerAdvanced::create_font() {
+	_THREAD_SAFE_METHOD_
+
 	FontDataAdvanced *fd = memnew(FontDataAdvanced);
 
 	return font_owner.make_rid(fd);
@@ -2394,7 +2396,7 @@ Array TextServerAdvanced::font_get_glyph_list(const RID &p_font_rid, const Vecto
 
 	Array ret;
 	const HashMap<int32_t, FontGlyph> &gl = fd->cache[size]->glyph_map;
-	for (const KeyValue<int32_t, FontGlyph> &E : gl) {
+	for (auto &E : gl) {
 		ret.push_back(E.key);
 	}
 	return ret;
@@ -2897,7 +2899,7 @@ String TextServerAdvanced::font_get_supported_chars(const RID &p_font_rid) const
 #endif
 	if (at_size) {
 		const HashMap<int32_t, FontGlyph> &gl = at_size->glyph_map;
-		for (const KeyValue<int32_t, FontGlyph> &E : gl) {
+		for (auto &E : gl) {
 			chars = chars + String::chr(E.key);
 		}
 	}
@@ -3168,7 +3170,7 @@ PackedStringArray TextServerAdvanced::font_get_language_support_overrides(const 
 
 	MutexLock lock(fd->mutex);
 	PackedStringArray out;
-	for (const KeyValue<String, bool> &E : fd->language_support_overrides) {
+	for (auto &E : fd->language_support_overrides) {
 		out.push_back(E.key);
 	}
 	return out;
@@ -3218,7 +3220,7 @@ PackedStringArray TextServerAdvanced::font_get_script_support_overrides(const RI
 
 	MutexLock lock(fd->mutex);
 	PackedStringArray out;
-	for (const KeyValue<String, bool> &E : fd->script_support_overrides) {
+	for (auto &E : fd->script_support_overrides) {
 		out.push_back(E.key);
 	}
 	return out;
@@ -3365,7 +3367,7 @@ void TextServerAdvanced::invalidate(TextServerAdvanced::ShapedTextDataAdvanced *
 void TextServerAdvanced::full_copy(ShapedTextDataAdvanced *p_shaped) {
 	ShapedTextDataAdvanced *parent = shaped_owner.get_or_null(p_shaped->parent);
 
-	for (const KeyValue<Variant, ShapedTextDataAdvanced::EmbeddedObject> &E : parent->objects) {
+	for (auto &E : parent->objects) {
 		if (E.value.pos >= p_shaped->start && E.value.pos < p_shaped->end) {
 			p_shaped->objects[E.key] = E.value;
 		}
@@ -3660,7 +3662,7 @@ bool TextServerAdvanced::shaped_text_resize_object(const RID &p_shaped, const Va
 			Glyph gl = sd->glyphs[i];
 			Variant key;
 			if (gl.count == 1) {
-				for (const KeyValue<Variant, ShapedTextDataAdvanced::EmbeddedObject> &E : sd->objects) {
+				for (auto &E : sd->objects) {
 					if (E.value.pos == gl.start) {
 						key = E.key;
 						break;
@@ -3709,7 +3711,7 @@ void TextServerAdvanced::_realign(ShapedTextDataAdvanced *p_sd) const {
 	// Align embedded objects to baseline.
 	double full_ascent = p_sd->ascent;
 	double full_descent = p_sd->descent;
-	for (KeyValue<Variant, ShapedTextDataAdvanced::EmbeddedObject> &E : p_sd->objects) {
+	for (auto &E : p_sd->objects) {
 		if ((E.value.pos >= p_sd->start) && (E.value.pos < p_sd->end)) {
 			if (p_sd->orientation == ORIENTATION_HORIZONTAL) {
 				switch (E.value.inline_align & INLINE_ALIGNMENT_TEXT_MASK) {
@@ -3864,7 +3866,7 @@ bool TextServerAdvanced::_shape_substr(ShapedTextDataAdvanced *p_new_sd, const S
 						Variant key;
 						bool find_embedded = false;
 						if (gl.count == 1) {
-							for (const KeyValue<Variant, ShapedTextDataAdvanced::EmbeddedObject> &E : p_sd->objects) {
+							for (auto &E : p_sd->objects) {
 								if (E.value.pos == gl.start) {
 									find_embedded = true;
 									key = E.key;
@@ -5207,7 +5209,7 @@ Array TextServerAdvanced::shaped_text_get_objects(const RID &p_shaped) const {
 	ERR_FAIL_COND_V(!sd, ret);
 
 	MutexLock lock(sd->mutex);
-	for (const KeyValue<Variant, ShapedTextDataAdvanced::EmbeddedObject> &E : sd->objects) {
+	for (auto &E : sd->objects) {
 		ret.push_back(E.key);
 	}
 

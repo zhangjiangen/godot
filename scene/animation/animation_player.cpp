@@ -832,7 +832,7 @@ void AnimationPlayer::_animation_process_animation(AnimationData *p_anim, double
 							nc->audio_start = p_time;
 						}
 					} else if (nc->audio_playing) {
-						bool loop = a->get_loop_mode() != Animation::LoopMode::LOOP_NONE;
+						bool loop = a->get_loop_mode() != Animation::LOOP_NONE;
 
 						bool stop = false;
 
@@ -883,15 +883,15 @@ void AnimationPlayer::_animation_process_animation(AnimationData *p_anim, double
 					double at_anim_pos = 0.0;
 
 					switch (anim->get_loop_mode()) {
-						case Animation::LoopMode::LOOP_NONE: {
+						case Animation::LOOP_NONE: {
 							at_anim_pos = MIN((double)anim->get_length(), p_time - pos); //seek to end
 						} break;
 
-						case Animation::LoopMode::LOOP_LINEAR: {
+						case Animation::LOOP_LINEAR: {
 							at_anim_pos = Math::fposmod(p_time - pos, (double)anim->get_length()); //seek to loop
 						} break;
 
-						case Animation::LoopMode::LOOP_PINGPONG: {
+						case Animation::LOOP_PINGPONG: {
 							at_anim_pos = Math::pingpong(p_time - pos, (double)anim->get_length());
 						} break;
 
@@ -944,7 +944,7 @@ void AnimationPlayer::_animation_process_data(PlaybackData &cd, double p_delta, 
 	int pingponged = 0;
 
 	switch (cd.from->animation->get_loop_mode()) {
-		case Animation::LoopMode::LOOP_NONE: {
+		case Animation::LOOP_NONE: {
 			if (next_pos < 0) {
 				next_pos = 0;
 			} else if (next_pos > len) {
@@ -969,7 +969,7 @@ void AnimationPlayer::_animation_process_data(PlaybackData &cd, double p_delta, 
 			}
 		} break;
 
-		case Animation::LoopMode::LOOP_LINEAR: {
+		case Animation::LOOP_LINEAR: {
 			double looped_next_pos = Math::fposmod(next_pos, (double)len);
 			if (looped_next_pos == 0 && next_pos != 0) {
 				// Loop multiples of the length to it, rather than 0
@@ -980,7 +980,7 @@ void AnimationPlayer::_animation_process_data(PlaybackData &cd, double p_delta, 
 			}
 		} break;
 
-		case Animation::LoopMode::LOOP_PINGPONG: {
+		case Animation::LOOP_PINGPONG: {
 			if ((int)Math::floor(abs(next_pos - cd.pos) / len) % 2 == 0) {
 				if (next_pos < 0 && cd.pos >= 0) {
 					cd.speed_scale *= -1.0;
@@ -1766,12 +1766,12 @@ void AnimationPlayer::_animation_changed() {
 }
 
 void AnimationPlayer::_stop_playing_caches() {
-	for (RBSet<TrackNodeCache *>::Element *E = playing_caches.front(); E; E = E->next()) {
-		if (E->get()->node && E->get()->audio_playing) {
-			E->get()->node->call(SNAME("stop"));
+	for (TrackNodeCache *E : playing_caches) {
+		if (E->node && E->audio_playing) {
+			E->node->call(SNAME("stop"));
 		}
-		if (E->get()->node && E->get()->animation_playing) {
-			AnimationPlayer *player = Object::cast_to<AnimationPlayer>(E->get()->node);
+		if (E->node && E->animation_playing) {
+			AnimationPlayer *player = Object::cast_to<AnimationPlayer>(E->node);
 			if (!player) {
 				continue;
 			}

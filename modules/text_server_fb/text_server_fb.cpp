@@ -853,6 +853,8 @@ _FORCE_INLINE_ void TextServerFallback::_font_clear_cache(FontDataFallback *p_fo
 }
 
 RID TextServerFallback::create_font() {
+	_THREAD_SAFE_METHOD_
+
 	FontDataFallback *fd = memnew(FontDataFallback);
 
 	return font_owner.make_rid(fd);

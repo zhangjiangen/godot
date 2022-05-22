@@ -693,8 +693,8 @@ void ScriptEditor::_update_modified_scripts_for_external_editor(Ref<Script> p_fo
 		_find_changed_scripts_for_external_editor(base, base, scripts);
 	}
 
-	for (RBSet<Ref<Script>>::Element *E = scripts.front(); E; E = E->next()) {
-		Ref<Script> script = E->get();
+	for (const Ref<Script> &E : scripts) {
+		Ref<Script> script = E;
 
 		if (p_for_script.is_valid() && p_for_script != script) {
 			continue;
@@ -1568,7 +1568,12 @@ void ScriptTextEditor::drop_data_fw(const Point2 &p_point, const Variant &p_data
 					continue;
 				}
 
-				String path = sn->get_path_to(node);
+				String path;
+				if (node->is_unique_name_in_owner()) {
+					path = "%" + node->get_name();
+				} else {
+					path = sn->get_path_to(node);
+				}
 				for (const String &segment : path.split("/")) {
 					if (!segment.is_valid_identifier()) {
 						path = path.c_escape().quote(quote_style);
@@ -1595,7 +1600,12 @@ void ScriptTextEditor::drop_data_fw(const Point2 &p_point, const Variant &p_data
 					continue;
 				}
 
-				String path = sn->get_path_to(node);
+				String path;
+				if (node->is_unique_name_in_owner()) {
+					path = "%" + node->get_name();
+				} else {
+					path = sn->get_path_to(node);
+				}
 				for (const String &segment : path.split("/")) {
 					if (!segment.is_valid_identifier()) {
 						path = path.c_escape().quote(quote_style);
