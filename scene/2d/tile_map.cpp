@@ -743,7 +743,7 @@ Vector2i TileMap::_coords_to_quadrant_coords(int p_layer, const Vector2i &p_coor
 }
 
 HashMap<Vector2i, TileMapQuadrant>::Iterator TileMap::_create_quadrant(int p_layer, const Vector2i &p_qk) {
-	ERR_FAIL_INDEX_V(p_layer, (int)layers.size(), nullptr);
+	ERR_FAIL_INDEX_V(p_layer, (int)layers.size(), layers[p_layer].quadrant_map.end());
 
 	TileMapQuadrant q;
 	q.layer = p_layer;

@@ -1451,13 +1451,15 @@ void EditorHelp::_help_callback(const String &p_topic) {
 			line = method_line[name];
 		} else {
 			HashMap<String, HashMap<String, int>>::Iterator iter = enum_values_line.begin();
-			while (true) {
+			while (iter) {
 				if (iter->value.has(name)) {
 					line = iter->value[name];
 					break;
-				} else if (iter == enum_values_line.last()) {
-					break;
-				} else {
+				}
+//                else if (iter == enum_values_line.last()) {
+//					break;
+//				}
+                else {
 					++iter;
 				}
 			}

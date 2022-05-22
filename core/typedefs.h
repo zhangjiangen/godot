@@ -44,6 +44,8 @@
 #include "core/error/error_list.h"
 #include <cstdint>
 
+#include <utility>
+
 // Turn argument to string constant:
 // https://gcc.gnu.org/onlinedocs/cpp/Stringizing.html#Stringizing
 #ifndef _STR

@@ -84,7 +84,7 @@ typename DisjointSet<T, H, C, AL>::Element *DisjointSet<T, H, C, AL>::get_parent
 template <typename T, class H, class C, class AL>
 typename DisjointSet<T, H, C, AL>::Element *DisjointSet<T, H, C, AL>::insert_or_get(T object) {
 	typename MapT::Iterator itr = elements.find(object);
-	if (itr != nullptr) {
+	if (itr) {
 		return itr->value;
 	}
 
@@ -134,7 +134,7 @@ void DisjointSet<T, H, C, AL>::get_representatives(Vector<T> &out_representative
 template <typename T, class H, class C, class AL>
 void DisjointSet<T, H, C, AL>::get_members(Vector<T> &out_members, T representative) {
 	typename MapT::Iterator rep_itr = elements.find(representative);
-	ERR_FAIL_COND(rep_itr == nullptr);
+	ERR_FAIL_COND(!rep_itr);
 
 	Element *rep_element = rep_itr->value;
 	ERR_FAIL_COND(rep_element->parent != rep_element);

@@ -68,7 +68,7 @@ bool FileAccessMemory::file_exists(const String &p_name) {
 	String name = fix_path(p_name);
 	//name = DirAccess::normalize_path(name);
 
-	return files && (files->find(name) != nullptr);
+	return files && (files->find(name) != files->end());
 }
 
 Error FileAccessMemory::open_custom(const uint8_t *p_data, uint64_t p_len) {

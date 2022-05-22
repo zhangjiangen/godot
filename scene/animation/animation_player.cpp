@@ -1299,7 +1299,8 @@ void AnimationPlayer::_rename_animation(const StringName &p_from_name, const Str
 
 	while (to_insert.size()) {
 		blend_times[to_insert.begin()->key] = to_insert.begin()->value;
-		to_insert.remove(to_insert.begin());
+        auto it = to_insert.begin();
+		to_insert.remove(it);
 	}
 
 	if (autoplay == p_from_name) {

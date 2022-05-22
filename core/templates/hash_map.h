@@ -36,7 +36,7 @@
 #include "core/templates/hashfuncs.h"
 #include "core/templates/paged_allocator.h"
 #include "core/templates/pair.h"
-
+#include "core/templates/robin_hoood.h"
 /**
  * A HashMap implementation that uses open addressing with Robin Hood hashing.
  * Robin Hood hashing swaps out entries that have a smaller probing distance
@@ -51,7 +51,7 @@
  * The assignment operator copy the pairs from one map to the other.
  */
 
-template <class TKey, class TValue>
+/*template <class TKey, class TValue>
 struct HashMapElement {
 	HashMapElement *next = nullptr;
 	HashMapElement *prev = nullptr;
@@ -128,8 +128,7 @@ private:
 		}
 	}
 
-	void
-	_insert_with_hash(uint32_t p_hash, HashMapElement<TKey, TValue> *p_value) {
+	void _insert_with_hash(uint32_t p_hash, HashMapElement<TKey, TValue> *p_value) {
 		uint32_t capacity = hash_table_size_primes[capacity_index];
 		uint32_t hash = p_hash;
 		HashMapElement<TKey, TValue> *value = p_value;
@@ -244,370 +243,367 @@ private:
 	}
 
 public:
-	_FORCE_INLINE_ uint32_t get_capacity() const {
-		return hash_table_size_primes[capacity_index];
+	_FORCE_INLINE_ uint32_t get_capacity() const { return hash_table_size_primes[capacity_index]; }
+	_FORCE_INLINE_ uint32_t size() const { return num_elements; }
+
+	// Standard Godot Container API
+
+bool is_empty() const {
+	return num_elements == 0;
+}
+
+void clear() {
+	if (elements == nullptr) {
+		return;
 	}
-	_FORCE_INLINE_ uint32_t size() const {
-		return num_elements;
-	}
-
-	/* Standard Godot Container API */
-
-	bool is_empty() const {
-		return num_elements == 0;
-	}
-
-	void clear() {
-		if (elements == nullptr) {
-			return;
-		}
-		uint32_t capacity = hash_table_size_primes[capacity_index];
-		for (uint32_t i = 0; i < capacity; i++) {
-			if (hashes[i] == EMPTY_HASH) {
-				continue;
-			}
-
-			hashes[i] = EMPTY_HASH;
-			element_alloc::delete_allocation(elements[i]);
-			elements[i] = nullptr;
+	uint32_t capacity = hash_table_size_primes[capacity_index];
+	for (uint32_t i = 0; i < capacity; i++) {
+		if (hashes[i] == EMPTY_HASH) {
+			continue;
 		}
 
-		tail_element = nullptr;
-		head_element = nullptr;
-		num_elements = 0;
+		hashes[i] = EMPTY_HASH;
+		element_alloc::delete_allocation(elements[i]);
+		elements[i] = nullptr;
 	}
 
-	TValue &get(const TKey &p_key) {
-		uint32_t pos = 0;
-		bool exists = _lookup_pos(p_key, pos);
-		CRASH_COND_MSG(!exists, "HashMap key not found.");
-		return elements[pos]->data.value;
+	tail_element = nullptr;
+	head_element = nullptr;
+	num_elements = 0;
+}
+
+TValue &get(const TKey &p_key) {
+	uint32_t pos = 0;
+	bool exists = _lookup_pos(p_key, pos);
+	CRASH_COND_MSG(!exists, "HashMap key not found.");
+	return elements[pos]->data.value;
+}
+
+const TValue &get(const TKey &p_key) const {
+	uint32_t pos = 0;
+	bool exists = _lookup_pos(p_key, pos);
+	CRASH_COND_MSG(!exists, "HashMap key not found.");
+	return elements[pos]->data.value;
+}
+bool try_get(const TKey &p_key, const TValue *&data) const {
+	data = getptr(p_key);
+	return data != nullptr;
+}
+
+bool try_get(const TKey &p_key, TValue *&data) {
+	data = getptr(p_key);
+	return data != nullptr;
+}
+
+const TValue *getptr(const TKey &p_key) const {
+	uint32_t pos = 0;
+	bool exists = _lookup_pos(p_key, pos);
+
+	if (exists) {
+		return &elements[pos]->data.value;
+	}
+	return nullptr;
+}
+
+TValue *getptr(const TKey &p_key) {
+	uint32_t pos = 0;
+	bool exists = _lookup_pos(p_key, pos);
+
+	if (exists) {
+		return &elements[pos]->data.value;
+	}
+	return nullptr;
+}
+
+_FORCE_INLINE_ bool has(const TKey &p_key) const {
+	uint32_t _pos = 0;
+	return _lookup_pos(p_key, _pos);
+}
+
+bool erase(const TKey &p_key) {
+	uint32_t pos = 0;
+	bool exists = _lookup_pos(p_key, pos);
+
+	if (!exists) {
+		return false;
 	}
 
-	const TValue &get(const TKey &p_key) const {
-		uint32_t pos = 0;
-		bool exists = _lookup_pos(p_key, pos);
-		CRASH_COND_MSG(!exists, "HashMap key not found.");
-		return elements[pos]->data.value;
-	}
-	bool try_get(const TKey &p_key, const TValue *&data) const {
-		data = getptr(p_key);
-		return data != nullptr;
+	uint32_t capacity = hash_table_size_primes[capacity_index];
+	uint32_t next_pos = (pos + 1) % capacity;
+	while (hashes[next_pos] != EMPTY_HASH && _get_probe_length(next_pos, hashes[next_pos], capacity) != 0) {
+		SWAP(hashes[next_pos], hashes[pos]);
+		SWAP(elements[next_pos], elements[pos]);
+		pos = next_pos;
+		next_pos = (pos + 1) % capacity;
 	}
 
-	bool try_get(const TKey &p_key, TValue *&data) {
-		data = getptr(p_key);
-		return data != nullptr;
+	hashes[pos] = EMPTY_HASH;
+
+	if (head_element == elements[pos]) {
+		head_element = elements[pos]->next;
 	}
 
-	const TValue *getptr(const TKey &p_key) const {
-		uint32_t pos = 0;
-		bool exists = _lookup_pos(p_key, pos);
-
-		if (exists) {
-			return &elements[pos]->data.value;
-		}
-		return nullptr;
+	if (tail_element == elements[pos]) {
+		tail_element = elements[pos]->prev;
 	}
 
-	TValue *getptr(const TKey &p_key) {
-		uint32_t pos = 0;
-		bool exists = _lookup_pos(p_key, pos);
-
-		if (exists) {
-			return &elements[pos]->data.value;
-		}
-		return nullptr;
+	if (elements[pos]->prev) {
+		elements[pos]->prev->next = elements[pos]->next;
 	}
 
-	_FORCE_INLINE_ bool has(const TKey &p_key) const {
-		uint32_t _pos = 0;
-		return _lookup_pos(p_key, _pos);
+	if (elements[pos]->next) {
+		elements[pos]->next->prev = elements[pos]->prev;
 	}
 
-	bool erase(const TKey &p_key) {
-		uint32_t pos = 0;
-		bool exists = _lookup_pos(p_key, pos);
+	element_alloc::delete_allocation(elements[pos]);
+	elements[pos] = nullptr;
 
-		if (!exists) {
-			return false;
-		}
+	num_elements--;
+	return true;
+}
 
-		uint32_t capacity = hash_table_size_primes[capacity_index];
-		uint32_t next_pos = (pos + 1) % capacity;
-		while (hashes[next_pos] != EMPTY_HASH && _get_probe_length(next_pos, hashes[next_pos], capacity) != 0) {
-			SWAP(hashes[next_pos], hashes[pos]);
-			SWAP(elements[next_pos], elements[pos]);
-			pos = next_pos;
-			next_pos = (pos + 1) % capacity;
-		}
+// Reserves space for a number of elements, useful to avoid many resizes and rehashes.
+// If adding a known (possibly large) number of elements at once, must be larger than old capacity.
+void reserve(uint32_t p_new_capacity) {
+	uint32_t new_index = capacity_index;
 
-		hashes[pos] = EMPTY_HASH;
-
-		if (head_element == elements[pos]) {
-			head_element = elements[pos]->next;
-		}
-
-		if (tail_element == elements[pos]) {
-			tail_element = elements[pos]->prev;
-		}
-
-		if (elements[pos]->prev) {
-			elements[pos]->prev->next = elements[pos]->next;
-		}
-
-		if (elements[pos]->next) {
-			elements[pos]->next->prev = elements[pos]->prev;
-		}
-
-		element_alloc::delete_allocation(elements[pos]);
-		elements[pos] = nullptr;
-
-		num_elements--;
-		return true;
+	while (hash_table_size_primes[new_index] < p_new_capacity) {
+		ERR_FAIL_COND_MSG(new_index + 1 == (uint32_t)HASH_TABLE_SIZE_MAX, nullptr);
+		new_index++;
 	}
 
-	// Reserves space for a number of elements, useful to avoid many resizes and rehashes.
-	// If adding a known (possibly large) number of elements at once, must be larger than old capacity.
-	void reserve(uint32_t p_new_capacity) {
-		uint32_t new_index = capacity_index;
-
-		while (hash_table_size_primes[new_index] < p_new_capacity) {
-			ERR_FAIL_COND_MSG(new_index + 1 == (uint32_t)HASH_TABLE_SIZE_MAX, nullptr);
-			new_index++;
-		}
-
-		if (new_index == capacity_index) {
-			return;
-		}
-
-		if (elements == nullptr) {
-			capacity_index = new_index;
-			return; // Unallocated yet.
-		}
-		_resize_and_rehash(new_index);
+	if (new_index == capacity_index) {
+		return;
 	}
 
-	/** Iterator API **/
-
-	struct ConstIterator {
-		_FORCE_INLINE_ const KeyValue<TKey, TValue> &operator*() const {
-			return E->data;
-		}
-		_FORCE_INLINE_ const KeyValue<TKey, TValue> *operator->() const { return &E->data; }
-		_FORCE_INLINE_ ConstIterator &operator++() {
-			if (E) {
-				E = E->next;
-			}
-			return *this;
-		}
-		_FORCE_INLINE_ ConstIterator &operator--() {
-			if (E) {
-				E = E->prev;
-			}
-			return *this;
-		}
-
-		_FORCE_INLINE_ bool operator==(const ConstIterator &b) const { return E == b.E; }
-		_FORCE_INLINE_ bool operator!=(const ConstIterator &b) const { return E != b.E; }
-
-		_FORCE_INLINE_ explicit operator bool() const {
-			return E != nullptr;
-		}
-
-		_FORCE_INLINE_ ConstIterator(const HashMapElement<TKey, TValue> *p_E) { E = p_E; }
-		_FORCE_INLINE_ ConstIterator() {}
-		_FORCE_INLINE_ ConstIterator(const ConstIterator &p_it) { E = p_it.E; }
-		_FORCE_INLINE_ void operator=(const ConstIterator &p_it) {
-			E = p_it.E;
-		}
-
-	private:
-		const HashMapElement<TKey, TValue> *E = nullptr;
-	};
-
-	struct Iterator {
-		_FORCE_INLINE_ KeyValue<TKey, TValue> &operator*() const {
-			return E->data;
-		}
-		_FORCE_INLINE_ KeyValue<TKey, TValue> *operator->() const { return &E->data; }
-		_FORCE_INLINE_ Iterator &operator++() {
-			if (E) {
-				E = E->next;
-			}
-			return *this;
-		}
-		_FORCE_INLINE_ Iterator &operator--() {
-			if (E) {
-				E = E->prev;
-			}
-			return *this;
-		}
-
-		_FORCE_INLINE_ bool operator==(const Iterator &b) const { return E == b.E; }
-		_FORCE_INLINE_ bool operator!=(const Iterator &b) const { return E != b.E; }
-
-		_FORCE_INLINE_ explicit operator bool() const {
-			return E != nullptr;
-		}
-
-		_FORCE_INLINE_ Iterator(HashMapElement<TKey, TValue> *p_E) { E = p_E; }
-		_FORCE_INLINE_ Iterator() {}
-		_FORCE_INLINE_ Iterator(const Iterator &p_it) { E = p_it.E; }
-		_FORCE_INLINE_ void operator=(const Iterator &p_it) {
-			E = p_it.E;
-		}
-
-		operator ConstIterator() const {
-			return ConstIterator(E);
-		}
-
-	private:
-		HashMapElement<TKey, TValue> *E = nullptr;
-	};
-
-	_FORCE_INLINE_ Iterator begin() {
-		return Iterator(head_element);
+	if (elements == nullptr) {
+		capacity_index = new_index;
+		return; // Unallocated yet.
 	}
-	_FORCE_INLINE_ Iterator end() {
-		return Iterator(nullptr);
+	_resize_and_rehash(new_index);
+}
+
+// Iterator API
+
+struct ConstIterator {
+	_FORCE_INLINE_ const KeyValue<TKey, TValue> &operator*() const {
+		return E->data;
 	}
-	_FORCE_INLINE_ Iterator last() {
-		return Iterator(tail_element);
+	_FORCE_INLINE_ const KeyValue<TKey, TValue> *operator->() const { return &E->data; }
+	_FORCE_INLINE_ ConstIterator &operator++() {
+		if (E) {
+			E = E->next;
+		}
+		return *this;
+	}
+	_FORCE_INLINE_ ConstIterator &operator--() {
+		if (E) {
+			E = E->prev;
+		}
+		return *this;
 	}
 
-	_FORCE_INLINE_ Iterator find(const TKey &p_key) {
-		uint32_t pos = 0;
-		bool exists = _lookup_pos(p_key, pos);
-		if (!exists) {
-			return end();
-		}
-		return Iterator(elements[pos]);
+	_FORCE_INLINE_ bool operator==(const ConstIterator &b) const { return E == b.E; }
+	_FORCE_INLINE_ bool operator!=(const ConstIterator &b) const { return E != b.E; }
+
+	_FORCE_INLINE_ explicit operator bool() const {
+		return E != nullptr;
 	}
 
-	_FORCE_INLINE_ void remove(const Iterator &p_iter) {
-		if (p_iter) {
-			erase(p_iter->key);
-		}
+	_FORCE_INLINE_ ConstIterator(const HashMapElement<TKey, TValue> *p_E) { E = p_E; }
+	_FORCE_INLINE_ ConstIterator() {}
+	_FORCE_INLINE_ ConstIterator(const ConstIterator &p_it) { E = p_it.E; }
+	_FORCE_INLINE_ void operator=(const ConstIterator &p_it) {
+		E = p_it.E;
 	}
 
-	_FORCE_INLINE_ ConstIterator begin() const {
-		return ConstIterator(head_element);
-	}
-	_FORCE_INLINE_ ConstIterator end() const {
-		return ConstIterator(nullptr);
-	}
-	_FORCE_INLINE_ ConstIterator last() const {
-		return ConstIterator(tail_element);
-	}
-
-	_FORCE_INLINE_ ConstIterator find(const TKey &p_key) const {
-		uint32_t pos = 0;
-		bool exists = _lookup_pos(p_key, pos);
-		if (!exists) {
-			return end();
-		}
-		return ConstIterator(elements[pos]);
-	}
-
-	/* Indexing */
-
-	const TValue &operator[](const TKey &p_key) const {
-		uint32_t pos = 0;
-		bool exists = _lookup_pos(p_key, pos);
-		CRASH_COND(!exists);
-		return elements[pos]->data.value;
-	}
-
-	TValue &operator[](const TKey &p_key) {
-		uint32_t pos = 0;
-		bool exists = _lookup_pos(p_key, pos);
-		if (!exists) {
-			return _insert(p_key, TValue())->data.value;
-		} else {
-			return elements[pos]->data.value;
-		}
-	}
-
-	/* Insert */
-
-	Iterator insert(const TKey &p_key, const TValue &p_value, bool p_front_insert = false) {
-		return Iterator(_insert(p_key, p_value, p_front_insert));
-	}
-
-	/* Constructors */
-
-	HashMap(const HashMap &p_other) {
-		reserve(hash_table_size_primes[p_other.capacity_index]);
-
-		if (p_other.num_elements == 0) {
-			return;
-		}
-
-		for (const KeyValue<TKey, TValue> &E : p_other) {
-			insert(E.key, E.value);
-		}
-	}
-
-	void operator=(const HashMap &p_other) {
-		if (this == &p_other) {
-			return; // Ignore self assignment.
-		}
-		if (num_elements != 0) {
-			clear();
-		}
-
-		reserve(hash_table_size_primes[p_other.capacity_index]);
-
-		if (p_other.elements == nullptr) {
-			return; // Nothing to copy.
-		}
-
-		for (const KeyValue<TKey, TValue> &E : p_other) {
-			insert(E.key, E.value);
-		}
-	}
-	void set_debug_info(const char *fn, int line) {
-		file_name = fn;
-		file_line = line;
-	}
-
-	HashMap(uint32_t p_initial_capacity, const char *path = nullptr, int line = 0) {
-		// Capacity can't be 0.
-		capacity_index = 0;
-		reserve(p_initial_capacity);
-		file_name = path;
-		file_line = line;
-	}
-	HashMap(const char *path = nullptr, int line = 0) {
-		capacity_index = MIN_CAPACITY_INDEX;
-		file_name = path;
-		file_line = line;
-	}
-
-	uint32_t debug_get_hash(uint32_t p_index) {
-		if (num_elements == 0) {
-			return 0;
-		}
-		ERR_FAIL_INDEX_V(p_index, get_capacity(), 0);
-		return hashes[p_index];
-	}
-	Iterator debug_get_element(uint32_t p_index) {
-		if (num_elements == 0) {
-			return Iterator();
-		}
-		ERR_FAIL_INDEX_V(p_index, get_capacity(), Iterator());
-		return Iterator(elements[p_index]);
-	}
-
-	~HashMap() {
-		clear();
-
-		if (elements != nullptr) {
-			MallocAllocator::free_memory(elements);
-			MallocAllocator::free_memory(hashes);
-		}
-	}
+private:
+	const HashMapElement<TKey, TValue> *E = nullptr;
 };
 
+struct Iterator {
+	_FORCE_INLINE_ KeyValue<TKey, TValue> &operator*() const {
+		return E->data;
+	}
+	_FORCE_INLINE_ KeyValue<TKey, TValue> *operator->() const { return &E->data; }
+	_FORCE_INLINE_ Iterator &operator++() {
+		if (E) {
+			E = E->next;
+		}
+		return *this;
+	}
+	_FORCE_INLINE_ Iterator &operator--() {
+		if (E) {
+			E = E->prev;
+		}
+		return *this;
+	}
+
+	_FORCE_INLINE_ bool operator==(const Iterator &b) const { return E == b.E; }
+	_FORCE_INLINE_ bool operator!=(const Iterator &b) const { return E != b.E; }
+
+	_FORCE_INLINE_ explicit operator bool() const {
+		return E != nullptr;
+	}
+
+	_FORCE_INLINE_ Iterator(HashMapElement<TKey, TValue> *p_E) { E = p_E; }
+	_FORCE_INLINE_ Iterator() {}
+	_FORCE_INLINE_ Iterator(const Iterator &p_it) { E = p_it.E; }
+	_FORCE_INLINE_ void operator=(const Iterator &p_it) {
+		E = p_it.E;
+	}
+
+	operator ConstIterator() const {
+		return ConstIterator(E);
+	}
+
+private:
+	HashMapElement<TKey, TValue> *E = nullptr;
+};
+
+_FORCE_INLINE_ Iterator begin() {
+	return Iterator(head_element);
+}
+_FORCE_INLINE_ Iterator end() {
+	return Iterator(nullptr);
+}
+_FORCE_INLINE_ Iterator last() {
+	return Iterator(tail_element);
+}
+
+_FORCE_INLINE_ Iterator find(const TKey &p_key) {
+	uint32_t pos = 0;
+	bool exists = _lookup_pos(p_key, pos);
+	if (!exists) {
+		return end();
+	}
+	return Iterator(elements[pos]);
+}
+
+_FORCE_INLINE_ void remove(const Iterator &p_iter) {
+	if (p_iter) {
+		erase(p_iter->key);
+	}
+}
+
+_FORCE_INLINE_ ConstIterator begin() const {
+	return ConstIterator(head_element);
+}
+_FORCE_INLINE_ ConstIterator end() const {
+	return ConstIterator(nullptr);
+}
+_FORCE_INLINE_ ConstIterator last() const {
+	return ConstIterator(tail_element);
+}
+
+_FORCE_INLINE_ ConstIterator find(const TKey &p_key) const {
+	uint32_t pos = 0;
+	bool exists = _lookup_pos(p_key, pos);
+	if (!exists) {
+		return end();
+	}
+	return ConstIterator(elements[pos]);
+}
+
+// Indexing
+
+const TValue &operator[](const TKey &p_key) const {
+	uint32_t pos = 0;
+	bool exists = _lookup_pos(p_key, pos);
+	CRASH_COND(!exists);
+	return elements[pos]->data.value;
+}
+
+TValue &operator[](const TKey &p_key) {
+	uint32_t pos = 0;
+	bool exists = _lookup_pos(p_key, pos);
+	if (!exists) {
+		return _insert(p_key, TValue())->data.value;
+	} else {
+		return elements[pos]->data.value;
+	}
+}
+
+// Insert
+
+Iterator insert(const TKey &p_key, const TValue &p_value, bool p_front_insert = false) {
+	return Iterator(_insert(p_key, p_value, p_front_insert));
+}
+
+// Constructors
+
+HashMap(const HashMap &p_other) {
+	reserve(hash_table_size_primes[p_other.capacity_index]);
+
+	if (p_other.num_elements == 0) {
+		return;
+	}
+
+	for (const KeyValue<TKey, TValue> &E : p_other) {
+		insert(E.key, E.value);
+	}
+}
+
+void operator=(const HashMap &p_other) {
+	if (this == &p_other) {
+		return; // Ignore self assignment.
+	}
+	if (num_elements != 0) {
+		clear();
+	}
+
+	reserve(hash_table_size_primes[p_other.capacity_index]);
+
+	if (p_other.elements == nullptr) {
+		return; // Nothing to copy.
+	}
+
+	for (const KeyValue<TKey, TValue> &E : p_other) {
+		insert(E.key, E.value);
+	}
+}
+void set_debug_info(const char *fn, int line) {
+	file_name = fn;
+	file_line = line;
+}
+
+HashMap(uint32_t p_initial_capacity, const char *path = nullptr, int line = 0) {
+	// Capacity can't be 0.
+	capacity_index = 0;
+	reserve(p_initial_capacity);
+	file_name = path;
+	file_line = line;
+}
+HashMap(const char *path = nullptr, int line = 0) {
+	capacity_index = MIN_CAPACITY_INDEX;
+	file_name = path;
+	file_line = line;
+}
+
+uint32_t debug_get_hash(uint32_t p_index) {
+	if (num_elements == 0) {
+		return 0;
+	}
+	ERR_FAIL_INDEX_V(p_index, get_capacity(), 0);
+	return hashes[p_index];
+}
+Iterator debug_get_element(uint32_t p_index) {
+	if (num_elements == 0) {
+		return Iterator();
+	}
+	ERR_FAIL_INDEX_V(p_index, get_capacity(), Iterator());
+	return Iterator(elements[p_index]);
+}
+
+~HashMap() {
+	clear();
+
+	if (elements != nullptr) {
+		MallocAllocator::free_memory(elements);
+		MallocAllocator::free_memory(hashes);
+	}
+}
+}
+;
+*/
 #endif // HASH_MAP_H
