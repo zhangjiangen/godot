@@ -879,7 +879,7 @@ void CSharpLanguage::reload_assemblies(bool p_soft_reload) {
 		// Script::instances are deleted during managed object disposal, which happens on domain finalize.
 		// Only placeholders are kept. Therefore we need to keep a copy before that happens.
 
-		for (Object *&obj : script->instances) {
+		for (Object *obj : script->instances) {
 			script->pending_reload_instances.insert(obj->get_instance_id());
 
 			RefCounted *rc = Object::cast_to<RefCounted>(obj);
@@ -889,7 +889,7 @@ void CSharpLanguage::reload_assemblies(bool p_soft_reload) {
 		}
 
 #ifdef TOOLS_ENABLED
-		for (PlaceHolderScriptInstance *&script_instance : script->placeholders) {
+		for (PlaceHolderScriptInstance *script_instance : script->placeholders) {
 			Object *obj = script_instance->get_owner();
 			script->pending_reload_instances.insert(obj->get_instance_id());
 
@@ -903,7 +903,7 @@ void CSharpLanguage::reload_assemblies(bool p_soft_reload) {
 		// Save state and remove script from instances
 		RBMap<ObjectID, CSharpScript::StateBackup> &owners_map = script->pending_reload_state;
 
-		for (Object *&obj : script->instances) {
+		for (Object *obj : script->instances) {
 			ERR_CONTINUE(!obj->get_script_instance());
 
 			CSharpInstance *csi = static_cast<CSharpInstance *>(obj->get_script_instance());
@@ -926,8 +926,8 @@ void CSharpLanguage::reload_assemblies(bool p_soft_reload) {
 
 	// After the state of all instances is saved, clear scripts and script instances
 	for (Ref<CSharpScript> &script : scripts) {
-		while (script->instances.front()) {
-			Object *obj = script->instances.front()->get();
+		while (script->instances.begin()) {
+			Object *obj = *script->instances.begin();
 			obj->set_script(Ref<RefCounted>()); // Remove script and existing script instances (placeholder are not removed before domain reload)
 		}
 
@@ -2322,9 +2322,9 @@ CSharpInstance::~CSharpInstance() {
 
 #ifdef DEBUG_ENABLED
 		// CSharpInstance must not be created unless it's going to be added to the list for sure
-		RBSet<Object *>::Element *match = script->instances.find(owner);
+		HashSet<Object *>::Iterator match = script->instances.find(owner);
 		CRASH_COND(!match);
-		script->instances.erase(match);
+		script->instances.remove(match);
 #else
 		script->instances.erase(owner);
 #endif
@@ -2579,7 +2579,7 @@ bool CSharpScript::_update_exports(PlaceHolderScriptInstance *p_instance_to_upda
 			_update_exports_values(values, propnames);
 
 			if (changed) {
-				for (PlaceHolderScriptInstance *&script_instance : placeholders) {
+				for (PlaceHolderScriptInstance *script_instance : placeholders) {
 					script_instance->update(propnames, values);
 				}
 			} else {
@@ -3581,7 +3581,7 @@ CSharpScript::~CSharpScript() {
 #endif
 }
 
-void CSharpScript::get_members(RBSet<StringName> *p_members) {
+void CSharpScript::get_members(HashSet<StringName> *p_members) {
 #if defined(TOOLS_ENABLED) || defined(DEBUG_ENABLED)
 	if (p_members) {
 		for (const StringName &member_name : exported_members_names) {

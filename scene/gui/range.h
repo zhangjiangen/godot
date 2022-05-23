@@ -37,7 +37,6 @@ class Range : public Control {
 	GDCLASS(Range, Control);
 
 	struct Shared {
-        RBSet<Range *> owners;
 		double val = 0.0;
 		double min = 0.0;
 		double max = 100.0;
@@ -46,6 +45,7 @@ class Range : public Control {
 		bool exp_ratio = false;
 		bool allow_greater = false;
 		bool allow_lesser = false;
+		HashSet<Range *> owners;
 		void emit_value_changed();
 		void emit_changed(const char *p_what = "");
 	};

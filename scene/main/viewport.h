@@ -203,7 +203,7 @@ private:
 
 	AudioListener2D *audio_listener_2d = nullptr;
 	Camera2D *camera_2d = nullptr;
-	RBSet<CanvasLayer *> canvas_layers;
+	HashSet<CanvasLayer *> canvas_layers;
 
 	RID viewport;
 	RID current_canvas;
@@ -301,7 +301,7 @@ private:
 	bool use_occlusion_culling = false;
 
 	mutable Ref<ViewportTexture> default_texture;
-	mutable RBSet<ViewportTexture *> viewport_textures;
+	mutable HashSet<ViewportTexture *> viewport_textures;
 
 	SDFOversize sdf_oversize = SDF_OVERSIZE_120_PERCENT;
 	SDFScale sdf_scale = SDF_SCALE_50_PERCENT;
@@ -616,7 +616,7 @@ public:
 	bool use_xr = false;
 	friend class AudioListener3D;
 	AudioListener3D *audio_listener_3d = nullptr;
-	RBSet<AudioListener3D *> audio_listener_3d_set;
+	HashSet<AudioListener3D *> audio_listener_3d_set;
 	bool is_audio_listener_3d_enabled = false;
 	RID internal_audio_listener_3d;
 	AudioListener3D *get_audio_listener_3d() const;
@@ -651,7 +651,7 @@ public:
 
 	friend class Camera3D;
 	Camera3D *camera_3d = nullptr;
-	RBSet<Camera3D *> camera_3d_set;
+	HashSet<Camera3D *> camera_3d_set;
 	Camera3D *get_camera_3d() const;
 	void _camera_3d_transform_changed_notify();
 	void _camera_3d_set(Camera3D *p_camera);

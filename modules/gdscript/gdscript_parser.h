@@ -1206,9 +1206,9 @@ private:
 	List<ParserError> errors;
 #ifdef DEBUG_ENABLED
 	List<GDScriptWarning> warnings;
-	RBSet<String> ignored_warnings;
-	RBSet<uint32_t> ignored_warning_codes;
-	RBSet<int> unsafe_lines;
+	HashSet<String> ignored_warnings;
+	HashSet<uint32_t> ignored_warning_codes;
+	HashSet<int> unsafe_lines;
 #endif
 
 	GDScriptTokenizer tokenizer;
@@ -1420,7 +1420,7 @@ public:
 	}
 #ifdef DEBUG_ENABLED
 	const List<GDScriptWarning> &get_warnings() const { return warnings; }
-	const RBSet<int> &get_unsafe_lines() const { return unsafe_lines; }
+	const HashSet<int> &get_unsafe_lines() const { return unsafe_lines; }
 	int get_last_line_number() const { return current.end_line; }
 #endif
 

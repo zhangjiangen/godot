@@ -403,7 +403,7 @@ public:
 	bool is_property_pinned(const StringName &p_property) const;
 	virtual StringName get_property_store_alias(const StringName &p_property) const;
 #endif
-	void get_storable_properties(RBSet<StringName> &r_storable_properties) const;
+	void get_storable_properties(HashSet<StringName> &r_storable_properties) const;
 
 	virtual String to_string() override;
 
@@ -560,6 +560,6 @@ VARIANT_ENUM_CAST(Node::ProcessMode);
 VARIANT_ENUM_CAST(Node::InternalMode);
 VARIANT_ENUM_CAST(Node::NameCasing);
 
-typedef RBSet<Node *, Node::Comparator> NodeSet;
+typedef HashSet<Node *, Node::Comparator> NodeSet;
 
 #endif
