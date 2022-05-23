@@ -36,19 +36,10 @@
 class Variant;
 
 struct _NO_DISCARD_ Plane {
-	union
-	{
-		struct 
-		{
-
-			Vector3 normal;
-			real_t d = 0;
-			/* data */
-		};
-		struct
-		{
-            real_t x, y, z, w;
-		};
+	Vector3 normal;
+	union {
+		real_t d = 0;
+		real_t w;
 	};
 
 	void set_normal(const Vector3 &p_normal);

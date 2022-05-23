@@ -922,7 +922,7 @@ struct _VariantCall {
 					} break;
 					case Variant::PLANE: {
 						Plane value = p_prev_value;
-						encode_float((float)value.x, &w[p_offset]);
+						encode_float((float)value.normal.x, &w[p_offset]);
 					} break;
 					case Variant::QUATERNION: {
 						Quaternion value = p_prev_value;
@@ -973,7 +973,7 @@ struct _VariantCall {
 					} break;
 					case Variant::PLANE: {
 						Plane value = p_prev_value;
-						encode_int32((int)value.x, &w[p_offset]);
+						encode_int32((int)value.normal.x, &w[p_offset]);
 					} break;
 					case Variant::QUATERNION: {
 						Quaternion value = p_prev_value;
@@ -1030,8 +1030,8 @@ struct _VariantCall {
 					} break;
 					case Variant::PLANE: {
 						Plane pv = p_prev_value;
-						encode_float((float)pv.x, &w[p_offset]);
-						encode_float((float)pv.y, &w[p_offset + 4]);
+						encode_float((float)pv.normal.x, &w[p_offset]);
+						encode_float((float)pv.normal.y, &w[p_offset + 4]);
 					} break;
 					case Variant::QUATERNION: {
 						Quaternion pv = p_prev_value;
@@ -1101,9 +1101,9 @@ struct _VariantCall {
 					} break;
 					case Variant::PLANE: {
 						Plane pv = p_prev_value;
-						encode_float((float)pv.x, &w[p_offset]);
-						encode_float((float)pv.y, &w[p_offset + 4]);
-						encode_float((float)pv.z, &w[p_offset + 8]);
+						encode_float((float)pv.normal.x, &w[p_offset]);
+						encode_float((float)pv.normal.y, &w[p_offset + 4]);
+						encode_float((float)pv.normal.z, &w[p_offset + 8]);
 					} break;
 					case Variant::VECTOR2I: {
 						Vector2i pv = p_prev_value;
@@ -1174,9 +1174,9 @@ struct _VariantCall {
 					} break;
 					case Variant::PLANE: {
 						Plane pv = p_prev_value;
-						encode_float((float)pv.x, &w[p_offset]);
-						encode_float((float)pv.y, &w[p_offset + 4]);
-						encode_float((float)pv.z, &w[p_offset + 8]);
+						encode_float((float)pv.normal.x, &w[p_offset]);
+						encode_float((float)pv.normal.y, &w[p_offset + 4]);
+						encode_float((float)pv.normal.z, &w[p_offset + 8]);
 						encode_float((float)pv.w, &w[p_offset + 12]);
 					} break;
 					case Variant::QUATERNION: {
@@ -1239,8 +1239,8 @@ struct _VariantCall {
 					} break;
 					case Variant::PLANE: {
 						Plane pv = p_prev_value;
-						encode_int32((int)pv.x, &w[p_offset]);
-						encode_int32((int)pv.y, &w[p_offset + 4]);
+						encode_int32((int)pv.normal.x, &w[p_offset]);
+						encode_int32((int)pv.normal.y, &w[p_offset + 4]);
 					} break;
 					case Variant::QUATERNION: {
 						Quaternion pv = p_prev_value;
@@ -1305,9 +1305,9 @@ struct _VariantCall {
 					} break;
 					case Variant::PLANE: {
 						Plane pv = p_prev_value;
-						encode_int32((int)pv.x, &w[p_offset]);
-						encode_int32((int)pv.y, &w[p_offset + 4]);
-						encode_int32((int)pv.z, &w[p_offset + 8]);
+						encode_int32((int)pv.normal.x, &w[p_offset]);
+						encode_int32((int)pv.normal.y, &w[p_offset + 4]);
+						encode_int32((int)pv.normal.z, &w[p_offset + 8]);
 					} break;
 					case Variant::QUATERNION: {
 						Quaternion pv = p_prev_value;
@@ -1380,9 +1380,9 @@ struct _VariantCall {
 					} break;
 					case Variant::PLANE: {
 						Plane pv = p_prev_value;
-						encode_int32((int)pv.x, &w[p_offset]);
-						encode_int32((int)pv.y, &w[p_offset + 4]);
-						encode_int32((int)pv.z, &w[p_offset + 8]);
+						encode_int32((int)pv.normal.x, &w[p_offset]);
+						encode_int32((int)pv.normal.y, &w[p_offset + 4]);
+						encode_int32((int)pv.normal.z, &w[p_offset + 8]);
 						encode_int32((int)pv.w, &w[p_offset + 12]);
 					} break;
 					case Variant::QUATERNION: {

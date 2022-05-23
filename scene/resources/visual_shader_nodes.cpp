@@ -633,7 +633,7 @@ String VisualShaderNodeVec4Constant::get_output_port_name(int p_port) const {
 }
 
 String VisualShaderNodeVec4Constant::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
-	return "	" + p_output_vars[0] + " = " + vformat("vec4(%.6f, %.6f, %.6f, %.6f)", constant.x, constant.y, constant.z, constant.w) + ";\n";
+	return "	" + p_output_vars[0] + " = " + vformat("vec4(%.6f, %.6f, %.6f, %.6f)", constant.normal.x, constant.normal.y, constant.normal.z, constant.w) + ";\n";
 }
 
 void VisualShaderNodeVec4Constant::set_constant(const Plane &p_constant) {
@@ -5987,7 +5987,7 @@ Plane VisualShaderNodeVec4Uniform::get_default_value() const {
 String VisualShaderNodeVec4Uniform::generate_global(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const {
 	String code = _get_qual_str() + "uniform vec4 " + get_uniform_name();
 	if (default_value_enabled) {
-		code += vformat(" = vec4(%.6f, %.6f, %.6f, %.6f)", default_value.x, default_value.y, default_value.z, default_value.w);
+		code += vformat(" = vec4(%.6f, %.6f, %.6f, %.6f)", default_value.normal.x, default_value.normal.y, default_value.normal.z, default_value.w);
 	}
 	code += ";\n";
 	return code;

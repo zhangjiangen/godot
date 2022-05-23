@@ -736,9 +736,9 @@ Plane CameraMatrix::get_gpu_mull_add() const {
 	float tan_half_fov_x = 1.0 / matrix[0][0];
 	float tan_half_fov_y = 1.0 / matrix[1][1];
     Plane ret;
-	ret.x = tan_half_fov_x * 2.0;
-	ret.y = tan_half_fov_y * -2.0;
-	ret.z = tan_half_fov_x * -1.0;
+	ret.normal.x = tan_half_fov_x * 2.0;
+	ret.normal.y = tan_half_fov_y * -2.0;
+	ret.normal.z = tan_half_fov_x * -1.0;
 	ret.w = tan_half_fov_y;
 	return ret;
 }
