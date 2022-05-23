@@ -36,6 +36,7 @@
 #include "core/templates/hash_map.h"
 #include "core/templates/hashfuncs.h"
 #include "core/templates/paged_allocator.h"
+#include "core/templates/robin_hoood.h"
 
 /**
  * Implementation of Set using a bidi indexed hash map.
@@ -45,7 +46,7 @@
  * - Iteration order does matter (via operator<)
  *
  */
-
+/*
 template <class TKey,
 		class Hasher = HashMapHasherDefault,
 		class Comparator = HashMapComparatorDefault<TKey>>
@@ -228,246 +229,246 @@ public:
 	_FORCE_INLINE_ uint32_t get_capacity() const { return hash_table_size_primes[capacity_index]; }
 	_FORCE_INLINE_ uint32_t size() const { return num_elements; }
 
-	/* Standard Godot Container API */
+	// Standard Godot Container API
 
-	bool is_empty() const {
-		return num_elements == 0;
+bool is_empty() const {
+	return num_elements == 0;
+}
+
+void clear() {
+	if (keys == nullptr) {
+		return;
+	}
+	uint32_t capacity = hash_table_size_primes[capacity_index];
+	for (uint32_t i = 0; i < capacity; i++) {
+		hashes[i] = EMPTY_HASH;
+	}
+	for (uint32_t i = 0; i < num_elements; i++) {
+		keys[i].~TKey();
 	}
 
-	void clear() {
-		if (keys == nullptr) {
-			return;
-		}
-		uint32_t capacity = hash_table_size_primes[capacity_index];
-		for (uint32_t i = 0; i < capacity; i++) {
-			hashes[i] = EMPTY_HASH;
-		}
-		for (uint32_t i = 0; i < num_elements; i++) {
-			keys[i].~TKey();
-		}
+	num_elements = 0;
+}
 
-		num_elements = 0;
+_FORCE_INLINE_ bool has(const TKey &p_key) const {
+	uint32_t _pos = 0;
+	return _lookup_pos(p_key, _pos);
+}
+
+bool erase(const TKey &p_key) {
+	uint32_t pos = 0;
+	bool exists = _lookup_pos(p_key, pos);
+
+	if (!exists) {
+		return false;
 	}
 
-	_FORCE_INLINE_ bool has(const TKey &p_key) const {
-		uint32_t _pos = 0;
-		return _lookup_pos(p_key, _pos);
+	uint32_t key_pos = pos;
+	pos = key_to_hash[pos]; //make hash pos
+
+	uint32_t capacity = hash_table_size_primes[capacity_index];
+	uint32_t next_pos = (pos + 1) % capacity;
+	while (hashes[next_pos] != EMPTY_HASH && _get_probe_length(next_pos, hashes[next_pos], capacity) != 0) {
+		uint32_t kpos = hash_to_key[pos];
+		uint32_t kpos_next = hash_to_key[next_pos];
+		SWAP(key_to_hash[kpos], key_to_hash[kpos_next]);
+		SWAP(hashes[next_pos], hashes[pos]);
+		SWAP(hash_to_key[next_pos], hash_to_key[pos]);
+
+		pos = next_pos;
+		next_pos = (pos + 1) % capacity;
 	}
 
-	bool erase(const TKey &p_key) {
-		uint32_t pos = 0;
-		bool exists = _lookup_pos(p_key, pos);
-
-		if (!exists) {
-			return false;
-		}
-
-		uint32_t key_pos = pos;
-		pos = key_to_hash[pos]; //make hash pos
-
-		uint32_t capacity = hash_table_size_primes[capacity_index];
-		uint32_t next_pos = (pos + 1) % capacity;
-		while (hashes[next_pos] != EMPTY_HASH && _get_probe_length(next_pos, hashes[next_pos], capacity) != 0) {
-			uint32_t kpos = hash_to_key[pos];
-			uint32_t kpos_next = hash_to_key[next_pos];
-			SWAP(key_to_hash[kpos], key_to_hash[kpos_next]);
-			SWAP(hashes[next_pos], hashes[pos]);
-			SWAP(hash_to_key[next_pos], hash_to_key[pos]);
-
-			pos = next_pos;
-			next_pos = (pos + 1) % capacity;
-		}
-
-		hashes[pos] = EMPTY_HASH;
-		keys[key_pos].~TKey();
-		num_elements--;
-		if (key_pos < num_elements) {
-			// Not the last key, move the last one here to keep keys lineal
-			memnew_placement(&keys[key_pos], TKey(keys[num_elements]));
-			keys[num_elements].~TKey();
-			key_to_hash[key_pos] = key_to_hash[num_elements];
-			hash_to_key[key_to_hash[num_elements]] = key_pos;
-		}
-
-		return true;
+	hashes[pos] = EMPTY_HASH;
+	keys[key_pos].~TKey();
+	num_elements--;
+	if (key_pos < num_elements) {
+		// Not the last key, move the last one here to keep keys lineal
+		memnew_placement(&keys[key_pos], TKey(keys[num_elements]));
+		keys[num_elements].~TKey();
+		key_to_hash[key_pos] = key_to_hash[num_elements];
+		hash_to_key[key_to_hash[num_elements]] = key_pos;
 	}
 
-	// Reserves space for a number of elements, useful to avoid many resizes and rehashes.
-	// If adding a known (possibly large) number of elements at once, must be larger than old capacity.
-	void reserve(uint32_t p_new_capacity) {
-		uint32_t new_index = capacity_index;
+	return true;
+}
 
-		while (hash_table_size_primes[new_index] < p_new_capacity) {
-			ERR_FAIL_COND_MSG(new_index + 1 == (uint32_t)HASH_TABLE_SIZE_MAX, nullptr);
-			new_index++;
-		}
+// Reserves space for a number of elements, useful to avoid many resizes and rehashes.
+// If adding a known (possibly large) number of elements at once, must be larger than old capacity.
+void reserve(uint32_t p_new_capacity) {
+	uint32_t new_index = capacity_index;
 
-		if (new_index == capacity_index) {
-			return;
-		}
-
-		if (keys == nullptr) {
-			capacity_index = new_index;
-			return; // Unallocated yet.
-		}
-		_resize_and_rehash(new_index);
+	while (hash_table_size_primes[new_index] < p_new_capacity) {
+		ERR_FAIL_COND_MSG(new_index + 1 == (uint32_t)HASH_TABLE_SIZE_MAX, nullptr);
+		new_index++;
 	}
 
-	/** Iterator API **/
-
-	struct Iterator {
-		_FORCE_INLINE_ const TKey &operator*() const {
-			return keys[index];
-		}
-		_FORCE_INLINE_ const TKey *operator->() const {
-			return &keys[index];
-		}
-		_FORCE_INLINE_ Iterator &operator++() {
-			index++;
-			if (index >= (int32_t)num_keys) {
-				index = -1;
-				keys = nullptr;
-				num_keys = 0;
-			}
-			return *this;
-		}
-		_FORCE_INLINE_ Iterator &operator--() {
-			index--;
-			if (index < 0) {
-				index = -1;
-				keys = nullptr;
-				num_keys = 0;
-			}
-			return *this;
-		}
-
-		_FORCE_INLINE_ bool operator==(const Iterator &b) const { return keys == b.keys && index == b.index; }
-		_FORCE_INLINE_ bool operator!=(const Iterator &b) const { return keys != b.keys || index != b.index; }
-
-		_FORCE_INLINE_ explicit operator bool() const {
-			return keys != nullptr;
-		}
-
-		_FORCE_INLINE_ Iterator(const TKey *p_keys, uint32_t p_num_keys, int32_t p_index = -1) {
-			keys = p_keys;
-			num_keys = p_num_keys;
-			index = p_index;
-		}
-		_FORCE_INLINE_ Iterator() {}
-		_FORCE_INLINE_ Iterator(const Iterator &p_it) {
-			keys = p_it.keys;
-			num_keys = p_it.num_keys;
-			index = p_it.index;
-		}
-		_FORCE_INLINE_ void operator=(const Iterator &p_it) {
-			keys = p_it.keys;
-			num_keys = p_it.num_keys;
-			index = p_it.index;
-		}
-
-	private:
-		const TKey *keys = nullptr;
-		uint32_t num_keys = 0;
-		int32_t index = -1;
-	};
-
-	_FORCE_INLINE_ Iterator begin() const {
-		return num_elements ? Iterator(keys, num_elements, 0) : Iterator();
-	}
-	_FORCE_INLINE_ Iterator end() const {
-		return Iterator();
-	}
-	_FORCE_INLINE_ Iterator last() const {
-		if (num_elements == 0) {
-			return Iterator();
-		}
-		return Iterator(keys, num_elements, num_elements - 1);
+	if (new_index == capacity_index) {
+		return;
 	}
 
-	_FORCE_INLINE_ Iterator find(const TKey &p_key) const {
-		uint32_t pos = 0;
-		bool exists = _lookup_pos(p_key, pos);
-		if (!exists) {
-			return end();
-		}
-		return Iterator(keys, num_elements, pos);
+	if (keys == nullptr) {
+		capacity_index = new_index;
+		return; // Unallocated yet.
 	}
+	_resize_and_rehash(new_index);
+}
 
-	_FORCE_INLINE_ void remove(const Iterator &p_iter) {
-		if (p_iter) {
-			erase(*p_iter);
-		}
+// Iterator API
+
+struct Iterator {
+	_FORCE_INLINE_ const TKey &operator*() const {
+		return keys[index];
 	}
-
-	/* Insert */
-
-	Iterator insert(const TKey &p_key) {
-		uint32_t pos = _insert(p_key);
-		return Iterator(keys, num_elements, pos);
+	_FORCE_INLINE_ const TKey *operator->() const {
+		return &keys[index];
 	}
-
-	/* Constructors */
-
-	HashSet(const HashSet &p_other) {
-		_init_from(p_other);
-	}
-
-	void operator=(const HashSet &p_other) {
-		if (this == &p_other) {
-			return; // Ignore self assignment.
-		}
-
-		clear();
-
-		if (keys != nullptr) {
-			Memory::free_static(keys);
-			Memory::free_static(key_to_hash);
-			Memory::free_static(hash_to_key);
-			Memory::free_static(hashes);
+	_FORCE_INLINE_ Iterator &operator++() {
+		index++;
+		if (index >= (int32_t)num_keys) {
+			index = -1;
 			keys = nullptr;
-			hashes = nullptr;
-			hash_to_key = nullptr;
-			key_to_hash = nullptr;
+			num_keys = 0;
 		}
-
-		_init_from(p_other);
+		return *this;
 	}
-
-	HashSet(uint32_t p_initial_capacity) {
-		// Capacity can't be 0.
-		capacity_index = 0;
-		reserve(p_initial_capacity);
-	}
-	HashSet() {
-		capacity_index = MIN_CAPACITY_INDEX;
-	}
-
-	void reset() {
-		clear();
-
-		if (keys != nullptr) {
-			Memory::free_static(keys);
-			Memory::free_static(key_to_hash);
-			Memory::free_static(hash_to_key);
-			Memory::free_static(hashes);
+	_FORCE_INLINE_ Iterator &operator--() {
+		index--;
+		if (index < 0) {
+			index = -1;
 			keys = nullptr;
-			hashes = nullptr;
-			hash_to_key = nullptr;
-			key_to_hash = nullptr;
+			num_keys = 0;
 		}
-		capacity_index = MIN_CAPACITY_INDEX;
+		return *this;
 	}
 
-	~HashSet() {
-		clear();
+	_FORCE_INLINE_ bool operator==(const Iterator &b) const { return keys == b.keys && index == b.index; }
+	_FORCE_INLINE_ bool operator!=(const Iterator &b) const { return keys != b.keys || index != b.index; }
 
-		if (keys != nullptr) {
-			Memory::free_static(keys);
-			Memory::free_static(key_to_hash);
-			Memory::free_static(hash_to_key);
-			Memory::free_static(hashes);
-		}
+	_FORCE_INLINE_ explicit operator bool() const {
+		return keys != nullptr;
 	}
+
+	_FORCE_INLINE_ Iterator(const TKey *p_keys, uint32_t p_num_keys, int32_t p_index = -1) {
+		keys = p_keys;
+		num_keys = p_num_keys;
+		index = p_index;
+	}
+	_FORCE_INLINE_ Iterator() {}
+	_FORCE_INLINE_ Iterator(const Iterator &p_it) {
+		keys = p_it.keys;
+		num_keys = p_it.num_keys;
+		index = p_it.index;
+	}
+	_FORCE_INLINE_ void operator=(const Iterator &p_it) {
+		keys = p_it.keys;
+		num_keys = p_it.num_keys;
+		index = p_it.index;
+	}
+
+private:
+	const TKey *keys = nullptr;
+	uint32_t num_keys = 0;
+	int32_t index = -1;
 };
 
+_FORCE_INLINE_ Iterator begin() const {
+	return num_elements ? Iterator(keys, num_elements, 0) : Iterator();
+}
+_FORCE_INLINE_ Iterator end() const {
+	return Iterator();
+}
+_FORCE_INLINE_ Iterator last() const {
+	if (num_elements == 0) {
+		return Iterator();
+	}
+	return Iterator(keys, num_elements, num_elements - 1);
+}
+
+_FORCE_INLINE_ Iterator find(const TKey &p_key) const {
+	uint32_t pos = 0;
+	bool exists = _lookup_pos(p_key, pos);
+	if (!exists) {
+		return end();
+	}
+	return Iterator(keys, num_elements, pos);
+}
+
+_FORCE_INLINE_ void remove(const Iterator &p_iter) {
+	if (p_iter) {
+		erase(*p_iter);
+	}
+}
+
+
+
+Iterator insert(const TKey &p_key) {
+	uint32_t pos = _insert(p_key);
+	return Iterator(keys, num_elements, pos);
+}
+
+
+HashSet(const HashSet &p_other) {
+	_init_from(p_other);
+}
+
+void operator=(const HashSet &p_other) {
+	if (this == &p_other) {
+		return; // Ignore self assignment.
+	}
+
+	clear();
+
+	if (keys != nullptr) {
+		Memory::free_static(keys);
+		Memory::free_static(key_to_hash);
+		Memory::free_static(hash_to_key);
+		Memory::free_static(hashes);
+		keys = nullptr;
+		hashes = nullptr;
+		hash_to_key = nullptr;
+		key_to_hash = nullptr;
+	}
+
+	_init_from(p_other);
+}
+
+HashSet(uint32_t p_initial_capacity) {
+	// Capacity can't be 0.
+	capacity_index = 0;
+	reserve(p_initial_capacity);
+}
+HashSet() {
+	capacity_index = MIN_CAPACITY_INDEX;
+}
+
+void reset() {
+	clear();
+
+	if (keys != nullptr) {
+		Memory::free_static(keys);
+		Memory::free_static(key_to_hash);
+		Memory::free_static(hash_to_key);
+		Memory::free_static(hashes);
+		keys = nullptr;
+		hashes = nullptr;
+		hash_to_key = nullptr;
+		key_to_hash = nullptr;
+	}
+	capacity_index = MIN_CAPACITY_INDEX;
+}
+
+~HashSet() {
+	clear();
+
+	if (keys != nullptr) {
+		Memory::free_static(keys);
+		Memory::free_static(key_to_hash);
+		Memory::free_static(hash_to_key);
+		Memory::free_static(hashes);
+	}
+}
+}
+;
+*/
 #endif // HASH_SET_H

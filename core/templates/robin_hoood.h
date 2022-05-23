@@ -698,7 +698,7 @@ public:
 	using value_type = typename std::conditional<
 			is_set, Key,
 			KeyValue<Key, T>>::type;
-	using size_type = size_t;
+	using size_type = uint32_t;
 	using hasher = Hash;
 	using key_equal = KeyEqual;
 	using Self = Table<IsFlat, MaxLoadFactor100, key_type, mapped_type, hasher, key_equal>;
@@ -1020,7 +1020,7 @@ private:
 		// NOLINTNEXTLINE(hicpp-explicit-conversions)
 		Iter(Iter<OtherIsConst> const &other) noexcept
 				:
-				Owenr(other.Owenr), mKeyVals(other.mKeyVals), mInfo(other.mInfo) {}
+				Owenr(other.Owenr), mKeyVals((NodePtr)other.mKeyVals), mInfo(other.mInfo) {}
 
 		Iter(const Table *owenr, NodePtr valPtr, uint8_t const *infoPtr) noexcept
 				:
@@ -1465,7 +1465,9 @@ public:
 		mInfoInc = InitialInfoInc;
 		mInfoHashShift = InitialInfoHashShift;
 	}
-
+	void reset() {
+		clear();
+	}
 	// Destroys the map and all it's contents.
 	~Table() {
 		ROBIN_HOOD_TRACE(this)
@@ -1553,28 +1555,22 @@ public:
 	// 	}
 	// }
 
-	void insert(std::initializer_list<value_type> ilist) {
-		for (auto &&vt : ilist) {
-			insert(std::move(vt));
-		}
-	}
-
 	template <typename... Args>
 	std::pair<iterator, bool> emplace(Args &&...args) {
 		ROBIN_HOOD_TRACE(this)
 		Node n{ *this, std::forward<Args>(args)... };
 		auto idxAndState = insertKeyPrepareEmptySpot(getFirstConst(n));
-		switch (idxAndState.value) {
+		switch (idxAndState.second) {
 			case InsertionState::key_found:
 				n.destroy(*this);
 				break;
 
 			case InsertionState::new_node:
-				::new (static_cast<void *>(&mKeyVals[idxAndState.key])) Node(*this, std::move(n));
+				::new (static_cast<void *>(&mKeyVals[idxAndState.first])) Node(*this, std::move(n));
 				break;
 
 			case InsertionState::overwrite_node:
-				mKeyVals[idxAndState.key] = std::move(n);
+				mKeyVals[idxAndState.first] = std::move(n);
 				break;
 
 			case InsertionState::overflow_error:
@@ -1583,8 +1579,8 @@ public:
 				break;
 		}
 
-		return std::make_pair(iterator(mKeyVals + idxAndState.key, mInfo + idxAndState.key),
-				InsertionState::key_found != idxAndState.value);
+		return std::make_pair(iterator(this, mKeyVals + idxAndState.first, mInfo + idxAndState.first),
+				InsertionState::key_found != idxAndState.second);
 	}
 
 	template <typename... Args>
@@ -1637,7 +1633,8 @@ public:
 		return insertOrAssignImpl(std::move(key), std::forward<Mapped>(obj)).first;
 	}
 	// 自定义插入函数
-	iterator insert(const key_type &key, const mapped_type &obj) {
+	template <typename Mapped = mapped_type>
+	iterator insert(const key_type &key, const Mapped &obj) {
 		return insert_or_assign(key, obj).first;
 	}
 	template <typename Mapped>
@@ -1660,8 +1657,13 @@ public:
 		return emplace(keyval).first;
 	}
 
-	std::pair<iterator, bool> insert(value_type &&keyval) {
-		return emplace(std::move(keyval));
+	void insert(std::initializer_list<value_type> ilist) {
+		for (auto &&vt : ilist) {
+			insert(std::move(vt));
+		}
+	}
+	iterator insert(value_type &&keyval) {
+		return emplace(std::move(keyval)).first;
 	}
 
 	iterator insert(const_iterator hint, value_type &&keyval) {
@@ -1760,7 +1762,8 @@ public:
 	} // Returns a reference to the value found for key.
 
 	// NOLINTNEXTLINE(modernize-use-nodiscard)
-	mapped_type &get(key_type const &key) {
+	template <typename Q = mapped_type>
+	Q &get(key_type const &key) {
 		ROBIN_HOOD_TRACE(this)
 		auto kv = mKeyVals + findIdx(key);
 		if (kv == reinterpret_cast_no_cast_align_warning<Node *>(mInfo)) {
@@ -1768,7 +1771,9 @@ public:
 		}
 		return kv->getSecond();
 	} // Returns a reference to the value found for key.
-	const mapped_type &get(key_type const &key) const {
+	template <typename Q = mapped_type>
+
+	const Q &get(key_type const &key) const {
 		ROBIN_HOOD_TRACE(this)
 		auto kv = mKeyVals + findIdx(key);
 		if (kv == reinterpret_cast_no_cast_align_warning<Node *>(mInfo)) {
@@ -2372,7 +2377,6 @@ private:
 	InfoType mInfoHashShift = InitialInfoHashShift; // 4 byte 56
 													// 16 byte 56 if NodeAllocator
 };
-
 } // namespace detail
 
 // map
@@ -2401,5 +2405,12 @@ using HashMap =
 						std::is_nothrow_move_constructible<KeyValue<Key, T>>::value &&
 						std::is_nothrow_move_assignable<KeyValue<Key, T>>::value,
 				MaxLoadFactor100, Key, T, Hash, KeyEqual>;
+template <typename Key, typename Hash = HashMapHasherDefault,
+		typename KeyEqual = HashMapComparatorDefault<Key>, size_t MaxLoadFactor100 = 80>
+using HashSet =
+		robin_hood::detail::Table<sizeof(Key) <= sizeof(size_t) * 6 &&
+						std::is_nothrow_move_constructible<Key>::value &&
+						std::is_nothrow_move_assignable<Key>::value,
+				MaxLoadFactor100, Key, void, Hash, KeyEqual>;
 
 #endif

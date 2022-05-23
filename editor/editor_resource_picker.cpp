@@ -998,12 +998,12 @@ void EditorResourcePicker::_button_set_resource() {
 	Ref<Resource> dropped_resource = ResourceLoader::load(file);
 
 	if (dropped_resource.is_valid()) {
-		RBSet<String> allowed_types;
+		HashSet<String> allowed_types;
 		_get_allowed_types(false, &allowed_types);
 		// If the accepted dropped resource is from the extended list, it requires conversion.
 		if (!_is_type_valid(dropped_resource->get_class(), allowed_types)) {
-			for (RBSet<String>::Element *E = allowed_types.front(); E; E = E->next()) {
-				String at = E->get().strip_edges();
+			for (String& E : allowed_types) {
+				String at = E.strip_edges();
 
 				if (at == "StandardMaterial3D" && ClassDB::is_parent_class(dropped_resource->get_class(), "Texture2D")) {
 					Ref<StandardMaterial3D> mat = memnew(StandardMaterial3D);
@@ -1048,7 +1048,7 @@ void EditorResourcePicker::update_set_resource_button() {
 }
 void EditorResourcePicker::on_file_system_select_file(const String file_path) {
 	select_file_path = file_path;
-	RBSet<String> allowed_types;
+	HashSet<String> allowed_types;
 	_get_allowed_types(false, &allowed_types);
 
 	bool is_visible = false;
@@ -1064,8 +1064,8 @@ void EditorResourcePicker::on_file_system_select_file(const String file_path) {
 	if (file_type != "" && _is_type_valid(file_type, allowed_types)) {
 		is_visible = true;
 	} else {
-		for (RBSet<String>::Element *E = allowed_types.front(); E; E = E->next()) {
-			String at = E->get().strip_edges();
+		for (String& E : allowed_types) {
+			String at = E.strip_edges();
 
 			if (at == "StandardMaterial3D" && ClassDB::is_parent_class(file_type, "Texture2D")) {
 				is_visible = true;
