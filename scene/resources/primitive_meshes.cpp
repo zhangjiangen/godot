@@ -745,10 +745,10 @@ BoxMesh::BoxMesh() {}
 */
 
 void CylinderMesh::_create_mesh_array(Array &p_arr) const {
-	create_mesh_array(p_arr, top_radius, bottom_radius, height, radial_segments, rings);
+	create_mesh_array(p_arr, top_radius, bottom_radius, height, radial_segments, rings, cap_top, cap_bottom);
 }
 
-void CylinderMesh::create_mesh_array(Array &p_arr, float top_radius, float bottom_radius, float height, int radial_segments, int rings) {
+void CylinderMesh::create_mesh_array(Array &p_arr, float top_radius, float bottom_radius, float height, int radial_segments, int rings, bool cap_top, bool cap_bottom) {
 	int i, j, prevrow, thisrow, point;
 	float x, y, z, u, v, radius;
 
@@ -806,7 +806,7 @@ void CylinderMesh::create_mesh_array(Array &p_arr, float top_radius, float botto
 	};
 
 	// add top
-	if (top_radius > 0.0) {
+	if (cap_top && top_radius > 0.0) {
 		y = height * 0.5;
 
 		thisrow = point;
@@ -842,7 +842,7 @@ void CylinderMesh::create_mesh_array(Array &p_arr, float top_radius, float botto
 	};
 
 	// add bottom
-	if (bottom_radius > 0.0) {
+	if (cap_bottom && bottom_radius > 0.0) {
 		y = height * -0.5;
 
 		thisrow = point;
@@ -897,11 +897,19 @@ void CylinderMesh::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_rings", "rings"), &CylinderMesh::set_rings);
 	ClassDB::bind_method(D_METHOD("get_rings"), &CylinderMesh::get_rings);
 
+	ClassDB::bind_method(D_METHOD("set_cap_top", "cap_top"), &CylinderMesh::set_cap_top);
+	ClassDB::bind_method(D_METHOD("is_cap_top"), &CylinderMesh::is_cap_top);
+
+	ClassDB::bind_method(D_METHOD("set_cap_bottom", "cap_bottom"), &CylinderMesh::set_cap_bottom);
+	ClassDB::bind_method(D_METHOD("is_cap_bottom"), &CylinderMesh::is_cap_bottom);
+
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "top_radius", PROPERTY_HINT_RANGE, "0,100,0.001,or_greater,suffix:m"), "set_top_radius", "get_top_radius");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "bottom_radius", PROPERTY_HINT_RANGE, "0,100,0.001,or_greater,suffix:m"), "set_bottom_radius", "get_bottom_radius");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "height", PROPERTY_HINT_RANGE, "0.001,100,0.001,or_greater,suffix:m"), "set_height", "get_height");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "radial_segments", PROPERTY_HINT_RANGE, "1,100,1,or_greater"), "set_radial_segments", "get_radial_segments");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "rings", PROPERTY_HINT_RANGE, "1,100,1,or_greater"), "set_rings", "get_rings");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "cap_top"), "set_cap_top", "is_cap_top");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "cap_bottom"), "set_cap_bottom", "is_cap_bottom");
 }
 
 void CylinderMesh::set_top_radius(const float p_radius) {
@@ -947,6 +955,24 @@ void CylinderMesh::set_rings(const int p_rings) {
 
 int CylinderMesh::get_rings() const {
 	return rings;
+}
+
+void CylinderMesh::set_cap_top(bool p_cap_top) {
+	cap_top = p_cap_top;
+	_request_update();
+}
+
+bool CylinderMesh::is_cap_top() const {
+	return cap_top;
+}
+
+void CylinderMesh::set_cap_bottom(bool p_cap_bottom) {
+	cap_bottom = p_cap_bottom;
+	_request_update();
+}
+
+bool CylinderMesh::is_cap_bottom() const {
+	return cap_bottom;
 }
 
 CylinderMesh::CylinderMesh() {}
@@ -2313,18 +2339,18 @@ void TextMesh::_generate_glyph_mesh_data(uint32_t p_hash, const Glyph &p_gl) con
 	//Decompose and triangulate.
 	List<TPPLPoly> out_poly;
 	if (tpart.ConvexPartition_HM(&in_poly, &out_poly) == 0) {
-		ERR_FAIL_MSG("Convex decomposing failed!");
+		ERR_FAIL_MSG("Convex decomposing failed. Make sure the font doesn't contain self-intersecting lines, as these are not supported in TextMesh.");
 	}
 	List<TPPLPoly> out_tris;
 	for (List<TPPLPoly>::Element *I = out_poly.front(); I; I = I->next()) {
 		if (tpart.Triangulate_OPT(&(I->get()), &out_tris) == 0) {
-			ERR_FAIL_MSG("Triangulation failed!");
+			ERR_FAIL_MSG("Triangulation failed. Make sure the font doesn't contain self-intersecting lines, as these are not supported in TextMesh.");
 		}
 	}
 
 	for (List<TPPLPoly>::Element *I = out_tris.front(); I; I = I->next()) {
 		TPPLPoly &tp = I->get();
-		ERR_FAIL_COND(tp.GetNumPoints() != 3); // Trianges only.
+		ERR_FAIL_COND(tp.GetNumPoints() != 3); // Triangles only.
 
 		for (int i = 0; i < 3; i++) {
 			gl_data.triangles.push_back(Vector2(tp.GetPoint(i).x, tp.GetPoint(i).y));
@@ -2402,6 +2428,10 @@ void TextMesh::_create_mesh_array(Array &p_arr) const {
 
 	Vector2 offset_pre = offset;
 	for (int i = 0; i < gl_size; i++) {
+		if (glyphs[i].index == 0) {
+			offset.x += glyphs[i].advance * pixel_size * glyphs[i].repeat;
+			continue;
+		}
 		if (glyphs[i].font_rid != RID()) {
 			uint32_t hash = hash_one_uint64(glyphs[i].font_rid.get_id());
 			hash = hash_djb2_one_32(glyphs[i].index, hash);
@@ -2457,6 +2487,10 @@ void TextMesh::_create_mesh_array(Array &p_arr) const {
 	int32_t p_idx = 0;
 	int32_t i_idx = 0;
 	for (int i = 0; i < gl_size; i++) {
+		if (glyphs[i].index == 0) {
+			offset.x += glyphs[i].advance * pixel_size * glyphs[i].repeat;
+			continue;
+		}
 		if (glyphs[i].font_rid != RID()) {
 			uint32_t hash = hash_one_uint64(glyphs[i].font_rid.get_id());
 			hash = hash_djb2_one_32(glyphs[i].index, hash);
@@ -2596,7 +2630,7 @@ void TextMesh::_create_mesh_array(Array &p_arr) const {
 	}
 
 	if (p_size == 0) {
-		// If empty, add single trinagle to suppress errors.
+		// If empty, add single triangle to suppress errors.
 		vertices.push_back(Vector3());
 		normals.push_back(Vector3());
 		uvs.push_back(Vector2());
