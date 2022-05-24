@@ -2402,6 +2402,10 @@ void TextMesh::_create_mesh_array(Array &p_arr) const {
 
 	Vector2 offset_pre = offset;
 	for (int i = 0; i < gl_size; i++) {
+		if (glyphs[i].index == 0) {
+			offset.x += glyphs[i].advance * pixel_size * glyphs[i].repeat;
+			continue;
+		}
 		if (glyphs[i].font_rid != RID()) {
 			uint32_t hash = hash_one_uint64(glyphs[i].font_rid.get_id());
 			hash = hash_djb2_one_32(glyphs[i].index, hash);
@@ -2457,6 +2461,10 @@ void TextMesh::_create_mesh_array(Array &p_arr) const {
 	int32_t p_idx = 0;
 	int32_t i_idx = 0;
 	for (int i = 0; i < gl_size; i++) {
+		if (glyphs[i].index == 0) {
+			offset.x += glyphs[i].advance * pixel_size * glyphs[i].repeat;
+			continue;
+		}
 		if (glyphs[i].font_rid != RID()) {
 			uint32_t hash = hash_one_uint64(glyphs[i].font_rid.get_id());
 			hash = hash_djb2_one_32(glyphs[i].index, hash);
@@ -2596,7 +2604,7 @@ void TextMesh::_create_mesh_array(Array &p_arr) const {
 	}
 
 	if (p_size == 0) {
-		// If empty, add single trinagle to suppress errors.
+		// If empty, add single triangle to suppress errors.
 		vertices.push_back(Vector3());
 		normals.push_back(Vector3());
 		uvs.push_back(Vector2());
