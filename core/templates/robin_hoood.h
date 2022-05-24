@@ -407,8 +407,8 @@ public:
 	void reset() noexcept {
 		while (mListForFree) {
 			T *tmp = *mListForFree;
-			ROBIN_HOOD_LOG("std::free")
-			std::free(mListForFree);
+			ROBIN_HOOD_LOG("MallocAllocator::free_memory")
+			MallocAllocator::free_memory(mListForFree);
 			mListForFree = reinterpret_cast_no_cast_align_warning<T **>(tmp);
 		}
 		mHead = nullptr;
@@ -443,8 +443,8 @@ public:
 		// calculate number of available elements in ptr
 		if (numBytes < ALIGNMENT + ALIGNED_SIZE) {
 			// not enough data for at least one element. Free and return.
-			ROBIN_HOOD_LOG("std::free")
-			std::free(ptr);
+			ROBIN_HOOD_LOG("MallocAllocator::free_memory")
+			MallocAllocator::free_memory(ptr);
 		} else {
 			ROBIN_HOOD_LOG("add to buffer")
 			add(ptr, numBytes);
@@ -513,9 +513,9 @@ private:
 
 		// alloc new memory: [prev |T, T, ... T]
 		size_t const bytes = ALIGNMENT + ALIGNED_SIZE * numElementsToAlloc;
-		ROBIN_HOOD_LOG("std::malloc " << bytes << " = " << ALIGNMENT << " + " << ALIGNED_SIZE
-									  << " * " << numElementsToAlloc)
-		add(assertNotNull<std::bad_alloc>(std::malloc(bytes)), bytes);
+		ROBIN_HOOD_LOG("MallocAllocator::alloc_memory " << bytes << " = " << ALIGNMENT << " + " << ALIGNED_SIZE
+														<< " * " << numElementsToAlloc)
+		add(assertNotNull<std::bad_alloc>(MallocAllocator::alloc_memory(bytes, __FILE__, __LINE__)), bytes);
 		return mHead;
 	}
 
@@ -550,8 +550,8 @@ template <typename T, size_t MinSize, size_t MaxSize>
 struct NodeAllocator<T, MinSize, MaxSize, true> {
 	// we are not using the data, so just free it.
 	void addOrFree(void *ptr, size_t ROBIN_HOOD_UNUSED(numBytes) /*unused*/) noexcept {
-		ROBIN_HOOD_LOG("std::free")
-		std::free(ptr);
+		ROBIN_HOOD_LOG("MallocAllocator::free_memory")
+		MallocAllocator::free_memory(ptr);
 	}
 };
 
@@ -1361,11 +1361,11 @@ public:
 			auto const numElementsWithBuffer = calcNumElementsWithBuffer(o.mMask + 1);
 			auto const numBytesTotal = calcNumBytesTotal(numElementsWithBuffer);
 
-			ROBIN_HOOD_LOG("std::malloc " << numBytesTotal << " = calcNumBytesTotal("
-										  << numElementsWithBuffer << ")")
+			ROBIN_HOOD_LOG("MallocAllocator::alloc " << numBytesTotal << " = calcNumBytesTotal("
+													 << numElementsWithBuffer << ")")
 			mHashMultiplier = o.mHashMultiplier;
 			mKeyVals = static_cast<Node *>(
-					detail::assertNotNull<std::bad_alloc>(std::malloc(numBytesTotal)));
+					detail::assertNotNull<std::bad_alloc>(MallocAllocator::alloc_memory(numBytesTotal,__FILE__,__LINE__)));
 			// no need for calloc because clonData does memcpy
 			mInfo = reinterpret_cast<uint8_t *>(mKeyVals + numElementsWithBuffer);
 			mNumElements = o.mNumElements;
@@ -1412,15 +1412,15 @@ public:
 			if (0 != mMask) {
 				// only deallocate if we actually have data!
 				ROBIN_HOOD_LOG("std::free")
-				std::free(mKeyVals);
+				MallocAllocator::free_memory(mKeyVals);
 			}
 
 			auto const numElementsWithBuffer = calcNumElementsWithBuffer(o.mMask + 1);
 			auto const numBytesTotal = calcNumBytesTotal(numElementsWithBuffer);
-			ROBIN_HOOD_LOG("std::malloc " << numBytesTotal << " = calcNumBytesTotal("
-										  << numElementsWithBuffer << ")")
+			ROBIN_HOOD_LOG("MallocAllocator::alloc_memory " << numBytesTotal << " = calcNumBytesTotal("
+															<< numElementsWithBuffer << ")")
 			mKeyVals = static_cast<Node *>(
-					detail::assertNotNull<std::bad_alloc>(std::malloc(numBytesTotal)));
+					detail::assertNotNull<std::bad_alloc>(MallocAllocator::alloc_memory(numBytesTotal,__FILE__,__LINE__)));
 
 			// no need for calloc here because cloneData performs a memcpy.
 			mInfo = reinterpret_cast<uint8_t *>(mKeyVals + numElementsWithBuffer);
@@ -2114,7 +2114,7 @@ private:
 			if (oldKeyVals != reinterpret_cast_no_cast_align_warning<Node *>(&mMask)) {
 				// don't destroy old data: put it into the pool instead
 				if (forceFree) {
-					std::free(oldKeyVals);
+					MallocAllocator::free_memory(oldKeyVals);
 				} else {
 					DataPool::addOrFree(oldKeyVals, calcNumBytesTotal(oldMaxElementsWithBuffer));
 				}
@@ -2207,7 +2207,7 @@ private:
 		ROBIN_HOOD_LOG("std::calloc " << numBytesTotal << " = calcNumBytesTotal("
 									  << numElementsWithBuffer << ")")
 		mKeyVals = reinterpret_cast<Node *>(
-				detail::assertNotNull<std::bad_alloc>(std::malloc(numBytesTotal)));
+				detail::assertNotNull<std::bad_alloc>(MallocAllocator::alloc_memory(numBytesTotal,__FILE__,__LINE__)));
 		mInfo = reinterpret_cast<uint8_t *>(mKeyVals + numElementsWithBuffer);
 		std::memset(mInfo, 0, numBytesTotal - numElementsWithBuffer * sizeof(Node));
 
@@ -2351,8 +2351,8 @@ private:
 		// reports a compile error: attempt to free a non-heap object 'fm'
 		// [-Werror=free-nonheap-object]
 		if (mKeyVals != reinterpret_cast_no_cast_align_warning<Node *>(&mMask)) {
-			ROBIN_HOOD_LOG("std::free")
-			std::free(mKeyVals);
+			ROBIN_HOOD_LOG("MallocAllocator::free_memory")
+			MallocAllocator::free_memory(mKeyVals);
 		}
 	}
 
@@ -2378,24 +2378,6 @@ private:
 													// 16 byte 56 if NodeAllocator
 };
 } // namespace detail
-
-// map
-
-template <typename Key, typename T, typename Hash = HashMapHasherDefault,
-		typename KeyEqual = HashMapComparatorDefault<Key>, size_t MaxLoadFactor100 = 80>
-using unordered_flat_map = detail::Table<true, MaxLoadFactor100, Key, T, Hash, KeyEqual>;
-
-template <typename Key, typename T, typename Hash = HashMapHasherDefault,
-		typename KeyEqual = HashMapComparatorDefault<Key>, size_t MaxLoadFactor100 = 80>
-using unordered_node_map = detail::Table<false, MaxLoadFactor100, Key, T, Hash, KeyEqual>;
-
-template <typename Key, typename T, typename Hash = HashMapHasherDefault,
-		typename KeyEqual = HashMapComparatorDefault<Key>, size_t MaxLoadFactor100 = 80>
-using unordered_map =
-		detail::Table<sizeof(KeyValue<Key, T>) <= sizeof(size_t) * 6 &&
-						std::is_nothrow_move_constructible<KeyValue<Key, T>>::value &&
-						std::is_nothrow_move_assignable<KeyValue<Key, T>>::value,
-				MaxLoadFactor100, Key, T, Hash, KeyEqual>;
 
 } // namespace robin_hood
 template <typename Key, typename T, typename Hash = HashMapHasherDefault,
