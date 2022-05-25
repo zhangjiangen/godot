@@ -335,16 +335,10 @@ inline T reinterpret_cast_no_cast_align_warning(void const *ptr) noexcept {
 // inlinings more difficult. Throws are also generally the slow path.
 template <typename E, typename... Args>
 [[noreturn]] ROBIN_HOOD(NOINLINE)
-#if ROBIN_HOOD(HAS_EXCEPTIONS)
-		void doThrow(Args &&...args) {
-	// NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
-	throw E(std::forward<Args>(args)...);
-}
-#else
+
 		void doThrow(Args &&...ROBIN_HOOD_UNUSED(args) /*unused*/) {
 	abort();
 }
-#endif
 
 template <typename E, typename T, typename... Args>
 T *assertNotNull(T *t, Args &&...args) {
@@ -1365,7 +1359,7 @@ public:
 													 << numElementsWithBuffer << ")")
 			mHashMultiplier = o.mHashMultiplier;
 			mKeyVals = static_cast<Node *>(
-					detail::assertNotNull<std::bad_alloc>(MallocAllocator::alloc_memory(numBytesTotal,__FILE__,__LINE__)));
+					detail::assertNotNull<std::bad_alloc>(MallocAllocator::alloc_memory(numBytesTotal, __FILE__, __LINE__)));
 			// no need for calloc because clonData does memcpy
 			mInfo = reinterpret_cast<uint8_t *>(mKeyVals + numElementsWithBuffer);
 			mNumElements = o.mNumElements;
@@ -1420,7 +1414,7 @@ public:
 			ROBIN_HOOD_LOG("MallocAllocator::alloc_memory " << numBytesTotal << " = calcNumBytesTotal("
 															<< numElementsWithBuffer << ")")
 			mKeyVals = static_cast<Node *>(
-					detail::assertNotNull<std::bad_alloc>(MallocAllocator::alloc_memory(numBytesTotal,__FILE__,__LINE__)));
+					detail::assertNotNull<std::bad_alloc>(MallocAllocator::alloc_memory(numBytesTotal, __FILE__, __LINE__)));
 
 			// no need for calloc here because cloneData performs a memcpy.
 			mInfo = reinterpret_cast<uint8_t *>(mKeyVals + numElementsWithBuffer);
@@ -2124,11 +2118,7 @@ private:
 
 	ROBIN_HOOD(NOINLINE)
 	void throwOverflowError() const {
-#if ROBIN_HOOD(HAS_EXCEPTIONS)
-		throw std::overflow_error("robin_hood::map overflow");
-#else
 		abort();
-#endif
 	}
 	enum InsertionState { overflow_error,
 		key_found,
@@ -2207,7 +2197,7 @@ private:
 		ROBIN_HOOD_LOG("std::calloc " << numBytesTotal << " = calcNumBytesTotal("
 									  << numElementsWithBuffer << ")")
 		mKeyVals = reinterpret_cast<Node *>(
-				detail::assertNotNull<std::bad_alloc>(MallocAllocator::alloc_memory(numBytesTotal,__FILE__,__LINE__)));
+				detail::assertNotNull<std::bad_alloc>(MallocAllocator::alloc_memory(numBytesTotal, __FILE__, __LINE__)));
 		mInfo = reinterpret_cast<uint8_t *>(mKeyVals + numElementsWithBuffer);
 		std::memset(mInfo, 0, numBytesTotal - numElementsWithBuffer * sizeof(Node));
 

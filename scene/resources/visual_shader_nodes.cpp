@@ -6569,8 +6569,8 @@ String VisualShaderNodeTexture2DArrayUniform::get_output_port_name(int p_port) c
 }
 
 String VisualShaderNodeTexture2DArrayUniform::generate_global(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const {
-    StringBuilder code;
-    code + _get_qual_str() + "uniform sampler2DArray " + get_uniform_name();
+	StringBuilder code;
+	code + _get_qual_str() + "uniform sampler2DArray " + get_uniform_name();
 	code += get_sampler_hint(texture_type, color_default, texture_filter, texture_repeat);
 	code += ";\n";
 	return code;
@@ -6594,8 +6594,8 @@ String VisualShaderNodeTexture3DUniform::get_output_port_name(int p_port) const 
 }
 
 String VisualShaderNodeTexture3DUniform::generate_global(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const {
-    StringBuilder code;
-    code + _get_qual_str() + "uniform sampler3D " + get_uniform_name();
+	StringBuilder code;
+	code + _get_qual_str() + "uniform sampler3D " + get_uniform_name();
 	code += get_sampler_hint(texture_type, color_default, texture_filter, texture_repeat);
 	code += ";\n";
 	return code;
@@ -6619,8 +6619,8 @@ String VisualShaderNodeCubemapUniform::get_output_port_name(int p_port) const {
 }
 
 String VisualShaderNodeCubemapUniform::generate_global(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const {
-    StringBuilder code;
-    code + _get_qual_str() + "uniform samplerCube " + get_uniform_name();
+	StringBuilder code;
+	code + _get_qual_str() + "uniform samplerCube " + get_uniform_name();
 	code += get_sampler_hint(texture_type, color_default, texture_filter, texture_repeat);
 	code += ";\n";
 	return code;
@@ -6829,6 +6829,7 @@ void VisualShaderNodeSwitch::set_op_type(OpType p_op_type) {
 		case OP_TYPE_IVECTOR_4D:
 			set_input_port_default_value(1, Rect2i(1.0, 1.0, 1.0, 1.0), get_input_port_default_value(1));
 			set_input_port_default_value(2, Rect2i(0.0, 0.0, 0.0, 0.0), get_input_port_default_value(2));
+			break;
 		case OP_TYPE_VECTOR_4D:
 			set_input_port_default_value(1, Plane(1.0, 1.0, 1.0, 1.0), get_input_port_default_value(1));
 			set_input_port_default_value(2, Plane(0.0, 0.0, 0.0, 0.0), get_input_port_default_value(2));
@@ -7288,6 +7289,7 @@ void VisualShaderNodeCompare::set_comparison_type(ComparisonType p_comparison_ty
 		case CTYPE_IVECTOR_4D:
 			set_input_port_default_value(0, Rect2i(0, 0, 0, 0), get_input_port_default_value(1));
 			set_input_port_default_value(1, Rect2i(0, 0, 0, 0), get_input_port_default_value(1));
+			break;
 		case CTYPE_VECTOR_4D:
 			set_input_port_default_value(0, Plane(), get_input_port_default_value(0));
 			set_input_port_default_value(1, Plane(), get_input_port_default_value(1));

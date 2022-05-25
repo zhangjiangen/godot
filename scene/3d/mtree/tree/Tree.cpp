@@ -16,7 +16,7 @@ void Tree3D::execute_functions() {
 void Tree3D::print_tree() {
 	std::cout << "tree "
 			  << "stems:" << stems.size() << std::endl;
-	int count = 0;
+
 	Tree3DNode *current_node = &stems[0].node;
 	while (true) {
 		count++;
