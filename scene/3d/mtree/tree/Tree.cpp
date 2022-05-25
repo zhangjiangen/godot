@@ -19,7 +19,6 @@ void Tree3D::print_tree() {
 
 	Tree3DNode *current_node = &stems[0].node;
 	while (true) {
-		count++;
 		if (current_node->children.size() == 0)
 			break;
 		current_node = &current_node->children[0]->node;
