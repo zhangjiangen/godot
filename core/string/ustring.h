@@ -226,6 +226,7 @@ public:
 	bool operator!=(const String &p_str) const;
 	String operator+(const String &p_str) const;
 	String operator+(char32_t p_char) const;
+	
 
 	String &operator+=(const String &);
 	String &operator+=(char32_t p_char);

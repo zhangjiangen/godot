@@ -313,11 +313,6 @@ using SizeT = uint64_t;
 using SizeT = uint32_t;
 #endif
 
-template <typename T>
-T rotr(T x, unsigned k) {
-	return (x >> k) | (x << (8U * sizeof(T) - k));
-}
-
 // This cast gets rid of warnings like "cast from 'uint8_t*' {aka 'unsigned char*'} to
 // 'uint64_t*' {aka 'long unsigned int*'} increases required alignment of target type". Use with
 // care!
@@ -573,62 +568,6 @@ struct nothrow {
 
 struct is_transparent_tag {};
 
-inline size_t hash_bytes(void const *ptr, size_t len) noexcept {
-	static constexpr uint64_t m = UINT64_C(0xc6a4a7935bd1e995);
-	static constexpr uint64_t seed = UINT64_C(0xe17a1465);
-	static constexpr unsigned int r = 47;
-
-	auto const *const data64 = static_cast<uint64_t const *>(ptr);
-	uint64_t h = seed ^ (len * m);
-
-	size_t const n_blocks = len / 8;
-	for (size_t i = 0; i < n_blocks; ++i) {
-		auto k = detail::unaligned_load<uint64_t>(data64 + i);
-
-		k *= m;
-		k ^= k >> r;
-		k *= m;
-
-		h ^= k;
-		h *= m;
-	}
-
-	auto const *const data8 = reinterpret_cast<uint8_t const *>(data64 + n_blocks);
-	switch (len & 7U) {
-		case 7:
-			h ^= static_cast<uint64_t>(data8[6]) << 48U;
-			ROBIN_HOOD(FALLTHROUGH); // FALLTHROUGH
-		case 6:
-			h ^= static_cast<uint64_t>(data8[5]) << 40U;
-			ROBIN_HOOD(FALLTHROUGH); // FALLTHROUGH
-		case 5:
-			h ^= static_cast<uint64_t>(data8[4]) << 32U;
-			ROBIN_HOOD(FALLTHROUGH); // FALLTHROUGH
-		case 4:
-			h ^= static_cast<uint64_t>(data8[3]) << 24U;
-			ROBIN_HOOD(FALLTHROUGH); // FALLTHROUGH
-		case 3:
-			h ^= static_cast<uint64_t>(data8[2]) << 16U;
-			ROBIN_HOOD(FALLTHROUGH); // FALLTHROUGH
-		case 2:
-			h ^= static_cast<uint64_t>(data8[1]) << 8U;
-			ROBIN_HOOD(FALLTHROUGH); // FALLTHROUGH
-		case 1:
-			h ^= static_cast<uint64_t>(data8[0]);
-			h *= m;
-			ROBIN_HOOD(FALLTHROUGH); // FALLTHROUGH
-		default:
-			break;
-	}
-
-	h ^= h >> r;
-
-	// not doing the final step here, because this will be done by keyToIdx anyways
-	// h *= m;
-	// h ^= h >> r;
-	return static_cast<size_t>(h);
-}
-
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
@@ -672,16 +611,16 @@ struct has_is_transparent<T, typename void_type<typename T::is_transparent>::typ
 // According to STL, order of templates has effect on throughput. That's why I've moved the
 // boolean to the front.
 // https://www.reddit.com/r/cpp/comments/ahp6iu/compile_time_binary_size_reductions_and_cs_future/eeguck4/
-template <bool IsFlat, size_t MaxLoadFactor100, typename Key, typename T, typename Hash,
-		typename KeyEqual>
+template <typename Key, typename T = void, typename Hash = HashMapHasherDefault,
+		typename KeyEqual = HashMapComparatorDefault<Key>>
 class Table
 		: detail::NodeAllocator<
 				  typename std::conditional<
 						  std::is_void<T>::value, Key,
 						  KeyValue<Key, T>>::type,
-				  4, 16384, IsFlat> {
+				  4, 16384, sizeof(Key) <= sizeof(size_t) * 6 && std::is_nothrow_move_constructible<Key>::value && std::is_nothrow_move_assignable<Key>::value> {
 public:
-	static constexpr bool is_flat = IsFlat;
+	static constexpr bool is_flat = sizeof(Key) <= sizeof(size_t) * 6 && std::is_nothrow_move_constructible<Key>::value && std::is_nothrow_move_assignable<Key>::value;
 	static constexpr bool is_map = !std::is_void<T>::value;
 	static constexpr bool is_set = !is_map;
 	static constexpr bool is_transparent =
@@ -695,12 +634,9 @@ public:
 	using size_type = uint32_t;
 	using hasher = Hash;
 	using key_equal = KeyEqual;
-	using Self = Table<IsFlat, MaxLoadFactor100, key_type, mapped_type, hasher, key_equal>;
+	using Self = Table<key_type, mapped_type, hasher, key_equal>;
 
 private:
-	static_assert(MaxLoadFactor100 > 10 && MaxLoadFactor100 < 100,
-			"MaxLoadFactor100 needs to be >10 && < 100");
-
 	using WHash = Hash;
 	using WKeyEqual = KeyEqual;
 
@@ -712,7 +648,7 @@ private:
 	static constexpr uint8_t InitialInfoInc = 1U << InitialInfoNumBits;
 	static constexpr size_t InfoMask = InitialInfoInc - 1U;
 	static constexpr uint8_t InitialInfoHashShift = 0;
-	using DataPool = detail::NodeAllocator<value_type, 4, 16384, IsFlat>;
+	using DataPool = detail::NodeAllocator<value_type, 4, 16384, is_flat>;
 
 	// type needs to be wider than uint8_t.
 	using InfoType = uint32_t;
@@ -885,7 +821,7 @@ private:
 		value_type *mData;
 	};
 
-	using Node = DataNode<Self, IsFlat>;
+	using Node = DataNode<Self, is_flat>;
 
 	// helpers for insertKeyPrepareEmptySpot: extract key entry (only const required)
 	ROBIN_HOOD(NODISCARD)
@@ -1112,7 +1048,7 @@ private:
 #endif
 		}
 
-		friend class Table<IsFlat, MaxLoadFactor100, key_type, mapped_type, hasher, key_equal>;
+		friend class Table<key_type, mapped_type, hasher, key_equal>;
 		const Table *Owenr = nullptr;
 		NodePtr mKeyVals{ nullptr };
 		uint8_t const *mInfo{ nullptr };
@@ -1221,7 +1157,7 @@ private:
 	}
 
 	void cloneData(const Table &o) {
-		Cloner<Table, IsFlat && ROBIN_HOOD_IS_TRIVIALLY_COPYABLE(Node)>()(o, *this);
+		Cloner<Table, is_flat && ROBIN_HOOD_IS_TRIVIALLY_COPYABLE(Node)>()(o, *this);
 	}
 
 	// inserts a keyval that is guaranteed to be new, e.g. when the hashmap is resized.
@@ -1399,7 +1335,7 @@ public:
 		}
 
 		// clean up old stuff
-		Destroyer<Self, IsFlat && std::is_trivially_destructible<Node>::value>{}.nodes(*this);
+		Destroyer<Self, is_flat && std::is_trivially_destructible<Node>::value>{}.nodes(*this);
 
 		if (mMask != o.mMask) {
 			// no luck: we don't have the same array size allocated, so we need to realloc.
@@ -1448,7 +1384,7 @@ public:
 			return;
 		}
 
-		Destroyer<Self, IsFlat && std::is_trivially_destructible<Node>::value>{}.nodes(*this);
+		Destroyer<Self, is_flat && std::is_trivially_destructible<Node>::value>{}.nodes(*this);
 
 		auto const numElementsWithBuffer = calcNumElementsWithBuffer(mMask + 1);
 		// clear everything, then set the sentinel again
@@ -1983,7 +1919,7 @@ public:
 
 	float max_load_factor() const noexcept { // NOLINT(modernize-use-nodiscard)
 		ROBIN_HOOD_TRACE(this)
-		return MaxLoadFactor100 / 100.0F;
+		return 80.0f / 100.0F;
 	}
 
 	// Average number of elements per bucket. Since we allow only 1 per bucket
@@ -2001,11 +1937,11 @@ public:
 	ROBIN_HOOD(NODISCARD)
 	size_t calcMaxNumElementsAllowed(size_t maxElements) const noexcept {
 		if (ROBIN_HOOD_LIKELY(maxElements <= (std::numeric_limits<size_t>::max)() / 100)) {
-			return maxElements * MaxLoadFactor100 / 100;
+			return maxElements * 80 / 100;
 		}
 
 		// we might be a bit inprecise, but since maxElements is quite large that doesn't matter
-		return (maxElements / 100) * MaxLoadFactor100;
+		return (maxElements / 100) * 80;
 	}
 
 	ROBIN_HOOD(NODISCARD)
@@ -2333,7 +2269,7 @@ private:
 			return;
 		}
 
-		Destroyer<Self, IsFlat && std::is_trivially_destructible<Node>::value>{}
+		Destroyer<Self, is_flat && std::is_trivially_destructible<Node>::value>{}
 				.nodesDoNotDeallocate(*this);
 
 		// This protection against not deleting mMask shouldn't be needed as it's sufficiently
@@ -2370,19 +2306,13 @@ private:
 } // namespace detail
 
 } // namespace robin_hood
-template <typename Key, typename T, typename Hash = HashMapHasherDefault,
-		typename KeyEqual = HashMapComparatorDefault<Key>, size_t MaxLoadFactor100 = 80>
+template <typename Key, typename T,  typename Hash = HashMapHasherDefault,
+		typename KeyEqual = HashMapComparatorDefault<Key>>
 using HashMap =
-		robin_hood::detail::Table<sizeof(KeyValue<Key, T>) <= sizeof(size_t) * 6 &&
-						std::is_nothrow_move_constructible<KeyValue<Key, T>>::value &&
-						std::is_nothrow_move_assignable<KeyValue<Key, T>>::value,
-				MaxLoadFactor100, Key, T, Hash, KeyEqual>;
-template <typename Key, typename Hash = HashMapHasherDefault,
-		typename KeyEqual = HashMapComparatorDefault<Key>, size_t MaxLoadFactor100 = 80>
+		robin_hood::detail::Table<Key, T, Hash, KeyEqual>;
+template <typename Key,  typename Hash = HashMapHasherDefault,
+		typename KeyEqual = HashMapComparatorDefault<Key>>
 using HashSet =
-		robin_hood::detail::Table<sizeof(Key) <= sizeof(size_t) * 6 &&
-						std::is_nothrow_move_constructible<Key>::value &&
-						std::is_nothrow_move_assignable<Key>::value,
-				MaxLoadFactor100, Key, void, Hash, KeyEqual>;
+		robin_hood::detail::Table<Key, void, Hash, KeyEqual>;
 
 #endif
