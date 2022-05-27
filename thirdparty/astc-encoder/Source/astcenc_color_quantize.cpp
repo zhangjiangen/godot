@@ -47,7 +47,7 @@
  * @param value         The value to convert. This may be outside of the 0-255 range and will be
  *                      clamped before the value is looked up.
  *
- * @return The encoded quantized value. These are not necessarily in the order; the compressor
+ * @return The encoded quantized value. These are not necessarily in order; the compressor
  *         scrambles the values slightly to make hardware implementation easier.
  */
 static inline int quant_color_clamp(
@@ -65,7 +65,7 @@ static inline int quant_color_clamp(
  * @param value         The value to convert. This may be outside of the 0-255 range and will be
  *                      clamped before the value is looked up.
  *
- * @return The encoded quantized value. These are not necessarily in the order; the compressor
+ * @return The encoded quantized value. These are not necessarily in order; the compressor
  *         scrambles the values slightly to make hardware implementation easier.
  */
 static inline int quant_color(
@@ -81,7 +81,7 @@ static inline int quant_color(
  * @param quant_level   The quantization level to use.
  * @param value         The value to convert.
  *
- * @return The encoded quantized value. These are not necessarily in the order; the compressor
+ * @return The encoded quantized value. These are not necessarily in order; the compressor
  *         scrambles the values slightly to make hardware implementation easier.
  */
 static inline int unquant_color(
@@ -123,7 +123,6 @@ static void quantize_rgb(
 	int ri0b, gi0b, bi0b, ri1b, gi1b, bi1b;
 	float rgb0_addon = 0.5f;
 	float rgb1_addon = 0.5f;
-	int iters = 0;
 	do
 	{
 		ri0 = quant_color_clamp(quant_level, astc::flt2int_rd(r0 + rgb0_addon));
@@ -142,7 +141,6 @@ static void quantize_rgb(
 
 		rgb0_addon -= 0.2f;
 		rgb1_addon += 0.2f;
-		iters++;
 	} while (ri0b + gi0b + bi0b > ri1b + gi1b + bi1b);
 
 	output[0] = static_cast<uint8_t>(ri0);
@@ -844,7 +842,7 @@ static void quantize_rgbs(
 	int bu = unquant_color(quant_level, bi);
 
 	float oldcolorsum = hadd_rgb_s(color) * scale;
-	float newcolorsum = (float)(ru + gu + bu);
+	float newcolorsum = static_cast<float>(ru + gu + bu);
 
 	float scalea = astc::clamp1f(color.lane<3>() * (oldcolorsum + 1e-10f) / (newcolorsum + 1e-10f));
 	int scale_idx = astc::flt2int_rtn(scalea * 256.0f);

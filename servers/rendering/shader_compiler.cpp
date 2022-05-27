@@ -694,7 +694,7 @@ String ShaderCompiler::_dump_node_code(const SL::Node *p_node, int p_level, Gene
 				r_gen_code.stage_globals[STAGE_VERTEX] + interp_mode + "out " + vcode;
 				r_gen_code.stage_globals[STAGE_FRAGMENT] + interp_mode + "in " + vcode;
 
-				index + inc;
+				index += inc;
 			}
 
 			if (var_frag_to_light.size() > 0) {

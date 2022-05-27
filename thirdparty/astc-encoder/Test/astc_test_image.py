@@ -251,16 +251,8 @@ def get_encoder_params(encoderName, referenceName, imageSet):
     if encoderName.startswith("ref"):
         _, version, simd = encoderName.split("-")
 
-        # 2.x variants
-        if version.startswith("2."):
-            encoder = te.Encoder2xRel(version, simd)
-            name = f"reference-{version}-{simd}"
-            outDir = "Test/Images/%s" % imageSet
-            refName = None
-            return (encoder, name, outDir, refName)
-
-        # 3.x variants
-        if version.startswith("3."):
+        # 2.x and 3.x variants
+        if version.startswith("2.") or version.startswith("3."):
             encoder = te.Encoder2xRel(version, simd)
             name = f"reference-{version}-{simd}"
             outDir = "Test/Images/%s" % imageSet
@@ -296,12 +288,12 @@ def parse_command_line():
     # All reference encoders
     refcoders = ["ref-1.7",
                  "ref-2.5-neon", "ref-2.5-sse2", "ref-2.5-sse4.1", "ref-2.5-avx2",
-                 "ref-3.5-neon", "ref-3.5-sse2", "ref-3.5-sse4.1", "ref-3.5-avx2",
                  "ref-3.6-neon", "ref-3.6-sse2", "ref-3.6-sse4.1", "ref-3.6-avx2",
+                 "ref-3.7-neon", "ref-3.7-sse2", "ref-3.7-sse4.1", "ref-3.7-avx2",
                  "ref-main-neon", "ref-main-sse2", "ref-main-sse4.1", "ref-main-avx2"]
 
     # All test encoders
-    testcoders = ["none", "neon", "sse2", "sse4.1", "avx2"]
+    testcoders = ["none", "neon", "sse2", "sse4.1", "avx2", "native"]
     testcodersAArch64 = ["none", "neon"]
     testcodersX86 = ["none", "sse2", "sse4.1", "avx2"]
 
@@ -310,7 +302,7 @@ def parse_command_line():
     parser.add_argument("--encoder", dest="encoders", default="avx2",
                         choices=coders, help="test encoder variant")
 
-    parser.add_argument("--reference", dest="reference", default="ref-3.6-avx2",
+    parser.add_argument("--reference", dest="reference", default="ref-main-avx2",
                         choices=refcoders, help="reference encoder variant")
 
     astcProfile = ["ldr", "ldrs", "hdr", "all"]

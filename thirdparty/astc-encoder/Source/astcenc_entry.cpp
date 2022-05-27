@@ -62,13 +62,13 @@ struct astcenc_preset_config
 static const std::array<astcenc_preset_config, 5> preset_configs_high {{
 	{
 		ASTCENC_PRE_FASTEST,
-		2, 8, 42, 2, 2, 85.2f, 63.2f, 3.5f, 3.5f, 1.0f, 1.0f, 0.5f, 25
+		2, 10, 42, 2, 2, 85.2f, 63.2f, 3.5f, 3.5f, 1.0f, 1.0f, 0.5f, 25
 	}, {
 		ASTCENC_PRE_FAST,
-		3, 12, 55, 3, 3, 85.2f, 63.2f, 3.5f, 3.5f, 1.0f, 1.1f, 0.65f, 20
+		3, 14, 55, 3, 3, 85.2f, 63.2f, 3.5f, 3.5f, 1.0f, 1.1f, 0.65f, 20
 	}, {
 		ASTCENC_PRE_MEDIUM,
-		4, 26, 76, 3, 3 , 95.0f, 70.0f, 2.5f, 2.5f, 1.2f, 1.25f, 0.85f, 16
+		4, 28, 76, 3, 3, 95.0f, 70.0f, 2.5f, 2.5f, 1.2f, 1.25f, 0.85f, 16
 	}, {
 		ASTCENC_PRE_THOROUGH,
 		4, 76, 93, 4, 4, 105.0f, 77.0f, 10.0f, 10.0f, 2.5f, 1.25f, 0.95f, 12
@@ -78,7 +78,6 @@ static const std::array<astcenc_preset_config, 5> preset_configs_high {{
 	}
 }};
 
-
 /**
  * @brief The static quality presets that are built-in for medium bandwidth
  * presets (25 <= x < 64 texels per block).
@@ -86,13 +85,13 @@ static const std::array<astcenc_preset_config, 5> preset_configs_high {{
 static const std::array<astcenc_preset_config, 5> preset_configs_mid {{
 	{
 		ASTCENC_PRE_FASTEST,
-		2, 8, 40, 2, 2, 85.2f, 63.2f, 3.5f, 3.5f, 1.0f, 1.0f, 0.5f, 20
+		2, 10, 42, 2, 2, 85.2f, 63.2f, 3.5f, 3.5f, 1.0f, 1.0f, 0.5f, 20
 	}, {
 		ASTCENC_PRE_FAST,
-		3, 12, 55, 3, 3, 85.2f, 63.2f, 3.5f, 3.5f, 1.0f, 1.1f, 0.5f, 16
+		3, 15, 55, 3, 3, 85.2f, 63.2f, 3.5f, 3.5f, 1.0f, 1.1f, 0.5f, 16
 	}, {
 		ASTCENC_PRE_MEDIUM,
-		4, 26, 76, 3, 3, 95.0f, 70.0f, 3.0f, 3.0f, 1.2f, 1.25f, 0.75f, 14
+		4, 30, 76, 3, 3, 95.0f, 70.0f, 3.0f, 3.0f, 1.2f, 1.25f, 0.75f, 14
 	}, {
 		ASTCENC_PRE_THOROUGH,
 		4, 76, 93, 4, 4, 105.0f, 77.0f, 10.0f, 10.0f, 2.5f, 1.25f, 0.95f, 10
@@ -110,13 +109,13 @@ static const std::array<astcenc_preset_config, 5> preset_configs_mid {{
 static const std::array<astcenc_preset_config, 5> preset_configs_low {{
 	{
 		ASTCENC_PRE_FASTEST,
-		2, 6, 38, 2, 2, 85.0f, 63.0f, 3.5f, 3.5f, 1.0f, 1.0f, 0.5f, 20
+		2, 10, 40, 2, 2, 85.0f, 63.0f, 3.5f, 3.5f, 1.0f, 1.0f, 0.5f, 20
 	}, {
 		ASTCENC_PRE_FAST,
-		3, 10, 53, 3, 3, 85.0f, 63.0f, 3.5f, 3.5f, 1.0f, 1.1f, 0.5f, 16
+		2, 15, 55, 3, 3, 85.0f, 63.0f, 3.5f, 3.5f, 1.0f, 1.1f, 0.5f, 16
 	}, {
 		ASTCENC_PRE_MEDIUM,
-		3, 26, 76, 3, 3, 95.0f, 70.0f, 3.5f, 3.5f, 1.2f, 1.25f, 0.65f, 12
+		3, 30, 76, 3, 3, 95.0f, 70.0f, 3.5f, 3.5f, 1.2f, 1.25f, 0.65f, 12
 	}, {
 		ASTCENC_PRE_THOROUGH,
 		4, 75, 92, 4, 4, 105.0f, 77.0f, 10.0f, 10.0f, 2.5f, 1.25f, 0.85f, 10
@@ -261,7 +260,7 @@ static astcenc_error validate_flags(
 ) {
 	// Flags field must not contain any unknown flag bits
 	unsigned int exMask = ~ASTCENC_ALL_FLAGS;
-	if (astc::popcount(flags & exMask) != 0)
+	if (popcount(flags & exMask) != 0)
 	{
 		return ASTCENC_ERR_BAD_FLAGS;
 	}
@@ -270,7 +269,7 @@ static astcenc_error validate_flags(
 	exMask = ASTCENC_FLG_MAP_MASK
 	       | ASTCENC_FLG_MAP_NORMAL
 	       | ASTCENC_FLG_MAP_RGBM;
-	if (astc::popcount(flags & exMask) > 1)
+	if (popcount(flags & exMask) > 1)
 	{
 		return ASTCENC_ERR_BAD_FLAGS;
 	}
@@ -423,7 +422,7 @@ static astcenc_error validate_config(
 	config.rgbm_m_scale = astc::max(config.rgbm_m_scale, 1.0f);
 
 	config.tune_partition_count_limit = astc::clamp(config.tune_partition_count_limit, 1u, 4u);
-	config.tune_partition_index_limit = astc::clamp(config.tune_partition_index_limit, 1u, (unsigned int)BLOCK_MAX_PARTITIONINGS);
+	config.tune_partition_index_limit = astc::clamp(config.tune_partition_index_limit, 1u, BLOCK_MAX_PARTITIONINGS);
 	config.tune_block_mode_limit = astc::clamp(config.tune_block_mode_limit, 1u, 100u);
 	config.tune_refinement_limit = astc::max(config.tune_refinement_limit, 1u);
 	config.tune_candidate_limit = astc::clamp(config.tune_candidate_limit, 1u, TUNE_MAX_TRIAL_CANDIDATES);
@@ -557,9 +556,9 @@ astcenc_error astcenc_config_init(
 
 		#define LERP(param) ((node_a.param * wt_node_a) + (node_b.param * wt_node_b))
 		#define LERPI(param) astc::flt2int_rtn(\
-		                         (((float)node_a.param) * wt_node_a) + \
-		                         (((float)node_b.param) * wt_node_b))
-		#define LERPUI(param) (unsigned int)LERPI(param)
+		                         (static_cast<float>(node_a.param) * wt_node_a) + \
+		                         (static_cast<float>(node_b.param) * wt_node_b))
+		#define LERPUI(param) static_cast<unsigned int>(LERPI(param))
 
 		config.tune_partition_count_limit = LERPI(tune_partition_count_limit);
 		config.tune_partition_index_limit = LERPI(tune_partition_index_limit);
@@ -655,7 +654,7 @@ astcenc_error astcenc_config_init(
 		//
 		// ... but we scale these up to keep a better balance between color and alpha. Note
 		// that if the content is using alpha we'd recommend using the -a option to weight
-		// the color conribution by the alpha transparency.
+		// the color contribution by the alpha transparency.
 		if (flags & ASTCENC_FLG_USE_PERCEPTUAL)
 		{
 			config.cw_r_weight = 0.30f * 2.25f;
@@ -842,7 +841,6 @@ static void compress_image(
 	// Only the first thread actually runs the initializer
 	ctx.manage_compress.init(block_count);
 
-
 	// Determine if we can use an optimized load function
 	bool needs_swz = (swizzle.r != ASTCENC_SWZ_R) || (swizzle.g != ASTCENC_SWZ_G) ||
 	                 (swizzle.b != ASTCENC_SWZ_B) || (swizzle.a != ASTCENC_SWZ_A);
@@ -853,10 +851,10 @@ static void compress_image(
 	bool use_fast_load = !needs_swz && !needs_hdr &&
 	                     block_z == 1 && image.data_type == ASTCENC_TYPE_U8;
 
-	auto load_func = fetch_image_block;
+	auto load_func = load_image_block;
 	if (use_fast_load)
 	{
-		load_func = fetch_image_block_fast_ldr;
+		load_func = load_image_block_fast_ldr;
 	}
 
 	// All threads run this processing loop until there is no work remaining
@@ -894,7 +892,7 @@ static void compress_image(
 
 				int y_footprint = block_y + 2 * (ctx.config.a_scale_radius - 1);
 
-				float footprint = (float)(x_footprint * y_footprint);
+				float footprint = static_cast<float>(x_footprint * y_footprint);
 				float threshold = 0.9f / (255.0f * footprint);
 
 				// Do we have any alpha values?
@@ -918,6 +916,18 @@ static void compress_image(
 			if (use_full_block)
 			{
 				load_func(decode_mode, image, blk, bsd, x * block_x, y * block_y, z * block_z, swizzle);
+
+				// Scale RGB error contribution by the maximum alpha in the block
+				// This encourages preserving alpha accuracy in regions with high
+				// transparency, and can buy up to 0.5 dB PSNR.
+				if (ctx.config.flags & ASTCENC_FLG_USE_ALPHA_WEIGHT)
+				{
+					float alpha_scale = blk.data_max.lane<3>() * (1.0f / 65535.0f);
+					blk.channel_weight = vfloat4(ctx.config.cw_r_weight * alpha_scale,
+					                             ctx.config.cw_g_weight * alpha_scale,
+					                             ctx.config.cw_b_weight * alpha_scale,
+					                             ctx.config.cw_a_weight);
+				}
 			}
 			// Apply alpha scale RDO - substitute constant color block
 			else
@@ -1133,7 +1143,8 @@ astcenc_error astcenc_decompress_image(
 
 			unsigned int offset = (((z * yblocks + y) * xblocks) + x) * 16;
 			const uint8_t* bp = data + offset;
-			physical_compressed_block pcb = *(const physical_compressed_block*)bp;
+
+			const physical_compressed_block& pcb = *reinterpret_cast<const physical_compressed_block*>(bp);
 			symbolic_compressed_block scb;
 
 			physical_to_symbolic(*ctx->bsd, pcb, scb);
@@ -1142,7 +1153,7 @@ astcenc_error astcenc_decompress_image(
 			                          x * block_x, y * block_y, z * block_z,
 			                          scb, blk);
 
-			write_image_block(image_out, blk, *ctx->bsd,
+			store_image_block(image_out, blk, *ctx->bsd,
 			                  x * block_x, y * block_y, z * block_z, *swizzle);
 		}
 
@@ -1173,7 +1184,7 @@ astcenc_error astcenc_get_block_info(
 	return ASTCENC_ERR_BAD_CONTEXT;
 #else
 	// Decode the compressed data into a symbolic form
-	physical_compressed_block pcb = *(const physical_compressed_block*)data;
+	const physical_compressed_block&pcb = *reinterpret_cast<const physical_compressed_block*>(data);
 	symbolic_compressed_block scb;
 	physical_to_symbolic(*ctx->bsd, pcb, scb);
 
@@ -1259,13 +1270,13 @@ astcenc_error astcenc_get_block_info(
 	int weight_plane1[BLOCK_MAX_TEXELS];
 	int weight_plane2[BLOCK_MAX_TEXELS];
 
-	unpack_weights(bsd, scb, di, bm.is_dual_plane, bm.get_weight_quant_mode(), weight_plane1, weight_plane2);
+	unpack_weights(bsd, scb, di, bm.is_dual_plane, weight_plane1, weight_plane2);
 	for (unsigned int i = 0; i < bsd.texel_count; i++)
 	{
-		info->weight_values_plane1[i] = (float)weight_plane1[i] * (1.0f / WEIGHTS_TEXEL_SUM);
+		info->weight_values_plane1[i] = static_cast<float>(weight_plane1[i]) * (1.0f / WEIGHTS_TEXEL_SUM);
 		if (info->is_dual_plane_block)
 		{
-			info->weight_values_plane2[i] = (float)weight_plane2[i] * (1.0f / WEIGHTS_TEXEL_SUM);
+			info->weight_values_plane2[i] = static_cast<float>(weight_plane2[i]) * (1.0f / WEIGHTS_TEXEL_SUM);
 		}
 	}
 

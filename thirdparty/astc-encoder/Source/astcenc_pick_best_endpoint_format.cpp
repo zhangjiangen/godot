@@ -89,10 +89,10 @@ static void compute_error_squared_rgb_single_partition(
 	const uint8_t* texel_indexes = pi.texels_of_partition[partition_index];
 	promise(texel_count > 0);
 
-	vfloat4 a_drop_errv = vfloat4::zero();
+	vfloatacc a_drop_errv = vfloatacc::zero();
 	vfloat default_a(blk.get_default_alpha());
 
-	vfloat4 uncor_errv = vfloat4::zero();
+	vfloatacc uncor_errv = vfloatacc::zero();
 	vfloat uncor_bs0(uncor_pline.bs.lane<0>());
 	vfloat uncor_bs1(uncor_pline.bs.lane<1>());
 	vfloat uncor_bs2(uncor_pline.bs.lane<2>());
@@ -101,12 +101,12 @@ static void compute_error_squared_rgb_single_partition(
 	vfloat uncor_amod1(uncor_pline.amod.lane<1>());
 	vfloat uncor_amod2(uncor_pline.amod.lane<2>());
 
-	vfloat4 samec_errv = vfloat4::zero();
+	vfloatacc samec_errv = vfloatacc::zero();
 	vfloat samec_bs0(samec_pline.bs.lane<0>());
 	vfloat samec_bs1(samec_pline.bs.lane<1>());
 	vfloat samec_bs2(samec_pline.bs.lane<2>());
 
-	vfloat4 rgbl_errv = vfloat4::zero();
+	vfloatacc rgbl_errv = vfloatacc::zero();
 	vfloat rgbl_bs0(rgbl_pline.bs.lane<0>());
 	vfloat rgbl_bs1(rgbl_pline.bs.lane<1>());
 	vfloat rgbl_bs2(rgbl_pline.bs.lane<2>());
@@ -115,7 +115,7 @@ static void compute_error_squared_rgb_single_partition(
 	vfloat rgbl_amod1(rgbl_pline.amod.lane<1>());
 	vfloat rgbl_amod2(rgbl_pline.amod.lane<2>());
 
-	vfloat4 l_errv = vfloat4::zero();
+	vfloatacc l_errv = vfloatacc::zero();
 	vfloat l_bs0(l_pline.bs.lane<0>());
 	vfloat l_bs1(l_pline.bs.lane<1>());
 	vfloat l_bs2(l_pline.bs.lane<2>());
@@ -200,7 +200,7 @@ static void compute_error_squared_rgb_single_partition(
 		haccumulate(l_errv, error, mask);
 	}
 
-	a_drop_err = hadd_s(a_drop_errv * ews.lane<3>());
+	a_drop_err = hadd_s(a_drop_errv) * ews.lane<3>();
 	uncor_err = hadd_s(uncor_errv);
 	samec_err = hadd_s(samec_errv);
 	rgbl_err = hadd_s(rgbl_errv);
@@ -420,9 +420,9 @@ static void compute_color_error_for_every_integer_count_and_quant_level(
 		// Estimate of color-component spread in low endpoint color
 		float df = hmax_s(abs(pdif));
 
-		int b = (int)bf;
-		int c = (int)cf;
-		int d = (int)df;
+		int b = static_cast<int>(bf);
+		int c = static_cast<int>(cf);
+		int d = static_cast<int>(df);
 
 		// Determine which one of the 6 submodes is likely to be used in case of an RGBO-mode
 		int rgbo_mode = 5;		// 7 bits per component
@@ -716,7 +716,7 @@ static float one_partition_find_best_combination_for_bitcount(
 
 	int ql = quant_mode_table[best_integer_count + 1][bits_available];
 
-	best_quant_level = (quant_method)ql;
+	best_quant_level = static_cast<quant_method>(ql);
 	best_format = FMT_LUMINANCE;
 
 	if (ql >= QUANT_6)
@@ -820,8 +820,8 @@ static float two_partitions_find_best_combination_for_bitcount(
 	int ql = quant_mode_table[best_integer_count][bits_available];
 	int ql_mod = quant_mode_table[best_integer_count][bits_available + 2];
 
-	best_quant_level = (quant_method)ql;
-	best_quant_level_mod = (quant_method)ql_mod;
+	best_quant_level = static_cast<quant_method>(ql);
+	best_quant_level_mod = static_cast<quant_method>(ql_mod);
 
 	if (ql >= QUANT_6)
 	{
@@ -945,8 +945,8 @@ static float three_partitions_find_best_combination_for_bitcount(
 	int ql = quant_mode_table[best_integer_count][bits_available];
 	int ql_mod = quant_mode_table[best_integer_count][bits_available + 5];
 
-	best_quant_level = (quant_method)ql;
-	best_quant_level_mod = (quant_method)ql_mod;
+	best_quant_level = static_cast<quant_method>(ql);
+	best_quant_level_mod = static_cast<quant_method>(ql_mod);
 
 	if (ql >= QUANT_6)
 	{
@@ -1081,8 +1081,8 @@ static float four_partitions_find_best_combination_for_bitcount(
 	int ql = quant_mode_table[best_integer_count][bits_available];
 	int ql_mod = quant_mode_table[best_integer_count][bits_available + 8];
 
-	best_quant_level = (quant_method)ql;
-	best_quant_level_mod = (quant_method)ql_mod;
+	best_quant_level = static_cast<quant_method>(ql);
+	best_quant_level_mod = static_cast<quant_method>(ql_mod);
 
 	if (ql >= QUANT_6)
 	{
@@ -1316,9 +1316,9 @@ unsigned int compute_ideal_endpoint_formats(
 		vint lane_ids = vint::lane_id() + vint(start_block_mode);
 		for (unsigned int j = start_block_mode; j < end_block_mode; j += ASTCENC_SIMD_WIDTH)
 		{
-			vfloat err = vfloat(&errors_of_best_combination[j]);
+			vfloat err = vfloat(errors_of_best_combination + j);
 			vmask mask1 = err < vbest_ep_error;
-			vmask mask2 = vint((int*)(&best_quant_levels[j])) > vint(4);
+			vmask mask2 = vint(reinterpret_cast<int*>(best_quant_levels + j)) > vint(4);
 			vmask mask = mask1 & mask2;
 			vbest_ep_error = select(vbest_ep_error, err, mask);
 			vbest_error_index = select(vbest_error_index, lane_ids, mask);

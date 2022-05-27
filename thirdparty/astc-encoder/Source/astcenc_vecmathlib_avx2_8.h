@@ -164,7 +164,7 @@ struct vint8
 	 */
 	ASTCENC_SIMD_INLINE explicit vint8(const int *p)
 	{
-		m = _mm256_loadu_si256((const __m256i*)p);
+		m = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(p));
 	}
 
 	/**
@@ -173,7 +173,7 @@ struct vint8
 	ASTCENC_SIMD_INLINE explicit vint8(const uint8_t *p)
 	{
 		// _mm_loadu_si64 would be nicer syntax, but missing on older GCC
-		m = _mm256_cvtepu8_epi32(_mm_cvtsi64_si128(*(const long long*)p));
+		m = _mm256_cvtepu8_epi32(_mm_cvtsi64_si128(*reinterpret_cast<const long long*>(p)));
 	}
 
 	/**
@@ -242,7 +242,7 @@ struct vint8
 	 */
 	static ASTCENC_SIMD_INLINE vint8 loada(const int* p)
 	{
-		return vint8(_mm256_load_si256((const __m256i*)p));
+		return vint8(_mm256_load_si256(reinterpret_cast<const __m256i*>(p)));
 	}
 
 	/**
@@ -340,7 +340,7 @@ ASTCENC_SIMD_INLINE vmask8 operator~(vmask8 a)
  *
  * bit0 = lane 0
  */
-ASTCENC_SIMD_INLINE unsigned mask(vmask8 a)
+ASTCENC_SIMD_INLINE unsigned int mask(vmask8 a)
 {
 	return _mm256_movemask_ps(a.m);
 }
@@ -534,7 +534,7 @@ ASTCENC_SIMD_INLINE vint8 hmax(vint8 a)
  */
 ASTCENC_SIMD_INLINE void storea(vint8 a, int* p)
 {
-	_mm256_store_si256((__m256i*)p, a.m);
+	_mm256_store_si256(reinterpret_cast<__m256i*>(p), a.m);
 }
 
 /**
@@ -542,7 +542,7 @@ ASTCENC_SIMD_INLINE void storea(vint8 a, int* p)
  */
 ASTCENC_SIMD_INLINE void store(vint8 a, int* p)
 {
-	_mm256_storeu_si256((__m256i*)p, a.m);
+	_mm256_storeu_si256(reinterpret_cast<__m256i*>(p), a.m);
 }
 
 /**
@@ -553,7 +553,7 @@ ASTCENC_SIMD_INLINE void store_nbytes(vint8 a, uint8_t* p)
 	// This is the most logical implementation, but the convenience intrinsic
 	// is missing on older compilers (supported in g++ 9 and clang++ 9).
 	// _mm_storeu_si64(ptr, _mm256_extracti128_si256(v.m, 0))
-	_mm_storel_epi64((__m128i*)p, _mm256_extracti128_si256(a.m, 0));
+	_mm_storel_epi64(reinterpret_cast<__m128i*>(p), _mm256_extracti128_si256(a.m, 0));
 }
 
 /**
@@ -586,16 +586,12 @@ ASTCENC_SIMD_INLINE vint8 pack_low_bytes(vint8 v)
 }
 
 /**
- * @brief Return lanes from @c b if MSB of @c cond is set, else @c a.
+ * @brief Return lanes from @c b if @c cond is set, else @c a.
  */
 ASTCENC_SIMD_INLINE vint8 select(vint8 a, vint8 b, vmask8 cond)
 {
-	// Don't use _mm256_blendv_epi8 directly, as it doesn't give the select on
-	// float sign-bit in the mask behavior which is useful. Performance is the
-	// same, these casts are free.
-	__m256 av = _mm256_castsi256_ps(a.m);
-	__m256 bv = _mm256_castsi256_ps(b.m);
-	return vint8(_mm256_castps_si256(_mm256_blendv_ps(av, bv, cond.m)));
+	__m256i condi = _mm256_castps_si256(cond.m);
+	return vint8(_mm256_blendv_epi8(a.m, b.m, condi));
 }
 
 // ============================================================================
@@ -875,7 +871,7 @@ ASTCENC_SIMD_INLINE float hadd_s(vfloat8 a)
 }
 
 /**
- * @brief Return lanes from @c b if MSB of @c cond is set, else @c a.
+ * @brief Return lanes from @c b if @c cond is set, else @c a.
  */
 ASTCENC_SIMD_INLINE vfloat8 select(vfloat8 a, vfloat8 b, vmask8 cond)
 {
@@ -883,28 +879,20 @@ ASTCENC_SIMD_INLINE vfloat8 select(vfloat8 a, vfloat8 b, vmask8 cond)
 }
 
 /**
- * @brief Accumulate the full horizontal sum of a vector.
+ * @brief Return lanes from @c b if MSB of @c cond is set, else @c a.
  */
-ASTCENC_SIMD_INLINE void haccumulate(float& accum, vfloat8 a)
+ASTCENC_SIMD_INLINE vfloat8 select_msb(vfloat8 a, vfloat8 b, vmask8 cond)
 {
-	// Two sequential 4-wide accumulates gives invariance with 4-wide code.
-	// Note that this approach gives higher error in the sum; adding the two
-	// smaller numbers together first would be more accurate.
-	vfloat4 lo(_mm256_extractf128_ps(a.m, 0));
-	haccumulate(accum, lo);
-
-	vfloat4 hi(_mm256_extractf128_ps(a.m, 1));
-	haccumulate(accum, hi);
+	return vfloat8(_mm256_blendv_ps(a.m, b.m, cond.m));
 }
 
 /**
  * @brief Accumulate lane-wise sums for a vector, folded 4-wide.
+ *
+ * This is invariant with 4-wide implementations.
  */
 ASTCENC_SIMD_INLINE void haccumulate(vfloat4& accum, vfloat8 a)
 {
-	// Two sequential 4-wide accumulates gives invariance with 4-wide code.
-	// Note that this approach gives higher error in the sum; adding the two
-	// smaller numbers together first would be more accurate.
 	vfloat4 lo(_mm256_extractf128_ps(a.m, 0));
 	haccumulate(accum, lo);
 
@@ -913,20 +901,35 @@ ASTCENC_SIMD_INLINE void haccumulate(vfloat4& accum, vfloat8 a)
 }
 
 /**
+ * @brief Accumulate lane-wise sums for a vector.
+ *
+ * This is NOT invariant with 4-wide implementations.
+ */
+ASTCENC_SIMD_INLINE void haccumulate(vfloat8& accum, vfloat8 a)
+{
+	accum += a;
+}
+
+/**
  * @brief Accumulate masked lane-wise sums for a vector, folded 4-wide.
+ *
+ * This is invariant with 4-wide implementations.
  */
 ASTCENC_SIMD_INLINE void haccumulate(vfloat4& accum, vfloat8 a, vmask8 m)
 {
 	a = select(vfloat8::zero(), a, m);
+	haccumulate(accum, a);
+}
 
-	// Two sequential 4-wide accumulates gives invariance with 4-wide code.
-	// Note that this approach gives higher error in the sum; adding the two
-	// smaller numbers together first would be more accurate.
-	vfloat4 lo(_mm256_extractf128_ps(a.m, 0));
-	haccumulate(accum, lo);
-
-	vfloat4 hi(_mm256_extractf128_ps(a.m, 1));
-	haccumulate(accum, hi);
+/**
+ * @brief Accumulate masked lane-wise sums for a vector.
+ *
+ * This is NOT invariant with 4-wide implementations.
+ */
+ASTCENC_SIMD_INLINE void haccumulate(vfloat8& accum, vfloat8 a, vmask8 m)
+{
+	a = select(vfloat8::zero(), a, m);
+	haccumulate(accum, a);
 }
 
 /**
@@ -1020,8 +1023,10 @@ ASTCENC_SIMD_INLINE void print(vfloat8 a)
 	alignas(ASTCENC_VECALIGN) float v[8];
 	storea(a, v);
 	printf("v8_f32:\n  %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f\n",
-	       (double)v[0], (double)v[1], (double)v[2], (double)v[3],
-	       (double)v[4], (double)v[5], (double)v[6], (double)v[7]);
+	       static_cast<double>(v[0]), static_cast<double>(v[1]),
+	       static_cast<double>(v[2]), static_cast<double>(v[3]),
+	       static_cast<double>(v[4]), static_cast<double>(v[5]),
+	       static_cast<double>(v[6]), static_cast<double>(v[7]));
 }
 
 /**

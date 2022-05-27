@@ -855,26 +855,6 @@ TEST(vfloat4, hadd_rgb_s)
 	EXPECT_NEAR(r, sum, 0.005f);
 }
 
-/** @brief Test vfloat4 haccumulate. */
-TEST(vfloat4, haccumulate)
-{
-	// These values will fail to add to the same value if reassociated
-	float a0 =          141.2540435791015625f;
-	float a1 =      5345345.5000000000000000f;
-	float a2 =       234234.7031250000000000f;
-	float a3 = 124353454080.0000000000000000f;
-
-	vfloat4 a(a0, a1, a2, a3);
-	float ra = 0.0f;
-	haccumulate(ra, a);
-
-	// Test that reassociation causes a failure with the numbers we chose
-	EXPECT_NE(ra, a0 + a1 + a2 + a3);
-
-	// Test that the sum works, for the association pattern we want used
-	EXPECT_EQ(ra, (a0 + a2) + (a1 + a3));
-}
-
 /** @brief Test vfloat4 sqrt. */
 TEST(vfloat4, sqrt)
 {
@@ -921,14 +901,14 @@ TEST(vfloat4, select_msb)
 	vfloat4 b(4.0f, 2.0f, 2.0f, 4.0f);
 
 	// Select in one direction
-	vfloat4 r1 = select(a, b, cond);
+	vfloat4 r1 = select_msb(a, b, cond);
 	EXPECT_EQ(r1.lane<0>(), 4.0f);
 	EXPECT_EQ(r1.lane<1>(), 3.0f);
 	EXPECT_EQ(r1.lane<2>(), 2.0f);
 	EXPECT_EQ(r1.lane<3>(), 1.0f);
 
 	// Select in the other
-	vfloat4 r2 = select(b, a, cond);
+	vfloat4 r2 = select_msb(b, a, cond);
 	EXPECT_EQ(r2.lane<0>(), 1.0f);
 	EXPECT_EQ(r2.lane<1>(), 2.0f);
 	EXPECT_EQ(r2.lane<2>(), 3.0f);
@@ -1815,28 +1795,6 @@ TEST(vint4, select)
 	EXPECT_EQ(r2.lane<3>(), 4);
 }
 
-/** @brief Test vint4 select MSB. */
-TEST(vint4, select_msb)
-{
-	vint4 msb(0x80000000, 0, 0x80000000, 0);
-	vmask4 cond(msb.m);
-
-	vint4 a(1, 3, 3, 1);
-	vint4 b(4, 2, 2, 4);
-
-	vint4 r1 = select(a, b, cond);
-	EXPECT_EQ(r1.lane<0>(), 4);
-	EXPECT_EQ(r1.lane<1>(), 3);
-	EXPECT_EQ(r1.lane<2>(), 2);
-	EXPECT_EQ(r1.lane<3>(), 1);
-
-	vint4 r2 = select(b, a, cond);
-	EXPECT_EQ(r2.lane<0>(), 1);
-	EXPECT_EQ(r2.lane<1>(), 2);
-	EXPECT_EQ(r2.lane<2>(), 3);
-	EXPECT_EQ(r2.lane<3>(), 4);
-}
-
 // VMASK4 tests - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** @brief Test vmask4 scalar literal constructor. */
 TEST(vmask4, scalar_literal_construct)
@@ -2499,33 +2457,6 @@ TEST(vfloat8, hadd_s)
 	float sum = 1.1f + 1.5f + 1.6f + 4.0f + 1.1f + 1.5f + 1.6f + 4.0f;
 	float r = hadd_s(a1);
 	EXPECT_NEAR(r, sum, 0.005f);
-}
-
-/** @brief Test vfloat8 haccumulate. */
-TEST(vfloat8, haccumulate)
-{
-	// These values will fail to add to the same value if reassociated
-	float l0 =          141.2540435791015625f;
-	float l1 =      5345345.5000000000000000f;
-	float l2 =       234234.7031250000000000f;
-	float l3 = 124353454080.0000000000000000f;
-
-	vfloat8 a1(l0, l1, l2, l3, l0, l1, l2, l3);
-	float r1 = 0.0f;
-	haccumulate(r1, a1);
-
-	vfloat4 a2(l0, l1, l2, l3);
-	vfloat4 b2(l0, l1, l2, l3);
-	float r2 = 0.0f;
-	haccumulate(r2, a2);
-	haccumulate(r2, b2);
-
-	// Test that reassociations cause a failure with the numbers we chose
-	EXPECT_NE(r1, l0 + l1 + l2 + l3 + l0 + l1 + l2 + l3);
-	EXPECT_NE(r1, (l0 + l1 + l2 + l3) + (l0 + l1 + l2 + l3));
-
-	// Test that the sum works, for the association pattern we want used
-	EXPECT_EQ(r1, r2);
 }
 
 /** @brief Test vfloat8 sqrt. */
@@ -3238,36 +3169,6 @@ TEST(vint8, select)
 	vint8 m1(1, 1, 1, 1, 1, 1, 1, 1);
 	vint8 m2(1, 2, 1, 2, 1, 2, 1, 2);
 	vmask8 cond = m1 == m2;
-
-	vint8 a(1, 3, 3, 1, 1, 3, 3, 1);
-	vint8 b(4, 2, 2, 4, 4, 2, 2, 4);
-
-	vint8 r1 = select(a, b, cond);
-	EXPECT_EQ(r1.lane<0>(), 4);
-	EXPECT_EQ(r1.lane<1>(), 3);
-	EXPECT_EQ(r1.lane<2>(), 2);
-	EXPECT_EQ(r1.lane<3>(), 1);
-	EXPECT_EQ(r1.lane<4>(), 4);
-	EXPECT_EQ(r1.lane<5>(), 3);
-	EXPECT_EQ(r1.lane<6>(), 2);
-	EXPECT_EQ(r1.lane<7>(), 1);
-
-	vint8 r2 = select(b, a, cond);
-	EXPECT_EQ(r2.lane<0>(), 1);
-	EXPECT_EQ(r2.lane<1>(), 2);
-	EXPECT_EQ(r2.lane<2>(), 3);
-	EXPECT_EQ(r2.lane<3>(), 4);
-	EXPECT_EQ(r2.lane<4>(), 1);
-	EXPECT_EQ(r2.lane<5>(), 2);
-	EXPECT_EQ(r2.lane<6>(), 3);
-	EXPECT_EQ(r2.lane<7>(), 4);
-}
-
-/** @brief Test vint8 select MSB. */
-TEST(vint8, select_msb)
-{
-	vint8 msb(0x80000000, 0, 0x80000000, 0, 0x80000000, 0, 0x80000000, 0);
-	vmask8 cond(msb.m);
 
 	vint8 a(1, 3, 3, 1, 1, 3, 3, 1);
 	vint8 b(4, 2, 2, 4, 4, 2, 2, 4);

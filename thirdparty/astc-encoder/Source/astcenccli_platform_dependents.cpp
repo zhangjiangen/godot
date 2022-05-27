@@ -80,12 +80,41 @@ int get_cpu_count()
 	GetSystemInfo(&sysinfo);
 	return sysinfo.dwNumberOfProcessors;
 }
+class WindowsTime
+{
+	private:
+		WindowsTime()
+		{
+			HMODULE module = GetModuleHandle("kernel32.dll");
+			if (module != NULL) {
+				auto func = (FnGetSystemTimePreciseAsFileTime)GetProcAddress(
+					module, "GetSystemTimePreciseAsFileTime");
+				GetSystemTimePreciseAsFileTime_ = func;
+			}
+		}
 
+	  	typedef VOID(WINAPI* FnGetSystemTimePreciseAsFileTime)(LPFILETIME);
+  		FnGetSystemTimePreciseAsFileTime GetSystemTimePreciseAsFileTime_;
+  public :
+		static WindowsTime* Instance()
+		{
+			static WindowsTime instance;
+			return &instance;
+		}
+		static void getSystemTimePreciseAsFileTime(LPFILETIME lpSystemTimeAsFileTime) {
+			if (Instance()->GetSystemTimePreciseAsFileTime_ != NULL) {
+			Instance()->GetSystemTimePreciseAsFileTime_(lpSystemTimeAsFileTime);
+			} else {
+			Instance()->GetSystemTimePreciseAsFileTime_(lpSystemTimeAsFileTime);
+			}
+		}
+};
+static WindowsTime * instance = WindowsTime::Instance();
 /* See header for documentation */
 double get_time()
 {
 	FILETIME tv;
-	GetSystemTimePreciseAsFileTime(&tv);
+	instance->getSystemTimePreciseAsFileTime(&tv);
 	unsigned long long ticks = tv.dwHighDateTime;
 	ticks = (ticks << 32) | tv.dwLowDateTime;
 	return ((double)ticks) / 1.0e7;

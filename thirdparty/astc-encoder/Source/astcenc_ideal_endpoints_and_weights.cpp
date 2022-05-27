@@ -302,21 +302,21 @@ static void compute_ideal_colors_and_weights_3_comp(
 	const float* data_vb = nullptr;
 	if (omitted_component == 0)
 	{
-		error_weight = hadd_s(blk.channel_weight.swz<0, 1, 2>()) / 3.0f;
+		error_weight = hadd_s(blk.channel_weight.swz<0, 1, 2>());
 		data_vr = blk.data_g;
 		data_vg = blk.data_b;
 		data_vb = blk.data_a;
 	}
 	else if (omitted_component == 1)
 	{
-		error_weight = hadd_s(blk.channel_weight.swz<0, 2, 3>()) / 3.0f;
+		error_weight = hadd_s(blk.channel_weight.swz<0, 2, 3>());
 		data_vr = blk.data_r;
 		data_vg = blk.data_b;
 		data_vb = blk.data_a;
 	}
 	else if (omitted_component == 2)
 	{
-		error_weight = hadd_s(blk.channel_weight.swz<0, 1, 3>()) / 3.0f;
+		error_weight = hadd_s(blk.channel_weight.swz<0, 1, 3>());
 		data_vr = blk.data_r;
 		data_vg = blk.data_g;
 		data_vb = blk.data_a;
@@ -325,11 +325,13 @@ static void compute_ideal_colors_and_weights_3_comp(
 	{
 		assert(omitted_component == 3);
 
-		error_weight = hadd_s(blk.channel_weight.swz<0, 1, 2>()) / 3.0f;
+		error_weight = hadd_s(blk.channel_weight.swz<0, 1, 2>());
 		data_vr = blk.data_r;
 		data_vg = blk.data_g;
 		data_vb = blk.data_b;
 	}
+
+	error_weight = error_weight * (1.0f / 3.0f);
 
 	if (omitted_component == 3)
 	{
@@ -618,7 +620,7 @@ float compute_error_of_weight_set_1plane(
 	const decimation_info& di,
 	const float* dec_weight_quant_uvalue
 ) {
-	vfloat4 error_summav = vfloat4::zero();
+	vfloatacc error_summav = vfloatacc::zero();
 	float error_summa = 0.0f;
 	unsigned int texel_count = di.texel_count;
 
@@ -673,9 +675,7 @@ float compute_error_of_weight_set_1plane(
 	}
 
 	// Resolve the final scalar accumulator sum
-	haccumulate(error_summa, error_summav);
-
-	return error_summa;
+	return error_summa = hadd_s(error_summav);
 }
 
 /* See header for documentation. */
@@ -686,8 +686,7 @@ float compute_error_of_weight_set_2planes(
 	const float* dec_weight_quant_uvalue_plane1,
 	const float* dec_weight_quant_uvalue_plane2
 ) {
-	vfloat4 error_summav = vfloat4::zero();
-	float error_summa = 0.0f;
+	vfloatacc error_summav = vfloatacc::zero();
 	unsigned int texel_count = di.texel_count;
 
 	// Process SIMD-width chunks, safe to over-fetch - the extra space is zero initialized
@@ -768,15 +767,12 @@ float compute_error_of_weight_set_2planes(
 	}
 
 	// Resolve the final scalar accumulator sum
-	haccumulate(error_summa, error_summav);
-
-	return error_summa;
+	return hadd_s(error_summav);
 }
 
 /* See header for documentation. */
 void compute_ideal_weights_for_decimation(
-	const endpoints_and_weights& eai_in,
-	endpoints_and_weights& eai_out,
+	const endpoints_and_weights& ei,
 	const decimation_info& di,
 	float* dec_weight_ideal_value
 ) {
@@ -786,40 +782,23 @@ void compute_ideal_weights_for_decimation(
 	promise(texel_count > 0);
 	promise(weight_count > 0);
 
-	// This function includes a copy of the epw from eai_in to eai_out. We do it here because we
-	// want to load the data anyway, so we can avoid loading it from memory twice.
-	eai_out.ep = eai_in.ep;
-	eai_out.is_constant_weight_error_scale = eai_in.is_constant_weight_error_scale;
-
 	// Ensure that the end of the output arrays that are used for SIMD paths later are filled so we
 	// can safely run SIMD elsewhere without a loop tail. Note that this is always safe as weight
 	// arrays always contain space for 64 elements
 	unsigned int prev_weight_count_simd = round_down_to_simd_multiple_vla(weight_count - 1);
 	storea(vfloat::zero(), dec_weight_ideal_value + prev_weight_count_simd);
 
-	// If we have a 1:1 mapping just shortcut the computation - clone the weights into both the
-	// weight set and the output epw copy.
-
-	// Transfer enough to also copy zero initialized SIMD over-fetch region
-	unsigned int texel_count_simd = round_up_to_simd_multiple_vla(texel_count);
-	for (unsigned int i = 0; i < texel_count_simd; i += ASTCENC_SIMD_WIDTH)
-	{
-		vfloat weight(eai_in.weights + i);
-		vfloat weight_error_scale(eai_in.weight_error_scale + i);
-
-		storea(weight, eai_out.weights + i);
-		storea(weight_error_scale, eai_out.weight_error_scale + i);
-
-		// Direct 1:1 weight mapping, so clone weights directly
-		// TODO: Can we just avoid the copy for direct cases?
-		if (is_direct)
-		{
-			storea(weight, dec_weight_ideal_value + i);
-		}
-	}
-
+	// If we have a 1:1 mapping just shortcut the computation. Transfer enough to also copy the
+	// zero-initialized SIMD over-fetch region
 	if (is_direct)
 	{
+		unsigned int texel_count_simd = round_up_to_simd_multiple_vla(texel_count);
+		for (unsigned int i = 0; i < texel_count_simd; i += ASTCENC_SIMD_WIDTH)
+		{
+			vfloat weight(ei.weights + i);
+			storea(weight, dec_weight_ideal_value + i);
+		}
+
 		return;
 	}
 
@@ -827,8 +806,8 @@ void compute_ideal_weights_for_decimation(
 	alignas(ASTCENC_VECALIGN) float infilled_weights[BLOCK_MAX_TEXELS];
 
 	// Compute an initial average for each decimated weight
-	bool constant_wes = eai_in.is_constant_weight_error_scale;
-	vfloat weight_error_scale(eai_in.weight_error_scale[0]);
+	bool constant_wes = ei.is_constant_weight_error_scale;
+	vfloat weight_error_scale(ei.weight_error_scale[0]);
 
 	// This overshoots - this is OK as we initialize the array tails in the
 	// decimation table structures to safe values ...
@@ -850,13 +829,13 @@ void compute_ideal_weights_for_decimation(
 
 			if (!constant_wes)
 			{
-				weight_error_scale = gatherf(eai_in.weight_error_scale, texel);
+				weight_error_scale = gatherf(ei.weight_error_scale, texel);
 			}
 
 			vfloat contrib_weight = weight * weight_error_scale;
 
 			weight_weight += contrib_weight;
-			initial_weight += gatherf(eai_in.weights, texel) * contrib_weight;
+			initial_weight += gatherf(ei.weights, texel) * contrib_weight;
 		}
 
 		storea(initial_weight / weight_weight, dec_weight_ideal_value + i);
@@ -908,12 +887,12 @@ void compute_ideal_weights_for_decimation(
 
 			if (!constant_wes)
 			{
- 				weight_error_scale = gatherf(eai_in.weight_error_scale, texel);
+ 				weight_error_scale = gatherf(ei.weight_error_scale, texel);
 			}
 
 			vfloat scale = weight_error_scale * contrib_weight;
 			vfloat old_weight = gatherf(infilled_weights, texel);
-			vfloat ideal_weight = gatherf(eai_in.weights, texel);
+			vfloat ideal_weight = gatherf(ei.weights, texel);
 
 			error_change0 += contrib_weight * scale;
 			error_change1 += (old_weight - ideal_weight) * scale;
@@ -939,7 +918,7 @@ void compute_quantized_weights_for_decimation(
 ) {
 	int weight_count = di.weight_count;
 	promise(weight_count > 0);
-	const quantization_and_transfer_table *qat = &(quant_and_xfer_tables[quant_level]);
+	const quant_and_transfer_table& qat = quant_and_xfer_tables[quant_level];
 
 	// The available quant levels, stored with a minus 1 bias
 	static const float quant_levels_m1[12] {
@@ -973,7 +952,7 @@ void compute_quantized_weights_for_decimation(
 	// safe data in compute_ideal_weights_for_decimation and arrays are always 64 elements
 	for (int i = 0; i < weight_count; i += ASTCENC_SIMD_WIDTH)
 	{
-		vfloat ix = loada(&dec_weight_ideal_value[i]) * scalev - scaled_low_boundv;
+		vfloat ix = loada(dec_weight_ideal_value + i) * scalev - scaled_low_boundv;
 		ix = clampzo(ix);
 
 		// Look up the two closest indexes and return the one that was closest
@@ -982,18 +961,21 @@ void compute_quantized_weights_for_decimation(
 		vint weightl = float_to_int(ix1);
 		vint weighth = weightl + vint(1);
 
-		vfloat ixl = gatherf(qat->unquantized_value_unsc, weightl);
-		vfloat ixh = gatherf(qat->unquantized_value_unsc, weighth);
+		// TODO: Can we just do more of this just as integers?
+		vint ixli = gatheri(qat.quant_to_unquant, weightl);
+		vint ixhi = gatheri(qat.quant_to_unquant, weighth);
+
+		vfloat ixl = int_to_float(ixli);
+		vfloat ixh = int_to_float(ixhi);
 
 		vmask mask = (ixl + ixh) < (vfloat(128.0f) * ix);
-		vint weight = select(weightl, weighth, mask);
+		vint weight = select(ixli, ixhi, mask);
 		ixl = select(ixl, ixh, mask);
 
 		// Invert the weight-scaling that was done initially
-		storea(ixl * rscalev + low_boundv, &weight_set_out[i]);
-		vint scm = gatheri(qat->scramble_map, weight);
-		vint scn = pack_low_bytes(scm);
-		store_nbytes(scn, &quantized_weight_set[i]);
+		storea(ixl * rscalev + low_boundv, weight_set_out + i);
+		vint scn = pack_low_bytes(weight);
+		store_nbytes(scn, quantized_weight_set + i);
 	}
 }
 
@@ -1065,8 +1047,7 @@ void recompute_ideal_colors_1plane(
 	const image_block& blk,
 	const partition_info& pi,
 	const decimation_info& di,
-	int weight_quant_mode,
-	const uint8_t* dec_weights_quant_pvalue,
+	const uint8_t* dec_weights_uquant,
 	endpoints& ep,
 	vfloat4 rgbs_vectors[BLOCK_MAX_PARTITIONS],
 	vfloat4 rgbo_vectors[BLOCK_MAX_PARTITIONS]
@@ -1079,12 +1060,12 @@ void recompute_ideal_colors_1plane(
 	promise(total_texel_count > 0);
 	promise(partition_count > 0);
 
-	const quantization_and_transfer_table& qat = quant_and_xfer_tables[weight_quant_mode];
-
-	float dec_weight[BLOCK_MAX_WEIGHTS];
-	for (unsigned int i = 0; i < weight_count; i++)
+	alignas(ASTCENC_VECALIGN) float dec_weight[BLOCK_MAX_WEIGHTS];
+	for (unsigned int i = 0; i < weight_count; i += ASTCENC_SIMD_WIDTH)
 	{
-		dec_weight[i] = qat.unquantized_value[dec_weights_quant_pvalue[i]] * (1.0f / 64.0f);
+		vint unquant_value(dec_weights_uquant + i);
+		vfloat unquant_valuef = int_to_float(unquant_value) * vfloat(1.0f / 64.0f);
+		storea(unquant_valuef, dec_weight + i);
 	}
 
 	alignas(ASTCENC_VECALIGN) float undec_weight[BLOCK_MAX_TEXELS];
@@ -1287,9 +1268,8 @@ void recompute_ideal_colors_2planes(
 	const image_block& blk,
 	const block_size_descriptor& bsd,
 	const decimation_info& di,
-	int weight_quant_mode,
-	const uint8_t* dec_weights_quant_pvalue_plane1,
-	const uint8_t* dec_weights_quant_pvalue_plane2,
+	const uint8_t* dec_weights_uquant_plane1,
+	const uint8_t* dec_weights_uquant_plane2,
 	endpoints& ep,
 	vfloat4& rgbs_vector,
 	vfloat4& rgbo_vector,
@@ -1301,16 +1281,20 @@ void recompute_ideal_colors_2planes(
 	promise(total_texel_count > 0);
 	promise(weight_count > 0);
 
-	const quantization_and_transfer_table *qat = &(quant_and_xfer_tables[weight_quant_mode]);
-
-	float dec_weight_plane1[BLOCK_MAX_WEIGHTS_2PLANE];
-	float dec_weight_plane2[BLOCK_MAX_WEIGHTS_2PLANE];
+	alignas(ASTCENC_VECALIGN) float dec_weight_plane1[BLOCK_MAX_WEIGHTS_2PLANE];
+	alignas(ASTCENC_VECALIGN) float dec_weight_plane2[BLOCK_MAX_WEIGHTS_2PLANE];
 
 	assert(weight_count <= BLOCK_MAX_WEIGHTS_2PLANE);
-	for (unsigned int i = 0; i < weight_count; i++)
+
+	for (unsigned int i = 0; i < weight_count; i += ASTCENC_SIMD_WIDTH)
 	{
-		dec_weight_plane1[i] = qat->unquantized_value[dec_weights_quant_pvalue_plane1[i]] * (1.0f / 64.0f);
-		dec_weight_plane2[i] = qat->unquantized_value[dec_weights_quant_pvalue_plane2[i]] * (1.0f / 64.0f);
+		vint unquant_value1(dec_weights_uquant_plane1 + i);
+		vfloat unquant_value1f = int_to_float(unquant_value1) * vfloat(1.0f / 64.0f);
+		storea(unquant_value1f, dec_weight_plane1 + i);
+
+		vint unquant_value2(dec_weights_uquant_plane2 + i);
+		vfloat unquant_value2f = int_to_float(unquant_value2) * vfloat(1.0f / 64.0f);
+		storea(unquant_value2f, dec_weight_plane2 + i);
 	}
 
 	alignas(ASTCENC_VECALIGN) float undec_weight_plane1[BLOCK_MAX_TEXELS];
