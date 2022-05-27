@@ -190,7 +190,7 @@ private:
 public:
 	//internal usage
 
-	void base_update_dependency(RID p_base, DependencyTracker *p_instance);
+	void base_update_dependency(RID p_base, DependencyTracker *p_instance) override;
 
 	/* VOXEL GI API */
 
@@ -263,7 +263,7 @@ public:
 	virtual AABB visibility_notifier_get_aabb(RID p_notifier) const override;
 	virtual void visibility_notifier_call(RID p_notifier, bool p_enter, bool p_deferred) override;
 
-	RS::InstanceType get_base_type(RID p_rid) const;
+	RS::InstanceType get_base_type(RID p_rid) const override;
 
 	bool free(RID p_rid) override;
 
@@ -281,10 +281,10 @@ public:
 	virtual void update_memory_info() override;
 	virtual uint64_t get_rendering_info(RS::RenderingInfo p_info) override;
 
-	String get_video_adapter_name() const;
-	String get_video_adapter_vendor() const;
-	RenderingDevice::DeviceType get_video_adapter_type() const;
-	String get_video_adapter_api_version() const;
+	String get_video_adapter_name() const override;
+	String get_video_adapter_vendor() const override;
+	RenderingDevice::DeviceType get_video_adapter_type() const override;
+	String get_video_adapter_api_version() const override;
 
 	virtual void capture_timestamps_begin() override;
 	virtual void capture_timestamp(const String &p_name) override;
