@@ -787,7 +787,7 @@ private:
 			_memory_info;
 	MemoryHashMap<void *, MemoryDebugInfo> point_map;
 	MemoryHashMap<void *, int> point_size_map;
-	int TestCount = 0;
+	//int TestCount = 0;
 	::Mutex _memory_info_mutex;
 
 	SmallMemoryManager() {

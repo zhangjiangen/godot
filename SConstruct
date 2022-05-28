@@ -670,8 +670,8 @@ if selected_platform in platform_list:
             elif methods.using_clang(env) or methods.using_emcc(env):
                 env.Append(CXXFLAGS=["-Wno-error=#warnings"])
 
-    if env['platform'] in ['osx', 'android', 'iphone']:
-        env.Append(CXXFLAGS=['-Wno-inconsistent-missing-override'])
+    # if env['platform'] in ['osx', 'android', 'iphone']:
+    env.Append(CXXFLAGS=['-Wno-inconsistent-missing-override'])
     if hasattr(detect, "get_program_suffix"):
         suffix = "_" + detect.get_program_suffix()
     else:
