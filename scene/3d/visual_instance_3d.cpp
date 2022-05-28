@@ -498,3 +498,12 @@ GeometryInstance3D::GeometryInstance3D() {
 	instance_uniform_property_remap.set_debug_info(__FILE__, __LINE__);
 	//RS::get_singleton()->instance_geometry_set_baked_light_texture_index(get_instance(),0);
 }
+
+GeometryInstance3D::~GeometryInstance3D() {
+	if (material_overlay.is_valid()) {
+		set_material_overlay(Ref<Material>());
+	}
+	if (material_override.is_valid()) {
+		set_material_override(Ref<Material>());
+	}
+}
