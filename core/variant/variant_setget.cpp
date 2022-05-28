@@ -2252,6 +2252,7 @@ void Variant::interpolate(const Variant &a, const Variant &b, float c, Variant &
 		case TRANSFORM3D: {
 			r_dst = a._data._transform3d->interpolate_with(*b._data._transform3d, c);
 		}
+			return;
 		case CAMERA_MATRIX: {
 			r_dst = a._data._camera_matrix->lerp(*b._data._camera_matrix, c);
 		}
