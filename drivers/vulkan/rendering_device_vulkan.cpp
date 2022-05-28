@@ -28,6 +28,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#define _CRT_SECURE_NO_WARNINGS
 #include "rendering_device_vulkan.h"
 
 #include "core/config/project_settings.h"

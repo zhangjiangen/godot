@@ -68,6 +68,9 @@ struct cli_config_options
 	/** @brief The number of threads to use for processing. */
 	unsigned int thread_count;
 
+	/** @brief The number of repeats to execute for benchmarking. */
+	unsigned int repeat_count;
+
 	/** @brief The number of image slices to load for a 3D image. */
 	unsigned int array_size;
 
@@ -101,6 +104,22 @@ struct cli_config_options
  * @return The astc image file, or nullptr on error.
  */
 astcenc_image* load_ncimage(
+	const char* filename,
+	bool y_flip,
+	bool& is_hdr,
+	unsigned int& component_count);
+
+/**
+ * @brief Load uncompressed PNG image.
+ *
+ * @param filename               The file path on disk.
+ * @param y_flip                 Should this image be Y flipped?
+ * @param[out] is_hdr            Is the loaded image HDR?
+ * @param[out] component_count   The number of components in the loaded image.
+ *
+ * @return The astc image file, or nullptr on error.
+ */
+astcenc_image* load_png_with_wuffs(
 	const char* filename,
 	bool y_flip,
 	bool& is_hdr,

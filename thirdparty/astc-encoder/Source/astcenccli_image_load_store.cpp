@@ -25,14 +25,12 @@
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
-#include <vector>
 
 #include "astcenccli_internal.h"
 
 #include "stb_image.h"
 #include "stb_image_write.h"
 #include "tinyexr.h"
-#include "wuffs-v0.3.c"
 
 /* ============================================================================
   Image load and store through the stb_iamge and tinyexr libraries
@@ -62,7 +60,7 @@ static astcenc_image* load_image_with_tinyexr(
 	if (load_res != TINYEXR_SUCCESS)
 	{
 		printf("ERROR: Failed to load image %s (%s)\n", filename, err);
-		free((void*)err);
+		free(reinterpret_cast<void*>(const_cast<char*>(err)));
 		return nullptr;
 	}
 
@@ -72,103 +70,6 @@ static astcenc_image* load_image_with_tinyexr(
 	is_hdr = true;
 	component_count = 4;
 	return res_img;
-}
-
-/**
- * @brief Load an image using Wuffs to provide the loader.
- *
- * @param      filename          The name of the file to load.
- * @param      y_flip            Should the image be vertically flipped?
- * @param[out] is_hdr            Is this an HDR image load?
- * @param[out] component_count   The number of components in the data.
- *
- * @return The loaded image data in a canonical 4 channel format, or @c nullptr on error.
- */
-static astcenc_image* load_png_with_wuffs(
-	const char* filename,
-	bool y_flip,
-	bool& is_hdr,
-	unsigned int& component_count
-) {
-	is_hdr = false;
-	component_count = 4;
-
-	std::ifstream file(filename, std::ios::binary | std::ios::ate);
-	std::streamsize size = file.tellg();
-	file.seekg(0, std::ios::beg);
-
-	std::vector<uint8_t> buffer(size);
-	file.read((char*)buffer.data(), size);
-
-	wuffs_png__decoder *dec = wuffs_png__decoder__alloc();
-	if (!dec)
-	{
-		return nullptr;
-	}
-
-	wuffs_base__image_config ic;
-	wuffs_base__io_buffer src = wuffs_base__ptr_u8__reader(buffer.data(), size, true);
-	wuffs_base__status status = wuffs_png__decoder__decode_image_config(dec, &ic, &src);
-	if (status.repr)
-	{
-		return nullptr;
-	}
-
-	uint32_t dim_x = wuffs_base__pixel_config__width(&ic.pixcfg);
-	uint32_t dim_y = wuffs_base__pixel_config__height(&ic.pixcfg);
-	size_t num_pixels = dim_x * dim_y;
-	if (num_pixels > (SIZE_MAX / 4))
-	{
-		return nullptr;
-	}
-
-	// Override the image's native pixel format to be RGBA_NONPREMUL
-	wuffs_base__pixel_config__set(
-	    &ic.pixcfg,
-	    WUFFS_BASE__PIXEL_FORMAT__RGBA_NONPREMUL,
-	    WUFFS_BASE__PIXEL_SUBSAMPLING__NONE,
-	    dim_x, dim_y);
-
-	// Configure the work buffer
-	size_t workbuf_len = wuffs_png__decoder__workbuf_len(dec).max_incl;
-	if (workbuf_len > SIZE_MAX)
-	{
-		return nullptr;
-	}
-
-	wuffs_base__slice_u8 workbuf_slice = wuffs_base__make_slice_u8((uint8_t*)malloc(workbuf_len), workbuf_len);
-	if (!workbuf_slice.ptr)
-	{
-		return nullptr;
-	}
-
-	wuffs_base__slice_u8 pixbuf_slice = wuffs_base__make_slice_u8((uint8_t*)malloc(num_pixels * 4), num_pixels * 4);
-	if (!pixbuf_slice.ptr)
-	{
-		return nullptr;
-	}
-
-	wuffs_base__pixel_buffer pb;
-	status = wuffs_base__pixel_buffer__set_from_slice(&pb, &ic.pixcfg, pixbuf_slice);
-	if (status.repr)
-	{
-		return nullptr;
-	}
-
-	// Decode the pixels
-	status = wuffs_png__decoder__decode_frame(dec, &pb, &src, WUFFS_BASE__PIXEL_BLEND__SRC, workbuf_slice, NULL);
-	if (status.repr)
-	{
-		return nullptr;
-	}
-
-	astcenc_image* img = astc_img_from_unorm8x4_array(pixbuf_slice.ptr, dim_x, dim_y, y_flip);
-
-	free(pixbuf_slice.ptr);
-	free(workbuf_slice.ptr);
-	free(dec);
-
-	return img;
 }
 
 /**
@@ -253,7 +154,7 @@ static bool store_png_image_with_stb(
 	int y_flip
 ) {
 	assert(img->data_type == ASTCENC_TYPE_U8);
-	uint8_t* buf = (uint8_t*)img->data[0];
+	uint8_t* buf = reinterpret_cast<uint8_t*>(img->data[0]);
 
 	stbi_flip_vertically_on_write(y_flip);
 	int res = stbi_write_png(filename, img->dim_x, img->dim_y, 4, buf, img->dim_x * 4);
@@ -275,7 +176,7 @@ static bool store_tga_image_with_stb(
 	int y_flip
 ) {
 	assert(img->data_type == ASTCENC_TYPE_U8);
-	uint8_t* buf = (uint8_t*)img->data[0];
+	uint8_t* buf = reinterpret_cast<uint8_t*>(img->data[0]);
 
 	stbi_flip_vertically_on_write(y_flip);
 	int res = stbi_write_tga(filename, img->dim_x, img->dim_y, 4, buf);
@@ -297,7 +198,7 @@ static bool store_bmp_image_with_stb(
 	int y_flip
 ) {
 	assert(img->data_type == ASTCENC_TYPE_U8);
-	uint8_t* buf = (uint8_t*)img->data[0];
+	uint8_t* buf = reinterpret_cast<uint8_t*>(img->data[0]);
 
 	stbi_flip_vertically_on_write(y_flip);
 	int res = stbi_write_bmp(filename, img->dim_x, img->dim_y, 4, buf);
@@ -327,8 +228,9 @@ static bool store_hdr_image_with_stb(
 /* ============================================================================
 Native Load and store of KTX and DDS file formats.
 
-Unlike "regular" 2D image formats, which are mostly supported through stb_image and tinyexr, these
-formats are supported directly; this involves a relatively large number of pixel formats.
+Unlike "regular" 2D image formats, which are mostly supported through stb_image
+and tinyexr, these formats are supported directly; this involves a relatively
+large number of pixel formats.
 
 The following restrictions apply to loading of these file formats:
 
@@ -401,8 +303,8 @@ static void copy_scanline(
 
 #define COPY_R(dsttype, srctype, convfunc, oneval) \
 	do { \
-		const srctype* s = (const srctype*)src; \
-		dsttype* d = (dsttype*)dst; \
+		const srctype* s = reinterpret_cast<const srctype*>(src); \
+		dsttype* d = reinterpret_cast<dsttype*>(dst); \
 		for (int i = 0; i < pixel_count; i++) \
 		{ \
 			d[4 * i    ] = convfunc(s[i]); \
@@ -415,8 +317,8 @@ static void copy_scanline(
 
 #define COPY_RG(dsttype, srctype, convfunc, oneval) \
 	do { \
-		const srctype* s = (const srctype*)src; \
-		dsttype* d = (dsttype*)dst; \
+		const srctype* s = reinterpret_cast<const srctype*>(src); \
+		dsttype* d = reinterpret_cast<dsttype*>(dst); \
 		for (int i = 0; i < pixel_count; i++) \
 		{ \
 			d[4 * i    ] = convfunc(s[2 * i    ]); \
@@ -429,8 +331,8 @@ static void copy_scanline(
 
 #define COPY_RGB(dsttype, srctype, convfunc, oneval) \
 	do { \
-		const srctype* s = (const srctype*)src; \
-		dsttype* d = (dsttype*)dst; \
+		const srctype* s = reinterpret_cast<const srctype*>(src); \
+		dsttype* d = reinterpret_cast<dsttype*>(dst); \
 		for (int i = 0; i < pixel_count; i++) \
 		{ \
 			d[4 * i    ] = convfunc(s[3 * i    ]); \
@@ -443,8 +345,8 @@ static void copy_scanline(
 
 #define COPY_BGR(dsttype, srctype, convfunc, oneval) \
 	do { \
-		const srctype* s = (const srctype*)src; \
-		dsttype* d = (dsttype*)dst; \
+		const srctype* s = reinterpret_cast<const srctype*>(src); \
+		dsttype* d = reinterpret_cast<dsttype*>(dst); \
 		for (int i = 0; i < pixel_count; i++)\
 		{ \
 			d[4 * i    ] = convfunc(s[3 * i + 2]); \
@@ -457,8 +359,8 @@ static void copy_scanline(
 
 #define COPY_RGBX(dsttype, srctype, convfunc, oneval) \
 	do { \
-		const srctype* s = (const srctype*)src; \
-		dsttype* d = (dsttype*)dst; \
+		const srctype* s = reinterpret_cast<const srctype*>(src); \
+		dsttype* d = reinterpret_cast<dsttype*>(dst); \
 		for (int i = 0; i < pixel_count; i++)\
 		{ \
 			d[4 * i    ] = convfunc(s[4 * i    ]); \
@@ -471,8 +373,8 @@ static void copy_scanline(
 
 #define COPY_BGRX(dsttype, srctype, convfunc, oneval) \
 	do { \
-		const srctype* s = (const srctype*)src; \
-		dsttype* d = (dsttype*)dst; \
+		const srctype* s = reinterpret_cast<const srctype*>(src); \
+		dsttype* d = reinterpret_cast<dsttype*>(dst); \
 		for (int i = 0; i < pixel_count; i++)\
 		{ \
 			d[4 * i    ] = convfunc(s[4 * i + 2]); \
@@ -485,8 +387,8 @@ static void copy_scanline(
 
 #define COPY_RGBA(dsttype, srctype, convfunc, oneval) \
 	do { \
-		const srctype* s = (const srctype*)src; \
-		dsttype* d = (dsttype*)dst; \
+		const srctype* s = reinterpret_cast<const srctype*>(src); \
+		dsttype* d = reinterpret_cast<dsttype*>(dst); \
 		for (int i = 0; i < pixel_count; i++) \
 		{ \
 			d[4 * i    ] = convfunc(s[4 * i    ]); \
@@ -499,8 +401,8 @@ static void copy_scanline(
 
 #define COPY_BGRA(dsttype, srctype, convfunc, oneval) \
 	do { \
-		const srctype* s = (const srctype*)src; \
-		dsttype* d = (dsttype*)dst; \
+		const srctype* s = reinterpret_cast<const srctype*>(src); \
+		dsttype* d = reinterpret_cast<dsttype*>(dst); \
 		for (int i = 0; i < pixel_count; i++) \
 		{ \
 			d[4 * i    ] = convfunc(s[4 * i + 2]); \
@@ -513,8 +415,8 @@ static void copy_scanline(
 
 #define COPY_L(dsttype, srctype, convfunc, oneval) \
 	do { \
-		const srctype* s = (const srctype*)src; \
-		dsttype* d = (dsttype*)dst; \
+		const srctype* s = reinterpret_cast<const srctype*>(src); \
+		dsttype* d = reinterpret_cast<dsttype*>(dst); \
 		for (int i = 0; i < pixel_count; i++) \
 		{ \
 			d[4 * i    ] = convfunc(s[i]); \
@@ -527,8 +429,8 @@ static void copy_scanline(
 
 #define COPY_LA(dsttype, srctype, convfunc, oneval) \
 	do { \
-		const srctype* s = (const srctype*)src; \
-		dsttype* d = (dsttype*)dst; \
+		const srctype* s = reinterpret_cast<const srctype*>(src); \
+		dsttype* d = reinterpret_cast<dsttype*>(dst); \
 		for (int i = 0; i < pixel_count; i++) \
 		{ \
 			d[4 * i    ] = convfunc(s[2 * i    ]); \
@@ -625,7 +527,7 @@ static void switch_endianness2(
 	void* dataptr,
 	int byte_count
 ) {
-	uint8_t *data = (uint8_t *) dataptr;
+	uint8_t* data = reinterpret_cast<uint8_t*>(dataptr);
 	for (int i = 0; i < byte_count / 2; i++)
 	{
 		uint8_t d0 = data[0];
@@ -646,7 +548,7 @@ static void switch_endianness4(
 	void* dataptr,
 	int byte_count
 ) {
-	uint8_t *data = (uint8_t *) dataptr;
+	uint8_t* data = reinterpret_cast<uint8_t*>(dataptr);
 	for (int i = 0; i < byte_count / 4; i++)
 	{
 		uint8_t d0 = data[0];
@@ -1603,7 +1505,9 @@ static bool store_ktx_uncompressed_image(
 	FILE *wf = fopen(filename, "wb");
 	if (wf)
 	{
-		void *dataptr = (bitness == 16) ? (void *)(row_pointers16[0][0]) : (void *)(row_pointers8[0][0]);
+		void* dataptr = (bitness == 16) ?
+			reinterpret_cast<void*>(row_pointers16[0][0]) :
+			reinterpret_cast<void*>(row_pointers8[0][0]);
 
 		size_t expected_bytes_written = sizeof(ktx_header) + image_write_bytes + 4;
 		size_t hdr_bytes_written = fwrite(&hdr, 1, sizeof(ktx_header), wf);
@@ -2233,7 +2137,9 @@ static bool store_dds_uncompressed_image(
 	FILE *wf = fopen(filename, "wb");
 	if (wf)
 	{
-		void *dataptr = (bitness == 16) ? (void *)(row_pointers16[0][0]) : (void *)(row_pointers8[0][0]);
+		void *dataptr = (bitness == 16) ?
+			reinterpret_cast<void*>(row_pointers16[0][0]) :
+			reinterpret_cast<void*>(row_pointers8[0][0]);
 
 		size_t expected_bytes_written = 4 + sizeof(dds_header) + (bitness > 8 ? sizeof(dds_header_dx10) : 0) + image_bytes;
 
@@ -2425,10 +2331,10 @@ static unsigned int unpack_bytes(
 	uint8_t c,
 	uint8_t d
 ) {
-	return ((unsigned int)(a))       +
-	       ((unsigned int)(b) << 8)  +
-	       ((unsigned int)(c) << 16) +
-	       ((unsigned int)(d) << 24);
+	return (static_cast<unsigned int>(a)      ) +
+	       (static_cast<unsigned int>(b) <<  8) +
+	       (static_cast<unsigned int>(c) << 16) +
+	       (static_cast<unsigned int>(d) << 24);
 }
 
 /* See header for documentation. */
@@ -2445,7 +2351,7 @@ int load_cimage(
 	}
 
 	astc_header hdr;
-	file.read((char*)&hdr, sizeof(astc_header));
+	file.read(reinterpret_cast<char*>(&hdr), sizeof(astc_header));
 	if (!file)
 	{
 		printf("ERROR: File read failed '%s'\n", filename);
@@ -2460,9 +2366,9 @@ int load_cimage(
 	}
 
 	// Ensure these are not zero to avoid div by zero
-	unsigned int block_x = astc::max((unsigned int)hdr.block_x, 1u);
-	unsigned int block_y = astc::max((unsigned int)hdr.block_y, 1u);
-	unsigned int block_z = astc::max((unsigned int)hdr.block_z, 1u);
+	unsigned int block_x = astc::max(static_cast<unsigned int>(hdr.block_x), 1u);
+	unsigned int block_y = astc::max(static_cast<unsigned int>(hdr.block_y), 1u);
+	unsigned int block_z = astc::max(static_cast<unsigned int>(hdr.block_z), 1u);
 
 	unsigned int dim_x = unpack_bytes(hdr.dim_x[0], hdr.dim_x[1], hdr.dim_x[2], 0);
 	unsigned int dim_y = unpack_bytes(hdr.dim_y[0], hdr.dim_y[1], hdr.dim_y[2], 0);
@@ -2481,7 +2387,7 @@ int load_cimage(
 	size_t data_size = xblocks * yblocks * zblocks * 16;
 	uint8_t *buffer = new uint8_t[data_size];
 
-	file.read((char*)buffer, data_size);
+	file.read(reinterpret_cast<char*>(buffer), data_size);
 	if (!file)
 	{
 		printf("ERROR: File read failed '%s'\n", filename);
@@ -2534,7 +2440,7 @@ int store_cimage(
 		return 1;
 	}
 
-	file.write((char*)&hdr, sizeof(astc_header));
-	file.write((char*)img.data, img.data_len);
+	file.write(reinterpret_cast<char*>(&hdr), sizeof(astc_header));
+	file.write(reinterpret_cast<char*>(img.data), img.data_len);
 	return 0;
 }
