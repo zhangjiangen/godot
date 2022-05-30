@@ -253,7 +253,7 @@ public:
 	virtual AABB fog_volume_get_aabb(RID p_fog_volume) const override;
 	virtual Vector3 fog_volume_get_extents(RID p_fog_volume) const;
 
-	/* VISIBILITY NOTIFIER */
+	/* VISIBILITY NOTIFIER */ 
 
 	virtual RID visibility_notifier_allocate() override;
 	virtual void visibility_notifier_initialize(RID p_notifier) override;
