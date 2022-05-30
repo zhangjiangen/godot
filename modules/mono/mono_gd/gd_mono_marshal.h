@@ -273,6 +273,8 @@ enum {
 			offsetof(Transform3D, basis) == 0 &&
 			offsetof(Transform3D, origin) == sizeof(Basis)),
 
+	MATCHES_CameraMatrix = (sizeof(Transform3D) == (sizeof(real_t) * 16)),
+
 	MATCHES_AABB = (MATCHES_Vector3 && (sizeof(AABB) == (sizeof(Vector3) * 2)) &&
 			offsetof(AABB, position) == (sizeof(Vector3) * 0) &&
 			offsetof(AABB, size) == (sizeof(Vector3) * 1)),
@@ -495,7 +497,10 @@ struct M_CameraMatrix {
 	}
 
 	static _FORCE_INLINE_ M_CameraMatrix convert_from(const CameraMatrix &p_from) {
-		M_CameraMatrix ret = { M_Plane::convert_from((Plane&)p_from.x), M_Plane::convert_from((Plane&)p_from.x),M_Plane::convert_from((Plane&)p_from.y,M_Plane::convert_from((Plane&)p_from.z),M_Plane::convert_from((Plane&)p_from.w)};
+		M_CameraMatrix ret = { M_Plane::convert_from((Plane&)p_from.x), 
+		M_Plane::convert_from((Plane&)p_from.y),
+		M_Plane::convert_from((Plane&)p_from.z)
+		,M_Plane::convert_from((Plane&)p_from.w)};
 		return ret;
 	}
 };
@@ -547,6 +552,7 @@ DECL_TYPE_MARSHAL_TEMPLATES(Vector3i)
 DECL_TYPE_MARSHAL_TEMPLATES(Basis)
 DECL_TYPE_MARSHAL_TEMPLATES(Quaternion)
 DECL_TYPE_MARSHAL_TEMPLATES(Transform3D)
+DECL_TYPE_MARSHAL_TEMPLATES(CameraMatrix)
 DECL_TYPE_MARSHAL_TEMPLATES(AABB)
 DECL_TYPE_MARSHAL_TEMPLATES(Color)
 DECL_TYPE_MARSHAL_TEMPLATES(Plane)

@@ -691,8 +691,8 @@ void CSharpLanguage::pre_unsafe_unreference(Object *p_obj) {
 	MutexLock lock(unsafe_object_references_lock);
 	ObjectID id = p_obj->get_instance_id();
 	HashMap<ObjectID, int>::Iterator elem = unsafe_object_references.find(id);
-	ERR_FAIL_NULL(elem);
-	if (--elem->value == 0) {
+	ERR_FAIL_COND(!elem);
+	if (--elem->value == 1) {
 		unsafe_object_references.remove(elem);
 	}
 #endif

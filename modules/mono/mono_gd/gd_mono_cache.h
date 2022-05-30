@@ -82,6 +82,7 @@ struct CachedData {
 	GDMonoClass *class_Basis = nullptr;
 	GDMonoClass *class_Quaternion = nullptr;
 	GDMonoClass *class_Transform3D = nullptr;
+	GDMonoClass *class_CameraMatrix = nullptr;
 	GDMonoClass *class_AABB = nullptr;
 	GDMonoClass *class_Color = nullptr;
 	GDMonoClass *class_Plane = nullptr;

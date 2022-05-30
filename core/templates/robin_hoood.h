@@ -1001,7 +1001,7 @@ private:
 		bool operator!=(Iter<O> const &o) const noexcept {
 			return mKeyVals != o.mKeyVals;
 		}
-		operator bool() const {
+		explicit operator bool() const {
 			if (Owenr == nullptr) {
 				return false;
 			}

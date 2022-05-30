@@ -1939,7 +1939,7 @@ Error BindingsGenerator::_generate_cs_method(const BindingsGenerator::TypeInterf
 		}
 
 		HashMap<const MethodInterface *, const InternalCall *>::ConstIterator match = method_icalls_map.find(&p_imethod);
-		ERR_FAIL_NULL_V(match, ERR_BUG);
+		ERR_FAIL_COND_V((!match), ERR_BUG);
 
 		const InternalCall *im_icall = match->value;
 
@@ -2323,7 +2323,7 @@ Error BindingsGenerator::_generate_glue_method(const BindingsGenerator::TypeInte
 	}
 
 	HashMap<const MethodInterface *, const InternalCall *>::ConstIterator match = method_icalls_map.find(&p_imethod);
-	ERR_FAIL_NULL_V(match, ERR_BUG);
+	ERR_FAIL_COND_V(!match, ERR_BUG);
 
 	const InternalCall *im_icall = match->value;
 	String icall_method = im_icall->name;
@@ -2489,7 +2489,7 @@ const BindingsGenerator::TypeInterface *BindingsGenerator::_get_type_or_null(con
 
 		// Enum not found. Most likely because none of its constants were bound, so it's empty. That's fine. Use int instead.
 		HashMap<StringName, TypeInterface>::ConstIterator int_match = builtin_types.find(name_cache.type_int);
-		ERR_FAIL_NULL_V(int_match, nullptr);
+		ERR_FAIL_COND_V(!int_match, nullptr);
 		return &int_match->value;
 	}
 
