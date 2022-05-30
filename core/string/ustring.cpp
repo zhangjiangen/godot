@@ -343,6 +343,7 @@ static Variant parse_gpu_defalut_value(const String &p_defalut_value_str, Varian
 			break;
 		case Variant::INT:
 			ret = p_defalut_value_str.to_int();
+			break;
 		case Variant::VECTOR2: {
 			Vector<String> lines = p_defalut_value_str.split(",", true);
 			float temp[2] = { 0, 0 };
@@ -593,7 +594,7 @@ Variant String::parse_gpu_struct() const {
 				temp_line = temp_line.trim("(); ");
 				if (!temp_line.is_empty()) {
 					// 保存当前组
-                    group = temp_line;
+					group = temp_line;
 				}
 				print_verbose(String("Parse Group: ") + (String)group);
 			} else if (temp_line.begins_with("SIMPLE_MEMBER")) {
