@@ -497,10 +497,10 @@ struct M_CameraMatrix {
 	}
 
 	static _FORCE_INLINE_ M_CameraMatrix convert_from(const CameraMatrix &p_from) {
-		M_CameraMatrix ret = { M_Plane::convert_from((Plane&)p_from.x), 
-		M_Plane::convert_from((Plane&)p_from.y),
-		M_Plane::convert_from((Plane&)p_from.z)
-		,M_Plane::convert_from((Plane&)p_from.w)};
+		M_CameraMatrix ret = { M_Plane::convert_from(*(Plane*)&p_from.x), 
+		M_Plane::convert_from(*(Plane*)&p_from.y),
+		M_Plane::convert_from(*(Plane*)&p_from.z)
+		,M_Plane::convert_from(*(Plane*)&p_from.w)};
 		return ret;
 	}
 };
