@@ -334,6 +334,7 @@ Variant::Type gpu_type_to_variant_type(const String &p_type) {
 	}
 	return Variant::NIL;
 }
+
 static Variant parse_gpu_defalut_value(const String &p_defalut_value_str, Variant::Type p_type) {
 	Variant ret;
 	switch (p_type) {
@@ -345,7 +346,12 @@ static Variant parse_gpu_defalut_value(const String &p_defalut_value_str, Varian
 			ret = p_defalut_value_str.to_int();
 			break;
 		case Variant::VECTOR2: {
-			Vector<String> lines = p_defalut_value_str.split(",", true);
+			int index = p_defalut_value_str.find("(");
+			String str = p_defalut_value_str;
+			if (index == -1) {
+				str = p_defalut_value_str.substr(index + 1);
+			}
+			Vector<String> lines = str.split(",", true);
 			float temp[2] = { 0, 0 };
 			for (int i = 0; i < lines.size() && i < 2; ++i) {
 				temp[i] = lines[i].trim("(), \t").to_float();
@@ -353,7 +359,12 @@ static Variant parse_gpu_defalut_value(const String &p_defalut_value_str, Varian
 			ret = Vector2(temp[0], temp[1]);
 		} break;
 		case Variant::VECTOR3: {
-			Vector<String> lines = p_defalut_value_str.split(",", true);
+			int index = p_defalut_value_str.find("(");
+			String str = p_defalut_value_str;
+			if (index == -1) {
+				str = p_defalut_value_str.substr(index + 1);
+			}
+			Vector<String> lines = str.split(",", true);
 			float temp[3] = { 0, 0, 0 };
 			for (int i = 0; i < lines.size() && i < 3; ++i) {
 				temp[i] = lines[i].trim("(), \t").to_float();
@@ -361,7 +372,12 @@ static Variant parse_gpu_defalut_value(const String &p_defalut_value_str, Varian
 			ret = Vector3(temp[0], temp[1], temp[2]);
 		} break;
 		case Variant::PLANE: {
-			Vector<String> lines = p_defalut_value_str.split(",", true);
+			int index = p_defalut_value_str.find("(");
+			String str = p_defalut_value_str;
+			if (index >= 0) {
+				str = p_defalut_value_str.substr(index + 1);
+			}
+			Vector<String> lines = str.split(",", true);
 			float temp[4] = { 0, 0, 0, 0 };
 			for (int i = 0; i < lines.size() && i < 4; ++i) {
 				temp[i] = lines[i].trim("(), \t").to_float();
@@ -369,7 +385,12 @@ static Variant parse_gpu_defalut_value(const String &p_defalut_value_str, Varian
 			ret = Plane(temp[0], temp[1], temp[2], temp[3]);
 		} break;
 		case Variant::VECTOR2I: {
-			Vector<String> lines = p_defalut_value_str.split(",", true);
+			int index = p_defalut_value_str.find("(");
+			String str = p_defalut_value_str;
+			if (index >= 0) {
+				str = p_defalut_value_str.substr(index + 1);
+			}
+			Vector<String> lines = str.split(",", true);
 			int temp[2] = { 0, 0 };
 			for (int i = 0; i < lines.size() && i < 2; ++i) {
 				temp[i] = lines[i].trim("(), \t").to_int();
@@ -377,7 +398,12 @@ static Variant parse_gpu_defalut_value(const String &p_defalut_value_str, Varian
 			ret = Vector2i(temp[0], temp[1]);
 		} break;
 		case Variant::VECTOR3I: {
-			Vector<String> lines = p_defalut_value_str.split(",", true);
+			int index = p_defalut_value_str.find("(");
+			String str = p_defalut_value_str;
+			if (index >= 0) {
+				str = p_defalut_value_str.substr(index + 1);
+			}
+			Vector<String> lines = str.split(",", true);
 			int temp[3] = { 0, 0, 0 };
 			for (int i = 0; i < lines.size() && i < 3; ++i) {
 				temp[i] = lines[i].trim("(), \t").to_int();
@@ -385,7 +411,12 @@ static Variant parse_gpu_defalut_value(const String &p_defalut_value_str, Varian
 			ret = Vector3i(temp[0], temp[1], temp[2]);
 		} break;
 		case Variant::RECT2I: {
-			Vector<String> lines = p_defalut_value_str.split(",", true);
+			int index = p_defalut_value_str.find("(");
+			String str = p_defalut_value_str;
+			if (index >= 0) {
+				str = p_defalut_value_str.substr(index + 1);
+			}
+			Vector<String> lines = str.split(",", true);
 			int temp[4] = { 0, 0, 0, 0 };
 			for (int i = 0; i < lines.size() && i < 4; ++i) {
 				temp[i] = lines[i].trim("(), \t").to_int();
@@ -393,7 +424,12 @@ static Variant parse_gpu_defalut_value(const String &p_defalut_value_str, Varian
 			ret = Rect2i(temp[0], temp[1], temp[2], temp[3]);
 		} break;
 		case Variant::QUATERNION: {
-			Vector<String> lines = p_defalut_value_str.split(",");
+			int index = p_defalut_value_str.find("(");
+			String str = p_defalut_value_str;
+			if (index >= 0) {
+				str = p_defalut_value_str.substr(index + 1);
+			}
+			Vector<String> lines = str.split(",", true);
 			// 旋转矩阵
 			float temp[9] = { 0 };
 			for (int i = 0; i < lines.size() && i < 9; ++i) {
@@ -411,7 +447,12 @@ static Variant parse_gpu_defalut_value(const String &p_defalut_value_str, Varian
 			}
 		} break;
 		case Variant::TRANSFORM3D: {
-			Vector<String> lines = p_defalut_value_str.split(",", true);
+			int index = p_defalut_value_str.find("(");
+			String str = p_defalut_value_str;
+			if (index >= 0) {
+				str = p_defalut_value_str.substr(index + 1);
+			}
+			Vector<String> lines = str.split(",", true);
 			float temp[16] = { 0 };
 			for (int i = 0; i < lines.size() && i < 16; ++i) {
 				temp[i] = lines[i].trim("(), \t").to_float();
@@ -435,17 +476,52 @@ static Variant parse_gpu_defalut_value(const String &p_defalut_value_str, Varian
 	}
 	return ret;
 }
+Vector<String> String::split_begin(const String &p_splitter, bool p_allow_empty, int p_maxsplit) const {
+	Vector<String> ret;
+	int from = 0;
+	int len = length();
+
+	while (true) {
+		int end = find(p_splitter, from);
+		if (end < 0) {
+			end = len;
+		}
+		if (p_allow_empty || (end > from)) {
+			if (p_maxsplit <= 0) {
+				ret.push_back(substr(from, end - from));
+			} else {
+				// Put rest of the string and leave cycle.
+				if (p_maxsplit  == ret.size()) {
+					ret.push_back(substr(from));
+					break;
+				}
+
+				// Otherwise, push items until positive limit is reached.
+				ret.push_back(substr(from, end - from));
+			}
+		}
+
+		if (end == len) {
+			break;
+		}
+
+		from = end + p_splitter.length();
+	}
+
+	return ret;
+}
 // 解析默认值，返回剩下的字符串
 static String parse_gpu_defalut_value(const String &p_value, Variant::Type p_type, Dictionary &member) {
 	String value = p_value;
 	Vector<String> lines;
 	if (p_type == Variant::FLOAT || p_type == Variant::INT) {
-		lines = p_value.split(",", false, 2);
+		lines = p_value.split_begin(",", false, 1);
 	} else {
-		lines = p_value.split(")", false, 2);
+		lines = p_value.split_begin(")", false, 2);
 	}
 	// 格式不匹配
-	if (lines.size() != 2) {
+	if (lines.size() < 2) {
+		print_line("error defalut value: " + p_value);
 		return String();
 	}
 	// 解析默认值
@@ -457,7 +533,7 @@ static String parse_gpu_defalut_value(const String &p_value, Variant::Type p_typ
 // 解析hint信息
 static void parse_gpu_hint(Dictionary &p_curr_member, const String &p_member_hit_str) {
 	Dictionary hint;
-	Vector<String> lines = p_member_hit_str.split(";");
+	Vector<String> lines = p_member_hit_str.split(";", false);
 	for (int i = 0; i < lines.size(); ++i) {
 		String line = lines[i].trim(" \t\n\r").to_upper();
 		if (line.size() == 0) {
@@ -481,36 +557,46 @@ static void parse_gpu_hint(Dictionary &p_curr_member, const String &p_member_hit
 static bool parse_gpu_struct_member_simple(Dictionary &p_curr_member, const String &p_member_str) {
 	String temp_line = p_member_str.replace("SIMPLE_MEMBER", "");
 	temp_line = temp_line.trim("() ");
-	Vector<String> lines = p_member_str.split(",", true, 3);
-	if (lines.size() != 3) {
+	Vector<String> lines = temp_line.split_begin(",", false, 2);
+	int count = lines.size();
+	print_line("count: " + itos(count));
+	if (count < 2) {
+		print_line("error member: " + temp_line);
 		return false;
 	}
 	Variant::Type type = gpu_type_to_variant_type(lines[0]);
 	// 不支持的类型
 	if (type == Variant::NIL) {
+		print_line("error type: " + lines[0]);
 		return false;
 	}
 	p_curr_member["type"] = type;
 	String name = lines[1].trim(" \t\n\r");
+	print_line("name: " + name);
 	p_curr_member["name"] = name;
 	// 解析数组数量
 	p_curr_member["array_count"] = 1;
 
-	// 解析默认值
-	String hit_str = parse_gpu_defalut_value(lines[2], type, p_curr_member);
-	// 解析属性描述信息
-	parse_gpu_hint(p_curr_member, hit_str);
+	if (lines.size() == 3) {
+		// 解析默认值
+		String hit_str = parse_gpu_defalut_value(lines[2], type, p_curr_member);
+		// 解析属性描述信息
+		parse_gpu_hint(p_curr_member, hit_str);
+	}
 	return true;
 }
 static bool parse_gpu_struct_member_simple_array(Dictionary &p_curr_member, const String &p_member_str) {
 	String temp_line = p_member_str.replace("SIMPLE_MEMBER_ARRAY", "");
-	Vector<String> lines = temp_line.split(",", true, 4);
-	if (lines.size() < 4) {
+    temp_line = temp_line.trim("() ");
+	Vector<String> lines = temp_line.split_begin(",", true, 3);
+	if (lines.size() < 3) {
+		print_line("error member: " + temp_line);
 		return false;
 	}
 	Variant::Type type = gpu_type_to_variant_type(lines[0]);
 	// 不支持的类型
 	if (type == Variant::NIL) {
+		print_line("error array type: " + lines[0]);
 		return false;
 	}
 	p_curr_member["type"] = type;
@@ -519,17 +605,20 @@ static bool parse_gpu_struct_member_simple_array(Dictionary &p_curr_member, cons
 	// 解析数组数量
 	p_curr_member["array_count"] = lines[2].trim(", ()").to_int();
 	// 解析默认值
-	String hit_str = parse_gpu_defalut_value(lines[3], type, p_curr_member);
-	// 解析属性描述信息
-	parse_gpu_hint(p_curr_member, hit_str);
+	if (lines.size() == 4) {
+		String hit_str = parse_gpu_defalut_value(lines[3], type, p_curr_member);
+		// 解析属性描述信息
+		parse_gpu_hint(p_curr_member, hit_str);
+	}
 
 	return true;
 }
 static bool parse_gpu_struct_member_struct(Dictionary &p_curr_member, const String &p_member_str) {
 	String temp_line = p_member_str.replace("STRUCT_MEMBER", "");
 	temp_line = temp_line.trim("() ");
-	Vector<String> lines = p_member_str.split(",", true, 2);
+	Vector<String> lines = temp_line.split_begin( ",", false, 1);
 	if (lines.size() != 2) {
+		print_line("error struct member: " + temp_line);
 		return false;
 	}
 	String type_name = lines[0].trim(" \t\n\r");
@@ -543,8 +632,9 @@ static bool parse_gpu_struct_member_struct(Dictionary &p_curr_member, const Stri
 static bool parse_gpu_struct_member_struct_array(Dictionary &p_curr_member, const String &p_member_str) {
 	String temp_line = p_member_str.replace("STRUCT_MEMBER_ARRAY", "");
 	temp_line = temp_line.trim("() ");
-	Vector<String> lines = p_member_str.split(",", true, 3);
-	if (lines.size() != 3) {
+	Vector<String> lines = temp_line.split_begin(",", false, 3);
+	if (lines.size() < 3) {
+		print_line("error struct array member: " + temp_line);
 		return false;
 	}
 	String type_name = lines[0].trim(" \t\n\r");
@@ -578,7 +668,7 @@ Variant String::parse_gpu_struct() const {
 					curr_struct[group] = (curr_group);
 					curr_group.clear();
 				}
-				print_verbose(String("Parse End: ") + name);
+				print_line(String("Parse End: ") + name);
 				// 保存结构体
 				dict[name] = curr_struct;
 				is_struct_start = false;
@@ -591,13 +681,27 @@ Variant String::parse_gpu_struct() const {
 				}
 				temp_line = temp_line.replace("STRUCT_MEMBER_GROUP", "");
 				// 移除无效的字符
-				temp_line = temp_line.trim("(); ");
+				temp_line = temp_line.trim("();\" ");
 				if (!temp_line.is_empty()) {
 					// 保存当前组
 					group = temp_line;
 				}
-				print_verbose(String("Parse Group: ") + (String)group);
-			} else if (temp_line.begins_with("SIMPLE_MEMBER")) {
+				print_line(String("Parse Group: ") + (String)group);
+			} else if (temp_line.begins_with("SIMPLE_MEMBER_ARRAY")) {
+                // 解析简单成员数组信息
+                Dictionary member;
+                bool rs = parse_gpu_struct_member_simple_array(member, temp_line);
+                if (rs) {
+                    curr_group.append(member);
+                } else {
+                    // 解析失败
+                    dict["error"] = "parse member error ";
+                    dict["line"] = line_index;
+                    return dict;
+                }
+                print_line(String("Parse Member Array : ") + (String)member["name"]);
+
+            } else if (temp_line.begins_with("SIMPLE_MEMBER")) {
 				// 解析简单成员信息
 				Dictionary member;
 				bool rs = parse_gpu_struct_member_simple(member, temp_line);
@@ -609,22 +713,21 @@ Variant String::parse_gpu_struct() const {
 					dict["line"] = line_index;
 					return dict;
 				}
-				print_verbose(String("Parse Member: ") + (String)member[name]);
-			} else if (temp_line.begins_with("SIMPLE_MEMBER_ARRAY")) {
-				// 解析简单成员数组信息
-				Dictionary member;
-				bool rs = parse_gpu_struct_member_simple_array(member, temp_line);
-				if (rs) {
-					curr_group.append(member);
-				} else {
-					// 解析失败
-					dict["error"] = "parse member error ";
-					dict["line"] = line_index;
-					return dict;
-				}
-				print_verbose(String("Parse Member Array : ") + (String)member[name]);
-
-			} else if (temp_line.begins_with("STRUCT_MEMBER")) {
+				print_line(String("Parse Member: ") + (String)member["name"]);
+			} else if (temp_line.begins_with("STRUCT_MEMBER_ARRAY")) {
+                // 解析结构体数组信息
+                Dictionary member;
+                bool rs = parse_gpu_struct_member_struct_array(member, temp_line);
+                if (rs) {
+                    curr_group.append(member);
+                } else {
+                    // 解析失败
+                    dict["error"] = "parse member error ";
+                    dict["line"] = line_index;
+                    return dict;
+                }
+                print_line(String("Parse Struct Member Array: ") + (String)member["name"]);
+            } else if (temp_line.begins_with("STRUCT_MEMBER")) {
 				// 解析结构体信息
 				Dictionary member;
 				bool rs = parse_gpu_struct_member_struct(member, temp_line);
@@ -636,20 +739,7 @@ Variant String::parse_gpu_struct() const {
 					dict["line"] = line_index;
 					return dict;
 				}
-				print_verbose(String("Parse Struct Member : ") + (String)member[name]);
-			} else if (temp_line.begins_with("STRUCT_MEMBER_ARRAY")) {
-				// 解析结构体数组信息
-				Dictionary member;
-				bool rs = parse_gpu_struct_member_struct_array(member, temp_line);
-				if (rs) {
-					curr_group.append(member);
-				} else {
-					// 解析失败
-					dict["error"] = "parse member error ";
-					dict["line"] = line_index;
-					return dict;
-				}
-				print_verbose(String("Parse Struct Member Array: ") + (String)member[name]);
+				print_line(String("Parse Struct Member : ") + (String)member["name"]);
 			}
 
 		} else {
@@ -668,7 +758,7 @@ Variant String::parse_gpu_struct() const {
 				// 设置默认分组名称
 				group = "@@_root";
 				is_struct_start = true;
-				print_verbose(String("Parse Struct ") + name);
+				print_line(String("Parse Struct ") + name);
 			}
 		}
 	}
@@ -1490,7 +1580,7 @@ Vector<String> String::split(const String &p_splitter, bool p_allow_empty, int p
 				ret.push_back(substr(from, end - from));
 			} else {
 				// Put rest of the string and leave cycle.
-				if (p_maxsplit == ret.size()) {
+				if (p_maxsplit == ret.size() - 1) {
 					ret.push_back(substr(from, len));
 					break;
 				}
@@ -4469,25 +4559,23 @@ String String::trim_suffix(const String &p_suffix) const {
 }
 
 String String::trim(const String &p_str) const {
-	//注释：找出startindex
+	// 整理字符串，移除首位包含p_str 的字符
 	int len = length();
-	int a1 = 0;
-	for (int i = 0; i < len; i++) {
-		if (p_str.find_char(operator[](i)) != -1) {
-			a1 = i;
-			break;
-		}
+	if (len == 0)
+		return String();
+	char32_t *buffer = (char32_t *)alloca(sizeof(char32_t) * (len + 1));
+	char32_t *p1 = buffer + len - 1;
+
+	buffer[len] = 0;
+	memcpy(buffer, get_data(), sizeof(char32_t) * len);
+	while (*buffer && p_str.find_char(*buffer) != -1) {
+		buffer++;
 	}
-	//注释：找出endindex
-	int b1 = 0;
-	for (int i = len; i >= 0; i--) {
-		if (p_str.find_char(operator[](i)) != -1) {
-			b1 = i;
-			break;
-		}
+	while (p1 >= buffer && p_str.find_char(*p1) != -1) {
+		*p1 = 0;
+		--p1;
 	}
-	//调用subString方法,传入两个参数
-	return substr(a1, b1);
+	return String(buffer);
 }
 
 bool String::is_valid_int() const {

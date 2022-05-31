@@ -226,7 +226,6 @@ public:
 	bool operator!=(const String &p_str) const;
 	String operator+(const String &p_str) const;
 	String operator+(char32_t p_char) const;
-	
 
 	String &operator+=(const String &);
 	String &operator+=(char32_t p_char);
@@ -353,6 +352,7 @@ public:
 	Vector<float> split_floats_mk(const Vector<String> &p_splitters, bool p_allow_empty = true) const;
 	Vector<int> split_ints(const String &p_splitter, bool p_allow_empty = true) const;
 	Vector<int> split_ints_mk(const Vector<String> &p_splitters, bool p_allow_empty = true) const;
+	Vector<String> split_begin(const String &p_splitter, bool p_allow_empty, int p_maxsplit) const;
 
 	String join(Vector<String> parts) const;
 
