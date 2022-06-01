@@ -393,7 +393,7 @@ int DebugAdapterProtocol::parse_variant(const Variant &p_var) {
 		case Variant::CAMERA_MATRIX: {
 			int id = variable_id++;
 			CameraMatrix basis = p_var;
-			const String type_quat = Variant::get_type_name(Variant::QUATERNION);
+			const String type_quat = Variant::get_type_name(Variant::PLANE);
 			DAP::Variable x, y, z, w;
 			x.name = "x";
 			y.name = "y";
@@ -403,14 +403,14 @@ int DebugAdapterProtocol::parse_variant(const Variant &p_var) {
 			y.type = type_quat;
 			z.type = type_quat;
 			w.type = type_quat;
-			x.value = (Quaternion&)basis.x;
-			y.value = (Quaternion&)basis.y;
-			z.value = (Quaternion&)basis.z;
-			w.value = (Quaternion&)basis.w;
-			x.variablesReference = parse_variant((Quaternion&)basis.x);
-			y.variablesReference = parse_variant((Quaternion&)basis.y);
-			z.variablesReference = parse_variant((Quaternion&)basis.z);
-			w.variablesReference = parse_variant((Quaternion&)basis.w);
+			x.value = (Plane)basis.x;
+			y.value = (Plane)basis.y;
+			z.value = (Plane)basis.z;
+			w.value = (Plane)basis.w;
+			x.variablesReference = parse_variant((Plane)basis.x);
+			y.variablesReference = parse_variant((Plane)basis.y);
+			z.variablesReference = parse_variant((Plane)basis.z);
+			w.variablesReference = parse_variant((Plane)basis.w);
 
 			Array arr;
 			arr.push_back(x.to_json());
