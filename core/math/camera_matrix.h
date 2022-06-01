@@ -62,6 +62,9 @@ struct CameraMatrix {
 			r.w = w + (p_b.w - w) * p_t;
 			return r;
 		}
+		explicit operator Plane() const {
+			return Plane(x, y, z, w);
+		}
 	};
 	union {
 		struct {
