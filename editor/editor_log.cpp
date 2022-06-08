@@ -226,7 +226,7 @@ void EditorLog::add_message(const String &p_msg, MessageType p_type) {
 	// also matches that of other IDE's.
 	Vector<String> lines = p_msg.split("\n", true);
 
-	for (int i = 0; i < lines.size(); i++) {
+	for (int i = 0; i < lines.size() && i < 100; i++) {
 		_process_message(lines[i], p_type);
 	}
 }

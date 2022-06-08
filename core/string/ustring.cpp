@@ -491,7 +491,7 @@ Vector<String> String::split_begin(const String &p_splitter, bool p_allow_empty,
 				ret.push_back(substr(from, end - from));
 			} else {
 				// Put rest of the string and leave cycle.
-				if (p_maxsplit  == ret.size()) {
+				if (p_maxsplit == ret.size()) {
 					ret.push_back(substr(from));
 					break;
 				}
@@ -587,7 +587,7 @@ static bool parse_gpu_struct_member_simple(Dictionary &p_curr_member, const Stri
 }
 static bool parse_gpu_struct_member_simple_array(Dictionary &p_curr_member, const String &p_member_str) {
 	String temp_line = p_member_str.replace("SIMPLE_MEMBER_ARRAY", "");
-    temp_line = temp_line.trim("() ");
+	temp_line = temp_line.trim("() ");
 	Vector<String> lines = temp_line.split_begin(",", true, 3);
 	if (lines.size() < 3) {
 		print_line("error member: " + temp_line);
@@ -616,7 +616,7 @@ static bool parse_gpu_struct_member_simple_array(Dictionary &p_curr_member, cons
 static bool parse_gpu_struct_member_struct(Dictionary &p_curr_member, const String &p_member_str) {
 	String temp_line = p_member_str.replace("STRUCT_MEMBER", "");
 	temp_line = temp_line.trim("() ");
-	Vector<String> lines = temp_line.split_begin( ",", false, 1);
+	Vector<String> lines = temp_line.split_begin(",", false, 1);
 	if (lines.size() != 2) {
 		print_line("error struct member: " + temp_line);
 		return false;
@@ -658,6 +658,7 @@ Variant String::parse_gpu_struct() const {
 	bool is_struct_start = false;
 	int line_index = 0;
 	Vector<String> lines = code.split("\n", false);
+	int member_index = 0;
 	for (int i = 0; i < lines.size(); i++) {
 		String temp_line = lines[i].trim("\t\n\r ");
 		if (is_struct_start) {
@@ -665,8 +666,8 @@ Variant String::parse_gpu_struct() const {
 				curr_group.push_back(name);
 				if (curr_group.size()) {
 					// 保存当前组
-					curr_struct[group] = (curr_group);
-					curr_group.clear();
+					curr_struct[group] = curr_group;
+					curr_group = Array();
 				}
 				print_line(String("Parse End: ") + name);
 				// 保存结构体
@@ -677,7 +678,7 @@ Variant String::parse_gpu_struct() const {
 				if (curr_group.size()) {
 					// 保存当前组
 					curr_struct[group] = (curr_group);
-					curr_group.clear();
+					curr_group = Array();
 				}
 				temp_line = temp_line.replace("STRUCT_MEMBER_GROUP", "");
 				// 移除无效的字符
@@ -688,24 +689,29 @@ Variant String::parse_gpu_struct() const {
 				}
 				print_line(String("Parse Group: ") + (String)group);
 			} else if (temp_line.begins_with("SIMPLE_MEMBER_ARRAY")) {
-                // 解析简单成员数组信息
-                Dictionary member;
-                bool rs = parse_gpu_struct_member_simple_array(member, temp_line);
-                if (rs) {
-                    curr_group.append(member);
-                } else {
-                    // 解析失败
-                    dict["error"] = "parse member error ";
-                    dict["line"] = line_index;
-                    return dict;
-                }
-                print_line(String("Parse Member Array : ") + (String)member["name"]);
+				// 解析简单成员数组信息
+				Dictionary member;
+				bool rs = parse_gpu_struct_member_simple_array(member, temp_line);
+				if (rs) {
+					member["index"] = member_index;
+					member_index++;
+					curr_group.append(member);
 
-            } else if (temp_line.begins_with("SIMPLE_MEMBER")) {
+				} else {
+					// 解析失败
+					dict["error"] = "parse member error ";
+					dict["line"] = line_index;
+					return dict;
+				}
+				print_line(String("Parse Member Array : ") + (String)member["name"]);
+
+			} else if (temp_line.begins_with("SIMPLE_MEMBER")) {
 				// 解析简单成员信息
 				Dictionary member;
 				bool rs = parse_gpu_struct_member_simple(member, temp_line);
 				if (rs) {
+					member["index"] = member_index;
+					member_index++;
 					curr_group.append(member);
 				} else {
 					// 解析失败
@@ -715,23 +721,27 @@ Variant String::parse_gpu_struct() const {
 				}
 				print_line(String("Parse Member: ") + (String)member["name"]);
 			} else if (temp_line.begins_with("STRUCT_MEMBER_ARRAY")) {
-                // 解析结构体数组信息
-                Dictionary member;
-                bool rs = parse_gpu_struct_member_struct_array(member, temp_line);
-                if (rs) {
-                    curr_group.append(member);
-                } else {
-                    // 解析失败
-                    dict["error"] = "parse member error ";
-                    dict["line"] = line_index;
-                    return dict;
-                }
-                print_line(String("Parse Struct Member Array: ") + (String)member["name"]);
-            } else if (temp_line.begins_with("STRUCT_MEMBER")) {
+				// 解析结构体数组信息
+				Dictionary member;
+				bool rs = parse_gpu_struct_member_struct_array(member, temp_line);
+				if (rs) {
+					member["index"] = member_index;
+					member_index++;
+					curr_group.append(member);
+				} else {
+					// 解析失败
+					dict["error"] = "parse member error ";
+					dict["line"] = line_index;
+					return dict;
+				}
+				print_line(String("Parse Struct Member Array: ") + (String)member["name"]);
+			} else if (temp_line.begins_with("STRUCT_MEMBER")) {
 				// 解析结构体信息
 				Dictionary member;
 				bool rs = parse_gpu_struct_member_struct(member, temp_line);
 				if (rs) {
+					member["index"] = member_index;
+					member_index++;
 					curr_group.append(member);
 				} else {
 					// 解析失败
@@ -759,6 +769,7 @@ Variant String::parse_gpu_struct() const {
 				group = "@@_root";
 				is_struct_start = true;
 				print_line(String("Parse Struct ") + name);
+				member_index = 0;
 			}
 		}
 	}
