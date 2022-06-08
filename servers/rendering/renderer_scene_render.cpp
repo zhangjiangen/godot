@@ -39,7 +39,7 @@ void RenderingListener::_bind_methods() {
 	GDVIRTUAL_BIND(_post_render);
 }
 
-void RendererSceneRender::CameraData::set_camera(const Transform3D p_transform, const CameraMatrix p_projection, bool p_is_orthogonal, bool p_vaspect) {
+void RendererSceneRender::CameraData::set_camera(const Transform3D p_transform, const CameraMatrix p_projection, bool p_is_orthogonal, bool p_vaspect, const Vector2 &p_taa_jitter) {
 	view_count = 1;
 	is_orthogonal = p_is_orthogonal;
 	vaspect = p_vaspect;
@@ -49,6 +49,7 @@ void RendererSceneRender::CameraData::set_camera(const Transform3D p_transform, 
 
 	view_offset[0] = Transform3D();
 	view_projection[0] = p_projection;
+	taa_jitter = p_taa_jitter;
 }
 
 void RendererSceneRender::CameraData::set_multiview_camera(uint32_t p_view_count, const Transform3D *p_transforms, const CameraMatrix *p_projections, bool p_is_orthogonal, bool p_vaspect) {

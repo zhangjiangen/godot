@@ -216,6 +216,9 @@
 		<member name="application/config/description" type="String" setter="" getter="" default="&quot;&quot;">
 			The project's description, displayed as a tooltip in the Project Manager when hovering the project.
 		</member>
+		<member name="application/config/features" type="PackedStringArray" setter="" getter="">
+			List of internal features associated with the project, like [code]Double Precision[/code] or [code]C#[/code]. Not to be confused with feature tags.
+		</member>
 		<member name="application/config/icon" type="String" setter="" getter="" default="&quot;&quot;">
 			Icon used for the project, set when project loads. Exporters will also use this icon when possible.
 		</member>
@@ -810,6 +813,12 @@
 		</member>
 		<member name="internationalization/locale/test" type="String" setter="" getter="" default="&quot;&quot;">
 			If non-empty, this locale will be used when running the project from the editor.
+		</member>
+		<member name="internationalization/locale/translation_remaps" type="PackedStringArray" setter="" getter="">
+			Locale-dependent resource remaps. Edit them in the "Localization" tab of Project Settings editor.
+		</member>
+		<member name="internationalization/locale/translations" type="PackedStringArray" setter="" getter="">
+			List of translation files available in the project. Edit them in the "Localization" tab of Project Settings editor.
 		</member>
 		<member name="internationalization/pseudolocalization/double_vowels" type="bool" setter="" getter="" default="false">
 			Double vowels in strings during pseudolocalization to simulate the lengthening of text due to localization.
@@ -1583,6 +1592,10 @@
 			Another way to combat specular aliasing is to enable [member rendering/anti_aliasing/screen_space_roughness_limiter/enabled].
 		</member>
 		<member name="rendering/anti_aliasing/quality/use_debanding" type="bool" setter="" getter="" default="false">
+		</member>
+		<member name="rendering/anti_aliasing/quality/use_taa" type="bool" setter="" getter="" default="false">
+			Enables Temporal Anti-Aliasing for the default screen [Viewport]. TAA works by jittering the camera and accumulating the images of the last rendered frames, motion vector rendering is used to account for camera and object motion.
+			[b]Note:[/b] The implementation is not complete yet, some visual instances such as particles and skinned meshes may show artifacts.
 		</member>
 		<member name="rendering/anti_aliasing/screen_space_roughness_limiter/amount" type="float" setter="" getter="" default="0.25">
 		</member>
