@@ -116,8 +116,8 @@ private:
 		int char_offset = 0;
 		int char_count = 0;
 
-		Line() { New_instantiate(text_buf); }
 
+		Line() { New_instantiate(text_buf); }
 
 		_FORCE_INLINE_ float get_height(float line_separation) const {
 			return offset.y + text_buf->get_size().y + text_buf->get_line_count() * line_separation;

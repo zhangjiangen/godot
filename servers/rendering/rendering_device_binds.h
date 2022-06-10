@@ -232,8 +232,11 @@ class RDShaderSource : public RefCounted {
 	GDCLASS(RDShaderSource, RefCounted)
 	String source[RD::SHADER_STAGE_MAX];
 	RD::ShaderLanguage language = RD::SHADER_LANGUAGE_GLSL;
+	String gd_export_path;
 
 public:
+	RDShaderSource() {
+	}
 	void set_stage_source(RD::ShaderStage p_stage, const String &p_source) {
 		ERR_FAIL_INDEX(p_stage, RD::SHADER_STAGE_MAX);
 		source[p_stage] = p_source;

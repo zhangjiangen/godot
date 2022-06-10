@@ -71,10 +71,10 @@ void ConfigFile::set_value(const String &p_section, const String &p_key, const V
 			values.erase(p_section);
 		}
 	} else {
-		if (!values.has(p_section)) {
-			// Insert section-less keys at the beginning.
-			values.insert(p_section, HashMap<String, Variant>(), p_section.is_empty());
-		}
+		// if (!values.has(p_section)) {
+		// 	// Insert section-less keys at the beginning.
+		// 	values.insert(p_section, HashMap<String, Variant>(), p_section.is_empty());
+		// }
 
 		values[p_section][p_key] = p_value;
 	}

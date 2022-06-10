@@ -115,7 +115,7 @@ invariant gl_Position;
 #GLOBALS
 
 void main() {
-	SceneData scene_data = scene_data_block.data;
+	const SceneData scene_data = scene_data_block.data;
 
 	vec4 instance_custom = vec4(0.0);
 #if defined(COLOR_USED)
@@ -582,7 +582,7 @@ void main() {
 	if (dp_clip > 0.0)
 		discard;
 #endif
-	SceneData scene_data = scene_data_block.data;
+	const SceneData scene_data = scene_data_block.data;
 
 	//lay out everything, whatever is unused is optimized away anyway
 	vec3 vertex = vertex_interp;

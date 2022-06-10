@@ -384,14 +384,14 @@ void main() {
 
 	instance_index_interp = instance_index;
 
-	SceneData scene_data = scene_data_block.data;
+	//const SceneData scene_data = scene_data_block.data;
 	mat4 model_matrix = instances.data[instance_index].transform;
 #if defined(MOTION_VECTORS)
 	vertex_shader(instance_index, is_multimesh, scene_data_block.prev_data, instances.data[instance_index].prev_transform, prev_screen_position);
-	vertex_shader(instance_index, is_multimesh, scene_data, model_matrix, screen_position);
+	vertex_shader(instance_index, is_multimesh, scene_data_block.data, model_matrix, screen_position);
 #else
 	vec4 screen_position;
-	vertex_shader(instance_index, is_multimesh, scene_data, model_matrix, screen_position);
+	vertex_shader(instance_index, is_multimesh, scene_data_block.data, model_matrix, screen_position);
 #endif
 }
 
@@ -637,8 +637,8 @@ void main() {
 		discard;
 #endif
 
-	SceneData scene_data = scene_data_block.data;
-	SceneData prev_scene_data = scene_data_block.prev_data;
+	#define  scene_data  scene_data_block.data
+	#define  prev_scene_data scene_data_block.prev_data
 	uint instance_index = instance_index_interp;
 
 	//lay out everything, whatever is unused is optimized away anyway

@@ -3308,13 +3308,12 @@ void RendererSceneCull::render_empty_scene(RID p_render_buffers, RID p_scenario,
 	RendererSceneRender::CameraData camera_data;
 	camera_data.set_camera(Transform3D(), CameraMatrix(), true, false);
 
+	scene_render->render_scene(p_render_buffers, &camera_data, nullptr, PagedArray<RendererSceneRender::GeometryInstance *>(), PagedArray<RID>(), PagedArray<RID>(), PagedArray<RID>(), PagedArray<RID>(), PagedArray<RID>(), PagedArray<RID>(), RID(), RID(), p_shadow_atlas, RID(), scenario->reflection_atlas, RID(), 0, 0, nullptr, 0, nullptr, 0, nullptr);
 	if(RS::get_singleton()->rendering_listener.is_valid())
 	{
         RS::get_singleton()->rendering_listener->post_render_scene();
         RS::get_singleton()->rendering_listener->post_render();
 	}
-	scene_render->render_scene(p_render_buffers, &camera_data, nullptr, PagedArray<RendererSceneRender::GeometryInstance *>(), PagedArray<RID>(), PagedArray<RID>(), PagedArray<RID>(), PagedArray<RID>(), PagedArray<RID>(), PagedArray<RID>(), RID(), RID(), p_shadow_atlas, RID(), scenario->reflection_atlas, RID(), 0, 0, nullptr, 0, nullptr, 0, nullptr);
-
 #endif
 }
 
