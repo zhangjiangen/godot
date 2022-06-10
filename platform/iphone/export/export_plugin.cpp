@@ -819,7 +819,11 @@ Error EditorExportPlatformIOS::_codesign(String p_file, void *p_userdata) {
 		codesign_args.push_back("-s");
 		codesign_args.push_back(sign_id);
 		codesign_args.push_back(p_file);
-		return OS::get_singleton()->execute("codesign", codesign_args);
+		String str;
+		Error err = OS::get_singleton()->execute("codesign", codesign_args, &str, nullptr, true);
+		print_verbose("codesign (" + p_file + "):\n" + str);
+
+		return err;
 	}
 	return OK;
 }
@@ -1394,7 +1398,7 @@ Error EditorExportPlatformIOS::export_project(const Ref<EditorExportPreset> &p_p
 		String err;
 		src_pkg_name = find_export_template("iphone.zip", &err);
 		if (src_pkg_name.is_empty()) {
-			EditorNode::add_io_error(err);
+			add_message(EXPORT_MESSAGE_ERROR, TTR("Prepare Templates"), TTR("Export template not found."));
 			return ERR_FILE_NOT_FOUND;
 		}
 	}
@@ -1489,7 +1493,7 @@ Error EditorExportPlatformIOS::export_project(const Ref<EditorExportPreset> &p_p
 	zlib_filefunc_def io = zipio_create_io(&io_fa);
 	unzFile src_pkg_zip = unzOpen2(src_pkg_name.utf8().get_data(), &io);
 	if (!src_pkg_zip) {
-		EditorNode::add_io_error("Could not open export template (not a zip file?):\n" + src_pkg_name);
+		add_message(EXPORT_MESSAGE_ERROR, TTR("Prepare Templates"), TTR("Could not open export template (not a zip file?): \"%s\".", src_pkg_name));
 		return ERR_CANT_OPEN;
 	}
 

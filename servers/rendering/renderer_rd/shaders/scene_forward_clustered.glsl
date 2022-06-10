@@ -384,7 +384,6 @@ void main() {
 
 	instance_index_interp = instance_index;
 
-	//const SceneData scene_data = scene_data_block.data;
 	mat4 model_matrix = instances.data[instance_index].transform;
 #if defined(MOTION_VECTORS)
 	vertex_shader(instance_index, is_multimesh, scene_data_block.prev_data, instances.data[instance_index].prev_transform, prev_screen_position);
@@ -630,15 +629,7 @@ uint cluster_get_range_clip_mask(uint i, uint z_min, uint z_max) {
 
 #endif //!MODE_RENDER DEPTH
 
-void main() {
-#ifdef MODE_DUAL_PARABOLOID
-
-	if (dp_clip > 0.0)
-		discard;
-#endif
-
-	#define  scene_data  scene_data_block.data
-	#define  prev_scene_data scene_data_block.prev_data
+void fragment_shader(in SceneData scene_data) {
 	uint instance_index = instance_index_interp;
 
 	//lay out everything, whatever is unused is optimized away anyway
@@ -2048,11 +2039,21 @@ void main() {
 #endif //MODE_RENDER_DEPTH
 #ifdef MOTION_VECTORS
 	vec2 position_clip = (screen_position.xy / screen_position.w) - scene_data.taa_jitter;
-	vec2 prev_position_clip = (prev_screen_position.xy / prev_screen_position.w) - prev_scene_data.taa_jitter;
+	vec2 prev_position_clip = (prev_screen_position.xy / prev_screen_position.w) - scene_data_block.prev_data.taa_jitter;
 
 	vec2 position_uv = position_clip * vec2(0.5, 0.5);
 	vec2 prev_position_uv = prev_position_clip * vec2(0.5, 0.5);
 
 	motion_vector = position_uv - prev_position_uv;
 #endif
+}
+
+void main() {
+#ifdef MODE_DUAL_PARABOLOID
+
+	if (dp_clip > 0.0)
+		discard;
+#endif
+
+	fragment_shader(scene_data_block.data);
 }
