@@ -147,38 +147,6 @@ void ImageTexture::reload_from_file() {
 	}
 }
 
-bool ImageTexture::_set(const StringName &p_name, const Variant &p_value) {
-	if (p_name == "image") {
-		create_from_image(p_value);
-	} else if (p_name == "size") {
-		Size2 s = p_value;
-		w = s.width;
-		h = s.height;
-		RenderingServer::get_singleton()->texture_set_size_override(texture, w, h);
-	} else {
-		return false;
-	}
-
-	return true;
-}
-
-bool ImageTexture::_get(const StringName &p_name, Variant &r_ret) const {
-	if (p_name == "image") {
-		r_ret = get_image();
-	} else if (p_name == "size") {
-		r_ret = Size2(w, h);
-	} else {
-		return false;
-	}
-
-	return true;
-}
-
-void ImageTexture::_get_property_list(List<PropertyInfo> *p_list) const {
-	p_list->push_back(PropertyInfo(Variant::OBJECT, PNAME("image"), PROPERTY_HINT_RESOURCE_TYPE, "Image", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_RESOURCE_NOT_PERSISTENT));
-	p_list->push_back(PropertyInfo(Variant::VECTOR2, PNAME("size"), PROPERTY_HINT_NONE, ""));
-}
-
 void ImageTexture::create_from_image(const Ref<Image> &p_image) {
 	ERR_FAIL_COND_MSG(p_image.is_null() || p_image->is_empty(), "Invalid image");
 	w = p_image->get_width();
@@ -2171,7 +2139,7 @@ void GradientTexture1D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_update"), &GradientTexture1D::_update);
 
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "gradient", PROPERTY_HINT_RESOURCE_TYPE, "Gradient"), "set_gradient", "get_gradient");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "width", PROPERTY_HINT_RANGE, "1,4096"), "set_width", "get_width");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "width", PROPERTY_HINT_RANGE, "1,16384"), "set_width", "get_width");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "use_hdr"), "set_use_hdr", "is_using_hdr");
 }
 
@@ -2259,7 +2227,7 @@ void GradientTexture1D::_update() {
 }
 
 void GradientTexture1D::set_width(int p_width) {
-	ERR_FAIL_COND(p_width <= 0);
+	ERR_FAIL_COND_MSG(p_width <= 0 || p_width > 16384, "Texture dimensions have to be within 1 to 16384 range.");
 	width = p_width;
 	_queue_update();
 }
@@ -2423,6 +2391,7 @@ float GradientTexture2D::_get_gradient_offset_at(int x, int y) const {
 }
 
 void GradientTexture2D::set_width(int p_width) {
+	ERR_FAIL_COND_MSG(p_width <= 0 || p_width > 16384, "Texture dimensions have to be within 1 to 16384 range.");
 	width = p_width;
 	_queue_update();
 }
@@ -2432,6 +2401,7 @@ int GradientTexture2D::get_width() const {
 }
 
 void GradientTexture2D::set_height(int p_height) {
+	ERR_FAIL_COND_MSG(p_height <= 0 || p_height > 16384, "Texture dimensions have to be within 1 to 16384 range.");
 	height = p_height;
 	_queue_update();
 }
@@ -2525,8 +2495,8 @@ void GradientTexture2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_update"), &GradientTexture2D::_update);
 
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "gradient", PROPERTY_HINT_RESOURCE_TYPE, "Gradient", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_EDITOR_INSTANTIATE_OBJECT), "set_gradient", "get_gradient");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "width", PROPERTY_HINT_RANGE, "1,2048"), "set_width", "get_width");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "height", PROPERTY_HINT_RANGE, "1,2048"), "set_height", "get_height");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "width", PROPERTY_HINT_RANGE, "1,2048,or_greater"), "set_width", "get_width");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "height", PROPERTY_HINT_RANGE, "1,2048,or_greater"), "set_height", "get_height");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "use_hdr"), "set_use_hdr", "is_using_hdr");
 
 	ADD_GROUP("Fill", "fill_");
