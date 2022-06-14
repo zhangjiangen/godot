@@ -1310,7 +1310,16 @@ _FORCE_INLINE_ bool TextServerAdvanced::_ensure_cache_for_size(FontDataAdvanced 
 		fargs.memory_size = p_font_data->data_size;
 		fargs.flags = FT_OPEN_MEMORY;
 		fargs.stream = &fd->stream;
-		error = FT_Open_Face(ft_library, &fargs, 0, &fd->face);
+
+		int max_index = 0;
+		FT_Face tmp_face;
+		error = FT_Open_Face(ft_library, &fargs, -1, &tmp_face);
+		if (error == 0) {
+			max_index = tmp_face->num_faces - 1;
+		}
+		FT_Done_Face(tmp_face);
+
+		error = FT_Open_Face(ft_library, &fargs, CLAMP(p_font_data->face_index, 0, max_index), &fd->face);
 		if (error) {
 			FT_Done_Face(fd->face);
 			fd->face = nullptr;
@@ -1740,6 +1749,69 @@ void TextServerAdvanced::font_set_data_ptr(const RID &p_font_rid, const uint8_t 
 	fd->data.resize(0);
 	fd->data_ptr = p_data_ptr;
 	fd->data_size = p_data_size;
+}
+
+void TextServerAdvanced::font_set_face_index(const RID &p_font_rid, int64_t p_face_index) {
+	ERR_FAIL_COND(p_face_index < 0);
+	ERR_FAIL_COND(p_face_index >= 0x7FFF);
+
+	FontDataAdvanced *fd = font_owner.get_or_null(p_font_rid);
+	ERR_FAIL_COND(!fd);
+
+	MutexLock lock(fd->mutex);
+	if (fd->face_index != p_face_index) {
+		fd->face_index = p_face_index;
+		_font_clear_cache(fd);
+	}
+}
+
+int64_t TextServerAdvanced::font_get_face_index(const RID &p_font_rid) const {
+	FontDataAdvanced *fd = font_owner.get_or_null(p_font_rid);
+	ERR_FAIL_COND_V(!fd, 0);
+
+	MutexLock lock(fd->mutex);
+	return fd->face_index;
+}
+
+int64_t TextServerAdvanced::font_get_face_count(const RID &p_font_rid) const {
+	FontDataAdvanced *fd = font_owner.get_or_null(p_font_rid);
+	ERR_FAIL_COND_V(!fd, 0);
+
+	MutexLock lock(fd->mutex);
+	int face_count = 0;
+
+	if (fd->data_ptr && (fd->data_size > 0)) {
+		// Init dynamic font.
+#ifdef MODULE_FREETYPE_ENABLED
+		int error = 0;
+		if (!ft_library) {
+			error = FT_Init_FreeType(&ft_library);
+			ERR_FAIL_COND_V_MSG(error != 0, false, "FreeType: Error initializing library: '" + String(FT_Error_String(error)) + "'.");
+		}
+
+		FT_StreamRec stream;
+		memset(&stream, 0, sizeof(FT_StreamRec));
+		stream.base = (unsigned char *)fd->data_ptr;
+		stream.size = fd->data_size;
+		stream.pos = 0;
+
+		FT_Open_Args fargs;
+		memset(&fargs, 0, sizeof(FT_Open_Args));
+		fargs.memory_base = (unsigned char *)fd->data_ptr;
+		fargs.memory_size = fd->data_size;
+		fargs.flags = FT_OPEN_MEMORY;
+		fargs.stream = &stream;
+
+		FT_Face tmp_face;
+		error = FT_Open_Face(ft_library, &fargs, -1, &tmp_face);
+		if (error == 0) {
+			face_count = tmp_face->num_faces;
+		}
+		FT_Done_Face(tmp_face);
+#endif
+	}
+
+	return face_count;
 }
 
 void TextServerAdvanced::font_set_style(const RID &p_font_rid, int64_t /*FontStyle*/ p_style) {
@@ -4804,6 +4876,9 @@ void TextServerAdvanced::_shape_run(ShapedTextDataAdvanced *p_sd, int64_t p_star
 
 	RID f = p_fonts[p_fb_index];
 	FontDataAdvanced *fd = font_owner.get_or_null(f);
+	ERR_FAIL_COND(!fd);
+	MutexLock lock(fd->mutex);
+
 	Vector2i fss = _get_size(fd, fs);
 	hb_font_t *hb_font = _font_get_hb_handle(f, fs);
 	double scale = font_get_scale(f, fs);

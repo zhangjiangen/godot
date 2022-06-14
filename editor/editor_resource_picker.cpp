@@ -972,6 +972,7 @@ EditorResourcePicker::EditorResourcePicker() {
 			file_system_dock->connect("on_select_file", callable_mp(this, &EditorScriptPicker::on_file_system_select_file));
 		}
 	}
+	add_theme_constant_override("separation", 0);
 }
 
 void EditorResourcePicker::_button_save_resource() {

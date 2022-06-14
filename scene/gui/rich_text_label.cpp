@@ -1243,8 +1243,8 @@ int RichTextLabel::_draw_line(ItemFrame *p_frame, int p_line, const Vector2 &p_o
 
 			// Draw glyphs.
 			for (int j = 0; j < glyphs[i].repeat; j++) {
+				bool skip = (trim_chars && l.char_offset + glyphs[i].end > visible_characters) || (trim_glyphs_ltr && (r_processed_glyphs >= visible_glyphs)) || (trim_glyphs_rtl && (r_processed_glyphs < total_glyphs - visible_glyphs));
 				if (visible) {
-					bool skip = (trim_chars && l.char_offset + glyphs[i].end > visible_characters) || (trim_glyphs_ltr && (r_processed_glyphs >= visible_glyphs)) || (trim_glyphs_rtl && (r_processed_glyphs < total_glyphs - visible_glyphs));
 					if (!skip) {
 						if (frid != RID()) {
 							TS->font_draw_glyph(frid, ci, glyphs[i].font_size, p_ofs + fx_offset + off, gl, selected ? selection_fg : font_color);
@@ -1253,6 +1253,27 @@ int RichTextLabel::_draw_line(ItemFrame *p_frame, int p_line, const Vector2 &p_o
 						}
 					}
 					r_processed_glyphs++;
+				}
+				if (skip) {
+					// End underline/overline/strikethrough is previous glyph is skipped.
+					if (ul_started) {
+						ul_started = false;
+						float y_off = TS->shaped_text_get_underline_position(rid);
+						float underline_width = TS->shaped_text_get_underline_thickness(rid) * get_theme_default_base_scale();
+						draw_line(ul_start + Vector2(0, y_off), p_ofs + Vector2(off.x, off.y + y_off), ul_color, underline_width);
+					}
+					if (dot_ul_started) {
+						dot_ul_started = false;
+						float y_off = TS->shaped_text_get_underline_position(rid);
+						float underline_width = TS->shaped_text_get_underline_thickness(rid) * get_theme_default_base_scale();
+						draw_dashed_line(dot_ul_start + Vector2(0, y_off), p_ofs + Vector2(off.x, off.y + y_off), dot_ul_color, underline_width, underline_width * 2);
+					}
+					if (st_started) {
+						st_started = false;
+						float y_off = -TS->shaped_text_get_ascent(rid) + TS->shaped_text_get_size(rid).y / 2;
+						float underline_width = TS->shaped_text_get_underline_thickness(rid) * get_theme_default_base_scale();
+						draw_line(st_start + Vector2(0, y_off), p_ofs + Vector2(off.x, off.y + y_off), st_color, underline_width);
+					}
 				}
 				off.x += glyphs[i].advance;
 			}
@@ -4974,7 +4995,7 @@ void RichTextLabel::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "bbcode_enabled"), "set_use_bbcode", "is_using_bbcode");
 
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "threaded"), "set_threaded", "is_threaded");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "progress_bar_delay"), "set_progress_bar_delay", "get_progress_bar_delay");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "progress_bar_delay", PROPERTY_HINT_NONE, "suffix:ms"), "set_progress_bar_delay", "get_progress_bar_delay");
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "tab_size", PROPERTY_HINT_RANGE, "0,24,1"), "set_tab_size", "get_tab_size");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "text", PROPERTY_HINT_MULTILINE_TEXT), "set_text", "get_text");

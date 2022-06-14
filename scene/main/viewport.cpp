@@ -161,29 +161,6 @@ ViewportTexture::~ViewportTexture() {
 	}
 }
 
-/////////////////////////////////////
-
-// Aliases used to provide custom styles to tooltips in the default
-// theme and editor theme.
-// TooltipPanel is also used for custom tooltips, while TooltipLabel
-// is only relevant for default tooltips.
-
-class TooltipPanel : public PopupPanel {
-	GDCLASS(TooltipPanel, PopupPanel);
-
-public:
-	TooltipPanel() {}
-};
-
-class TooltipLabel : public Label {
-	GDCLASS(TooltipLabel, Label);
-
-public:
-	TooltipLabel() {}
-};
-
-/////////////////////////////////////
-
 void Viewport::_sub_window_update_order() {
 	for (int i = 0; i < gui.sub_windows.size(); i++) {
 		RS::get_singleton()->canvas_item_set_draw_index(gui.sub_windows[i].canvas_item, i);
@@ -1228,7 +1205,8 @@ void Viewport::_gui_show_tooltip() {
 	}
 
 	// Popup window which houses the tooltip content.
-	TooltipPanel *panel = memnew(TooltipPanel);
+	PopupPanel *panel = memnew(PopupPanel);
+	panel->set_theme_type_variation(SNAME("TooltipPanel"));
 
 	// Controls can implement `make_custom_tooltip` to provide their own tooltip.
 	// This should be a Control node which will be added as child to a TooltipPanel.
@@ -1236,7 +1214,8 @@ void Viewport::_gui_show_tooltip() {
 
 	// If no custom tooltip is given, use a default implementation.
 	if (!base_tooltip) {
-		gui.tooltip_label = memnew(TooltipLabel);
+		gui.tooltip_label = memnew(Label);
+		gui.tooltip_label->set_theme_type_variation(SNAME("TooltipLabel"));
 		gui.tooltip_label->set_auto_translate(gui.tooltip_control->is_auto_translating());
 		gui.tooltip_label->set_text(tooltip_text);
 		base_tooltip = gui.tooltip_label;
@@ -4083,8 +4062,8 @@ void SubViewport::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_clear_mode", "mode"), &SubViewport::set_clear_mode);
 	ClassDB::bind_method(D_METHOD("get_clear_mode"), &SubViewport::get_clear_mode);
 
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2I, "size"), "set_size", "get_size");
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2I, "size_2d_override"), "set_size_2d_override", "get_size_2d_override");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2I, "size", PROPERTY_HINT_NONE, "suffix:px"), "set_size", "get_size");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2I, "size_2d_override", PROPERTY_HINT_NONE, "suffix:px"), "set_size_2d_override", "get_size_2d_override");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "size_2d_override_stretch"), "set_size_2d_override_stretch", "is_size_2d_override_stretch_enabled");
 	ADD_GROUP("Render Target", "render_target_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "render_target_clear_mode", PROPERTY_HINT_ENUM, "Always,Never,Next Frame"), "set_clear_mode", "get_clear_mode");
