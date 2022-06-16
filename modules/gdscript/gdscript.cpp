@@ -128,6 +128,7 @@ void GDScript::_super_implicit_constructor(GDScript *p_script, GDScriptInstance 
 			return;
 		}
 	}
+	ERR_FAIL_NULL(p_script->implicit_initializer);
 	p_script->implicit_initializer->call(p_instance, nullptr, 0, r_error);
 }
 
@@ -1474,6 +1475,9 @@ void GDScriptInstance::get_property_list(List<PropertyInfo> *p_properties) const
 					}
 					if (d.has("usage")) {
 						pinfo.usage = d["usage"];
+					}
+					if (d.has("class_name")) {
+						pinfo.class_name = d["class_name"];
 					}
 
 					props.push_back(pinfo);
