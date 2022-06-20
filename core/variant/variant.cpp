@@ -2922,8 +2922,29 @@ uint32_t Variant::recursive_hash(int recursion_count) const {
 			h = hash_murmur3_one_real(t.origin.z, h);
 			return hash_fmix32(h);
 		} break;
-		case CAMERA_MATRIX: {			
-			return hash_murmur3_32(_data._camera_matrix, sizeof(CameraMatrix));
+		case CAMERA_MATRIX: {
+			uint32_t h = HASH_MURMUR3_SEED;
+			const CameraMatrix &t = *_data._camera_matrix;
+			h = hash_murmur3_one_real(t.q[0].x, h);
+			h = hash_murmur3_one_real(t.q[0].y, h);
+			h = hash_murmur3_one_real(t.q[0].z, h);
+			h = hash_murmur3_one_real(t.q[0].w, h);
+
+			h = hash_murmur3_one_real(t.q[1].x, h);
+			h = hash_murmur3_one_real(t.q[1].y, h);
+			h = hash_murmur3_one_real(t.q[1].z, h);
+			h = hash_murmur3_one_real(t.q[1].w, h);
+
+			h = hash_murmur3_one_real(t.q[2].x, h);
+			h = hash_murmur3_one_real(t.q[2].y, h);
+			h = hash_murmur3_one_real(t.q[2].z, h);
+			h = hash_murmur3_one_real(t.q[2].w, h);
+
+			h = hash_murmur3_one_real(t.q[3].x, h);
+			h = hash_murmur3_one_real(t.q[3].y, h);
+			h = hash_murmur3_one_real(t.q[3].z, h);
+			h = hash_murmur3_one_real(t.q[3].w, h);
+			return hash_fmix32(h);
 
 		} break;
 
