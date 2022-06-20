@@ -132,7 +132,9 @@ void initialize_gltf_module(ModuleInitializationLevel p_level) {
 
 		// Project settings defined here so doctool finds them.
 		GLOBAL_DEF_RST("filesystem/import/blender/enabled", true);
+		GLOBAL_DEF_RST("filesystem/import/blender/blender3_path", true);
 		GLOBAL_DEF_RST("filesystem/import/fbx/enabled", true);
+		GLOBAL_DEF_RST("filesystem/import/fbx/fbx2gltf_path", "");
 		GDREGISTER_CLASS(EditorSceneFormatImporterBlend);
 		GDREGISTER_CLASS(EditorSceneFormatImporterFBX);
 

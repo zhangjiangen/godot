@@ -435,8 +435,8 @@ void ClusterBuilderRD::bake_cluster() {
 		{
 			RD::DrawListID draw_list = RD::get_singleton()->draw_list_begin(framebuffer, RD::INITIAL_ACTION_DROP, RD::FINAL_ACTION_DISCARD, RD::INITIAL_ACTION_DROP, RD::FINAL_ACTION_DISCARD);
 			ClusterBuilderSharedDataRD::ClusterRender::PushConstant push_constant = {};
-
-			RD::get_singleton()->draw_list_bind_render_pipeline(draw_list, shared->cluster_render.shader_pipelines[use_msaa ? ClusterBuilderSharedDataRD::ClusterRender::PIPELINE_MSAA : ClusterBuilderSharedDataRD::ClusterRender::PIPELINE_NORMAL]);
+			// 空的framebuffer 因为没有绑定任何randertarget 所以无法使用msaa
+			RD::get_singleton()->draw_list_bind_render_pipeline(draw_list, shared->cluster_render.shader_pipelines[ClusterBuilderSharedDataRD::ClusterRender::PIPELINE_NORMAL]);
 			RD::get_singleton()->draw_list_bind_uniform_set(draw_list, cluster_render_uniform_set, 0);
 
 			for (uint32_t i = 0; i < render_element_count;) {

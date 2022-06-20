@@ -4086,10 +4086,16 @@ RenderingDevice::TextureSamples RenderingDeviceVulkan::framebuffer_format_get_te
 RID RenderingDeviceVulkan::framebuffer_create_empty(const Size2i &p_size, TextureSamples p_samples, FramebufferFormatID p_format_check) {
 	_THREAD_SAFE_METHOD_
 	Framebuffer framebuffer;
-	framebuffer.format_id = framebuffer_format_create_empty(p_samples);
+	// mac 系统因为没有绑定任何缓冲，所以无法使用msaa，
+	//framebuffer.format_id = framebuffer_format_create_empty(p_samples);
+	framebuffer.format_id = framebuffer_format_create_empty(TEXTURE_SAMPLES_1);
+
 	ERR_FAIL_COND_V(p_format_check != INVALID_FORMAT_ID && framebuffer.format_id != p_format_check, RID());
 	framebuffer.size = p_size;
 	framebuffer.view_count = 1;
+	// mac 系统因为没有绑定任何缓冲，所以无法使用msaa，
+	//framebuffer.sample_count = p_samples;
+	framebuffer.sample_count = TEXTURE_SAMPLES_1;
 
 	return framebuffer_owner.make_rid(framebuffer);
 }
@@ -4125,6 +4131,7 @@ RID RenderingDeviceVulkan::framebuffer_create_multipass(const Vector<RID> &p_tex
 	Size2i size;
 	bool size_set = false;
 	int samples = 0;
+	TextureSamples sample_count = TEXTURE_SAMPLES_1;
 	bool is_sample_count_set = false;
 	for (int i = 0; i < p_texture_attachments.size(); i++) {
 		AttachmentFormat af;
@@ -4154,6 +4161,7 @@ RID RenderingDeviceVulkan::framebuffer_create_multipass(const Vector<RID> &p_tex
 			}
 			af.format = texture->format;
 			af.samples = texture->samples;
+			sample_count = texture->samples;
 			af.usage_flags = texture->usage_flags;
 		}
 		attachments.write[i] = af;
@@ -4173,6 +4181,8 @@ RID RenderingDeviceVulkan::framebuffer_create_multipass(const Vector<RID> &p_tex
 	framebuffer.format_id = format_id;
 	framebuffer.texture_ids = p_texture_attachments;
 	framebuffer.size = size;
+	// 保存msaa采样次数
+	framebuffer.sample_count = sample_count;
 	framebuffer.view_count = p_view_count;
 
 	RID id = framebuffer_owner.make_rid(framebuffer);
@@ -5799,15 +5809,15 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 	uint32_t set_uniform_count = set.uniform_info.size();
 	const UniformInfo *set_uniforms = set.uniform_info.ptr();
 
-	LocalVectorPool<VkWriteDescriptorSet>::V writes = LocalVectorPool<VkWriteDescriptorSet>::instance().get();
+	Vector<VkWriteDescriptorSet> writes;
 	DescriptorPoolKey pool_key;
 
 	//to keep them alive until update call
-	LocalVectorPool<LocalVectorPool<VkDescriptorBufferInfo>::V>::V buffer_infos = LocalVectorPool<LocalVectorPool<VkDescriptorBufferInfo>::V>::instance().get();
-	LocalVectorPool<LocalVectorPool<VkBufferView>::V>::V buffer_views = LocalVectorPool<LocalVectorPool<VkBufferView>::V>::instance().get();
-	LocalVectorPool<LocalVectorPool<VkDescriptorImageInfo>::V>::V image_infos = LocalVectorPool<LocalVectorPool<VkDescriptorImageInfo>::V>::instance().get();
+	List<Vector<VkDescriptorBufferInfo>> buffer_infos;
+	List<Vector<VkBufferView>> buffer_views;
+	List<Vector<VkDescriptorImageInfo>> image_infos;
 	//used for verification to make sure a uniform set does not use a framebuffer bound texture
-	Vector<UniformSet::AttachableTexture> attachable_textures;
+	LocalVector<UniformSet::AttachableTexture> attachable_textures;
 	Vector<Texture *> mutable_sampled_textures;
 	Vector<Texture *> mutable_storage_textures;
 
@@ -5850,7 +5860,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					}
 				}
 
-				LocalVectorPool<VkDescriptorImageInfo>::V image_info = LocalVectorPool<VkDescriptorImageInfo>::instance().get();
+				Vector<VkDescriptorImageInfo> image_info;
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j++) {
 					VkSampler *sampler = sampler_owner.get_or_null(uniform.get_id(j));
@@ -5863,11 +5873,11 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 
 					image_info.push_back(img_info);
 				}
-				image_infos.push_back(image_info);
+
 				write.dstArrayElement = 0;
 				write.descriptorCount = uniform.get_id_count();
 				write.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
-				write.pImageInfo = image_infos.back().ptr();
+				write.pImageInfo = image_infos.push_back(image_info)->get().ptr();
 				write.pBufferInfo = nullptr;
 				write.pTexelBufferView = nullptr;
 
@@ -5883,7 +5893,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					}
 				}
 
-				LocalVectorPool<VkDescriptorImageInfo>::V image_info = LocalVectorPool<VkDescriptorImageInfo>::instance().get();
+				Vector<VkDescriptorImageInfo> image_info;
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j += 2) {
 					VkSampler *sampler = sampler_owner.get_or_null(uniform.get_id(j + 0));
@@ -5919,11 +5929,11 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 
 					image_info.push_back(img_info);
 				}
-				image_infos.push_back(image_info);
+
 				write.dstArrayElement = 0;
 				write.descriptorCount = uniform.get_id_count() / 2;
 				write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				write.pImageInfo = image_infos.back().ptr();
+				write.pImageInfo = image_infos.push_back(image_info)->get().ptr();
 				write.pBufferInfo = nullptr;
 				write.pTexelBufferView = nullptr;
 
@@ -5939,7 +5949,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					}
 				}
 
-				LocalVectorPool<VkDescriptorImageInfo>::V image_info = LocalVectorPool<VkDescriptorImageInfo>::instance().get();
+				Vector<VkDescriptorImageInfo> image_info;
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j++) {
 					Texture *texture = texture_owner.get_or_null(uniform.get_id(j));
@@ -5973,11 +5983,11 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 
 					image_info.push_back(img_info);
 				}
-				image_infos.push_back(image_info);
+
 				write.dstArrayElement = 0;
 				write.descriptorCount = uniform.get_id_count();
 				write.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-				write.pImageInfo = image_infos.back().ptr();
+				write.pImageInfo = image_infos.push_back(image_info)->get().ptr();
 				write.pBufferInfo = nullptr;
 				write.pTexelBufferView = nullptr;
 
@@ -5992,7 +6002,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					}
 				}
 
-				LocalVectorPool<VkDescriptorImageInfo>::V image_info = LocalVectorPool<VkDescriptorImageInfo>::instance().get();
+				Vector<VkDescriptorImageInfo> image_info;
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j++) {
 					Texture *texture = texture_owner.get_or_null(uniform.get_id(j));
@@ -6021,11 +6031,11 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 
 					image_info.push_back(img_info);
 				}
-				image_infos.push_back(image_info);
+
 				write.dstArrayElement = 0;
 				write.descriptorCount = uniform.get_id_count();
 				write.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-				write.pImageInfo = image_infos.back().ptr();
+				write.pImageInfo = image_infos.push_back(image_info)->get().ptr();
 				write.pBufferInfo = nullptr;
 				write.pTexelBufferView = nullptr;
 
@@ -6041,8 +6051,8 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					}
 				}
 
-				LocalVectorPool<VkDescriptorBufferInfo>::V buffer_info = LocalVectorPool<VkDescriptorBufferInfo>::instance().get();
-				LocalVectorPool<VkBufferView>::V buffer_view = LocalVectorPool<VkBufferView>::instance().get();
+				Vector<VkDescriptorBufferInfo> buffer_info;
+				Vector<VkBufferView> buffer_view;
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j++) {
 					TextureBuffer *buffer = texture_buffer_owner.get_or_null(uniform.get_id(j));
@@ -6051,14 +6061,13 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					buffer_info.push_back(buffer->buffer.buffer_info);
 					buffer_view.push_back(buffer->view);
 				}
-				buffer_infos.push_back(buffer_info);
-				buffer_views.push_back(buffer_view);
+
 				write.dstArrayElement = 0;
 				write.descriptorCount = uniform.get_id_count();
 				write.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
 				write.pImageInfo = nullptr;
-				write.pBufferInfo = buffer_infos.back().ptr();
-				write.pTexelBufferView = buffer_views.back().ptr();
+				write.pBufferInfo = buffer_infos.push_back(buffer_info)->get().ptr();
+				write.pTexelBufferView = buffer_views.push_back(buffer_view)->get().ptr();
 
 				type_size = uniform.get_id_count();
 
@@ -6072,9 +6081,9 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					}
 				}
 
-				LocalVectorPool<VkDescriptorImageInfo>::V image_info = LocalVectorPool<VkDescriptorImageInfo>::instance().get();
-				LocalVectorPool<VkDescriptorBufferInfo>::V buffer_info = LocalVectorPool<VkDescriptorBufferInfo>::instance().get();
-				LocalVectorPool<VkBufferView>::V buffer_view = LocalVectorPool<VkBufferView>::instance().get();
+				Vector<VkDescriptorImageInfo> image_info;
+				Vector<VkDescriptorBufferInfo> buffer_info;
+				Vector<VkBufferView> buffer_view;
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j += 2) {
 					VkSampler *sampler = sampler_owner.get_or_null(uniform.get_id(j + 0));
@@ -6094,15 +6103,13 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					buffer_info.push_back(buffer->buffer.buffer_info);
 					buffer_view.push_back(buffer->view);
 				}
-				image_infos.push_back(image_info);
-				buffer_infos.push_back(buffer_info);
-				buffer_views.push_back(buffer_view);
+
 				write.dstArrayElement = 0;
 				write.descriptorCount = uniform.get_id_count() / 2;
 				write.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
-				write.pImageInfo = image_infos.back().ptr();
-				write.pBufferInfo = buffer_infos.back().ptr();
-				write.pTexelBufferView = buffer_views.back().ptr();
+				write.pImageInfo = image_infos.push_back(image_info)->get().ptr();
+				write.pBufferInfo = buffer_infos.push_back(buffer_info)->get().ptr();
+				write.pTexelBufferView = buffer_views.push_back(buffer_view)->get().ptr();
 
 				type_size = uniform.get_id_count() / 2;
 			} break;
@@ -6167,7 +6174,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					}
 				}
 
-				LocalVectorPool<VkDescriptorImageInfo>::V image_info = LocalVectorPool<VkDescriptorImageInfo>::instance().get();
+				Vector<VkDescriptorImageInfo> image_info;
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j++) {
 					Texture *texture = texture_owner.get_or_null(uniform.get_id(j));
@@ -6191,11 +6198,11 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 
 					image_info.push_back(img_info);
 				}
-				image_infos.push_back(image_info);
+
 				write.dstArrayElement = 0;
 				write.descriptorCount = uniform.get_id_count();
 				write.descriptorType = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
-				write.pImageInfo = image_infos.back().ptr();
+				write.pImageInfo = image_infos.push_back(image_info)->get().ptr();
 				write.pBufferInfo = nullptr;
 				write.pTexelBufferView = nullptr;
 
@@ -6257,8 +6264,8 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 
 	//write the contents
 	if (writes.size()) {
-		for (uint32_t i = 0; i < writes.size(); i++) {
-			writes[i].dstSet = descriptor_set;
+		for (int i = 0; i < writes.size(); i++) {
+			writes.write[i].dstSet = descriptor_set;
 		}
 		vkUpdateDescriptorSets(device, writes.size(), writes.ptr(), 0, nullptr);
 	}
@@ -6558,12 +6565,6 @@ RID RenderingDeviceVulkan::render_pipeline_create(RID p_shader, FramebufferForma
 	multisample_state_create_info.pNext = nullptr;
 	multisample_state_create_info.flags = 0;
 
-#if __APPLE__
-	// Matel 不支持renderpopline 和 framebuffer samplecount 不一致
-	multisample_state_create_info.rasterizationSamples = rasterization_sample_count[0];
-#else
-	multisample_state_create_info.rasterizationSamples = rasterization_sample_count[p_multisample_state.sample_count];
-#endif
 	multisample_state_create_info.rasterizationSamples = rasterization_sample_count[p_multisample_state.sample_count];
 	multisample_state_create_info.sampleShadingEnable = p_multisample_state.enable_sample_shading;
 	multisample_state_create_info.minSampleShading = p_multisample_state.min_sample_shading;
@@ -6827,6 +6828,8 @@ RID RenderingDeviceVulkan::render_pipeline_create(RID p_shader, FramebufferForma
 	pipeline.push_constant_stages = shader->push_constant.push_constants_vk_stage;
 	pipeline.pipeline_layout = shader->pipeline_layout;
 	pipeline.shader = p_shader;
+	// 保存msaa 采样次数
+	pipeline.sample_count = p_multisample_state.sample_count;
 	pipeline.push_constant_size = shader->push_constant.push_constant_size;
 
 #ifdef DEBUG_ENABLED
@@ -7076,6 +7079,7 @@ Error RenderingDeviceVulkan::_draw_list_setup_framebuffer(Framebuffer *p_framebu
 	vk.initial_depth_action = p_initial_depth_action;
 	vk.final_depth_action = p_final_depth_action;
 	vk.view_count = p_framebuffer->view_count;
+	vk.sample_count = p_framebuffer->sample_count;
 
 	if (!p_framebuffer->framebuffers.has(vk)) {
 		//need to create this version
@@ -7372,6 +7376,7 @@ RenderingDevice::DrawListID RenderingDeviceVulkan::draw_list_begin(RID p_framebu
 	scissor.extent.height = viewport_size.height;
 
 	vkCmdSetScissor(command_buffer, 0, 1, &scissor);
+	draw_list->state.sample_count = framebuffer->sample_count;
 
 	return int64_t(ID_TYPE_DRAW_LIST) << ID_BASE_SHIFT;
 }
@@ -7382,6 +7387,7 @@ Error RenderingDeviceVulkan::draw_list_begin_split(RID p_framebuffer, uint32_t p
 	ERR_FAIL_COND_V(p_splits < 1, ERR_INVALID_DECLARATION);
 
 	Framebuffer *framebuffer = framebuffer_owner.get_or_null(p_framebuffer);
+	draw_list->state.sample_count = framebuffer->sample_count;
 	ERR_FAIL_COND_V(!framebuffer, ERR_INVALID_DECLARATION);
 
 	Point2i viewport_offset;
@@ -7518,6 +7524,7 @@ void RenderingDeviceVulkan::draw_list_bind_render_pipeline(DrawListID p_list, RI
 #endif
 
 	const RenderPipeline *pipeline = render_pipeline_owner.get_or_null(p_render_pipeline);
+
 	ERR_FAIL_COND(!pipeline);
 #ifdef DEBUG_ENABLED
 	ERR_FAIL_COND(pipeline->validation.framebuffer_format != draw_list_framebuffer_format && pipeline->validation.render_pass != draw_list_current_subpass);
@@ -7526,6 +7533,7 @@ void RenderingDeviceVulkan::draw_list_bind_render_pipeline(DrawListID p_list, RI
 	if (p_render_pipeline == dl->state.pipeline) {
 		return; //redundant state, return.
 	}
+	//ERR_FAIL_COND(dl->state.sample_count != pipeline->sample_count);
 
 	dl->state.pipeline = p_render_pipeline;
 	dl->state.pipeline_layout = pipeline->pipeline_layout;
@@ -7702,8 +7710,10 @@ void RenderingDeviceVulkan::draw_list_set_push_constant(DrawListID p_list, const
 #endif
 
 #ifdef DEBUG_ENABLED
-	ERR_FAIL_COND_MSG(p_data_size != dl->validation.pipeline_push_constant_size,
-			"This render pipeline requires (" + itos(dl->validation.pipeline_push_constant_size) + ") bytes of push constant data, supplied: (" + itos(p_data_size) + ")");
+	if (p_data_size != dl->validation.pipeline_push_constant_size) {
+		ERR_FAIL_COND_MSG(p_data_size != dl->validation.pipeline_push_constant_size,
+				"This render pipeline requires (" + itos(dl->validation.pipeline_push_constant_size) + ") bytes of push constant data, supplied: (" + itos(p_data_size) + ")");
+	}
 #endif
 	vkCmdPushConstants(dl->command_buffer, dl->state.pipeline_layout, dl->state.pipeline_push_constant_stages, 0, p_data_size, p_data);
 #ifdef DEBUG_ENABLED
@@ -7719,8 +7729,10 @@ void RenderingDeviceVulkan::draw_list_draw(DrawListID p_list, bool p_use_indices
 #endif
 
 #ifdef DEBUG_ENABLED
-	ERR_FAIL_COND_MSG(!dl->validation.pipeline_active,
-			"No render pipeline was set before attempting to draw.");
+	if (!dl->validation.pipeline_active) {
+		ERR_FAIL_COND_MSG(!dl->validation.pipeline_active,
+				"No render pipeline was set before attempting to draw.");
+	}
 	if (dl->validation.pipeline_vertex_format != INVALID_ID) {
 		//pipeline uses vertices, validate format
 		ERR_FAIL_COND_MSG(dl->validation.vertex_format == INVALID_ID,

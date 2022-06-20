@@ -378,30 +378,38 @@ private:
 	struct Framebuffer {
 		FramebufferFormatID format_id = 0;
 		struct VersionKey {
-			InitialAction initial_color_action;
-			FinalAction final_color_action;
-			InitialAction initial_depth_action;
-			FinalAction final_depth_action;
-			uint32_t view_count;
+			union {
+				struct {
+					InitialAction initial_color_action : 8;
+					FinalAction final_color_action : 8;
+					InitialAction initial_depth_action : 8;
+					FinalAction final_depth_action : 8;
+					uint32_t view_count : 8;
+					// 当前渲染列队的msaa采样次数
+					TextureSamples sample_count : 8;
+				};
+				uint64_t key;
+			};
 
 			bool operator<(const VersionKey &p_key) const {
-				if (initial_color_action == p_key.initial_color_action) {
-					if (final_color_action == p_key.final_color_action) {
-						if (initial_depth_action == p_key.initial_depth_action) {
-							if (final_depth_action == p_key.final_depth_action) {
-								return view_count < p_key.view_count;
-							} else {
-								return final_depth_action < p_key.final_depth_action;
-							}
-						} else {
-							return initial_depth_action < p_key.initial_depth_action;
-						}
-					} else {
-						return final_color_action < p_key.final_color_action;
-					}
-				} else {
-					return initial_color_action < p_key.initial_color_action;
-				}
+				return key < p_key.key;
+				// if (initial_color_action == p_key.initial_color_action) {
+				// 	if (final_color_action == p_key.final_color_action) {
+				// 		if (initial_depth_action == p_key.initial_depth_action) {
+				// 			if (final_depth_action == p_key.final_depth_action) {
+				// 				return view_count < p_key.view_count;
+				// 			} else {
+				// 				return final_depth_action < p_key.final_depth_action;
+				// 			}
+				// 		} else {
+				// 			return initial_depth_action < p_key.initial_depth_action;
+				// 		}
+				// 	} else {
+				// 		return final_color_action < p_key.final_color_action;
+				// 	}
+				// } else {
+				// 	return initial_color_action < p_key.initial_color_action;
+				// }
 			}
 		};
 
@@ -417,6 +425,8 @@ private:
 		RBMap<VersionKey, Version> framebuffers;
 		Size2 size;
 		uint32_t view_count;
+		// 当前渲染列队的msaa采样次数
+		TextureSamples sample_count = TEXTURE_SAMPLES_1;
 	};
 
 	RID_Owner<Framebuffer, true> framebuffer_owner;
@@ -656,8 +666,6 @@ private:
 		Vector<SpecializationConstant> specialization_constants;
 		VkPipelineLayout pipeline_layout = VK_NULL_HANDLE;
 		String name; //used for debug
-		// 临时变量
-		LocalVector<VkWriteDescriptorSet> writes;
 	};
 
 	String _shader_uniform_debug(RID p_shader, int p_set = -1);
@@ -758,7 +766,7 @@ private:
 			RID texture;
 		};
 
-		Vector<AttachableTexture> attachable_textures; //used for validation
+		LocalVector<AttachableTexture> attachable_textures; //used for validation
 		Vector<Texture *> mutable_sampled_textures; //used for layout change
 		Vector<Texture *> mutable_storage_textures; //used for layout change
 		UniformSetInvalidatedCallback invalidated_callback = nullptr;
@@ -800,6 +808,8 @@ private:
 		Vector<uint32_t> set_formats;
 		VkPipelineLayout pipeline_layout = VK_NULL_HANDLE; // not owned, needed for push constants
 		VkPipeline pipeline = VK_NULL_HANDLE;
+		// msaa 采样次数
+		TextureSamples sample_count = TEXTURE_SAMPLES_1;
 		uint32_t push_constant_size = 0;
 		uint32_t push_constant_stages = 0;
 	};
@@ -856,6 +866,8 @@ private:
 		struct State {
 			SetState sets[MAX_UNIFORM_SETS];
 			uint32_t set_count = 0;
+			// 当前渲染列队的msaa采样次数
+			TextureSamples sample_count = TEXTURE_SAMPLES_1;
 			RID pipeline;
 			RID pipeline_shader;
 			VkPipelineLayout pipeline_layout = VK_NULL_HANDLE;

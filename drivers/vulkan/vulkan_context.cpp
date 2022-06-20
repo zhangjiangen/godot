@@ -243,10 +243,10 @@ Error VulkanContext::_get_preferred_validation_layers(uint32_t *count, const cha
 		return OK;
 	}
 
-	VkLayerProperties *instance_layers = (VkLayerProperties *)memalloc(sizeof(VkLayerProperties) * instance_layer_count);
+	VkLayerProperties *instance_layers = (VkLayerProperties *)alloca(sizeof(VkLayerProperties) * instance_layer_count);
 	err = vkEnumerateInstanceLayerProperties(&instance_layer_count, instance_layers);
 	if (err) {
-		memfree(instance_layers);
+		//memfree(instance_layers);
 		ERR_FAIL_V(ERR_CANT_CREATE);
 	}
 
@@ -260,7 +260,7 @@ Error VulkanContext::_get_preferred_validation_layers(uint32_t *count, const cha
 		}
 	}
 
-	memfree(instance_layers);
+	//memfree(instance_layers);
 
 	return OK;
 }
@@ -312,10 +312,10 @@ Error VulkanContext::_initialize_extensions() {
 	ERR_FAIL_COND_V(err != VK_SUCCESS && err != VK_INCOMPLETE, ERR_CANT_CREATE);
 
 	if (instance_extension_count > 0) {
-		VkExtensionProperties *instance_extensions = (VkExtensionProperties *)memalloc(sizeof(VkExtensionProperties) * instance_extension_count);
+		VkExtensionProperties *instance_extensions = (VkExtensionProperties *)alloca(sizeof(VkExtensionProperties) * instance_extension_count);
 		err = vkEnumerateInstanceExtensionProperties(nullptr, &instance_extension_count, instance_extensions);
 		if (err != VK_SUCCESS && err != VK_INCOMPLETE) {
-			memfree(instance_extensions);
+			//memfree(instance_extensions);
 			ERR_FAIL_V(ERR_CANT_CREATE);
 		}
 		for (uint32_t i = 0; i < instance_extension_count; i++) {
@@ -342,12 +342,12 @@ Error VulkanContext::_initialize_extensions() {
 				extension_names[enabled_extension_count++] = VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME;
 			}
 			if (enabled_extension_count >= MAX_EXTENSIONS) {
-				memfree(instance_extensions);
+				//memfree(instance_extensions);
 				ERR_FAIL_V_MSG(ERR_BUG, "Enabled extension count reaches MAX_EXTENSIONS, BUG");
 			}
 		}
 
-		memfree(instance_extensions);
+		//memfree(instance_extensions);
 	}
 
 	ERR_FAIL_COND_V_MSG(!surfaceExtFound, ERR_CANT_CREATE, "No surface extension found, is a driver installed?");
