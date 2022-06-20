@@ -38,10 +38,13 @@
 #include "editor/editor_node.h"
 #include "editor/editor_scale.h"
 #include "editor/editor_settings.h"
+#include "editor/filesystem_dock.h"
+#include "editor/plugins/visual_shader_editor_plugin.h"
 #include "editor/project_settings_editor.h"
 #include "editor/property_editor.h"
+#include "editor/shader_create_dialog.h"
+#include "scene/gui/split_container.h"
 #include "servers/display_server.h"
-#include "servers/rendering/shader_preprocessor.h"
 #include "servers/rendering/shader_types.h"
 
 /*** SHADER SCRIPT EDITOR ****/
@@ -70,10 +73,6 @@ Ref<Shader> ShaderTextEditor::get_edited_shader() const {
 }
 
 void ShaderTextEditor::set_edited_shader(const Ref<Shader> &p_shader) {
-	set_edited_shader(p_shader, p_shader->get_code());
-}
-
-void ShaderTextEditor::set_edited_shader(const Ref<Shader> &p_shader, String code) {
 	if (shader == p_shader) {
 		return;
 	}
@@ -81,21 +80,13 @@ void ShaderTextEditor::set_edited_shader(const Ref<Shader> &p_shader, String cod
 
 	_load_theme_settings();
 
-	get_text_editor()->set_text(code);
+	get_text_editor()->set_text(p_shader->get_code());
 	get_text_editor()->clear_undo_history();
 	get_text_editor()->call_deferred(SNAME("set_h_scroll"), 0);
 	get_text_editor()->call_deferred(SNAME("set_v_scroll"), 0);
 
 	_validate_script();
 	_line_col_changed();
-	if (resource_path_panel) {
-		resource_path_panel->clear();
-		resource_path_panel->add_text(p_shader->get_path());
-	}
-}
-
-void ShaderTextEditor::load_theme_settings() {
-	_load_theme_settings();
 }
 
 void ShaderTextEditor::reload_text() {
@@ -117,32 +108,9 @@ void ShaderTextEditor::reload_text() {
 
 	update_line_and_column();
 }
-void ShaderTextEditor::set_shader_editor(ShaderEditor *p_editor) {
-	shader_editor = p_editor;
-}
 
-void ShaderTextEditor::set_shader_dependency_tree(Tree *p_tree) {
-	shader_dependency_tree = p_tree;
-}
-
-void ShaderTextEditor::_clear_tree_item_backgrounds(TreeItem *p_node) {
-	Array tree_children = p_node->get_children();
-	for (int i = 0; i < tree_children.size(); i++) {
-		Variant child = tree_children[i];
-		if (child.get_type() == Variant::Type::OBJECT) {
-			Object *obj = child.get_validated_object();
-			TreeItem *itemChild = obj->cast_to<TreeItem>(obj);
-			itemChild->clear_custom_bg_color(0);
-
-			_clear_tree_item_backgrounds(itemChild);
-		}
-	}
-}
 void ShaderTextEditor::set_warnings_panel(RichTextLabel *p_warnings_panel) {
 	warnings_panel = p_warnings_panel;
-}
-void ShaderTextEditor::set_resource_path_panel(RichTextLabel *p_resource_path_panel) {
-	resource_path_panel = p_resource_path_panel;
 }
 
 void ShaderTextEditor::_load_theme_settings() {
@@ -155,16 +123,6 @@ void ShaderTextEditor::_load_theme_settings() {
 			}
 		}
 		marked_line_color = updated_marked_line_color;
-	}
-
-	float updated_preprocessor_inactive_color_intensity = EDITOR_GET("text_editor/theme/highlighting/preprocessor_inactive_color_intensity");
-	if (updated_preprocessor_inactive_color_intensity != preprocessor_inactive_color_intensity) {
-		for (int i = 0; i < text_editor->get_line_count(); i++) {
-			if (text_editor->get_line_font_color_intensity(i) == preprocessor_inactive_color_intensity) {
-				text_editor->set_line_font_color_intensity(i, updated_preprocessor_inactive_color_intensity);
-			}
-		}
-		preprocessor_inactive_color_intensity = updated_preprocessor_inactive_color_intensity;
 	}
 
 	syntax_highlighter->set_number_color(EDITOR_GET("text_editor/theme/highlighting/number_color"));
@@ -232,22 +190,6 @@ void ShaderTextEditor::_load_theme_settings() {
 	if (!text_editor->has_auto_brace_completion_open_key("/*")) {
 		text_editor->add_auto_brace_completion_pair("/*", "*/");
 	}
-	if (resource_path_panel) {
-		resource_path_panel->add_theme_font_override("normal_font", EditorNode::get_singleton()->get_gui_base()->get_theme_font(SNAME("main"), SNAME("EditorFonts")));
-		resource_path_panel->add_theme_font_size_override("normal_font_size", EditorNode::get_singleton()->get_gui_base()->get_theme_font_size(SNAME("main_size"), SNAME("EditorFonts")));
-	}
-
-	// Colorize shader preprocessor directives
-	List<String> preprocessor_keywords;
-	ShaderPreprocessor::get_keyword_list(&preprocessor_keywords);
-
-	for (const String &E : preprocessor_keywords) {
-		syntax_highlighter->add_keyword_color(E, keyword_color);
-	}
-
-	//colorize preprocessor include strings
-	const Color string_color = EDITOR_GET("text_editor/theme/highlighting/string_color");
-	syntax_highlighter->add_color_region("\"", "\"", string_color, false);
 
 	if (warnings_panel) {
 		// Warnings panel
@@ -304,7 +246,7 @@ void ShaderTextEditor::_code_complete_script(const String &p_code, List<ScriptLa
 void ShaderTextEditor::_validate_script() {
 	_check_shader_mode();
 
-	//String code = get_text_editor()->get_text();
+	String code = get_text_editor()->get_text();
 	//List<StringName> params;
 	//shader->get_param_list(&params);
 
@@ -314,61 +256,6 @@ void ShaderTextEditor::_validate_script() {
 	info.shader_types = ShaderTypes::get_singleton()->get_types();
 	info.global_variable_type_func = _get_global_variable_type;
 
-	// force apply current shader.
-	String code = get_text_editor()->get_text();
-	shader->set_code(code);
-	shader_editor->shader_rolling_code[shader->get_path()] = code;
-
-	// reset code to parent shader code
-	code = shader_editor->get_shader()->get_code();
-
-	shader_editor->shader_dependencies.populate(shader_editor->get_shader());
-	shader_editor->_update_shader_dependency_tree();
-
-	_clear_tree_item_backgrounds(shader_dependency_tree->get_root());
-
-	ShaderPreprocessor processor(code);
-	String processed = processor.preprocess();
-
-	PreprocessorState *state = processor.get_state();
-	if (!state->error.is_empty()) {
-		// couldn't preprocess, so no sense in validating. Need to feed back issues to user.
-		// only write include path if there are includes
-		if (shader_editor->shader_dependencies.size() > 1) {
-			String error_text = "error(" + state->current_include + ":" + itos(state->error_line) + "): " + state->error;
-			set_error(error_text);
-		} else {
-			String error_text = "error(" + itos(state->error_line) + "): " + state->error;
-			set_error(error_text);
-		}
-		set_error_pos(state->error_line - 1, 0);
-
-		bool highlight_error = false;
-		if (!state->current_include.is_empty()) {
-			TreeItem *tree_item = shader_dependency_tree->get_item_with_text(state->current_include);
-			tree_item->set_custom_bg_color(0, marked_line_color);
-
-			error_shader_path = state->current_include;
-
-			if (shader->get_path() == error_shader_path) {
-				highlight_error = true;
-			}
-		} else {
-			highlight_error = true;
-		}
-
-		for (int i = 0; i < get_text_editor()->get_line_count(); i++) {
-			get_text_editor()->set_line_background_color(i, Color(0, 0, 0, 0));
-		}
-
-		if (highlight_error) {
-			get_text_editor()->set_line_background_color(state->error_line - 1, marked_line_color);
-		}
-
-		return;
-	}
-
-
 	ShaderLanguage sl;
 
 	sl.enable_warning_checking(saved_warnings_enabled);
@@ -377,79 +264,18 @@ void ShaderTextEditor::_validate_script() {
 	last_compile_result = sl.compile(code, info);
 
 	if (last_compile_result != OK) {
-		// String error_text = "error(" + itos(sl.get_error_line()) + "): " + sl.get_error_text();
-		// set_error(error_text);
-		// set_error_pos(sl.get_error_line() - 1, 0);
-		// for (int i = 0; i < get_text_editor()->get_line_count(); i++) {
-		// 	get_text_editor()->set_line_background_color(i, Color(0, 0, 0, 0));
-		// }
-		// get_text_editor()->set_line_background_color(sl.get_error_line() - 1, marked_line_color);
-		ShaderDependencyNode *context;
-		int adjusted_line = sl.get_error_line();
-		for (ShaderDependencyNode *node : shader_editor->shader_dependencies.nodes) {
-			adjusted_line = node->GetContext(sl.get_error_line(), &context);
-			break;
+		String error_text = "error(" + itos(sl.get_error_line()) + "): " + sl.get_error_text();
+		set_error(error_text);
+		set_error_pos(sl.get_error_line() - 1, 0);
+		for (int i = 0; i < get_text_editor()->get_line_count(); i++) {
+			get_text_editor()->set_line_background_color(i, Color(0, 0, 0, 0));
 		}
-
-		bool highlight_error = false;
-		error_shader_path = shader->get_path();
-		if (context) {
-			if (!context->get_path().is_empty()) {
-				TreeItem *tree_item = shader_dependency_tree->get_item_with_text(context->get_path());
-				tree_item->set_custom_bg_color(0, marked_line_color);
-
-				error_shader_path = context->get_path();
-			} else {
-				highlight_error = true;
-			}
-		}
-
-		// only write include path if there are includes
-		if (shader_editor->shader_dependencies.size() > 1) {
-			String error_text = "error(" + error_shader_path + ":" + itos(adjusted_line) + "): " + sl.get_error_text();
-			set_error(error_text);
-		} else {
-			String error_text = "error(" + itos(adjusted_line) + "): " + sl.get_error_text();
-			set_error(error_text);
-		}
-		set_error_pos(adjusted_line - 1, 0);
-
-		if (highlight_error) {
-			for (int i = 0; i < get_text_editor()->get_line_count(); i++) {
-				get_text_editor()->set_line_background_color(i, Color(0, 0, 0, 0));
-			}
-			get_text_editor()->set_line_background_color(adjusted_line - 1, marked_line_color);
-		}
-
+		get_text_editor()->set_line_background_color(sl.get_error_line() - 1, marked_line_color);
 	} else {
-		error_shader_path = "";
-
 		for (int i = 0; i < get_text_editor()->get_line_count(); i++) {
 			get_text_editor()->set_line_background_color(i, Color(0, 0, 0, 0));
 		}
 		set_error("");
-	}
-
-	// reset intensity and reset for lines that match unevaluated conditional macros
-	for (int i = 0; i < get_text_editor()->get_line_count(); i++) {
-		get_text_editor()->set_line_font_color_intensity(i, 1.0f);
-	}
-
-	if (!state->skipped_conditions.is_empty()) {
-		HashMap<String, Vector<SkippedPreprocessorCondition *>>::Iterator val_elem = state->skipped_conditions.find(shader->get_path());
-		if (val_elem) {
-			for (SkippedPreprocessorCondition *cond : val_elem->value) {
-				int end_line = cond->end_line;
-				if (end_line < 0) {
-					// set to end of file
-					end_line = get_text_editor()->get_line_count() - cond->start_line;
-				}
-
-				for (int i = cond->start_line; i < cond->end_line; i++) {
-					get_text_editor()->set_line_font_color_intensity(i, preprocessor_inactive_color_intensity);
-				}
-			}
-		}
 	}
 
 	if (warnings.size() > 0 || last_compile_result != OK) {
@@ -468,99 +294,31 @@ void ShaderTextEditor::_validate_script() {
 	emit_signal(SNAME("script_changed"));
 }
 
-void ShaderTextEditor::goto_error() {
-	if (!error_shader_path.is_empty()) {
-		shader_editor->open_path(error_shader_path);
-
-		int error_line;
-		int error_column;
-		get_error_pos(error_line, error_column);
-
-		for (int i = 0; i < get_text_editor()->get_line_count(); i++) {
-			get_text_editor()->set_line_background_color(i, Color(0, 0, 0, 0));
-		}
-		get_text_editor()->set_line_background_color(error_line, marked_line_color);
-	}
-
-	CodeTextEditor::goto_error();
-}
-
 void ShaderTextEditor::_update_warning_panel() {
 	int warning_count = 0;
 
-	const Color &warning_color = warnings_panel->get_theme_color(SNAME("warning_color"), SNAME("Editor"));
 	warnings_panel->push_table(2);
 	for (int i = 0; i < warnings.size(); i++) {
 		ShaderWarning &w = warnings[i];
 
-		ShaderDependencyNode *context;
-		int adjusted_line = w.get_line();
-		for (ShaderDependencyNode *node : shader_editor->shader_dependencies.nodes) {
-			adjusted_line = node->GetContext(w.get_line(), &context);
-			break;
-		}
-
-		bool highlight_error = false;
-		String warning_shader_path = shader->get_path();
-		if (context) {
-			if (!context->get_path().is_empty()) {
-				TreeItem *tree_item = shader_dependency_tree->get_item_with_text(context->get_path());
-				if (saved_treat_warning_as_errors) {
-					if (warning_count == 0) {
-						tree_item->set_custom_bg_color(0, marked_line_color);
-					}
-				} else {
-					// TODO need a less intense yellow. set font color instead maybe?
-					// maybe use color * intensity used for preprocessor condition blocked code?
-					tree_item->set_custom_bg_color(0, warning_color * preprocessor_inactive_color_intensity);
-				}
-
-				warning_shader_path = context->get_path();
-			} else {
-				highlight_error = true;
-			}
-		}
-
 		if (warning_count == 0) {
 			if (saved_treat_warning_as_errors) {
-				// String error_text = "error(" + itos(w.get_line()) + "): " + w.get_message() + " " + TTR("Warnings should be fixed to prevent errors.");
-				// set_error_pos(w.get_line() - 1, 0);
-				// set_error(error_text);
-				// get_text_editor()->set_line_background_color(w.get_line() - 1, marked_line_color);
-
-				error_shader_path = warning_shader_path;
-				if (shader_editor->shader_dependencies.size() > 1) {
-					String error_text = "error(" + warning_shader_path + ":" + itos(adjusted_line) + "): " + w.get_message() + " " + TTR("Warnings should be fixed to prevent errors.");
-					set_error(error_text);
-				} else {
-					String error_text = "error(" + itos(adjusted_line) + "): " + w.get_message() + " " + TTR("Warnings should be fixed to prevent errors.");
-					set_error(error_text);
-				}
-				set_error_pos(adjusted_line - 1, 0);
-
-				if (highlight_error) {
-					get_text_editor()->set_line_background_color(adjusted_line - 1, marked_line_color);
-				}
+				String error_text = "error(" + itos(w.get_line()) + "): " + w.get_message() + " " + TTR("Warnings should be fixed to prevent errors.");
+				set_error_pos(w.get_line() - 1, 0);
+				set_error(error_text);
+				get_text_editor()->set_line_background_color(w.get_line() - 1, marked_line_color);
 			}
 		}
 
 		warning_count++;
-		
-		Array warning_data_array;
-		warning_data_array.resize(2);
-		warning_data_array[0] = adjusted_line - 1;
-		warning_data_array[1] = warning_shader_path;
+		int line = w.get_line();
 
 		// First cell.
 		warnings_panel->push_cell();
-		warnings_panel->push_color(warning_color);
-		if (adjusted_line != -1) {
-			warnings_panel->push_meta(warning_data_array);
-			if (shader_editor->shader_dependencies.size() > 1) {
-				warnings_panel->add_text(warning_shader_path + " - " + TTR("Line") + " " + itos(adjusted_line));
-			} else {
-				warnings_panel->add_text(TTR("Line") + " " + itos(adjusted_line));
-			}
+		warnings_panel->push_color(warnings_panel->get_theme_color(SNAME("warning_color"), SNAME("Editor")));
+		if (line != -1) {
+			warnings_panel->push_meta(line - 1);
+			warnings_panel->add_text(TTR("Line") + " " + itos(line));
 			warnings_panel->add_text(" (" + w.get_name() + "):");
 			warnings_panel->pop(); // Meta goto.
 		} else {
@@ -583,7 +341,7 @@ void ShaderTextEditor::_bind_methods() {
 }
 
 ShaderTextEditor::ShaderTextEditor() {
-	New_instantiate(syntax_highlighter);
+	syntax_highlighter.instantiate();
 	get_text_editor()->set_syntax_highlighter(syntax_highlighter);
 }
 
@@ -674,13 +432,6 @@ void ShaderEditor::_menu_option(int p_option) {
 		case HELP_DOCS: {
 			OS::get_singleton()->shell_open(vformat("%s/tutorials/shaders/shader_reference/index.html", VERSION_DOCS_URL));
 		} break;
-		case VIEW_SHADER_DEPENDENCIES: {
-			if (shader_dependency_tree->is_visible()) {
-				shader_dependency_tree->hide();
-			} else {
-				shader_dependency_tree->show();
-			}
-		} break;
 	}
 	if (p_option != SEARCH_FIND && p_option != SEARCH_REPLACE && p_option != SEARCH_GOTO_LINE) {
 		shader_editor->get_text_editor()->call_deferred(SNAME("grab_focus"));
@@ -702,7 +453,6 @@ void ShaderEditor::_notification(int p_what) {
 }
 
 void ShaderEditor::_editor_settings_changed() {
-	shader_editor->load_theme_settings();
 	shader_editor->update_editor_settings();
 
 	shader_editor->get_text_editor()->add_theme_constant_override("line_spacing", EditorSettings::get_singleton()->get("text_editor/appearance/whitespace/line_spacing"));
@@ -713,6 +463,7 @@ void ShaderEditor::_editor_settings_changed() {
 void ShaderEditor::_show_warnings_panel(bool p_show) {
 	warnings_panel->set_visible(p_show);
 }
+
 void ShaderEditor::_warning_clicked(Variant p_line) {
 	if (p_line.get_type() == Variant::INT) {
 		shader_editor->get_text_editor()->set_caret_line(p_line.operator int64_t());
@@ -811,21 +562,6 @@ void ShaderEditor::edit(const Ref<Shader> &p_shader) {
 
 	shader = p_shader;
 
-
-	// create shader dependencies and update tree.
-	shader_rolling_code.clear();
-	shader_dependencies.populate(shader);
-	_update_shader_dependency_tree();
-
-	// show and hide dep tree based on amount of deps. If 1 dep, don't show.
-	if (shader_dependencies.size() > 1) {
-		shader_dependency_tree->show();
-	} else {
-		shader_dependency_tree->hide();
-	}
-
-	shader_rolling_code[shader->get_path()] = p_shader->get_code();
-
 	shader_editor->set_edited_shader(p_shader);
 
 	//vertex_editor->set_edited_shader(shader,ShaderLanguage::SHADER_MATERIAL_VERTEX);
@@ -841,8 +577,6 @@ void ShaderEditor::save_external_data(const String &p_str) {
 	apply_shaders();
 	if (!shader->is_built_in()) {
 		//external shader, save it
-		Ref<Shader> edited_shader = shader_editor->get_edited_shader();
-		ResourceSaver::save(edited_shader->get_path(), edited_shader);
 		ResourceSaver::save(shader->get_path(), shader);
 	}
 
@@ -851,26 +585,17 @@ void ShaderEditor::save_external_data(const String &p_str) {
 
 void ShaderEditor::apply_shaders() {
 	if (shader.is_valid()) {
-		Ref<Shader> currently_edited_shader = shader_editor->get_edited_shader();
+		String shader_code = shader->get_code();
 		String editor_code = shader_editor->get_text_editor()->get_text();
-		shader_rolling_code[currently_edited_shader->get_path()] = editor_code;
-		if (currently_edited_shader == shader) {
-			String shader_code = shader->get_code();
-			if (shader_code != editor_code) {
-				shader->set_code(editor_code);
-				shader->set_edited(true);
-			}
-		} else {
-			currently_edited_shader->set_code(editor_code);
-			currently_edited_shader->set_edited(true);
+		if (shader_code != editor_code) {
+			shader->set_code(editor_code);
+			shader->set_edited(true);
 		}
-
-		ShaderPreprocessor::refresh_shader_dependencies(*shader);
 	}
 }
 
-void ShaderEditor::_text_edit_gui_input(const Ref<InputEvent> &p_ev) {
-	Ref<InputEventMouseButton> mb = p_ev;
+void ShaderEditor::_text_edit_gui_input(const Ref<InputEvent> &ev) {
+	Ref<InputEventMouseButton> mb = ev;
 
 	if (mb.is_valid()) {
 		if (mb->get_button_index() == MouseButton::RIGHT && mb->is_pressed()) {
@@ -902,7 +627,7 @@ void ShaderEditor::_text_edit_gui_input(const Ref<InputEvent> &p_ev) {
 		}
 	}
 
-	Ref<InputEventKey> k = p_ev;
+	Ref<InputEventKey> k = ev;
 	if (k.is_valid() && k->is_pressed() && k->is_action("ui_menu", true)) {
 		CodeEdit *tx = shader_editor->get_text_editor();
 		tx->adjust_viewport_to_caret();
@@ -970,61 +695,6 @@ void ShaderEditor::_make_context_menu(bool p_selection, Vector2 p_position) {
 	context_menu->popup();
 }
 
-void ShaderEditor::open_path(String p_path) {
-    Ref<Resource> res = ResourceLoader::load(p_path);
-	if (!res.is_null()) {
-		Ref<Shader> shader = Object::cast_to<Shader>(*res);
-		if (!shader.is_null()) {
-			HashMap<String, String>::Iterator rolling_code = shader_rolling_code.find(shader->get_path());
-
-			if (rolling_code) {
-				shader_editor->set_edited_shader(shader, rolling_code->value);
-			} else {
-				String included = shader->get_code();
-				shader_rolling_code[p_path] = included;
-				shader_editor->set_edited_shader(shader);
-			}
-		}
-	}
-}
-
-Ref<Shader> ShaderEditor::get_shader() {
-	return shader;
-}
-void ShaderEditor::_tree_activate_shader() {
-	TreeItem *selected = shader_dependency_tree->get_selected();
-	if (selected) {
-		String path = selected->get_metadata(0);
-
-		open_path(path);
-	}
-}
-
-void ShaderEditor::_update_shader_dependency_tree() {
-	shader_dependency_tree->clear();
-	TreeItem *root = shader_dependency_tree->create_item();
-	root->select(0);
-
-	for (ShaderDependencyNode *node : shader_dependencies.nodes) {
-		TreeItem *shader_parent_item = shader_dependency_tree->create_item(root);
-		shader_parent_item->set_text(0, TTR(node->get_path()));
-		shader_parent_item->set_metadata(0, node->get_path());
-		shader_parent_item->set_icon(0, get_theme_icon(SNAME("Shader"), SNAME("EditorIcons")));
-
-		_update_shader_dependency_tree_items(shader_parent_item, node);
-	}
-}
-
-void ShaderEditor::_update_shader_dependency_tree_items(TreeItem *p_parent_tree_item, ShaderDependencyNode *p_node) {
-	for (ShaderDependencyNode *child_node : p_node->dependencies) {
-		TreeItem *shader_child_item = shader_dependency_tree->create_item(p_parent_tree_item);
-		shader_child_item->set_text(0, TTR(child_node->get_path()));
-		shader_child_item->set_metadata(0, child_node->get_path());
-		shader_child_item->set_icon(0, get_theme_icon(SNAME("Shader"), SNAME("EditorIcons")));
-
-		_update_shader_dependency_tree_items(shader_child_item, child_node);
-	}
-}
 ShaderEditor::ShaderEditor() {
 	GLOBAL_DEF("debug/shader_language/warnings/enable", true);
 	GLOBAL_DEF("debug/shader_language/warnings/treat_warnings_as_errors", false);
@@ -1034,7 +704,6 @@ ShaderEditor::ShaderEditor() {
 	_update_warnings(false);
 
 	shader_editor = memnew(ShaderTextEditor);
-	shader_editor->set_shader_editor(this);
 	shader_editor->set_v_size_flags(SIZE_EXPAND_FILL);
 	shader_editor->add_theme_constant_override("separation", 0);
 	shader_editor->set_anchors_and_offsets_preset(Control::PRESET_WIDE);
@@ -1057,8 +726,6 @@ ShaderEditor::ShaderEditor() {
 	context_menu->connect("id_pressed", callable_mp(this, &ShaderEditor::_menu_option));
 
 	VBoxContainer *main_container = memnew(VBoxContainer);
-	add_child(main_container);
-	
 	HBoxContainer *hbc = memnew(HBoxContainer);
 
 	edit_menu = memnew(MenuButton);
@@ -1114,14 +781,6 @@ ShaderEditor::ShaderEditor() {
 	bookmarks_menu->connect("about_to_popup", callable_mp(this, &ShaderEditor::_update_bookmark_list));
 	bookmarks_menu->connect("index_pressed", callable_mp(this, &ShaderEditor::_bookmark_item_pressed));
 
-	view_menu = memnew(MenuButton);
-	view_menu->set_shortcut_context(this);
-	view_menu->set_text(TTR("View"));
-	view_menu->set_switch_on_hover(true);
-
-	view_menu->get_popup()->add_icon_item(get_theme_icon(SNAME("Tree"), SNAME("EditorIcons")), TTR("Shader Dependencies"), VIEW_SHADER_DEPENDENCIES);
-	view_menu->get_popup()->connect("id_pressed", callable_mp(this, &ShaderEditor::_menu_option));
-
 	help_menu = memnew(MenuButton);
 	help_menu->set_text(TTR("Help"));
 	help_menu->set_switch_on_hover(true);
@@ -1130,46 +789,20 @@ ShaderEditor::ShaderEditor() {
 
 	add_child(main_container);
 	main_container->add_child(hbc);
-
-//	// 资源目录
-//	resource_path_panel = memnew(RichTextLabel);
-//	resource_path_panel->set_custom_minimum_size(Size2(10, 40));
-//	resource_path_panel->set_h_size_flags(Control::SIZE_FILL);
-//	main_container->add_child(resource_path_panel);
-//	shader_editor->set_resource_path_panel(resource_path_panel);
-
 	hbc->add_child(search_menu);
 	hbc->add_child(edit_menu);
 	hbc->add_child(goto_menu);
-	hbc->add_child(view_menu);
 	hbc->add_child(help_menu);
 	hbc->add_theme_style_override("panel", EditorNode::get_singleton()->get_gui_base()->get_theme_stylebox(SNAME("ScriptEditorPanel"), SNAME("EditorStyles")));
 
-	// split container for code editor and dependency tree
-	HSplitContainer *panel_split = memnew(HSplitContainer);
-	panel_split->set_anchors_and_offsets_preset(Control::PRESET_WIDE);
-	panel_split->set_v_size_flags(SIZE_EXPAND_FILL);
-	main_container->add_child(panel_split);
-
 	VSplitContainer *editor_box = memnew(VSplitContainer);
-	panel_split->add_child(editor_box);
+	main_container->add_child(editor_box);
 	editor_box->set_anchors_and_offsets_preset(Control::PRESET_WIDE);
 	editor_box->set_v_size_flags(SIZE_EXPAND_FILL);
 	editor_box->add_child(shader_editor);
 
-	shader_dependency_tree = memnew(Tree);
-	shader_dependency_tree->set_hide_root(true);
-	shader_dependency_tree->set_allow_rmb_select(true);
-	shader_dependency_tree->set_anchors_and_offsets_preset(Control::PRESET_TOP_RIGHT, Control::PRESET_MODE_KEEP_WIDTH);
-	shader_dependency_tree->set_select_mode(Tree::SELECT_SINGLE);
-	shader_dependency_tree->set_custom_minimum_size(Size2(100 * EDSCALE, 30 * EDSCALE));
-	shader_dependency_tree->connect("item_activated", callable_mp(this, &ShaderEditor::_tree_activate_shader));
-	panel_split->add_child(shader_dependency_tree);
-	shader_editor->set_shader_dependency_tree(shader_dependency_tree);
-
 	FindReplaceBar *bar = memnew(FindReplaceBar);
-	editor_box->add_child(bar);
-	bar->set_anchors_and_offsets_preset(Control::PRESET_LEFT_WIDE, Control::PRESET_MODE_KEEP_WIDTH);
+	main_container->add_child(bar);
 	bar->hide();
 	shader_editor->set_find_replace_bar(bar);
 
@@ -1207,62 +840,216 @@ ShaderEditor::ShaderEditor() {
 	_editor_settings_changed();
 }
 
+void ShaderEditorPlugin::_update_shader_list() {
+	shader_list->clear();
+	for (uint32_t i = 0; i < edited_shaders.size(); i++) {
+		String text;
+		String path = edited_shaders[i].shader->get_path();
+		String _class = edited_shaders[i].shader->get_class();
+
+		if (path.is_resource_file()) {
+			text = path.get_file();
+		} else if (edited_shaders[i].shader->get_name() != "") {
+			text = edited_shaders[i].shader->get_name();
+		} else {
+			text = _class + ":" + itos(edited_shaders[i].shader->get_instance_id());
+		}
+
+		if (!shader_list->has_theme_icon(_class, SNAME("EditorIcons"))) {
+			_class = "Resource";
+		}
+		Ref<Texture2D> icon = shader_list->get_theme_icon(_class, SNAME("EditorIcons"));
+
+		shader_list->add_item(text, icon);
+		shader_list->set_item_tooltip(shader_list->get_item_count() - 1, path);
+	}
+
+	if (shader_tabs->get_tab_count()) {
+		shader_list->select(shader_tabs->get_current_tab());
+	}
+
+	for (int i = 1; i < FILE_MAX; i++) {
+		file_menu->get_popup()->set_item_disabled(file_menu->get_popup()->get_item_index(i), edited_shaders.size() == 0);
+	}
+}
+
 void ShaderEditorPlugin::edit(Object *p_object) {
 	Shader *s = Object::cast_to<Shader>(p_object);
-	shader_editor->edit(s);
+	for (uint32_t i = 0; i < edited_shaders.size(); i++) {
+		if (edited_shaders[i].shader.ptr() == s) {
+			// Exists, select.
+			shader_tabs->set_current_tab(i);
+			shader_list->select(i);
+			return;
+		}
+	}
+	// Add.
+	EditedShader es;
+	es.shader = Ref<Shader>(s);
+	Ref<VisualShader> vs = es.shader;
+	if (vs.is_valid()) {
+		es.visual_shader_editor = memnew(VisualShaderEditor);
+		es.visual_shader_editor->edit(vs.ptr());
+		shader_tabs->add_child(es.visual_shader_editor);
+	} else {
+		es.shader_editor = memnew(ShaderEditor);
+		es.shader_editor->edit(s);
+		shader_tabs->add_child(es.shader_editor);
+	}
+	shader_tabs->set_current_tab(shader_tabs->get_tab_count() - 1);
+	edited_shaders.push_back(es);
+	_update_shader_list();
 }
 
 bool ShaderEditorPlugin::handles(Object *p_object) const {
-	Shader *shader = Object::cast_to<Shader>(p_object);
-	return shader != nullptr && shader->is_text_shader();
+	return Object::cast_to<Shader>(p_object) != nullptr;
 }
 
 void ShaderEditorPlugin::make_visible(bool p_visible) {
 	if (p_visible) {
-		if (button != nullptr) {
-			button->show();
-			//editor->make_bottom_panel_item_visible(shader_editor);
-		}
-		//  else
-		// 	dock_make_float(shader_editor);
-
-	} else {
-		if (button != nullptr) {
-			button->hide();
-			if (shader_editor->is_visible_in_tree()) {
-				//editor->hide_bottom_panel();
-			}
-		}
-		//  else
-		// 	dock_floating_close(shader_editor);
-		shader_editor->apply_shaders();
+		EditorNode::get_singleton()->make_bottom_panel_item_visible(main_split);
 	}
 }
 
 void ShaderEditorPlugin::selected_notify() {
-	shader_editor->ensure_select_current();
+}
+
+ShaderEditor *ShaderEditorPlugin::get_shader_editor(const Ref<Shader> &p_for_shader) {
+	for (uint32_t i = 0; i < edited_shaders.size(); i++) {
+		if (edited_shaders[i].shader == p_for_shader) {
+			return edited_shaders[i].shader_editor;
+		}
+	}
+	return nullptr;
 }
 
 void ShaderEditorPlugin::save_external_data() {
-	shader_editor->save_external_data();
+	for (uint32_t i = 0; i < edited_shaders.size(); i++) {
+		if (edited_shaders[i].shader_editor) {
+			edited_shaders[i].shader_editor->save_external_data();
+		}
+	}
 }
 
 void ShaderEditorPlugin::apply_changes() {
-	shader_editor->apply_shaders();
+	for (uint32_t i = 0; i < edited_shaders.size(); i++) {
+		if (edited_shaders[i].shader_editor) {
+			edited_shaders[i].shader_editor->apply_shaders();
+		}
+	}
+}
+
+void ShaderEditorPlugin::_shader_selected(int p_index) {
+	shader_tabs->set_current_tab(p_index);
+}
+
+void ShaderEditorPlugin::_close_shader(int p_index) {
+	int index = shader_tabs->get_current_tab();
+	ERR_FAIL_INDEX(index, shader_tabs->get_tab_count());
+	Control *c = shader_tabs->get_tab_control(index);
+	memdelete(c);
+	edited_shaders.remove_at(index);
+	_update_shader_list();
+}
+
+void ShaderEditorPlugin::_resource_saved(Object *obj) {
+	// May have been renamed on save.
+	for (uint32_t i = 0; i < edited_shaders.size(); i++) {
+		if (edited_shaders[i].shader.ptr() == obj) {
+			_update_shader_list();
+			return;
+		}
+	}
+}
+
+void ShaderEditorPlugin::_menu_item_pressed(int p_index) {
+	switch (p_index) {
+		case FILE_NEW: {
+			String base_path = FileSystemDock::get_singleton()->get_current_path();
+			shader_create_dialog->config(base_path.plus_file("new_shader"), false, false, 0);
+			shader_create_dialog->popup_centered();
+		} break;
+		case FILE_OPEN: {
+			InspectorDock::get_singleton()->open_resource("Shader");
+		} break;
+		case FILE_SAVE: {
+			int index = shader_tabs->get_current_tab();
+			ERR_FAIL_INDEX(index, shader_tabs->get_tab_count());
+			EditorNode::get_singleton()->save_resource(edited_shaders[index].shader);
+		} break;
+		case FILE_SAVE_AS: {
+			int index = shader_tabs->get_current_tab();
+			ERR_FAIL_INDEX(index, shader_tabs->get_tab_count());
+			String path = edited_shaders[index].shader->get_path();
+			if (!path.is_resource_file()) {
+				path = "";
+			}
+			EditorNode::get_singleton()->save_resource_as(edited_shaders[index].shader, path);
+		} break;
+		case FILE_INSPECT: {
+			int index = shader_tabs->get_current_tab();
+			ERR_FAIL_INDEX(index, shader_tabs->get_tab_count());
+			EditorNode::get_singleton()->push_item(edited_shaders[index].shader.ptr());
+		} break;
+		case FILE_CLOSE: {
+			_close_shader(shader_tabs->get_current_tab());
+		} break;
+	}
+}
+
+void ShaderEditorPlugin::_shader_created(Ref<Shader> p_shader) {
+	EditorNode::get_singleton()->push_item(p_shader.ptr());
 }
 
 ShaderEditorPlugin::ShaderEditorPlugin() {
-	shader_editor = memnew(ShaderEditor);
+	main_split = memnew(HSplitContainer);
 
-	//shader_editor->set_custom_minimum_size(Size2(0, 300) * EDSCALE);
-	//button = editor->add_bottom_panel_item(TTR("Shader"), shader_editor);
-	//button->hide();
-	// 换个地方吧，这里能够悬浮出来多窗口编辑
-	button = nullptr;
-	shader_editor->set_name(TTR("Shader"));
-	add_control_to_dock(DOCK_SLOT_RIGHT_BL, shader_editor);
+	VBoxContainer *vb = memnew(VBoxContainer);
 
-	_2d = false;
+	HBoxContainer *file_hb = memnew(HBoxContainer);
+	vb->add_child(file_hb);
+	file_menu = memnew(MenuButton);
+	file_menu->set_text(TTR("File"));
+	file_menu->get_popup()->add_item(TTR("New Shader"), FILE_NEW);
+	file_menu->get_popup()->add_separator();
+	file_menu->get_popup()->add_item(TTR("Load Shader"), FILE_OPEN);
+	file_menu->get_popup()->add_item(TTR("Save Shader"), FILE_SAVE);
+	file_menu->get_popup()->add_item(TTR("Save Shader As"), FILE_SAVE_AS);
+	file_menu->get_popup()->add_separator();
+	file_menu->get_popup()->add_item(TTR("Open Shader in Inspector"), FILE_INSPECT);
+	file_menu->get_popup()->add_separator();
+	file_menu->get_popup()->add_item(TTR("Close Shader"), FILE_CLOSE);
+	file_menu->get_popup()->connect("id_pressed", callable_mp(this, &ShaderEditorPlugin::_menu_item_pressed));
+	file_hb->add_child(file_menu);
+
+	for (int i = 1; i < FILE_MAX; i++) {
+		file_menu->get_popup()->set_item_disabled(file_menu->get_popup()->get_item_index(i), true);
+	}
+
+	shader_list = memnew(ItemList);
+	shader_list->set_v_size_flags(Control::SIZE_EXPAND_FILL);
+	vb->add_child(shader_list);
+	shader_list->connect("item_selected", callable_mp(this, &ShaderEditorPlugin::_shader_selected));
+
+	main_split->add_child(vb);
+	vb->set_custom_minimum_size(Size2(200, 300) * EDSCALE);
+
+	shader_tabs = memnew(TabContainer);
+	shader_tabs->set_tabs_visible(false);
+	shader_tabs->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	main_split->add_child(shader_tabs);
+	Ref<StyleBoxEmpty> empty;
+	empty.instantiate();
+	shader_tabs->add_theme_style_override("panel", empty);
+
+	button = EditorNode::get_singleton()->add_bottom_panel_item(TTR("Shader Editor"), main_split);
+
+	// Defer connect because Editor class is not in the binding system yet.
+	EditorNode::get_singleton()->call_deferred("connect", "resource_saved", callable_mp(this, &ShaderEditorPlugin::_resource_saved), varray(), CONNECT_DEFERRED);
+
+	shader_create_dialog = memnew(ShaderCreateDialog);
+	vb->add_child(shader_create_dialog);
+	shader_create_dialog->connect("shader_created", callable_mp(this, &ShaderEditorPlugin::_shader_created));
 }
 
 ShaderEditorPlugin::~ShaderEditorPlugin() {
