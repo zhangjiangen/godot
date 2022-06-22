@@ -631,15 +631,6 @@ void VisualShaderGraphPlugin::add_node(VisualShader::Type p_type, int p_id) {
 				case VisualShaderNode::PORT_TYPE_VECTOR_4D: {
 					output_port_count += 4;
 				} break;
-				case VisualShaderNode::PORT_TYPE_IVECTOR_2D: {
-					output_port_count += 2;
-				} break;
-				case VisualShaderNode::PORT_TYPE_IVECTOR_3D: {
-					output_port_count += 3;
-				} break;
-				case VisualShaderNode::PORT_TYPE_IVECTOR_4D: {
-					output_port_count += 4;
-				} break;
 				default:
 					break;
 			}
@@ -964,8 +955,6 @@ void VisualShaderGraphPlugin::add_node(VisualShader::Type p_type, int p_id) {
 						port_left = vsnode->get_input_port_type(i + 3);
 					}
 					node->set_slot(i + port_offset, valid_left, port_left, type_color[port_left], true, VisualShaderNode::PORT_TYPE_SCALAR, vector_expanded_color[2]);
-					port_offset++;
-
 					port_offset++;
 
 					valid_left = (i + 4) < vsnode->get_input_port_count();
@@ -1343,7 +1332,7 @@ void VisualShaderEditor::_update_nodes() {
 			Ref<Script> script = Ref<Script>(res);
 
 			Ref<VisualShaderNodeCustom> ref;
-			New_instantiate(ref);
+			ref.instantiate();
 			ref->set_script(script);
 			if (!ref->is_available(visual_shader->get_mode(), visual_shader->get_shader_type())) {
 				continue;
@@ -1628,7 +1617,7 @@ void VisualShaderEditor::_update_options_menu() {
 				item->set_icon(0, EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector3"), SNAME("EditorIcons")));
 				break;
 			case VisualShaderNode::PORT_TYPE_VECTOR_4D:
-				item->set_icon(0, EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector3"), SNAME("EditorIcons")));
+				item->set_icon(0, EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector4"), SNAME("EditorIcons")));
 				break;
 			case VisualShaderNode::PORT_TYPE_IVECTOR_2D:
 				item->set_icon(0, EditorNode::get_singleton()->get_gui_base()->get_theme_icon(SNAME("Vector2"), SNAME("EditorIcons")));
@@ -1716,12 +1705,6 @@ void VisualShaderEditor::_draw_color_over_button(Object *obj, Color p_color) {
 
 void VisualShaderEditor::_update_created_node(GraphNode *node) {
 	const Ref<StyleBoxFlat> sb = node->get_theme_stylebox(SNAME("frame"), SNAME("GraphNode"));
-	if (!sb.is_valid()) {
-		node->add_theme_color_override("title_color", Color(1, 0.8f, 0.9f, 1));
-		node->add_theme_color_override("close_color", Color(1, 0.8f, 0.9f, 0.7f));
-		node->add_theme_color_override("resizer_color", Color(1, 0.8f, 0.9f, 0.7f));
-		return;
-	}
 	Color c = sb->get_border_color();
 	const Color mono_color = ((c.r + c.g + c.b) / 3) < 0.7 ? Color(1.0, 1.0, 1.0, 0.85) : Color(0.0, 0.0, 0.0, 0.85);
 	c = mono_color;
@@ -1775,8 +1758,6 @@ void VisualShaderEditor::_update_uniforms(bool p_update_refs) {
 					uniform_type = VisualShaderNodeUniformRef::UniformType::UNIFORM_TYPE_IVECTOR_4D;
 				} else if (color_uniform.is_valid()) {
 					uniform_type = VisualShaderNodeUniformRef::UniformType::UNIFORM_TYPE_COLOR;
-				} else if (transform_uniform.is_valid()) {
-					uniform_type = VisualShaderNodeUniformRef::UniformType::UNIFORM_TYPE_TRANSFORM;
 				} else if (transform_uniform.is_valid()) {
 					uniform_type = VisualShaderNodeUniformRef::UniformType::UNIFORM_TYPE_TRANSFORM;
 				} else if (color_uniform.is_valid()) {
@@ -2891,7 +2872,7 @@ void VisualShaderEditor::_add_node(int p_idx, const Vector<Variant> &p_ops, Stri
 					initial_expression_code = "output0 = vec3(1.0, 1.0, 1.0);";
 					break;
 				case VisualShaderNode::PORT_TYPE_VECTOR_4D:
-					initial_expression_code = "output0 = vec4(1.0, 1.0);";
+					initial_expression_code = "output0 = vec4(1.0, 1.0, 1.0, 1.0);";
 					break;
 				case VisualShaderNode::PORT_TYPE_IVECTOR_2D:
 					initial_expression_code = "output0 = ivec2(1, 1, 1);";
@@ -3456,24 +3437,6 @@ void VisualShaderEditor::_convert_constants_to_uniforms(bool p_vice_versa) {
 				}
 			}
 		}
-		// vec4
-		if (!caught) {
-			if (!p_vice_versa) {
-				Ref<VisualShaderNodeVec4Constant> vec4_const = Object::cast_to<VisualShaderNodeVec4Constant>(node.ptr());
-				if (vec4_const.is_valid()) {
-					_replace_node(type_id, node_id, "VisualShaderNodeVec4Constant", "VisualShaderNodeVec4Uniform");
-					var = vec4_const->get_constant();
-					caught = true;
-				}
-			} else {
-				Ref<VisualShaderNodeVec4Uniform> vec4_const = Object::cast_to<VisualShaderNodeVec4Uniform>(node.ptr());
-				if (vec4_const.is_valid()) {
-					_replace_node(type_id, node_id, "VisualShaderNodeVec4Uniform", "VisualShaderNodeVec4Constant");
-					var = vec4_const->get_default_value();
-					caught = true;
-				}
-			}
-		}
 		// ivec2
 		if (!caught) {
 			if (!p_vice_versa) {
@@ -3988,9 +3951,7 @@ void VisualShaderEditor::_scroll_changed(const Vector2 &p_scroll) {
 		return;
 	}
 	updating = true;
-	if (visual_shader.is_valid()) {
-		visual_shader->set_graph_offset(p_scroll / EDSCALE);
-	}
+	visual_shader->set_graph_offset(p_scroll / EDSCALE);
 	updating = false;
 }
 
@@ -5054,7 +5015,7 @@ VisualShaderEditor::VisualShaderEditor() {
 	preview_vbox->add_theme_constant_override("separation", 0);
 
 	preview_text = memnew(CodeEdit);
-	New_instantiate(syntax_highlighter);
+	syntax_highlighter.instantiate();
 	preview_vbox->add_child(preview_text);
 	preview_text->set_v_size_flags(Control::SIZE_EXPAND_FILL);
 	preview_text->set_syntax_highlighter(syntax_highlighter);
@@ -5871,62 +5832,16 @@ VisualShaderEditor::VisualShaderEditor() {
 	undo_redo = EditorNode::get_singleton()->get_undo_redo();
 
 	Ref<VisualShaderNodePluginDefault> default_plugin;
-	New_instantiate(default_plugin);
+	default_plugin.instantiate();
 	add_plugin(default_plugin);
 
-	New_instantiate(graph_plugin);
+	graph_plugin.instantiate();
 
 	property_editor = memnew(CustomPropertyEditor);
 	add_child(property_editor);
 
 	property_editor->connect("variant_changed", callable_mp(this, &VisualShaderEditor::_port_edited));
 }
-
-/////////////////
-
-void VisualShaderEditorPlugin::edit(Object *p_object) {
-	visual_shader_editor->edit(Object::cast_to<VisualShader>(p_object));
-}
-
-bool VisualShaderEditorPlugin::handles(Object *p_object) const {
-	return p_object->is_class("VisualShader");
-}
-
-void VisualShaderEditorPlugin::make_visible(bool p_visible) {
-	if (p_visible) {
-		//editor->hide_animation_player_editors();
-		//editor->animation_panel_make_visible(true);
-		//button->show();
-		//editor->make_bottom_panel_item_visible(visual_shader_editor);
-		//dock_make_float(visual_shader_editor);
-		visual_shader_editor->update_nodes();
-
-		visual_shader_editor->set_process_input(true);
-		//visual_shader_editor->set_process(true);
-	} else {
-		if (visual_shader_editor->is_visible_in_tree()) {
-			//EditorNode::get_singleton()->hide_bottom_panel();
-		}
-		//button->hide();
-		//dock_floating_close(visual_shader_editor);
-		visual_shader_editor->set_process_input(false);
-		//visual_shader_editor->set_process(false);
-	}
-}
-
-VisualShaderEditorPlugin::VisualShaderEditorPlugin() {
-	visual_shader_editor = memnew(VisualShaderEditor);
-	visual_shader_editor->set_custom_minimum_size(Size2(0, 300) * EDSCALE);
-	visual_shader_editor->set_name(TTR("VisualShader"));
-	//button = editor->add_control_to_dock(DOCK_SLOT_RIGHT_BL, visual_shader_editor);
-	add_control_to_dock(DOCK_SLOT_RIGHT_BL, visual_shader_editor);
-	//button->hide();
-}
-
-VisualShaderEditorPlugin::~VisualShaderEditorPlugin() {
-}
-
-////////////////
 
 class VisualShaderNodePluginInputEditor : public OptionButton {
 	GDCLASS(VisualShaderNodePluginInputEditor, OptionButton);
@@ -6456,7 +6371,7 @@ void VisualShaderNodePortPreview::_shader_changed() {
 	String shader_code = shader->generate_preview_shader(type, node, port, default_textures);
 
 	Ref<Shader> preview_shader;
-	New_instantiate(preview_shader);
+	preview_shader.instantiate();
 	preview_shader->set_code(shader_code);
 	for (int i = 0; i < default_textures.size(); i++) {
 		for (int j = 0; j < default_textures[i].params.size(); j++) {
@@ -6465,7 +6380,7 @@ void VisualShaderNodePortPreview::_shader_changed() {
 	}
 
 	Ref<ShaderMaterial> material;
-	New_instantiate(material);
+	material.instantiate();
 	material->set_shader(preview_shader);
 
 	//find if a material is also being edited and copy parameters to this one
@@ -6558,7 +6473,7 @@ Ref<Resource> VisualShaderConversionPlugin::convert(const Ref<Resource> &p_resou
 	ERR_FAIL_COND_V(!vshader.is_valid(), Ref<Resource>());
 
 	Ref<Shader> shader;
-	New_instantiate(shader);
+	shader.instantiate();
 
 	String code = vshader->get_code();
 	shader->set_code(code);

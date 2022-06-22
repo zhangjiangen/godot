@@ -55,6 +55,8 @@ env.drivers_sources += thirdparty_obj
 driver_obj = []
 
 env.add_source_files(driver_obj, "*.cpp")
+if env["platform"] == "osx" or env["platform"] == "iphone":
+    env.add_source_files(driver_obj, "*.mm")
 env.drivers_sources += driver_obj
 
 # Needed to force rebuilding the driver files when the thirdparty code is updated.

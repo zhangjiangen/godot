@@ -40,7 +40,7 @@
 #include "core/object/object.h"
 #include <stdio.h>
 #include <stdlib.h>
-#define RECORD_MEMORY 0
+#define RECORD_MEMORY 1
 struct MemmoryInfo {
 	size_t size;
 	size_t count;
@@ -505,6 +505,9 @@ class SmallMemoryManager {
 	DECL_MEMUBER_TYPE(960);
 	DECL_MEMUBER_TYPE(1024);
 #undef DECL_MEMUBER_TYPE
+#if RECORD_MEMORY
+	int TestCount = 0;
+#endif
 
 public:
 #define OP_MEMORY_NEW(Count)                                                \
