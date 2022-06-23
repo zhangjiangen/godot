@@ -154,7 +154,7 @@ private:
 public:
 	//internal usage
 
-	void base_update_dependency(RID p_base, DependencyTracker *p_instance) override;
+	void base_update_dependency(RID p_base, DependencyTracker *p_instance);
 
 	/* FOG VOLUMES */
 

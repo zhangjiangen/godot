@@ -42,7 +42,7 @@
 
 static Ref<Image> _webp_mem_loader_func(const uint8_t *p_png, int p_size) {
 	Ref<Image> img;
-	New_instantiate(img);
+	img.instantiate();
 	Error err = WebPCommon::webp_load_image_from_buffer(img.ptr(), p_png, p_size);
 	ERR_FAIL_COND_V(err, Ref<Image>());
 	return img;

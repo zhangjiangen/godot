@@ -154,6 +154,14 @@ void RenderForwardClustered::RenderBufferDataForwardClustered::ensure_voxelgi() 
 			}
 		}
 
+		if (view_count == 1) {
+			voxelgi_views[0] = voxelgi_buffer;
+		} else {
+			for (uint32_t v = 0; v < view_count; v++) {
+				voxelgi_views[v] = RD::get_singleton()->texture_create_shared_from_slice(RD::TextureView(), voxelgi_buffer, v, 0);
+			}
+		}
+
 		Vector<RID> fb;
 		if (msaa != RS::VIEWPORT_MSAA_DISABLED) {
 			fb.push_back(depth_msaa);
@@ -349,6 +357,22 @@ void RenderForwardClustered::RenderBufferDataForwardClustered::configure(RID p_c
 		tf.usage_bits = RD::TEXTURE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | RD::TEXTURE_USAGE_CAN_COPY_FROM_BIT | RD::TEXTURE_USAGE_SAMPLING_BIT;
 
 		depth_msaa = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
+
+		if (view_count == 1) {
+			// just reuse
+			color_views[0] = color;
+			depth_views[0] = depth;
+			color_msaa_views[0] = color_msaa;
+			depth_msaa_views[0] = depth_msaa;
+		} else {
+			// create slices
+			for (uint32_t v = 0; v < view_count; v++) {
+				color_views[v] = RD::get_singleton()->texture_create_shared_from_slice(RD::TextureView(), color, v, 0);
+				depth_views[v] = RD::get_singleton()->texture_create_shared_from_slice(RD::TextureView(), depth, v, 0);
+				color_msaa_views[v] = RD::get_singleton()->texture_create_shared_from_slice(RD::TextureView(), color_msaa, v, 0);
+				depth_msaa_views[v] = RD::get_singleton()->texture_create_shared_from_slice(RD::TextureView(), depth_msaa, v, 0);
+			}
+		}
 
 		if (view_count == 1) {
 			// just reuse
