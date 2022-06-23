@@ -272,100 +272,76 @@ public:
 		}
 	}
 };
-// 智能用在临时变量，不能返回给成员变量永远持有,并且如果复制给其他变量，当前变量就会清空，用的时候要小心
-template <class T>
-class LocalVectorPool {
+// 只能操作alloca分配的内存，生命期是在函数调用结束
+template <class T, class U = uint32_t>
+class TempAllocaVector
+{
 public:
-	class V {
-	private:
-		mutable LocalVector<T> *_vector;
-		LocalVectorPool *Owenr;
+	TempAllocaVector(T* p_memmory,U p_capacity):count(0),capacity(p_capacity),data(p_memmory)
+	{
 
-	public:
-		V(LocalVectorPool *owenr, LocalVector<T> *v) :
-				_vector(v),
-				Owenr(owenr) {
-		}
-		V() :
-				_vector(nullptr), Owenr(nullptr) {
-		}
-		V(const V &v) :
-				_vector(v._vector),
-				Owenr(v.Owenr) {
-			v._vector = nullptr;
-		}
-		~V() {
-			if (_vector && Owenr)
-				Owenr->add(_vector);
-		}
-		void operator=(const V &o) {
-			_vector = o._vector;
-			Owenr = o.Owenr;
-			o._vector = nullptr;
-		}
-		_FORCE_INLINE_ const T &operator[](size_t p_index) const {
-			return (*_vector)[p_index];
-		}
-		_FORCE_INLINE_ T &operator[](size_t p_index) {
-			return (*_vector)[p_index];
-		}
-		_FORCE_INLINE_ void push_back(T &p_elem) {
-			_vector->push_back(p_elem);
-		}
-		T *ptr() {
-			return _vector->ptr();
+	}
+	~TempAllocaVector()
+	{
+	}
+	T *ptr() {
+		return data;
+	}
+
+	const T *ptr() const {
+		return data;
+	}
+
+	_FORCE_INLINE_ T &push_back(const T &p_elem) {
+		if (unlikely(count == capacity)) {
+			CRASH_COND_MSG(!data, "Out of memory");
 		}
 
-		T &back() {
-			return _vector->back();
+		if (!__has_trivial_constructor(T) ) {
+			memnew_placement(&data[count++], T(p_elem));
+		} else {
+			data[count++] = p_elem;
 		}
-		const T &back() const {
-			return _vector->back();
-		}
-		const T *ptr() const {
-			return _vector->ptr();
-		}
-		uint32_t size() const {
-			return _vector->size();
-		}
-		void clear() {
-			_vector->clear();
-		}
-		LocalVector<T> &get() {
-			return *_vector;
-		}
-		const LocalVector<T> &get() const {
-			return *_vector;
-		}
-	};
+		return data[count - 1];
+	}
 
+	int64_t find(const T &p_val, U p_from = 0) const {
+		for (U i = p_from; i < count; i++) {
+			if (data[i] == p_val) {
+				return int64_t(i);
+			}
+		}
+		return -1;
+	}
+	void remove_at(U p_index) {
+		ERR_FAIL_UNSIGNED_INDEX(p_index, count);
+		count--;
+		for (U i = p_index; i < count; i++) {
+			data[i] = data[i + 1];
+		}
+		if (!__has_trivial_destructor(T) ) {
+			data[count].~T();
+		}
+	}
+	_FORCE_INLINE_ T &operator[](U p_index) {
+		CRASH_BAD_UNSIGNED_INDEX(p_index, count);
+		return data[p_index];
+	}
+	_FORCE_INLINE_ U size() const { return count; }
+	void clear() {
+		if (!__has_trivial_destructor(T) ) {
+			for (U i = 0; i < count; i++) {
+				data[i].~T();
+			}
+		}
+		count = 0;
+	}
 private:
-	void add(LocalVector<T> *v) {
-		mutex.lock();
-		v->clear();
-		pool.push_back(v);
-		mutex.unlock();
-	}
-	LocalVector<LocalVector<T> *> pool;
-	::Mutex mutex;
+	U count = 0;
+	U capacity = 0;
+	T *data = nullptr;
 
-public:
-	static LocalVectorPool &instance() {
-		static LocalVectorPool ins;
-
-		return ins;
-	}
-	V get() {
-		mutex.lock();
-		if (pool.size()) {
-			LocalVector<T> *ret = pool.back();
-			pool.pop_back();
-			mutex.unlock();
-			return V(this, ret);
-		}
-		mutex.unlock();
-		return V(this, memnew(LocalVector<T>));
-	}
 };
+#define DEF_TEMP_ALLOCA_VECTOR(type,var,count) TempAllocaVector<type> var(count > 0 : alloca(sizeof(type) * count) : nullptr,count)
 
 #endif // LOCAL_VECTOR_H

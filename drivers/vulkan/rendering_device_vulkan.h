@@ -767,8 +767,8 @@ private:
 		};
 
 		LocalVector<AttachableTexture> attachable_textures; //used for validation
-		Vector<Texture *> mutable_sampled_textures; //used for layout change
-		Vector<Texture *> mutable_storage_textures; //used for layout change
+		LocalVector<Texture *> mutable_sampled_textures; //used for layout change
+		LocalVector<Texture *> mutable_storage_textures; //used for layout change
 		UniformSetInvalidatedCallback invalidated_callback = nullptr;
 		void *invalidated_callback_userdata = nullptr;
 	};
