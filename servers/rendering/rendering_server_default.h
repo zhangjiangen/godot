@@ -84,7 +84,6 @@ class RenderingServerDefault : public RenderingServer {
 	SafeFlag draw_thread_up;
 	bool create_thread;
 
-	SafeNumeric<uint64_t> draw_pending;
 	void _thread_draw(bool p_swap_buffers, double frame_step);
 	void _thread_flush();
 
@@ -436,8 +435,8 @@ public:
 #undef ServerName
 #undef server_name
 
-#define ServerName RendererStorage
-#define server_name RSG::storage
+#define ServerName RendererGI
+#define server_name RSG::gi
 
 	FUNCRIDSPLIT(voxel_gi)
 
