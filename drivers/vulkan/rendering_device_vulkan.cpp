@@ -2451,6 +2451,12 @@ RID RenderingDeviceVulkan::texture_create_shared_from_slice(const TextureView &p
 		image_view_create_info.viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
 	}
 
+	if (p_slice_type == TEXTURE_SLICE_2D) {
+		texture.type = TEXTURE_TYPE_2D;
+	} else if (p_slice_type == TEXTURE_SLICE_3D) {
+		texture.type = TEXTURE_TYPE_3D;
+	}
+
 	if (p_view.format_override == DATA_FORMAT_MAX || p_view.format_override == texture.format) {
 		image_view_create_info.format = vulkan_formats[texture.format];
 	} else {
@@ -5809,17 +5815,18 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 	uint32_t set_uniform_count = set.uniform_info.size();
 	const UniformInfo *set_uniforms = set.uniform_info.ptr();
 
-	Vector<VkWriteDescriptorSet> writes;
+	DEF_TEMP_ALLOCA_VECTOR(VkWriteDescriptorSet, writes,set_uniform_count);
 	DescriptorPoolKey pool_key;
 
 	//to keep them alive until update call
-	List<Vector<VkDescriptorBufferInfo>> buffer_infos;
-	List<Vector<VkBufferView>> buffer_views;
-	List<Vector<VkDescriptorImageInfo>> image_infos;
+	// List<Vector<VkDescriptorBufferInfo>> buffer_infos;
+	// List<Vector<VkBufferView>> buffer_views;
+	// List<Vector<VkDescriptorImageInfo>> image_infos;
 	//used for verification to make sure a uniform set does not use a framebuffer bound texture
-	LocalVector<UniformSet::AttachableTexture> attachable_textures;
-	Vector<Texture *> mutable_sampled_textures;
-	Vector<Texture *> mutable_storage_textures;
+	UniformSet uniform_set;
+	auto& attachable_textures = uniform_set.attachable_textures;
+	auto &mutable_sampled_textures = uniform_set.mutable_sampled_textures;
+	auto &mutable_storage_textures = uniform_set.mutable_storage_textures;
 
 	for (uint32_t i = 0; i < set_uniform_count; i++) {
 		const UniformInfo &set_uniform = set_uniforms[i];
@@ -5860,7 +5867,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					}
 				}
 
-				Vector<VkDescriptorImageInfo> image_info;
+				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo,image_info,uniform.get_id_count());
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j++) {
 					VkSampler *sampler = sampler_owner.get_or_null(uniform.get_id(j));
@@ -5877,7 +5884,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 				write.dstArrayElement = 0;
 				write.descriptorCount = uniform.get_id_count();
 				write.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
-				write.pImageInfo = image_infos.push_back(image_info)->get().ptr();
+				write.pImageInfo = image_info.ptr();
 				write.pBufferInfo = nullptr;
 				write.pTexelBufferView = nullptr;
 
@@ -5893,7 +5900,8 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					}
 				}
 
-				Vector<VkDescriptorImageInfo> image_info;
+				//Vector<VkDescriptorImageInfo> image_info;
+                DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo,image_info,uniform.get_id_count());
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j += 2) {
 					VkSampler *sampler = sampler_owner.get_or_null(uniform.get_id(j + 0));
@@ -5933,7 +5941,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 				write.dstArrayElement = 0;
 				write.descriptorCount = uniform.get_id_count() / 2;
 				write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				write.pImageInfo = image_infos.push_back(image_info)->get().ptr();
+				write.pImageInfo = image_info.ptr();
 				write.pBufferInfo = nullptr;
 				write.pTexelBufferView = nullptr;
 
@@ -5949,7 +5957,8 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					}
 				}
 
-				Vector<VkDescriptorImageInfo> image_info;
+				//Vector<VkDescriptorImageInfo> image_info;
+				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo,image_info,uniform.get_id_count());
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j++) {
 					Texture *texture = texture_owner.get_or_null(uniform.get_id(j));
@@ -5987,7 +5996,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 				write.dstArrayElement = 0;
 				write.descriptorCount = uniform.get_id_count();
 				write.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-				write.pImageInfo = image_infos.push_back(image_info)->get().ptr();
+				write.pImageInfo = image_info.ptr();
 				write.pBufferInfo = nullptr;
 				write.pTexelBufferView = nullptr;
 
@@ -6002,7 +6011,8 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					}
 				}
 
-				Vector<VkDescriptorImageInfo> image_info;
+				//Vector<VkDescriptorImageInfo> image_info;
+				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo,image_info,uniform.get_id_count());
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j++) {
 					Texture *texture = texture_owner.get_or_null(uniform.get_id(j));
@@ -6035,7 +6045,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 				write.dstArrayElement = 0;
 				write.descriptorCount = uniform.get_id_count();
 				write.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-				write.pImageInfo = image_infos.push_back(image_info)->get().ptr();
+				write.pImageInfo = image_info.ptr();
 				write.pBufferInfo = nullptr;
 				write.pTexelBufferView = nullptr;
 
@@ -6051,8 +6061,10 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					}
 				}
 
-				Vector<VkDescriptorBufferInfo> buffer_info;
-				Vector<VkBufferView> buffer_view;
+				// Vector<VkDescriptorBufferInfo> buffer_info;
+				// Vector<VkBufferView> buffer_view;
+				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorBufferInfo,buffer_info,uniform.get_id_count());
+				DEF_TEMP_ALLOCA_VECTOR(VkBufferView,buffer_view,uniform.get_id_count());
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j++) {
 					TextureBuffer *buffer = texture_buffer_owner.get_or_null(uniform.get_id(j));
@@ -6066,8 +6078,8 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 				write.descriptorCount = uniform.get_id_count();
 				write.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
 				write.pImageInfo = nullptr;
-				write.pBufferInfo = buffer_infos.push_back(buffer_info)->get().ptr();
-				write.pTexelBufferView = buffer_views.push_back(buffer_view)->get().ptr();
+				write.pBufferInfo = buffer_info.ptr();
+				write.pTexelBufferView = buffer_view.ptr();
 
 				type_size = uniform.get_id_count();
 
@@ -6081,9 +6093,13 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					}
 				}
 
-				Vector<VkDescriptorImageInfo> image_info;
-				Vector<VkDescriptorBufferInfo> buffer_info;
-				Vector<VkBufferView> buffer_view;
+				// Vector<VkDescriptorImageInfo> image_info;
+				// Vector<VkDescriptorBufferInfo> buffer_info;
+				// Vector<VkBufferView> buffer_view;
+				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo,image_info,uniform.get_id_count());
+				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorBufferInfo,buffer_info,uniform.get_id_count());
+				DEF_TEMP_ALLOCA_VECTOR(VkBufferView,buffer_view,uniform.get_id_count());
+				
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j += 2) {
 					VkSampler *sampler = sampler_owner.get_or_null(uniform.get_id(j + 0));
@@ -6107,9 +6123,9 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 				write.dstArrayElement = 0;
 				write.descriptorCount = uniform.get_id_count() / 2;
 				write.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
-				write.pImageInfo = image_infos.push_back(image_info)->get().ptr();
-				write.pBufferInfo = buffer_infos.push_back(buffer_info)->get().ptr();
-				write.pTexelBufferView = buffer_views.push_back(buffer_view)->get().ptr();
+				write.pImageInfo = image_info.ptr();
+				write.pBufferInfo = buffer_info.ptr();
+				write.pTexelBufferView = buffer_view.ptr();
 
 				type_size = uniform.get_id_count() / 2;
 			} break;
@@ -6174,7 +6190,8 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					}
 				}
 
-				Vector<VkDescriptorImageInfo> image_info;
+				//Vector<VkDescriptorImageInfo> image_info;
+				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo,image_info,uniform.get_id_count());
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j++) {
 					Texture *texture = texture_owner.get_or_null(uniform.get_id(j));
@@ -6202,7 +6219,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 				write.dstArrayElement = 0;
 				write.descriptorCount = uniform.get_id_count();
 				write.descriptorType = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
-				write.pImageInfo = image_infos.push_back(image_info)->get().ptr();
+				write.pImageInfo = image_info.ptr();
 				write.pBufferInfo = nullptr;
 				write.pTexelBufferView = nullptr;
 
@@ -6240,14 +6257,14 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 		ERR_FAIL_V_MSG(RID(), "Cannot allocate descriptor sets, error " + itos(res) + ".");
 	}
 
-	UniformSet uniform_set;
+	//UniformSet uniform_set;
 	uniform_set.pool = pool;
 	uniform_set.pool_key = pool_key;
 	uniform_set.descriptor_set = descriptor_set;
 	uniform_set.format = shader->set_formats[p_shader_set];
-	uniform_set.attachable_textures = attachable_textures;
-	uniform_set.mutable_sampled_textures = mutable_sampled_textures;
-	uniform_set.mutable_storage_textures = mutable_storage_textures;
+	//uniform_set.attachable_textures = attachable_textures;
+	// uniform_set.mutable_sampled_textures = mutable_sampled_textures;
+	// uniform_set.mutable_storage_textures = mutable_storage_textures;
 	uniform_set.shader_set = p_shader_set;
 	uniform_set.shader_id = p_shader;
 
@@ -6265,7 +6282,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 	//write the contents
 	if (writes.size()) {
 		for (int i = 0; i < writes.size(); i++) {
-			writes.write[i].dstSet = descriptor_set;
+			writes[i].dstSet = descriptor_set;
 		}
 		vkUpdateDescriptorSets(device, writes.size(), writes.ptr(), 0, nullptr);
 	}
@@ -7616,7 +7633,7 @@ void RenderingDeviceVulkan::draw_list_bind_uniform_set(DrawListID p_list, RID p_
 
 	uint32_t mst_count = uniform_set->mutable_storage_textures.size();
 	if (mst_count) {
-		Texture **mst_textures = const_cast<UniformSet *>(uniform_set)->mutable_storage_textures.ptrw();
+		Texture **mst_textures = const_cast<UniformSet *>(uniform_set)->mutable_storage_textures.ptr();
 		for (uint32_t i = 0; i < mst_count; i++) {
 			if (mst_textures[i]->used_in_frame != frames_drawn) {
 				mst_textures[i]->used_in_frame = frames_drawn;
@@ -8248,7 +8265,7 @@ void RenderingDeviceVulkan::compute_list_bind_uniform_set(ComputeListID p_list, 
 	uint32_t textures_to_sampled_count = uniform_set->mutable_sampled_textures.size();
 	uint32_t textures_to_storage_count = uniform_set->mutable_storage_textures.size();
 
-	Texture **textures_to_sampled = uniform_set->mutable_sampled_textures.ptrw();
+	Texture **textures_to_sampled = uniform_set->mutable_sampled_textures.ptr();
 
 	VkImageMemoryBarrier *texture_barriers = nullptr;
 
@@ -8293,7 +8310,7 @@ void RenderingDeviceVulkan::compute_list_bind_uniform_set(ComputeListID p_list, 
 		textures_to_sampled[i]->used_in_compute = true;
 	}
 
-	Texture **textures_to_storage = uniform_set->mutable_storage_textures.ptrw();
+	Texture **textures_to_storage = uniform_set->mutable_storage_textures.ptr();
 
 	for (uint32_t i = 0; i < textures_to_storage_count; i++) {
 		if (textures_to_storage[i]->layout != VK_IMAGE_LAYOUT_GENERAL) {

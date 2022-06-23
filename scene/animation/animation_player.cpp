@@ -283,6 +283,9 @@ void AnimationPlayer::_ensure_node_caches(AnimationData *p_anim, Node *p_root_ov
 	setup_pass++;
 
 	for (int i = 0; i < a->get_track_count(); i++) {
+		if (!a->track_is_enabled(i)) {
+			continue;
+		}
 		p_anim->node_cache.write[i] = nullptr;
 		Ref<Resource> resource;
 		Vector<StringName> leftover_path;
@@ -1992,8 +1995,8 @@ Ref<AnimatedValuesBackup> AnimationPlayer::apply_reset(bool p_user_initiated) {
 	Ref<AnimationLibrary> al;
 	al.instantiate();
 	al->add_animation(SceneStringNames::get_singleton()->RESET, reset_anim);
-	aux_player->add_animation_library("default", al);
-	aux_player->set_assigned_animation("default/" + SceneStringNames::get_singleton()->RESET);
+	aux_player->add_animation_library("", al);
+	aux_player->set_assigned_animation(SceneStringNames::get_singleton()->RESET);
 	// Forcing the use of the original root because the scene where original player belongs may be not the active one
 	Node *root = get_node(get_root());
 	Ref<AnimatedValuesBackup> old_values = aux_player->backup_animated_values(root);

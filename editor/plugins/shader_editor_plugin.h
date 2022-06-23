@@ -83,7 +83,8 @@ protected:
 
 public:
 	virtual void _validate_script() override;
-	virtual void goto_error() override;
+	virtual void goto_error() override {
+	}
 
 	void load_theme_settings();
 	void reload_text();

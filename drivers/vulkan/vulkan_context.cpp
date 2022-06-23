@@ -38,6 +38,9 @@
 #include "servers/rendering/rendering_device.h"
 
 #include "vk_enum_string_helper.h"
+#if APPLE_STYLE_KEYS
+#include "osx_ios_submit.h"
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -1898,7 +1901,11 @@ void VulkanContext::flush(bool p_flush_setup, bool p_flush_pending) {
 		submit_info.pCommandBuffers = command_buffer_queue.ptr();
 		submit_info.signalSemaphoreCount = 0;
 		submit_info.pSignalSemaphores = nullptr;
+#if APPLE_STYLE_KEYS
+		VkResult err = osx_ios_submit::Submit(graphics_queue, 1, &submit_info, VK_NULL_HANDLE);
+#else
 		VkResult err = vkQueueSubmit(graphics_queue, 1, &submit_info, VK_NULL_HANDLE);
+#endif
 		command_buffer_queue.write[0] = nullptr;
 		ERR_FAIL_COND(err);
 		vkDeviceWaitIdle(device);
@@ -1917,7 +1924,11 @@ void VulkanContext::flush(bool p_flush_setup, bool p_flush_pending) {
 		submit_info.pCommandBuffers = command_buffer_queue.ptr() + 1;
 		submit_info.signalSemaphoreCount = 0;
 		submit_info.pSignalSemaphores = nullptr;
+#if APPLE_STYLE_KEYS
+		VkResult err = osx_ios_submit::Submit(graphics_queue, 1, &submit_info, VK_NULL_HANDLE);
+#else
 		VkResult err = vkQueueSubmit(graphics_queue, 1, &submit_info, VK_NULL_HANDLE);
+#endif
 		ERR_FAIL_COND(err);
 		vkDeviceWaitIdle(device);
 
@@ -2039,7 +2050,11 @@ Error VulkanContext::swap_buffers() {
 	submit_info.pCommandBuffers = commands_ptr;
 	submit_info.signalSemaphoreCount = 1;
 	submit_info.pSignalSemaphores = &draw_complete_semaphores[frame_index];
+#if APPLE_STYLE_KEYS
+	err = osx_ios_submit::Submit(graphics_queue, 1, &submit_info, fences[frame_index]);
+#else
 	err = vkQueueSubmit(graphics_queue, 1, &submit_info, fences[frame_index]);
+#endif
 	ERR_FAIL_COND_V(err, ERR_CANT_CREATE);
 
 	command_buffer_queue.write[0] = nullptr;
@@ -2070,7 +2085,13 @@ Error VulkanContext::swap_buffers() {
 
 		submit_info.signalSemaphoreCount = 1;
 		submit_info.pSignalSemaphores = &image_ownership_semaphores[frame_index];
+
+#if APPLE_STYLE_KEYS
+		err = osx_ios_submit::Submit(present_queue, 1, &submit_info, nullFence);
+#else
 		err = vkQueueSubmit(present_queue, 1, &submit_info, nullFence);
+#endif
+
 		ERR_FAIL_COND_V(err, ERR_CANT_CREATE);
 	}
 
@@ -2285,7 +2306,11 @@ void VulkanContext::local_device_push_command_buffers(RID p_local_device, const 
 	submit_info.signalSemaphoreCount = 0;
 	submit_info.pSignalSemaphores = nullptr;
 
-	VkResult err = vkQueueSubmit(ld->queue, 1, &submit_info, VK_NULL_HANDLE);
+#if APPLE_STYLE_KEYS
+    VkResult err = osx_ios_submit::Submit(ld->queue, 1, &submit_info, VK_NULL_HANDLE);
+#else
+    VkResult err = vkQueueSubmit(ld->queue, 1, &submit_info, VK_NULL_HANDLE);
+#endif
 	if (err == VK_ERROR_OUT_OF_HOST_MEMORY) {
 		print_line("Vulkan: Out of host memory!");
 	}

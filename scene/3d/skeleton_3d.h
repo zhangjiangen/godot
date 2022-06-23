@@ -75,7 +75,7 @@ private:
 
 		bool enabled;
 		int parent;
-
+		// bind pos 的初始本地空间变换矩阵
 		Transform3D rest;
 		Transform3D global_rest;
 
@@ -87,11 +87,12 @@ private:
 			}
 		}
 		bool pose_cache_dirty = true;
+		// 骨骼本地空间的变换，一般从动画更新里面获取到
 		Transform3D pose_cache;
 		Vector3 pose_position;
 		Quaternion pose_rotation;
 		Vector3 pose_scale = Vector3(1, 1, 1);
-
+		// 最终的世界空间的变换
 		Transform3D pose_global;
 		Transform3D pose_global_no_override;
 
@@ -239,6 +240,7 @@ public:
 
 	void force_update_all_dirty_bones();
 	void force_update_all_bone_transforms();
+	// 强制更新所有子骨骼的变换
 	void force_update_bone_children_transforms(int bone_idx);
 
 	void update_bone_rest_forward_vector(int p_bone, bool p_force_update = false);
