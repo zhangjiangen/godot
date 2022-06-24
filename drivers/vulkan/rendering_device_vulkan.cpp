@@ -6079,7 +6079,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 				write.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
 				write.pImageInfo = nullptr;
 				write.pBufferInfo = buffer_info.ptr();
-				write.pTexelBufferView = buffer_view.ptr();
+				write.pTexelBufferView = buffer_viewsbuffer_view.ptr();
 
 				type_size = uniform.get_id_count();
 
