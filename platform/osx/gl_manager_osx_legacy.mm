@@ -87,19 +87,21 @@ void GLManager_OSX::window_resize(DisplayServer::WindowID p_window_id, int p_wid
 
 	win.width = p_width;
 	win.height = p_height;
+	@autoreleasepool
+	{
+		GLint dim[2];
+		dim[0] = p_width;
+		dim[1] = p_height;
+		CGLSetParameter((CGLContextObj)[win.context CGLContextObj], kCGLCPSurfaceBackingSize, &dim[0]);
+		CGLEnable((CGLContextObj)[win.context CGLContextObj], kCGLCESurfaceBackingSize);
+		if (OS::get_singleton()->is_hidpi_allowed()) {
+			[win.window_view setWantsBestResolutionOpenGLSurface:YES];
+		} else {
+			[win.window_view setWantsBestResolutionOpenGLSurface:NO];
+		}
 
-	GLint dim[2];
-	dim[0] = p_width;
-	dim[1] = p_height;
-	CGLSetParameter((CGLContextObj)[win.context CGLContextObj], kCGLCPSurfaceBackingSize, &dim[0]);
-	CGLEnable((CGLContextObj)[win.context CGLContextObj], kCGLCESurfaceBackingSize);
-	if (OS::get_singleton()->is_hidpi_allowed()) {
-		[win.window_view setWantsBestResolutionOpenGLSurface:YES];
-	} else {
-		[win.window_view setWantsBestResolutionOpenGLSurface:NO];
+		[win.context update];
 	}
-
-	[win.context update];
 }
 
 int GLManager_OSX::window_get_width(DisplayServer::WindowID p_window_id) {
@@ -136,8 +138,10 @@ void GLManager_OSX::release_current() {
 	if (current_window == DisplayServer::INVALID_WINDOW_ID) {
 		return;
 	}
-
-	[NSOpenGLContext clearCurrentContext];
+	@autoreleasepool
+	{
+		[NSOpenGLContext clearCurrentContext];
+	}
 }
 
 void GLManager_OSX::window_make_current(DisplayServer::WindowID p_window_id) {
@@ -147,10 +151,11 @@ void GLManager_OSX::window_make_current(DisplayServer::WindowID p_window_id) {
 	if (!windows.has(p_window_id)) {
 		return;
 	}
-
-	GLWindow &win = windows[p_window_id];
-	[win.context makeCurrentContext];
-
+	@autoreleasepool
+	{
+		GLWindow &win = windows[p_window_id];
+		[win.context makeCurrentContext];
+	}
 	current_window = p_window_id;
 }
 
@@ -161,14 +166,19 @@ void GLManager_OSX::make_current() {
 	if (!windows.has(current_window)) {
 		return;
 	}
-
-	GLWindow &win = windows[current_window];
-	[win.context makeCurrentContext];
+	@autoreleasepool
+	{
+		GLWindow &win = windows[current_window];
+		[win.context makeCurrentContext];
+	}
 }
 
 void GLManager_OSX::swap_buffers() {
-	for (const KeyValue<DisplayServer::WindowID, GLWindow> &E : windows) {
-		[E.value.context flushBuffer];
+	@autoreleasepool
+	{
+		for (const KeyValue<DisplayServer::WindowID, GLWindow> &E : windows) {
+			[E.value.context flushBuffer];
+		}
 	}
 }
 
@@ -177,8 +187,11 @@ void GLManager_OSX::window_update(DisplayServer::WindowID p_window_id) {
 		return;
 	}
 
-	GLWindow &win = windows[p_window_id];
-	[win.context update];
+	@autoreleasepool
+	{
+		GLWindow &win = windows[p_window_id];
+		[win.context update];
+	}
 }
 
 void GLManager_OSX::window_set_per_pixel_transparency_enabled(DisplayServer::WindowID p_window_id, bool p_enabled) {
@@ -186,15 +199,18 @@ void GLManager_OSX::window_set_per_pixel_transparency_enabled(DisplayServer::Win
 		return;
 	}
 
-	GLWindow &win = windows[p_window_id];
-	if (p_enabled) {
-		GLint opacity = 0;
-		[win.context setValues:&opacity forParameter:NSOpenGLContextParameterSurfaceOpacity];
-	} else {
-		GLint opacity = 1;
-		[win.context setValues:&opacity forParameter:NSOpenGLContextParameterSurfaceOpacity];
+	@autoreleasepool
+	{
+		GLWindow &win = windows[p_window_id];
+		if (p_enabled) {
+			GLint opacity = 0;
+			[win.context setValues:&opacity forParameter:NSOpenGLContextParameterSurfaceOpacity];
+		} else {
+			GLint opacity = 1;
+			[win.context setValues:&opacity forParameter:NSOpenGLContextParameterSurfaceOpacity];
+		}
+		[win.context update];
 	}
-	[win.context update];
 }
 
 Error GLManager_OSX::initialize() {

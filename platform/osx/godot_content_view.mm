@@ -95,25 +95,29 @@
 }
 
 - (void)setMarkedText:(id)aString selectedRange:(NSRange)selectedRange replacementRange:(NSRange)replacementRange {
-	if ([aString isKindOfClass:[NSAttributedString class]]) {
-		marked_text = [[NSMutableAttributedString alloc] initWithAttributedString:aString];
-	} else {
-		marked_text = [[NSMutableAttributedString alloc] initWithString:aString];
-	}
-	if (marked_text.length == 0) {
-		[self unmarkText];
-		return;
-	}
 
-	DisplayServerOSX *ds = (DisplayServerOSX *)DisplayServer::get_singleton();
-	if (!ds || !ds->has_window(window_id)) {
-		return;
-	}
+	@autoreleasepool
+	{
+		if ([aString isKindOfClass:[NSAttributedString class]]) {
+			marked_text = [[NSMutableAttributedString alloc] initWithAttributedString:aString];
+		} else {
+			marked_text = [[NSMutableAttributedString alloc] initWithString:aString];
+		}
+		if (marked_text.length == 0) {
+			[self unmarkText];
+			return;
+		}
 
-	DisplayServerOSX::WindowData &wd = ds->get_window(window_id);
-	if (wd.im_active) {
-		ime_input_event_in_progress = true;
-		ds->update_im_text(Point2i(selectedRange.location, selectedRange.length), String::utf8([[marked_text mutableString] UTF8String]));
+		DisplayServerOSX *ds = (DisplayServerOSX *)DisplayServer::get_singleton();
+		if (!ds || !ds->has_window(window_id)) {
+			return;
+		}
+
+		DisplayServerOSX::WindowData &wd = ds->get_window(window_id);
+		if (wd.im_active) {
+			ime_input_event_in_progress = true;
+			ds->update_im_text(Point2i(selectedRange.location, selectedRange.length), String::utf8([[marked_text mutableString] UTF8String]));
+		}
 	}
 }
 
@@ -154,13 +158,17 @@
 		return NSMakeRect(0, 0, 0, 0);
 	}
 
-	DisplayServerOSX::WindowData &wd = ds->get_window(window_id);
-	const NSRect content_rect = [wd.window_view frame];
-	const float scale = ds->screen_get_max_scale();
-	NSRect point_in_window_rect = NSMakeRect(wd.im_position.x / scale, content_rect.size.height - (wd.im_position.y / scale) - 1, 0, 0);
-	NSPoint point_on_screen = [wd.window_object convertRectToScreen:point_in_window_rect].origin;
+	@autoreleasepool
+	{
+		DisplayServerOSX::WindowData &wd = ds->get_window(window_id);
+		const NSRect content_rect = [wd.window_view frame];
+		const float scale = ds->screen_get_max_scale();
+		NSRect point_in_window_rect = NSMakeRect(wd.im_position.x / scale, content_rect.size.height - (wd.im_position.y / scale) - 1, 0, 0);
+		NSPoint point_on_screen = [wd.window_object convertRectToScreen:point_in_window_rect].origin;
 
-	return NSMakeRect(point_on_screen.x, point_on_screen.y, 0, 0);
+		return NSMakeRect(point_on_screen.x, point_on_screen.y, 0, 0);
+	}
+	return NSMakeRect(0, 0, 0, 0);
 }
 
 - (void)cancelComposition {
@@ -173,56 +181,59 @@
 }
 
 - (void)insertText:(id)aString replacementRange:(NSRange)replacementRange {
-	NSEvent *event = [NSApp currentEvent];
+	@autoreleasepool
+	{
+		NSEvent *event = [NSApp currentEvent];
 
-	NSString *characters;
-	if ([aString isKindOfClass:[NSAttributedString class]]) {
-		characters = [aString string];
-	} else {
-		characters = (NSString *)aString;
-	}
-
-	NSCharacterSet *ctrl_chars = [NSCharacterSet controlCharacterSet];
-	NSCharacterSet *wsnl_chars = [NSCharacterSet whitespaceAndNewlineCharacterSet];
-	if ([characters rangeOfCharacterFromSet:ctrl_chars].length && [characters rangeOfCharacterFromSet:wsnl_chars].length == 0) {
-		[[NSTextInputContext currentInputContext] discardMarkedText];
-		[self cancelComposition];
-		return;
-	}
-
-	DisplayServerOSX *ds = (DisplayServerOSX *)DisplayServer::get_singleton();
-	if (!ds || !ds->has_window(window_id)) {
-		[self cancelComposition];
-		return;
-	}
-
-	Char16String text;
-	text.resize([characters length] + 1);
-	[characters getCharacters:(unichar *)text.ptrw() range:NSMakeRange(0, [characters length])];
-
-	String u32text;
-	u32text.parse_utf16(text.ptr(), text.length());
-
-	for (int i = 0; i < u32text.length(); i++) {
-		const char32_t codepoint = u32text[i];
-		if ((codepoint & 0xFF00) == 0xF700) {
-			continue;
+		NSString *characters;
+		if ([aString isKindOfClass:[NSAttributedString class]]) {
+			characters = [aString string];
+		} else {
+			characters = (NSString *)aString;
 		}
 
-		DisplayServerOSX::KeyEvent ke;
+		NSCharacterSet *ctrl_chars = [NSCharacterSet controlCharacterSet];
+		NSCharacterSet *wsnl_chars = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+		if ([characters rangeOfCharacterFromSet:ctrl_chars].length && [characters rangeOfCharacterFromSet:wsnl_chars].length == 0) {
+			[[NSTextInputContext currentInputContext] discardMarkedText];
+			[self cancelComposition];
+			return;
+		}
 
-		ke.window_id = window_id;
-		ke.osx_state = [event modifierFlags];
-		ke.pressed = true;
-		ke.echo = false;
-		ke.raw = false; // IME input event.
-		ke.keycode = Key::NONE;
-		ke.physical_keycode = Key::NONE;
-		ke.unicode = codepoint;
+		DisplayServerOSX *ds = (DisplayServerOSX *)DisplayServer::get_singleton();
+		if (!ds || !ds->has_window(window_id)) {
+			[self cancelComposition];
+			return;
+		}
 
-		ds->push_to_key_event_buffer(ke);
+		Char16String text;
+		text.resize([characters length] + 1);
+		[characters getCharacters:(unichar *)text.ptrw() range:NSMakeRange(0, [characters length])];
+
+		String u32text;
+		u32text.parse_utf16(text.ptr(), text.length());
+
+		for (int i = 0; i < u32text.length(); i++) {
+			const char32_t codepoint = u32text[i];
+			if ((codepoint & 0xFF00) == 0xF700) {
+				continue;
+			}
+
+			DisplayServerOSX::KeyEvent ke;
+
+			ke.window_id = window_id;
+			ke.osx_state = [event modifierFlags];
+			ke.pressed = true;
+			ke.echo = false;
+			ke.raw = false; // IME input event.
+			ke.keycode = Key::NONE;
+			ke.physical_keycode = Key::NONE;
+			ke.unicode = codepoint;
+
+			ds->push_to_key_event_buffer(ke);
+		}
+		[self cancelComposition];
 	}
-	[self cancelComposition];
 }
 
 // MARK: Drag and drop
@@ -333,12 +344,15 @@
 }
 
 - (void)mouseDown:(NSEvent *)event {
-	if (([event modifierFlags] & NSEventModifierFlagControl)) {
-		mouse_down_control = true;
-		[self processMouseEvent:event index:MouseButton::RIGHT mask:MouseButton::MASK_RIGHT pressed:true];
-	} else {
-		mouse_down_control = false;
-		[self processMouseEvent:event index:MouseButton::LEFT mask:MouseButton::MASK_LEFT pressed:true];
+	@autoreleasepool
+	{
+		if (([event modifierFlags] & NSEventModifierFlagControl)) {
+			mouse_down_control = true;
+			[self processMouseEvent:event index:MouseButton::RIGHT mask:MouseButton::MASK_RIGHT pressed:true];
+		} else {
+			mouse_down_control = false;
+			[self processMouseEvent:event index:MouseButton::LEFT mask:MouseButton::MASK_LEFT pressed:true];
+		}
 	}
 }
 
@@ -362,32 +376,35 @@
 
 	DisplayServerOSX::WindowData &wd = ds->get_window(window_id);
 
-	NSPoint delta = NSMakePoint([event deltaX], [event deltaY]);
-	NSPoint mpos = [event locationInWindow];
+	@autoreleasepool
+	{
+		NSPoint delta = NSMakePoint([event deltaX], [event deltaY]);
+		NSPoint mpos = [event locationInWindow];
 
-	if (ds->update_mouse_wrap(wd, delta, mpos, [event timestamp])) {
-		return;
+		if (ds->update_mouse_wrap(wd, delta, mpos, [event timestamp])) {
+			return;
+		}
+
+		Ref<InputEventMouseMotion> mm;
+		mm.instantiate();
+
+		mm->set_window_id(window_id);
+		mm->set_button_mask(ds->mouse_get_button_state());
+		ds->update_mouse_pos(wd, mpos);
+		mm->set_position(wd.mouse_pos);
+		mm->set_pressure([event pressure]);
+		if ([event subtype] == NSEventSubtypeTabletPoint) {
+			const NSPoint p = [event tilt];
+			mm->set_tilt(Vector2(p.x, p.y));
+		}
+		mm->set_global_position(wd.mouse_pos);
+		mm->set_velocity(Input::get_singleton()->get_last_mouse_velocity());
+		const Vector2i relativeMotion = Vector2i(delta.x, delta.y) * ds->screen_get_max_scale();
+		mm->set_relative(relativeMotion);
+		ds->get_key_modifier_state([event modifierFlags], mm);
+
+		Input::get_singleton()->parse_input_event(mm);
 	}
-
-	Ref<InputEventMouseMotion> mm;
-	mm.instantiate();
-
-	mm->set_window_id(window_id);
-	mm->set_button_mask(ds->mouse_get_button_state());
-	ds->update_mouse_pos(wd, mpos);
-	mm->set_position(wd.mouse_pos);
-	mm->set_pressure([event pressure]);
-	if ([event subtype] == NSEventSubtypeTabletPoint) {
-		const NSPoint p = [event tilt];
-		mm->set_tilt(Vector2(p.x, p.y));
-	}
-	mm->set_global_position(wd.mouse_pos);
-	mm->set_velocity(Input::get_singleton()->get_last_mouse_velocity());
-	const Vector2i relativeMotion = Vector2i(delta.x, delta.y) * ds->screen_get_max_scale();
-	mm->set_relative(relativeMotion);
-	ds->get_key_modifier_state([event modifierFlags], mm);
-
-	Input::get_singleton()->parse_input_event(mm);
 }
 
 - (void)rightMouseDown:(NSEvent *)event {
@@ -403,14 +420,18 @@
 }
 
 - (void)otherMouseDown:(NSEvent *)event {
-	if ((int)[event buttonNumber] == 2) {
-		[self processMouseEvent:event index:MouseButton::MIDDLE mask:MouseButton::MASK_MIDDLE pressed:true];
-	} else if ((int)[event buttonNumber] == 3) {
-		[self processMouseEvent:event index:MouseButton::MB_XBUTTON1 mask:MouseButton::MASK_XBUTTON1 pressed:true];
-	} else if ((int)[event buttonNumber] == 4) {
-		[self processMouseEvent:event index:MouseButton::MB_XBUTTON2 mask:MouseButton::MASK_XBUTTON2 pressed:true];
-	} else {
-		return;
+
+	@autoreleasepool
+	{
+		if ((int)[event buttonNumber] == 2) {
+			[self processMouseEvent:event index:MouseButton::MIDDLE mask:MouseButton::MASK_MIDDLE pressed:true];
+		} else if ((int)[event buttonNumber] == 3) {
+			[self processMouseEvent:event index:MouseButton::MB_XBUTTON1 mask:MouseButton::MASK_XBUTTON1 pressed:true];
+		} else if ((int)[event buttonNumber] == 4) {
+			[self processMouseEvent:event index:MouseButton::MB_XBUTTON2 mask:MouseButton::MASK_XBUTTON2 pressed:true];
+		} else {
+			return;
+		}
 	}
 }
 
@@ -419,14 +440,18 @@
 }
 
 - (void)otherMouseUp:(NSEvent *)event {
-	if ((int)[event buttonNumber] == 2) {
-		[self processMouseEvent:event index:MouseButton::MIDDLE mask:MouseButton::MASK_MIDDLE pressed:false];
-	} else if ((int)[event buttonNumber] == 3) {
-		[self processMouseEvent:event index:MouseButton::MB_XBUTTON1 mask:MouseButton::MASK_XBUTTON1 pressed:false];
-	} else if ((int)[event buttonNumber] == 4) {
-		[self processMouseEvent:event index:MouseButton::MB_XBUTTON2 mask:MouseButton::MASK_XBUTTON2 pressed:false];
-	} else {
-		return;
+
+	@autoreleasepool
+	{
+		if ((int)[event buttonNumber] == 2) {
+			[self processMouseEvent:event index:MouseButton::MIDDLE mask:MouseButton::MASK_MIDDLE pressed:false];
+		} else if ((int)[event buttonNumber] == 3) {
+			[self processMouseEvent:event index:MouseButton::MB_XBUTTON1 mask:MouseButton::MASK_XBUTTON1 pressed:false];
+		} else if ((int)[event buttonNumber] == 4) {
+			[self processMouseEvent:event index:MouseButton::MB_XBUTTON2 mask:MouseButton::MASK_XBUTTON2 pressed:false];
+		} else {
+			return;
+		}
 	}
 }
 
@@ -476,15 +501,19 @@
 }
 
 - (void)updateTrackingAreas {
-	if (tracking_area != nil) {
-		[self removeTrackingArea:tracking_area];
+
+	@autoreleasepool
+	{
+		if (tracking_area != nil) {
+			[self removeTrackingArea:tracking_area];
+		}
+
+		NSTrackingAreaOptions options = NSTrackingMouseEnteredAndExited | NSTrackingActiveInKeyWindow | NSTrackingCursorUpdate | NSTrackingInVisibleRect;
+		tracking_area = [[NSTrackingArea alloc] initWithRect:[self bounds] options:options owner:self userInfo:nil];
+
+		[self addTrackingArea:tracking_area];
+		[super updateTrackingAreas];
 	}
-
-	NSTrackingAreaOptions options = NSTrackingMouseEnteredAndExited | NSTrackingActiveInKeyWindow | NSTrackingCursorUpdate | NSTrackingInVisibleRect;
-	tracking_area = [[NSTrackingArea alloc] initWithRect:[self bounds] options:options owner:self userInfo:nil];
-
-	[self addTrackingArea:tracking_area];
-	[super updateTrackingAreas];
 }
 
 // MARK: Keyboard
@@ -736,27 +765,30 @@
 	double delta_x = [event scrollingDeltaX];
 	double delta_y = [event scrollingDeltaY];
 
-	if ([event hasPreciseScrollingDeltas]) {
-		delta_x *= 0.03;
-		delta_y *= 0.03;
-	}
-
-	if ([event momentumPhase] != NSEventPhaseNone) {
-		if (ignore_momentum_scroll) {
-			return;
+	@autoreleasepool
+	{
+		if ([event hasPreciseScrollingDeltas]) {
+			delta_x *= 0.03;
+			delta_y *= 0.03;
 		}
-	} else {
-		ignore_momentum_scroll = false;
-	}
 
-	if ([event phase] != NSEventPhaseNone || [event momentumPhase] != NSEventPhaseNone) {
-		[self processPanEvent:event dx:delta_x dy:delta_y];
-	} else {
-		if (fabs(delta_x)) {
-			[self processScrollEvent:event button:(0 > delta_x ? MouseButton::WHEEL_RIGHT : MouseButton::WHEEL_LEFT) factor:fabs(delta_x * 0.3)];
+		if ([event momentumPhase] != NSEventPhaseNone) {
+			if (ignore_momentum_scroll) {
+				return;
+			}
+		} else {
+			ignore_momentum_scroll = false;
 		}
-		if (fabs(delta_y)) {
-			[self processScrollEvent:event button:(0 < delta_y ? MouseButton::WHEEL_UP : MouseButton::WHEEL_DOWN) factor:fabs(delta_y * 0.3)];
+
+		if ([event phase] != NSEventPhaseNone || [event momentumPhase] != NSEventPhaseNone) {
+			[self processPanEvent:event dx:delta_x dy:delta_y];
+		} else {
+			if (fabs(delta_x)) {
+				[self processScrollEvent:event button:(0 > delta_x ? MouseButton::WHEEL_RIGHT : MouseButton::WHEEL_LEFT) factor:fabs(delta_x * 0.3)];
+			}
+			if (fabs(delta_y)) {
+				[self processScrollEvent:event button:(0 < delta_y ? MouseButton::WHEEL_UP : MouseButton::WHEEL_DOWN) factor:fabs(delta_y * 0.3)];
+			}
 		}
 	}
 }

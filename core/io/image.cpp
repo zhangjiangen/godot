@@ -114,10 +114,7 @@ SaveJPGFunc Image::save_jpg_func = nullptr;
 SaveEXRFunc Image::save_exr_func = nullptr;
 
 SavePNGBufferFunc Image::save_png_buffer_func = nullptr;
-<<<<<<< HEAD
-=======
 SaveEXRBufferFunc Image::save_exr_buffer_func = nullptr;
->>>>>>> master
 SaveJPGBufferFunc Image::save_jpg_buffer_func = nullptr;
 
 SaveWebPFunc Image::save_webp_func = nullptr;
@@ -2527,6 +2524,34 @@ Error Image::load(const String &p_path) {
 	return ImageLoader::load_image(p_path, this);
 }
 
+int Image::get_any_image_data_size(int p_width, int p_height, Format p_format, bool p_mipmaps) {
+	if (p_format < FORMAT_RGBA_ASTC_4x4) {
+		return get_image_data_size(p_width, p_height, p_format, p_mipmaps);
+	}
+	// astc 需要特殊处理
+	int bx = get_format_block_size_width(p_format);
+	int by = get_format_block_size_height(p_format);
+	int blocks_x =
+			(p_width + bx - 1) / bx;
+	int blocks_y =
+			(p_height + by - 1) / by;
+	if (!p_mipmaps) {
+		return blocks_x * blocks_y * 16;
+	}
+	int size = blocks_x * blocks_y * 16;
+	int ml = Math::max(p_width, p_height);
+	while (ml < bx * 2) {
+		p_width = Math::max(p_width >> 1, bx);
+		p_height = Math::max(p_height >> 1, by);
+		ml = Math::max(p_width, p_height);
+		blocks_x =
+				(p_width + bx - 1) / bx;
+		blocks_y =
+				(p_height + by - 1) / by;
+		size += blocks_x * blocks_y * 16;
+	}
+	return size;
+}
 Error Image::save_png(const String &p_path) const {
 	if (save_png_func == nullptr) {
 		return ERR_UNAVAILABLE;
@@ -3482,10 +3507,7 @@ void Image::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("save_jpg", "path", "quality"), &Image::save_jpg, DEFVAL(0.75));
 	ClassDB::bind_method(D_METHOD("save_jpg_to_buffer", "quality"), &Image::save_jpg_to_buffer, DEFVAL(0.75));
 	ClassDB::bind_method(D_METHOD("save_exr", "path", "grayscale"), &Image::save_exr, DEFVAL(false));
-<<<<<<< HEAD
-=======
 	ClassDB::bind_method(D_METHOD("save_exr_to_buffer", "grayscale"), &Image::save_exr_to_buffer, DEFVAL(false));
->>>>>>> master
 	ClassDB::bind_method(D_METHOD("save_webp", "path", "lossy", "quality"), &Image::save_webp, DEFVAL(false), DEFVAL(0.75f));
 	ClassDB::bind_method(D_METHOD("save_webp_to_buffer", "lossy", "quality"), &Image::save_webp_to_buffer, DEFVAL(false), DEFVAL(0.75f));
 

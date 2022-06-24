@@ -342,7 +342,11 @@ Array DisplayServerIPhone::tts_get_voices() const {
 
 void DisplayServerIPhone::tts_speak(const String &p_text, const String &p_voice, int p_volume, float p_pitch, float p_rate, int p_utterance_id, bool p_interrupt) {
 	ERR_FAIL_COND(!tts);
-	[tts speak:p_text voice:p_voice volume:p_volume pitch:p_pitch rate:p_rate utterance_id:p_utterance_id interrupt:p_interrupt];
+
+	@autoreleasepool
+	{
+		[tts speak:p_text voice:p_voice volume:p_volume pitch:p_pitch rate:p_rate utterance_id:p_utterance_id interrupt:p_interrupt];
+	}
 }
 
 void DisplayServerIPhone::tts_pause() {
@@ -362,15 +366,18 @@ void DisplayServerIPhone::tts_stop() {
 
 Rect2i DisplayServerIPhone::get_display_safe_area() const {
 	if (@available(iOS 11, *)) {
-		UIEdgeInsets insets = UIEdgeInsetsZero;
-		UIView *view = AppDelegate.viewController.godotView;
-		if ([view respondsToSelector:@selector(safeAreaInsets)]) {
-			insets = [view safeAreaInsets];
+		@autoreleasepool
+		{
+			UIEdgeInsets insets = UIEdgeInsetsZero;
+			UIView *view = AppDelegate.viewController.godotView;
+			if ([view respondsToSelector:@selector(safeAreaInsets)]) {
+				insets = [view safeAreaInsets];
+			}
+			float scale = screen_get_scale();
+			Size2i insets_position = Size2i(insets.left, insets.top) * scale;
+			Size2i insets_size = Size2i(insets.left + insets.right, insets.top + insets.bottom) * scale;
+			return Rect2i(screen_get_position() + insets_position, screen_get_size() - insets_size);
 		}
-		float scale = screen_get_scale();
-		Size2i insets_position = Size2i(insets.left, insets.top) * scale;
-		Size2i insets_size = Size2i(insets.left + insets.right, insets.top + insets.bottom) * scale;
-		return Rect2i(screen_get_position() + insets_position, screen_get_size() - insets_size);
 	} else {
 		return Rect2i(screen_get_position(), screen_get_size());
 	}
@@ -402,36 +409,39 @@ int DisplayServerIPhone::screen_get_dpi(int p_screen) const {
 	struct utsname systemInfo;
 	uname(&systemInfo);
 
-	NSString *string = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
+	@autoreleasepool
+	{
+		NSString *string = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
 
-	NSDictionary *iOSModelToDPI = [GodotDeviceMetrics dpiList];
+		NSDictionary *iOSModelToDPI = [GodotDeviceMetrics dpiList];
 
-	for (NSArray *keyArray in iOSModelToDPI) {
-		if ([keyArray containsObject:string]) {
-			NSNumber *value = iOSModelToDPI[keyArray];
-			return [value intValue];
-		}
-	}
-
-	// If device wasn't found in dictionary
-	// make a best guess from device metrics.
-	CGFloat scale = [UIScreen mainScreen].scale;
-
-	UIUserInterfaceIdiom idiom = [UIDevice currentDevice].userInterfaceIdiom;
-
-	switch (idiom) {
-		case UIUserInterfaceIdiomPad:
-			return scale == 2 ? 264 : 132;
-		case UIUserInterfaceIdiomPhone: {
-			if (scale == 3) {
-				CGFloat nativeScale = [UIScreen mainScreen].nativeScale;
-				return nativeScale == 3 ? 458 : 401;
+		for (NSArray *keyArray in iOSModelToDPI) {
+			if ([keyArray containsObject:string]) {
+				NSNumber *value = iOSModelToDPI[keyArray];
+				return [value intValue];
 			}
-
-			return 326;
 		}
-		default:
-			return 72;
+
+		// If device wasn't found in dictionary
+		// make a best guess from device metrics.
+		CGFloat scale = [UIScreen mainScreen].scale;
+
+		UIUserInterfaceIdiom idiom = [UIDevice currentDevice].userInterfaceIdiom;
+
+		switch (idiom) {
+			case UIUserInterfaceIdiomPad:
+				return scale == 2 ? 264 : 132;
+			case UIUserInterfaceIdiomPhone: {
+				if (scale == 3) {
+					CGFloat nativeScale = [UIScreen mainScreen].nativeScale;
+					return nativeScale == 3 ? 458 : 401;
+				}
+
+				return 326;
+			}
+			default:
+				return 72;
+		}
 	}
 }
 
@@ -585,13 +595,17 @@ bool DisplayServerIPhone::screen_is_touchscreen(int p_screen) const {
 }
 
 void DisplayServerIPhone::virtual_keyboard_show(const String &p_existing_text, const Rect2 &p_screen_rect, bool p_multiline, int p_max_length, int p_cursor_start, int p_cursor_end) {
-	NSString *existingString = [[NSString alloc] initWithUTF8String:p_existing_text.utf8().get_data()];
+	
+	@autoreleasepool
+	{
+		NSString *existingString = [[NSString alloc] initWithUTF8String:p_existing_text.utf8().get_data()];
 
-	[AppDelegate.viewController.keyboardView
-			becomeFirstResponderWithString:existingString
-								 multiline:p_multiline
-							   cursorStart:p_cursor_start
-								 cursorEnd:p_cursor_end];
+		[AppDelegate.viewController.keyboardView
+				becomeFirstResponderWithString:existingString
+									multiline:p_multiline
+								cursorStart:p_cursor_start
+									cursorEnd:p_cursor_end];
+	}
 }
 
 void DisplayServerIPhone::virtual_keyboard_hide() {
@@ -607,21 +621,35 @@ int DisplayServerIPhone::virtual_keyboard_get_height() const {
 }
 
 void DisplayServerIPhone::clipboard_set(const String &p_text) {
-	[UIPasteboard generalPasteboard].string = [NSString stringWithUTF8String:p_text.utf8()];
+	@autoreleasepool
+	{
+		[UIPasteboard generalPasteboard].string = [NSString stringWithUTF8String:p_text.utf8()];
+	}
 }
 
 String DisplayServerIPhone::clipboard_get() const {
-	NSString *text = [UIPasteboard generalPasteboard].string;
+	@autoreleasepool
+	{
+		NSString *text = [UIPasteboard generalPasteboard].string;
 
-	return String::utf8([text UTF8String]);
+		return String::utf8([text UTF8String]);
+	}
+	return String();
 }
 
 void DisplayServerIPhone::screen_set_keep_on(bool p_enable) {
-	[UIApplication sharedApplication].idleTimerDisabled = p_enable;
+	@autoreleasepool
+	{
+		[UIApplication sharedApplication].idleTimerDisabled = p_enable;
+	}
 }
 
 bool DisplayServerIPhone::screen_is_kept_on() const {
-	return [UIApplication sharedApplication].idleTimerDisabled;
+	@autoreleasepool
+	{
+		return [UIApplication sharedApplication].idleTimerDisabled;
+	}
+	return fale;
 }
 
 void DisplayServerIPhone::resize_window(CGSize viewSize) {

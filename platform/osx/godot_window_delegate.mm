@@ -75,13 +75,16 @@
 	}
 
 	DisplayServerOSX::WindowData &wd = ds->get_window(window_id);
-	wd.fullscreen = true;
-	// Reset window size limits.
-	[wd.window_object setContentMinSize:NSMakeSize(0, 0)];
-	[wd.window_object setContentMaxSize:NSMakeSize(FLT_MAX, FLT_MAX)];
+	@autoreleasepool
+	{
+		wd.fullscreen = true;
+		// Reset window size limits.
+		[wd.window_object setContentMinSize:NSMakeSize(0, 0)];
+		[wd.window_object setContentMaxSize:NSMakeSize(FLT_MAX, FLT_MAX)];
 
-	// Force window resize event.
-	[self windowDidResize:notification];
+		// Force window resize event.
+		[self windowDidResize:notification];
+	}
 }
 
 - (void)windowDidExitFullScreen:(NSNotification *)notification {
@@ -95,27 +98,30 @@
 
 	// Set window size limits.
 	const float scale = ds->screen_get_max_scale();
-	if (wd.min_size != Size2i()) {
-		Size2i size = wd.min_size / scale;
-		[wd.window_object setContentMinSize:NSMakeSize(size.x, size.y)];
-	}
-	if (wd.max_size != Size2i()) {
-		Size2i size = wd.max_size / scale;
-		[wd.window_object setContentMaxSize:NSMakeSize(size.x, size.y)];
-	}
+	@autoreleasepool
+	{
+		if (wd.min_size != Size2i()) {
+			Size2i size = wd.min_size / scale;
+			[wd.window_object setContentMinSize:NSMakeSize(size.x, size.y)];
+		}
+		if (wd.max_size != Size2i()) {
+			Size2i size = wd.max_size / scale;
+			[wd.window_object setContentMaxSize:NSMakeSize(size.x, size.y)];
+		}
 
-	// Restore resizability state.
-	if (wd.resize_disabled) {
-		[wd.window_object setStyleMask:[wd.window_object styleMask] & ~NSWindowStyleMaskResizable];
-	}
+		// Restore resizability state.
+		if (wd.resize_disabled) {
+			[wd.window_object setStyleMask:[wd.window_object styleMask] & ~NSWindowStyleMaskResizable];
+		}
 
-	// Restore on-top state.
-	if (wd.on_top) {
-		[wd.window_object setLevel:NSFloatingWindowLevel];
-	}
+		// Restore on-top state.
+		if (wd.on_top) {
+			[wd.window_object setLevel:NSFloatingWindowLevel];
+		}
 
-	// Force window resize event.
-	[self windowDidResize:notification];
+		// Force window resize event.
+		[self windowDidResize:notification];
+	}
 }
 
 - (void)windowDidChangeBackingProperties:(NSNotification *)notification {
@@ -126,26 +132,29 @@
 
 	DisplayServerOSX::WindowData &wd = ds->get_window(window_id);
 
-	CGFloat new_scale_factor = [wd.window_object backingScaleFactor];
-	CGFloat old_scale_factor = [[[notification userInfo] objectForKey:@"NSBackingPropertyOldScaleFactorKey"] doubleValue];
+	@autoreleasepool
+	{
+		CGFloat new_scale_factor = [wd.window_object backingScaleFactor];
+		CGFloat old_scale_factor = [[[notification userInfo] objectForKey:@"NSBackingPropertyOldScaleFactorKey"] doubleValue];
 
-	if (new_scale_factor != old_scale_factor) {
-		// Set new display scale and window size.
-		const float scale = ds->screen_get_max_scale();
-		const NSRect content_rect = [wd.window_view frame];
+		if (new_scale_factor != old_scale_factor) {
+			// Set new display scale and window size.
+			const float scale = ds->screen_get_max_scale();
+			const NSRect content_rect = [wd.window_view frame];
 
-		wd.size.width = content_rect.size.width * scale;
-		wd.size.height = content_rect.size.height * scale;
+			wd.size.width = content_rect.size.width * scale;
+			wd.size.height = content_rect.size.height * scale;
 
-		ds->send_window_event(wd, DisplayServerOSX::WINDOW_EVENT_DPI_CHANGE);
+			ds->send_window_event(wd, DisplayServerOSX::WINDOW_EVENT_DPI_CHANGE);
 
-		CALayer *layer = [wd.window_view layer];
-		if (layer) {
-			layer.contentsScale = scale;
+			CALayer *layer = [wd.window_view layer];
+			if (layer) {
+				layer.contentsScale = scale;
+			}
+
+			//Force window resize event
+			[self windowDidResize:notification];
 		}
-
-		//Force window resize event
-		[self windowDidResize:notification];
 	}
 }
 
@@ -170,24 +179,27 @@
 	}
 
 	DisplayServerOSX::WindowData &wd = ds->get_window(window_id);
-	const NSRect content_rect = [wd.window_view frame];
-	const float scale = ds->screen_get_max_scale();
-	wd.size.width = content_rect.size.width * scale;
-	wd.size.height = content_rect.size.height * scale;
+	@autoreleasepool
+	{
+		const NSRect content_rect = [wd.window_view frame];
+		const float scale = ds->screen_get_max_scale();
+		wd.size.width = content_rect.size.width * scale;
+		wd.size.height = content_rect.size.height * scale;
 
-	CALayer *layer = [wd.window_view layer];
-	if (layer) {
-		layer.contentsScale = scale;
-	}
+		CALayer *layer = [wd.window_view layer];
+		if (layer) {
+			layer.contentsScale = scale;
+		}
 
-	ds->window_resize(window_id, wd.size.width, wd.size.height);
+		ds->window_resize(window_id, wd.size.width, wd.size.height);
 
-	if (!wd.rect_changed_callback.is_null()) {
-		Variant size = Rect2i(ds->window_get_position(window_id), ds->window_get_size(window_id));
-		Variant *sizep = &size;
-		Variant ret;
-		Callable::CallError ce;
-		wd.rect_changed_callback.call((const Variant **)&sizep, 1, ret, ce);
+		if (!wd.rect_changed_callback.is_null()) {
+			Variant size = Rect2i(ds->window_get_position(window_id), ds->window_get_size(window_id));
+			Variant *sizep = &size;
+			Variant ret;
+			Callable::CallError ce;
+			wd.rect_changed_callback.call((const Variant **)&sizep, 1, ret, ce);
+		}
 	}
 }
 
@@ -218,11 +230,14 @@
 	DisplayServerOSX::WindowData &wd = ds->get_window(window_id);
 
 	if (ds->mouse_get_mode() == DisplayServer::MOUSE_MODE_CAPTURED) {
-		const NSRect content_rect = [wd.window_view frame];
-		NSRect point_in_window_rect = NSMakeRect(content_rect.size.width / 2, content_rect.size.height / 2, 0, 0);
-		NSPoint point_on_screen = [[wd.window_view window] convertRectToScreen:point_in_window_rect].origin;
-		CGPoint mouse_warp_pos = { point_on_screen.x, CGDisplayBounds(CGMainDisplayID()).size.height - point_on_screen.y };
-		CGWarpMouseCursorPosition(mouse_warp_pos);
+		@autoreleasepool
+		{
+			const NSRect content_rect = [wd.window_view frame];
+			NSRect point_in_window_rect = NSMakeRect(content_rect.size.width / 2, content_rect.size.height / 2, 0, 0);
+			NSPoint point_on_screen = [[wd.window_view window] convertRectToScreen:point_in_window_rect].origin;
+			CGPoint mouse_warp_pos = { point_on_screen.x, CGDisplayBounds(CGMainDisplayID()).size.height - point_on_screen.y };
+			CGWarpMouseCursorPosition(mouse_warp_pos);
+		}
 	} else {
 		ds->update_mouse_pos(wd, [wd.window_object mouseLocationOutsideOfEventStream]);
 	}

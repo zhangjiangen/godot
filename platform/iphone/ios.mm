@@ -70,49 +70,55 @@ CHHapticEngine *iOS::get_haptic_engine_instance() API_AVAILABLE(ios(13)) {
 }
 
 void iOS::vibrate_haptic_engine(float p_duration_seconds) API_AVAILABLE(ios(13)) {
-	if (@available(iOS 13, *)) { // We need the @available check every time to make the compiler happy...
-		if (supports_haptic_engine()) {
-			CHHapticEngine *haptic_engine = get_haptic_engine_instance();
-			if (haptic_engine) {
-				NSDictionary *hapticDict = @{
-					CHHapticPatternKeyPattern : @[
-						@{CHHapticPatternKeyEvent : @{
-							CHHapticPatternKeyEventType : CHHapticEventTypeHapticContinuous,
-							CHHapticPatternKeyTime : @(CHHapticTimeImmediate),
-							CHHapticPatternKeyEventDuration : @(p_duration_seconds)
-						},
-						},
-					],
-				};
+	@autoreleasepool
+	{
+		if (@available(iOS 13, *)) { // We need the @available check every time to make the compiler happy...
+			if (supports_haptic_engine()) {
+				CHHapticEngine *haptic_engine = get_haptic_engine_instance();
+				if (haptic_engine) {
+					NSDictionary *hapticDict = @{
+						CHHapticPatternKeyPattern : @[
+							@{CHHapticPatternKeyEvent : @{
+								CHHapticPatternKeyEventType : CHHapticEventTypeHapticContinuous,
+								CHHapticPatternKeyTime : @(CHHapticTimeImmediate),
+								CHHapticPatternKeyEventDuration : @(p_duration_seconds)
+							},
+							},
+						],
+					};
 
-				NSError *error;
-				CHHapticPattern *pattern = [[CHHapticPattern alloc] initWithDictionary:hapticDict error:&error];
+					NSError *error;
+					CHHapticPattern *pattern = [[CHHapticPattern alloc] initWithDictionary:hapticDict error:&error];
 
-				[[haptic_engine createPlayerWithPattern:pattern error:&error] startAtTime:0 error:&error];
+					[[haptic_engine createPlayerWithPattern:pattern error:&error] startAtTime:0 error:&error];
 
-				NSLog(@"Could not vibrate using haptic engine: %@", error);
+					NSLog(@"Could not vibrate using haptic engine: %@", error);
+				}
+
+				return;
 			}
-
-			return;
 		}
-	}
 
-	NSLog(@"Haptic engine is not supported in this version of iOS");
+		NSLog(@"Haptic engine is not supported in this version of iOS");
+	}
 }
 
 void iOS::start_haptic_engine() {
-	if (@available(iOS 13, *)) {
-		if (supports_haptic_engine()) {
-			CHHapticEngine *haptic_engine = get_haptic_engine_instance();
-			if (haptic_engine) {
-				[haptic_engine startWithCompletionHandler:^(NSError *returnedError) {
-					if (returnedError) {
-						NSLog(@"Could not start haptic engine: %@", returnedError);
-					}
-				}];
-			}
+	@autoreleasepool
+	{
+		if (@available(iOS 13, *)) {
+			if (supports_haptic_engine()) {
+				CHHapticEngine *haptic_engine = get_haptic_engine_instance();
+				if (haptic_engine) {
+					[haptic_engine startWithCompletionHandler:^(NSError *returnedError) {
+						if (returnedError) {
+							NSLog(@"Could not start haptic engine: %@", returnedError);
+						}
+					}];
+				}
 
-			return;
+				return;
+			}
 		}
 	}
 
@@ -139,32 +145,39 @@ void iOS::stop_haptic_engine() {
 }
 
 void iOS::alert(const char *p_alert, const char *p_title) {
-	NSString *title = [NSString stringWithUTF8String:p_title];
-	NSString *message = [NSString stringWithUTF8String:p_alert];
+	@autoreleasepool
+	{
+		NSString *title = [NSString stringWithUTF8String:p_title];
+		NSString *message = [NSString stringWithUTF8String:p_alert];
 
-	UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
-	UIAlertAction *button = [UIAlertAction actionWithTitle:@"OK"
-													 style:UIAlertActionStyleCancel
-												   handler:^(id){
-												   }];
+		UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertAction *button = [UIAlertAction actionWithTitle:@"OK"
+														style:UIAlertActionStyleCancel
+													handler:^(id){
+													}];
 
-	[alert addAction:button];
+		[alert addAction:button];
 
-	[AppDelegate.viewController presentViewController:alert animated:YES completion:nil];
+		[AppDelegate.viewController presentViewController:alert animated:YES completion:nil];
+	}
 }
 
 String iOS::get_model() const {
 	// [[UIDevice currentDevice] model] only returns "iPad" or "iPhone".
-	size_t size;
-	sysctlbyname("hw.machine", nullptr, &size, nullptr, 0);
-	char *model = (char *)alloca(size);
-	if (model == nullptr) {
-		return "";
+	const char *str = nullptr;
+	@autoreleasepool
+	{
+		size_t size;
+		sysctlbyname("hw.machine", nullptr, &size, nullptr, 0);
+		char *model = (char *)alloca(size);
+		if (model == nullptr) {
+			return "";
+		}
+		sysctlbyname("hw.machine", model, &size, nullptr, 0);
+		NSString *platform = [NSString stringWithCString:model encoding:NSUTF8StringEncoding];
+		//free(model);
+		str = [platform UTF8String];
 	}
-	sysctlbyname("hw.machine", model, &size, nullptr, 0);
-	NSString *platform = [NSString stringWithCString:model encoding:NSUTF8StringEncoding];
-	//free(model);
-	const char *str = [platform UTF8String];
 	return String::utf8(str != nullptr ? str : "");
 }
 

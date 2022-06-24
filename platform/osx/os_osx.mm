@@ -134,19 +134,22 @@ String OS_OSX::get_name() const {
 }
 
 void OS_OSX::alert(const String &p_alert, const String &p_title) {
-	NSAlert *window = [[NSAlert alloc] init];
-	NSString *ns_title = [NSString stringWithUTF8String:p_title.utf8().get_data()];
-	NSString *ns_alert = [NSString stringWithUTF8String:p_alert.utf8().get_data()];
+	@autoreleasepool
+	{
+		NSAlert *window = [[NSAlert alloc] init];
+		NSString *ns_title = [NSString stringWithUTF8String:p_title.utf8().get_data()];
+		NSString *ns_alert = [NSString stringWithUTF8String:p_alert.utf8().get_data()];
 
-	[window addButtonWithTitle:@"OK"];
-	[window setMessageText:ns_title];
-	[window setInformativeText:ns_alert];
-	[window setAlertStyle:NSAlertStyleWarning];
+		[window addButtonWithTitle:@"OK"];
+		[window setMessageText:ns_title];
+		[window setInformativeText:ns_alert];
+		[window setAlertStyle:NSAlertStyleWarning];
 
-	id key_window = [[NSApplication sharedApplication] keyWindow];
-	[window runModal];
-	if (key_window) {
-		[key_window makeKeyAndOrderFront:nil];
+		id key_window = [[NSApplication sharedApplication] keyWindow];
+		[window runModal];
+		if (key_window) {
+			[key_window makeKeyAndOrderFront:nil];
+		}
 	}
 }
 
@@ -288,13 +291,16 @@ String OS_OSX::get_system_dir(SystemDir p_dir, bool p_shared_storage) const {
 }
 
 Error OS_OSX::shell_open(String p_uri) {
-	NSString *string = [NSString stringWithUTF8String:p_uri.utf8().get_data()];
-	NSURL *uri = [[NSURL alloc] initWithString:string];
-	// Escape special characters in filenames
-	if (!uri || !uri.scheme || [uri.scheme isEqual:@"file"]) {
-		uri = [[NSURL alloc] initWithString:[string stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
+	@autoreleasepool
+	{
+		NSString *string = [NSString stringWithUTF8String:p_uri.utf8().get_data()];
+		NSURL *uri = [[NSURL alloc] initWithString:string];
+		// Escape special characters in filenames
+		if (!uri || !uri.scheme || [uri.scheme isEqual:@"file"]) {
+			uri = [[NSURL alloc] initWithString:[string stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
+		}
+		[[NSWorkspace sharedWorkspace] openURL:uri];
 	}
-	[[NSWorkspace sharedWorkspace] openURL:uri];
 	return OK;
 }
 
@@ -319,93 +325,103 @@ String OS_OSX::get_executable_path() const {
 
 Error OS_OSX::create_process(const String &p_path, const List<String> &p_arguments, ProcessID *r_child_id, bool p_open_console) {
 	// Use NSWorkspace if path is an .app bundle.
-	NSURL *url = [NSURL fileURLWithPath:@(p_path.utf8().get_data())];
-	NSBundle *bundle = [NSBundle bundleWithURL:url];
-	if (bundle) {
-		NSMutableArray *arguments = [[NSMutableArray alloc] init];
-		for (const String &arg : p_arguments) {
-			[arguments addObject:[NSString stringWithUTF8String:arg.utf8().get_data()]];
-		}
-		if (@available(macOS 10.15, *)) {
-			NSWorkspaceOpenConfiguration *configuration = [[NSWorkspaceOpenConfiguration alloc] init];
-			[configuration setArguments:arguments];
-			[configuration setCreatesNewApplicationInstance:YES];
-			__block dispatch_semaphore_t lock = dispatch_semaphore_create(0);
-			__block Error err = ERR_TIMEOUT;
-			__block pid_t pid = 0;
-
-			[[NSWorkspace sharedWorkspace] openApplicationAtURL:url
-												  configuration:configuration
-											  completionHandler:^(NSRunningApplication *app, NSError *error) {
-												  if (error) {
-													  err = ERR_CANT_FORK;
-													  NSLog(@"Failed to execute: %@", error.localizedDescription);
-												  } else {
-													  pid = [app processIdentifier];
-													  err = OK;
-												  }
-												  dispatch_semaphore_signal(lock);
-											  }];
-			dispatch_semaphore_wait(lock, dispatch_time(DISPATCH_TIME_NOW, 20000000000)); // 20 sec timeout, wait for app to launch.
-
-			if (err == OK) {
-				if (r_child_id) {
-					*r_child_id = (ProcessID)pid;
-				}
+	@autoreleasepool
+	{
+		NSURL *url = [NSURL fileURLWithPath:@(p_path.utf8().get_data())];
+		NSBundle *bundle = [NSBundle bundleWithURL:url];
+		if (bundle) {
+			NSMutableArray *arguments = [[NSMutableArray alloc] init];
+			for (const String &arg : p_arguments) {
+				[arguments addObject:[NSString stringWithUTF8String:arg.utf8().get_data()]];
 			}
+			if (@available(macOS 10.15, *)) {
+				NSWorkspaceOpenConfiguration *configuration = [[NSWorkspaceOpenConfiguration alloc] init];
+				[configuration setArguments:arguments];
+				[configuration setCreatesNewApplicationInstance:YES];
+				__block dispatch_semaphore_t lock = dispatch_semaphore_create(0);
+				__block Error err = ERR_TIMEOUT;
+				__block pid_t pid = 0;
 
-			return err;
-		} else {
-			Error err = ERR_TIMEOUT;
-			NSError *error = nullptr;
-			NSRunningApplication *app = [[NSWorkspace sharedWorkspace] launchApplicationAtURL:url options:NSWorkspaceLaunchNewInstance configuration:[NSDictionary dictionaryWithObject:arguments forKey:NSWorkspaceLaunchConfigurationArguments] error:&error];
-			if (error) {
-				err = ERR_CANT_FORK;
-				NSLog(@"Failed to execute: %@", error.localizedDescription);
+				[[NSWorkspace sharedWorkspace] openApplicationAtURL:url
+													configuration:configuration
+												completionHandler:^(NSRunningApplication *app, NSError *error) {
+													if (error) {
+														err = ERR_CANT_FORK;
+														NSLog(@"Failed to execute: %@", error.localizedDescription);
+													} else {
+														pid = [app processIdentifier];
+														err = OK;
+													}
+													dispatch_semaphore_signal(lock);
+												}];
+				dispatch_semaphore_wait(lock, dispatch_time(DISPATCH_TIME_NOW, 20000000000)); // 20 sec timeout, wait for app to launch.
+
+				if (err == OK) {
+					if (r_child_id) {
+						*r_child_id = (ProcessID)pid;
+					}
+				}
+
+				return err;
 			} else {
-				if (r_child_id) {
-					*r_child_id = (ProcessID)[app processIdentifier];
+				Error err = ERR_TIMEOUT;
+				NSError *error = nullptr;
+				NSRunningApplication *app = [[NSWorkspace sharedWorkspace] launchApplicationAtURL:url options:NSWorkspaceLaunchNewInstance configuration:[NSDictionary dictionaryWithObject:arguments forKey:NSWorkspaceLaunchConfigurationArguments] error:&error];
+				if (error) {
+					err = ERR_CANT_FORK;
+					NSLog(@"Failed to execute: %@", error.localizedDescription);
+				} else {
+					if (r_child_id) {
+						*r_child_id = (ProcessID)[app processIdentifier];
+					}
+					err = OK;
 				}
-				err = OK;
+				return err;
 			}
-			return err;
+		} else {
+			return OS_Unix::create_process(p_path, p_arguments, r_child_id, p_open_console);
 		}
-	} else {
-		return OS_Unix::create_process(p_path, p_arguments, r_child_id, p_open_console);
 	}
+	return OK;
 }
 
 Error OS_OSX::create_instance(const List<String> &p_arguments, ProcessID *r_child_id) {
 	// If executable is bundled, always execute editor instances as an app bundle to ensure app window is registered and activated correctly.
-	NSString *nsappname = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
-	if (nsappname != nil) {
-		String path;
-		path.parse_utf8([[[NSBundle mainBundle] bundlePath] UTF8String]);
-		return create_process(path, p_arguments, r_child_id, false);
-	} else {
-		return create_process(get_executable_path(), p_arguments, r_child_id, false);
+	@autoreleasepool
+	{
+		NSString *nsappname = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
+		if (nsappname != nil) {
+			String path;
+			path.parse_utf8([[[NSBundle mainBundle] bundlePath] UTF8String]);
+			return create_process(path, p_arguments, r_child_id, false);
+		} else {
+			return create_process(get_executable_path(), p_arguments, r_child_id, false);
+		}
 	}
 }
 
 String OS_OSX::get_unique_id() const {
 	static String serial_number;
 
-	if (serial_number.is_empty()) {
-		io_service_t platform_expert = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceMatching("IOPlatformExpertDevice"));
-		CFStringRef serial_number_cf_string = nullptr;
-		if (platform_expert) {
-			serial_number_cf_string = (CFStringRef)IORegistryEntryCreateCFProperty(platform_expert, CFSTR(kIOPlatformSerialNumberKey), kCFAllocatorDefault, 0);
-			IOObjectRelease(platform_expert);
-		}
+	@autoreleasepool
+	{
+		if (serial_number.is_empty()) {
+			io_service_t platform_expert = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceMatching("IOPlatformExpertDevice"));
+			CFStringRef serial_number_cf_string = nullptr;
+			if (platform_expert) {
+				serial_number_cf_string = (CFStringRef)IORegistryEntryCreateCFProperty(platform_expert, CFSTR(kIOPlatformSerialNumberKey), kCFAllocatorDefault, 0);
+				IOObjectRelease(platform_expert);
+			}
 
-		NSString *serial_number_ns_string = nil;
-		if (serial_number_cf_string) {
-			serial_number_ns_string = [NSString stringWithString:(__bridge NSString *)serial_number_cf_string];
-			CFRelease(serial_number_cf_string);
-		}
+			NSString *serial_number_ns_string = nil;
+			if (serial_number_cf_string) {
+				serial_number_ns_string = [NSString stringWithString:(__bridge NSString *)serial_number_cf_string];
+				CFRelease(serial_number_cf_string);
+			}
 
-		if (serial_number_ns_string) {
-			serial_number.parse_utf8([serial_number_ns_string UTF8String]);
+			if (serial_number_ns_string) {
+				serial_number.parse_utf8([serial_number_ns_string UTF8String]);
+			}
 		}
 	}
 

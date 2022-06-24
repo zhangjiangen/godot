@@ -150,45 +150,48 @@
 		return;
 	}
 
-	if (self.previousSelectedRange.length == 0) {
-		// We are deleting all text before cursor if no range was selected.
-		// This way any inserted or changed text will be updated.
-		NSString *substringToDelete = [self.previousText substringToIndex:self.previousSelectedRange.location];
-		[self deleteText:substringToDelete.length];
-	} else {
-		// If text was previously selected
-		// we are sending only one `backspace`.
-		// It will remove all text from text input.
-		[self deleteText:1];
-	}
-
-	NSString *substringToEnter;
-
-	if (self.selectedRange.length == 0) {
-		// If previous cursor had a selection
-		// we have to calculate an inserted text.
-		if (self.previousSelectedRange.length != 0) {
-			NSInteger rangeEnd = self.selectedRange.location + self.selectedRange.length;
-			NSInteger rangeStart = MIN(self.previousSelectedRange.location, self.selectedRange.location);
-			NSInteger rangeLength = MAX(0, rangeEnd - rangeStart);
-
-			NSRange calculatedRange;
-
-			if (rangeLength >= 0) {
-				calculatedRange = NSMakeRange(rangeStart, rangeLength);
-			} else {
-				calculatedRange = NSMakeRange(rangeStart, 0);
-			}
-
-			substringToEnter = [self.text substringWithRange:calculatedRange];
+	@autoreleasepool
+	{
+		if (self.previousSelectedRange.length == 0) {
+			// We are deleting all text before cursor if no range was selected.
+			// This way any inserted or changed text will be updated.
+			NSString *substringToDelete = [self.previousText substringToIndex:self.previousSelectedRange.location];
+			[self deleteText:substringToDelete.length];
 		} else {
-			substringToEnter = [self.text substringToIndex:self.selectedRange.location];
+			// If text was previously selected
+			// we are sending only one `backspace`.
+			// It will remove all text from text input.
+			[self deleteText:1];
 		}
-	} else {
-		substringToEnter = [self.text substringWithRange:self.selectedRange];
-	}
 
-	[self enterText:substringToEnter];
+		NSString *substringToEnter;
+
+		if (self.selectedRange.length == 0) {
+			// If previous cursor had a selection
+			// we have to calculate an inserted text.
+			if (self.previousSelectedRange.length != 0) {
+				NSInteger rangeEnd = self.selectedRange.location + self.selectedRange.length;
+				NSInteger rangeStart = MIN(self.previousSelectedRange.location, self.selectedRange.location);
+				NSInteger rangeLength = MAX(0, rangeEnd - rangeStart);
+
+				NSRange calculatedRange;
+
+				if (rangeLength >= 0) {
+					calculatedRange = NSMakeRange(rangeStart, rangeLength);
+				} else {
+					calculatedRange = NSMakeRange(rangeStart, 0);
+				}
+
+				substringToEnter = [self.text substringWithRange:calculatedRange];
+			} else {
+				substringToEnter = [self.text substringToIndex:self.selectedRange.location];
+			}
+		} else {
+			substringToEnter = [self.text substringWithRange:self.selectedRange];
+		}
+
+		[self enterText:substringToEnter];
+	}
 
 	self.previousText = self.text;
 	self.previousSelectedRange = self.selectedRange;

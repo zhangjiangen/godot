@@ -111,34 +111,40 @@
 	[self.view addSubview:self.keyboardView];
 
 	printf("******** adding observer for keyboard show/hide\n");
-	[[NSNotificationCenter defaultCenter]
-			addObserver:self
-			   selector:@selector(keyboardOnScreen:)
-				   name:UIKeyboardDidShowNotification
-				 object:nil];
-	[[NSNotificationCenter defaultCenter]
-			addObserver:self
-			   selector:@selector(keyboardHidden:)
-				   name:UIKeyboardDidHideNotification
-				 object:nil];
+	@autoreleasepool
+	{
+		[[NSNotificationCenter defaultCenter]
+				addObserver:self
+				selector:@selector(keyboardOnScreen:)
+					name:UIKeyboardDidShowNotification
+					object:nil];
+		[[NSNotificationCenter defaultCenter]
+				addObserver:self
+				selector:@selector(keyboardHidden:)
+					name:UIKeyboardDidHideNotification
+					object:nil];
+	}
 }
 
 - (void)displayLoadingOverlay {
-	NSBundle *bundle = [NSBundle mainBundle];
-	NSString *storyboardName = @"Launch Screen";
+	@autoreleasepool
+	{
+		NSBundle *bundle = [NSBundle mainBundle];
+		NSString *storyboardName = @"Launch Screen";
 
-	if ([bundle pathForResource:storyboardName ofType:@"storyboardc"] == nil) {
-		return;
+		if ([bundle pathForResource:storyboardName ofType:@"storyboardc"] == nil) {
+			return;
+		}
+
+		UIStoryboard *launchStoryboard = [UIStoryboard storyboardWithName:storyboardName bundle:bundle];
+
+		UIViewController *controller = [launchStoryboard instantiateInitialViewController];
+		self.godotLoadingOverlay = controller.view;
+		self.godotLoadingOverlay.frame = self.view.bounds;
+		self.godotLoadingOverlay.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+
+		[self.view addSubview:self.godotLoadingOverlay];
 	}
-
-	UIStoryboard *launchStoryboard = [UIStoryboard storyboardWithName:storyboardName bundle:bundle];
-
-	UIViewController *controller = [launchStoryboard instantiateInitialViewController];
-	self.godotLoadingOverlay = controller.view;
-	self.godotLoadingOverlay.frame = self.view.bounds;
-	self.godotLoadingOverlay.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-
-	[self.view addSubview:self.godotLoadingOverlay];
 }
 
 - (BOOL)godotViewFinishedSetup:(GodotView *)view {
@@ -223,11 +229,14 @@
 	NSDictionary *info = notification.userInfo;
 	NSValue *value = info[UIKeyboardFrameEndUserInfoKey];
 
-	CGRect rawFrame = [value CGRectValue];
-	CGRect keyboardFrame = [self.view convertRect:rawFrame fromView:nil];
+	@autoreleasepool
+	{
+		CGRect rawFrame = [value CGRectValue];
+		CGRect keyboardFrame = [self.view convertRect:rawFrame fromView:nil];
 
-	if (DisplayServerIPhone::get_singleton()) {
-		DisplayServerIPhone::get_singleton()->virtual_keyboard_set_height(keyboardFrame.size.height);
+		if (DisplayServerIPhone::get_singleton()) {
+			DisplayServerIPhone::get_singleton()->virtual_keyboard_set_height(keyboardFrame.size.height);
+		}
 	}
 }
 

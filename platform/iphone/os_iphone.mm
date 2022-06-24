@@ -249,16 +249,19 @@ String OSIPhone::get_model_name() const {
 }
 
 Error OSIPhone::shell_open(String p_uri) {
-	NSString *urlPath = [[NSString alloc] initWithUTF8String:p_uri.utf8().get_data()];
-	NSURL *url = [NSURL URLWithString:urlPath];
+	@autoreleasepool
+	{
+		NSString *urlPath = [[NSString alloc] initWithUTF8String:p_uri.utf8().get_data()];
+		NSURL *url = [NSURL URLWithString:urlPath];
 
-	if (![[UIApplication sharedApplication] canOpenURL:url]) {
-		return ERR_CANT_OPEN;
+		if (![[UIApplication sharedApplication] canOpenURL:url]) {
+			return ERR_CANT_OPEN;
+		}
+
+		printf("opening url %s\n", p_uri.utf8().get_data());
+
+		[[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
 	}
-
-	printf("opening url %s\n", p_uri.utf8().get_data());
-
-	[[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
 
 	return OK;
 }
@@ -323,7 +326,10 @@ void OSIPhone::on_focus_out() {
 			DisplayServerIPhone::get_singleton()->send_window_event(DisplayServer::WINDOW_EVENT_FOCUS_OUT);
 		}
 
-		[AppDelegate.viewController.godotView stopRendering];
+		@autoreleasepool
+		{
+			[AppDelegate.viewController.godotView stopRendering];
+		}
 
 		audio_driver.stop();
 	}
@@ -337,7 +343,10 @@ void OSIPhone::on_focus_in() {
 			DisplayServerIPhone::get_singleton()->send_window_event(DisplayServer::WINDOW_EVENT_FOCUS_IN);
 		}
 
-		[AppDelegate.viewController.godotView startRendering];
+		@autoreleasepool
+		{
+			[AppDelegate.viewController.godotView startRendering];
+		}
 
 		audio_driver.start();
 	}

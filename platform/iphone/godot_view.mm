@@ -72,28 +72,31 @@ static const float earth_gravity = 9.80665;
 
 	CALayer<DisplayLayer> *layer;
 
-	if ([driverName isEqualToString:@"vulkan"]) {
-		layer = [GodotMetalLayer layer];
-	} else if ([driverName isEqualToString:@"opengl_es"]) {
-		if (@available(iOS 13, *)) {
-			NSLog(@"OpenGL ES is deprecated on iOS 13");
+	@autoreleasepool
+	{
+		if ([driverName isEqualToString:@"vulkan"]) {
+			layer = [GodotMetalLayer layer];
+		} else if ([driverName isEqualToString:@"opengl_es"]) {
+			if (@available(iOS 13, *)) {
+				NSLog(@"OpenGL ES is deprecated on iOS 13");
+			}
+	#if defined(TARGET_OS_SIMULATOR) && TARGET_OS_SIMULATOR
+			return nil;
+	#else
+			layer = [GodotOpenGLLayer layer];
+	#endif
+		} else {
+			return nil;
 		}
-#if defined(TARGET_OS_SIMULATOR) && TARGET_OS_SIMULATOR
-		return nil;
-#else
-		layer = [GodotOpenGLLayer layer];
-#endif
-	} else {
-		return nil;
+
+		layer.frame = self.bounds;
+		layer.contentsScale = self.contentScaleFactor;
+
+		[self.layer addSublayer:layer];
+		self.renderingLayer = layer;
+
+		[layer initializeDisplayLayer];
 	}
-
-	layer.frame = self.bounds;
-	layer.contentsScale = self.contentScaleFactor;
-
-	[self.layer addSublayer:layer];
-	self.renderingLayer = layer;
-
-	[layer initializeDisplayLayer];
 
 	return self.renderingLayer;
 }
@@ -202,19 +205,22 @@ static const float earth_gravity = 9.80665;
 
 	printf("start animation!\n");
 
-	if (self.useCADisplayLink) {
-		self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(drawView)];
+	@autoreleasepool
+	{
+		if (self.useCADisplayLink) {
+			self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(drawView)];
 
-		// Approximate frame rate
-		// assumes device refreshes at 60 fps
-		int displayFPS = (NSInteger)(1.0 / self.renderingInterval);
+			// Approximate frame rate
+			// assumes device refreshes at 60 fps
+			int displayFPS = (NSInteger)(1.0 / self.renderingInterval);
 
-		self.displayLink.preferredFramesPerSecond = displayFPS;
+			self.displayLink.preferredFramesPerSecond = displayFPS;
 
-		// Setup DisplayLink in main thread
-		[self.displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
-	} else {
-		self.animationTimer = [NSTimer scheduledTimerWithTimeInterval:self.renderingInterval target:self selector:@selector(drawView) userInfo:nil repeats:YES];
+			// Setup DisplayLink in main thread
+			[self.displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+		} else {
+			self.animationTimer = [NSTimer scheduledTimerWithTimeInterval:self.renderingInterval target:self selector:@selector(drawView) userInfo:nil repeats:YES];
+		}
 	}
 }
 
@@ -224,39 +230,42 @@ static const float earth_gravity = 9.80665;
 		return;
 	}
 
-	if (self.useCADisplayLink) {
-		// Pause the CADisplayLink to avoid recursion
-		[self.displayLink setPaused:YES];
+	@autoreleasepool
+	{
+		if (self.useCADisplayLink) {
+			// Pause the CADisplayLink to avoid recursion
+			[self.displayLink setPaused:YES];
 
-		// Process all input events
-		while (CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.0, TRUE) == kCFRunLoopRunHandledSource) {
-			// Continue.
+			// Process all input events
+			while (CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.0, TRUE) == kCFRunLoopRunHandledSource) {
+				// Continue.
+			}
+
+			// We are good to go, resume the CADisplayLink
+			[self.displayLink setPaused:NO];
 		}
 
-		// We are good to go, resume the CADisplayLink
-		[self.displayLink setPaused:NO];
-	}
+		[self.renderingLayer renderDisplayLayer];
 
-	[self.renderingLayer renderDisplayLayer];
-
-	if (!self.renderer) {
-		return;
-	}
-
-	if ([self.renderer setupView:self]) {
-		return;
-	}
-
-	if (self.delegate) {
-		BOOL delegateFinishedSetup = [self.delegate godotViewFinishedSetup:self];
-
-		if (!delegateFinishedSetup) {
+		if (!self.renderer) {
 			return;
 		}
-	}
 
-	[self handleMotion];
-	[self.renderer renderOnView:self];
+		if ([self.renderer setupView:self]) {
+			return;
+		}
+
+		if (self.delegate) {
+			BOOL delegateFinishedSetup = [self.delegate godotViewFinishedSetup:self];
+
+			if (!delegateFinishedSetup) {
+				return;
+			}
+		}
+
+		[self handleMotion];
+		[self.renderer renderOnView:self];
+	}
 }
 
 - (BOOL)canRender {
@@ -442,12 +451,15 @@ static const float earth_gravity = 9.80665;
 
 	UIInterfaceOrientation interfaceOrientation = UIInterfaceOrientationUnknown;
 
-	if (@available(iOS 13, *)) {
-		interfaceOrientation = [UIApplication sharedApplication].delegate.window.windowScene.interfaceOrientation;
-#if !defined(TARGET_OS_SIMULATOR) || !TARGET_OS_SIMULATOR
-	} else {
-		interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-#endif
+	@autoreleasepool
+	{
+		if (@available(iOS 13, *)) {
+			interfaceOrientation = [UIApplication sharedApplication].delegate.window.windowScene.interfaceOrientation;
+	#if !defined(TARGET_OS_SIMULATOR) || !TARGET_OS_SIMULATOR
+		} else {
+			interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+	#endif
+		}
 	}
 
 	switch (interfaceOrientation) {

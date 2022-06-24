@@ -66,50 +66,56 @@ static ViewController *mainViewController = nil;
 	// Create a full-screen window
 	self.window = [[UIWindow alloc] initWithFrame:windowBounds];
 
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	NSString *documentsDirectory = [paths objectAtIndex:0];
-	paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-	NSString *cacheDirectory = [paths objectAtIndex:0];
+	@autoreleasepool
+	{
+		NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+		NSString *documentsDirectory = [paths objectAtIndex:0];
+		paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+		NSString *cacheDirectory = [paths objectAtIndex:0];
 
-	int err = iphone_main(gargc, gargv, String::utf8([documentsDirectory UTF8String]), String::utf8([cacheDirectory UTF8String]));
+		int err = iphone_main(gargc, gargv, String::utf8([documentsDirectory UTF8String]), String::utf8([cacheDirectory UTF8String]));
 
-	if (err != 0) {
-		// bail, things did not go very well for us, should probably output a message on screen with our error code...
-		exit(0);
-		return NO;
+		if (err != 0) {
+			// bail, things did not go very well for us, should probably output a message on screen with our error code...
+			exit(0);
+			return NO;
+		}
+
+		ViewController *viewController = [[ViewController alloc] init];
+		viewController.godotView.useCADisplayLink = bool(GLOBAL_DEF("display.iOS/use_cadisplaylink", true)) ? YES : NO;
+		viewController.godotView.renderingInterval = 1.0 / kRenderingFrequency;
+
+		self.window.rootViewController = viewController;
+
+		// Show the window
+		[self.window makeKeyAndVisible];
+
+		[[NSNotificationCenter defaultCenter]
+				addObserver:self
+				selector:@selector(onAudioInterruption:)
+					name:AVAudioSessionInterruptionNotification
+					object:[AVAudioSession sharedInstance]];
+
+		mainViewController = viewController;
+
+		// prevent to stop music in another background app
+		[[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
 	}
-
-	ViewController *viewController = [[ViewController alloc] init];
-	viewController.godotView.useCADisplayLink = bool(GLOBAL_DEF("display.iOS/use_cadisplaylink", true)) ? YES : NO;
-	viewController.godotView.renderingInterval = 1.0 / kRenderingFrequency;
-
-	self.window.rootViewController = viewController;
-
-	// Show the window
-	[self.window makeKeyAndVisible];
-
-	[[NSNotificationCenter defaultCenter]
-			addObserver:self
-			   selector:@selector(onAudioInterruption:)
-				   name:AVAudioSessionInterruptionNotification
-				 object:[AVAudioSession sharedInstance]];
-
-	mainViewController = viewController;
-
-	// prevent to stop music in another background app
-	[[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
 
 	return YES;
 }
 
 - (void)onAudioInterruption:(NSNotification *)notification {
-	if ([notification.name isEqualToString:AVAudioSessionInterruptionNotification]) {
-		if ([[notification.userInfo valueForKey:AVAudioSessionInterruptionTypeKey] isEqualToNumber:[NSNumber numberWithInt:AVAudioSessionInterruptionTypeBegan]]) {
-			NSLog(@"Audio interruption began");
-			OSIPhone::get_singleton()->on_focus_out();
-		} else if ([[notification.userInfo valueForKey:AVAudioSessionInterruptionTypeKey] isEqualToNumber:[NSNumber numberWithInt:AVAudioSessionInterruptionTypeEnded]]) {
-			NSLog(@"Audio interruption ended");
-			OSIPhone::get_singleton()->on_focus_in();
+	@autoreleasepool
+	{
+		if ([notification.name isEqualToString:AVAudioSessionInterruptionNotification]) {
+			if ([[notification.userInfo valueForKey:AVAudioSessionInterruptionTypeKey] isEqualToNumber:[NSNumber numberWithInt:AVAudioSessionInterruptionTypeBegan]]) {
+				NSLog(@"Audio interruption began");
+				OSIPhone::get_singleton()->on_focus_out();
+			} else if ([[notification.userInfo valueForKey:AVAudioSessionInterruptionTypeKey] isEqualToNumber:[NSNumber numberWithInt:AVAudioSessionInterruptionTypeEnded]]) {
+				NSLog(@"Audio interruption ended");
+				OSIPhone::get_singleton()->on_focus_in();
+			}
 		}
 	}
 }

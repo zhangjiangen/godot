@@ -107,15 +107,18 @@ const CGFloat kGLGestureMovementDistance = 0.5;
 }
 
 - (void)fireDelayedTouches:(id)timer {
-	[self.delayTimer invalidate];
-	self.delayTimer = nil;
+	@autoreleasepool
+	{
+		[self.delayTimer invalidate];
+		self.delayTimer = nil;
 
-	if (self.delayedTouches) {
-		[self.godotView godotTouchesBegan:self.delayedTouches withEvent:self.delayedEvent];
+		if (self.delayedTouches) {
+			[self.godotView godotTouchesBegan:self.delayedTouches withEvent:self.delayedEvent];
+		}
+
+		self.delayedTouches = nil;
+		self.delayedEvent = nil;
 	}
-
-	self.delayedTouches = nil;
-	self.delayedEvent = nil;
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -126,61 +129,74 @@ const CGFloat kGLGestureMovementDistance = 0.5;
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-	NSSet *cleared = [self copyClearedTouches:touches phase:UITouchPhaseMoved];
+	@autoreleasepool
+	{
+		NSSet *cleared = [self copyClearedTouches:touches phase:UITouchPhaseMoved];
 
-	if (self.delayTimer) {
-		// We should check if movement was significant enough to fire an event
-		// for dragging to work correctly.
-		for (UITouch *touch in cleared) {
-			CGPoint from = [touch locationInView:self.godotView];
-			CGPoint to = [touch previousLocationInView:self.godotView];
-			CGFloat xDistance = from.x - to.x;
-			CGFloat yDistance = from.y - to.y;
+		if (self.delayTimer) {
+			// We should check if movement was significant enough to fire an event
+			// for dragging to work correctly.
+			for (UITouch *touch in cleared) {
+				CGPoint from = [touch locationInView:self.godotView];
+				CGPoint to = [touch previousLocationInView:self.godotView];
+				CGFloat xDistance = from.x - to.x;
+				CGFloat yDistance = from.y - to.y;
 
-			CGFloat distance = sqrt(xDistance * xDistance + yDistance * yDistance);
+				CGFloat distance = sqrt(xDistance * xDistance + yDistance * yDistance);
 
-			// Early exit, since one of touches has moved enough to fire a drag event.
-			if (distance > kGLGestureMovementDistance) {
-				[self.delayTimer fire];
-				[self.godotView godotTouchesMoved:cleared withEvent:event];
-				return;
+				// Early exit, since one of touches has moved enough to fire a drag event.
+				if (distance > kGLGestureMovementDistance) {
+					[self.delayTimer fire];
+					[self.godotView godotTouchesMoved:cleared withEvent:event];
+					return;
+				}
 			}
+
+			return;
 		}
 
-		return;
+		[self.godotView godotTouchesMoved:cleared withEvent:event];
+
+		[super touchesMoved:touches withEvent:event];
 	}
-
-	[self.godotView godotTouchesMoved:cleared withEvent:event];
-
-	[super touchesMoved:touches withEvent:event];
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-	[self.delayTimer fire];
+	@autoreleasepool
+	{
+		[self.delayTimer fire];
 
-	NSSet *cleared = [self copyClearedTouches:touches phase:UITouchPhaseEnded];
-	[self.godotView godotTouchesEnded:cleared withEvent:event];
+		NSSet *cleared = [self copyClearedTouches:touches phase:UITouchPhaseEnded];
+		[self.godotView godotTouchesEnded:cleared withEvent:event];
 
-	[super touchesEnded:touches withEvent:event];
+		[super touchesEnded:touches withEvent:event];
+	}
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
-	[self.delayTimer fire];
-	[self.godotView godotTouchesCancelled:touches withEvent:event];
+	@autoreleasepool
+	{
+		[self.delayTimer fire];
+		[self.godotView godotTouchesCancelled:touches withEvent:event];
 
-	[super touchesCancelled:touches withEvent:event];
+		[super touchesCancelled:touches withEvent:event];
+	}
 }
 
 - (NSSet *)copyClearedTouches:(NSSet *)touches phase:(UITouchPhase)phaseToSave {
-	NSMutableSet *cleared = [touches mutableCopy];
+	@autoreleasepool
+	{
+		NSMutableSet *cleared = [touches mutableCopy];
 
-	for (UITouch *touch in touches) {
-		if (touch.view != self.view || touch.phase != phaseToSave) {
-			[cleared removeObject:touch];
+		for (UITouch *touch in touches) {
+			if (touch.view != self.view || touch.phase != phaseToSave) {
+				[cleared removeObject:touch];
+			}
 		}
-	}
 
-	return cleared;
+		return cleared;
+	}
+	return nullptr;
 }
 
 @end

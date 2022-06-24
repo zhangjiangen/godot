@@ -35,23 +35,26 @@
 @implementation GodotApplication
 
 - (void)sendEvent:(NSEvent *)event {
-	DisplayServerOSX *ds = (DisplayServerOSX *)DisplayServer::get_singleton();
-	if (ds) {
-		if ([event type] == NSEventTypeLeftMouseDown || [event type] == NSEventTypeRightMouseDown || [event type] == NSEventTypeOtherMouseDown) {
-			if (ds->mouse_process_popups()) {
-				return;
+	@autoreleasepool
+	{
+		DisplayServerOSX *ds = (DisplayServerOSX *)DisplayServer::get_singleton();
+		if (ds) {
+			if ([event type] == NSEventTypeLeftMouseDown || [event type] == NSEventTypeRightMouseDown || [event type] == NSEventTypeOtherMouseDown) {
+				if (ds->mouse_process_popups()) {
+					return;
+				}
 			}
+			ds->send_event(event);
 		}
-		ds->send_event(event);
-	}
 
-	// From http://cocoadev.com/index.pl?GameKeyboardHandlingAlmost
-	// This works around an AppKit bug, where key up events while holding
-	// down the command key don't get sent to the key window.
-	if ([event type] == NSEventTypeKeyUp && ([event modifierFlags] & NSEventModifierFlagCommand)) {
-		[[self keyWindow] sendEvent:event];
-	} else {
-		[super sendEvent:event];
+		// From http://cocoadev.com/index.pl?GameKeyboardHandlingAlmost
+		// This works around an AppKit bug, where key up events while holding
+		// down the command key don't get sent to the key window.
+		if ([event type] == NSEventTypeKeyUp && ([event modifierFlags] & NSEventModifierFlagCommand)) {
+			[[self keyWindow] sendEvent:event];
+		} else {
+			[super sendEvent:event];
+		}
 	}
 }
 

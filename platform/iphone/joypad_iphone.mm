@@ -135,11 +135,14 @@ void JoypadIPhone::start_processing() {
 }
 
 - (int)getJoyIdForController:(GCController *)controller {
-	NSArray *keys = [self.connectedJoypads allKeysForObject:controller];
+	@autoreleasepool
+	{
+		NSArray *keys = [self.connectedJoypads allKeysForObject:controller];
 
-	for (NSNumber *key in keys) {
-		int joy_id = [key intValue];
-		return joy_id;
+		for (NSNumber *key in keys) {
+			int joy_id = [key intValue];
+			return joy_id;
+		}
 	}
 
 	return -1;
@@ -159,14 +162,17 @@ void JoypadIPhone::start_processing() {
 		controller.playerIndex = [self getFreePlayerIndex];
 	}
 
-	// tell Godot about our new controller
-	Input::get_singleton()->joy_connection_changed(joy_id, true, String::utf8([controller.vendorName UTF8String]));
+	@autoreleasepool
+	{
+		// tell Godot about our new controller
+		Input::get_singleton()->joy_connection_changed(joy_id, true, String::utf8([controller.vendorName UTF8String]));
 
-	// add it to our dictionary, this will retain our controllers
-	[self.connectedJoypads setObject:controller forKey:[NSNumber numberWithInt:joy_id]];
+		// add it to our dictionary, this will retain our controllers
+		[self.connectedJoypads setObject:controller forKey:[NSNumber numberWithInt:joy_id]];
 
-	// set our input handler
-	[self setControllerInputHandler:controller];
+		// set our input handler
+		[self setControllerInputHandler:controller];
+	}
 }
 
 - (void)controllerWasConnected:(NSNotification *)notification {
