@@ -307,10 +307,8 @@ Error ResourceImporterTextureAtlas::import_group_file(const String &p_group_file
 
 	//update cache if existing, else create
 	Ref<Texture2D> cache;
-	if (ResourceCache::has(p_group_file)) {
-		Resource *resptr = ResourceCache::get(p_group_file);
-		cache.reference_ptr(resptr);
-	} else {
+	cache = ResourceCache::get_ref(p_group_file);
+	if (!cache.is_valid()) {
 		Ref<ImageTexture> res_cache;
 		New_instantiate(res_cache);
 		res_cache->create_from_image(new_atlas);
