@@ -649,7 +649,7 @@ bool DisplayServerIPhone::screen_is_kept_on() const {
 	{
 		return [UIApplication sharedApplication].idleTimerDisabled;
 	}
-	return fale;
+	return false;
 }
 
 void DisplayServerIPhone::resize_window(CGSize viewSize) {
