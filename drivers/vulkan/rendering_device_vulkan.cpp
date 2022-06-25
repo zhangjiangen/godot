@@ -39,6 +39,9 @@
 #include "core/templates/hashfuncs.h"
 #include "drivers/vulkan/vulkan_context.h"
 
+#if APPLE_STYLE_KEYS
+#include "osx_ios_submit.h"
+#endif
 #include "thirdparty/misc/smolv.h"
 #include "thirdparty/spirv-reflect/spirv_reflect.h"
 
@@ -1470,8 +1473,11 @@ Error RenderingDeviceVulkan::_buffer_allocate(Buffer *p_buffer, uint32_t p_size,
 		vmaFindMemoryTypeIndexForBufferInfo(allocator, &bufferInfo, &allocInfo, &mem_type_index);
 		allocInfo.pool = _find_or_create_small_allocs_pool(mem_type_index);
 	}
-
+#if APPLE_STYLE_KEYS
+	VkResult err = osx_ios_submit::CreateBuffer(allocator, &bufferInfo, &allocInfo, &p_buffer->buffer, &p_buffer->allocation, nullptr);
+#else
 	VkResult err = vmaCreateBuffer(allocator, &bufferInfo, &allocInfo, &p_buffer->buffer, &p_buffer->allocation, nullptr);
+#endif
 	if (err) {
 		ERR_FAIL_COND_V_MSG(err, ERR_CANT_CREATE, "Can't create buffer of size: " + itos(p_size) + ", error " + itos(err) + ".");
 	}
@@ -1491,7 +1497,12 @@ Error RenderingDeviceVulkan::_buffer_free(Buffer *p_buffer) {
 	ERR_FAIL_COND_V(p_buffer->size == 0, ERR_INVALID_PARAMETER);
 
 	buffer_memory -= p_buffer->size;
+
+#if APPLE_STYLE_KEYS
+	osx_ios_submit::DestroyBuffer(allocator, p_buffer->buffer, p_buffer->allocation);
+#else
 	vmaDestroyBuffer(allocator, p_buffer->buffer, p_buffer->allocation);
+#endif
 	DefaultAllocator::record_memory_free((void *)p_buffer->buffer, p_buffer->size);
 	p_buffer->buffer = VK_NULL_HANDLE;
 	p_buffer->allocation = nullptr;
@@ -1522,7 +1533,11 @@ Error RenderingDeviceVulkan::_insert_staging_block() {
 
 	StagingBufferBlock block;
 
+#if APPLE_STYLE_KEYS
+	VkResult err = osx_ios_submit::CreateBuffer(allocator, &bufferInfo, &allocInfo, &block.buffer, &block.allocation, nullptr);
+#else
 	VkResult err = vmaCreateBuffer(allocator, &bufferInfo, &allocInfo, &block.buffer, &block.allocation, nullptr);
+#endif
 	ERR_FAIL_COND_V_MSG(err, ERR_CANT_CREATE, "vmaCreateBuffer failed with error " + itos(err) + ".");
 
 	DefaultAllocator::record_memory_alloc((void *)block.buffer, staging_buffer_block_size, __FILE__, __LINE__);
@@ -1684,7 +1699,11 @@ Error RenderingDeviceVulkan::_buffer_update(Buffer *p_buffer, size_t p_offset, c
 
 		void *data_ptr = nullptr;
 		{
+#if APPLE_STYLE_KEYS
+			VkResult vkerr = osx_ios_submit::MapMemory(allocator, staging_buffer_blocks[staging_buffer_current].allocation, &data_ptr);
+#else
 			VkResult vkerr = vmaMapMemory(allocator, staging_buffer_blocks[staging_buffer_current].allocation, &data_ptr);
+#endif
 			ERR_FAIL_COND_V_MSG(vkerr, ERR_CANT_CREATE, "vmaMapMemory failed with error " + itos(vkerr) + ".");
 		}
 
@@ -2098,8 +2117,11 @@ RID RenderingDeviceVulkan::texture_create(const TextureFormat &p_format, const T
 	} else {
 		image_view_create_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 	}
-
+#if APPLE_STYLE_KEYS
+	err = osx_ios_submit::CreateImageView(device, &image_view_create_info, nullptr, &texture.view);
+#else
 	err = vkCreateImageView(device, &image_view_create_info, nullptr, &texture.view);
+#endif
 
 	if (err) {
 		vmaDestroyImage(allocator, texture.image, texture.allocation);
@@ -2254,8 +2276,11 @@ RID RenderingDeviceVulkan::texture_create_shared(const TextureView &p_view, RID 
 
 		image_view_create_info.pNext = &usage_info;
 	}
-
+#if APPLE_STYLE_KEYS
+	VkResult err = osx_ios_submit::CreateImageView(device, &image_view_create_info, nullptr, &texture.view);
+#else
 	VkResult err = vkCreateImageView(device, &image_view_create_info, nullptr, &texture.view);
+#endif
 	ERR_FAIL_COND_V_MSG(err, RID(), "vkCreateImageView failed with error " + itos(err) + ".");
 
 	texture.owner = p_with_texture;
@@ -2350,7 +2375,11 @@ RID RenderingDeviceVulkan::texture_create_from_extension(TextureType p_type, Dat
 		image_view_create_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 	}
 
+#if APPLE_STYLE_KEYS
+	VkResult err = osx_ios_submit::CreateImageView(device, &image_view_create_info, nullptr, &texture.view);
+#else
 	VkResult err = vkCreateImageView(device, &image_view_create_info, nullptr, &texture.view);
+#endif
 
 	if (err) {
 		// vmaDestroyImage(allocator, texture.image, texture.allocation);
@@ -2498,8 +2527,12 @@ RID RenderingDeviceVulkan::texture_create_shared_from_slice(const TextureView &p
 	} else {
 		image_view_create_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 	}
-
-	VkResult err = vkCreateImageView(device, &image_view_create_info, nullptr, &texture.view);
+//#if APPLE_STYLE_KEYS
+//	VkResult err = osx_ios_submit::CreateImageView(device, &image_view_create_info, nullptr, &texture.view);
+//#else
+//	VkResult err = vkCreateImageView(device, &image_view_create_info, nullptr, &texture.view);
+//#endf
+    VkResult err = vkCreateImageView(device, &image_view_create_info, nullptr, &texture.view);
 	ERR_FAIL_COND_V_MSG(err, RID(), "vkCreateImageView failed with error " + itos(err) + ".");
 
 	texture.owner = p_with_texture;
@@ -2618,7 +2651,11 @@ Error RenderingDeviceVulkan::_texture_update(RID p_texture, uint32_t p_layer, co
 
 					{ //map
 						void *data_ptr = nullptr;
+#if APPLE_STYLE_KEYS
+						VkResult vkerr = osx_ios_submit::MapMemory(allocator, staging_buffer_blocks[staging_buffer_current].allocation, &data_ptr);
+#else
 						VkResult vkerr = vmaMapMemory(allocator, staging_buffer_blocks[staging_buffer_current].allocation, &data_ptr);
+#endif
 						ERR_FAIL_COND_V_MSG(vkerr, ERR_CANT_CREATE, "vmaMapMemory failed with error " + itos(vkerr) + ".");
 						write_ptr = (uint8_t *)data_ptr;
 						write_ptr += alloc_offset;
@@ -2761,7 +2798,11 @@ Vector<uint8_t> RenderingDeviceVulkan::_texture_get_data_from_image(Texture *tex
 	image_data.resize(image_size);
 
 	void *img_mem;
+#if APPLE_STYLE_KEYS
+	osx_ios_submit::MapMemory(allocator, p_allocation, &img_mem);
+#else
 	vmaMapMemory(allocator, p_allocation, &img_mem);
+#endif
 
 	uint32_t blockw, blockh;
 	get_compressed_image_format_block_dimensions(tex->format, blockw, blockh);
@@ -2930,7 +2971,11 @@ Vector<uint8_t> RenderingDeviceVulkan::texture_get_data(RID p_texture, uint32_t 
 		_flush(true);
 
 		void *buffer_mem;
+#if APPLE_STYLE_KEYS
+		VkResult vkerr = osx_ios_submit::MapMemory(allocator, tmp_buffer.allocation, &buffer_mem);
+#else
 		VkResult vkerr = vmaMapMemory(allocator, tmp_buffer.allocation, &buffer_mem);
+#endif
 		ERR_FAIL_COND_V_MSG(vkerr, Vector<uint8_t>(), "vmaMapMemory failed with error " + itos(vkerr) + ".");
 
 		Vector<uint8_t> buffer_data;
@@ -3971,7 +4016,12 @@ VkRenderPass RenderingDeviceVulkan::_render_pass_create(const Vector<AttachmentF
 	}
 
 	VkRenderPass render_pass;
-	VkResult res = vkCreateRenderPass(device, &render_pass_create_info, nullptr, &render_pass);
+	VkResult res;
+#if APPLE_STYLE_KEYS
+	res = osx_ios_submit::CreateRenderPass(device, &render_pass_create_info, nullptr, &render_pass);
+#else
+	res = vkCreateRenderPass(device, &render_pass_create_info, nullptr, &render_pass);
+#endif
 	ERR_FAIL_COND_V_MSG(res, VK_NULL_HANDLE, "vkCreateRenderPass failed with error " + itos(res) + ".");
 
 	return render_pass;
@@ -4057,7 +4107,12 @@ RenderingDevice::FramebufferFormatID RenderingDeviceVulkan::framebuffer_format_c
 	render_pass_create_info.pDependencies = nullptr;
 
 	VkRenderPass render_pass;
-	VkResult res = vkCreateRenderPass(device, &render_pass_create_info, nullptr, &render_pass);
+	VkResult res;
+#if APPLE_STYLE_KEYS
+	res = osx_ios_submit::CreateRenderPass(device, &render_pass_create_info, nullptr, &render_pass);
+#else
+	res = vkCreateRenderPass(device, &render_pass_create_info, nullptr, &render_pass);
+#endif
 
 	ERR_FAIL_COND_V_MSG(res, 0, "vkCreateRenderPass for empty fb failed with error " + itos(res) + ".");
 
@@ -5418,7 +5473,11 @@ RID RenderingDeviceVulkan::shader_create_from_bytecode(const Vector<uint8_t> &p_
 		shader_module_create_info.pCode = (const uint32_t *)r;
 
 		VkShaderModule module;
+#if APPLE_STYLE_KEYS
+		VkResult res = osx_ios_submit::CreateShaderModule(device, &shader_module_create_info, nullptr, &module);
+#else
 		VkResult res = vkCreateShaderModule(device, &shader_module_create_info, nullptr, &module);
+#endif
 		if (res) {
 			success = false;
 			error_text = "Error (" + itos(res) + ") creating shader module for stage: " + String(shader_stage_names[stage_type[i]]);
@@ -5532,7 +5591,11 @@ RID RenderingDeviceVulkan::shader_create_from_bytecode(const Vector<uint8_t> &p_
 	if (!success) {
 		//clean up if failed
 		for (int i = 0; i < shader.pipeline_stages.size(); i++) {
+#if APPLE_STYLE_KEYS
+			osx_ios_submit::DestroyShaderModule(device, shader.pipeline_stages[i].module, nullptr);
+#else
 			vkDestroyShaderModule(device, shader.pipeline_stages[i].module, nullptr);
+#endif
 		}
 
 		for (int i = 0; i < shader.sets.size(); i++) {
@@ -5748,7 +5811,11 @@ RenderingDeviceVulkan::DescriptorPool *RenderingDeviceVulkan::_descriptor_pool_a
 
 		descriptor_pool_create_info.poolSizeCount = sizes.size();
 		descriptor_pool_create_info.pPoolSizes = sizes.ptr();
+#if APPLE_STYLE_KEYS
+		VkResult res = osx_ios_submit::CreateDescriptorPool(device, &descriptor_pool_create_info, nullptr, &pool->pool);
+#else
 		VkResult res = vkCreateDescriptorPool(device, &descriptor_pool_create_info, nullptr, &pool->pool);
+#endif
 		if (res) {
 			memdelete_allocator<DescriptorPool, DefaultAllocator>(pool);
 			ERR_FAIL_COND_V_MSG(res, nullptr, "vkCreateDescriptorPool failed with error " + itos(res) + ".");
@@ -5768,7 +5835,11 @@ void RenderingDeviceVulkan::_descriptor_pool_free(const DescriptorPoolKey &p_key
 	ERR_FAIL_COND(p_pool->usage == 0);
 	p_pool->usage--;
 	if (p_pool->usage == 0) {
+#if APPLE_STYLE_KEYS
+		osx_ios_submit::DestroyDescriptorPool(device, p_pool->pool, nullptr);
+#else
 		vkDestroyDescriptorPool(device, p_pool->pool, nullptr);
+#endif
 		descriptor_pools[p_key].erase(p_pool);
 		memdelete_allocator<DescriptorPool, DefaultAllocator>(p_pool);
 		if (descriptor_pools[p_key].is_empty()) {
@@ -5815,7 +5886,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 	uint32_t set_uniform_count = set.uniform_info.size();
 	const UniformInfo *set_uniforms = set.uniform_info.ptr();
 
-	DEF_TEMP_ALLOCA_VECTOR(VkWriteDescriptorSet, writes,set_uniform_count);
+	DEF_TEMP_ALLOCA_VECTOR(VkWriteDescriptorSet, writes, set_uniform_count);
 	DescriptorPoolKey pool_key;
 
 	//to keep them alive until update call
@@ -5824,7 +5895,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 	// List<Vector<VkDescriptorImageInfo>> image_infos;
 	//used for verification to make sure a uniform set does not use a framebuffer bound texture
 	UniformSet uniform_set;
-	auto& attachable_textures = uniform_set.attachable_textures;
+	auto &attachable_textures = uniform_set.attachable_textures;
 	auto &mutable_sampled_textures = uniform_set.mutable_sampled_textures;
 	auto &mutable_storage_textures = uniform_set.mutable_storage_textures;
 
@@ -5867,7 +5938,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					}
 				}
 
-				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo,image_info,uniform.get_id_count());
+				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo, image_info, uniform.get_id_count());
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j++) {
 					VkSampler *sampler = sampler_owner.get_or_null(uniform.get_id(j));
@@ -5901,7 +5972,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 				}
 
 				//Vector<VkDescriptorImageInfo> image_info;
-                DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo,image_info,uniform.get_id_count());
+				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo, image_info, uniform.get_id_count());
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j += 2) {
 					VkSampler *sampler = sampler_owner.get_or_null(uniform.get_id(j + 0));
@@ -5958,7 +6029,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 				}
 
 				//Vector<VkDescriptorImageInfo> image_info;
-				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo,image_info,uniform.get_id_count());
+				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo, image_info, uniform.get_id_count());
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j++) {
 					Texture *texture = texture_owner.get_or_null(uniform.get_id(j));
@@ -6012,7 +6083,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 				}
 
 				//Vector<VkDescriptorImageInfo> image_info;
-				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo,image_info,uniform.get_id_count());
+				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo, image_info, uniform.get_id_count());
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j++) {
 					Texture *texture = texture_owner.get_or_null(uniform.get_id(j));
@@ -6063,8 +6134,8 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 
 				// Vector<VkDescriptorBufferInfo> buffer_info;
 				// Vector<VkBufferView> buffer_view;
-				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorBufferInfo,buffer_info,uniform.get_id_count());
-				DEF_TEMP_ALLOCA_VECTOR(VkBufferView,buffer_view,uniform.get_id_count());
+				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorBufferInfo, buffer_info, uniform.get_id_count());
+				DEF_TEMP_ALLOCA_VECTOR(VkBufferView, buffer_view, uniform.get_id_count());
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j++) {
 					TextureBuffer *buffer = texture_buffer_owner.get_or_null(uniform.get_id(j));
@@ -6096,10 +6167,9 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 				// Vector<VkDescriptorImageInfo> image_info;
 				// Vector<VkDescriptorBufferInfo> buffer_info;
 				// Vector<VkBufferView> buffer_view;
-				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo,image_info,uniform.get_id_count());
-				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorBufferInfo,buffer_info,uniform.get_id_count());
-				DEF_TEMP_ALLOCA_VECTOR(VkBufferView,buffer_view,uniform.get_id_count());
-				
+				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo, image_info, uniform.get_id_count());
+				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorBufferInfo, buffer_info, uniform.get_id_count());
+				DEF_TEMP_ALLOCA_VECTOR(VkBufferView, buffer_view, uniform.get_id_count());
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j += 2) {
 					VkSampler *sampler = sampler_owner.get_or_null(uniform.get_id(j + 0));
@@ -6191,7 +6261,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 				}
 
 				//Vector<VkDescriptorImageInfo> image_info;
-				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo,image_info,uniform.get_id_count());
+				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo, image_info, uniform.get_id_count());
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j++) {
 					Texture *texture = texture_owner.get_or_null(uniform.get_id(j));
@@ -6251,7 +6321,11 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 
 	VkDescriptorSet descriptor_set;
 
+#if APPLE_STYLE_KEYS
+	VkResult res = osx_ios_submit::AllocateDescriptorSets(device, &descriptor_set_allocate_info, &descriptor_set);
+#else
 	VkResult res = vkAllocateDescriptorSets(device, &descriptor_set_allocate_info, &descriptor_set);
+#endif
 	if (res) {
 		_descriptor_pool_free(pool_key, pool); // meh
 		ERR_FAIL_V_MSG(RID(), "Cannot allocate descriptor sets, error " + itos(res) + ".");
@@ -6284,7 +6358,11 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 		for (int i = 0; i < writes.size(); i++) {
 			writes[i].dstSet = descriptor_set;
 		}
+#if APPLE_STYLE_KEYS
+		osx_ios_submit::UpdateDescriptorSets(device, writes.size(), writes.ptr(), 0, nullptr);
+#else
 		vkUpdateDescriptorSets(device, writes.size(), writes.ptr(), 0, nullptr);
+#endif
 	}
 
 	return id;
@@ -6420,7 +6498,11 @@ Vector<uint8_t> RenderingDeviceVulkan::buffer_get_data(RID p_buffer) {
 	_flush(true);
 
 	void *buffer_mem;
+#if APPLE_STYLE_KEYS
+	VkResult vkerr = osx_ios_submit::MapMemory(allocator, tmp_buffer.allocation, &buffer_mem);
+#else
 	VkResult vkerr = vmaMapMemory(allocator, tmp_buffer.allocation, &buffer_mem);
+#endif
 	ERR_FAIL_COND_V_MSG(vkerr, Vector<uint8_t>(), "vmaMapMemory failed with error " + itos(vkerr) + ".");
 
 	Vector<uint8_t> buffer_data;
@@ -6838,7 +6920,11 @@ RID RenderingDeviceVulkan::render_pipeline_create(RID p_shader, FramebufferForma
 	graphics_pipeline_create_info.basePipelineIndex = 0;
 
 	RenderPipeline pipeline;
+#if APPLE_STYLE_KEYS
+	VkResult err = osx_ios_submit::CreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &graphics_pipeline_create_info, nullptr, &pipeline.pipeline);
+#else
 	VkResult err = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &graphics_pipeline_create_info, nullptr, &pipeline.pipeline);
+#endif
 	ERR_FAIL_COND_V_MSG(err, RID(), "vkCreateGraphicsPipelines failed with error " + itos(err) + " for shader '" + shader->name + "'.");
 
 	pipeline.set_formats = shader->set_formats;
@@ -6952,7 +7038,11 @@ RID RenderingDeviceVulkan::compute_pipeline_create(RID p_shader, const Vector<Pi
 	}
 
 	ComputePipeline pipeline;
+#if APPLE_STYLE_KEYS
+	VkResult err = osx_ios_submit::CreateComputePipelines(device, VK_NULL_HANDLE, 1, &compute_pipeline_create_info, nullptr, &pipeline.pipeline);
+#else
 	VkResult err = vkCreateComputePipelines(device, VK_NULL_HANDLE, 1, &compute_pipeline_create_info, nullptr, &pipeline.pipeline);
+#endif
 	ERR_FAIL_COND_V_MSG(err, RID(), "vkCreateComputePipelines failed with error " + itos(err) + ".");
 
 	pipeline.set_formats = shader->set_formats;
@@ -9082,7 +9172,11 @@ void RenderingDeviceVulkan::_free_pending_resources(int p_frame) {
 
 		//shaders themselves
 		for (int i = 0; i < shader->pipeline_stages.size(); i++) {
+#if APPLE_STYLE_KEYS
+			osx_ios_submit::DestroyShaderModule(device, shader->pipeline_stages[i].module, nullptr);
+#else
 			vkDestroyShaderModule(device, shader->pipeline_stages[i].module, nullptr);
+#endif
 		}
 
 		frames[p_frame].shaders_to_dispose_of.pop_front();
@@ -9719,7 +9813,11 @@ void RenderingDeviceVulkan::finalize() {
 	memdelete_arr(frames);
 
 	for (int i = 0; i < staging_buffer_blocks.size(); i++) {
+#if APPLE_STYLE_KEYS
+		osx_ios_submit::DestroyBuffer(allocator, staging_buffer_blocks[i].buffer, staging_buffer_blocks[i].allocation);
+#else
 		vmaDestroyBuffer(allocator, staging_buffer_blocks[i].buffer, staging_buffer_blocks[i].allocation);
+#endif
 		DefaultAllocator::record_memory_free((void *)staging_buffer_blocks[i].buffer, staging_buffer_block_size);
 	}
 	while (small_allocs_pools.size()) {

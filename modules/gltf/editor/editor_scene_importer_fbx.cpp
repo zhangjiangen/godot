@@ -53,6 +53,7 @@ Node *EditorSceneFormatImporterFBX::import_scene(const String &p_path, uint32_t 
 		List<String> *r_missing_deps, Error *r_err) {
 	// Get global paths for source and sink.
 
+	print_line("importing fbx: " + p_path);
 	// Don't use `c_escape()` as it can generate broken paths. These paths will be
 	// enclosed in double quotes by OS::execute(), so we only need to escape those.
 	// `c_escape_multiline()` seems to do this (escapes `\` and `"` only).
@@ -73,6 +74,8 @@ Node *EditorSceneFormatImporterFBX::import_scene(const String &p_path, uint32_t 
 	args.push_back(sink_global);
 	args.push_back("--binary");
 
+	print_line("conver fbx globle path: " + source_global);
+	print_line("conver fbx to glb: " + sink_global);
 	String standard_out;
 	int ret;
 	OS::get_singleton()->execute(fbx2gltf_path, args, &standard_out, &ret, true);

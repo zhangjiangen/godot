@@ -1711,10 +1711,10 @@ namespace VULKAN_HPP_NAMESPACE
       return ::vkDestroyImageView( device, imageView, pAllocator );
     }
 
-    VkResult vkCreateShaderModule( VkDevice                         device,
+  VkResult vkCreateShaderModule( VkDevice                         device,
                                    const VkShaderModuleCreateInfo * pCreateInfo,
                                    const VkAllocationCallbacks *    pAllocator,
-                                   VkShaderModule *                 pShaderModule ) const VULKAN_HPP_NOEXCEPT
+                                   VkShaderModule *                 pShaderModule )   const VULKAN_HPP_NOEXCEPT
     {
       return ::vkCreateShaderModule( device, pCreateInfo, pAllocator, pShaderModule );
     }
