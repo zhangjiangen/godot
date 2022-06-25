@@ -305,7 +305,7 @@ Error OS_Unix::execute(const String &p_path, const List<String> &p_arguments, St
 		} else {
 			command += " 2>/dev/null"; // Silence stderr
 		}
-
+		print_line("Executing: " + command);
 		FILE *f = popen(command.utf8().get_data(), "r");
 		ERR_FAIL_COND_V_MSG(!f, ERR_CANT_OPEN, "Cannot create pipe from command: " + command);
 		char buf[65535];

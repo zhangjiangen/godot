@@ -64,16 +64,17 @@ Node *EditorSceneFormatImporterFBX::import_scene(const String &p_path, uint32_t 
 
 	// Run fbx2gltf.
 
-	String fbx2gltf_path = EDITOR_GET("filesystem/import/fbx/fbx2gltf_path");
+	String fbx2gltf_path = GLOBAL_GET("filesystem/import/fbx/fbx2gltf_path");
 
 	List<String> args;
-	args.push_back("--pbr-metallic-roughness");
+	//args.push_back("--pbr-metallic-roughness");
 	args.push_back("--input");
 	args.push_back(source_global);
 	args.push_back("--output");
 	args.push_back(sink_global);
 	args.push_back("--binary");
-
+	args.push_back("--anim-framerate");
+	args.push_back("bake" + String::num(p_bake_fps));
 	print_line("conver fbx globle path: " + source_global);
 	print_line("conver fbx to glb: " + sink_global);
 	String standard_out;
