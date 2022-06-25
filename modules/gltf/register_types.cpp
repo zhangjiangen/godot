@@ -83,7 +83,7 @@ static void _editor_init() {
 
 	bool fbx_enabled = GLOBAL_GET("filesystem/import/fbx/enabled");
 	// Defined here because EditorSettings doesn't exist in `register_gltf_types` yet.
-	String fbx2gltf_path = EDITOR_DEF_RST("filesystem/import/fbx/fbx2gltf_path", "");
+	String fbx2gltf_path = GLOBAL_GET("filesystem/import/fbx/fbx2gltf_path");
 	EditorSettings::get_singleton()->add_property_hint(PropertyInfo(Variant::STRING,
 			"filesystem/import/fbx/fbx2gltf_path", PROPERTY_HINT_GLOBAL_FILE));
 	if (fbx_enabled) {
@@ -132,7 +132,7 @@ void initialize_gltf_module(ModuleInitializationLevel p_level) {
 
 		// Project settings defined here so doctool finds them.
 		GLOBAL_DEF_RST("filesystem/import/blender/enabled", true);
-		GLOBAL_DEF_RST("filesystem/import/blender/blender3_path", true);
+		GLOBAL_DEF_RST("filesystem/import/blender/blender3_path", "");
 		GLOBAL_DEF_RST("filesystem/import/fbx/enabled", true);
 		GLOBAL_DEF_RST("filesystem/import/fbx/fbx2gltf_path", "");
 		GDREGISTER_CLASS(EditorSceneFormatImporterBlend);
