@@ -267,22 +267,17 @@ void AnimationTreeEditorPlugin::make_visible(bool p_visible) {
 		if (anim_tree_editor->is_visible_in_tree()) {
 			EditorNode::get_singleton()->hide_bottom_panel();
 		}
-		// else
-		// 	dock_floating_close(anim_tree_editor);
+		button->hide();
 		anim_tree_editor->set_process(false);
 	}
 }
 
 AnimationTreeEditorPlugin::AnimationTreeEditorPlugin() {
 	anim_tree_editor = memnew(AnimationTreeEditor);
-	//anim_tree_editor->set_custom_minimum_size(Size2(0, 300) * EDSCALE);
+	anim_tree_editor->set_custom_minimum_size(Size2(0, 300) * EDSCALE);
 
-	//button = editor->add_bottom_panel_item(TTR("AnimationTree"), anim_tree_editor);
-	// 换个地方吧，这里能够悬浮出来多窗口编辑
-	anim_tree_editor->set_name(TTR("AnimationTree"));
-	button = nullptr;
-	add_control_to_dock(DOCK_SLOT_RIGHT_BL, anim_tree_editor);
-	//button->hide();
+	button = EditorNode::get_singleton()->add_bottom_panel_item(TTR("AnimationTree"), anim_tree_editor);
+	button->hide();
 }
 
 AnimationTreeEditorPlugin::~AnimationTreeEditorPlugin() {

@@ -2527,12 +2527,13 @@ RID RenderingDeviceVulkan::texture_create_shared_from_slice(const TextureView &p
 	} else {
 		image_view_create_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 	}
-//#if APPLE_STYLE_KEYS
-//	VkResult err = osx_ios_submit::CreateImageView(device, &image_view_create_info, nullptr, &texture.view);
-//#else
-//	VkResult err = vkCreateImageView(device, &image_view_create_info, nullptr, &texture.view);
-//#endf
-    VkResult err = vkCreateImageView(device, &image_view_create_info, nullptr, &texture.view);
+
+#if APPLE_STYLE_KEYS
+	VkResult err = osx_ios_submit::CreateImageView(device, &image_view_create_info, nullptr, &texture.view);
+#else
+	VkResult err = vkCreateImageView(device, &image_view_create_info, nullptr, &texture.view);
+#endif
+	//VkResult err = vkCreateImageView(device, &image_view_create_info, nullptr, &texture.view);
 	ERR_FAIL_COND_V_MSG(err, RID(), "vkCreateImageView failed with error " + itos(err) + ".");
 
 	texture.owner = p_with_texture;
@@ -6355,7 +6356,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 
 	//write the contents
 	if (writes.size()) {
-		for (int i = 0; i < writes.size(); i++) {
+		for (uint32_t i = 0; i < writes.size(); i++) {
 			writes[i].dstSet = descriptor_set;
 		}
 #if APPLE_STYLE_KEYS
