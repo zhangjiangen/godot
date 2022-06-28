@@ -1870,16 +1870,16 @@ Error VulkanContext::initialize() {
 	return OK;
 }
 
-void VulkanContext::set_setup_buffer(const VkCommandBuffer &pCommandBuffer) {
-	command_buffer_queue.write[0] = pCommandBuffer;
+void VulkanContext::set_setup_buffer(VkCommandBuffer p_command_buffer) {
+	command_buffer_queue.write[0] = p_command_buffer;
 }
 
-void VulkanContext::append_command_buffer(const VkCommandBuffer &pCommandBuffer) {
+void VulkanContext::append_command_buffer(VkCommandBuffer p_command_buffer) {
 	if (command_buffer_queue.size() <= command_buffer_count) {
 		command_buffer_queue.resize(command_buffer_count + 1);
 	}
 
-	command_buffer_queue.write[command_buffer_count] = pCommandBuffer;
+	command_buffer_queue.write[command_buffer_count] = p_command_buffer;
 	command_buffer_count++;
 }
 
@@ -1889,7 +1889,10 @@ void VulkanContext::flush(bool p_flush_setup, bool p_flush_pending) {
 
 	//flush the pending setup buffer
 
-	if (p_flush_setup && command_buffer_queue[0]) {
+	bool setup_flushable = p_flush_setup && command_buffer_queue[0];
+	bool pending_flushable = p_flush_pending && command_buffer_count > 1;
+
+	if (setup_flushable) {
 		//use a fence to wait for everything done
 		VkSubmitInfo submit_info;
 		submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -1899,8 +1902,9 @@ void VulkanContext::flush(bool p_flush_setup, bool p_flush_pending) {
 		submit_info.pWaitSemaphores = nullptr;
 		submit_info.commandBufferCount = 1;
 		submit_info.pCommandBuffers = command_buffer_queue.ptr();
-		submit_info.signalSemaphoreCount = 0;
-		submit_info.pSignalSemaphores = nullptr;
+
+		submit_info.signalSemaphoreCount = pending_flushable ? 1 : 0;
+		submit_info.pSignalSemaphores = pending_flushable ? &draw_complete_semaphores[frame_index] : nullptr;
 #if APPLE_STYLE_KEYS
 		VkResult err = osx_ios_submit::Submit(graphics_queue, 1, &submit_info, VK_NULL_HANDLE);
 #else
@@ -1908,18 +1912,18 @@ void VulkanContext::flush(bool p_flush_setup, bool p_flush_pending) {
 #endif
 		command_buffer_queue.write[0] = nullptr;
 		ERR_FAIL_COND(err);
-		vkDeviceWaitIdle(device);
 	}
 
-	if (p_flush_pending && command_buffer_count > 1) {
+	if (pending_flushable) {
 		//use a fence to wait for everything done
 
 		VkSubmitInfo submit_info;
 		submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 		submit_info.pNext = nullptr;
-		submit_info.pWaitDstStageMask = nullptr;
-		submit_info.waitSemaphoreCount = 0;
-		submit_info.pWaitSemaphores = nullptr;
+		VkPipelineStageFlags wait_stage_mask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+		submit_info.pWaitDstStageMask = setup_flushable ? &wait_stage_mask : nullptr;
+		submit_info.waitSemaphoreCount = setup_flushable ? 1 : 0;
+		submit_info.pWaitSemaphores = setup_flushable ? &draw_complete_semaphores[frame_index] : nullptr;
 		submit_info.commandBufferCount = command_buffer_count - 1;
 		submit_info.pCommandBuffers = command_buffer_queue.ptr() + 1;
 		submit_info.signalSemaphoreCount = 0;
@@ -1928,12 +1932,13 @@ void VulkanContext::flush(bool p_flush_setup, bool p_flush_pending) {
 		VkResult err = osx_ios_submit::Submit(graphics_queue, 1, &submit_info, VK_NULL_HANDLE);
 #else
 		VkResult err = vkQueueSubmit(graphics_queue, 1, &submit_info, VK_NULL_HANDLE);
-#endif
-		ERR_FAIL_COND(err);
-		vkDeviceWaitIdle(device);
 
+#endif
 		command_buffer_count = 1;
+		ERR_FAIL_COND(err);
 	}
+
+	vkDeviceWaitIdle(device);
 }
 
 Error VulkanContext::prepare_buffers() {
@@ -2307,9 +2312,9 @@ void VulkanContext::local_device_push_command_buffers(RID p_local_device, const 
 	submit_info.pSignalSemaphores = nullptr;
 
 #if APPLE_STYLE_KEYS
-    VkResult err = osx_ios_submit::Submit(ld->queue, 1, &submit_info, VK_NULL_HANDLE);
+	VkResult err = osx_ios_submit::Submit(ld->queue, 1, &submit_info, VK_NULL_HANDLE);
 #else
-    VkResult err = vkQueueSubmit(ld->queue, 1, &submit_info, VK_NULL_HANDLE);
+	VkResult err = vkQueueSubmit(ld->queue, 1, &submit_info, VK_NULL_HANDLE);
 #endif
 	if (err == VK_ERROR_OUT_OF_HOST_MEMORY) {
 		print_line("Vulkan: Out of host memory!");

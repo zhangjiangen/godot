@@ -222,7 +222,7 @@ private:
 	uint64_t staging_buffer_max_size = 0;
 	bool staging_buffer_used = false;
 
-	Error _staging_buffer_allocate(uint32_t p_amount, uint32_t p_required_align, uint32_t &r_alloc_offset, uint32_t &r_alloc_size, bool p_can_segment = true, bool p_on_draw_command_buffer = false);
+	Error _staging_buffer_allocate(uint32_t p_amount, uint32_t p_required_align, uint32_t &r_alloc_offset, uint32_t &r_alloc_size, bool p_can_segment = true);
 	Error _insert_staging_block();
 
 	struct Buffer {
@@ -659,7 +659,6 @@ private:
 		};
 
 		bool is_compute = false;
-		int max_output = 0;
 		Vector<Set> sets;
 		Vector<uint32_t> set_formats;
 		Vector<VkPipelineShaderStageCreateInfo> pipeline_stages;
@@ -896,11 +895,9 @@ private:
 			uint32_t pipeline_dynamic_state = 0;
 			VertexFormatID pipeline_vertex_format = INVALID_ID;
 			RID pipeline_shader;
-			uint32_t invalid_set_from = 0;
 			bool pipeline_uses_restart_indices = false;
 			uint32_t pipeline_primitive_divisor = 0;
 			uint32_t pipeline_primitive_minimum = 0;
-			Vector<uint32_t> pipeline_set_formats;
 			uint32_t pipeline_push_constant_size = 0;
 			bool pipeline_push_constant_supplied = false;
 		} validation;
@@ -974,7 +971,6 @@ private:
 			bool pipeline_active = false;
 			RID pipeline_shader;
 			uint32_t invalid_set_from = 0;
-			Vector<uint32_t> pipeline_set_formats;
 			uint32_t pipeline_push_constant_size = 0;
 			bool pipeline_push_constant_supplied = false;
 		} validation;
@@ -1024,19 +1020,19 @@ private:
 
 		VkQueryPool timestamp_pool;
 
-		String *timestamp_names = nullptr;
-		uint64_t *timestamp_cpu_values = nullptr;
+		TightLocalVector<String> timestamp_names;
+		TightLocalVector<uint64_t> timestamp_cpu_values;
 		uint32_t timestamp_count = 0;
-		String *timestamp_result_names = nullptr;
-		uint64_t *timestamp_cpu_result_values = nullptr;
-		uint64_t *timestamp_result_values = nullptr;
+		TightLocalVector<String> timestamp_result_names;
+		TightLocalVector<uint64_t> timestamp_cpu_result_values;
+		TightLocalVector<uint64_t> timestamp_result_values;
 		uint32_t timestamp_result_count = 0;
 		uint64_t index = 0;
 	};
 
 	uint32_t max_timestamp_query_elements = 0;
 
-	Frame *frames = nullptr; //frames available, for main device they are cycled (usually 3), for local devices only 1
+	TightLocalVector<Frame> frames; //frames available, for main device they are cycled (usually 3), for local devices only 1
 	int frame = 0; //current frame
 	int frame_count = 0; //total amount of frames
 	uint64_t frames_drawn = 0;
