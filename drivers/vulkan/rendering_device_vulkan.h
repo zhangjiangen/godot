@@ -766,8 +766,8 @@ private:
 		};
 
 		LocalVector<AttachableTexture> attachable_textures; //used for validation
-		LocalVector<Texture *> mutable_sampled_textures; //used for layout change
-		LocalVector<Texture *> mutable_storage_textures; //used for layout change
+		Vector<Texture *> mutable_sampled_textures; //used for layout change
+		Vector<Texture *> mutable_storage_textures; //used for layout change
 		UniformSetInvalidatedCallback invalidated_callback = nullptr;
 		void *invalidated_callback_userdata = nullptr;
 	};
@@ -1063,7 +1063,7 @@ private:
 
 public:
 	virtual RID texture_create(const TextureFormat &p_format, const TextureView &p_view, const Vector<Vector<uint8_t>> &p_data = Vector<Vector<uint8_t>>(), const char *fn = __FILE__, int line = __LINE__);
-	virtual RID texture_create_shared(const TextureView &p_view, RID p_with_texture, bool p_is_only_sample);
+	virtual RID texture_create_shared(const TextureView &p_view, RID p_with_texture);
 	virtual RID texture_create_from_extension(TextureType p_type, DataFormat p_format, TextureSamples p_samples, uint64_t p_flags, uint64_t p_image, uint64_t p_width, uint64_t p_height, uint64_t p_depth, uint64_t p_layers);
 
 	virtual RID texture_create_shared_from_slice(const TextureView &p_view, RID p_with_texture, uint32_t p_layer, uint32_t p_mipmap, uint32_t p_mipmaps = 1, TextureSliceType p_slice_type = TEXTURE_SLICE_2D);
@@ -1122,7 +1122,7 @@ public:
 	/****************/
 
 	virtual String shader_get_binary_cache_key() const;
-	virtual Vector<uint8_t> shader_compile_binary_from_spirv(const Vector<ShaderStageSPIRVData> &p_spirv, ShaderInfo &p_shader_info, const String &p_shader_name = "");
+	virtual Vector<uint8_t> shader_compile_binary_from_spirv(const Vector<ShaderStageSPIRVData> &p_spirv, const String &p_shader_name = "");
 
 	virtual RID shader_create_from_bytecode(const Vector<uint8_t> &p_shader_binary);
 

@@ -521,7 +521,7 @@ public:
 	};
 
 	virtual RID texture_create(const TextureFormat &p_format, const TextureView &p_view, const Vector<Vector<uint8_t>> &p_data = Vector<Vector<uint8_t>>(), const char *fn = __FILE__, int line = __LINE__) = 0;
-	virtual RID texture_create_shared(const TextureView &p_view, RID p_with_texture, bool p_is_only_sample) = 0;
+	virtual RID texture_create_shared(const TextureView &p_view, RID p_with_texture) = 0;
 	virtual RID texture_create_from_extension(TextureType p_type, DataFormat p_format, TextureSamples p_samples, uint64_t p_flags, uint64_t p_image, uint64_t p_width, uint64_t p_height, uint64_t p_depth, uint64_t p_layers) = 0;
 	virtual bool get_geometry_shader_is_supported() {
 		return false;
@@ -767,7 +767,7 @@ public:
 	};
 
 	virtual String shader_get_binary_cache_key() const = 0;
-	virtual Vector<uint8_t> shader_compile_binary_from_spirv(const Vector<ShaderStageSPIRVData> &p_spirv, ShaderInfo &p_shader_info, const String &p_shader_name = "") = 0;
+	virtual Vector<uint8_t> shader_compile_binary_from_spirv(const Vector<ShaderStageSPIRVData> &p_spirv, const String &p_shader_name = "") = 0;
 
 	virtual RID shader_create_from_spirv(const Vector<ShaderStageSPIRVData> &p_spirv, ShaderInfo &p_shader_info, const String &p_shader_name = "");
 	virtual RID shader_create_from_bytecode(const Vector<uint8_t> &p_shader_binary) = 0;
@@ -1400,7 +1400,7 @@ protected:
 	RID _vertex_array_create(uint32_t p_vertex_count, VertexFormatID p_vertex_format, const TypedArray<RID> &p_src_buffers);
 
 	Ref<RDShaderSPIRV> _shader_compile_spirv_from_source(const Ref<RDShaderSource> &p_source, bool p_allow_cache = true);
-	Vector<uint8_t> _shader_compile_binary_from_spirv(const Ref<RDShaderSPIRV> &p_bytecode, ShaderInfo &p_shader_info, const String &p_shader_name = "");
+	Vector<uint8_t> _shader_compile_binary_from_spirv(const Ref<RDShaderSPIRV> &p_bytecode, const String &p_shader_name = "");
 	Vector<uint8_t> __shader_compile_binary_from_spirv(const Ref<RDShaderSPIRV> &p_bytecode, const String &p_shader_name = "");
 	RID _shader_create_from_spirv(const Ref<RDShaderSPIRV> &p_spirv, ShaderInfo &p_shader_info, const String &p_shader_name = "");
 	RID __shader_create_from_spirv(const Ref<RDShaderSPIRV> &p_spirv, const String &p_shader_name = "");

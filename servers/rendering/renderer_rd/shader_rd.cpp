@@ -359,8 +359,7 @@ void ShaderRD::_compile_variant(uint32_t p_variant, Version *p_version) {
 		//#endif
 		return;
 	}
-	RD::ShaderInfo p_shader_info;
-	Vector<uint8_t> shader_data = RD::get_singleton()->shader_compile_binary_from_spirv(stages, p_shader_info, name + ":" + itos(p_variant));
+	Vector<uint8_t> shader_data = RD::get_singleton()->shader_compile_binary_from_spirv(stages, name + ":" + itos(p_variant));
 
 	ERR_FAIL_COND(shader_data.size() == 0);
 

@@ -86,7 +86,7 @@ String RenderingDevice::shader_get_spirv_cache_key() const {
 }
 
 RID RenderingDevice::shader_create_from_spirv(const Vector<ShaderStageSPIRVData> &p_spirv, ShaderInfo &p_shader_info, const String &p_shader_name) {
-	Vector<uint8_t> bytecode = shader_compile_binary_from_spirv(p_spirv, p_shader_info, p_shader_name);
+	Vector<uint8_t> bytecode = shader_compile_binary_from_spirv(p_spirv, p_shader_name);
 	ERR_FAIL_COND_V(bytecode.size() == 0, RID());
 	return shader_create_from_bytecode(bytecode);
 }
@@ -106,7 +106,7 @@ RID RenderingDevice::_texture_create(const Ref<RDTextureFormat> &p_format, const
 RID RenderingDevice::_texture_create_shared(const Ref<RDTextureView> &p_view, RID p_with_texture) {
 	ERR_FAIL_COND_V(p_view.is_null(), RID());
 
-	return texture_create_shared(p_view->base, p_with_texture, false);
+	return texture_create_shared(p_view->base, p_with_texture);
 }
 
 RID RenderingDevice::_texture_create_shared_from_slice(const Ref<RDTextureView> &p_view, RID p_with_texture, uint32_t p_layer, uint32_t p_mipmap, uint32_t p_mipmaps, TextureSliceType p_slice_type) {
@@ -207,7 +207,7 @@ Ref<RDShaderSPIRV> RenderingDevice::_shader_compile_spirv_from_source(const Ref<
 	return bytecode;
 }
 
-Vector<uint8_t> RenderingDevice::_shader_compile_binary_from_spirv(const Ref<RDShaderSPIRV> &p_spirv, ShaderInfo &p_shader_info, const String &p_shader_name) {
+Vector<uint8_t> RenderingDevice::_shader_compile_binary_from_spirv(const Ref<RDShaderSPIRV> &p_spirv, const String &p_shader_name) {
 	ERR_FAIL_COND_V(p_spirv.is_null(), Vector<uint8_t>());
 
 	Vector<ShaderStageSPIRVData> stage_data;
@@ -224,11 +224,11 @@ Vector<uint8_t> RenderingDevice::_shader_compile_binary_from_spirv(const Ref<RDS
 		stage_data.push_back(sd);
 	}
 
-	return shader_compile_binary_from_spirv(stage_data, p_shader_info, p_shader_name);
+	return shader_compile_binary_from_spirv(stage_data, p_shader_name);
 }
 Vector<uint8_t> RenderingDevice::__shader_compile_binary_from_spirv(const Ref<RDShaderSPIRV> &p_spirv, const String &p_shader_name) {
 	ShaderInfo p_shader_info;
-	return _shader_compile_binary_from_spirv(p_spirv, p_shader_info, p_shader_name);
+	return _shader_compile_binary_from_spirv(p_spirv, p_shader_name);
 }
 RID RenderingDevice::__shader_create_from_spirv(const Ref<RDShaderSPIRV> &p_spirv, const String &p_shader_name) {
 	ShaderInfo p_shader_info;

@@ -28,7 +28,6 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#define _CRT_SECURE_NO_WARNINGS
 #include "rendering_device_vulkan.h"
 
 #include "core/config/project_settings.h"
@@ -1800,7 +1799,6 @@ void RenderingDeviceVulkan::_buffer_memory_barrier(VkBuffer buffer, uint64_t p_f
 
 RID RenderingDeviceVulkan::texture_create(const TextureFormat &p_format, const TextureView &p_view, const Vector<Vector<uint8_t>> &p_data, const char *fn, int line) {
 	_THREAD_SAFE_METHOD_
-	//line = 100;
 	VkImageCreateInfo image_create_info;
 	image_create_info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 	image_create_info.pNext = nullptr;
@@ -2160,7 +2158,7 @@ RID RenderingDeviceVulkan::texture_create(const TextureFormat &p_format, const T
 	return id;
 }
 
-RID RenderingDeviceVulkan::texture_create_shared(const TextureView &p_view, RID p_with_texture, bool p_is_only_sample) {
+RID RenderingDeviceVulkan::texture_create_shared(const TextureView &p_view, RID p_with_texture) {
 	_THREAD_SAFE_METHOD_
 
 	Texture *src_texture = texture_owner.get_or_null(p_with_texture);
@@ -2240,12 +2238,10 @@ RID RenderingDeviceVulkan::texture_create_shared(const TextureView &p_view, RID 
 		if (texture.usage_flags & TEXTURE_USAGE_SAMPLING_BIT) {
 			usage_info.usage |= VK_IMAGE_USAGE_SAMPLED_BIT;
 		}
-		// 是否只是当贴图使用
-		if (!p_is_only_sample) {
-			if (texture.usage_flags & TEXTURE_USAGE_STORAGE_BIT) {
-				if (texture_is_format_supported_for_usage(p_view.format_override, TEXTURE_USAGE_STORAGE_BIT)) {
-					usage_info.usage |= VK_IMAGE_USAGE_STORAGE_BIT;
-				}
+
+		if (texture.usage_flags & TEXTURE_USAGE_STORAGE_BIT) {
+			if (texture_is_format_supported_for_usage(p_view.format_override, TEXTURE_USAGE_STORAGE_BIT)) {
+				usage_info.usage |= VK_IMAGE_USAGE_STORAGE_BIT;
 			}
 		}
 
@@ -2533,7 +2529,6 @@ RID RenderingDeviceVulkan::texture_create_shared_from_slice(const TextureView &p
 #else
 	VkResult err = vkCreateImageView(device, &image_view_create_info, nullptr, &texture.view);
 #endif
-	//VkResult err = vkCreateImageView(device, &image_view_create_info, nullptr, &texture.view);
 	ERR_FAIL_COND_V_MSG(err, RID(), "vkCreateImageView failed with error " + itos(err) + ".");
 
 	texture.owner = p_with_texture;
@@ -4151,16 +4146,10 @@ RenderingDevice::TextureSamples RenderingDeviceVulkan::framebuffer_format_get_te
 RID RenderingDeviceVulkan::framebuffer_create_empty(const Size2i &p_size, TextureSamples p_samples, FramebufferFormatID p_format_check) {
 	_THREAD_SAFE_METHOD_
 	Framebuffer framebuffer;
-	// mac 系统因为没有绑定任何缓冲，所以无法使用msaa，
-	//framebuffer.format_id = framebuffer_format_create_empty(p_samples);
-	framebuffer.format_id = framebuffer_format_create_empty(TEXTURE_SAMPLES_1);
-
+	framebuffer.format_id = framebuffer_format_create_empty(p_samples);
 	ERR_FAIL_COND_V(p_format_check != INVALID_FORMAT_ID && framebuffer.format_id != p_format_check, RID());
 	framebuffer.size = p_size;
 	framebuffer.view_count = 1;
-	// mac 系统因为没有绑定任何缓冲，所以无法使用msaa，
-	//framebuffer.sample_count = p_samples;
-	framebuffer.sample_count = TEXTURE_SAMPLES_1;
 
 	return framebuffer_owner.make_rid(framebuffer);
 }
@@ -4820,7 +4809,8 @@ struct RenderingDeviceVulkanShaderBinaryData {
 	uint32_t stage_count;
 	uint32_t shader_name_len;
 };
-Vector<uint8_t> RenderingDeviceVulkan::shader_compile_binary_from_spirv(const Vector<ShaderStageSPIRVData> &p_spirv, ShaderInfo &p_shader_info, const String &p_shader_name) {
+
+Vector<uint8_t> RenderingDeviceVulkan::shader_compile_binary_from_spirv(const Vector<ShaderStageSPIRVData> &p_spirv, const String &p_shader_name) {
 	RenderingDeviceVulkanShaderBinaryData binary_data;
 	binary_data.vertex_input_mask = 0;
 	binary_data.fragment_outputs = 0;
@@ -4892,8 +4882,6 @@ Vector<uint8_t> RenderingDeviceVulkan::shader_compile_binary_from_spirv(const Ve
 					const SpvReflectDescriptorBinding &binding = *bindings[j];
 
 					RenderingDeviceVulkanShaderBinaryDataBinding info;
-					//ShaderInfo::UniformInfo uniform_log_info;
-					//uniform_log_info.name = binding.name;
 					int name_count = Math::min(strlen(binding.name), 23);
 					//info.name = binding.name;
 					strncpy(info.name, binding.name, name_count + 1);
@@ -5153,7 +5141,6 @@ Vector<uint8_t> RenderingDeviceVulkan::shader_compile_binary_from_spirv(const Ve
 
 				binary_data.push_constant_size = pconstants[0]->size;
 				binary_data.push_constants_vk_stage |= shader_stage_masks[stage];
-				p_shader_info.PushConstSize[stage] = binary_data.push_constant_size;
 
 				//print_line("Stage: " + String(shader_stage_names[stage]) + " push constant of size=" + itos(push_constant.push_constant_size));
 			}
@@ -5717,7 +5704,7 @@ RID RenderingDeviceVulkan::texture_buffer_create(uint32_t p_size_elements, DataF
 	ERR_FAIL_COND_V(p_data.size() && (uint32_t)p_data.size() != size_bytes, RID());
 
 	TextureBuffer texture_buffer;
-	Error err = _buffer_allocate(&texture_buffer.buffer, size_bytes, VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE, 0, __FILE__, __LINE__);
+	Error err = _buffer_allocate(&texture_buffer.buffer, size_bytes, VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE, 0);
 	ERR_FAIL_COND_V(err != OK, RID());
 
 	if (p_data.size()) {
@@ -5772,7 +5759,7 @@ RenderingDeviceVulkan::DescriptorPool *RenderingDeviceVulkan::_descriptor_pool_a
 
 	if (!pool) {
 		//create a new one
-		pool = memnew_allocator(DescriptorPool, DefaultAllocator);
+		pool = memnew(DescriptorPool);
 		pool->usage = 0;
 
 		VkDescriptorPoolCreateInfo descriptor_pool_create_info;
@@ -5848,7 +5835,7 @@ RenderingDeviceVulkan::DescriptorPool *RenderingDeviceVulkan::_descriptor_pool_a
 		VkResult res = vkCreateDescriptorPool(device, &descriptor_pool_create_info, nullptr, &pool->pool);
 #endif
 		if (res) {
-			memdelete_allocator<DescriptorPool, DefaultAllocator>(pool);
+			memdelete(pool);
 			ERR_FAIL_COND_V_MSG(res, nullptr, "vkCreateDescriptorPool failed with error " + itos(res) + ".");
 		}
 		descriptor_pools[p_key].insert(pool);
@@ -5872,7 +5859,7 @@ void RenderingDeviceVulkan::_descriptor_pool_free(const DescriptorPoolKey &p_key
 		vkDestroyDescriptorPool(device, p_pool->pool, nullptr);
 #endif
 		descriptor_pools[p_key].erase(p_pool);
-		memdelete_allocator<DescriptorPool, DefaultAllocator>(p_pool);
+		memdelete(p_pool);
 		if (descriptor_pools[p_key].is_empty()) {
 			descriptor_pools.erase(p_key);
 		}
@@ -5899,12 +5886,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 	if (shader == nullptr) {
 		ERR_FAIL_COND_V(!shader, RID());
 	}
-	if (p_shader_set >= (uint32_t)shader->sets.size()) {
-		ERR_FAIL_COND_V_MSG(p_shader_set >= (uint32_t)shader->sets.size(), RID(), "shader set error : ( sets-" + itos(shader->sets.size()) + ":curr-" + itos(p_shader_set) + ") not used by shader.");
-	}
-	if (shader->sets[p_shader_set].uniform_info.size() == 0) {
-		ERR_FAIL_COND_V_MSG(shader->sets[p_shader_set].uniform_info.size() == 0, RID(), "shader set uniform unset  : " + itos(p_shader_set) + ".");
-	}
+
 	ERR_FAIL_COND_V_MSG(p_shader_set >= (uint32_t)shader->sets.size() || shader->sets[p_shader_set].uniform_info.size() == 0, RID(),
 			"Desired set (" + itos(p_shader_set) + ") not used by shader.");
 	//see that all sets in shader are satisfied
@@ -5917,18 +5899,17 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 	uint32_t set_uniform_count = set.uniform_info.size();
 	const UniformInfo *set_uniforms = set.uniform_info.ptr();
 
-	DEF_TEMP_ALLOCA_VECTOR(VkWriteDescriptorSet, writes, set_uniform_count);
+	Vector<VkWriteDescriptorSet> writes;
 	DescriptorPoolKey pool_key;
 
 	//to keep them alive until update call
-	// List<Vector<VkDescriptorBufferInfo>> buffer_infos;
-	// List<Vector<VkBufferView>> buffer_views;
-	// List<Vector<VkDescriptorImageInfo>> image_infos;
+	List<Vector<VkDescriptorBufferInfo>> buffer_infos;
+	List<Vector<VkBufferView>> buffer_views;
+	List<Vector<VkDescriptorImageInfo>> image_infos;
 	//used for verification to make sure a uniform set does not use a framebuffer bound texture
-	UniformSet uniform_set;
-	auto &attachable_textures = uniform_set.attachable_textures;
-	auto &mutable_sampled_textures = uniform_set.mutable_sampled_textures;
-	auto &mutable_storage_textures = uniform_set.mutable_storage_textures;
+	LocalVector<UniformSet::AttachableTexture> attachable_textures;
+	Vector<Texture *> mutable_sampled_textures;
+	Vector<Texture *> mutable_storage_textures;
 
 	for (uint32_t i = 0; i < set_uniform_count; i++) {
 		const UniformInfo &set_uniform = set_uniforms[i];
@@ -5969,7 +5950,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					}
 				}
 
-				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo, image_info, uniform.get_id_count());
+				Vector<VkDescriptorImageInfo> image_info;
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j++) {
 					VkSampler *sampler = sampler_owner.get_or_null(uniform.get_id(j));
@@ -5986,7 +5967,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 				write.dstArrayElement = 0;
 				write.descriptorCount = uniform.get_id_count();
 				write.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
-				write.pImageInfo = image_info.ptr();
+				write.pImageInfo = image_infos.push_back(image_info)->get().ptr();
 				write.pBufferInfo = nullptr;
 				write.pTexelBufferView = nullptr;
 
@@ -6002,8 +5983,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					}
 				}
 
-				//Vector<VkDescriptorImageInfo> image_info;
-				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo, image_info, uniform.get_id_count());
+				Vector<VkDescriptorImageInfo> image_info;
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j += 2) {
 					VkSampler *sampler = sampler_owner.get_or_null(uniform.get_id(j + 0));
@@ -6043,7 +6023,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 				write.dstArrayElement = 0;
 				write.descriptorCount = uniform.get_id_count() / 2;
 				write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				write.pImageInfo = image_info.ptr();
+				write.pImageInfo = image_infos.push_back(image_info)->get().ptr();
 				write.pBufferInfo = nullptr;
 				write.pTexelBufferView = nullptr;
 
@@ -6059,8 +6039,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					}
 				}
 
-				//Vector<VkDescriptorImageInfo> image_info;
-				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo, image_info, uniform.get_id_count());
+				Vector<VkDescriptorImageInfo> image_info;
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j++) {
 					Texture *texture = texture_owner.get_or_null(uniform.get_id(j));
@@ -6098,7 +6077,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 				write.dstArrayElement = 0;
 				write.descriptorCount = uniform.get_id_count();
 				write.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-				write.pImageInfo = image_info.ptr();
+				write.pImageInfo = image_infos.push_back(image_info)->get().ptr();
 				write.pBufferInfo = nullptr;
 				write.pTexelBufferView = nullptr;
 
@@ -6113,8 +6092,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					}
 				}
 
-				//Vector<VkDescriptorImageInfo> image_info;
-				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo, image_info, uniform.get_id_count());
+				Vector<VkDescriptorImageInfo> image_info;
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j++) {
 					Texture *texture = texture_owner.get_or_null(uniform.get_id(j));
@@ -6147,7 +6125,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 				write.dstArrayElement = 0;
 				write.descriptorCount = uniform.get_id_count();
 				write.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-				write.pImageInfo = image_info.ptr();
+				write.pImageInfo = image_infos.push_back(image_info)->get().ptr();
 				write.pBufferInfo = nullptr;
 				write.pTexelBufferView = nullptr;
 
@@ -6163,10 +6141,8 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					}
 				}
 
-				// Vector<VkDescriptorBufferInfo> buffer_info;
-				// Vector<VkBufferView> buffer_view;
-				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorBufferInfo, buffer_info, uniform.get_id_count());
-				DEF_TEMP_ALLOCA_VECTOR(VkBufferView, buffer_view, uniform.get_id_count());
+				Vector<VkDescriptorBufferInfo> buffer_info;
+				Vector<VkBufferView> buffer_view;
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j++) {
 					TextureBuffer *buffer = texture_buffer_owner.get_or_null(uniform.get_id(j));
@@ -6180,8 +6156,8 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 				write.descriptorCount = uniform.get_id_count();
 				write.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
 				write.pImageInfo = nullptr;
-				write.pBufferInfo = buffer_info.ptr();
-				write.pTexelBufferView = buffer_view.ptr();
+				write.pBufferInfo = buffer_infos.push_back(buffer_info)->get().ptr();
+				write.pTexelBufferView = buffer_views.push_back(buffer_view)->get().ptr();
 
 				type_size = uniform.get_id_count();
 
@@ -6195,12 +6171,9 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					}
 				}
 
-				// Vector<VkDescriptorImageInfo> image_info;
-				// Vector<VkDescriptorBufferInfo> buffer_info;
-				// Vector<VkBufferView> buffer_view;
-				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo, image_info, uniform.get_id_count());
-				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorBufferInfo, buffer_info, uniform.get_id_count());
-				DEF_TEMP_ALLOCA_VECTOR(VkBufferView, buffer_view, uniform.get_id_count());
+				Vector<VkDescriptorImageInfo> image_info;
+				Vector<VkDescriptorBufferInfo> buffer_info;
+				Vector<VkBufferView> buffer_view;
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j += 2) {
 					VkSampler *sampler = sampler_owner.get_or_null(uniform.get_id(j + 0));
@@ -6224,9 +6197,9 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 				write.dstArrayElement = 0;
 				write.descriptorCount = uniform.get_id_count() / 2;
 				write.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
-				write.pImageInfo = image_info.ptr();
-				write.pBufferInfo = buffer_info.ptr();
-				write.pTexelBufferView = buffer_view.ptr();
+				write.pImageInfo = image_infos.push_back(image_info)->get().ptr();
+				write.pBufferInfo = buffer_infos.push_back(buffer_info)->get().ptr();
+				write.pTexelBufferView = buffer_views.push_back(buffer_view)->get().ptr();
 
 				type_size = uniform.get_id_count() / 2;
 			} break;
@@ -6265,9 +6238,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 
 					ERR_FAIL_COND_V_MSG(!(buffer->usage & VK_BUFFER_USAGE_STORAGE_BUFFER_BIT), RID(), "Vertex buffer supplied (binding: " + itos(uniform.binding) + ") was not created with storage flag.");
 				}
-				if (!buffer) {
-					ERR_FAIL_COND_V_MSG(!buffer, RID(), "Storage buffer supplied (binding: " + itos(uniform.binding) + ") is invalid.");
-				}
+				ERR_FAIL_COND_V_MSG(!buffer, RID(), "Storage buffer supplied (binding: " + itos(uniform.binding) + ") is invalid.");
 
 				//if 0, then it's sized on link time
 				ERR_FAIL_COND_V_MSG(set_uniform.length > 0 && buffer->size != (uint32_t)set_uniform.length, RID(),
@@ -6291,8 +6262,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 					}
 				}
 
-				//Vector<VkDescriptorImageInfo> image_info;
-				DEF_TEMP_ALLOCA_VECTOR(VkDescriptorImageInfo, image_info, uniform.get_id_count());
+				Vector<VkDescriptorImageInfo> image_info;
 
 				for (uint32_t j = 0; j < uniform.get_id_count(); j++) {
 					Texture *texture = texture_owner.get_or_null(uniform.get_id(j));
@@ -6320,7 +6290,7 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 				write.dstArrayElement = 0;
 				write.descriptorCount = uniform.get_id_count();
 				write.descriptorType = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
-				write.pImageInfo = image_info.ptr();
+				write.pImageInfo = image_infos.push_back(image_info)->get().ptr();
 				write.pBufferInfo = nullptr;
 				write.pTexelBufferView = nullptr;
 
@@ -6362,14 +6332,14 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 		ERR_FAIL_V_MSG(RID(), "Cannot allocate descriptor sets, error " + itos(res) + ".");
 	}
 
-	//UniformSet uniform_set;
+	UniformSet uniform_set;
 	uniform_set.pool = pool;
 	uniform_set.pool_key = pool_key;
 	uniform_set.descriptor_set = descriptor_set;
 	uniform_set.format = shader->set_formats[p_shader_set];
-	//uniform_set.attachable_textures = attachable_textures;
-	// uniform_set.mutable_sampled_textures = mutable_sampled_textures;
-	// uniform_set.mutable_storage_textures = mutable_storage_textures;
+	uniform_set.attachable_textures = attachable_textures;
+	uniform_set.mutable_sampled_textures = mutable_sampled_textures;
+	uniform_set.mutable_storage_textures = mutable_storage_textures;
 	uniform_set.shader_set = p_shader_set;
 	uniform_set.shader_id = p_shader;
 
@@ -6386,8 +6356,8 @@ RID RenderingDeviceVulkan::uniform_set_create(const Vector<Uniform> &p_uniforms,
 
 	//write the contents
 	if (writes.size()) {
-		for (uint32_t i = 0; i < writes.size(); i++) {
-			writes[i].dstSet = descriptor_set;
+		for (int i = 0; i < writes.size(); i++) {
+			writes.write[i].dstSet = descriptor_set;
 		}
 #if APPLE_STYLE_KEYS
 		osx_ios_submit::UpdateDescriptorSets(device, writes.size(), writes.ptr(), 0, nullptr);
@@ -7674,7 +7644,7 @@ void RenderingDeviceVulkan::draw_list_bind_render_pipeline(DrawListID p_list, RI
 	if (p_render_pipeline == dl->state.pipeline) {
 		return; //redundant state, return.
 	}
-	//ERR_FAIL_COND(dl->state.sample_count != pipeline->sample_count);
+
 
 	dl->state.pipeline = p_render_pipeline;
 	dl->state.pipeline_layout = pipeline->pipeline_layout;
@@ -7757,7 +7727,7 @@ void RenderingDeviceVulkan::draw_list_bind_uniform_set(DrawListID p_list, RID p_
 
 	uint32_t mst_count = uniform_set->mutable_storage_textures.size();
 	if (mst_count) {
-		Texture **mst_textures = const_cast<UniformSet *>(uniform_set)->mutable_storage_textures.ptr();
+		Texture **mst_textures = const_cast<UniformSet *>(uniform_set)->mutable_storage_textures.ptrw();
 		for (uint32_t i = 0; i < mst_count; i++) {
 			if (mst_textures[i]->used_in_frame != frames_drawn) {
 				mst_textures[i]->used_in_frame = frames_drawn;
@@ -8058,7 +8028,7 @@ Error RenderingDeviceVulkan::_draw_list_allocate(const Rect2i &p_viewport, uint3
 	_THREAD_SAFE_LOCK_
 
 	if (p_splits == 0) {
-		draw_list = memnew_allocator(DrawList, DefaultAllocator);
+		draw_list = memnew(DrawList);
 		draw_list->command_buffer = frames[frame].draw_command_buffer;
 		draw_list->viewport = p_viewport;
 		draw_list_count = 0;
@@ -8164,7 +8134,7 @@ void RenderingDeviceVulkan::_draw_list_free(Rect2i *r_last_viewport) {
 			*r_last_viewport = draw_list->viewport;
 		}
 		//just end the list
-		memdelete_allocator<DrawList, DefaultAllocator>(draw_list);
+		memdelete(draw_list);
 		draw_list = nullptr;
 	}
 
@@ -8284,7 +8254,7 @@ RenderingDevice::ComputeListID RenderingDeviceVulkan::compute_list_begin(bool p_
 	// Lock while compute_list is active
 	_THREAD_SAFE_LOCK_
 
-	compute_list = memnew_allocator(ComputeList, DefaultAllocator);
+	compute_list = memnew(ComputeList);
 	compute_list->command_buffer = frames[frame].draw_command_buffer;
 	compute_list->state.allow_draw_overlap = p_allow_draw_overlap;
 
@@ -8387,7 +8357,7 @@ void RenderingDeviceVulkan::compute_list_bind_uniform_set(ComputeListID p_list, 
 	uint32_t textures_to_sampled_count = uniform_set->mutable_sampled_textures.size();
 	uint32_t textures_to_storage_count = uniform_set->mutable_storage_textures.size();
 
-	Texture **textures_to_sampled = uniform_set->mutable_sampled_textures.ptr();
+	Texture **textures_to_sampled = uniform_set->mutable_sampled_textures.ptrw();
 
 	VkImageMemoryBarrier *texture_barriers = nullptr;
 
@@ -8432,7 +8402,7 @@ void RenderingDeviceVulkan::compute_list_bind_uniform_set(ComputeListID p_list, 
 		textures_to_sampled[i]->used_in_compute = true;
 	}
 
-	Texture **textures_to_storage = uniform_set->mutable_storage_textures.ptr();
+	Texture **textures_to_storage = uniform_set->mutable_storage_textures.ptrw();
 
 	for (uint32_t i = 0; i < textures_to_storage_count; i++) {
 		if (textures_to_storage[i]->layout != VK_IMAGE_LAYOUT_GENERAL) {
@@ -8758,7 +8728,7 @@ void RenderingDeviceVulkan::compute_list_end(uint32_t p_post_barrier) {
 	_full_barrier(true);
 #endif
 
-	memdelete_allocator<ComputeList, DefaultAllocator>(compute_list);
+	memdelete(compute_list);
 	compute_list = nullptr;
 
 	// compute_list is no longer active

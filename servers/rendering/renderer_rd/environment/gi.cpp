@@ -503,7 +503,7 @@ void GI::SDFGI::create(RendererSceneEnvironmentRD *p_env, const Vector3 &p_world
 		lightprobe_data = RD::get_singleton()->texture_create(tf_octprobes, RD::TextureView(), Vector<Vector<uint8_t>>(), __FILE__, __LINE__);
 		RD::TextureView tv;
 		tv.format_override = RD::DATA_FORMAT_E5B9G9R9_UFLOAT_PACK32;
-		lightprobe_texture = RD::get_singleton()->texture_create_shared(tv, lightprobe_data, true);
+		lightprobe_texture = RD::get_singleton()->texture_create_shared(tv, lightprobe_data);
 
 		//texture handling ambient data, to integrate with volumetric foc
 		RD::TextureFormat tf_ambient = tf_probes;
@@ -526,7 +526,7 @@ void GI::SDFGI::create(RendererSceneEnvironmentRD *p_env, const Vector3 &p_world
 		} else {
 			tv.format_override = RD::DATA_FORMAT_A8B8G8R8_UNORM_PACK32;
 		}
-		occlusion_texture = RD::get_singleton()->texture_create_shared(tv, occlusion_data, true);
+		occlusion_texture = RD::get_singleton()->texture_create_shared(tv, occlusion_data);
 	}
 
 	for (uint32_t i = 0; i < cascades.size(); i++) {
@@ -544,7 +544,7 @@ void GI::SDFGI::create(RendererSceneEnvironmentRD *p_env, const Vector3 &p_world
 		{
 			RD::TextureView tv;
 			tv.format_override = RD::DATA_FORMAT_E5B9G9R9_UFLOAT_PACK32;
-			cascade.light_tex = RD::get_singleton()->texture_create_shared(tv, cascade.light_data, true);
+			cascade.light_tex = RD::get_singleton()->texture_create_shared(tv, cascade.light_data);
 
 			RD::get_singleton()->texture_clear(cascade.light_tex, Color(0, 0, 0, 0), 0, 1, 0, 1);
 			RD::get_singleton()->texture_clear(cascade.light_aniso_0_tex, Color(0, 0, 0, 0), 0, 1, 0, 1);
