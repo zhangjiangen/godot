@@ -34,9 +34,9 @@
 #include "core/debugger/engine_debugger.h"
 #include "core/input/input.h"
 #include "core/io/dir_access.h"
+#include "core/io/image_loader.h"
 #include "core/io/marshalls.h"
 #include "core/io/resource_loader.h"
-#include "core/multiplayer/multiplayer_api.h"
 #include "core/object/message_queue.h"
 #include "core/os/keyboard.h"
 #include "core/os/os.h"
@@ -44,6 +44,7 @@
 #include "node.h"
 #include "scene/animation/tween.h"
 #include "scene/debugger/scene_debugger.h"
+#include "scene/main/multiplayer_api.h"
 #include "scene/main/viewport.h"
 #include "scene/resources/font.h"
 #include "scene/resources/material.h"
@@ -1212,19 +1213,17 @@ void SceneTree::set_multiplayer(Ref<MultiplayerAPI> p_multiplayer, const NodePat
 	if (p_root_path.is_empty()) {
 		ERR_FAIL_COND(!p_multiplayer.is_valid());
 		if (multiplayer.is_valid()) {
-			multiplayer->set_root_path(NodePath());
+			multiplayer->object_configuration_remove(nullptr, NodePath("/" + root->get_name()));
 		}
 		multiplayer = p_multiplayer;
-		multiplayer->set_root_path("/" + root->get_name());
+		multiplayer->object_configuration_add(nullptr, NodePath("/" + root->get_name()));
 	} else {
+		if (custom_multiplayers.has(p_root_path)) {
+			custom_multiplayers[p_root_path]->object_configuration_remove(nullptr, p_root_path);
+		}
 		if (p_multiplayer.is_valid()) {
 			custom_multiplayers[p_root_path] = p_multiplayer;
-			p_multiplayer->set_root_path(p_root_path);
-		} else {
-			if (custom_multiplayers.has(p_root_path)) {
-				custom_multiplayers[p_root_path]->set_root_path(NodePath());
-				custom_multiplayers.erase(p_root_path);
-			}
+			p_multiplayer->object_configuration_add(nullptr, p_root_path);
 		}
 	}
 }
@@ -1414,7 +1413,7 @@ SceneTree::SceneTree() {
 #endif // _3D_DISABLED
 
 	// Initialize network state.
-	set_multiplayer(Ref<MultiplayerAPI>(memnew(MultiplayerAPI)));
+	set_multiplayer(MultiplayerAPI::create_default_interface());
 
 	root->set_as_audio_listener_2d(true);
 	current_scene = nullptr;
@@ -1446,25 +1445,48 @@ SceneTree::SceneTree() {
 	bool snap_2d_vertices = GLOBAL_DEF("rendering/2d/snap/snap_2d_vertices_to_pixel", false);
 	root->set_snap_2d_vertices_to_pixel(snap_2d_vertices);
 
-	int shadowmap_size = GLOBAL_DEF("rendering/shadows/shadow_atlas/size", 4096);
-	ProjectSettings::get_singleton()->set_custom_property_info("rendering/shadows/shadow_atlas/size", PropertyInfo(Variant::INT, "rendering/shadows/shadow_atlas/size", PROPERTY_HINT_RANGE, "256,16384"));
-	GLOBAL_DEF("rendering/shadows/shadow_atlas/size.mobile", 2048);
-	bool shadowmap_16_bits = GLOBAL_DEF("rendering/shadows/shadow_atlas/16_bits", true);
-	int atlas_q0 = GLOBAL_DEF("rendering/shadows/shadow_atlas/quadrant_0_subdiv", 2);
-	int atlas_q1 = GLOBAL_DEF("rendering/shadows/shadow_atlas/quadrant_1_subdiv", 2);
-	int atlas_q2 = GLOBAL_DEF("rendering/shadows/shadow_atlas/quadrant_2_subdiv", 3);
-	int atlas_q3 = GLOBAL_DEF("rendering/shadows/shadow_atlas/quadrant_3_subdiv", 4);
-	ProjectSettings::get_singleton()->set_custom_property_info("rendering/shadows/shadow_atlas/quadrant_0_subdiv", PropertyInfo(Variant::INT, "rendering/shadows/shadow_atlas/quadrant_0_subdiv", PROPERTY_HINT_ENUM, "Disabled,1 Shadow,4 Shadows,16 Shadows,64 Shadows,256 Shadows,1024 Shadows"));
-	ProjectSettings::get_singleton()->set_custom_property_info("rendering/shadows/shadow_atlas/quadrant_1_subdiv", PropertyInfo(Variant::INT, "rendering/shadows/shadow_atlas/quadrant_1_subdiv", PROPERTY_HINT_ENUM, "Disabled,1 Shadow,4 Shadows,16 Shadows,64 Shadows,256 Shadows,1024 Shadows"));
-	ProjectSettings::get_singleton()->set_custom_property_info("rendering/shadows/shadow_atlas/quadrant_2_subdiv", PropertyInfo(Variant::INT, "rendering/shadows/shadow_atlas/quadrant_2_subdiv", PROPERTY_HINT_ENUM, "Disabled,1 Shadow,4 Shadows,16 Shadows,64 Shadows,256 Shadows,1024 Shadows"));
-	ProjectSettings::get_singleton()->set_custom_property_info("rendering/shadows/shadow_atlas/quadrant_3_subdiv", PropertyInfo(Variant::INT, "rendering/shadows/shadow_atlas/quadrant_3_subdiv", PROPERTY_HINT_ENUM, "Disabled,1 Shadow,4 Shadows,16 Shadows,64 Shadows,256 Shadows,1024 Shadows"));
+	// We setup VRS for the main viewport here, in the editor this will have little effect.
+	const int vrs_mode = GLOBAL_DEF("rendering/vrs/mode", 0);
+	ProjectSettings::get_singleton()->set_custom_property_info("rendering/vrs/mode", PropertyInfo(Variant::INT, "rendering/vrs/mode", PROPERTY_HINT_ENUM, String::utf8("Disabled,Texture,XR")));
+	root->set_vrs_mode(Viewport::VRSMode(vrs_mode));
+	const String vrs_texture_path = String(GLOBAL_DEF("rendering/vrs/texture", String())).strip_edges();
+	ProjectSettings::get_singleton()->set_custom_property_info("rendering/vrs/texture",
+			PropertyInfo(Variant::STRING,
+					"rendering/vrs/texture",
+					PROPERTY_HINT_FILE, "*.png"));
+	if (vrs_mode == 1 && !vrs_texture_path.is_empty()) {
+		Ref<Image> vrs_image;
+		vrs_image.instantiate();
+		Error load_err = ImageLoader::load_image(vrs_texture_path, vrs_image);
+		if (load_err) {
+			ERR_PRINT("Non-existing or invalid VRS texture at '" + vrs_texture_path + "'.");
+		} else {
+			Ref<ImageTexture> vrs_texture;
+			vrs_texture.instantiate();
+			vrs_texture->create_from_image(vrs_image);
+			root->set_vrs_texture(vrs_texture);
+		}
+	}
 
-	root->set_shadow_atlas_size(shadowmap_size);
-	root->set_shadow_atlas_16_bits(shadowmap_16_bits);
-	root->set_shadow_atlas_quadrant_subdiv(0, Viewport::ShadowAtlasQuadrantSubdiv(atlas_q0));
-	root->set_shadow_atlas_quadrant_subdiv(1, Viewport::ShadowAtlasQuadrantSubdiv(atlas_q1));
-	root->set_shadow_atlas_quadrant_subdiv(2, Viewport::ShadowAtlasQuadrantSubdiv(atlas_q2));
-	root->set_shadow_atlas_quadrant_subdiv(3, Viewport::ShadowAtlasQuadrantSubdiv(atlas_q3));
+	int shadowmap_size = GLOBAL_DEF("rendering/shadows/positional_shadow/atlas_size", 4096);
+	ProjectSettings::get_singleton()->set_custom_property_info("rendering/shadows/positional_shadow/atlas_size", PropertyInfo(Variant::INT, "rendering/shadows/positional_shadow/atlas_size", PROPERTY_HINT_RANGE, "256,16384"));
+	GLOBAL_DEF("rendering/shadows/positional_shadow/atlas_size.mobile", 2048);
+	bool shadowmap_16_bits = GLOBAL_DEF("rendering/shadows/positional_shadow/atlas_16_bits", true);
+	int atlas_q0 = GLOBAL_DEF("rendering/shadows/positional_shadow/atlas_quadrant_0_subdiv", 2);
+	int atlas_q1 = GLOBAL_DEF("rendering/shadows/positional_shadow/atlas_quadrant_1_subdiv", 2);
+	int atlas_q2 = GLOBAL_DEF("rendering/shadows/positional_shadow/atlas_quadrant_2_subdiv", 3);
+	int atlas_q3 = GLOBAL_DEF("rendering/shadows/positional_shadow/atlas_quadrant_3_subdiv", 4);
+	ProjectSettings::get_singleton()->set_custom_property_info("rendering/shadows/positional_shadow/atlas_quadrant_0_subdiv", PropertyInfo(Variant::INT, "rendering/shadows/positional_shadow/atlas_quadrant_0_subdiv", PROPERTY_HINT_ENUM, "Disabled,1 Shadow,4 Shadows,16 Shadows,64 Shadows,256 Shadows,1024 Shadows"));
+	ProjectSettings::get_singleton()->set_custom_property_info("rendering/shadows/positional_shadow/atlas_quadrant_1_subdiv", PropertyInfo(Variant::INT, "rendering/shadows/positional_shadow/atlas_quadrant_1_subdiv", PROPERTY_HINT_ENUM, "Disabled,1 Shadow,4 Shadows,16 Shadows,64 Shadows,256 Shadows,1024 Shadows"));
+	ProjectSettings::get_singleton()->set_custom_property_info("rendering/shadows/positional_shadow/atlas_quadrant_2_subdiv", PropertyInfo(Variant::INT, "rendering/shadows/positional_shadow/atlas_quadrant_2_subdiv", PROPERTY_HINT_ENUM, "Disabled,1 Shadow,4 Shadows,16 Shadows,64 Shadows,256 Shadows,1024 Shadows"));
+	ProjectSettings::get_singleton()->set_custom_property_info("rendering/shadows/positional_shadow/atlas_quadrant_3_subdiv", PropertyInfo(Variant::INT, "rendering/shadows/positional_shadow/atlas_quadrant_3_subdiv", PROPERTY_HINT_ENUM, "Disabled,1 Shadow,4 Shadows,16 Shadows,64 Shadows,256 Shadows,1024 Shadows"));
+
+	root->set_positional_shadow_atlas_size(shadowmap_size);
+	root->set_positional_shadow_atlas_16_bits(shadowmap_16_bits);
+	root->set_positional_shadow_atlas_quadrant_subdiv(0, Viewport::PositionalShadowAtlasQuadrantSubdiv(atlas_q0));
+	root->set_positional_shadow_atlas_quadrant_subdiv(1, Viewport::PositionalShadowAtlasQuadrantSubdiv(atlas_q1));
+	root->set_positional_shadow_atlas_quadrant_subdiv(2, Viewport::PositionalShadowAtlasQuadrantSubdiv(atlas_q2));
+	root->set_positional_shadow_atlas_quadrant_subdiv(3, Viewport::PositionalShadowAtlasQuadrantSubdiv(atlas_q3));
 
 	Viewport::SDFOversize sdf_oversize = Viewport::SDFOversize(int(GLOBAL_DEF("rendering/2d/sdf/oversize", 1)));
 	root->set_sdf_oversize(sdf_oversize);

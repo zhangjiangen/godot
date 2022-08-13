@@ -513,9 +513,9 @@ void PopupMenu::_draw_items() {
 	bool rtl = control->is_layout_rtl();
 	Ref<StyleBox> style = get_theme_stylebox(SNAME("panel"));
 	Ref<StyleBox> hover = get_theme_stylebox(SNAME("hover"));
-	// In Item::checkable_type enum order (less the non-checkable member).
-	Ref<Texture2D> check[] = { get_theme_icon(SNAME("checked")), get_theme_icon(SNAME("radio_checked")) };
-	Ref<Texture2D> uncheck[] = { get_theme_icon(SNAME("unchecked")), get_theme_icon(SNAME("radio_unchecked")) };
+	// In Item::checkable_type enum order (less the non-checkable member), with disabled repeated at the end.
+	Ref<Texture2D> check[] = { get_theme_icon(SNAME("checked")), get_theme_icon(SNAME("radio_checked")), get_theme_icon(SNAME("checked_disabled")), get_theme_icon(SNAME("radio_checked_disabled")) };
+	Ref<Texture2D> uncheck[] = { get_theme_icon(SNAME("unchecked")), get_theme_icon(SNAME("radio_unchecked")), get_theme_icon(SNAME("unchecked_disabled")), get_theme_icon(SNAME("radio_unchecked_disabled")) };
 	Ref<Texture2D> submenu;
 	if (rtl) {
 		submenu = get_theme_icon(SNAME("submenu_mirrored"));
@@ -558,7 +558,11 @@ void PopupMenu::_draw_items() {
 
 	float check_ofs = 0.0;
 	if (has_check) {
-		check_ofs = MAX(get_theme_icon(SNAME("checked"))->get_width(), get_theme_icon(SNAME("radio_checked"))->get_width()) + hseparation;
+		for (int i = 0; i < 4; i++) {
+			check_ofs = MAX(check_ofs, check[i]->get_width());
+			check_ofs = MAX(check_ofs, uncheck[i]->get_width());
+		}
+		check_ofs += hseparation;
 	}
 
 	Point2 ofs = Point2();
@@ -620,7 +624,8 @@ void PopupMenu::_draw_items() {
 
 		// Checkboxes
 		if (items[i].checkable_type && !items[i].separator) {
-			Texture2D *icon = (items[i].checked ? check[items[i].checkable_type - 1] : uncheck[items[i].checkable_type - 1]).ptr();
+			int disabled = int(items[i].disabled) * 2;
+			Texture2D *icon = (items[i].checked ? check[items[i].checkable_type - 1 + disabled] : uncheck[items[i].checkable_type - 1 + disabled]).ptr();
 			if (rtl) {
 				icon->draw(ci, Size2(control->get_size().width - item_ofs.x - icon->get_width(), item_ofs.y) + Point2(0, Math::floor((h - icon->get_height()) / 2.0)), icon_color);
 			} else {
@@ -760,11 +765,11 @@ void PopupMenu::_shape_item(int p_item) {
 		} else {
 			items.write[p_item].text_buf->set_direction((TextServer::Direction)items[p_item].text_direction);
 		}
-		items.write[p_item].text_buf->add_string(items.write[p_item].xl_text, font, font_size, items[p_item].opentype_features, !items[p_item].language.is_empty() ? items[p_item].language : TranslationServer::get_singleton()->get_tool_locale());
+		items.write[p_item].text_buf->add_string(items.write[p_item].xl_text, font, font_size, items[p_item].language);
 
 		items.write[p_item].accel_text_buf->clear();
 		items.write[p_item].accel_text_buf->set_direction(is_layout_rtl() ? TextServer::DIRECTION_RTL : TextServer::DIRECTION_LTR);
-		items.write[p_item].accel_text_buf->add_string(_get_accel_text(items.write[p_item]), font, font_size, Dictionary(), TranslationServer::get_singleton()->get_tool_locale());
+		items.write[p_item].accel_text_buf->add_string(_get_accel_text(items.write[p_item]), font, font_size);
 		items.write[p_item].dirty = false;
 	}
 }
@@ -1067,29 +1072,6 @@ void PopupMenu::set_item_text_direction(int p_item, Control::TextDirection p_tex
 	}
 }
 
-void PopupMenu::clear_item_opentype_features(int p_item) {
-	if (p_item < 0) {
-		p_item += get_item_count();
-	}
-	ERR_FAIL_INDEX(p_item, items.size());
-	items.write[p_item].opentype_features.clear();
-	items.write[p_item].dirty = true;
-	control->update();
-}
-
-void PopupMenu::set_item_opentype_feature(int p_item, const String &p_name, int p_value) {
-	if (p_item < 0) {
-		p_item += get_item_count();
-	}
-	ERR_FAIL_INDEX(p_item, items.size());
-	int32_t tag = TS->name_to_tag(p_name);
-	if (!items[p_item].opentype_features.has(tag) || (int)items[p_item].opentype_features[tag] != p_value) {
-		items.write[p_item].opentype_features[tag] = p_value;
-		items.write[p_item].dirty = true;
-		control->update();
-	}
-}
-
 void PopupMenu::set_item_language(int p_item, const String &p_language) {
 	if (p_item < 0) {
 		p_item += get_item_count();
@@ -1193,15 +1175,6 @@ String PopupMenu::get_item_text(int p_idx) const {
 Control::TextDirection PopupMenu::get_item_text_direction(int p_item) const {
 	ERR_FAIL_INDEX_V(p_item, items.size(), Control::TEXT_DIRECTION_INHERITED);
 	return items[p_item].text_direction;
-}
-
-int PopupMenu::get_item_opentype_feature(int p_item, const String &p_name) const {
-	ERR_FAIL_INDEX_V(p_item, items.size(), -1);
-	int32_t tag = TS->name_to_tag(p_name);
-	if (!items[p_item].opentype_features.has(tag)) {
-		return -1;
-	}
-	return items[p_item].opentype_features[tag];
 }
 
 String PopupMenu::get_item_language(int p_item) const {
@@ -1853,7 +1826,6 @@ void PopupMenu::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("set_item_text", "index", "text"), &PopupMenu::set_item_text);
 	ClassDB::bind_method(D_METHOD("set_item_text_direction", "index", "direction"), &PopupMenu::set_item_text_direction);
-	ClassDB::bind_method(D_METHOD("set_item_opentype_feature", "index", "tag", "value"), &PopupMenu::set_item_opentype_feature);
 	ClassDB::bind_method(D_METHOD("set_item_language", "index", "language"), &PopupMenu::set_item_language);
 	ClassDB::bind_method(D_METHOD("set_item_icon", "index", "icon"), &PopupMenu::set_item_icon);
 	ClassDB::bind_method(D_METHOD("set_item_checked", "index", "checked"), &PopupMenu::set_item_checked);
@@ -1876,8 +1848,6 @@ void PopupMenu::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("get_item_text", "index"), &PopupMenu::get_item_text);
 	ClassDB::bind_method(D_METHOD("get_item_text_direction", "index"), &PopupMenu::get_item_text_direction);
-	ClassDB::bind_method(D_METHOD("get_item_opentype_feature", "index", "tag"), &PopupMenu::get_item_opentype_feature);
-	ClassDB::bind_method(D_METHOD("clear_item_opentype_features", "index"), &PopupMenu::clear_item_opentype_features);
 	ClassDB::bind_method(D_METHOD("get_item_language", "index"), &PopupMenu::get_item_language);
 	ClassDB::bind_method(D_METHOD("get_item_icon", "index"), &PopupMenu::get_item_icon);
 	ClassDB::bind_method(D_METHOD("is_item_checked", "index"), &PopupMenu::is_item_checked);
@@ -1944,7 +1914,7 @@ void PopupMenu::popup(const Rect2 &p_bounds) {
 PopupMenu::PopupMenu() {
 	// Margin Container
 	margin_container = memnew(MarginContainer);
-	margin_container->set_anchors_and_offsets_preset(Control::PRESET_WIDE);
+	margin_container->set_anchors_and_offsets_preset(Control::PRESET_FULL_RECT);
 	add_child(margin_container, false, INTERNAL_MODE_FRONT);
 	margin_container->connect("draw", callable_mp(this, &PopupMenu::_draw_background));
 
@@ -1956,7 +1926,7 @@ PopupMenu::PopupMenu() {
 	// The control which will display the items
 	control = memnew(Control);
 	control->set_clip_contents(false);
-	control->set_anchors_and_offsets_preset(Control::PRESET_WIDE);
+	control->set_anchors_and_offsets_preset(Control::PRESET_FULL_RECT);
 	control->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	control->set_v_size_flags(Control::SIZE_EXPAND_FILL);
 	scroll_container->add_child(control, false, INTERNAL_MODE_FRONT);

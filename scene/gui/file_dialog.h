@@ -151,7 +151,7 @@ protected:
 public:
 	void popup_file_dialog();
 	void clear_filters();
-	void add_filter(const String &p_filter);
+	void add_filter(const String &p_filter, const String &p_description = "");
 	void set_filters(const Vector<String> &p_filters);
 	Vector<String> get_filters() const;
 
@@ -196,4 +196,4 @@ public:
 VARIANT_ENUM_CAST(FileDialog::FileMode);
 VARIANT_ENUM_CAST(FileDialog::Access);
 
-#endif
+#endif // FILE_DIALOG_H

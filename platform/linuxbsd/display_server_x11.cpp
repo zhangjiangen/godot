@@ -196,6 +196,7 @@ bool DisplayServerX11::_refresh_device_info() {
 
 	xi.absolute_devices.clear();
 	xi.touch_devices.clear();
+	xi.pen_inverted_devices.clear();
 
 	int dev_count;
 	XIDeviceInfo *info = XIQueryDevice(x11_display, XIAllDevices, &dev_count);
@@ -205,7 +206,7 @@ bool DisplayServerX11::_refresh_device_info() {
 		if (!dev->enabled) {
 			continue;
 		}
-		if (!(dev->use == XIMasterPointer || dev->use == XIFloatingSlave)) {
+		if (!(dev->use == XISlavePointer || dev->use == XIFloatingSlave)) {
 			continue;
 		}
 
@@ -274,6 +275,7 @@ bool DisplayServerX11::_refresh_device_info() {
 		xi.pen_pressure_range[dev->deviceid] = Vector2(pressure_min, pressure_max);
 		xi.pen_tilt_x_range[dev->deviceid] = Vector2(tilt_x_min, tilt_x_max);
 		xi.pen_tilt_y_range[dev->deviceid] = Vector2(tilt_y_min, tilt_y_max);
+		xi.pen_inverted_devices[dev->deviceid] = String(dev->name).findn("eraser") > 0;
 	}
 
 	XIFreeDeviceInfo(info);
@@ -1487,8 +1489,8 @@ void DisplayServerX11::window_set_current_screen(int p_screen, WindowID p_window
 		XMoveResizeWindow(x11_display, wd.x11_window, position.x, position.y, size.x, size.y);
 	} else {
 		if (p_screen != window_get_current_screen(p_window)) {
-			Point2i position = screen_get_position(p_screen);
-			XMoveWindow(x11_display, wd.x11_window, position.x, position.y);
+			Vector2 ofs = window_get_position(p_window) - screen_get_position(window_get_current_screen(p_window));
+			window_set_position(ofs + screen_get_position(p_screen), p_window);
 		}
 	}
 }
@@ -3145,7 +3147,7 @@ void DisplayServerX11::_window_changed(XEvent *event) {
 		Variant *rectp = &rect;
 		Variant ret;
 		Callable::CallError ce;
-		wd.rect_changed_callback.call((const Variant **)&rectp, 1, ret, ce);
+		wd.rect_changed_callback.callp((const Variant **)&rectp, 1, ret, ce);
 	}
 }
 
@@ -3166,7 +3168,7 @@ void DisplayServerX11::_dispatch_input_event(const Ref<InputEvent> &p_event) {
 			if (windows.has(E->get())) {
 				Callable callable = windows[E->get()].input_event_callback;
 				if (callable.is_valid()) {
-					callable.call((const Variant **)&evp, 1, ret, ce);
+					callable.callp((const Variant **)&evp, 1, ret, ce);
 				}
 			}
 			return;
@@ -3179,7 +3181,7 @@ void DisplayServerX11::_dispatch_input_event(const Ref<InputEvent> &p_event) {
 		if (windows.has(event_from_window->get_window_id())) {
 			Callable callable = windows[event_from_window->get_window_id()].input_event_callback;
 			if (callable.is_valid()) {
-				callable.call((const Variant **)&evp, 1, ret, ce);
+				callable.callp((const Variant **)&evp, 1, ret, ce);
 			}
 		}
 	} else {
@@ -3187,7 +3189,7 @@ void DisplayServerX11::_dispatch_input_event(const Ref<InputEvent> &p_event) {
 		for (KeyValue<WindowID, WindowData> &E : windows) {
 			Callable callable = E.value.input_event_callback;
 			if (callable.is_valid()) {
-				callable.call((const Variant **)&evp, 1, ret, ce);
+				callable.callp((const Variant **)&evp, 1, ret, ce);
 			}
 		}
 	}
@@ -3199,7 +3201,7 @@ void DisplayServerX11::_send_window_event(const WindowData &wd, WindowEvent p_ev
 		Variant *eventp = &event;
 		Variant ret;
 		Callable::CallError ce;
-		wd.event_callback.call((const Variant **)&eventp, 1, ret, ce);
+		wd.event_callback.callp((const Variant **)&eventp, 1, ret, ce);
 	}
 }
 
@@ -3484,7 +3486,7 @@ void DisplayServerX11::process_events() {
 					} break;
 					case XI_RawMotion: {
 						XIRawEvent *raw_event = (XIRawEvent *)event_data;
-						int device_id = raw_event->deviceid;
+						int device_id = raw_event->sourceid;
 
 						// Determine the axis used (called valuators in XInput for some forsaken reason)
 						//  Mask is a bitmask indicating which axes are involved.
@@ -3548,6 +3550,11 @@ void DisplayServerX11::process_events() {
 							}
 
 							values++;
+						}
+
+						HashMap<int, bool>::Iterator pen_inverted = xi.pen_inverted_devices.find(device_id);
+						if (pen_inverted) {
+							xi.pen_inverted = pen_inverted->value;
 						}
 
 						// https://bugs.freedesktop.org/show_bug.cgi?id=71609
@@ -3984,6 +3991,7 @@ void DisplayServerX11::process_events() {
 					mm->set_pressure(bool(mouse_get_button_state() & MouseButton::MASK_LEFT) ? 1.0f : 0.0f);
 				}
 				mm->set_tilt(xi.tilt);
+				mm->set_pen_inverted(xi.pen_inverted);
 
 				_get_key_modifier_state(event.xmotion.state, mm);
 				mm->set_button_mask((MouseButton)mouse_get_button_state());
@@ -4060,7 +4068,7 @@ void DisplayServerX11::process_events() {
 						Variant *vp = &v;
 						Variant ret;
 						Callable::CallError ce;
-						windows[window_id].drop_files_callback.call((const Variant **)&vp, 1, ret, ce);
+						windows[window_id].drop_files_callback.callp((const Variant **)&vp, 1, ret, ce);
 					}
 
 					//Reply that all is well.
@@ -4167,13 +4175,17 @@ void DisplayServerX11::process_events() {
 
 void DisplayServerX11::release_rendering_thread() {
 #if defined(GLES3_ENABLED)
-	gl_manager->release_current();
+	if (gl_manager) {
+		gl_manager->release_current();
+	}
 #endif
 }
 
 void DisplayServerX11::make_rendering_thread() {
 #if defined(GLES3_ENABLED)
-	gl_manager->make_current();
+	if (gl_manager) {
+		gl_manager->make_current();
+	}
 #endif
 }
 
@@ -4979,7 +4991,7 @@ DisplayServerX11::DisplayServerX11(const String &p_rendering_driver, WindowMode 
 
 #ifdef DBUS_ENABLED
 	screensaver = memnew(FreeDesktopScreenSaver);
-	screen_set_keep_on(GLOBAL_DEF("display/window/energy_saving/keep_screen_on", true));
+	screen_set_keep_on(GLOBAL_GET("display/window/energy_saving/keep_screen_on"));
 #endif
 
 	r_error = OK;
