@@ -1,39 +1,40 @@
-/*************************************************************************/
-/*  cast_2d_editor_plugin.cpp                                            */
-/*************************************************************************/
-/*                       This file is part of:                           */
-/*                           GODOT ENGINE                                */
-/*                      https://godotengine.org                          */
-/*************************************************************************/
-/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
-/*                                                                       */
-/* Permission is hereby granted, free of charge, to any person obtaining */
-/* a copy of this software and associated documentation files (the       */
-/* "Software"), to deal in the Software without restriction, including   */
-/* without limitation the rights to use, copy, modify, merge, publish,   */
-/* distribute, sublicense, and/or sell copies of the Software, and to    */
-/* permit persons to whom the Software is furnished to do so, subject to */
-/* the following conditions:                                             */
-/*                                                                       */
-/* The above copyright notice and this permission notice shall be        */
-/* included in all copies or substantial portions of the Software.       */
-/*                                                                       */
-/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
-/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
-/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
-/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
-/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
-/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
-/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
-/*************************************************************************/
+/**************************************************************************/
+/*  cast_2d_editor_plugin.cpp                                             */
+/**************************************************************************/
+/*                         This file is part of:                          */
+/*                             GODOT ENGINE                               */
+/*                        https://godotengine.org                         */
+/**************************************************************************/
+/* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
+/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
+/*                                                                        */
+/* Permission is hereby granted, free of charge, to any person obtaining  */
+/* a copy of this software and associated documentation files (the        */
+/* "Software"), to deal in the Software without restriction, including    */
+/* without limitation the rights to use, copy, modify, merge, publish,    */
+/* distribute, sublicense, and/or sell copies of the Software, and to     */
+/* permit persons to whom the Software is furnished to do so, subject to  */
+/* the following conditions:                                              */
+/*                                                                        */
+/* The above copyright notice and this permission notice shall be         */
+/* included in all copies or substantial portions of the Software.        */
+/*                                                                        */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,        */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF     */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. */
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY   */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,   */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
+/**************************************************************************/
 
 #include "cast_2d_editor_plugin.h"
 
 #include "canvas_item_editor_plugin.h"
 #include "editor/editor_node.h"
-#include "scene/2d/ray_cast_2d.h"
-#include "scene/2d/shape_cast_2d.h"
+#include "editor/editor_undo_redo_manager.h"
+#include "scene/2d/physics/ray_cast_2d.h"
+#include "scene/2d/physics/shape_cast_2d.h"
 
 void Cast2DEditor::_notification(int p_what) {
 	switch (p_what) {
@@ -64,10 +65,13 @@ bool Cast2DEditor::forward_canvas_gui_input(const Ref<InputEvent> &p_event) {
 	if (mb.is_valid() && mb->get_button_index() == MouseButton::LEFT) {
 		Vector2 target_position = node->get("target_position");
 
+		Vector2 gpoint = mb->get_position();
+
 		if (mb->is_pressed()) {
-			if (xform.xform(target_position).distance_to(mb->get_position()) < 8) {
+			if (xform.xform(target_position).distance_to(gpoint) < 8) {
 				pressed = true;
 				original_target_position = target_position;
+				original_mouse_pos = gpoint;
 
 				return true;
 			} else {
@@ -76,15 +80,17 @@ bool Cast2DEditor::forward_canvas_gui_input(const Ref<InputEvent> &p_event) {
 				return false;
 			}
 		} else if (pressed) {
-			undo_redo->create_action(TTR("Set target_position"));
-			undo_redo->add_do_property(node, "target_position", target_position);
-			undo_redo->add_do_method(canvas_item_editor, "update_viewport");
-			undo_redo->add_undo_property(node, "target_position", original_target_position);
-			undo_redo->add_undo_method(canvas_item_editor, "update_viewport");
-			undo_redo->commit_action();
+			if (original_mouse_pos != gpoint) {
+				EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
+				undo_redo->create_action(TTR("Set Target Position"));
+				undo_redo->add_do_property(node, "target_position", target_position);
+				undo_redo->add_do_method(canvas_item_editor, "update_viewport");
+				undo_redo->add_undo_property(node, "target_position", original_target_position);
+				undo_redo->add_undo_method(canvas_item_editor, "update_viewport");
+				undo_redo->commit_action();
+			}
 
 			pressed = false;
-
 			return true;
 		}
 	}
@@ -111,7 +117,7 @@ void Cast2DEditor::forward_canvas_draw_over_viewport(Control *p_overlay) {
 
 	Transform2D gt = canvas_item_editor->get_canvas_transform() * node->get_global_transform();
 
-	const Ref<Texture2D> handle = get_theme_icon(SNAME("EditorHandle"), SNAME("EditorIcons"));
+	const Ref<Texture2D> handle = get_editor_theme_icon(SNAME("EditorHandle"));
 	p_overlay->draw_texture(handle, gt.xform((Vector2)node->get("target_position")) - handle->get_size() / 2);
 }
 
@@ -127,10 +133,6 @@ void Cast2DEditor::edit(Node2D *p_node) {
 	}
 
 	canvas_item_editor->update_viewport();
-}
-
-Cast2DEditor::Cast2DEditor() {
-	undo_redo = EditorNode::get_singleton()->get_undo_redo();
 }
 
 ///////////////////////

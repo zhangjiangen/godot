@@ -9,7 +9,6 @@ def configure(env):
 def get_doc_classes():
     return [
         "EditorSceneFormatImporterBlend",
-        "EditorSceneFormatImporterFBX",
         "EditorSceneFormatImporterGLTF",
         "GLTFAccessor",
         "GLTFAnimation",
@@ -21,11 +20,14 @@ def get_doc_classes():
         "GLTFLight",
         "GLTFMesh",
         "GLTFNode",
+        "GLTFPhysicsBody",
+        "GLTFPhysicsShape",
         "GLTFSkeleton",
         "GLTFSkin",
         "GLTFSpecGloss",
         "GLTFState",
         "GLTFTexture",
+        "GLTFTextureSampler",
     ]
 
 

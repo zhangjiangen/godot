@@ -1,34 +1,33 @@
-/*************************************************************************/
-/*  audio_stream_mp3.cpp                                                 */
-/*************************************************************************/
-/*                       This file is part of:                           */
-/*                           GODOT ENGINE                                */
-/*                      https://godotengine.org                          */
-/*************************************************************************/
-/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
-/*                                                                       */
-/* Permission is hereby granted, free of charge, to any person obtaining */
-/* a copy of this software and associated documentation files (the       */
-/* "Software"), to deal in the Software without restriction, including   */
-/* without limitation the rights to use, copy, modify, merge, publish,   */
-/* distribute, sublicense, and/or sell copies of the Software, and to    */
-/* permit persons to whom the Software is furnished to do so, subject to */
-/* the following conditions:                                             */
-/*                                                                       */
-/* The above copyright notice and this permission notice shall be        */
-/* included in all copies or substantial portions of the Software.       */
-/*                                                                       */
-/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
-/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
-/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
-/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
-/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
-/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
-/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
-/*************************************************************************/
+/**************************************************************************/
+/*  audio_stream_mp3.cpp                                                  */
+/**************************************************************************/
+/*                         This file is part of:                          */
+/*                             GODOT ENGINE                               */
+/*                        https://godotengine.org                         */
+/**************************************************************************/
+/* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
+/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
+/*                                                                        */
+/* Permission is hereby granted, free of charge, to any person obtaining  */
+/* a copy of this software and associated documentation files (the        */
+/* "Software"), to deal in the Software without restriction, including    */
+/* without limitation the rights to use, copy, modify, merge, publish,    */
+/* distribute, sublicense, and/or sell copies of the Software, and to     */
+/* permit persons to whom the Software is furnished to do so, subject to  */
+/* the following conditions:                                              */
+/*                                                                        */
+/* The above copyright notice and this permission notice shall be         */
+/* included in all copies or substantial portions of the Software.        */
+/*                                                                        */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,        */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF     */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. */
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY   */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,   */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
+/**************************************************************************/
 
-#define MINIMP3_ONLY_MP3
 #define MINIMP3_FLOAT_OUTPUT
 #define MINIMP3_IMPLEMENTATION
 #define MINIMP3_NO_STDIO
@@ -47,7 +46,9 @@ int AudioStreamPlaybackMP3::_mix_internal(AudioFrame *p_buffer, int p_frames) {
 	int frames_mixed_this_step = p_frames;
 
 	int beat_length_frames = -1;
-	bool beat_loop = mp3_stream->has_loop() && mp3_stream->get_bpm() > 0 && mp3_stream->get_beat_count() > 0;
+	bool use_loop = looping_override ? looping : mp3_stream->loop;
+
+	bool beat_loop = use_loop && mp3_stream->get_bpm() > 0 && mp3_stream->get_beat_count() > 0;
 	if (beat_loop) {
 		beat_length_frames = mp3_stream->get_beat_count() * mp3_stream->sample_rate * 60 / mp3_stream->get_bpm();
 	}
@@ -83,7 +84,7 @@ int AudioStreamPlaybackMP3::_mix_internal(AudioFrame *p_buffer, int p_frames) {
 
 		else {
 			//EOF
-			if (mp3_stream->loop) {
+			if (use_loop) {
 				seek(mp3_stream->loop_offset);
 				loops++;
 			} else {
@@ -104,7 +105,7 @@ float AudioStreamPlaybackMP3::get_stream_sampling_rate() {
 	return mp3_stream->sample_rate;
 }
 
-void AudioStreamPlaybackMP3::start(float p_from_pos) {
+void AudioStreamPlaybackMP3::start(double p_from_pos) {
 	active = true;
 	seek(p_from_pos);
 	loops = 0;
@@ -123,11 +124,11 @@ int AudioStreamPlaybackMP3::get_loop_count() const {
 	return loops;
 }
 
-float AudioStreamPlaybackMP3::get_playback_position() const {
-	return float(frames_mixed) / mp3_stream->sample_rate;
+double AudioStreamPlaybackMP3::get_playback_position() const {
+	return double(frames_mixed) / mp3_stream->sample_rate;
 }
 
-void AudioStreamPlaybackMP3::seek(float p_time) {
+void AudioStreamPlaybackMP3::seek(double p_time) {
 	if (!active) {
 		return;
 	}
@@ -142,6 +143,25 @@ void AudioStreamPlaybackMP3::seek(float p_time) {
 
 void AudioStreamPlaybackMP3::tag_used_streams() {
 	mp3_stream->tag_used(get_playback_position());
+}
+
+void AudioStreamPlaybackMP3::set_parameter(const StringName &p_name, const Variant &p_value) {
+	if (p_name == SNAME("looping")) {
+		if (p_value == Variant()) {
+			looping_override = false;
+			looping = false;
+		} else {
+			looping_override = true;
+			looping = p_value;
+		}
+	}
+}
+
+Variant AudioStreamPlaybackMP3::get_parameter(const StringName &p_name) const {
+	if (looping_override && p_name == SNAME("looping")) {
+		return looping;
+	}
+	return Variant();
 }
 
 AudioStreamPlaybackMP3::~AudioStreamPlaybackMP3() {
@@ -217,20 +237,24 @@ bool AudioStreamMP3::has_loop() const {
 	return loop;
 }
 
-void AudioStreamMP3::set_loop_offset(float p_seconds) {
+void AudioStreamMP3::set_loop_offset(double p_seconds) {
 	loop_offset = p_seconds;
 }
 
-float AudioStreamMP3::get_loop_offset() const {
+double AudioStreamMP3::get_loop_offset() const {
 	return loop_offset;
 }
 
-float AudioStreamMP3::get_length() const {
+double AudioStreamMP3::get_length() const {
 	return length;
 }
 
 bool AudioStreamMP3::is_monophonic() const {
 	return false;
+}
+
+void AudioStreamMP3::get_parameter_list(List<Parameter> *r_parameters) {
+	r_parameters->push_back(Parameter(PropertyInfo(Variant::BOOL, "looping", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_CHECKABLE), Variant()));
 }
 
 void AudioStreamMP3::set_bpm(double p_bpm) {

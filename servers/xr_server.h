@@ -1,32 +1,32 @@
-/*************************************************************************/
-/*  xr_server.h                                                          */
-/*************************************************************************/
-/*                       This file is part of:                           */
-/*                           GODOT ENGINE                                */
-/*                      https://godotengine.org                          */
-/*************************************************************************/
-/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
-/*                                                                       */
-/* Permission is hereby granted, free of charge, to any person obtaining */
-/* a copy of this software and associated documentation files (the       */
-/* "Software"), to deal in the Software without restriction, including   */
-/* without limitation the rights to use, copy, modify, merge, publish,   */
-/* distribute, sublicense, and/or sell copies of the Software, and to    */
-/* permit persons to whom the Software is furnished to do so, subject to */
-/* the following conditions:                                             */
-/*                                                                       */
-/* The above copyright notice and this permission notice shall be        */
-/* included in all copies or substantial portions of the Software.       */
-/*                                                                       */
-/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
-/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
-/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
-/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
-/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
-/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
-/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
-/*************************************************************************/
+/**************************************************************************/
+/*  xr_server.h                                                           */
+/**************************************************************************/
+/*                         This file is part of:                          */
+/*                             GODOT ENGINE                               */
+/*                        https://godotengine.org                         */
+/**************************************************************************/
+/* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
+/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
+/*                                                                        */
+/* Permission is hereby granted, free of charge, to any person obtaining  */
+/* a copy of this software and associated documentation files (the        */
+/* "Software"), to deal in the Software without restriction, including    */
+/* without limitation the rights to use, copy, modify, merge, publish,    */
+/* distribute, sublicense, and/or sell copies of the Software, and to     */
+/* permit persons to whom the Software is furnished to do so, subject to  */
+/* the following conditions:                                              */
+/*                                                                        */
+/* The above copyright notice and this permission notice shall be         */
+/* included in all copies or substantial portions of the Software.        */
+/*                                                                        */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,        */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF     */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. */
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY   */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,   */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
+/**************************************************************************/
 
 #ifndef XR_SERVER_H
 #define XR_SERVER_H
@@ -39,6 +39,9 @@
 
 class XRInterface;
 class XRPositionalTracker;
+class XRHandTracker;
+class XRFaceTracker;
+class XRBodyTracker;
 
 /**
 	The XR server is a singleton object that gives access to the various
@@ -58,7 +61,7 @@ class XRServer : public Object {
 
 public:
 	enum XRMode {
-		XRMODE_DEFAULT, /* Default behaviour, means we check project settings */
+		XRMODE_DEFAULT, /* Default behavior, means we check project settings */
 		XRMODE_OFF, /* Ignore project settings, disable OpenXR, disable shaders */
 		XRMODE_ON, /* Ignore project settings, enable OpenXR, enable shaders, run editor in VR (if applicable) */
 	};
@@ -85,6 +88,9 @@ private:
 
 	Vector<Ref<XRInterface>> interfaces;
 	Dictionary trackers;
+	Dictionary hand_trackers;
+	Dictionary face_trackers;
+	Dictionary body_trackers;
 
 	Ref<XRInterface> primary_interface; /* we'll identify one interface as primary, this will be used by our viewports */
 
@@ -111,7 +117,7 @@ public:
 		Most VR platforms, and our assumption, is that 1 unit in our virtual world equates to 1 meter in the real mode.
 		This scale basically effects the unit size relationship to real world size.
 
-		I may remove access to this property in GDScript in favour of exposing it on the XROrigin3D node
+		I may remove access to this property in GDScript in favor of exposing it on the XROrigin3D node
 	*/
 	double get_world_scale() const;
 	void set_world_scale(double p_world_scale);
@@ -142,6 +148,7 @@ public:
 		and in the virtual world out of sync
 	*/
 	Transform3D get_reference_frame() const;
+	void clear_reference_frame();
 	void center_on_hmd(RotationMode p_rotation_mode, bool p_keep_height);
 
 	/*
@@ -157,7 +164,7 @@ public:
 	int get_interface_count() const;
 	Ref<XRInterface> get_interface(int p_index) const;
 	Ref<XRInterface> find_interface(const String &p_name) const;
-	Array get_interfaces() const;
+	TypedArray<Dictionary> get_interfaces() const;
 
 	/*
 		note, more then one interface can technically be active, especially on mobile, but only one interface is used for
@@ -181,6 +188,30 @@ public:
 	PackedStringArray get_suggested_tracker_names() const;
 	PackedStringArray get_suggested_pose_names(const StringName &p_tracker_name) const;
 	// Q: Should we add get_suggested_input_names and get_suggested_haptic_names even though we don't use them for the IDE?
+
+	/*
+		Hand trackers are objects that expose the tracked joints of a hand.
+	*/
+	void add_hand_tracker(const StringName &p_tracker_name, Ref<XRHandTracker> p_hand_tracker);
+	void remove_hand_tracker(const StringName &p_tracker_name);
+	Dictionary get_hand_trackers() const;
+	Ref<XRHandTracker> get_hand_tracker(const StringName &p_tracker_name) const;
+
+	/*
+		Face trackers are objects that expose the tracked blend shapes of a face.
+	 */
+	void add_face_tracker(const StringName &p_tracker_name, Ref<XRFaceTracker> p_face_tracker);
+	void remove_face_tracker(const StringName &p_tracker_name);
+	Dictionary get_face_trackers() const;
+	Ref<XRFaceTracker> get_face_tracker(const StringName &p_tracker_name) const;
+
+	/*
+		Body trackers are objects that expose the tracked joints of a body.
+	 */
+	void add_body_tracker(const StringName &p_tracker_name, Ref<XRBodyTracker> p_face_tracker);
+	void remove_body_tracker(const StringName &p_tracker_name);
+	Dictionary get_body_trackers() const;
+	Ref<XRBodyTracker> get_body_tracker(const StringName &p_tracker_name) const;
 
 	// Process is called before we handle our physics process and game process. This is where our interfaces will update controller data and such.
 	void _process();

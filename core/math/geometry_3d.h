@@ -1,132 +1,46 @@
-/*************************************************************************/
-/*  geometry_3d.h                                                        */
-/*************************************************************************/
-/*                       This file is part of:                           */
-/*                           GODOT ENGINE                                */
-/*                      https://godotengine.org                          */
-/*************************************************************************/
-/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
-/*                                                                       */
-/* Permission is hereby granted, free of charge, to any person obtaining */
-/* a copy of this software and associated documentation files (the       */
-/* "Software"), to deal in the Software without restriction, including   */
-/* without limitation the rights to use, copy, modify, merge, publish,   */
-/* distribute, sublicense, and/or sell copies of the Software, and to    */
-/* permit persons to whom the Software is furnished to do so, subject to */
-/* the following conditions:                                             */
-/*                                                                       */
-/* The above copyright notice and this permission notice shall be        */
-/* included in all copies or substantial portions of the Software.       */
-/*                                                                       */
-/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
-/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
-/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
-/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
-/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
-/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
-/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
-/*************************************************************************/
+/**************************************************************************/
+/*  geometry_3d.h                                                         */
+/**************************************************************************/
+/*                         This file is part of:                          */
+/*                             GODOT ENGINE                               */
+/*                        https://godotengine.org                         */
+/**************************************************************************/
+/* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
+/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
+/*                                                                        */
+/* Permission is hereby granted, free of charge, to any person obtaining  */
+/* a copy of this software and associated documentation files (the        */
+/* "Software"), to deal in the Software without restriction, including    */
+/* without limitation the rights to use, copy, modify, merge, publish,    */
+/* distribute, sublicense, and/or sell copies of the Software, and to     */
+/* permit persons to whom the Software is furnished to do so, subject to  */
+/* the following conditions:                                              */
+/*                                                                        */
+/* The above copyright notice and this permission notice shall be         */
+/* included in all copies or substantial portions of the Software.        */
+/*                                                                        */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,        */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF     */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. */
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY   */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,   */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
+/**************************************************************************/
 
 #ifndef GEOMETRY_3D_H
 #define GEOMETRY_3D_H
 
+#include "core/math/delaunay_3d.h"
 #include "core/math/face3.h"
 #include "core/object/object.h"
+#include "core/templates/local_vector.h"
 #include "core/templates/vector.h"
 
 class Geometry3D {
 public:
-	static void get_closest_points_between_segments(const Vector3 &p1, const Vector3 &p2, const Vector3 &q1, const Vector3 &q2, Vector3 &c1, Vector3 &c2) {
-// Do the function 'd' as defined by pb. I think it's a dot product of some sort.
-#define d_of(m, n, o, p) ((m.x - n.x) * (o.x - p.x) + (m.y - n.y) * (o.y - p.y) + (m.z - n.z) * (o.z - p.z))
-
-		// Calculate the parametric position on the 2 curves, mua and mub.
-		real_t mua = (d_of(p1, q1, q2, q1) * d_of(q2, q1, p2, p1) - d_of(p1, q1, p2, p1) * d_of(q2, q1, q2, q1)) / (d_of(p2, p1, p2, p1) * d_of(q2, q1, q2, q1) - d_of(q2, q1, p2, p1) * d_of(q2, q1, p2, p1));
-		real_t mub = (d_of(p1, q1, q2, q1) + mua * d_of(q2, q1, p2, p1)) / d_of(q2, q1, q2, q1);
-
-		// Clip the value between [0..1] constraining the solution to lie on the original curves.
-		if (mua < 0) {
-			mua = 0;
-		}
-		if (mub < 0) {
-			mub = 0;
-		}
-		if (mua > 1) {
-			mua = 1;
-		}
-		if (mub > 1) {
-			mub = 1;
-		}
-		c1 = p1.lerp(p2, mua);
-		c2 = q1.lerp(q2, mub);
-	}
-
-	static real_t get_closest_distance_between_segments(const Vector3 &p_from_a, const Vector3 &p_to_a, const Vector3 &p_from_b, const Vector3 &p_to_b) {
-		Vector3 u = p_to_a - p_from_a;
-		Vector3 v = p_to_b - p_from_b;
-		Vector3 w = p_from_a - p_to_a;
-		real_t a = u.dot(u); // Always >= 0
-		real_t b = u.dot(v);
-		real_t c = v.dot(v); // Always >= 0
-		real_t d = u.dot(w);
-		real_t e = v.dot(w);
-		real_t D = a * c - b * b; // Always >= 0
-		real_t sc, sN, sD = D; // sc = sN / sD, default sD = D >= 0
-		real_t tc, tN, tD = D; // tc = tN / tD, default tD = D >= 0
-
-		// Compute the line parameters of the two closest points.
-		if (D < (real_t)CMP_EPSILON) { // The lines are almost parallel.
-			sN = 0.0f; // Force using point P0 on segment S1
-			sD = 1.0f; // to prevent possible division by 0.0 later.
-			tN = e;
-			tD = c;
-		} else { // Get the closest points on the infinite lines
-			sN = (b * e - c * d);
-			tN = (a * e - b * d);
-			if (sN < 0.0f) { // sc < 0 => the s=0 edge is visible.
-				sN = 0.0f;
-				tN = e;
-				tD = c;
-			} else if (sN > sD) { // sc > 1 => the s=1 edge is visible.
-				sN = sD;
-				tN = e + b;
-				tD = c;
-			}
-		}
-
-		if (tN < 0.0f) { // tc < 0 => the t=0 edge is visible.
-			tN = 0.0f;
-			// Recompute sc for this edge.
-			if (-d < 0.0f) {
-				sN = 0.0f;
-			} else if (-d > a) {
-				sN = sD;
-			} else {
-				sN = -d;
-				sD = a;
-			}
-		} else if (tN > tD) { // tc > 1 => the t=1 edge is visible.
-			tN = tD;
-			// Recompute sc for this edge.
-			if ((-d + b) < 0.0f) {
-				sN = 0;
-			} else if ((-d + b) > a) {
-				sN = sD;
-			} else {
-				sN = (-d + b);
-				sD = a;
-			}
-		}
-		// Finally do the division to get sc and tc.
-		sc = (Math::is_zero_approx(sN) ? 0.0f : sN / sD);
-		tc = (Math::is_zero_approx(tN) ? 0.0f : tN / tD);
-
-		// Get the difference of the two closest points.
-		Vector3 dP = w + (sc * u) - (tc * v); // = S1(sc) - S2(tc)
-
-		return dP.length(); // Return the closest distance.
-	}
+	static void get_closest_points_between_segments(const Vector3 &p_p0, const Vector3 &p_p1, const Vector3 &p_q0, const Vector3 &p_q1, Vector3 &r_ps, Vector3 &r_qt);
+	static real_t get_closest_distance_between_segments(const Vector3 &p_p0, const Vector3 &p_p1, const Vector3 &p_q0, const Vector3 &p_q1);
 
 	static inline bool ray_intersects_triangle(const Vector3 &p_from, const Vector3 &p_dir, const Vector3 &p_v0, const Vector3 &p_v1, const Vector3 &p_v2, Vector3 *r_res = nullptr) {
 		Vector3 e1 = p_v1 - p_v0;
@@ -619,26 +533,40 @@ public:
 		return clipped;
 	}
 
-	static Vector<Vector<Face3>> separate_objects(Vector<Face3> p_array);
+	static Vector<int32_t> tetrahedralize_delaunay(const Vector<Vector3> &p_points) {
+		Vector<Delaunay3D::OutputSimplex> tetr = Delaunay3D::tetrahedralize(p_points);
+		Vector<int32_t> tetrahedrons;
+
+		tetrahedrons.resize(4 * tetr.size());
+		int32_t *ptr = tetrahedrons.ptrw();
+		for (int i = 0; i < tetr.size(); i++) {
+			*ptr++ = tetr[i].points[0];
+			*ptr++ = tetr[i].points[1];
+			*ptr++ = tetr[i].points[2];
+			*ptr++ = tetr[i].points[3];
+		}
+		return tetrahedrons;
+	}
 
 	// Create a "wrap" that encloses the given geometry.
-	static Vector<Face3> wrap_geometry(Vector<Face3> p_array, real_t *p_error = nullptr);
+	static Vector<Face3> wrap_geometry(const Vector<Face3> &p_array, real_t *p_error = nullptr);
 
 	struct MeshData {
 		struct Face {
 			Plane plane;
-			Vector<int> indices;
+			LocalVector<int> indices;
 		};
 
-		Vector<Face> faces;
+		LocalVector<Face> faces;
 
 		struct Edge {
-			int a, b;
+			int vertex_a, vertex_b;
+			int face_a, face_b;
 		};
 
-		Vector<Edge> edges;
+		LocalVector<Edge> edges;
 
-		Vector<Vector3> vertices;
+		LocalVector<Vector3> vertices;
 
 		void optimize_vertices();
 	};
@@ -666,7 +594,7 @@ public:
 		max = x2;                        \
 	}
 
-	_FORCE_INLINE_ static bool planeBoxOverlap(Vector3 normal, float d, Vector3 maxbox) {
+	_FORCE_INLINE_ static bool planeBoxOverlap(Vector3 normal, real_t d, Vector3 maxbox) {
 		int q;
 		Vector3 vmin, vmax;
 		for (q = 0; q <= 2; q++) {
@@ -750,8 +678,7 @@ public:
 		return false;                              \
 	}
 
-	/*======================== Z-tests ========================*/
-
+/*======================== Z-tests ========================*/
 #define AXISTEST_Z12(a, b, fa, fb)                 \
 	p1 = a * v1.x - b * v1.y;                      \
 	p2 = a * v2.x - b * v2.y;                      \
@@ -790,21 +717,19 @@ public:
 		/*    2) normal of the triangle */
 		/*    3) crossproduct(edge from tri, {x,y,z}-directin) */
 		/*       this gives 3x3=9 more tests */
-		Vector3 v0, v1, v2;
-		float min, max, d, p0, p1, p2, rad, fex, fey, fez;
-		Vector3 normal, e0, e1, e2;
+		real_t min, max, p0, p1, p2, rad, fex, fey, fez;
 
 		/* This is the fastest branch on Sun */
 		/* move everything so that the boxcenter is in (0,0,0) */
 
-		v0 = triverts[0] - boxcenter;
-		v1 = triverts[1] - boxcenter;
-		v2 = triverts[2] - boxcenter;
+		const Vector3 v0 = triverts[0] - boxcenter;
+		const Vector3 v1 = triverts[1] - boxcenter;
+		const Vector3 v2 = triverts[2] - boxcenter;
 
 		/* compute triangle edges */
-		e0 = v1 - v0; /* tri edge 0 */
-		e1 = v2 - v1; /* tri edge 1 */
-		e2 = v0 - v2; /* tri edge 2 */
+		const Vector3 e0 = v1 - v0; /* tri edge 0 */
+		const Vector3 e1 = v2 - v1; /* tri edge 1 */
+		const Vector3 e2 = v0 - v2; /* tri edge 2 */
 
 		/* Bullet 3:  */
 		/*  test the 9 tests first (this was faster) */
@@ -856,8 +781,8 @@ public:
 		/* Bullet 2: */
 		/*  test if the box intersects the plane of the triangle */
 		/*  compute plane equation of triangle: normal*x+d=0 */
-		normal = e0.cross(e1);
-		d = -normal.dot(v0); /* plane eq: normal.x+d=0 */
+		const Vector3 normal = e0.cross(e1);
+		const real_t d = -normal.dot(v0); /* plane eq: normal.x+d=0 */
 		return planeBoxOverlap(normal, d, boxhalfsize); /* if true, box and triangle overlaps */
 	}
 
@@ -865,51 +790,51 @@ public:
 	static Vector<int8_t> generate_sdf8(const Vector<uint32_t> &p_positive, const Vector<uint32_t> &p_negative);
 
 	static Vector3 triangle_get_barycentric_coords(const Vector3 &p_a, const Vector3 &p_b, const Vector3 &p_c, const Vector3 &p_pos) {
-		Vector3 v0 = p_b - p_a;
-		Vector3 v1 = p_c - p_a;
-		Vector3 v2 = p_pos - p_a;
+		const Vector3 v0 = p_b - p_a;
+		const Vector3 v1 = p_c - p_a;
+		const Vector3 v2 = p_pos - p_a;
 
-		float d00 = v0.dot(v0);
-		float d01 = v0.dot(v1);
-		float d11 = v1.dot(v1);
-		float d20 = v2.dot(v0);
-		float d21 = v2.dot(v1);
-		float denom = (d00 * d11 - d01 * d01);
+		const real_t d00 = v0.dot(v0);
+		const real_t d01 = v0.dot(v1);
+		const real_t d11 = v1.dot(v1);
+		const real_t d20 = v2.dot(v0);
+		const real_t d21 = v2.dot(v1);
+		const real_t denom = (d00 * d11 - d01 * d01);
 		if (denom == 0) {
 			return Vector3(); //invalid triangle, return empty
 		}
-		float v = (d11 * d20 - d01 * d21) / denom;
-		float w = (d00 * d21 - d01 * d20) / denom;
-		float u = 1.0f - v - w;
+		const real_t v = (d11 * d20 - d01 * d21) / denom;
+		const real_t w = (d00 * d21 - d01 * d20) / denom;
+		const real_t u = 1.0f - v - w;
 		return Vector3(u, v, w);
 	}
 
 	static Color tetrahedron_get_barycentric_coords(const Vector3 &p_a, const Vector3 &p_b, const Vector3 &p_c, const Vector3 &p_d, const Vector3 &p_pos) {
-		Vector3 vap = p_pos - p_a;
-		Vector3 vbp = p_pos - p_b;
+		const Vector3 vap = p_pos - p_a;
+		const Vector3 vbp = p_pos - p_b;
 
-		Vector3 vab = p_b - p_a;
-		Vector3 vac = p_c - p_a;
-		Vector3 vad = p_d - p_a;
+		const Vector3 vab = p_b - p_a;
+		const Vector3 vac = p_c - p_a;
+		const Vector3 vad = p_d - p_a;
 
-		Vector3 vbc = p_c - p_b;
-		Vector3 vbd = p_d - p_b;
+		const Vector3 vbc = p_c - p_b;
+		const Vector3 vbd = p_d - p_b;
 		// ScTP computes the scalar triple product
 #define STP(m_a, m_b, m_c) ((m_a).dot((m_b).cross((m_c))))
-		float va6 = STP(vbp, vbd, vbc);
-		float vb6 = STP(vap, vac, vad);
-		float vc6 = STP(vap, vad, vab);
-		float vd6 = STP(vap, vab, vac);
-		float v6 = 1 / STP(vab, vac, vad);
+		const real_t va6 = STP(vbp, vbd, vbc);
+		const real_t vb6 = STP(vap, vac, vad);
+		const real_t vc6 = STP(vap, vad, vab);
+		const real_t vd6 = STP(vap, vab, vac);
+		const real_t v6 = 1 / STP(vab, vac, vad);
 		return Color(va6 * v6, vb6 * v6, vc6 * v6, vd6 * v6);
 #undef STP
 	}
 
 	_FORCE_INLINE_ static Vector3 octahedron_map_decode(const Vector2 &p_uv) {
 		// https://twitter.com/Stubbesaurus/status/937994790553227264
-		Vector2 f = p_uv * 2.0f - Vector2(1.0f, 1.0f);
+		const Vector2 f = p_uv * 2.0f - Vector2(1.0f, 1.0f);
 		Vector3 n = Vector3(f.x, f.y, 1.0f - Math::abs(f.x) - Math::abs(f.y));
-		float t = CLAMP(-n.z, 0.0f, 1.0f);
+		const real_t t = CLAMP(-n.z, 0.0f, 1.0f);
 		n.x += n.x >= 0 ? -t : t;
 		n.y += n.y >= 0 ? -t : t;
 		return n.normalized();

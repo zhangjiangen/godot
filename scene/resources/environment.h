@@ -1,32 +1,32 @@
-/*************************************************************************/
-/*  environment.h                                                        */
-/*************************************************************************/
-/*                       This file is part of:                           */
-/*                           GODOT ENGINE                                */
-/*                      https://godotengine.org                          */
-/*************************************************************************/
-/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
-/*                                                                       */
-/* Permission is hereby granted, free of charge, to any person obtaining */
-/* a copy of this software and associated documentation files (the       */
-/* "Software"), to deal in the Software without restriction, including   */
-/* without limitation the rights to use, copy, modify, merge, publish,   */
-/* distribute, sublicense, and/or sell copies of the Software, and to    */
-/* permit persons to whom the Software is furnished to do so, subject to */
-/* the following conditions:                                             */
-/*                                                                       */
-/* The above copyright notice and this permission notice shall be        */
-/* included in all copies or substantial portions of the Software.       */
-/*                                                                       */
-/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
-/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
-/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
-/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
-/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
-/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
-/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
-/*************************************************************************/
+/**************************************************************************/
+/*  environment.h                                                         */
+/**************************************************************************/
+/*                         This file is part of:                          */
+/*                             GODOT ENGINE                               */
+/*                        https://godotengine.org                         */
+/**************************************************************************/
+/* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
+/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
+/*                                                                        */
+/* Permission is hereby granted, free of charge, to any person obtaining  */
+/* a copy of this software and associated documentation files (the        */
+/* "Software"), to deal in the Software without restriction, including    */
+/* without limitation the rights to use, copy, modify, merge, publish,    */
+/* distribute, sublicense, and/or sell copies of the Software, and to     */
+/* permit persons to whom the Software is furnished to do so, subject to  */
+/* the following conditions:                                              */
+/*                                                                        */
+/* The above copyright notice and this permission notice shall be         */
+/* included in all copies or substantial portions of the Software.        */
+/*                                                                        */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,        */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF     */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. */
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY   */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,   */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
+/**************************************************************************/
 
 #ifndef ENVIRONMENT_H
 #define ENVIRONMENT_H
@@ -75,6 +75,11 @@ public:
 		SDFGI_Y_SCALE_100_PERCENT,
 	};
 
+	enum FogMode {
+		FOG_MODE_EXPONENTIAL,
+		FOG_MODE_DEPTH,
+	};
+
 	enum GlowBlendMode {
 		GLOW_BLEND_MODE_ADDITIVE,
 		GLOW_BLEND_MODE_SCREEN,
@@ -92,9 +97,11 @@ private:
 	float bg_sky_custom_fov = 0.0;
 	Vector3 bg_sky_rotation;
 	Color bg_color;
-	float bg_energy = 1.0;
 	int bg_canvas_max_layer = 0;
 	int bg_camera_feed_id = 1;
+	float bg_energy_multiplier = 1.0;
+	float bg_intensity = 30000.0; // Measured in nits or candela/m^2
+	void _update_bg_energy();
 
 	// Ambient light
 	Color ambient_color;
@@ -108,11 +115,6 @@ private:
 	ToneMapper tone_mapper = TONE_MAPPER_LINEAR;
 	float tonemap_exposure = 1.0;
 	float tonemap_white = 1.0;
-	bool tonemap_auto_exposure_enabled = false;
-	float tonemap_auto_exposure_min = 0.05;
-	float tonemap_auto_exposure_max = 8.0;
-	float tonemap_auto_exposure_speed = 0.5;
-	float tonemap_auto_exposure_grey = 0.4;
 	void _update_tonemap();
 
 	// SSR
@@ -175,6 +177,7 @@ private:
 
 	// Fog
 	bool fog_enabled = false;
+	FogMode fog_mode = FOG_MODE_EXPONENTIAL;
 	Color fog_light_color = Color(0.518, 0.553, 0.608);
 	float fog_light_energy = 1.0;
 	float fog_sun_scatter = 0.0;
@@ -182,8 +185,16 @@ private:
 	float fog_height = 0.0;
 	float fog_height_density = 0.0; //can be negative to invert effect
 	float fog_aerial_perspective = 0.0;
+	float fog_sky_affect = 1.0;
 
 	void _update_fog();
+
+	// Depth Fog
+	float fog_depth_curve = 1.0;
+	float fog_depth_begin = 10.0;
+	float fog_depth_end = 100.0;
+
+	void _update_fog_depth();
 
 	// Volumetric Fog
 	bool volumetric_fog_enabled = false;
@@ -196,6 +207,7 @@ private:
 	float volumetric_fog_detail_spread = 2.0;
 	float volumetric_fog_gi_inject = 1.0;
 	float volumetric_fog_ambient_inject = 0.0;
+	float volumetric_fog_sky_affect = 1.0;
 	bool volumetric_fog_temporal_reproject = true;
 	float volumetric_fog_temporal_reproject_amount = 0.9;
 	void _update_volumetric_fog();
@@ -211,7 +223,7 @@ private:
 
 protected:
 	static void _bind_methods();
-	virtual void _validate_property(PropertyInfo &property) const override;
+	void _validate_property(PropertyInfo &p_property) const;
 #ifndef DISABLE_DEPRECATED
 	// Kept for compatibility from 3.x to 4.0.
 	bool _set(const StringName &p_name, const Variant &p_value);
@@ -231,8 +243,10 @@ public:
 	Vector3 get_sky_rotation() const;
 	void set_bg_color(const Color &p_color);
 	Color get_bg_color() const;
-	void set_bg_energy(float p_energy);
-	float get_bg_energy() const;
+	void set_bg_energy_multiplier(float p_energy);
+	float get_bg_energy_multiplier() const;
+	void set_bg_intensity(float p_energy);
+	float get_bg_intensity() const;
 	void set_canvas_max_layer(int p_max_layer);
 	int get_canvas_max_layer() const;
 	void set_camera_feed_id(int p_id);
@@ -257,16 +271,6 @@ public:
 	float get_tonemap_exposure() const;
 	void set_tonemap_white(float p_white);
 	float get_tonemap_white() const;
-	void set_tonemap_auto_exposure_enabled(bool p_enabled);
-	bool is_tonemap_auto_exposure_enabled() const;
-	void set_tonemap_auto_exposure_min(float p_auto_exposure_min);
-	float get_tonemap_auto_exposure_min() const;
-	void set_tonemap_auto_exposure_max(float p_auto_exposure_max);
-	float get_tonemap_auto_exposure_max() const;
-	void set_tonemap_auto_exposure_speed(float p_auto_exposure_speed);
-	float get_tonemap_auto_exposure_speed() const;
-	void set_tonemap_auto_exposure_grey(float p_auto_exposure_grey);
-	float get_tonemap_auto_exposure_grey() const;
 
 	// SSR
 	void set_ssr_enabled(bool p_enabled);
@@ -370,6 +374,8 @@ public:
 
 	void set_fog_enabled(bool p_enabled);
 	bool is_fog_enabled() const;
+	void set_fog_mode(FogMode p_mode);
+	FogMode get_fog_mode() const;
 	void set_fog_light_color(const Color &p_light_color);
 	Color get_fog_light_color() const;
 	void set_fog_light_energy(float p_amount);
@@ -385,6 +391,16 @@ public:
 	float get_fog_height_density() const;
 	void set_fog_aerial_perspective(float p_aerial_perspective);
 	float get_fog_aerial_perspective() const;
+	void set_fog_sky_affect(float p_sky_affect);
+	float get_fog_sky_affect() const;
+
+	// Depth Fog
+	void set_fog_depth_curve(float p_curve);
+	float get_fog_depth_curve() const;
+	void set_fog_depth_begin(float p_begin);
+	float get_fog_depth_begin() const;
+	void set_fog_depth_end(float p_end);
+	float get_fog_depth_end() const;
 
 	// Volumetric Fog
 	void set_volumetric_fog_enabled(bool p_enable);
@@ -407,6 +423,8 @@ public:
 	float get_volumetric_fog_gi_inject() const;
 	void set_volumetric_fog_ambient_inject(float p_ambient_inject);
 	float get_volumetric_fog_ambient_inject() const;
+	void set_volumetric_fog_sky_affect(float p_sky_affect);
+	float get_volumetric_fog_sky_affect() const;
 	void set_volumetric_fog_temporal_reprojection_enabled(bool p_enable);
 	bool is_volumetric_fog_temporal_reprojection_enabled() const;
 	void set_volumetric_fog_temporal_reprojection_amount(float p_amount);
@@ -434,5 +452,6 @@ VARIANT_ENUM_CAST(Environment::ReflectionSource)
 VARIANT_ENUM_CAST(Environment::ToneMapper)
 VARIANT_ENUM_CAST(Environment::SDFGIYScale)
 VARIANT_ENUM_CAST(Environment::GlowBlendMode)
+VARIANT_ENUM_CAST(Environment::FogMode)
 
 #endif // ENVIRONMENT_H

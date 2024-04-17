@@ -1,44 +1,48 @@
-/*************************************************************************/
-/*  editor_preview_plugins.cpp                                           */
-/*************************************************************************/
-/*                       This file is part of:                           */
-/*                           GODOT ENGINE                                */
-/*                      https://godotengine.org                          */
-/*************************************************************************/
-/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
-/*                                                                       */
-/* Permission is hereby granted, free of charge, to any person obtaining */
-/* a copy of this software and associated documentation files (the       */
-/* "Software"), to deal in the Software without restriction, including   */
-/* without limitation the rights to use, copy, modify, merge, publish,   */
-/* distribute, sublicense, and/or sell copies of the Software, and to    */
-/* permit persons to whom the Software is furnished to do so, subject to */
-/* the following conditions:                                             */
-/*                                                                       */
-/* The above copyright notice and this permission notice shall be        */
-/* included in all copies or substantial portions of the Software.       */
-/*                                                                       */
-/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
-/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
-/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
-/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
-/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
-/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
-/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
-/*************************************************************************/
+/**************************************************************************/
+/*  editor_preview_plugins.cpp                                            */
+/**************************************************************************/
+/*                         This file is part of:                          */
+/*                             GODOT ENGINE                               */
+/*                        https://godotengine.org                         */
+/**************************************************************************/
+/* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
+/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
+/*                                                                        */
+/* Permission is hereby granted, free of charge, to any person obtaining  */
+/* a copy of this software and associated documentation files (the        */
+/* "Software"), to deal in the Software without restriction, including    */
+/* without limitation the rights to use, copy, modify, merge, publish,    */
+/* distribute, sublicense, and/or sell copies of the Software, and to     */
+/* permit persons to whom the Software is furnished to do so, subject to  */
+/* the following conditions:                                              */
+/*                                                                        */
+/* The above copyright notice and this permission notice shall be         */
+/* included in all copies or substantial portions of the Software.        */
+/*                                                                        */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,        */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF     */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. */
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY   */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,   */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
+/**************************************************************************/
 
 #include "editor_preview_plugins.h"
 
 #include "core/config/project_settings.h"
 #include "core/io/file_access_memory.h"
 #include "core/io/resource_loader.h"
+#include "core/object/script_language.h"
 #include "core/os/os.h"
 #include "editor/editor_paths.h"
-#include "editor/editor_scale.h"
 #include "editor/editor_settings.h"
+#include "editor/themes/editor_scale.h"
+#include "scene/resources/atlas_texture.h"
 #include "scene/resources/bit_map.h"
 #include "scene/resources/font.h"
+#include "scene/resources/gradient_texture.h"
+#include "scene/resources/image_texture.h"
 #include "scene/resources/material.h"
 #include "scene/resources/mesh.h"
 #include "servers/audio/audio_stream.h"
@@ -79,7 +83,7 @@ bool EditorTexturePreviewPlugin::generate_small_preview_automatically() const {
 	return true;
 }
 
-Ref<Texture2D> EditorTexturePreviewPlugin::generate(const Ref<Resource> &p_from, const Size2 &p_size) const {
+Ref<Texture2D> EditorTexturePreviewPlugin::generate(const Ref<Resource> &p_from, const Size2 &p_size, Dictionary &p_metadata) const {
 	Ref<Image> img;
 	Ref<AtlasTexture> atex = p_from;
 	if (atex.is_valid()) {
@@ -93,7 +97,7 @@ Ref<Texture2D> EditorTexturePreviewPlugin::generate(const Ref<Resource> &p_from,
 			return Ref<Texture2D>();
 		}
 
-		img = atlas->get_rect(atex->get_region());
+		img = atlas->get_region(atex->get_region());
 	} else {
 		Ref<Texture2D> tex = p_from;
 		if (tex.is_valid()) {
@@ -107,6 +111,7 @@ Ref<Texture2D> EditorTexturePreviewPlugin::generate(const Ref<Resource> &p_from,
 	if (img.is_null() || img->is_empty()) {
 		return Ref<Texture2D>();
 	}
+	p_metadata["dimensions"] = img->get_size();
 
 	img->clear_mipmaps();
 
@@ -125,7 +130,7 @@ Ref<Texture2D> EditorTexturePreviewPlugin::generate(const Ref<Resource> &p_from,
 	if (new_size.y > p_size.y) {
 		new_size = Vector2(new_size.x * p_size.y / new_size.y, p_size.y);
 	}
-	Vector2i new_size_i(MAX(1, (int)new_size.x), MAX(1, (int)new_size.y));
+	Vector2i new_size_i = Vector2i(new_size).max(Vector2i(1, 1));
 	img->resize(new_size_i.x, new_size_i.y, Image::INTERPOLATE_CUBIC);
 	post_process_preview(img);
 
@@ -141,7 +146,7 @@ bool EditorImagePreviewPlugin::handles(const String &p_type) const {
 	return p_type == "Image";
 }
 
-Ref<Texture2D> EditorImagePreviewPlugin::generate(const Ref<Resource> &p_from, const Size2 &p_size) const {
+Ref<Texture2D> EditorImagePreviewPlugin::generate(const Ref<Resource> &p_from, const Size2 &p_size, Dictionary &p_metadata) const {
 	Ref<Image> img = p_from;
 
 	if (img.is_null() || img->is_empty()) {
@@ -185,7 +190,7 @@ bool EditorBitmapPreviewPlugin::handles(const String &p_type) const {
 	return ClassDB::is_parent_class(p_type, "BitMap");
 }
 
-Ref<Texture2D> EditorBitmapPreviewPlugin::generate(const Ref<Resource> &p_from, const Size2 &p_size) const {
+Ref<Texture2D> EditorBitmapPreviewPlugin::generate(const Ref<Resource> &p_from, const Size2 &p_size, Dictionary &p_metadata) const {
 	Ref<BitMap> bm = p_from;
 
 	if (bm->get_size() == Size2()) {
@@ -201,7 +206,7 @@ Ref<Texture2D> EditorBitmapPreviewPlugin::generate(const Ref<Resource> &p_from, 
 
 		for (int i = 0; i < bm->get_size().width; i++) {
 			for (int j = 0; j < bm->get_size().height; j++) {
-				if (bm->get_bit(Point2i(i, j))) {
+				if (bm->get_bit(i, j)) {
 					w[j * (int)bm->get_size().width + i] = 255;
 				} else {
 					w[j * (int)bm->get_size().width + i] = 0;
@@ -210,9 +215,7 @@ Ref<Texture2D> EditorBitmapPreviewPlugin::generate(const Ref<Resource> &p_from, 
 		}
 	}
 
-	Ref<Image> img;
-	img.instantiate();
-	img->create(bm->get_size().width, bm->get_size().height, false, Image::FORMAT_L8, data);
+	Ref<Image> img = Image::create_from_data(bm->get_size().width, bm->get_size().height, false, Image::FORMAT_L8, data);
 
 	if (img->is_compressed()) {
 		if (img->decompress() != OK) {
@@ -248,14 +251,14 @@ bool EditorPackedScenePreviewPlugin::handles(const String &p_type) const {
 	return ClassDB::is_parent_class(p_type, "PackedScene");
 }
 
-Ref<Texture2D> EditorPackedScenePreviewPlugin::generate(const Ref<Resource> &p_from, const Size2 &p_size) const {
-	return generate_from_path(p_from->get_path(), p_size);
+Ref<Texture2D> EditorPackedScenePreviewPlugin::generate(const Ref<Resource> &p_from, const Size2 &p_size, Dictionary &p_metadata) const {
+	return generate_from_path(p_from->get_path(), p_size, p_metadata);
 }
 
-Ref<Texture2D> EditorPackedScenePreviewPlugin::generate_from_path(const String &p_path, const Size2 &p_size) const {
+Ref<Texture2D> EditorPackedScenePreviewPlugin::generate_from_path(const String &p_path, const Size2 &p_size, Dictionary &p_metadata) const {
 	String temp_path = EditorPaths::get_singleton()->get_cache_dir();
 	String cache_base = ProjectSettings::get_singleton()->globalize_path(p_path).md5_text();
-	cache_base = temp_path.plus_file("resthumb-" + cache_base);
+	cache_base = temp_path.path_join("resthumb-" + cache_base);
 
 	//does not have it, try to load a cached thumbnail
 
@@ -282,14 +285,8 @@ EditorPackedScenePreviewPlugin::EditorPackedScenePreviewPlugin() {
 
 //////////////////////////////////////////////////////////////////
 
-void EditorMaterialPreviewPlugin::_generate_frame_started() {
-	RS::get_singleton()->viewport_set_update_mode(viewport, RS::VIEWPORT_UPDATE_ONCE); //once used for capture
-
-	RS::get_singleton()->request_frame_drawn_callback(callable_mp(const_cast<EditorMaterialPreviewPlugin *>(this), &EditorMaterialPreviewPlugin::_preview_done));
-}
-
-void EditorMaterialPreviewPlugin::_preview_done() {
-	preview_done.post();
+void EditorMaterialPreviewPlugin::abort() {
+	draw_requester.abort();
 }
 
 bool EditorMaterialPreviewPlugin::handles(const String &p_type) const {
@@ -300,16 +297,14 @@ bool EditorMaterialPreviewPlugin::generate_small_preview_automatically() const {
 	return true;
 }
 
-Ref<Texture2D> EditorMaterialPreviewPlugin::generate(const Ref<Resource> &p_from, const Size2 &p_size) const {
+Ref<Texture2D> EditorMaterialPreviewPlugin::generate(const Ref<Resource> &p_from, const Size2 &p_size, Dictionary &p_metadata) const {
 	Ref<Material> material = p_from;
 	ERR_FAIL_COND_V(material.is_null(), Ref<Texture2D>());
 
 	if (material->get_shader_mode() == Shader::MODE_SPATIAL) {
 		RS::get_singleton()->mesh_surface_set_material(sphere, 0, material->get_rid());
 
-		RS::get_singleton()->connect(SNAME("frame_pre_draw"), callable_mp(const_cast<EditorMaterialPreviewPlugin *>(this), &EditorMaterialPreviewPlugin::_generate_frame_started), Object::CONNECT_ONESHOT);
-
-		preview_done.wait();
+		draw_requester.request_and_wait(viewport);
 
 		Ref<Image> img = RS::get_singleton()->texture_2d_get(viewport_texture);
 		RS::get_singleton()->mesh_surface_set_material(sphere, 0, RID());
@@ -341,6 +336,12 @@ EditorMaterialPreviewPlugin::EditorMaterialPreviewPlugin() {
 	RS::get_singleton()->viewport_attach_camera(viewport, camera);
 	RS::get_singleton()->camera_set_transform(camera, Transform3D(Basis(), Vector3(0, 0, 3)));
 	RS::get_singleton()->camera_set_perspective(camera, 45, 0.1, 10);
+
+	if (GLOBAL_GET("rendering/lights_and_shadows/use_physical_light_units")) {
+		camera_attributes = RS::get_singleton()->camera_attributes_create();
+		RS::get_singleton()->camera_attributes_set_exposure(camera_attributes, 1.0, 0.000032552); // Matches default CameraAttributesPhysical to work well with default DirectionalLight3Ds.
+		RS::get_singleton()->camera_set_camera_attributes(camera, camera_attributes);
+	}
 
 	light = RS::get_singleton()->directional_light_create();
 	light_instance = RS::get_singleton()->instance_create2(light, scenario);
@@ -432,6 +433,7 @@ EditorMaterialPreviewPlugin::EditorMaterialPreviewPlugin() {
 }
 
 EditorMaterialPreviewPlugin::~EditorMaterialPreviewPlugin() {
+	ERR_FAIL_NULL(RenderingServer::get_singleton());
 	RS::get_singleton()->free(sphere);
 	RS::get_singleton()->free(sphere_instance);
 	RS::get_singleton()->free(viewport);
@@ -440,6 +442,7 @@ EditorMaterialPreviewPlugin::~EditorMaterialPreviewPlugin() {
 	RS::get_singleton()->free(light2);
 	RS::get_singleton()->free(light_instance2);
 	RS::get_singleton()->free(camera);
+	RS::get_singleton()->free(camera_attributes);
 	RS::get_singleton()->free(scenario);
 }
 
@@ -449,25 +452,42 @@ bool EditorScriptPreviewPlugin::handles(const String &p_type) const {
 	return ClassDB::is_parent_class(p_type, "Script");
 }
 
-Ref<Texture2D> EditorScriptPreviewPlugin::generate(const Ref<Resource> &p_from, const Size2 &p_size) const {
+Ref<Texture2D> EditorScriptPreviewPlugin::generate_from_path(const String &p_path, const Size2 &p_size, Dictionary &p_metadata) const {
+	Error err;
+	String code = FileAccess::get_file_as_string(p_path, &err);
+	if (err != OK) {
+		return Ref<Texture2D>();
+	}
+
+	ScriptLanguage *lang = ScriptServer::get_language_for_extension(p_path.get_extension());
+	return _generate_from_source_code(lang, code, p_size, p_metadata);
+}
+
+Ref<Texture2D> EditorScriptPreviewPlugin::generate(const Ref<Resource> &p_from, const Size2 &p_size, Dictionary &p_metadata) const {
 	Ref<Script> scr = p_from;
 	if (scr.is_null()) {
 		return Ref<Texture2D>();
 	}
 
 	String code = scr->get_source_code().strip_edges();
-	if (code.is_empty()) {
+	return _generate_from_source_code(scr->get_language(), code, p_size, p_metadata);
+}
+
+Ref<Texture2D> EditorScriptPreviewPlugin::_generate_from_source_code(const ScriptLanguage *p_language, const String &p_source_code, const Size2 &p_size, Dictionary &p_metadata) const {
+	if (p_source_code.is_empty()) {
 		return Ref<Texture2D>();
 	}
 
 	List<String> kwors;
-	scr->get_language()->get_reserved_words(&kwors);
+	if (p_language) {
+		p_language->get_reserved_words(&kwors);
+	}
 
 	HashSet<String> control_flow_keywords;
 	HashSet<String> keywords;
 
 	for (const String &E : kwors) {
-		if (scr->get_language()->is_control_flow_keyword(E)) {
+		if (p_language && p_language->is_control_flow_keyword(E)) {
 			control_flow_keywords.insert(E);
 		} else {
 			keywords.insert(E);
@@ -476,22 +496,21 @@ Ref<Texture2D> EditorScriptPreviewPlugin::generate(const Ref<Resource> &p_from, 
 
 	int line = 0;
 	int col = 0;
-	Ref<Image> img;
-	img.instantiate();
 	int thumbnail_size = MAX(p_size.x, p_size.y);
-	img->create(thumbnail_size, thumbnail_size, false, Image::FORMAT_RGBA8);
+	Ref<Image> img = Image::create_empty(thumbnail_size, thumbnail_size, false, Image::FORMAT_RGBA8);
 
-	Color bg_color = EditorSettings::get_singleton()->get("text_editor/theme/highlighting/background_color");
-	Color keyword_color = EditorSettings::get_singleton()->get("text_editor/theme/highlighting/keyword_color");
-	Color control_flow_keyword_color = EditorSettings::get_singleton()->get("text_editor/theme/highlighting/control_flow_keyword_color");
-	Color text_color = EditorSettings::get_singleton()->get("text_editor/theme/highlighting/text_color");
-	Color symbol_color = EditorSettings::get_singleton()->get("text_editor/theme/highlighting/symbol_color");
-	Color comment_color = EditorSettings::get_singleton()->get("text_editor/theme/highlighting/comment_color");
+	Color bg_color = EDITOR_GET("text_editor/theme/highlighting/background_color");
+	Color keyword_color = EDITOR_GET("text_editor/theme/highlighting/keyword_color");
+	Color control_flow_keyword_color = EDITOR_GET("text_editor/theme/highlighting/control_flow_keyword_color");
+	Color text_color = EDITOR_GET("text_editor/theme/highlighting/text_color");
+	Color symbol_color = EDITOR_GET("text_editor/theme/highlighting/symbol_color");
+	Color comment_color = EDITOR_GET("text_editor/theme/highlighting/comment_color");
+	Color doc_comment_color = EDITOR_GET("text_editor/theme/highlighting/doc_comment_color");
 
 	if (bg_color.a == 0) {
 		bg_color = Color(0, 0, 0, 0);
 	}
-	bg_color.a = MAX(bg_color.a, 0.2); // some background
+	bg_color.a = MAX(bg_color.a, 0.2); // Ensure we have some background, regardless of the text editor setting.
 
 	img->fill(bg_color);
 
@@ -504,31 +523,38 @@ Ref<Texture2D> EditorScriptPreviewPlugin::generate(const Ref<Resource> &p_from, 
 	bool in_control_flow_keyword = false;
 	bool in_keyword = false;
 	bool in_comment = false;
-	for (int i = 0; i < code.length(); i++) {
-		char32_t c = code[i];
+	bool in_doc_comment = false;
+	for (int i = 0; i < p_source_code.length(); i++) {
+		char32_t c = p_source_code[i];
 		if (c > 32) {
 			if (col < thumbnail_size) {
 				Color color = text_color;
 
 				if (c == '#') {
-					in_comment = true;
+					if (i < p_source_code.length() - 1 && p_source_code[i + 1] == '#') {
+						in_doc_comment = true;
+					} else {
+						in_comment = true;
+					}
 				}
 
 				if (in_comment) {
 					color = comment_color;
+				} else if (in_doc_comment) {
+					color = doc_comment_color;
 				} else {
 					if (is_symbol(c)) {
-						//make symbol a little visible
+						// Make symbol a little visible.
 						color = symbol_color;
 						in_control_flow_keyword = false;
 						in_keyword = false;
 					} else if (!prev_is_text && is_ascii_identifier_char(c)) {
 						int pos = i;
 
-						while (is_ascii_identifier_char(code[pos])) {
+						while (is_ascii_identifier_char(p_source_code[pos])) {
 							pos++;
 						}
-						String word = code.substr(i, pos - i);
+						String word = p_source_code.substr(i, pos - i);
 						if (control_flow_keywords.has(word)) {
 							in_control_flow_keyword = true;
 						} else if (keywords.has(word)) {
@@ -560,6 +586,7 @@ Ref<Texture2D> EditorScriptPreviewPlugin::generate(const Ref<Resource> &p_from, 
 
 			if (c == '\n') {
 				in_comment = false;
+				in_doc_comment = false;
 
 				col = x0;
 				line++;
@@ -586,7 +613,7 @@ bool EditorAudioStreamPreviewPlugin::handles(const String &p_type) const {
 	return ClassDB::is_parent_class(p_type, "AudioStream");
 }
 
-Ref<Texture2D> EditorAudioStreamPreviewPlugin::generate(const Ref<Resource> &p_from, const Size2 &p_size) const {
+Ref<Texture2D> EditorAudioStreamPreviewPlugin::generate(const Ref<Resource> &p_from, const Size2 &p_size, Dictionary &p_metadata) const {
 	Ref<AudioStream> stream = p_from;
 	ERR_FAIL_COND_V(stream.is_null(), Ref<Texture2D>());
 
@@ -627,11 +654,11 @@ Ref<Texture2D> EditorAudioStreamPreviewPlugin::generate(const Ref<Resource> &p_f
 		}
 
 		for (int j = from; j < to; j++) {
-			max = MAX(max, frames[j].l);
-			max = MAX(max, frames[j].r);
+			max = MAX(max, frames[j].left);
+			max = MAX(max, frames[j].right);
 
-			min = MIN(min, frames[j].l);
-			min = MIN(min, frames[j].r);
+			min = MIN(min, frames[j].left);
+			min = MIN(min, frames[j].right);
 		}
 
 		int pfrom = CLAMP((min * 0.5 + 0.5) * h / 2, 0, h / 2) + h / 4;
@@ -653,9 +680,7 @@ Ref<Texture2D> EditorAudioStreamPreviewPlugin::generate(const Ref<Resource> &p_f
 
 	//post_process_preview(img);
 
-	Ref<Image> image;
-	image.instantiate();
-	image->create(w, h, false, Image::FORMAT_RGB8, img);
+	Ref<Image> image = Image::create_from_data(w, h, false, Image::FORMAT_RGB8, img);
 	return ImageTexture::create_from_image(image);
 }
 
@@ -664,21 +689,15 @@ EditorAudioStreamPreviewPlugin::EditorAudioStreamPreviewPlugin() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-void EditorMeshPreviewPlugin::_generate_frame_started() {
-	RS::get_singleton()->viewport_set_update_mode(viewport, RS::VIEWPORT_UPDATE_ONCE); //once used for capture
-
-	RS::get_singleton()->request_frame_drawn_callback(callable_mp(const_cast<EditorMeshPreviewPlugin *>(this), &EditorMeshPreviewPlugin::_preview_done));
-}
-
-void EditorMeshPreviewPlugin::_preview_done() {
-	preview_done.post();
+void EditorMeshPreviewPlugin::abort() {
+	draw_requester.abort();
 }
 
 bool EditorMeshPreviewPlugin::handles(const String &p_type) const {
 	return ClassDB::is_parent_class(p_type, "Mesh"); // Any mesh.
 }
 
-Ref<Texture2D> EditorMeshPreviewPlugin::generate(const Ref<Resource> &p_from, const Size2 &p_size) const {
+Ref<Texture2D> EditorMeshPreviewPlugin::generate(const Ref<Resource> &p_from, const Size2 &p_size, Dictionary &p_metadata) const {
 	Ref<Mesh> mesh = p_from;
 	ERR_FAIL_COND_V(mesh.is_null(), Ref<Texture2D>());
 
@@ -702,9 +721,7 @@ Ref<Texture2D> EditorMeshPreviewPlugin::generate(const Ref<Resource> &p_from, co
 	xform.origin.z -= rot_aabb.size.z * 2;
 	RS::get_singleton()->instance_set_transform(mesh_instance, xform);
 
-	RS::get_singleton()->connect(SNAME("frame_pre_draw"), callable_mp(const_cast<EditorMeshPreviewPlugin *>(this), &EditorMeshPreviewPlugin::_generate_frame_started), Object::CONNECT_ONESHOT);
-
-	preview_done.wait();
+	draw_requester.request_and_wait(viewport);
 
 	Ref<Image> img = RS::get_singleton()->texture_2d_get(viewport_texture);
 	ERR_FAIL_COND_V(img.is_null(), Ref<ImageTexture>());
@@ -743,6 +760,12 @@ EditorMeshPreviewPlugin::EditorMeshPreviewPlugin() {
 	//RS::get_singleton()->camera_set_perspective(camera,45,0.1,10);
 	RS::get_singleton()->camera_set_orthogonal(camera, 1.0, 0.01, 1000.0);
 
+	if (GLOBAL_GET("rendering/lights_and_shadows/use_physical_light_units")) {
+		camera_attributes = RS::get_singleton()->camera_attributes_create();
+		RS::get_singleton()->camera_attributes_set_exposure(camera_attributes, 1.0, 0.000032552); // Matches default CameraAttributesPhysical to work well with default DirectionalLight3Ds.
+		RS::get_singleton()->camera_set_camera_attributes(camera, camera_attributes);
+	}
+
 	light = RS::get_singleton()->directional_light_create();
 	light_instance = RS::get_singleton()->instance_create2(light, scenario);
 	RS::get_singleton()->instance_set_transform(light_instance, Transform3D().looking_at(Vector3(-1, -1, -1), Vector3(0, 1, 0)));
@@ -760,6 +783,7 @@ EditorMeshPreviewPlugin::EditorMeshPreviewPlugin() {
 }
 
 EditorMeshPreviewPlugin::~EditorMeshPreviewPlugin() {
+	ERR_FAIL_NULL(RenderingServer::get_singleton());
 	//RS::get_singleton()->free(sphere);
 	RS::get_singleton()->free(mesh_instance);
 	RS::get_singleton()->free(viewport);
@@ -768,26 +792,21 @@ EditorMeshPreviewPlugin::~EditorMeshPreviewPlugin() {
 	RS::get_singleton()->free(light2);
 	RS::get_singleton()->free(light_instance2);
 	RS::get_singleton()->free(camera);
+	RS::get_singleton()->free(camera_attributes);
 	RS::get_singleton()->free(scenario);
 }
 
 ///////////////////////////////////////////////////////////////////////////
 
-void EditorFontPreviewPlugin::_generate_frame_started() {
-	RS::get_singleton()->viewport_set_update_mode(viewport, RS::VIEWPORT_UPDATE_ONCE); //once used for capture
-
-	RS::get_singleton()->request_frame_drawn_callback(callable_mp(const_cast<EditorFontPreviewPlugin *>(this), &EditorFontPreviewPlugin::_preview_done));
-}
-
-void EditorFontPreviewPlugin::_preview_done() {
-	preview_done.post();
+void EditorFontPreviewPlugin::abort() {
+	draw_requester.abort();
 }
 
 bool EditorFontPreviewPlugin::handles(const String &p_type) const {
 	return ClassDB::is_parent_class(p_type, "Font");
 }
 
-Ref<Texture2D> EditorFontPreviewPlugin::generate_from_path(const String &p_path, const Size2 &p_size) const {
+Ref<Texture2D> EditorFontPreviewPlugin::generate_from_path(const String &p_path, const Size2 &p_size, Dictionary &p_metadata) const {
 	Ref<Font> sampled_font = ResourceLoader::load(p_path);
 	ERR_FAIL_COND_V(sampled_font.is_null(), Ref<Texture2D>());
 
@@ -812,9 +831,7 @@ Ref<Texture2D> EditorFontPreviewPlugin::generate_from_path(const String &p_path,
 	const float fg = c.get_luminance() < 0.5 ? 1.0 : 0.0;
 	sampled_font->draw_string(canvas_item, pos, sample, HORIZONTAL_ALIGNMENT_LEFT, -1.f, 50, Color(fg, fg, fg));
 
-	RS::get_singleton()->connect(SNAME("frame_pre_draw"), callable_mp(const_cast<EditorFontPreviewPlugin *>(this), &EditorFontPreviewPlugin::_generate_frame_started), Object::CONNECT_ONESHOT);
-
-	preview_done.wait();
+	draw_requester.request_and_wait(viewport);
 
 	RS::get_singleton()->canvas_item_clear(canvas_item);
 
@@ -836,12 +853,12 @@ Ref<Texture2D> EditorFontPreviewPlugin::generate_from_path(const String &p_path,
 	return ImageTexture::create_from_image(img);
 }
 
-Ref<Texture2D> EditorFontPreviewPlugin::generate(const Ref<Resource> &p_from, const Size2 &p_size) const {
+Ref<Texture2D> EditorFontPreviewPlugin::generate(const Ref<Resource> &p_from, const Size2 &p_size, Dictionary &p_metadata) const {
 	String path = p_from->get_path();
 	if (!FileAccess::exists(path)) {
 		return Ref<Texture2D>();
 	}
-	return generate_from_path(path, p_size);
+	return generate_from_path(path, p_size, p_metadata);
 }
 
 EditorFontPreviewPlugin::EditorFontPreviewPlugin() {
@@ -859,6 +876,7 @@ EditorFontPreviewPlugin::EditorFontPreviewPlugin() {
 }
 
 EditorFontPreviewPlugin::~EditorFontPreviewPlugin() {
+	ERR_FAIL_NULL(RenderingServer::get_singleton());
 	RS::get_singleton()->free(canvas_item);
 	RS::get_singleton()->free(canvas);
 	RS::get_singleton()->free(viewport);
@@ -876,7 +894,7 @@ bool EditorGradientPreviewPlugin::generate_small_preview_automatically() const {
 	return true;
 }
 
-Ref<Texture2D> EditorGradientPreviewPlugin::generate(const Ref<Resource> &p_from, const Size2 &p_size) const {
+Ref<Texture2D> EditorGradientPreviewPlugin::generate(const Ref<Resource> &p_from, const Size2 &p_size, Dictionary &p_metadata) const {
 	Ref<Gradient> gradient = p_from;
 	if (gradient.is_valid()) {
 		Ref<GradientTexture1D> ptex;

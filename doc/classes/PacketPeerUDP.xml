@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<class name="PacketPeerUDP" inherits="PacketPeer" version="4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+<class name="PacketPeerUDP" inherits="PacketPeer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
 	<brief_description>
 		UDP packet peer.
 	</brief_description>
@@ -19,7 +19,7 @@
 				Binds this [PacketPeerUDP] to the specified [param port] and [param bind_address] with a buffer size [param recv_buf_size], allowing it to receive incoming packets.
 				If [param bind_address] is set to [code]"*"[/code] (default), the peer will be bound on all available addresses (both IPv4 and IPv6).
 				If [param bind_address] is set to [code]"0.0.0.0"[/code] (for IPv4) or [code]"::"[/code] (for IPv6), the peer will be bound to all available addresses matching that IP type.
-				If [param bind_address] is set to any valid address (e.g. [code]"192.168.1.101"[/code], [code]"::1"[/code], etc), the peer will only be bound to the interface with that addresses (or fail if no interface with the given address exists).
+				If [param bind_address] is set to any valid address (e.g. [code]"192.168.1.101"[/code], [code]"::1"[/code], etc.), the peer will only be bound to the interface with that address (or fail if no interface with the given address exists).
 			</description>
 		</method>
 		<method name="close">
@@ -34,7 +34,7 @@
 			<param index="1" name="port" type="int" />
 			<description>
 				Calling this method connects this UDP peer to the given [param host]/[param port] pair. UDP is in reality connectionless, so this option only means that incoming packets from different addresses are automatically discarded, and that outgoing packets are always sent to the connected address (future calls to [method set_dest_address] are not allowed). This method does not send any data to the remote peer, to do that, use [method PacketPeer.put_var] or [method PacketPeer.put_packet] as usual. See also [UDPServer].
-				[b]Note:[/b] Connecting to the remote peer does not help to protect from malicious attacks like IP spoofing, etc. Think about using an encryption technique like SSL or DTLS if you feel like your application is transferring sensitive information.
+				[b]Note:[/b] Connecting to the remote peer does not help to protect from malicious attacks like IP spoofing, etc. Think about using an encryption technique like TLS or DTLS if you feel like your application is transferring sensitive information.
 			</description>
 		</method>
 		<method name="get_local_port" qualifiers="const">
@@ -112,7 +112,7 @@
 				socket = PacketPeerUDP.new()
 				# Server
 				socket.set_dest_address("127.0.0.1", 789)
-				socket.put_packet("Time to stop".to_ascii())
+				socket.put_packet("Time to stop".to_ascii_buffer())
 
 				# Client
 				while socket.wait() == OK:
@@ -121,10 +121,10 @@
 				        return
 				[/gdscript]
 				[csharp]
-				var socket = new PacketPeerUDP();
+				var socket = new PacketPeerUdp();
 				// Server
 				socket.SetDestAddress("127.0.0.1", 789);
-				socket.PutPacket("Time to stop".ToAscii());
+				socket.PutPacket("Time to stop".ToAsciiBuffer());
 
 				// Client
 				while (socket.Wait() == OK)

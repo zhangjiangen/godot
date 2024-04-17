@@ -1,32 +1,32 @@
-/*************************************************************************/
-/*  find_in_files.cpp                                                    */
-/*************************************************************************/
-/*                       This file is part of:                           */
-/*                           GODOT ENGINE                                */
-/*                      https://godotengine.org                          */
-/*************************************************************************/
-/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
-/*                                                                       */
-/* Permission is hereby granted, free of charge, to any person obtaining */
-/* a copy of this software and associated documentation files (the       */
-/* "Software"), to deal in the Software without restriction, including   */
-/* without limitation the rights to use, copy, modify, merge, publish,   */
-/* distribute, sublicense, and/or sell copies of the Software, and to    */
-/* permit persons to whom the Software is furnished to do so, subject to */
-/* the following conditions:                                             */
-/*                                                                       */
-/* The above copyright notice and this permission notice shall be        */
-/* included in all copies or substantial portions of the Software.       */
-/*                                                                       */
-/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
-/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
-/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
-/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
-/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
-/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
-/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
-/*************************************************************************/
+/**************************************************************************/
+/*  find_in_files.cpp                                                     */
+/**************************************************************************/
+/*                         This file is part of:                          */
+/*                             GODOT ENGINE                               */
+/*                        https://godotengine.org                         */
+/**************************************************************************/
+/* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
+/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
+/*                                                                        */
+/* Permission is hereby granted, free of charge, to any person obtaining  */
+/* a copy of this software and associated documentation files (the        */
+/* "Software"), to deal in the Software without restriction, including    */
+/* without limitation the rights to use, copy, modify, merge, publish,    */
+/* distribute, sublicense, and/or sell copies of the Software, and to     */
+/* permit persons to whom the Software is furnished to do so, subject to  */
+/* the following conditions:                                              */
+/*                                                                        */
+/* The above copyright notice and this permission notice shall be         */
+/* included in all copies or substantial portions of the Software.        */
+/*                                                                        */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,        */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF     */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. */
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY   */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,   */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
+/**************************************************************************/
 
 #include "find_in_files.h"
 
@@ -34,7 +34,8 @@
 #include "core/io/dir_access.h"
 #include "core/os/os.h"
 #include "editor/editor_node.h"
-#include "editor/editor_scale.h"
+#include "editor/editor_string_names.h"
+#include "editor/themes/editor_scale.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/button.h"
 #include "scene/gui/check_box.h"
@@ -54,7 +55,7 @@ inline void pop_back(T &container) {
 	container.resize(container.size() - 1);
 }
 
-static bool find_next(const String &line, String pattern, int from, bool match_case, bool whole_words, int &out_begin, int &out_end) {
+static bool find_next(const String &line, const String &pattern, int from, bool match_case, bool whole_words, int &out_begin, int &out_end) {
 	int end = from;
 
 	while (true) {
@@ -83,7 +84,7 @@ static bool find_next(const String &line, String pattern, int from, bool match_c
 
 //--------------------------------------------------------------------------------
 
-void FindInFiles::set_search_text(String p_pattern) {
+void FindInFiles::set_search_text(const String &p_pattern) {
 	_pattern = p_pattern;
 }
 
@@ -95,7 +96,7 @@ void FindInFiles::set_match_case(bool p_match_case) {
 	_match_case = p_match_case;
 }
 
-void FindInFiles::set_folder(String folder) {
+void FindInFiles::set_folder(const String &folder) {
 	_root_dir = folder;
 }
 
@@ -168,12 +169,14 @@ void FindInFiles::_iterate() {
 			String folder_name = folders_to_scan[folders_to_scan.size() - 1];
 			pop_back(folders_to_scan);
 
-			_current_dir = _current_dir.plus_file(folder_name);
+			_current_dir = _current_dir.path_join(folder_name);
 
 			PackedStringArray sub_dirs;
-			_scan_dir("res://" + _current_dir, sub_dirs);
+			PackedStringArray files_to_scan;
+			_scan_dir("res://" + _current_dir, sub_dirs, files_to_scan);
 
 			_folders_stack.push_back(sub_dirs);
+			_files_to_scan.append_array(files_to_scan);
 
 		} else {
 			// Go back one level.
@@ -210,7 +213,7 @@ float FindInFiles::get_progress() const {
 	return 0;
 }
 
-void FindInFiles::_scan_dir(String path, PackedStringArray &out_folders) {
+void FindInFiles::_scan_dir(const String &path, PackedStringArray &out_folders, PackedStringArray &out_files_to_scan) {
 	Ref<DirAccess> dir = DirAccess::open(path);
 	if (dir.is_null()) {
 		print_verbose("Cannot open directory! " + path);
@@ -226,8 +229,11 @@ void FindInFiles::_scan_dir(String path, PackedStringArray &out_folders) {
 			break;
 		}
 
-		// If there is a .gdignore file in the directory, skip searching the directory.
+		// If there is a .gdignore file in the directory, clear all the files/folders
+		// to be searched on this path and skip searching the directory.
 		if (file == ".gdignore") {
+			out_folders.clear();
+			out_files_to_scan.clear();
 			break;
 		}
 
@@ -246,13 +252,13 @@ void FindInFiles::_scan_dir(String path, PackedStringArray &out_folders) {
 		} else {
 			String file_ext = file.get_extension();
 			if (_extension_filter.has(file_ext)) {
-				_files_to_scan.push_back(path.plus_file(file));
+				out_files_to_scan.push_back(path.path_join(file));
 			}
 		}
 	}
 }
 
-void FindInFiles::_scan_file(String fpath) {
+void FindInFiles::_scan_file(const String &fpath) {
 	Ref<FileAccess> f = FileAccess::open(fpath, FileAccess::READ);
 	if (f.is_null()) {
 		print_verbose(String("Cannot open file ") + fpath);
@@ -373,7 +379,7 @@ FindInFilesDialog::FindInFilesDialog() {
 
 	Label *filter_label = memnew(Label);
 	filter_label->set_text(TTR("Filters:"));
-	filter_label->set_tooltip(TTR("Include the files with the following extensions. Add or remove them in ProjectSettings."));
+	filter_label->set_tooltip_text(TTR("Include the files with the following extensions. Add or remove them in ProjectSettings."));
 	gc->add_child(filter_label);
 
 	_filters_container = memnew(HBoxContainer);
@@ -391,12 +397,28 @@ FindInFilesDialog::FindInFilesDialog() {
 	_mode = SEARCH_MODE;
 }
 
-void FindInFilesDialog::set_search_text(String text) {
-	_search_text_line_edit->set_text(text);
-	_on_search_text_modified(text);
+void FindInFilesDialog::set_search_text(const String &text) {
+	if (_mode == SEARCH_MODE) {
+		if (!text.is_empty()) {
+			_search_text_line_edit->set_text(text);
+			_on_search_text_modified(text);
+		}
+		callable_mp((Control *)_search_text_line_edit, &Control::grab_focus).call_deferred();
+		_search_text_line_edit->select_all();
+	} else if (_mode == REPLACE_MODE) {
+		if (!text.is_empty()) {
+			_search_text_line_edit->set_text(text);
+			callable_mp((Control *)_replace_text_line_edit, &Control::grab_focus).call_deferred();
+			_replace_text_line_edit->select_all();
+			_on_search_text_modified(text);
+		} else {
+			callable_mp((Control *)_search_text_line_edit, &Control::grab_focus).call_deferred();
+			_search_text_line_edit->select_all();
+		}
+	}
 }
 
-void FindInFilesDialog::set_replace_text(String text) {
+void FindInFilesDialog::set_replace_text(const String &text) {
 	_replace_text_line_edit->set_text(text);
 }
 
@@ -422,8 +444,7 @@ void FindInFilesDialog::set_find_in_files_mode(FindInFilesMode p_mode) {
 }
 
 String FindInFilesDialog::get_search_text() const {
-	String text = _search_text_line_edit->get_text();
-	return text.strip_edges();
+	return _search_text_line_edit->get_text();
 }
 
 String FindInFilesDialog::get_replace_text() const {
@@ -459,14 +480,11 @@ void FindInFilesDialog::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_VISIBILITY_CHANGED: {
 			if (is_visible()) {
-				// Doesn't work more than once if not deferred...
-				_search_text_line_edit->call_deferred(SNAME("grab_focus"));
-				_search_text_line_edit->select_all();
 				// Extensions might have changed in the meantime, we clean them and instance them again.
 				for (int i = 0; i < _filters_container->get_child_count(); i++) {
-					_filters_container->get_child(i)->queue_delete();
+					_filters_container->get_child(i)->queue_free();
 				}
-				Array exts = ProjectSettings::get_singleton()->get("editor/script/search_in_file_extensions");
+				Array exts = GLOBAL_GET("editor/script/search_in_file_extensions");
 				for (int i = 0; i < exts.size(); ++i) {
 					CheckBox *cb = memnew(CheckBox);
 					cb->set_text(exts[i]);
@@ -500,15 +518,15 @@ void FindInFilesDialog::custom_action(const String &p_action) {
 	}
 }
 
-void FindInFilesDialog::_on_search_text_modified(String text) {
-	ERR_FAIL_COND(!_find_button);
-	ERR_FAIL_COND(!_replace_button);
+void FindInFilesDialog::_on_search_text_modified(const String &text) {
+	ERR_FAIL_NULL(_find_button);
+	ERR_FAIL_NULL(_replace_button);
 
 	_find_button->set_disabled(get_search_text().is_empty());
 	_replace_button->set_disabled(get_search_text().is_empty());
 }
 
-void FindInFilesDialog::_on_search_text_submitted(String text) {
+void FindInFilesDialog::_on_search_text_submitted(const String &text) {
 	// This allows to trigger a global search without leaving the keyboard.
 	if (!_find_button->is_disabled()) {
 		if (_mode == SEARCH_MODE) {
@@ -523,7 +541,7 @@ void FindInFilesDialog::_on_search_text_submitted(String text) {
 	}
 }
 
-void FindInFilesDialog::_on_replace_text_submitted(String text) {
+void FindInFilesDialog::_on_replace_text_submitted(const String &text) {
 	// This allows to trigger a global search without leaving the keyboard.
 	if (!_replace_button->is_disabled()) {
 		if (_mode == REPLACE_MODE) {
@@ -548,6 +566,7 @@ void FindInFilesDialog::_bind_methods() {
 //-----------------------------------------------------------------------------
 const char *FindInFilesPanel::SIGNAL_RESULT_SELECTED = "result_selected";
 const char *FindInFilesPanel::SIGNAL_FILES_MODIFIED = "files_modified";
+const char *FindInFilesPanel::SIGNAL_CLOSE_BUTTON_CLICKED = "close_button_clicked";
 
 FindInFilesPanel::FindInFilesPanel() {
 	_finder = memnew(FindInFiles);
@@ -570,8 +589,6 @@ FindInFilesPanel::FindInFilesPanel() {
 		hbc->add_child(find_label);
 
 		_search_text_label = memnew(Label);
-		_search_text_label->add_theme_font_override("font", EditorNode::get_singleton()->get_gui_base()->get_theme_font(SNAME("source"), SNAME("EditorFonts")));
-		_search_text_label->add_theme_font_size_override("font_size", EditorNode::get_singleton()->get_gui_base()->get_theme_font_size(SNAME("source_size"), SNAME("EditorFonts")));
 		hbc->add_child(_search_text_label);
 
 		_progress_bar = memnew(ProgressBar);
@@ -595,18 +612,25 @@ FindInFilesPanel::FindInFilesPanel() {
 		_cancel_button->hide();
 		hbc->add_child(_cancel_button);
 
+		_close_button = memnew(Button);
+		_close_button->set_text(TTR("Close"));
+		_close_button->connect("pressed", callable_mp(this, &FindInFilesPanel::_on_close_button_clicked));
+		hbc->add_child(_close_button);
+
 		vbc->add_child(hbc);
 	}
 
 	_results_display = memnew(Tree);
-	_results_display->add_theme_font_override("font", EditorNode::get_singleton()->get_gui_base()->get_theme_font(SNAME("source"), SNAME("EditorFonts")));
-	_results_display->add_theme_font_size_override("font_size", EditorNode::get_singleton()->get_gui_base()->get_theme_font_size(SNAME("source_size"), SNAME("EditorFonts")));
+	_results_display->set_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED);
 	_results_display->set_v_size_flags(SIZE_EXPAND_FILL);
 	_results_display->connect("item_selected", callable_mp(this, &FindInFilesPanel::_on_result_selected));
 	_results_display->connect("item_edited", callable_mp(this, &FindInFilesPanel::_on_item_edited));
 	_results_display->set_hide_root(true);
 	_results_display->set_select_mode(Tree::SELECT_ROW);
 	_results_display->set_allow_rmb_select(true);
+	_results_display->set_allow_reselect(true);
+	_results_display->add_theme_constant_override("inner_item_margin_left", 0);
+	_results_display->add_theme_constant_override("inner_item_margin_right", 0);
 	_results_display->create_item(); // Root
 	vbc->add_child(_results_display);
 
@@ -649,7 +673,7 @@ void FindInFilesPanel::set_with_replace(bool with_replace) {
 	}
 }
 
-void FindInFilesPanel::set_replace_text(String text) {
+void FindInFilesPanel::set_replace_text(const String &text) {
 	_replace_line_edit->set_text(text);
 }
 
@@ -688,18 +712,25 @@ void FindInFilesPanel::stop_search() {
 
 void FindInFilesPanel::_notification(int p_what) {
 	switch (p_what) {
-		case NOTIFICATION_PROCESS: {
-			_progress_bar->set_as_ratio(_finder->get_progress());
+		case NOTIFICATION_THEME_CHANGED: {
+			_search_text_label->add_theme_font_override("font", get_theme_font(SNAME("source"), EditorStringName(EditorFonts)));
+			_search_text_label->add_theme_font_size_override("font_size", get_theme_font_size(SNAME("source_size"), EditorStringName(EditorFonts)));
+			_results_display->add_theme_font_override("font", get_theme_font(SNAME("source"), EditorStringName(EditorFonts)));
+			_results_display->add_theme_font_size_override("font_size", get_theme_font_size(SNAME("source_size"), EditorStringName(EditorFonts)));
+
+			// Rebuild search tree.
+			if (!_finder->get_search_text().is_empty()) {
+				start_search();
+			}
 		} break;
 
-		case NOTIFICATION_THEME_CHANGED: {
-			_search_text_label->add_theme_font_override("font", get_theme_font(SNAME("source"), SNAME("EditorFonts")));
-			_results_display->add_theme_font_override("font", get_theme_font(SNAME("source"), SNAME("EditorFonts")));
+		case NOTIFICATION_PROCESS: {
+			_progress_bar->set_as_ratio(_finder->get_progress());
 		} break;
 	}
 }
 
-void FindInFilesPanel::_on_result_found(String fpath, int line_number, int begin, int end, String text) {
+void FindInFilesPanel::_on_result_found(const String &fpath, int line_number, int begin, int end, String text) {
 	TreeItem *file_item;
 	HashMap<String, TreeItem *>::Iterator E = _file_items.find(fpath);
 
@@ -718,6 +749,10 @@ void FindInFilesPanel::_on_result_found(String fpath, int line_number, int begin
 		file_item = E->value;
 	}
 
+	Color file_item_color = _results_display->get_theme_color(SNAME("font_color")) * Color(1, 1, 1, 0.67);
+	file_item->set_custom_color(0, file_item_color);
+	file_item->set_selectable(0, false);
+
 	int text_index = _with_replace ? 1 : 0;
 
 	TreeItem *item = _results_display->create_item(file_item);
@@ -732,7 +767,7 @@ void FindInFilesPanel::_on_result_found(String fpath, int line_number, int begin
 	String start = vformat("%3s: ", line_number);
 
 	item->set_text(text_index, start + text);
-	item->set_custom_draw(text_index, this, "_draw_result_text");
+	item->set_custom_draw_callback(text_index, callable_mp(this, &FindInFilesPanel::draw_result_text));
 
 	Result r;
 	r.line_number = line_number;
@@ -764,13 +799,13 @@ void FindInFilesPanel::draw_result_text(Object *item_obj, Rect2 rect) {
 	int font_size = _results_display->get_theme_font_size(SNAME("font_size"));
 
 	Rect2 match_rect = rect;
-	match_rect.position.x += font->get_string_size(item_text.left(r.begin_trimmed), HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x;
-	match_rect.size.x = font->get_string_size(_search_text_label->get_text(), HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x;
+	match_rect.position.x += font->get_string_size(item_text.left(r.begin_trimmed), HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x - 1;
+	match_rect.size.x = font->get_string_size(_search_text_label->get_text(), HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x + 1;
 	match_rect.position.y += 1 * EDSCALE;
 	match_rect.size.y -= 2 * EDSCALE;
 
-	// Use the inverted accent color to help match rectangles stand out even on the currently selected line.
-	_results_display->draw_rect(match_rect, get_theme_color(SNAME("accent_color"), SNAME("Editor")).inverted() * Color(1, 1, 1, 0.5));
+	_results_display->draw_rect(match_rect, get_theme_color(SNAME("accent_color"), EditorStringName(Editor)) * Color(1, 1, 1, 0.33), false, 2.0);
+	_results_display->draw_rect(match_rect, get_theme_color(SNAME("accent_color"), EditorStringName(Editor)) * Color(1, 1, 1, 0.17), true);
 
 	// Text is drawn by Tree already.
 }
@@ -778,14 +813,12 @@ void FindInFilesPanel::draw_result_text(Object *item_obj, Rect2 rect) {
 void FindInFilesPanel::_on_item_edited() {
 	TreeItem *item = _results_display->get_selected();
 
-	if (item->is_checked(0)) {
-		item->set_custom_color(1, _results_display->get_theme_color(SNAME("font_color")));
-	} else {
-		// Grey out.
-		Color color = _results_display->get_theme_color(SNAME("font_color"));
-		color.a /= 2.0;
-		item->set_custom_color(1, color);
+	// Change opacity to half if checkbox is checked, otherwise full.
+	Color use_color = _results_display->get_theme_color(SNAME("font_color"));
+	if (!item->is_checked(0)) {
+		use_color.a *= 0.5;
 	}
+	item->set_custom_color(1, use_color);
 }
 
 void FindInFilesPanel::_on_finished() {
@@ -794,11 +827,11 @@ void FindInFilesPanel::_on_finished() {
 	int file_count = _file_items.size();
 
 	if (result_count == 1 && file_count == 1) {
-		results_text = vformat(TTR("%d match in %d file."), result_count, file_count);
+		results_text = vformat(TTR("%d match in %d file"), result_count, file_count);
 	} else if (result_count != 1 && file_count == 1) {
-		results_text = vformat(TTR("%d matches in %d file."), result_count, file_count);
+		results_text = vformat(TTR("%d matches in %d file"), result_count, file_count);
 	} else {
-		results_text = vformat(TTR("%d matches in %d files."), result_count, file_count);
+		results_text = vformat(TTR("%d matches in %d files"), result_count, file_count);
 	}
 
 	_status_label->set_text(results_text);
@@ -816,6 +849,10 @@ void FindInFilesPanel::_on_cancel_button_clicked() {
 	stop_search();
 }
 
+void FindInFilesPanel::_on_close_button_clicked() {
+	emit_signal(SNAME(SIGNAL_CLOSE_BUTTON_CLICKED));
+}
+
 void FindInFilesPanel::_on_result_selected() {
 	TreeItem *item = _results_display->get_selected();
 	HashMap<TreeItem *, Result>::Iterator E = _result_items.find(item);
@@ -831,7 +868,7 @@ void FindInFilesPanel::_on_result_selected() {
 	emit_signal(SNAME(SIGNAL_RESULT_SELECTED), fpath, r.line_number, r.begin, r.end);
 }
 
-void FindInFilesPanel::_on_replace_text_changed(String text) {
+void FindInFilesPanel::_on_replace_text_changed(const String &text) {
 	update_replace_buttons();
 }
 
@@ -901,7 +938,7 @@ private:
 	Vector<char> _line_buffer;
 };
 
-void FindInFilesPanel::apply_replaces_in_file(String fpath, const Vector<Result> &locations, String new_text) {
+void FindInFilesPanel::apply_replaces_in_file(const String &fpath, const Vector<Result> &locations, const String &new_text) {
 	// If the file is already open, I assume the editor will reload it.
 	// If there are unsaved changes, the user will be asked on focus,
 	// however that means either losing changes or losing replaces.
@@ -968,14 +1005,13 @@ void FindInFilesPanel::update_replace_buttons() {
 	_replace_all_button->set_disabled(disabled);
 }
 
-void FindInFilesPanel::set_progress_visible(bool visible) {
-	_progress_bar->set_self_modulate(Color(1, 1, 1, visible ? 1 : 0));
+void FindInFilesPanel::set_progress_visible(bool p_visible) {
+	_progress_bar->set_self_modulate(Color(1, 1, 1, p_visible ? 1 : 0));
 }
 
 void FindInFilesPanel::_bind_methods() {
 	ClassDB::bind_method("_on_result_found", &FindInFilesPanel::_on_result_found);
 	ClassDB::bind_method("_on_finished", &FindInFilesPanel::_on_finished);
-	ClassDB::bind_method("_draw_result_text", &FindInFilesPanel::draw_result_text);
 
 	ADD_SIGNAL(MethodInfo(SIGNAL_RESULT_SELECTED,
 			PropertyInfo(Variant::STRING, "path"),
@@ -984,4 +1020,6 @@ void FindInFilesPanel::_bind_methods() {
 			PropertyInfo(Variant::INT, "end")));
 
 	ADD_SIGNAL(MethodInfo(SIGNAL_FILES_MODIFIED, PropertyInfo(Variant::STRING, "paths")));
+
+	ADD_SIGNAL(MethodInfo(SIGNAL_CLOSE_BUTTON_CLICKED));
 }

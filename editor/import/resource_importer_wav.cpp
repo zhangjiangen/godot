@@ -1,32 +1,32 @@
-/*************************************************************************/
-/*  resource_importer_wav.cpp                                            */
-/*************************************************************************/
-/*                       This file is part of:                           */
-/*                           GODOT ENGINE                                */
-/*                      https://godotengine.org                          */
-/*************************************************************************/
-/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
-/*                                                                       */
-/* Permission is hereby granted, free of charge, to any person obtaining */
-/* a copy of this software and associated documentation files (the       */
-/* "Software"), to deal in the Software without restriction, including   */
-/* without limitation the rights to use, copy, modify, merge, publish,   */
-/* distribute, sublicense, and/or sell copies of the Software, and to    */
-/* permit persons to whom the Software is furnished to do so, subject to */
-/* the following conditions:                                             */
-/*                                                                       */
-/* The above copyright notice and this permission notice shall be        */
-/* included in all copies or substantial portions of the Software.       */
-/*                                                                       */
-/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
-/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
-/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
-/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
-/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
-/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
-/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
-/*************************************************************************/
+/**************************************************************************/
+/*  resource_importer_wav.cpp                                             */
+/**************************************************************************/
+/*                         This file is part of:                          */
+/*                             GODOT ENGINE                               */
+/*                        https://godotengine.org                         */
+/**************************************************************************/
+/* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
+/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
+/*                                                                        */
+/* Permission is hereby granted, free of charge, to any person obtaining  */
+/* a copy of this software and associated documentation files (the        */
+/* "Software"), to deal in the Software without restriction, including    */
+/* without limitation the rights to use, copy, modify, merge, publish,    */
+/* distribute, sublicense, and/or sell copies of the Software, and to     */
+/* permit persons to whom the Software is furnished to do so, subject to  */
+/* the following conditions:                                              */
+/*                                                                        */
+/* The above copyright notice and this permission notice shall be         */
+/* included in all copies or substantial portions of the Software.        */
+/*                                                                        */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,        */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF     */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. */
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY   */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,   */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
+/**************************************************************************/
 
 #include "resource_importer_wav.h"
 
@@ -107,7 +107,7 @@ Error ResourceImporterWAV::import(const String &p_source_file, const String &p_s
 	file->get_buffer((uint8_t *)&riff, 4); //RIFF
 
 	if (riff[0] != 'R' || riff[1] != 'I' || riff[2] != 'F' || riff[3] != 'F') {
-		ERR_FAIL_V(ERR_FILE_UNRECOGNIZED);
+		ERR_FAIL_V_MSG(ERR_FILE_UNRECOGNIZED, vformat("Not a WAV file. File should start with 'RIFF', but found '%s', in file of size %d bytes", riff, file->get_length()));
 	}
 
 	/* GET FILESIZE */
@@ -115,12 +115,12 @@ Error ResourceImporterWAV::import(const String &p_source_file, const String &p_s
 
 	/* CHECK WAVE */
 
-	char wave[4];
-
-	file->get_buffer((uint8_t *)&wave, 4); //RIFF
+	char wave[5];
+	wave[4] = 0;
+	file->get_buffer((uint8_t *)&wave, 4); //WAVE
 
 	if (wave[0] != 'W' || wave[1] != 'A' || wave[2] != 'V' || wave[3] != 'E') {
-		ERR_FAIL_V_MSG(ERR_FILE_UNRECOGNIZED, "Not a WAV file (no WAVE RIFF header).");
+		ERR_FAIL_V_MSG(ERR_FILE_UNRECOGNIZED, vformat("Not a WAV file. Header should contain 'WAVE', but found '%s', in file of size %d bytes", wave, file->get_length()));
 	}
 
 	// Let users override potential loop points from the WAV.
@@ -292,7 +292,9 @@ Error ResourceImporterWAV::import(const String &p_source_file, const String &p_s
 				loop_end = file->get_32();
 			}
 		}
-		file->seek(file_pos + chunksize);
+		// Move to the start of the next chunk. Note that RIFF requires a padding byte for odd
+		// chunk sizes.
+		file->seek(file_pos + chunksize + (chunksize & 1));
 	}
 
 	// STEP 2, APPLY CONVERSIONS
@@ -326,7 +328,7 @@ Error ResourceImporterWAV::import(const String &p_source_file, const String &p_s
 			int ipos = 0;
 
 			for (int i = 0; i < new_data_frames; i++) {
-				//simple cubic interpolation should be enough.
+				// Cubic interpolation should be enough.
 
 				float mu = frac;
 
@@ -335,15 +337,7 @@ Error ResourceImporterWAV::import(const String &p_source_file, const String &p_s
 				float y2 = data[MIN(frames - 1, ipos + 1) * format_channels + c];
 				float y3 = data[MIN(frames - 1, ipos + 2) * format_channels + c];
 
-				float mu2 = mu * mu;
-				float a0 = y3 - y2 - y0 + y1;
-				float a1 = y0 - y1 - a0;
-				float a2 = y2 - y0;
-				float a3 = y1;
-
-				float res = (a0 * mu * mu2 + a1 * mu2 + a2 * mu + a3);
-
-				new_data.write[i * format_channels + c] = res;
+				new_data.write[i * format_channels + c] = Math::cubic_interpolate(y1, y2, y0, y3, mu);
 
 				// update position and always keep fractional part within ]0...1]
 				// in order to avoid 32bit floating point precision errors
@@ -386,11 +380,11 @@ Error ResourceImporterWAV::import(const String &p_source_file, const String &p_s
 
 	bool trim = p_options["edit/trim"];
 
-	if (trim && (loop_mode != AudioStreamWAV::LOOP_DISABLED) && format_channels > 0) {
+	if (trim && (loop_mode == AudioStreamWAV::LOOP_DISABLED) && format_channels > 0) {
 		int first = 0;
 		int last = (frames / format_channels) - 1;
 		bool found = false;
-		float limit = Math::db2linear(TRIM_DB_LIMIT);
+		float limit = Math::db_to_linear(TRIM_DB_LIMIT);
 
 		for (int i = 0; i < data.size() / format_channels; i++) {
 			float ampChannelSum = 0;

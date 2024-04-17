@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<class name="AudioEffectChorus" inherits="AudioEffect" version="4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+<class name="AudioEffectChorus" inherits="AudioEffect" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
 	<brief_description>
 		Adds a chorus audio effect.
 	</brief_description>
@@ -166,7 +166,7 @@
 			The voice's filter rate.
 		</member>
 		<member name="voice_count" type="int" setter="set_voice_count" getter="get_voice_count" default="2">
-			The amount of voices in the effect.
+			The number of voices in the effect.
 		</member>
 		<member name="wet" type="float" setter="set_wet" getter="get_wet" default="0.5">
 			The effect's processed signal.

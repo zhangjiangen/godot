@@ -1,10 +1,12 @@
 import os
 import sys
-from methods import detect_darwin_sdk_path
+from methods import detect_darwin_sdk_path, get_compiler_version, is_vanilla_clang
+from platform_methods import detect_arch, detect_mvk
 
+from typing import TYPE_CHECKING
 
-def is_active():
-    return True
+if TYPE_CHECKING:
+    from SCons.Script.SConscript import SConsEnvironment
 
 
 def get_name():
@@ -26,81 +28,55 @@ def get_opts():
         ("MACOS_SDK_PATH", "Path to the macOS SDK", ""),
         ("vulkan_sdk_path", "Path to the Vulkan SDK", ""),
         EnumVariable("macports_clang", "Build using Clang from MacPorts", "no", ("no", "5.0", "devel")),
-        BoolVariable("debug_symbols", "Add debugging symbols to release/release_debug builds", True),
-        BoolVariable("separate_debug_symbols", "Create a separate file containing debugging symbols", False),
         BoolVariable("use_ubsan", "Use LLVM/GCC compiler undefined behavior sanitizer (UBSAN)", False),
         BoolVariable("use_asan", "Use LLVM/GCC compiler address sanitizer (ASAN)", False),
         BoolVariable("use_tsan", "Use LLVM/GCC compiler thread sanitizer (TSAN)", False),
         BoolVariable("use_coverage", "Use instrumentation codes in the binary (e.g. for code coverage)", False),
+        ("angle_libs", "Path to the ANGLE static libraries", ""),
+        (
+            "bundle_sign_identity",
+            "The 'Full Name', 'Common Name' or SHA-1 hash of the signing identity used to sign editor .app bundle.",
+            "-",
+        ),
+        BoolVariable("generate_bundle", "Generate an APP bundle after building iOS/macOS binaries", False),
     ]
+
+
+def get_doc_classes():
+    return [
+        "EditorExportPlatformMacOS",
+    ]
+
+
+def get_doc_path():
+    return "doc_classes"
 
 
 def get_flags():
     return [
+        ("arch", detect_arch()),
         ("use_volk", False),
+        ("supported", ["mono"]),
     ]
 
 
-def get_mvk_sdk_path():
-    def int_or_zero(i):
-        try:
-            return int(i)
-        except:
-            return 0
+def configure(env: "SConsEnvironment"):
+    # Validate arch.
+    supported_arches = ["x86_64", "arm64"]
+    if env["arch"] not in supported_arches:
+        print(
+            'Unsupported CPU architecture "%s" for macOS. Supported architectures are: %s.'
+            % (env["arch"], ", ".join(supported_arches))
+        )
+        sys.exit()
 
-    def ver_parse(a):
-        return [int_or_zero(i) for i in a.split(".")]
-
-    dirname = os.path.expanduser("~/VulkanSDK")
-    files = os.listdir(dirname)
-
-    ver_file = "0.0.0.0"
-    ver_num = ver_parse(ver_file)
-
-    for file in files:
-        if os.path.isdir(os.path.join(dirname, file)):
-            ver_comp = ver_parse(file)
-            lib_name = os.path.join(
-                os.path.join(dirname, file), "MoltenVK/MoltenVK.xcframework/macos-arm64_x86_64/libMoltenVK.a"
-            )
-            if os.path.isfile(lib_name) and ver_comp > ver_num:
-                ver_num = ver_comp
-                ver_file = file
-
-    return os.path.join(os.path.join(dirname, ver_file), "MoltenVK/MoltenVK.xcframework/macos-arm64_x86_64/")
-
-
-def configure(env):
     ## Build type
 
-    if env["target"] == "release":
-        if env["optimize"] == "speed":  # optimize for speed (default)
-            env.Prepend(CCFLAGS=["-O3", "-fomit-frame-pointer", "-ftree-vectorize"])
-        elif env["optimize"] == "size":  # optimize for size
-            env.Prepend(CCFLAGS=["-Os", "-ftree-vectorize"])
+    if env["target"] == "template_release":
         if env["arch"] != "arm64":
             env.Prepend(CCFLAGS=["-msse2"])
-
-        if env["debug_symbols"]:
-            env.Prepend(CCFLAGS=["-g2"])
-
-    elif env["target"] == "release_debug":
-        if env["optimize"] == "speed":  # optimize for speed (default)
-            env.Prepend(CCFLAGS=["-O2"])
-        elif env["optimize"] == "size":  # optimize for size
-            env.Prepend(CCFLAGS=["-Os"])
-        if env["debug_symbols"]:
-            env.Prepend(CCFLAGS=["-g2"])
-
-    elif env["target"] == "debug":
-        env.Prepend(CCFLAGS=["-g3"])
+    elif env.dev_build:
         env.Prepend(LINKFLAGS=["-Xlinker", "-no_deduplicate"])
-
-    ## Architecture
-
-    # macOS no longer runs on 32-bit since 10.7 which is unsupported since 2014
-    # As such, we only support 64-bit
-    env["bits"] = "64"
 
     ## Compiler configuration
 
@@ -108,16 +84,26 @@ def configure(env):
     if "OSXCROSS_ROOT" in os.environ:
         env["osxcross"] = True
 
+    # CPU architecture.
     if env["arch"] == "arm64":
-        print("Building for macOS 11.0+, platform arm64.")
+        print("Building for macOS 11.0+.")
         env.Append(ASFLAGS=["-arch", "arm64", "-mmacosx-version-min=11.0"])
         env.Append(CCFLAGS=["-arch", "arm64", "-mmacosx-version-min=11.0"])
         env.Append(LINKFLAGS=["-arch", "arm64", "-mmacosx-version-min=11.0"])
-    else:
-        print("Building for macOS 10.12+, platform x86_64.")
-        env.Append(ASFLAGS=["-arch", "x86_64", "-mmacosx-version-min=10.12"])
-        env.Append(CCFLAGS=["-arch", "x86_64", "-mmacosx-version-min=10.12"])
-        env.Append(LINKFLAGS=["-arch", "x86_64", "-mmacosx-version-min=10.12"])
+    elif env["arch"] == "x86_64":
+        print("Building for macOS 10.13+.")
+        env.Append(ASFLAGS=["-arch", "x86_64", "-mmacosx-version-min=10.13"])
+        env.Append(CCFLAGS=["-arch", "x86_64", "-mmacosx-version-min=10.13"])
+        env.Append(LINKFLAGS=["-arch", "x86_64", "-mmacosx-version-min=10.13"])
+
+    cc_version = get_compiler_version(env)
+    cc_version_major = cc_version["apple_major"]
+    cc_version_minor = cc_version["apple_minor"]
+    vanilla = is_vanilla_clang(env)
+
+    # Workaround for Xcode 15 linker bug.
+    if not vanilla and cc_version_major == 1500 and cc_version_minor == 0:
+        env.Prepend(LINKFLAGS=["-ld_classic"])
 
     env.Append(CCFLAGS=["-fobjc-arc"])
 
@@ -139,7 +125,7 @@ def configure(env):
         env.Append(LINKFLAGS=["-isysroot", "$MACOS_SDK_PATH"])
 
     else:  # osxcross build
-        root = os.environ.get("OSXCROSS_ROOT", 0)
+        root = os.environ.get("OSXCROSS_ROOT", "")
         if env["arch"] == "arm64":
             basecmd = root + "/target/bin/arm64-apple-" + env["osxcross_sdk"] + "-"
         else:
@@ -150,13 +136,28 @@ def configure(env):
             env["CC"] = basecmd + "cc"
             env["CXX"] = basecmd + "c++"
         else:
-            # there aren't any ccache wrappers available for OS X cross-compile,
+            # there aren't any ccache wrappers available for macOS cross-compile,
             # to enable caching we need to prepend the path to the ccache binary
             env["CC"] = ccache_path + " " + basecmd + "cc"
             env["CXX"] = ccache_path + " " + basecmd + "c++"
         env["AR"] = basecmd + "ar"
         env["RANLIB"] = basecmd + "ranlib"
         env["AS"] = basecmd + "as"
+
+    # LTO
+
+    if env["lto"] == "auto":  # LTO benefits for macOS (size, performance) haven't been clearly established yet.
+        env["lto"] = "none"
+
+    if env["lto"] != "none":
+        if env["lto"] == "thin":
+            env.Append(CCFLAGS=["-flto=thin"])
+            env.Append(LINKFLAGS=["-flto=thin"])
+        else:
+            env.Append(CCFLAGS=["-flto"])
+            env.Append(LINKFLAGS=["-flto"])
+
+    # Sanitizers
 
     if env["use_ubsan"] or env["use_asan"] or env["use_tsan"]:
         env.extra_suffix += ".san"
@@ -185,16 +186,13 @@ def configure(env):
 
     ## Dependencies
 
-    if env["builtin_libtheora"]:
-        if env["arch"] != "arm64":
-            env["x86_libtheora_opt_gcc"] = True
+    if env["builtin_libtheora"] and env["arch"] == "x86_64":
+        env["x86_libtheora_opt_gcc"] = True
 
     ## Flags
 
     env.Prepend(CPPPATH=["#platform/macos"])
-    env.Append(
-        CPPDEFINES=["MACOS_ENABLED", "UNIX_ENABLED", "APPLE_STYLE_KEYS", "COREAUDIO_ENABLED", "COREMIDI_ENABLED"]
-    )
+    env.Append(CPPDEFINES=["MACOS_ENABLED", "UNIX_ENABLED", "COREAUDIO_ENABLED", "COREMIDI_ENABLED"])
     env.Append(
         LINKFLAGS=[
             "-framework",
@@ -210,43 +208,52 @@ def configure(env):
             "-framework",
             "IOKit",
             "-framework",
-            "ForceFeedback",
+            "GameController",
+            "-framework",
+            "CoreHaptics",
             "-framework",
             "CoreVideo",
             "-framework",
             "AVFoundation",
             "-framework",
             "CoreMedia",
+            "-framework",
+            "QuartzCore",
+            "-framework",
+            "Security",
         ]
     )
     env.Append(LIBS=["pthread", "z"])
 
     if env["opengl3"]:
-        env.Append(CPPDEFINES=["GLES_ENABLED", "GLES3_ENABLED"])
-        env.Append(CCFLAGS=["-Wno-deprecated-declarations"])  # Disable deprecation warnings
-        env.Append(LINKFLAGS=["-framework", "OpenGL"])
+        env.Append(CPPDEFINES=["GLES3_ENABLED"])
+        if env["angle_libs"] != "":
+            env.AppendUnique(CPPDEFINES=["EGL_STATIC"])
+            env.Append(LINKFLAGS=["-L" + env["angle_libs"]])
+            env.Append(LINKFLAGS=["-lANGLE.macos." + env["arch"]])
+            env.Append(LINKFLAGS=["-lEGL.macos." + env["arch"]])
+            env.Append(LINKFLAGS=["-lGLES.macos." + env["arch"]])
+        env.Prepend(CPPPATH=["#thirdparty/angle/include"])
 
     env.Append(LINKFLAGS=["-rpath", "@executable_path/../Frameworks", "-rpath", "@executable_path"])
 
     if env["vulkan"]:
-        env.Append(CPPDEFINES=["VULKAN_ENABLED"])
-        env.Append(LINKFLAGS=["-framework", "Metal", "-framework", "QuartzCore", "-framework", "IOSurface"])
+        env.Append(CPPDEFINES=["VULKAN_ENABLED", "RD_ENABLED"])
+        env.Append(LINKFLAGS=["-framework", "Metal", "-framework", "IOSurface"])
         if not env["use_volk"]:
             env.Append(LINKFLAGS=["-lMoltenVK"])
-            mvk_found = False
-            if env["vulkan_sdk_path"] != "":
-                mvk_path = os.path.join(
-                    os.path.expanduser(env["vulkan_sdk_path"]), "MoltenVK/MoltenVK.xcframework/macos-arm64_x86_64/"
-                )
-                if os.path.isfile(os.path.join(mvk_path, "libMoltenVK.a")):
-                    mvk_found = True
-                    env.Append(LINKFLAGS=["-L" + mvk_path])
-            if not mvk_found:
-                mvk_path = get_mvk_sdk_path()
-                if os.path.isfile(os.path.join(mvk_path, "libMoltenVK.a")):
-                    mvk_found = True
-                    env.Append(LINKFLAGS=["-L" + mvk_path])
-            if not mvk_found:
+
+            mvk_path = ""
+            arch_variants = ["macos-arm64_x86_64", "macos-" + env["arch"]]
+            for arch in arch_variants:
+                mvk_path = detect_mvk(env, arch)
+                if mvk_path != "":
+                    mvk_path = os.path.join(mvk_path, arch)
+                    break
+
+            if mvk_path != "":
+                env.Append(LINKFLAGS=["-L" + mvk_path])
+            else:
                 print(
                     "MoltenVK SDK installation directory not found, use 'vulkan_sdk_path' SCons parameter to specify SDK path."
                 )
