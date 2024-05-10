@@ -147,23 +147,17 @@ GDScriptParser::GDScriptParser() {
 }
 
 GDScriptParser::~GDScriptParser() {
-	clear();
-}
-
-void GDScriptParser::clear() {
 	while (list != nullptr) {
 		Node *element = list;
 		list = list->next;
 		memdelete(element);
 	}
+}
 
-	head = nullptr;
-	list = nullptr;
-	_is_tool = false;
-	for_completion = false;
-	errors.clear();
-	multiline_stack.clear();
-	nodes_in_progress.clear();
+void GDScriptParser::clear() {
+	GDScriptParser tmp;
+	tmp = *this;
+	*this = GDScriptParser();
 }
 
 void GDScriptParser::push_error(const String &p_message, const Node *p_origin) {
@@ -707,6 +701,25 @@ void GDScriptParser::parse_program() {
 	}
 
 	clear_unused_annotations();
+}
+
+Ref<GDScriptParserRef> GDScriptParser::get_depended_parser_for(const String &p_path) {
+	Ref<GDScriptParserRef> ref;
+	if (depended_parsers.has(p_path)) {
+		ref = depended_parsers[p_path];
+	} else {
+		Error err = OK;
+		ref = GDScriptCache::get_parser(p_path, GDScriptParserRef::EMPTY, err, script_path);
+		if (ref.is_valid()) {
+			depended_parsers[p_path] = ref;
+		}
+	}
+
+	return ref;
+}
+
+const HashMap<String, Ref<GDScriptParserRef>> &GDScriptParser::get_depended_parsers() {
+	return depended_parsers;
 }
 
 GDScriptParser::ClassNode *GDScriptParser::find_class(const String &p_qualified_name) const {
@@ -3186,6 +3199,9 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_call(ExpressionNode *p_pre
 }
 
 GDScriptParser::ExpressionNode *GDScriptParser::parse_get_node(ExpressionNode *p_previous_operand, bool p_can_assign) {
+	// We want code completion after a DOLLAR even if the current code is invalid.
+	make_completion_context(COMPLETION_GET_NODE, nullptr, -1, true);
+
 	if (!current.is_node_name() && !check(GDScriptTokenizer::Token::LITERAL) && !check(GDScriptTokenizer::Token::SLASH) && !check(GDScriptTokenizer::Token::PERCENT)) {
 		push_error(vformat(R"(Expected node path as string or identifier after "%s".)", previous.get_name()));
 		return nullptr;
@@ -3241,7 +3257,7 @@ GDScriptParser::ExpressionNode *GDScriptParser::parse_get_node(ExpressionNode *p
 			path_state = PATH_STATE_SLASH;
 		}
 
-		make_completion_context(COMPLETION_GET_NODE, get_node, context_argument++);
+		make_completion_context(COMPLETION_GET_NODE, get_node, context_argument++, true);
 
 		if (match(GDScriptTokenizer::Token::LITERAL)) {
 			if (previous.literal.get_type() != Variant::STRING) {
@@ -4071,6 +4087,7 @@ bool GDScriptParser::onready_annotation(const AnnotationNode *p_annotation, Node
 
 	if (current_class && !ClassDB::is_parent_class(current_class->get_datatype().native_type, SNAME("Node"))) {
 		push_error(R"("@onready" can only be used in classes that inherit "Node".)", p_annotation);
+		return false;
 	}
 
 	VariableNode *variable = static_cast<VariableNode *>(p_target);
@@ -4114,6 +4131,9 @@ static String _get_annotation_error_string(const StringName &p_annotation_name, 
 				break;
 			case Variant::COLOR:
 				types.push_back("PackedColorArray");
+				break;
+			case Variant::VECTOR4:
+				types.push_back("PackedVector4Array");
 				break;
 			default:
 				break;
@@ -4813,6 +4833,8 @@ static Variant::Type _variant_type_to_typed_array_element_type(Variant::Type p_t
 			return Variant::VECTOR3;
 		case Variant::PACKED_COLOR_ARRAY:
 			return Variant::COLOR;
+		case Variant::PACKED_VECTOR4_ARRAY:
+			return Variant::VECTOR4;
 		default:
 			return Variant::NIL;
 	}

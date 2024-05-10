@@ -98,7 +98,7 @@ public:
 	// Implemented in web_main.cpp loop callback instead.
 	void add_frame_delay(bool p_can_draw) override;
 
-	void vibrate_handheld(int p_duration_ms) override;
+	void vibrate_handheld(int p_duration_ms, float p_amplitude) override;
 
 	String get_cache_path() const override;
 	String get_config_path() const override;
@@ -109,7 +109,7 @@ public:
 
 	void alert(const String &p_alert, const String &p_title = "ALERT!") override;
 
-	Error open_dynamic_library(const String &p_path, void *&p_library_handle, bool p_also_set_library_path = false, String *r_resolved_path = nullptr, bool p_generate_temp_files = false) override;
+	Error open_dynamic_library(const String &p_path, void *&p_library_handle, GDExtensionData *p_data = nullptr) override;
 
 	void resume_audio();
 

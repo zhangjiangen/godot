@@ -546,8 +546,8 @@ Dictionary OS_Unix::execute_with_pipe(const String &p_path, const List<String> &
 		// The child process.
 		Vector<CharString> cs;
 		cs.push_back(p_path.utf8());
-		for (int i = 0; i < p_arguments.size(); i++) {
-			cs.push_back(p_arguments[i].utf8());
+		for (const String &arg : p_arguments) {
+			cs.push_back(arg.utf8());
 		}
 
 		Vector<char *> args;
@@ -606,8 +606,8 @@ Error OS_Unix::execute(const String &p_path, const List<String> &p_arguments, St
 #else
 	if (r_pipe) {
 		String command = "\"" + p_path + "\"";
-		for (int i = 0; i < p_arguments.size(); i++) {
-			command += String(" \"") + p_arguments[i] + "\"";
+		for (const String &arg : p_arguments) {
+			command += String(" \"") + arg + "\"";
 		}
 		if (read_stderr) {
 			command += " 2>&1"; // Include stderr
@@ -647,8 +647,8 @@ Error OS_Unix::execute(const String &p_path, const List<String> &p_arguments, St
 		// The child process
 		Vector<CharString> cs;
 		cs.push_back(p_path.utf8());
-		for (int i = 0; i < p_arguments.size(); i++) {
-			cs.push_back(p_arguments[i].utf8());
+		for (const String &arg : p_arguments) {
+			cs.push_back(arg.utf8());
 		}
 
 		Vector<char *> args;
@@ -689,8 +689,8 @@ Error OS_Unix::create_process(const String &p_path, const List<String> &p_argume
 
 		Vector<CharString> cs;
 		cs.push_back(p_path.utf8());
-		for (int i = 0; i < p_arguments.size(); i++) {
-			cs.push_back(p_arguments[i].utf8());
+		for (const String &arg : p_arguments) {
+			cs.push_back(arg.utf8());
 		}
 
 		Vector<char *> args;
@@ -784,7 +784,7 @@ String OS_Unix::get_locale() const {
 	return locale;
 }
 
-Error OS_Unix::open_dynamic_library(const String &p_path, void *&p_library_handle, bool p_also_set_library_path, String *r_resolved_path, bool p_generate_temp_files) {
+Error OS_Unix::open_dynamic_library(const String &p_path, void *&p_library_handle, GDExtensionData *p_data) {
 	String path = p_path;
 
 	if (FileAccess::exists(path) && path.is_relative_path()) {
@@ -808,8 +808,8 @@ Error OS_Unix::open_dynamic_library(const String &p_path, void *&p_library_handl
 	p_library_handle = dlopen(path.utf8().get_data(), GODOT_DLOPEN_MODE);
 	ERR_FAIL_NULL_V_MSG(p_library_handle, ERR_CANT_OPEN, vformat("Can't open dynamic library: %s. Error: %s.", p_path, dlerror()));
 
-	if (r_resolved_path != nullptr) {
-		*r_resolved_path = path;
+	if (p_data != nullptr && p_data->r_resolved_path != nullptr) {
+		*p_data->r_resolved_path = path;
 	}
 
 	return OK;
