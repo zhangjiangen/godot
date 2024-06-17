@@ -1018,8 +1018,7 @@ void DisplayServerWayland::cursor_set_custom_image(const Ref<Resource> &p_cursor
 			wayland_thread.cursor_shape_clear_custom_image(p_shape);
 		}
 
-		Rect2 atlas_rect;
-		Ref<Image> image = _get_cursor_image_from_resource(p_cursor, p_hotspot, atlas_rect);
+		Ref<Image> image = _get_cursor_image_from_resource(p_cursor, p_hotspot);
 		ERR_FAIL_COND(image.is_null());
 
 		CustomCursor &cursor = custom_cursors[p_shape];
@@ -1137,7 +1136,14 @@ void DisplayServerWayland::process_events() {
 			WindowData wd = main_window;
 
 			if (wd.drop_files_callback.is_valid()) {
-				wd.drop_files_callback.call(dropfiles_msg->files);
+				Variant v_files = dropfiles_msg->files;
+				const Variant *v_args[1] = { &v_files };
+				Variant ret;
+				Callable::CallError ce;
+				wd.drop_files_callback.callp((const Variant **)&v_args, 1, ret, ce);
+				if (ce.error != Callable::CallError::CALL_OK) {
+					ERR_PRINT(vformat("Failed to execute drop files callback: %s.", Variant::get_callable_error_text(wd.drop_files_callback, v_args, 1, ce)));
+				}
 			}
 		}
 	}
@@ -1209,6 +1215,15 @@ void DisplayServerWayland::set_context(Context p_context) {
 	wayland_thread.window_set_app_id(MAIN_WINDOW_ID, app_id);
 }
 
+bool DisplayServerWayland::is_window_transparency_available() const {
+#if defined(RD_ENABLED)
+	if (rendering_device && !rendering_device->is_composite_alpha_supported()) {
+		return false;
+	}
+#endif
+	return OS::get_singleton()->is_layered_allowed();
+}
+
 Vector<String> DisplayServerWayland::get_rendering_drivers_func() {
 	Vector<String> drivers;
 
@@ -1224,8 +1239,8 @@ Vector<String> DisplayServerWayland::get_rendering_drivers_func() {
 	return drivers;
 }
 
-DisplayServer *DisplayServerWayland::create_func(const String &p_rendering_driver, WindowMode p_mode, VSyncMode p_vsync_mode, uint32_t p_flags, const Point2i *p_position, const Size2i &p_resolution, int p_screen, Error &r_error) {
-	DisplayServer *ds = memnew(DisplayServerWayland(p_rendering_driver, p_mode, p_vsync_mode, p_flags, p_resolution, r_error));
+DisplayServer *DisplayServerWayland::create_func(const String &p_rendering_driver, WindowMode p_mode, VSyncMode p_vsync_mode, uint32_t p_flags, const Point2i *p_position, const Size2i &p_resolution, int p_screen, Context p_context, Error &r_error) {
+	DisplayServer *ds = memnew(DisplayServerWayland(p_rendering_driver, p_mode, p_vsync_mode, p_flags, p_resolution, p_context, r_error));
 	if (r_error != OK) {
 		ERR_PRINT("Can't create the Wayland display server.");
 		memdelete(ds);
@@ -1235,7 +1250,7 @@ DisplayServer *DisplayServerWayland::create_func(const String &p_rendering_drive
 	return ds;
 }
 
-DisplayServerWayland::DisplayServerWayland(const String &p_rendering_driver, WindowMode p_mode, VSyncMode p_vsync_mode, uint32_t p_flags, const Vector2i &p_resolution, Error &r_error) {
+DisplayServerWayland::DisplayServerWayland(const String &p_rendering_driver, WindowMode p_mode, VSyncMode p_vsync_mode, uint32_t p_flags, const Vector2i &p_resolution, Context p_context, Error &r_error) {
 #ifdef GLES3_ENABLED
 #ifdef SOWRAP_ENABLED
 #ifdef DEBUG_ENABLED
@@ -1247,6 +1262,7 @@ DisplayServerWayland::DisplayServerWayland(const String &p_rendering_driver, Win
 #endif // GLES3_ENABLED
 
 	r_error = ERR_UNAVAILABLE;
+	context = p_context;
 
 	Error thread_err = wayland_thread.init();
 
@@ -1326,7 +1342,7 @@ DisplayServerWayland::DisplayServerWayland(const String &p_rendering_driver, Win
 
 			if (prime_idx == -1) {
 				print_verbose("Detecting GPUs, set DRI_PRIME in the environment to override GPU detection logic.");
-				prime_idx = DetectPrimeEGL::detect_prime();
+				prime_idx = DetectPrimeEGL::detect_prime(EGL_PLATFORM_WAYLAND_KHR);
 			}
 
 			if (prime_idx) {
@@ -1339,7 +1355,7 @@ DisplayServerWayland::DisplayServerWayland(const String &p_rendering_driver, Win
 		if (rendering_driver == "opengl3") {
 			egl_manager = memnew(EGLManagerWayland);
 
-			if (egl_manager->initialize() != OK || egl_manager->open_display(wayland_thread.get_wl_display()) != OK) {
+			if (egl_manager->initialize(wayland_thread.get_wl_display()) != OK || egl_manager->open_display(wayland_thread.get_wl_display()) != OK) {
 				memdelete(egl_manager);
 				egl_manager = nullptr;
 
@@ -1359,7 +1375,7 @@ DisplayServerWayland::DisplayServerWayland(const String &p_rendering_driver, Win
 		if (rendering_driver == "opengl3_es") {
 			egl_manager = memnew(EGLManagerWaylandGLES);
 
-			if (egl_manager->initialize() != OK) {
+			if (egl_manager->initialize(wayland_thread.get_wl_display()) != OK) {
 				memdelete(egl_manager);
 				egl_manager = nullptr;
 				r_error = ERR_CANT_CREATE;

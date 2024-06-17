@@ -2229,6 +2229,7 @@ void RenderingServer::_bind_methods() {
 	BIND_CONSTANT(MAX_GLOW_LEVELS);
 	BIND_CONSTANT(MAX_CURSORS);
 	BIND_CONSTANT(MAX_2D_DIRECTIONAL_LIGHTS);
+	BIND_CONSTANT(MAX_MESH_SURFACES);
 
 	/* TEXTURE */
 
@@ -3229,9 +3230,9 @@ void RenderingServer::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("canvas_item_add_line", "item", "from", "to", "color", "width", "antialiased"), &RenderingServer::canvas_item_add_line, DEFVAL(-1.0), DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("canvas_item_add_polyline", "item", "points", "colors", "width", "antialiased"), &RenderingServer::canvas_item_add_polyline, DEFVAL(-1.0), DEFVAL(false));
-	ClassDB::bind_method(D_METHOD("canvas_item_add_multiline", "item", "points", "colors", "width"), &RenderingServer::canvas_item_add_multiline, DEFVAL(-1.0));
-	ClassDB::bind_method(D_METHOD("canvas_item_add_rect", "item", "rect", "color"), &RenderingServer::canvas_item_add_rect);
-	ClassDB::bind_method(D_METHOD("canvas_item_add_circle", "item", "pos", "radius", "color"), &RenderingServer::canvas_item_add_circle);
+	ClassDB::bind_method(D_METHOD("canvas_item_add_multiline", "item", "points", "colors", "width", "antialiased"), &RenderingServer::canvas_item_add_multiline, DEFVAL(-1.0), DEFVAL(false));
+	ClassDB::bind_method(D_METHOD("canvas_item_add_rect", "item", "rect", "color", "antialiased"), &RenderingServer::canvas_item_add_rect, DEFVAL(false));
+	ClassDB::bind_method(D_METHOD("canvas_item_add_circle", "item", "pos", "radius", "color", "antialiased"), &RenderingServer::canvas_item_add_circle, DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("canvas_item_add_texture_rect", "item", "rect", "texture", "tile", "modulate", "transpose"), &RenderingServer::canvas_item_add_texture_rect, DEFVAL(false), DEFVAL(Color(1, 1, 1)), DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("canvas_item_add_msdf_texture_rect_region", "item", "rect", "texture", "src_rect", "modulate", "outline_size", "px_range", "scale"), &RenderingServer::canvas_item_add_msdf_texture_rect_region, DEFVAL(Color(1, 1, 1)), DEFVAL(0), DEFVAL(1.0), DEFVAL(1.0));
 	ClassDB::bind_method(D_METHOD("canvas_item_add_lcd_texture_rect_region", "item", "rect", "texture", "src_rect", "modulate"), &RenderingServer::canvas_item_add_lcd_texture_rect_region);
@@ -3609,7 +3610,7 @@ void RenderingServer::init() {
 	GLOBAL_DEF(PropertyInfo(Variant::FLOAT, "rendering/environment/subsurface_scattering/subsurface_scattering_scale", PROPERTY_HINT_RANGE, "0.001,1,0.001"), 0.05);
 	GLOBAL_DEF(PropertyInfo(Variant::FLOAT, "rendering/environment/subsurface_scattering/subsurface_scattering_depth_scale", PROPERTY_HINT_RANGE, "0.001,1,0.001"), 0.01);
 
-	GLOBAL_DEF(PropertyInfo(Variant::INT, "rendering/limits/global_shader_variables/buffer_size", PROPERTY_HINT_RANGE, "1,1048576,1"), 65536);
+	GLOBAL_DEF(PropertyInfo(Variant::INT, "rendering/limits/global_shader_variables/buffer_size", PROPERTY_HINT_RANGE, "16,1048576,1"), 65536);
 
 	GLOBAL_DEF(PropertyInfo(Variant::FLOAT, "rendering/lightmapping/probe_capture/update_speed", PROPERTY_HINT_RANGE, "0.001,256,0.001"), 15);
 	GLOBAL_DEF(PropertyInfo(Variant::FLOAT, "rendering/lightmapping/primitive_meshes/texel_size", PROPERTY_HINT_RANGE, "0.001,100,0.001"), 0.2);

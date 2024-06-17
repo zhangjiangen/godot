@@ -34,7 +34,6 @@
 #include "core/variant/type_info.h"
 #include "scene/3d/skeleton_modifier_3d.h"
 #include "scene/resources/surface_tool.h"
-#include "scene/scene_string_names.h"
 #ifndef DISABLE_DEPRECATED
 #include "scene/3d/physical_bone_simulator_3d.h"
 #endif // _DISABLE_DEPRECATED
@@ -266,9 +265,29 @@ void Skeleton3D::_update_process_order() {
 
 	bones_backup.resize(bones.size());
 
+	concatenated_bone_names = StringName();
+
 	process_order_dirty = false;
 
 	emit_signal("bone_list_changed");
+}
+
+void Skeleton3D::_update_bone_names() const {
+	String names;
+	for (int i = 0; i < bones.size(); i++) {
+		if (i > 0) {
+			names += ",";
+		}
+		names += bones[i].name;
+	}
+	concatenated_bone_names = StringName(names);
+}
+
+StringName Skeleton3D::get_concatenated_bone_names() const {
+	if (concatenated_bone_names == StringName()) {
+		_update_bone_names();
+	}
+	return concatenated_bone_names;
 }
 
 #ifndef DISABLE_DEPRECATED
@@ -314,7 +333,7 @@ void Skeleton3D::_notification(int p_what) {
 				_process_modifiers();
 			}
 
-			emit_signal(SceneStringNames::get_singleton()->skeleton_updated);
+			emit_signal(SceneStringName(skeleton_updated));
 
 			// Update skins.
 			RenderingServer *rs = RenderingServer::get_singleton();
@@ -605,7 +624,7 @@ void Skeleton3D::set_bone_enabled(int p_bone, bool p_enabled) {
 	ERR_FAIL_INDEX(p_bone, bone_size);
 
 	bones.write[p_bone].enabled = p_enabled;
-	emit_signal(SceneStringNames::get_singleton()->bone_enabled_changed, p_bone);
+	emit_signal(SceneStringName(bone_enabled_changed), p_bone);
 	_make_dirty();
 }
 
@@ -617,7 +636,7 @@ bool Skeleton3D::is_bone_enabled(int p_bone) const {
 
 void Skeleton3D::set_show_rest_only(bool p_enabled) {
 	show_rest_only = p_enabled;
-	emit_signal(SceneStringNames::get_singleton()->show_rest_only_changed);
+	emit_signal(SceneStringName(show_rest_only_changed));
 	_make_dirty();
 }
 
@@ -840,7 +859,7 @@ void Skeleton3D::force_update_all_bone_transforms() {
 	if (updating) {
 		return;
 	}
-	emit_signal(SceneStringNames::get_singleton()->pose_updated);
+	emit_signal(SceneStringName(pose_updated));
 }
 
 void Skeleton3D::force_update_bone_children_transforms(int p_bone_idx) {
@@ -848,12 +867,13 @@ void Skeleton3D::force_update_bone_children_transforms(int p_bone_idx) {
 	ERR_FAIL_INDEX(p_bone_idx, bone_size);
 
 	Bone *bonesptr = bones.ptrw();
-	List<int> bones_to_process = List<int>();
+	thread_local LocalVector<int> bones_to_process;
+	bones_to_process.clear();
 	bones_to_process.push_back(p_bone_idx);
 
-	while (bones_to_process.size() > 0) {
-		int current_bone_idx = bones_to_process.front()->get();
-		bones_to_process.erase(current_bone_idx);
+	uint32_t index = 0;
+	while (index < bones_to_process.size()) {
+		int current_bone_idx = bones_to_process[index];
 
 		Bone &b = bonesptr[current_bone_idx];
 		bool bone_enabled = b.enabled && !show_rest_only;
@@ -906,6 +926,8 @@ void Skeleton3D::force_update_bone_children_transforms(int p_bone_idx) {
 		for (int i = 0; i < child_bone_size; i++) {
 			bones_to_process.push_back(b.child_bones[i]);
 		}
+
+		index++;
 	}
 }
 
@@ -980,6 +1002,8 @@ void Skeleton3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("find_bone", "name"), &Skeleton3D::find_bone);
 	ClassDB::bind_method(D_METHOD("get_bone_name", "bone_idx"), &Skeleton3D::get_bone_name);
 	ClassDB::bind_method(D_METHOD("set_bone_name", "bone_idx", "name"), &Skeleton3D::set_bone_name);
+
+	ClassDB::bind_method(D_METHOD("get_concatenated_bone_names"), &Skeleton3D::get_concatenated_bone_names);
 
 	ClassDB::bind_method(D_METHOD("get_bone_parent", "bone_idx"), &Skeleton3D::get_bone_parent);
 	ClassDB::bind_method(D_METHOD("set_bone_parent", "bone_idx", "parent_idx"), &Skeleton3D::set_bone_parent);

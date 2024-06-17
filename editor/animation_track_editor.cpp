@@ -55,8 +55,10 @@
 #include "scene/gui/texture_rect.h"
 #include "scene/gui/view_panner.h"
 #include "scene/main/window.h"
-#include "scene/scene_string_names.h"
 #include "servers/audio/audio_stream.h"
+
+constexpr double FPS_DECIMAL = 1;
+constexpr double SECOND_DECIMAL = 0.0001;
 
 void AnimationTrackKeyEdit::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_update_obj"), &AnimationTrackKeyEdit::_update_obj);
@@ -1323,7 +1325,7 @@ void AnimationTimelineEdit::_anim_length_changed(double p_new_len) {
 		return;
 	}
 
-	p_new_len = MAX(0.0001, p_new_len);
+	p_new_len = MAX(SECOND_DECIMAL, p_new_len);
 	if (use_fps && animation->get_step() > 0) {
 		p_new_len *= animation->get_step();
 	}
@@ -1443,7 +1445,7 @@ void AnimationTimelineEdit::_notification(int p_what) {
 
 			float l = animation->get_length();
 			if (l <= 0) {
-				l = 0.0001; // Avoid crashor.
+				l = SECOND_DECIMAL; // Avoid crashor.
 			}
 
 			Ref<Texture2D> hsize_icon = get_editor_theme_icon(SNAME("Hsize"));
@@ -1724,7 +1726,7 @@ void AnimationTimelineEdit::update_values() {
 	editing = true;
 	if (use_fps && animation->get_step() > 0) {
 		length->set_value(animation->get_length() / animation->get_step());
-		length->set_step(1);
+		length->set_step(FPS_DECIMAL);
 		length->set_tooltip_text(TTR("Animation length (frames)"));
 		time_icon->set_tooltip_text(TTR("Animation length (frames)"));
 		if (track_edit) {
@@ -1732,7 +1734,7 @@ void AnimationTimelineEdit::update_values() {
 		}
 	} else {
 		length->set_value(animation->get_length());
-		length->set_step(0.0001);
+		length->set_step(SECOND_DECIMAL);
 		length->set_tooltip_text(TTR("Animation length (seconds)"));
 		time_icon->set_tooltip_text(TTR("Animation length (seconds)"));
 	}
@@ -1896,7 +1898,7 @@ AnimationTimelineEdit::AnimationTimelineEdit() {
 	play_position->set_mouse_filter(MOUSE_FILTER_PASS);
 	add_child(play_position);
 	play_position->set_anchors_and_offsets_preset(PRESET_FULL_RECT);
-	play_position->connect("draw", callable_mp(this, &AnimationTimelineEdit::_play_position_draw));
+	play_position->connect(SceneStringName(draw), callable_mp(this, &AnimationTimelineEdit::_play_position_draw));
 
 	add_track = memnew(MenuButton);
 	add_track->set_position(Vector2(0, 0));
@@ -1913,9 +1915,9 @@ AnimationTimelineEdit::AnimationTimelineEdit() {
 	time_icon->set_tooltip_text(TTR("Animation length (seconds)"));
 	len_hb->add_child(time_icon);
 	length = memnew(EditorSpinSlider);
-	length->set_min(0.0001);
+	length->set_min(SECOND_DECIMAL);
 	length->set_max(36000);
-	length->set_step(0.0001);
+	length->set_step(SECOND_DECIMAL);
 	length->set_allow_greater(true);
 	length->set_custom_minimum_size(Vector2(70 * EDSCALE, 0));
 	length->set_hide_slider(true);
@@ -1925,7 +1927,7 @@ AnimationTimelineEdit::AnimationTimelineEdit() {
 	loop = memnew(Button);
 	loop->set_flat(true);
 	loop->set_tooltip_text(TTR("Animation Looping"));
-	loop->connect("pressed", callable_mp(this, &AnimationTimelineEdit::_anim_loop_pressed));
+	loop->connect(SceneStringName(pressed), callable_mp(this, &AnimationTimelineEdit::_anim_loop_pressed));
 	loop->set_toggle_mode(true);
 	len_hb->add_child(loop);
 	add_child(len_hb);
@@ -2646,7 +2648,7 @@ String AnimationTrackEdit::get_tooltip(const Point2 &p_pos) const {
 		}
 
 		if (key_idx != -1) {
-			String text = TTR("Time (s):") + " " + TS->format_number(rtos(Math::snapped(animation->track_get_key_time(track, key_idx), 0.0001))) + "\n";
+			String text = TTR("Time (s):") + " " + TS->format_number(rtos(Math::snapped(animation->track_get_key_time(track, key_idx), SECOND_DECIMAL))) + "\n";
 			switch (animation->track_get_type(track)) {
 				case Animation::TYPE_POSITION_3D: {
 					Vector3 t = animation->track_get_key_value(track, key_idx);
@@ -2811,7 +2813,7 @@ void AnimationTrackEdit::gui_input(const Ref<InputEvent> &p_event) {
 				if (!menu) {
 					menu = memnew(PopupMenu);
 					add_child(menu);
-					menu->connect("id_pressed", callable_mp(this, &AnimationTrackEdit::_menu_selected));
+					menu->connect(SceneStringName(id_pressed), callable_mp(this, &AnimationTrackEdit::_menu_selected));
 				}
 				menu->clear();
 				if (animation->track_get_type(track) == Animation::TYPE_AUDIO) {
@@ -2834,7 +2836,7 @@ void AnimationTrackEdit::gui_input(const Ref<InputEvent> &p_event) {
 				if (!menu) {
 					menu = memnew(PopupMenu);
 					add_child(menu);
-					menu->connect("id_pressed", callable_mp(this, &AnimationTrackEdit::_menu_selected));
+					menu->connect(SceneStringName(id_pressed), callable_mp(this, &AnimationTrackEdit::_menu_selected));
 				}
 				menu->clear();
 				menu->add_icon_item(get_editor_theme_icon(SNAME("InterpRaw")), TTR("Nearest"), MENU_INTERPOLATION_NEAREST);
@@ -2880,7 +2882,7 @@ void AnimationTrackEdit::gui_input(const Ref<InputEvent> &p_event) {
 				if (!menu) {
 					menu = memnew(PopupMenu);
 					add_child(menu);
-					menu->connect("id_pressed", callable_mp(this, &AnimationTrackEdit::_menu_selected));
+					menu->connect(SceneStringName(id_pressed), callable_mp(this, &AnimationTrackEdit::_menu_selected));
 				}
 				menu->clear();
 				menu->add_icon_item(get_editor_theme_icon(SNAME("InterpWrapClamp")), TTR("Clamp Loop Interp"), MENU_LOOP_CLAMP);
@@ -2914,7 +2916,7 @@ void AnimationTrackEdit::gui_input(const Ref<InputEvent> &p_event) {
 				if (!menu) {
 					menu = memnew(PopupMenu);
 					add_child(menu);
-					menu->connect("id_pressed", callable_mp(this, &AnimationTrackEdit::_menu_selected));
+					menu->connect(SceneStringName(id_pressed), callable_mp(this, &AnimationTrackEdit::_menu_selected));
 				}
 
 				bool selected = _try_select_at_ui_pos(pos, mb->is_command_or_control_pressed() || mb->is_shift_pressed(), false);
@@ -2932,7 +2934,7 @@ void AnimationTrackEdit::gui_input(const Ref<InputEvent> &p_event) {
 				}
 				if (selected || editor->is_selection_active()) {
 					AnimationPlayer *player = AnimationPlayerEditor::get_singleton()->get_player();
-					if (!player->has_animation(SceneStringNames::get_singleton()->RESET) || animation != player->get_animation(SceneStringNames::get_singleton()->RESET)) {
+					if ((!player->has_animation(SceneStringName(RESET)) || animation != player->get_animation(SceneStringName(RESET))) && editor->can_add_reset_key()) {
 						menu->add_icon_item(get_editor_theme_icon(SNAME("Reload")), TTR("Add RESET Value(s)"), MENU_KEY_ADD_RESET);
 					}
 
@@ -2962,7 +2964,7 @@ void AnimationTrackEdit::gui_input(const Ref<InputEvent> &p_event) {
 		}
 
 		path->set_text(animation->track_get_path(track));
-		Vector2 theme_ofs = path->get_theme_stylebox(SNAME("normal"), SNAME("LineEdit"))->get_offset();
+		Vector2 theme_ofs = path->get_theme_stylebox(CoreStringName(normal), SNAME("LineEdit"))->get_offset();
 		path_popup->set_position(get_screen_position() + path_rect.position - theme_ofs);
 		path_popup->set_size(path_rect.size);
 		path_popup->popup();
@@ -3363,7 +3365,7 @@ AnimationTrackEdit::AnimationTrackEdit() {
 	play_position->set_mouse_filter(MOUSE_FILTER_PASS);
 	add_child(play_position);
 	play_position->set_anchors_and_offsets_preset(PRESET_FULL_RECT);
-	play_position->connect("draw", callable_mp(this, &AnimationTrackEdit::_play_position_draw));
+	play_position->connect(SceneStringName(draw), callable_mp(this, &AnimationTrackEdit::_play_position_draw));
 	set_focus_mode(FOCUS_CLICK);
 	set_mouse_filter(MOUSE_FILTER_PASS); // Scroll has to work too for selection.
 }
@@ -3586,13 +3588,13 @@ void AnimationTrackEditor::_root_removed() {
 
 void AnimationTrackEditor::set_root(Node *p_root) {
 	if (root) {
-		root->disconnect("tree_exiting", callable_mp(this, &AnimationTrackEditor::_root_removed));
+		root->disconnect(SceneStringName(tree_exiting), callable_mp(this, &AnimationTrackEditor::_root_removed));
 	}
 
 	root = p_root;
 
 	if (root) {
-		root->connect("tree_exiting", callable_mp(this, &AnimationTrackEditor::_root_removed), CONNECT_ONE_SHOT);
+		root->connect(SceneStringName(tree_exiting), callable_mp(this, &AnimationTrackEditor::_root_removed), CONNECT_ONE_SHOT);
 	}
 
 	_update_tracks();
@@ -3691,8 +3693,8 @@ void AnimationTrackEditor::_animation_track_remove_request(int p_track, Ref<Anim
 
 		// Remove corresponding reset tracks if they are no longer needed.
 		AnimationPlayer *player = AnimationPlayerEditor::get_singleton()->get_player();
-		if (player->has_animation(SceneStringNames::get_singleton()->RESET)) {
-			Ref<Animation> reset = player->get_animation(SceneStringNames::get_singleton()->RESET);
+		if (player->has_animation(SceneStringName(RESET))) {
+			Ref<Animation> reset = player->get_animation(SceneStringName(RESET));
 			if (reset != p_from_animation) {
 				for (int i = 0; i < reset->get_track_count(); i++) {
 					if (reset->track_get_path(i) == p_from_animation->track_get_path(p_track)) {
@@ -3798,7 +3800,7 @@ void AnimationTrackEditor::make_insert_queue() {
 void AnimationTrackEditor::commit_insert_queue() {
 	bool reset_allowed = true;
 	AnimationPlayer *player = AnimationPlayerEditor::get_singleton()->get_player();
-	if (player->has_animation(SceneStringNames::get_singleton()->RESET) && player->get_animation(SceneStringNames::get_singleton()->RESET) == animation) {
+	if (player->has_animation(SceneStringName(RESET)) && player->get_animation(SceneStringName(RESET)) == animation) {
 		// Avoid messing with the reset animation itself.
 		reset_allowed = false;
 	} else {
@@ -4207,8 +4209,8 @@ void AnimationTrackEditor::insert_value_key(const String &p_property, const Vari
 
 Ref<Animation> AnimationTrackEditor::_create_and_get_reset_animation() {
 	AnimationPlayer *player = AnimationPlayerEditor::get_singleton()->get_player();
-	if (player->has_animation(SceneStringNames::get_singleton()->RESET)) {
-		return player->get_animation(SceneStringNames::get_singleton()->RESET);
+	if (player->has_animation(SceneStringName(RESET))) {
+		return player->get_animation(SceneStringName(RESET));
 	} else {
 		Ref<AnimationLibrary> al;
 		AnimationMixer *mixer = AnimationPlayerEditor::get_singleton()->fetch_mixer_for_library();
@@ -4224,9 +4226,9 @@ Ref<Animation> AnimationTrackEditor::_create_and_get_reset_animation() {
 		reset_anim.instantiate();
 		reset_anim->set_length(ANIM_MIN_LENGTH);
 		EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
-		undo_redo->add_do_method(al.ptr(), "add_animation", SceneStringNames::get_singleton()->RESET, reset_anim);
+		undo_redo->add_do_method(al.ptr(), "add_animation", SceneStringName(RESET), reset_anim);
 		undo_redo->add_do_method(AnimationPlayerEditor::get_singleton(), "_animation_player_changed", player);
-		undo_redo->add_undo_method(al.ptr(), "remove_animation", SceneStringNames::get_singleton()->RESET);
+		undo_redo->add_undo_method(al.ptr(), "remove_animation", SceneStringName(RESET));
 		undo_redo->add_undo_method(AnimationPlayerEditor::get_singleton(), "_animation_player_changed", player);
 		return reset_anim;
 	}
@@ -4423,7 +4425,7 @@ AnimationTrackEditor::TrackIndices AnimationTrackEditor::_confirm_insert(InsertD
 		}
 	}
 
-	float time = timeline->get_play_position();
+	float time = p_id.time == FLT_MAX ? timeline->get_play_position() : p_id.time;
 	Variant value;
 
 	switch (p_id.type) {
@@ -4431,7 +4433,9 @@ AnimationTrackEditor::TrackIndices AnimationTrackEditor::_confirm_insert(InsertD
 		case Animation::TYPE_ROTATION_3D:
 		case Animation::TYPE_SCALE_3D:
 		case Animation::TYPE_BLEND_SHAPE:
-		case Animation::TYPE_VALUE: {
+		case Animation::TYPE_VALUE:
+		case Animation::TYPE_AUDIO:
+		case Animation::TYPE_ANIMATION: {
 			value = p_id.value;
 
 		} break;
@@ -4447,10 +4451,9 @@ AnimationTrackEditor::TrackIndices AnimationTrackEditor::_confirm_insert(InsertD
 			bezier_edit_icon->set_disabled(false);
 
 		} break;
-		case Animation::TYPE_ANIMATION: {
-			value = p_id.value;
-		} break;
 		default: {
+			// Other track types shouldn't use this code path.
+			DEV_ASSERT(false);
 		}
 	}
 
@@ -4525,6 +4528,16 @@ bool AnimationTrackEditor::is_key_clipboard_active() const {
 
 bool AnimationTrackEditor::is_snap_enabled() const {
 	return snap->is_pressed() ^ Input::get_singleton()->is_key_pressed(Key::CMD_OR_CTRL);
+}
+
+bool AnimationTrackEditor::can_add_reset_key() const {
+	for (const KeyValue<SelectedKey, KeyInfo> &E : selection) {
+		const Animation::TrackType track_type = animation->track_get_type(E.key.track);
+		if (track_type != Animation::TYPE_ANIMATION && track_type != Animation::TYPE_AUDIO && track_type != Animation::TYPE_METHOD) {
+			return true;
+		}
+	}
+	return false;
 }
 
 void AnimationTrackEditor::_update_tracks() {
@@ -4759,10 +4772,12 @@ void AnimationTrackEditor::_animation_changed() {
 }
 
 void AnimationTrackEditor::_snap_mode_changed(int p_mode) {
-	timeline->set_use_fps(p_mode == 1);
+	bool use_fps = p_mode == 1;
+	timeline->set_use_fps(use_fps);
 	if (key_edit) {
-		key_edit->set_use_fps(p_mode == 1);
+		key_edit->set_use_fps(use_fps);
 	}
+	step->set_step(use_fps ? FPS_DECIMAL : SECOND_DECIMAL);
 	_update_step_spinbox();
 }
 
@@ -4776,7 +4791,9 @@ void AnimationTrackEditor::_update_step_spinbox() {
 		if (animation->get_step() == 0) {
 			step->set_value(0);
 		} else {
-			step->set_value(1.0 / animation->get_step());
+			// The value stored within tscn cannot restored the original FPS due to lack of precision,
+			// so the value should be limited to integer.
+			step->set_value(Math::round(1.0 / animation->get_step()));
 		}
 
 	} else {
@@ -4784,6 +4801,7 @@ void AnimationTrackEditor::_update_step_spinbox() {
 	}
 
 	step->set_block_signals(false);
+	_update_snap_unit();
 }
 
 void AnimationTrackEditor::_animation_update() {
@@ -4851,7 +4869,7 @@ void AnimationTrackEditor::_notification(int p_what) {
 			imported_anim_warning->set_icon(get_editor_theme_icon(SNAME("NodeWarning")));
 			dummy_player_warning->set_icon(get_editor_theme_icon(SNAME("NodeWarning")));
 			inactive_player_warning->set_icon(get_editor_theme_icon(SNAME("NodeWarning")));
-			main_panel->add_theme_style_override("panel", get_theme_stylebox(SNAME("panel"), SNAME("Tree")));
+			main_panel->add_theme_style_override(SceneStringName(panel), get_theme_stylebox(SceneStringName(panel), SNAME("Tree")));
 			edit->get_popup()->set_item_icon(edit->get_popup()->get_item_index(EDIT_APPLY_RESET), get_editor_theme_icon(SNAME("Reload")));
 			auto_fit->set_icon(get_editor_theme_icon(SNAME("AnimationAutoFit")));
 			auto_fit_bezier->set_icon(get_editor_theme_icon(SNAME("AnimationAutoFitBezier")));
@@ -4876,6 +4894,8 @@ void AnimationTrackEditor::_update_step(double p_new_step) {
 	if (animation.is_null()) {
 		return;
 	}
+
+	_update_snap_unit();
 
 	EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 	undo_redo->create_action(TTR("Change Animation Step"));
@@ -5024,8 +5044,8 @@ void AnimationTrackEditor::_add_track(int p_type) {
 
 void AnimationTrackEditor::_fetch_value_track_options(const NodePath &p_path, Animation::UpdateMode *r_update_mode, Animation::InterpolationType *r_interpolation_type, bool *r_loop_wrap) {
 	AnimationPlayer *player = AnimationPlayerEditor::get_singleton()->get_player();
-	if (player->has_animation(SceneStringNames::get_singleton()->RESET)) {
-		Ref<Animation> reset_anim = player->get_animation(SceneStringNames::get_singleton()->RESET);
+	if (player->has_animation(SceneStringName(RESET))) {
+		Ref<Animation> reset_anim = player->get_animation(SceneStringName(RESET));
 		int rt = reset_anim->find_track(p_path, Animation::TrackType::TYPE_VALUE);
 		if (rt >= 0) {
 			*r_update_mode = reset_anim->value_track_get_update_mode(rt);
@@ -5163,90 +5183,71 @@ void AnimationTrackEditor::_insert_key_from_track(float p_ofs, int p_track) {
 		p_ofs = snap_time(p_ofs);
 	}
 	while (animation->track_find_key(p_track, p_ofs, Animation::FIND_MODE_APPROX) != -1) { // Make sure insertion point is valid.
-		p_ofs += 0.0001;
+		p_ofs += SECOND_DECIMAL;
 	}
 
-	EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
+	Node *node = root->get_node_or_null(animation->track_get_path(p_track));
+	if (!node) {
+		EditorNode::get_singleton()->show_warning(TTR("Track path is invalid, so can't add a key."));
+		return;
+	}
+
+	// Special handling for this one.
+	if (animation->track_get_type(p_track) == Animation::TYPE_METHOD) {
+		method_selector->select_method_from_instance(node);
+
+		insert_key_from_track_call_ofs = p_ofs;
+		insert_key_from_track_call_track = p_track;
+		return;
+	}
+
+	InsertData id;
+	id.path = animation->track_get_path(p_track);
+	id.advance = false;
+	id.track_idx = p_track;
+	id.type = animation->track_get_type(p_track);
+	// TRANSLATORS: This describes the target of new animation track, will be inserted into another string.
+	id.query = vformat(TTR("node '%s'"), node->get_name());
+	id.time = p_ofs;
+	// id.value is filled in each case handled below.
+
 	switch (animation->track_get_type(p_track)) {
 		case Animation::TYPE_POSITION_3D: {
-			if (!root->has_node(animation->track_get_path(p_track))) {
-				EditorNode::get_singleton()->show_warning(TTR("Track path is invalid, so can't add a key."));
-				return;
-			}
-			Node3D *base = Object::cast_to<Node3D>(root->get_node(animation->track_get_path(p_track)));
+			Node3D *base = Object::cast_to<Node3D>(node);
 
 			if (!base) {
 				EditorNode::get_singleton()->show_warning(TTR("Track is not of type Node3D, can't insert key"));
 				return;
 			}
 
-			Vector3 pos = base->get_position();
-
-			undo_redo->create_action(TTR("Add Position Key"));
-			undo_redo->add_do_method(animation.ptr(), "position_track_insert_key", p_track, p_ofs, pos);
-			undo_redo->add_undo_method(this, "_clear_selection_for_anim", animation);
-			undo_redo->add_undo_method(animation.ptr(), "track_remove_key_at_time", p_track, p_ofs);
-			undo_redo->commit_action();
-
+			id.value = base->get_position();
 		} break;
 		case Animation::TYPE_ROTATION_3D: {
-			if (!root->has_node(animation->track_get_path(p_track))) {
-				EditorNode::get_singleton()->show_warning(TTR("Track path is invalid, so can't add a key."));
-				return;
-			}
-			Node3D *base = Object::cast_to<Node3D>(root->get_node(animation->track_get_path(p_track)));
+			Node3D *base = Object::cast_to<Node3D>(node);
 
 			if (!base) {
 				EditorNode::get_singleton()->show_warning(TTR("Track is not of type Node3D, can't insert key"));
 				return;
 			}
 
-			Quaternion rot = base->get_transform().basis.operator Quaternion();
-
-			undo_redo->create_action(TTR("Add Rotation Key"));
-			undo_redo->add_do_method(animation.ptr(), "rotation_track_insert_key", p_track, p_ofs, rot);
-			undo_redo->add_undo_method(this, "_clear_selection_for_anim", animation);
-			undo_redo->add_undo_method(animation.ptr(), "track_remove_key_at_time", p_track, p_ofs);
-			undo_redo->commit_action();
-
+			id.value = base->get_transform().basis.operator Quaternion();
 		} break;
 		case Animation::TYPE_SCALE_3D: {
-			if (!root->has_node(animation->track_get_path(p_track))) {
-				EditorNode::get_singleton()->show_warning(TTR("Track path is invalid, so can't add a key."));
-				return;
-			}
-			Node3D *base = Object::cast_to<Node3D>(root->get_node(animation->track_get_path(p_track)));
+			Node3D *base = Object::cast_to<Node3D>(node);
 
 			if (!base) {
 				EditorNode::get_singleton()->show_warning(TTR("Track is not of type Node3D, can't insert key"));
 				return;
 			}
 
-			undo_redo->create_action(TTR("Add Scale Key"));
-			undo_redo->add_do_method(animation.ptr(), "scale_track_insert_key", p_track, p_ofs, base->get_scale());
-			undo_redo->add_undo_method(this, "_clear_selection_for_anim", animation);
-			undo_redo->add_undo_method(animation.ptr(), "track_remove_key_at_time", p_track, p_ofs);
-			undo_redo->commit_action();
-
+			id.value = base->get_scale();
 		} break;
 		case Animation::TYPE_BLEND_SHAPE:
 		case Animation::TYPE_VALUE: {
 			NodePath bp;
-			Variant value;
-			_find_hint_for_track(p_track, bp, &value);
-
-			undo_redo->create_action(TTR("Add Track Key"));
-			undo_redo->add_do_method(animation.ptr(), "track_insert_key", p_track, p_ofs, value);
-			undo_redo->add_undo_method(this, "_clear_selection_for_anim", animation);
-			undo_redo->add_undo_method(animation.ptr(), "track_remove_key_at_time", p_track, p_ofs);
-			undo_redo->commit_action();
-
+			_find_hint_for_track(p_track, bp, &id.value);
 		} break;
 		case Animation::TYPE_METHOD: {
-			if (!root->has_node(animation->track_get_path(p_track))) {
-				EditorNode::get_singleton()->show_warning(TTR("Track path is invalid, so can't add a method key."));
-				return;
-			}
 			Node *base = root->get_node_or_null(animation->track_get_path(p_track));
 			ERR_FAIL_NULL(base);
 
@@ -5268,12 +5269,7 @@ void AnimationTrackEditor::_insert_key_from_track(float p_ofs, int p_track) {
 			arr[3] = 0.25;
 			arr[4] = 0;
 
-			undo_redo->create_action(TTR("Add Track Key"));
-			undo_redo->add_do_method(animation.ptr(), "track_insert_key", p_track, p_ofs, arr);
-			undo_redo->add_undo_method(this, "_clear_selection_for_anim", animation);
-			undo_redo->add_undo_method(animation.ptr(), "track_remove_key_at_time", p_track, p_ofs);
-			undo_redo->commit_action();
-
+			id.value = arr;
 		} break;
 		case Animation::TYPE_AUDIO: {
 			Dictionary ak;
@@ -5281,22 +5277,18 @@ void AnimationTrackEditor::_insert_key_from_track(float p_ofs, int p_track) {
 			ak["start_offset"] = 0;
 			ak["end_offset"] = 0;
 
-			undo_redo->create_action(TTR("Add Track Key"));
-			undo_redo->add_do_method(animation.ptr(), "track_insert_key", p_track, p_ofs, ak);
-			undo_redo->add_undo_method(this, "_clear_selection_for_anim", animation);
-			undo_redo->add_undo_method(animation.ptr(), "track_remove_key_at_time", p_track, p_ofs);
-			undo_redo->commit_action();
+			id.value = ak;
 		} break;
 		case Animation::TYPE_ANIMATION: {
-			StringName anim = "[stop]";
-
-			undo_redo->create_action(TTR("Add Track Key"));
-			undo_redo->add_do_method(animation.ptr(), "track_insert_key", p_track, p_ofs, anim);
-			undo_redo->add_undo_method(this, "_clear_selection_for_anim", animation);
-			undo_redo->add_undo_method(animation.ptr(), "track_remove_key_at_time", p_track, p_ofs);
-			undo_redo->commit_action();
+			id.value = StringName("[stop]");
 		} break;
+		default: {
+			// All track types should be handled by now.
+			DEV_ASSERT(false);
+		}
 	}
+
+	_query_insert(id);
 }
 
 void AnimationTrackEditor::_add_method_key(const String &p_method) {
@@ -6612,6 +6604,11 @@ void AnimationTrackEditor::_edit_menu_pressed(int p_option) {
 			for (const KeyValue<SelectedKey, KeyInfo> &E : selection) {
 				const SelectedKey &sk = E.key;
 
+				const Animation::TrackType track_type = animation->track_get_type(E.key.track);
+				if (track_type == Animation::TYPE_ANIMATION || track_type == Animation::TYPE_AUDIO || track_type == Animation::TYPE_METHOD) {
+					continue;
+				}
+
 				// Only add one key per track.
 				if (tracks_added.has(sk.track)) {
 					continue;
@@ -7008,25 +7005,31 @@ void AnimationTrackEditor::_selection_changed() {
 	}
 }
 
+void AnimationTrackEditor::_update_snap_unit() {
+	if (step->get_value() <= 0) {
+		snap_unit = 0;
+		return; // Avoid zero div.
+	}
+
+	if (timeline->is_using_fps()) {
+		snap_unit = 1.0 / step->get_value();
+	} else {
+		snap_unit = 1.0 / Math::round(1.0 / step->get_value()); // Follow the snap behavior of the timeline editor.
+	}
+}
+
 float AnimationTrackEditor::snap_time(float p_value, bool p_relative) {
 	if (is_snap_enabled()) {
-		double snap_increment;
-		if (timeline->is_using_fps() && step->get_value() > 0) {
-			snap_increment = 1.0 / step->get_value();
-		} else {
-			snap_increment = step->get_value();
-		}
-
 		if (Input::get_singleton()->is_key_pressed(Key::SHIFT)) {
 			// Use more precise snapping when holding Shift.
-			snap_increment *= 0.25;
+			snap_unit *= 0.25;
 		}
 
 		if (p_relative) {
-			double rel = Math::fmod(timeline->get_value(), snap_increment);
-			p_value = Math::snapped(p_value + rel, snap_increment) - rel;
+			double rel = Math::fmod(timeline->get_value(), snap_unit);
+			p_value = Math::snapped(p_value + rel, snap_unit) - rel;
 		} else {
-			p_value = Math::snapped(p_value, snap_increment);
+			p_value = Math::snapped(p_value, snap_unit);
 		}
 	}
 
@@ -7195,8 +7198,8 @@ AnimationTrackEditor::AnimationTrackEditor() {
 	scroll->remove_child(sb);
 	timeline_scroll->add_child(sb); // Move here so timeline and tracks are always aligned.
 	scroll->set_focus_mode(FOCUS_CLICK);
-	scroll->connect("gui_input", callable_mp(this, &AnimationTrackEditor::_scroll_input));
-	scroll->connect("focus_exited", callable_mp(panner.ptr(), &ViewPanner::release_pan_key));
+	scroll->connect(SceneStringName(gui_input), callable_mp(this, &AnimationTrackEditor::_scroll_input));
+	scroll->connect(SceneStringName(focus_exited), callable_mp(panner.ptr(), &ViewPanner::release_pan_key));
 
 	bezier_edit = memnew(AnimationBezierTrackEdit);
 	timeline_vbox->add_child(bezier_edit);
@@ -7227,21 +7230,21 @@ AnimationTrackEditor::AnimationTrackEditor() {
 	imported_anim_warning->hide();
 	imported_anim_warning->set_text(TTR("Imported Scene"));
 	imported_anim_warning->set_tooltip_text(TTR("Warning: Editing imported animation"));
-	imported_anim_warning->connect("pressed", callable_mp(this, &AnimationTrackEditor::_show_imported_anim_warning));
+	imported_anim_warning->connect(SceneStringName(pressed), callable_mp(this, &AnimationTrackEditor::_show_imported_anim_warning));
 	bottom_hb->add_child(imported_anim_warning);
 
 	dummy_player_warning = memnew(Button);
 	dummy_player_warning->hide();
 	dummy_player_warning->set_text(TTR("Dummy Player"));
 	dummy_player_warning->set_tooltip_text(TTR("Warning: Editing dummy AnimationPlayer"));
-	dummy_player_warning->connect("pressed", callable_mp(this, &AnimationTrackEditor::_show_dummy_player_warning));
+	dummy_player_warning->connect(SceneStringName(pressed), callable_mp(this, &AnimationTrackEditor::_show_dummy_player_warning));
 	bottom_hb->add_child(dummy_player_warning);
 
 	inactive_player_warning = memnew(Button);
 	inactive_player_warning->hide();
 	inactive_player_warning->set_text(TTR("Inactive Player"));
 	inactive_player_warning->set_tooltip_text(TTR("Warning: AnimationPlayer is inactive"));
-	inactive_player_warning->connect("pressed", callable_mp(this, &AnimationTrackEditor::_show_inactive_player_warning));
+	inactive_player_warning->connect(SceneStringName(pressed), callable_mp(this, &AnimationTrackEditor::_show_inactive_player_warning));
 	bottom_hb->add_child(inactive_player_warning);
 
 	bottom_hb->add_spacer();
@@ -7250,14 +7253,14 @@ AnimationTrackEditor::AnimationTrackEditor() {
 	bezier_edit_icon->set_flat(true);
 	bezier_edit_icon->set_disabled(true);
 	bezier_edit_icon->set_toggle_mode(true);
-	bezier_edit_icon->connect("pressed", callable_mp(this, &AnimationTrackEditor::_toggle_bezier_edit));
+	bezier_edit_icon->connect(SceneStringName(pressed), callable_mp(this, &AnimationTrackEditor::_toggle_bezier_edit));
 	bezier_edit_icon->set_tooltip_text(TTR("Toggle between the bezier curve editor and track editor."));
 
 	bottom_hb->add_child(bezier_edit_icon);
 
 	selected_filter = memnew(Button);
 	selected_filter->set_flat(true);
-	selected_filter->connect("pressed", callable_mp(this, &AnimationTrackEditor::_view_group_toggle)); // Same function works the same.
+	selected_filter->connect(SceneStringName(pressed), callable_mp(this, &AnimationTrackEditor::_view_group_toggle)); // Same function works the same.
 	selected_filter->set_toggle_mode(true);
 	selected_filter->set_tooltip_text(TTR("Only show tracks from nodes selected in tree."));
 
@@ -7265,7 +7268,7 @@ AnimationTrackEditor::AnimationTrackEditor() {
 
 	view_group = memnew(Button);
 	view_group->set_flat(true);
-	view_group->connect("pressed", callable_mp(this, &AnimationTrackEditor::_view_group_toggle));
+	view_group->connect(SceneStringName(pressed), callable_mp(this, &AnimationTrackEditor::_view_group_toggle));
 	view_group->set_toggle_mode(true);
 	view_group->set_tooltip_text(TTR("Group tracks by node or display them as plain list."));
 
@@ -7283,7 +7286,7 @@ AnimationTrackEditor::AnimationTrackEditor() {
 	step = memnew(EditorSpinSlider);
 	step->set_min(0);
 	step->set_max(1000000);
-	step->set_step(0.0001);
+	step->set_step(SECOND_DECIMAL);
 	step->set_hide_slider(true);
 	step->set_custom_minimum_size(Size2(100, 0) * EDSCALE);
 	step->set_tooltip_text(TTR("Animation step value."));
@@ -7313,17 +7316,19 @@ AnimationTrackEditor::AnimationTrackEditor() {
 	bottom_hb->add_child(zoom);
 	timeline->set_zoom(zoom);
 
+	ED_SHORTCUT("animation_editor/auto_fit", TTR("Fit to panel"), KeyModifierMask::ALT | Key::F);
+
 	auto_fit = memnew(Button);
 	auto_fit->set_flat(true);
-	auto_fit->connect("pressed", callable_mp(this, &AnimationTrackEditor::_auto_fit));
-	auto_fit->set_shortcut(ED_SHORTCUT("animation_editor/auto_fit", TTR("Fit to panel"), KeyModifierMask::ALT | Key::F));
+	auto_fit->connect(SceneStringName(pressed), callable_mp(this, &AnimationTrackEditor::_auto_fit));
+	auto_fit->set_shortcut(ED_GET_SHORTCUT("animation_editor/auto_fit"));
 	bottom_hb->add_child(auto_fit);
 
 	auto_fit_bezier = memnew(Button);
 	auto_fit_bezier->set_flat(true);
 	auto_fit_bezier->set_visible(false);
-	auto_fit_bezier->connect("pressed", callable_mp(this, &AnimationTrackEditor::_auto_fit_bezier));
-	auto_fit_bezier->set_shortcut(ED_SHORTCUT("animation_editor/auto_fit", TTR("Fit to panel"), KeyModifierMask::ALT | Key::F));
+	auto_fit_bezier->connect(SceneStringName(pressed), callable_mp(this, &AnimationTrackEditor::_auto_fit_bezier));
+	auto_fit_bezier->set_shortcut(ED_GET_SHORTCUT("animation_editor/auto_fit"));
 	bottom_hb->add_child(auto_fit_bezier);
 
 	edit = memnew(MenuButton);
@@ -7364,7 +7369,7 @@ AnimationTrackEditor::AnimationTrackEditor() {
 	edit->get_popup()->add_item(TTR("Optimize Animation (no undo)..."), EDIT_OPTIMIZE_ANIMATION);
 	edit->get_popup()->add_item(TTR("Clean-Up Animation (no undo)..."), EDIT_CLEAN_UP_ANIMATION);
 
-	edit->get_popup()->connect("id_pressed", callable_mp(this, &AnimationTrackEditor::_edit_menu_pressed));
+	edit->get_popup()->connect(SceneStringName(id_pressed), callable_mp(this, &AnimationTrackEditor::_edit_menu_pressed));
 	edit->get_popup()->connect("about_to_popup", callable_mp(this, &AnimationTrackEditor::_edit_menu_about_to_popup));
 
 	pick_track = memnew(SceneTreeDialog);
@@ -7373,7 +7378,7 @@ AnimationTrackEditor::AnimationTrackEditor() {
 	pick_track->set_title(TTR("Pick a node to animate:"));
 	pick_track->connect("selected", callable_mp(this, &AnimationTrackEditor::_new_track_node_selected));
 	pick_track->get_filter_line_edit()->connect("text_changed", callable_mp(this, &AnimationTrackEditor::_pick_track_filter_text_changed));
-	pick_track->get_filter_line_edit()->connect("gui_input", callable_mp(this, &AnimationTrackEditor::_pick_track_filter_input));
+	pick_track->get_filter_line_edit()->connect(SceneStringName(gui_input), callable_mp(this, &AnimationTrackEditor::_pick_track_filter_input));
 
 	prop_selector = memnew(PropertySelector);
 	add_child(prop_selector);
@@ -7406,7 +7411,7 @@ AnimationTrackEditor::AnimationTrackEditor() {
 	box_selection->set_as_top_level(true);
 	box_selection->set_mouse_filter(MOUSE_FILTER_IGNORE);
 	box_selection->hide();
-	box_selection->connect("draw", callable_mp(this, &AnimationTrackEditor::_box_selection_draw));
+	box_selection->connect(SceneStringName(draw), callable_mp(this, &AnimationTrackEditor::_box_selection_draw));
 
 	// Default Plugins.
 
@@ -7523,9 +7528,9 @@ AnimationTrackEditor::AnimationTrackEditor() {
 	ease_selection->select(Tween::EASE_IN_OUT); // Default
 	ease_selection->set_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED); // Translation context is needed.
 	ease_fps = memnew(SpinBox);
-	ease_fps->set_min(1);
+	ease_fps->set_min(FPS_DECIMAL);
 	ease_fps->set_max(999);
-	ease_fps->set_step(1);
+	ease_fps->set_step(FPS_DECIMAL);
 	ease_fps->set_value(30); // Default
 	ease_grid->add_child(memnew(Label(TTR("Transition Type:"))));
 	ease_grid->add_child(transition_selection);
@@ -7549,9 +7554,9 @@ AnimationTrackEditor::AnimationTrackEditor() {
 	bake_value = memnew(CheckBox);
 	bake_value->set_pressed(true);
 	bake_fps = memnew(SpinBox);
-	bake_fps->set_min(1);
+	bake_fps->set_min(FPS_DECIMAL);
 	bake_fps->set_max(999);
-	bake_fps->set_step(1);
+	bake_fps->set_step(FPS_DECIMAL);
 	bake_fps->set_value(30); // Default
 	bake_grid->add_child(memnew(Label(TTR("3D Pos/Rot/Scl Track:"))));
 	bake_grid->add_child(bake_trs);
@@ -7573,7 +7578,7 @@ AnimationTrackEditor::AnimationTrackEditor() {
 
 	Button *select_all_button = memnew(Button);
 	select_all_button->set_text(TTR("Select All/None"));
-	select_all_button->connect("pressed", callable_mp(this, &AnimationTrackEditor::_select_all_tracks_for_copy));
+	select_all_button->connect(SceneStringName(pressed), callable_mp(this, &AnimationTrackEditor::_select_all_tracks_for_copy));
 	track_copy_vbox->add_child(select_all_button);
 
 	track_copy_select = memnew(Tree);
@@ -7670,15 +7675,14 @@ AnimationTrackKeyEditEditor::AnimationTrackKeyEditEditor(Ref<Animation> p_animat
 	spinner->set_allow_lesser(true);
 
 	if (use_fps) {
-		spinner->set_step(1);
-		spinner->set_hide_slider(true);
+		spinner->set_step(FPS_DECIMAL);
 		real_t fps = animation->get_step();
 		if (fps > 0) {
 			fps = 1.0 / fps;
 		}
 		spinner->set_value(key_ofs * fps);
 	} else {
-		spinner->set_step(0.0001);
+		spinner->set_step(SECOND_DECIMAL);
 		spinner->set_value(key_ofs);
 		spinner->set_max(animation->get_length());
 	}
